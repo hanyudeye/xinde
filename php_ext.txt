@@ -1,0 +1,1366 @@
+http://www.cnblogs.com/zhenyu-whu/p/3159856.html
+HTTP 304 的标准解释是：
+
+    Not Modified 客户端有缓冲的文档并发出了一个条件性的请求（一般是提供If-Modified-Since头表示客户只想比指定日期更新的文档）。服务器告诉客户，原来缓冲的文档还可以继续使用。
+
+如 果客户端在请求一个文件的时候，发现自己缓存的文件有 Last Modified ，那么在请求中会包含 If Modified Since ，这个时间就是缓存文件的 Last Modified 。因此，如果请求中包含 If Modified Since，就说明已经有缓存在客户端。只要判断这个时间和当前请求的文件的修改时间就可以确定是返回 304 还是 200 。对于静态文件，例如：CSS、图片，服务器会自动完成 Last Modified 和 If Modified Since 的比较，完成缓存或者更新。但是对于动态页面，就是动态产生的页面，往往没有包含 Last Modified 信息，这样浏览器、网关等都不会做缓存，也就是在每次请求的时候都完成一个 200 的请求。
+
+因此，对于动态页面做缓存加速，首先要在 Response 的 HTTP Header 中增加 Last Modified 定义，其次根据 Request 中的 If Modified Since 和被请求内容的更新时间来返回 200 或者 304 。虽然在返回 304 的时候已经做了一次数据库查询，但是可以避免接下来更多的数据库查询，并且没有返回页面内容而只是一个 HTTP Header，从而大大的降低带宽的消耗，对于用户的感觉也是提高。
+
+当这些缓存有效的时候，通过 HttpWatch 查看一个请求会得到这样的结果：
+第一次访问 200
+鼠标点击二次访问 (Cache)
+按F5刷新 304
+按Ctrl+F5强制刷新 200
+
+如果是这样的就说明缓存真正有效了。
+正则替换
+
+preg_replace() 函数用于正则表达式的搜索和替换。
+mixed preg_replace( mixed pattern, mixed replacement, mixed subject [, int limit ] ) 
+pattern 	正则表达式
+replacement 	替换的内容
+subject 	需要匹配替换的对象
+limit 	可选，指定替换的个数，如果省略 limit 或者其值为 -1，则所有的匹配项都会被替换
+
+    replacement 可以包含 \\n 形式或 $n 形式的逆向引用，首选使用后者。每个此种引用将被替换为与第 n 个被捕获的括号内的子模式所匹配的文本。n 可以从 0 到 99，其中 \\0 或 $0 指的是被整个模式所匹配的文本。对左圆括号从左到右计数（从 1 开始）以取得子模式的数目。
+    对替换模式在一个逆向引用后面紧接着一个数字时（如 \\11），不能使用 \\ 符号来表示逆向引用。因为这样将会使 preg_replace() 搞不清楚是想要一个 \\1 的逆向引用后面跟着一个数字 1 还是一个 \\11 的逆向引用。解决方法是使用 \${1}1。这会形成一个隔离的 $1 逆向引用，而使另一个 1 只是单纯的文字。
+    上述参数除 limit 外都可以是一个数组。如果 pattern 和 replacement 都是数组，将以其键名在数组中出现的顺序来进行处理，这不一定和索引的数字顺序相同。如果使用索引来标识哪个 pattern 将被哪个 replacement 来替换，应该在调用 preg_replace() 之前用 ksort() 函数对数组进行排序。
+
+
+以下是对php中class类的用法进行了详细的总结介绍，需要的朋友可以过来参考下
+
+一：结构和调用(实例化)：
+
+class className{} ，调用：$obj = new className();当类有构造函数时，还应传入参数。如$obj = new className($v,$v2…);
+
+二：构造函数和析构函数：
+
+1、构造函数用于初始化：使用__construct()，可带参数。
+
+2、但析构函数不能带参数（用于在销去一个类之前执行一些操作或功能）。析构函数用__destruct()做名称。在脚本执行结束时，会销掉内存中的对象，因此可不用析造函数，但有些比如COOKIE等，就应当要用此函数销掉。
+
+知识点：在PHP4中也提供了构造函数，但使用的是与类同名的类方法，在PHP5仍能兼容这种做法，当一个类中没有包含__construct时，会查找与类同名的方法，如果找到，就认为是构造函数，如下：
+复制代码 代码如下:
+
+class test
+{ var $b;
+function test() { $this->b=5; }
+function addab($c) { return $this->b+$c; }
+}
+$a = new test(); echo $a->addab(4); // 返回 9
+
+3、PHP不会自动调用父类的构造函数(不支持构造函数重载)，必须使用parent关键字显式地调用。
+复制代码 代码如下:
+
+class employee{
+function __construct()….
+}
+class Manager extents Employee{
+function __construct(){
+parent::_construct();
+echo ‘这个子类的父类构造函数调用了！';
+}
+}
+
+当然也可以调用与该实例没有任何关系的其它类的构造函数。只需在__construct()前加上类名即可。如：
+otherClassName::__construct();
+
+类的主家庭成员：属性、方法、常量、静态成员
+
+三、类的属性：
+有两种方法对类的属性赋值或取值。
+1、使用公共作用域public关键词。
+2、使用__set()和__get()来分别赋值和取值，前者称为设置方法（setter）或修改方法(mutator)，后者称为访问方法(accessor)或获取方法(getter)。建议使用这种方法：优点：
+A、可在__set（）统一进行数据验证。
+B、便于统一管理属性。
+
+注意：
+
+第一：__set()和__get()只对私有属性起作用，对于用public定义的属性，它们两个都懒理搭理，如下：
+复制代码 代码如下:
+
+class test{
+protected $a=9,$b=2,$c;
+public $d;
+function __set($n,$v) { $this->$n = $v+2; }
+function __get($name) { return $this->$name+2; }
+}
+$a = new test();
+$a->b =5; echo “<br />”; echo $a->b;
+
+实例只对$a,$b,$c的设置会经过__set和__get过滤与返回，对于$d，就不会起作用。如$a->d=5,再返回还是5。
+
+第二：__set($n,$v)要带两个参数。而__get($n)只能有一个参数。实例：
+复制代码 代码如下:
+
+class test{
+private $a=5,$b=6,$c;
+function __set($n,$v)
+{
+if($n=='a'&&$n>0)
+$this->$n = $v;
+else
+$this->$n = $v+2;
+}
+function __get($name)
+{
+return $this->$name; //如果改为return $this->$name + $this->addab(); 如调用a的值，实际返回的是a+a+b的值。默认为5+5+6=16。
+}
+function addab()
+{ return $this->a + $this->b; }
+}
+$e=new test();
+$e->a = 11; //注意写法：类的内部用$this->$n即变量的写法，但外部实例要用$e->a的方式。
+$e->b = 12; //get 14
+$e->k = 22;
+
+类的属性可自由扩展，如上例的k，不管是否用__set，当一个实例建立起来后，可以用$e->newProperty = xx;直接来创造一个属性，但不建议这么做。
+
+四、类的方法：
+理解成类当中的函数即可。
+
+调用：
+
+1、内部调用：可使用$this->Fanname();或$this->addab()或test::addab();
+
+2、实例化调用时，用$e->addab();即可。对于在该方法中没有使用$this关键字的，如上例中的：
+function addab() { return $this->a+$this->b; }
+改为： function addab() { return 25; }那在在外部实例调用该方法，也可用“$e::addab();”或“test::addab();”
+
+五、类的常量：
+如果类的属性理解成类中的变量，那么类的常量和变量是不一样的，其定义方法为：
+复制代码 代码如下:
+
+class test{
+private $a;
+const PI = '3.14′;
+…..
+//在类中调用上面的常量用两种方法，“$this::PI”,或 “类名::PI”,这里就是test::PI,如下：
+function getvalue(){
+return $this->a * $this::PI; //或$this->a * test::PI,用this关键字或类名均可，但都要用双冒号。
+}
+}
+$e= new test();
+$e->PI =5; //注意，这里用 ->只是创造了一个也是名为PI的属性，而不是改变类中的PI常量的值。
+echo $e::PI; //这个才是调用类的常量。
+
+常量只能用双冒号::来调用。并且不能更改其值。
+在类外部实例化后调用类常量同样也有两种方法。方法为：
+“$e::PI” 或 “test::PI”，共同点是都要用冒号，不同点是外部不能用this关键字，只能用实例名，但类名::PI是通用的。
+
+六、类的静态成员（静态属性或静态方法）：
+
+如果需要创建供所有类的实例共享的字段或方法。就得用静态成员。有两个特征：
+
+1、静态成员是共产主义者，它让脚本上的所有该类的实例调用，但不能借助类的特定实例名调用，而是在类的外部，统一使用“类名::$成员名”的方式调用。而类的内部则统一使用 “self::$成员名”来调用。
+
+2、当每一次新创建实例时，静态成员会从上次创建的实例最后值开始重新计算，而不是类中初始的值开始计算。
+
+3、对于用public定义的静态成员，可以在外部更改它的值。private等则不行。
+复制代码 代码如下:
+
+class test{
+public static $v = 0;
+function __construct(){ self::$v++; }
+static function getV(){ return self::$v; }
+}
+$a = new test();
+echo test::getV(); // 返回 1
+$b = new test();
+echo test::getV(); // 返回 2
+test::$v=8; //由于public定义的成员，改变静态成员的值。
+$c = new test();
+echo test::getV(); // 返回 9
+
+七、关键字：
+（一）this关键字：用于类的内部指代类的本身。来访问属性或方法或常量，如$this->属性名或方法名。$this::常量名。this还可以用在该类的子类中，来指代本身的属性或方法。
+
+（二）双冒号“::”关键字：用于调用常量、静态成员。
+
+（三）self关键字:在类的内部与双冒号配合调用静态成员，如 self::$staticVar.，在类的内部，不能用$this来调用静态成员。
+
+（四）__toString()：在类中使用__toString()，用于将类转成字串并打印类，用处不大：如：
+
+class test{ public $p;
+public function __toString(){ return var_export($this,TRUE); }
+}
+$a=new test();
+echo $a; //输出：test::__set_state(array( ‘p' => NULL, ))，或写成：echo $a->__toString();
+
+（五）__clone() ：当克隆对象时，这个关键字才会发生作用，用于更改克隆时某些值。
+
+（六）__call()：方法重载，参下面示例：
+
+class cB{
+function __call($method,$n){
+if($method=='showVarType'){
+if(is_numeric($n[0])){ //不能用$n。要用$n[0];
+$this->displayNum();
+}else if (is_array($n[0])){
+$this->displayArr();
+}else{
+$this->displayOther();
+}
+}
+}
+function displayNum() {
+echo ‘<h3>这是数字!</h3>';
+}
+function displayArr() {
+echo ‘<h3>这是数组!</h3>';
+}
+function displayOther() {
+echo ‘<h3>不是数组也不是数字!</h3>';
+}
+}
+
+$x='a';
+$y=array(‘a','b');
+$b=new cB;
+$b->showVarType($x); //不是数组也不是数字
+$b->showVarType($y); //这是数组
+
+注意，不能在类中定义showVarType（）方法，否则代码不能用。
+
+（七）extends:继承: 如class a{} class b extends a{} 类b继承了类a
+
+附：记忆：以后统一在调用方法或属性时用 “-> “,调用常量则用双冒号“::”，不会搞晕。
+
+八、方法和属性的作用域：
+
+共有6种：public(默认，可省略，也等同于php6的var声明),private（私有，也不能由子类使用），protected(私有，但可由子类使用) ，abstract(抽象，参下文)，final(阻止在子类中覆盖—也称重载，阻止被继承，用于修饰类名及方法，如final class test{ final function fun(){}} ，但不能用于属性),static(静态)
+
+九：抽象类和抽象方法（abstract——注意：没有所谓抽象属性）:
+
+抽象可以理解成父类为子类定义了一个模板或基类。作用域abstract只在父类中声明，但在子类中实现。注意事项：
+
+1、抽象类不能被实例化，只能被子类（具体类）继承后实现。
+
+2、抽象类必须在其子类中实现该抽象类的所有抽象方法。否则会出错。
+
+3、在抽象方法中，只是声明，但不能具体实现：如abstract function gettow(){ return $this->p; }是错的，只能声明这个方法：abstract function gettow();（连方括号{}都不要出现）,抽象方法和抽象类主要用于复杂的类层次关系中。该层次关系需要确保每一个子类都包含并重载了某些特定的方法。这也可以通过接口实现
+
+4、属性不能被命名为抽象属性，如abstract $p = 5是错的。
+
+5、只有声明为抽象的类可以声明抽象方法，但如果方法声明为抽象，就不能具体实现。如：
+复制代码 代码如下:
+
+abstract class Employee
+{
+abstract function a(…);
+abstract function b(…);
+}
+
+以后再对这个父类扩展，组成各种子类（如经理，员工，出纳）。
+
+6、抽象类中，如果要实现具体的方法，不能声明为抽象。这样可能实际意义更大。可以把几个类库中共同的部分提取到抽象类中，其它的类继承抽象类即可。如下：
+复制代码 代码如下:
+
+abstract class BaseShop{
+Const TAX=0.06; // 在抽象类中定义常量
+public function buy($gid) { // 如果定义为抽象方法abstract function buy（）就不能在这里实现主体。
+echo(‘你购买了ID为 :'.$gid.'的商品');
+}
+public function sell($gid) {
+echo(‘你卖了ID为 :'.$gid.'的商品');
+}
+public function view($gid) {
+echo(‘你查看了ID为 :'.$gid.'的商品');
+}
+}
+class BallShop extends BaseShop{
+var $itme_id = null;
+public function __construct()
+{
+$this->itme_id = 2314;
+}
+public function open()
+{
+$this->sell($this->itme_id);
+}
+public function getTax()
+{
+echo printf(‘<h3>平均税率是 %d%%。</h3>',$this::TAX*100);
+}
+}
+$s = new BallShop;
+$s->open(); //你卖了ID为 :2314的商品
+$shop->getTax();
+
+十：类型提示：
+注意，类型提示功能只能用于参数为对象的提示，而无法用于为整数，字串，浮点等类型提示。有些类的方法需要传入的参数为所期望的对象类型，可以用下面的方法达到强制实施此替则。要达到类型提示，只要在方法的对象型参数前加一个已存在的类的名称，如：function funname(OtherClassName $otherclassINSName,$c….)，注意，OtherClassName必须是存在的类。如下：
+复制代码 代码如下:
+
+class em{ var $k=56; }
+class test{
+function __construct()
+{ echo $this->addab(new em(),2); }
+
+function addab(em $j,$c) //这个方法，即可以在内部调用，也可以在外部调用。只要作用域许可。
+{ return $j->k+$c; }
+}
+$a = new test();
+$b = new em();
+echo $a->addab($b,2); //或 $a->addab(new em(),2);
+
+十一、类的管理：
+
+1、instanceof关键字：用于分析一个对象是否是某一个类的实例或子类或是实现了某个特定的接口：如下例，但要注意： 类名没有任何引号等定界符，否则会出错。如test不能用'test'
+复制代码 代码如下:
+
+class test2{}
+class test{}
+class testChilern Extends test{}
+$a = new test2();
+$m = new test();
+$i = ($m instanceof test);
+if($i)echo ‘$m是类test的实例！<br />'; // get this value
+switch ($a instanceof test){
+case true :
+echo ‘YES<br />';
+break;
+case false :
+echo ‘No<br />'; //get this value
+break;
+}
+$d=new testChilern();
+if($d instanceof test)echo ‘$d是类test的子类！<br />'; // get this value
+
+2、确定类是否存在：boolean class_exists(string class_name): class_exists(‘test');
+
+3、返回类名：string get_class(object)，成功时返回实例的类名，失败则返回FALSE：
+
+$a = new test2(); echo get_class($a); //返回 test2
+
+4、了解类的公用属性：array get_class_vars(‘className') ,返回关键数组：包含所有定义的public属性名及其相应的值。这个函数不能用实例名做变量
+
+5、返回类方法：get_class_methods(‘test'); //或： get_class_methods($a);可用实例名做参数，返回包括构造函数在内的所有非私有方法。
+
+6、print_r(get_declared_classes())了解当前PHP版本中所有的类名。PHP5有149个。
+
+7、get_object_vars($a)返回实例中所有公用的属性及其值的关联数组。注意它和get_class_vars()的区别：
+/* (1) get_object_vars($a)是用实例名做参数，而get_class_vars(‘test')是用类名做参数。
+* (2) get_object_vars($a)获得的属性值是实例运行后的值，而get_class_vars(‘test')获得的属性值是类中的初始定义。
+* (3) 两者均返回关联数组，且均对未赋值的属性返回NULL的值。如类test中有定义了public $q;则返回Array ( [v] => 5 [q]=>) ,
+*/
+
+8、返回父类的名称：get_parent_class($b);//或get_parent_class(‘test2′); 返回test
+
+9、确定接口是否存在：boolean interface_exists($string interface[,boolean autoload])
+
+10、确定对象类型： boolean is_a($obj,'className')，当$obj属于CLASSNAME类时，或属于其子类时，返回TRUE，如果$obj与class类型无关则返回FALSE。如：is_a($a,'test')
+
+11、确定是否是某类的子对象：当$b是继承自TEST类时，返回TRUE，否则FALSE。boolean is_subclass_of($b,'test');
+
+12、确定类或实例中，是否存在某方法。method_exists($a,'getv') //或用method_exists(‘test','getv')，此函数适用于非public定义的作用域的方法。
+
+以上函数实例：
+复制代码 代码如下:
+
+class test{
+public $v=2;
+private $c=5;
+function __construct(){
+$this->v=5;
+}
+private function getv(){
+return $this->v;
+}
+}
+class test2 extends test{}
+
+$a=new test();
+$b=new test2();
+print_r( get_class_methods(‘test')); //或：print_r( get_class_methods($a)); 均返回：Array ( [0] => __construct [1] => getv )
+echo ‘<br />';
+print_r( get_class_vars(‘test')); //返回：Array ( [v] => 2 )，和上面不一样，不能用print_r( get_class_methods($a));
+echo ‘<br />';
+echo get_parent_class($b);//或get_parent_class(‘test2′); 返回test
+echo ‘<br />';
+echo is_a($b,'test');// 返回1
+echo ‘<br />';
+if(is_subclass_of(‘test2′,'test'))echo ‘是子类！'; //或(is_subclass_of($b,'test')),返回1，当参数1为$a时则返回false,
+echo ‘<br />';
+echo method_exists($a,'getv') //或用method_exists(‘test','getv')返回1,本函数也适用于用private等定义域的方法。
+
+十一、自动加载类库文件：
+
+当类多了以后，比如要在一个文件中载入3个类库文件：a.class.php,b.class.php,c.class.php要用三个require_once(‘classes/a.class.php);
+
+require_once(‘classes/b.class.php);
+require_once(‘classes/c.class.php);
+
+可以用PHP5自动加载的功能来处理：在全局应用配置文件中，定义一个特殊的函数__autoload($class)函数（__autoload并不是一个类的方法，只是单独的函数，和类没有关系）：
+function __autoload($class){
+require_once(“classes/$class)
+}
+
+该函数放哪没有关系，在创建类实例时，也不必去调用这个autoload函数。PHP会自动完成。但务必注意一点：“在调用页面上创建实例所使用的类名称”、和“被调用的文件名”、以及“该文件中的类的名称”3个必须是一样的。这样就不需要去调用__autoload();如果不一样则必须单独调用__autoload(‘c');并给它一个文件名前缀。如：
+c.class.php文件的代码是：
+复制代码 代码如下:
+
+< ?php
+class c{
+public $m=7;
+}
+?>
+
+这里代码的类名称是c,而文件名也是c，
+现在要在index.php调用：
+复制代码 代码如下:
+
+< ?php
+function __autoload($class){
+require_once “$class.class.php”;
+}
+
+$m = new c(); //创建实例调用的类也是c
+echo $m->m;
+?>
+
+此时PHP会自动调用根目录下的c.class.php中的类C。
+
+但如果c.class.php中的代码是：
+复制代码 代码如下:
+
+< ?php
+class mm{
+public $m=7;
+}
+?>
+
+而调用页index.php代码是：
+复制代码 代码如下:
+
+< ?php
+function __autoload($class){
+require_once “$class.class.php”;
+}
+# __autoload(‘c'); //如果不加这一行就会出错。
+$m = new mm();
+echo $m->m;
+?>
+
+会出错，提示找不到mm.class.php文件。这时可以加一行__autoload(‘c');但这样就达不到简化代码的目的。
+
+类的家族化扩展：类的高级功能：
+
+一、对象克隆：
+当克隆一个对象的实例时，其属性初始值继承了被克隆对象的当前值。
+复制代码 代码如下:
+
+class test
+{
+public $p=5;
+function __clone(){ //只在克隆发生时起作用。用于改变在克隆时某些值
+$this->p=15;
+}
+}
+$a=new test();
+echo $a->p;
+$a->p=8; //如果没有__clone()方法影响，$b的P值将为8
+$b = clone $a;
+echo $b->p; //15
+
+二、对象继承：
+
+没有被声明为final的类可以被继承，没有被final和private界定的方法也可以继承，没有被private界定的属性也可以继承。当子类继承了父类或超类后，可以直接使用父类或超类（祖父类以及祖父的祖父）的所有允许的方法，属性。
+关键：理解构造函数和重载在继承中的特性！
+
+（一）构造函数在继承中的特性：
+
+1、当父类有构造函数而子类没有：则子类会在实例化时会自动执行父类的构造函数。这时如果要创建子类的实例，需要引入父类构造函数中所需的参数，否则出错。即使是“子类的子类”如果没有构造函数，也要在创建实例时输入其父类的父类的构造函数所需参数。PHP会从实例所在的子类会向上搜索合造的构造函数，一旦找到就停止，使用该构造函数。而不会再向上搜索，因此：子类本身如果没有构造函数，则以其最靠近的一个超类并且有构造函数的为准。
+复制代码 代码如下:
+
+class cA{
+public $name,$age;
+function __construct($n) {
+$this->name = $n;
+$this->age = 25;
+}
+function __set($n,$v) {
+$this->$n = $v;
+}
+function __get($n) {
+return $this->$n;
+}
+}
+
+class cB extends cA{
+function funB1() { echo ‘<h3>Class cB execute success!</h3>'; }
+}
+
+class cC extends cB {
+function funC1() { echo ‘<h3>Class cC FunC1!</h3>'; }
+}
+$b=new cB(‘Jack');
+$b->name='John';
+echo “$b->name : $b->age”;
+$b->funB1();
+$c=new cC(); //这里会出错，由于cB也没有构造函数，因此再向上以cA为准，需要一个参数。改为$c=new cC(‘David');即可。
+echo $c->name(); //David
+
+2、当子类也有构造函数时：这时，不管父类是否有构造函数，都会执行子类自己的构造函数。
+如上：
+复制代码 代码如下:
+
+class cB extends cA{
+function __construct() {
+echo ‘<h3>this is Class cB \'s __construct!</h3>';
+}
+function funB1() {
+echo ‘<h3>Class cB execute success!</h3>';
+}
+}
+
+现在类CB有自己的构造函数时，这时创建实例$b=new cB(‘Jack');参数JACK不会起作用，因为父类CA的构造函数没有得到执行。因此$b->name和$->age就不会初始化值。需要另外赋值$b->name='Jack',$b->age=25;
+如果这时要执行父类CA的构造函数，可以这样：
+复制代码 代码如下:
+
+function __construct($n) {
+parent::__construct($n); // 或：cA::__construct($n);
+echo ‘<h3>this is Class cB \'s __construct!</h3>';
+}
+
+由于parent::__construct($n); 只会向上搜索父类的构造函数，一找到就停止且执行当前找到的构造函数，因此在上面例子中，如果parent::__construct($n)是用在最后一层的类cC中，并且类CB,CA都有构造函数，那么cC的实例只会执行cB的构造函数。不会执行cA。这时，如果CC的实例想都调用CA和CB的构造函数，有两种方法：
+
+A、在CB中也加入parent::__construct($n)
+B、在CC中把构造函数改为：
+复制代码 代码如下:
+
+function __construct($n) {
+cA::__construct($n); //即：类名::构造函数。
+cB::__construct();
+echo ‘<h3>this is Class cB \'s __construct!</h3>';
+}
+
+（二）在子类中调用父类的属性或方法：
+
+1、调用父类方法：在子类中调用父类的方法，有3种方法：
+$this->ParentFunction(); 或
+父类名::ParentFunction(); 或
+parent::parentFun();
+
+2、调用父类属性：只能用$this->ParentProperty;
+
+（三）重载：
+
+在子类中，可以定义与父类相同属性或方法，改变父类该属性或方法的值或操作，称做重载。如：
+calss ParClass{ function pfun(){ ….}}
+class ChildrenClass extends ParClass{function pfun(){ ….}}} //重载了父类的pfun的方法。
+在子类中重载后，优先执行自己重载后的新定义的方法或属性。
+也可以在子类中用parent::parentFun();调用父类的方法，但所得到的值是子类自己输入的参数运算值。而不是该方法在父类中运算的值。
+
+三、接口：
+
+接口：interface，可以理解成一组功能的共同规范，最大意义可能就是在多人协作时，为各自的开发规定一个共同的方法名称。
+
+和抽象类中的抽象方法一样：
+
+1、不能在接口中对方法具体实现进行定义。而是由具体类来实现（而抽象类中的非抽象方法可以不必再定义，只有抽象方法和接口是一样要求要在具体类中实现）。
+
+2、和抽象类一样，可以在接口中定义常量，并由具体类直接继承。
+
+3、具体类必须实现抽象类的所有抽象方法（非抽象方法除外），同样，具体类如通过implements实现了接口后，必须完成接口中的所有方法。
+
+接口实现过程：1、定义接口，2、用..implement X,Y,…和具体类对接。
+复制代码 代码如下:
+
+interface Info{ //定义接口
+const N=22;
+public function getage();
+public function getname();
+}
+
+class age implements Info //如要多个接口 class age （extends emJob） implements Info,interB…
+{
+public $age=15;
+public $name='Join';
+function getage() {
+echo “年级是$this->age”;
+}
+function getname() {
+echo “姓名是$this->name”;
+}
+function getN(){
+echo ‘<h3>在接口中定义的常量N的值是：'.$this::N.' </h3>'; //直接继承接口中的常量值。
+}
+}
+
+$age=new age;
+echo $age::N; //22，直接调用接口中的常量值。
+$age->getN();
+
+关于抽象类和接口类的使用区分：何时用接口，何时用抽象？
+
+1、相关性：当创建的模型由一些紧密相关的对象采用时，用抽象。对于不相关对象采用的功能，用接口。
+
+2、多重继承：PHP类可以继承多个接口，但不能扩展多个抽象类。
+
+3、公共行为实现：抽象类可在其中实现公共的方法，但接口不行。
+
+四、命名空间（PHP6）
+
+类库脚本A.inc.php和脚本B.inc.php中都一个类的名称为 class CNAME，并且这两个文件要在同一个文件如index.php中被调用。这时要用到命名空间。
+
+步聚：
+
+1、打开上面的A和B两个文件，分别在上面的最前面各加一行：
+
+namespace SPACEA; 和 namespace SPACEB; 名字自定。
+
+2、在index.php中实例化类时，在类的前面添加命名空间和双冒号做为前缀：
+include ‘a.inc.php';
+include ‘b.inc.php';
+$a=new SPACEA::CNAME();
+$b=new SPACEB::CNAME();
+
+这样就不会冲突了。
+但在PHP6正式发布前，这个功能还未定下来。
+
+五、实现迭代器和迭代。
+参《PHP圣经》P142；
+
+六、使用Reflection(反射)API 。
+简易实例：
+class a{ …. }
+$c = new ReflectionClass(‘a'); //PHP 内置类。
+echo ‘<pre>'.$c.'</pre>';
+输出类a的结构和内容。参《PHP圣经》P145;
+
+一、贪婪与非贪婪
+
+什么叫贪婪，比如说要从字符串中<td>面包一</td><td>面包二</td>吃面包，本来你只可以吃面包一，可是你贪心，
+于是就把第一个<td>到最后一个</td>里面的两个面包取出来了，你想多吃点，非贪婪也就是你不贪吃了，就只吃面包一。
+
+我们来看看正则里面是怎么贪婪的
+$str = '<td>面包一</td><td>面包二</td>';
+preg_match('/<td>(.*)<\/td>/',$str,$res);
+print_r($res);
+
+Array
+(
+    [0] => <td>面包一</td><td>面包二</td>
+    [1] => 面包一</td><td>面包二
+)0记录的是整个字符，1表示的是第一次匹配。
+
+$str = '<td>面包一</td><td>面包二</td>';
+preg_match('/<td>(.*?)<\/td>/',$str,$res);
+print_r($res);
+
+Array
+(
+    [0] => <td>面包一</td>
+    [1] => 面包一
+)
+
+在修饰匹配次数的特殊符号后再加上一个 "?" 号，则可以使匹配次数不定的表达式尽可能少的匹配。
+
+在PHP中还可以通过修饰符来实现，
+$str = '<td>面包一</td><td>面包二</td>';
+preg_match('/<td>(.*)<\/td>/U',$str,$res);
+print_r($res);
+
+结果和上面一样。这就是修饰符U的作用
+
+二、预搜索
+预搜索是一个非获取匹配，不进行存储供以后使用。
+1、正向预搜索  "(?=xxxxx)"，"(?!xxxxx)"
+"(?=xxxxx)”:所在缝隙的右侧，必须能够匹配上 xxxxx 这部分的表达式，
+
+$str = 'windows NT windows 2003 windows xp';
+preg_match('/windows (?=xp)/',$str,$res);
+print_r($res);
+
+结果：
+
+Array
+(
+    [0] => windows
+)
+
+这个是xp前面的windows，不会取NT和2003前面的。
+
+格式："(?!xxxxx)"，所在缝隙的右侧，不能匹配 xxxxx 这部分表达式
+$str = 'windows NT windows 2003 windows xp';
+preg_match_all('/windows (?!xp)/',$str,$res);
+print_r($res);
+
+结果：
+
+Array
+(
+    [0] => Array
+        (
+            [0] => windows    这个是nt前面的
+            [1] => windows    这个是2003前面的
+        )
+
+)
+
+从这里可以看出，预搜索不进行存储供以后使用。
+
+与会存储的对比下。
+
+<?php
+$str = 'windows NT windows 2003 windows xp';
+preg_match_all('/windows ([^xp])/',$str,$res);
+print_r($res);
+
+结果：
+
+Array
+(
+    [0] => Array    全部模式匹配的数组    
+
+   (
+            [0] => windows N  
+            [1] => windows 2
+        )
+
+    [1] => Array   子模式所匹配的字符串组成的数组，通过存储取得。
+        (
+            [0] => N
+            [1] => 2
+        )
+
+)
+
+2、反向预搜索  "(?<=xxxxx)"，"(?<!xxxxx)"
+
+"(?<=xxxxx)" :所在缝隙的 "左侧”能够匹配xxxxx部分。
+
+<?php
+$str = '1234567890123456';
+preg_match('/(?<=\d{4})\d+(?=\d{4})/',$str,$res);
+print_r($res);
+
+结果：
+
+Array
+(
+    [0] => 56789012
+)
+
+匹配除了前4个数字和后4个数字之外的中间8个数字
+"(?<!xxxxx)"：所在缝隙的“左侧”不能匹配xxxx部分。
+
+<?php
+$str = '我1234567890123456';
+preg_match('/(?<!我)\d+/',$str,$res);
+print_r($res);
+
+结果：
+
+Array
+(
+    [0] => 234567890123456
+)
+
+preg_match 比 ereg效率高。
+
+对于开发人员来说，正则表达式是一个非常有用的功能。默认查找匹配的一个句子,句子是空格或其它分隔符分开的
+它提供了 查找，匹配，替换 句子，单词，或者其他格式的字符串。
+在这篇文章里，我已经编写了15个贼拉有用的正则表达式，WEB开发人员都应该将它收藏到自己的工具包。
+
+正则表达式     将会匹配
+foo ——————字符串“foo”  
+^foo ——————以“foo”开头的字符串  
+foo$ ——————以“foo”结尾的字符串  
+^foo$ ——————“foo”开头和结尾，（只能是他自己 ）  
+[abc]—————— a 或者b 或者c  
+[a-z] —————— a到z之间任意字母  
+[^A-Z]——————除了 A-Z这些之外的字符  
+(gif|jpg)——————“gif”或者 “jpeg”  
+[a-z]+—————— 一个或者多个 a到z之间任意字母  
+[0-9.-]—————— 0-9之间任意数字，或者 点 或者 横线  
+^[a-zA-Z0-9_]{1,}$—————— 至少一个字母数字下划线  
+([wx])([yz])—————— wy或wz或xy或xz  
+[^A-Za-z0-9]—————— 字符数字之外的字符  
+([A-Z]{3}|[0-9]{4})—————— 三个大写字母或者4个数字  
+
+
+    \ 将下一个字符标记为一个特殊字符、或一个原义字符、或一个 向后引用、或一个八进制转义符。例如，'n' 匹配字符 "n"。'\n' 匹配一个换行符。序列 '\\' 匹配 "\" 而 "\(" 则匹配 "("。  就是不可显示的控制字符.换行符,制表符,分段符,ascii有的.
+    ^ 匹配输入字符串的开始位置。如果设置了 RegExp 对象的 Multiline 属性，^ 也匹配 '\n' 或 '\r' 之后的位置。  
+    $ 匹配输入字符串的结束位置。如果设置了RegExp 对象的 Multiline 属性，$ 也匹配 '\n' 或 '\r' 之前的位置。  
+    * 匹配前面的子表达式零次或多次。例如，zo* 能匹配 "z" 以及 "zoo"。* 等价于{0,}。  
+    + 匹配前面的子表达式一次或多次。例如，'zo+' 能匹配 "zo" 以及 "zoo"，但不能匹配 "z"。+ 等价于 {1,}。  
+    ? 匹配前面的子表达式零次或一次。例如，"do(es)?" 可以匹配 "do" 或 "does" 中的"do" 。? 等价于 {0,1}。  
+    {n} n 是一个非负整数。匹配确定的 n 次。例如，'o{2}' 不能匹配 "Bob" 中的 'o'，但是能匹配 "food" 中的两个 o。  
+    {n,} n 是一个非负整数。至少匹配n 次。例如，'o{2,}' 不能匹配 "Bob" 中的 'o'，但能匹配 "foooood" 中的所有 o。'o{1,}' 等价于 'o+'。'o{0,}' 则等价于 'o*'。  
+    {n,m} m 和 n 均为非负整数，其中n <= m。最少匹配 n 次且最多匹配 m 次。例如，"o{1,3}" 将匹配 "fooooood" 中的前三个 o。'o{0,1}' 等价于 'o?'。请注意在逗号和两个数之间不能有空格。  
+    ? 当该字符紧跟在任何一个其他限制符 (*, +, ?, {n}, {n,}, {n,m}) 后面时，匹配模式是非贪婪的。非贪婪模式尽可能少的匹配所搜索的字符串，而默认的贪婪模式则尽可能多的匹配所搜索的字符串。例如，对于字符串 "oooo"，'o+?' 将匹配单个 "o"，而 'o+' 将匹配所有 'o'。  
+    . 匹配除 "\n" 之外的任何单个字符。要匹配包括 '\n' 在内的任何字符，请使用象 '[.\n]' 的模式。  
+    (pattern) 匹配 pattern 并获取这一匹配。所获取的匹配可以从产生的 Matches 集合得到，在VBScript 中使用 SubMatches 集合，在JScript 中则使用 $0…$9 属性。要匹配圆括号字符，请使用 '\(' 或 '\)'。  
+    (?:pattern) 匹配 pattern 但不获取匹配结果，也就是说这是一个非获取匹配，不进行存储供以后使用。这在使用 "或" 字符 (|) 来组合一个模式的各个部分是很有用。例如， 'industr(?:y|ies) 就是一个比 'industry|industries' 更简略的表达式。  
+    (?=pattern) 正向预查，在任何匹配 pattern 的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如，'Windows (?=95|98|NT|2000)' 能匹配 "Windows 2000" 中的 "Windows" ，但不能匹配 "Windows 3.1" 中的 "Windows"。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始。  
+    (?!pattern) 负向预查，在任何不匹配 pattern 的字符串开始处匹配查找字符串。这是一个非获取匹配，也就是说，该匹配不需要获取供以后使用。例如'Windows (?!95|98|NT|2000)' 能匹配 "Windows 3.1" 中的 "Windows"，但不能匹配 "Windows 2000" 中的 "Windows"。预查不消耗字符，也就是说，在一个匹配发生后，在最后一次匹配之后立即开始下一次匹配的搜索，而不是从包含预查的字符之后开始  
+    x|y 匹配 x 或 y。例如，'z|food' 能匹配 "z" 或 "food"。'(z|f)ood' 则匹配 "zood" 或 "food"。  
+    [xyz] 字符集合。匹配所包含的任意一个字符。例如， '[abc]' 可以匹配 "plain" 中的 'a'。  
+    [^xyz] 负值字符集合。匹配未包含的任意字符。例如， '[^abc]' 可以匹配 "plain" 中的'p'。  
+    [a-z] 字符范围。匹配指定范围内的任意字符。例如，'[a-z]' 可以匹配 'a' 到 'z' 范围内的任意小写字母字符。  
+    [^a-z] 负值字符范围。匹配任何不在指定范围内的任意字符。例如，'[^a-z]' 可以匹配任何不在 'a' 到 'z' 范围内的任意字符。  
+    \b 匹配一个单词边界，也就是指单词和空格间的位置。例如， 'er\b' 可以匹配"never" 中的 'er'，但不能匹配 "verb" 中的 'er'。  
+    \B 匹配非单词边界。'er\B' 能匹配 "verb" 中的 'er'，但不能匹配 "never" 中的 'er'。  
+    \cx 匹配由 x 指明的控制字符。例如， \cM 匹配一个 Control-M 或回车符。x 的值必须为 A-Z 或 a-z 之一。否则，将 c 视为一个原义的 'c' 字符。  
+    \d 匹配一个数字字符。等价于 [0-9]。  
+    \D 匹配一个非数字字符。等价于 [^0-9]。  
+    \f 匹配一个换页符。等价于 \x0c 和 \cL。  
+    \n 匹配一个换行符。等价于 \x0a 和 \cJ。  
+    \r 匹配一个回车符。等价于 \x0d 和 \cM。  
+    \s 匹配任何空白字符，包括空格、制表符、换页符等等。等价于 [ \f\n\r\t\v]。  
+    \S 匹配任何非空白字符。等价于 [^ \f\n\r\t\v]。  
+    \t 匹配一个制表符。等价于 \x09 和 \cI。  
+    \v 匹配一个垂直制表符。等价于 \x0b 和 \cK。  
+    \w 匹配包括下划线的任何单词字符。等价于'[A-Za-z0-9_]'。  
+    \W 匹配任何非单词字符。等价于 '[^A-Za-z0-9_]'。  
+    \xn 匹配 n，其中 n 为十六进制转义值。十六进制转义值必须为确定的两个数字长。例如，'\x41' 匹配 "A"。'\x041' 则等价于 '\x04' & "1"。正则表达式中可以使用 ASCII 编码。.  
+    \num 匹配 num，其中 num 是一个正整数。对所获取的匹配的引用。例如，'(.)\1' 匹配两个连续的相同字符。  
+    \n 标识一个八进制转义值或一个向后引用。如果 \n 之前至少 n 个获取的子表达式，则 n 为向后引用。否则，如果 n 为八进制数字 (0-7)，则 n 为一个八进制转义值。  
+    \nm 标识一个八进制转义值或一个向后引用。如果 \nm 之前至少有 nm 个获得子表达式，则 nm 为向后引用。如果 \nm 之前至少有 n 个获取，则 n 为一个后跟文字 m 的向后引用。如果前面的条件都不满足，若 n 和 m 均为八进制数字 (0-7)，则 \nm 将匹配八进制转义值 nm。  
+    \nml 如果 n 为八进制数字 (0-3)，且 m 和 l 均为八进制数字 (0-7)，则匹配八进制转义值 nml。  
+    \un 匹配 n，其中 n 是一个用四个十六进制数字表示的 Unicode 字符。例如， \u00A9 匹配版权符号 (?)。  
+
+ 
+ 
+    常用的正则表达式
+    1、非负整数：”^\d+$”
+    2、正整数：”^[0-9]*[1-9][0-9]*$”
+    3、非正整数：”^((-\d+)|(0+))$”
+    4、负整数：”^-[0-9]*[1-9][0-9]*$”
+ 
+    5、整数：”^-?\d+$”
+
+    6、非负浮点数：”^\d+(\.\d+)?$”
+
+	7、正浮点数：”^((0-9)+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$”
+
+    8、非正浮点数：”^((-\d+\.\d+)?)|(0+(\.0+)?))$”
+
+    9、负浮点数：”^(-((正浮点数正则式)))$”
+
+    10、英文字符串：”^[A-Za-z]+$”
+
+    11、英文大写串：”^[A-Z]+$”
+
+    12、英文小写串：”^[a-z]+$”
+
+    13、英文字符数字串：”^[A-Za-z0-9]+$”
+
+    14、英数字加下划线串：”^\w+$”
+
+    15、E-mail地址：”^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$”
+
+    16、URL：”^[a-zA-Z]+://(\w+(-\w+)*)(\.(\w+(-\w+)*))*(\?\s*)?$”
+
+ 
+
+php 正则表达式的方法
+    preg_match_all() 该函数 preg_match_all() 在字符串中匹配出全部符合模式的字符串.  
+      
+    * preg_match() 返回 pattern 所匹配的次数。要么是 0 次（没有匹配）或 1 次，因为 preg_match() 在第一次匹配之后将停止搜索。  
+    int preg_match ( string pattern, string subject [, array matches [, int flags]])
+  在 subject 字符串中搜索与 pattern 给出的正则表达式相匹配的内容。
+
+ 如果提供了 matches，则其会被搜索的结果所填充。$matches[0] 将包含与整个模式匹配的文本，$matches[1] 将包含与第一个捕获的括号中的子模式所匹配的文本，以此类推    
+    * preg_match_all() 则相反，会一直搜索到 subject 的结尾处。如果出错 preg_match() 返回 FALSE。  
+    * http://www.yesky.com/imagesnew/software/php/zh/function.preg-match-all.html  
+      
+      
+     preg_replace()  该函数与ereg_replace()类似，不同在于它利用匹配的模式去替换输入的参数  
+     http://www.yesky.com/imagesnew/software/php/zh/function.preg-replace.htm  
+      
+     preg_split() 该函数与split()类似 不同在于它将与正则表达式匹配的字符当做分割的模式  
+     http://www.yesky.com/imagesnew/software/php/zh/function.preg-split.html  
+      
+     preg_grep() 该函数preg_grep() 匹配数组中全部元素，返回符合正则表达式的元素组成的数组  
+      
+     preg_quote() 转义正则表达式字符  
+
+
+验证域名
+检验一个字符串是否是个有效域名.
+
+    $url = "http://komunitasweb.com/";  
+    if (preg_match('/^(http|https|ftp)://([A-Z0-9][A-Z0-9_-]*(?:.[A-Z0-9][A-Z0-9_-]*)+):?(d+)?/?/i', $url)) {  
+        echo "Your url is ok.";  
+    } else {  
+        echo "Wrong url.";  
+    }  
+
+
+从一个字符串中 突出某个单词
+这是一个非常有用的在一个字符串中匹配出某个单词 并且突出它，非常有效的搜索结果
+Php代码  收藏代码
+
+    $text = "Sample sentence from KomunitasWeb, regex has become popular in web programming. Now we learn regex. According to wikipedia, Regular expressions (abbreviated as regex or  
+      
+    regexp, with plural forms regexes, regexps, or regexen) are written in a formal language that can be interpreted by a regular expression processor";  
+    $text = preg_replace("/b(regex)b/i", '<span style="background:#5fc9f6">1</span>', $text);  
+    echo $text;  
+
+
+突出查询结果在你的 WordPress 博客里就像刚才我说的，上面的那段代码可以很方便的搜索出结果，而这里是一个更好的方式去执行搜索在某个WordPress的博客上打开你的文件 search.php ，然后找到 方法 the_title() 然后用下面代码替换掉它
+Php代码  收藏代码
+
+    echo $title;  
+      
+    Now, just before the modified line, add this code:  
+      
+    <?php  
+        $title     = get_the_title();  
+        $keys= explode(" ",$s);  
+        $title     = preg_replace('/('.implode('|', $keys) .')/iu',  
+            '<strong>\0</strong>',  
+            $title);  
+    ?>  
+      
+    Save the search.php file and open style.css. Append the following line to it:  
+      
+    strong.search-excerpt { background: yellow; }  
+
+
+从HTML文档中获得全部图片
+如果你曾经希望去获得某个网页上的全部图片，这段代码就是你需要的，你可以轻松的建立一个图片下载机器人
+Php代码  收藏代码
+
+    $images = array();  
+    preg_match_all('/(img|src)=("|')[^"'>]+/i', $data, $media);  
+    unset($data);  
+    $data=preg_replace('/(img|src)("|'|="|=')(.*)/i',"$3",$media[0]);  
+    foreach($data as $url)  
+    {  
+        $info = pathinfo($url);  
+        if (isset($info['extension']))  
+        {  
+            if (($info['extension'] == 'jpg') ||  
+            ($info['extension'] == 'jpeg') ||  
+            ($info['extension'] == 'gif') ||  
+            ($info['extension'] == 'png'))  
+            array_push($images, $url);  
+        }  
+    }  
+
+
+删除重复字母
+经常重复输入字母? 这个表达式正适合.
+    $text = preg_replace("/s(w+s)1/i", "$1", $text);   
+
+ 删除重复的标点
+功能同上，但只是面对标点，白白重复的逗号
+
+    $text = preg_replace("/.+/i", ".", $text);  
+
+匹配一个XML或者HTML标签
+这个简单的函数有两个参数：第一个是你要匹配的标签，第二个是包含XML或HTML的变量，再强调下，这个真的很强大
+Php代码  收藏代码
+
+    function get_tag( $tag, $xml ) {  
+      $tag = preg_quote($tag);  
+      preg_match_all('{<'.$tag.'[^>]*>(.*?)</'.$tag.'>.'}',  
+                       $xml,  
+                       $matches,  
+                       PREG_PATTERN_ORDER);  
+      
+      return $matches[1];  
+    }  
+
+ 
+匹配具有属性值的XML或者HTML标签
+这个功能和上面的非常相似，但是它允许你匹配的标签内部有属性值，例如你可以轻松匹配 <div id=”header”>
+Php代码  收藏代码
+
+    function get_tag( $attr, $value, $xml, $tag=null ) {  
+      if( is_null($tag) )  
+        $tag = '\w+';  
+      else  
+        $tag = preg_quote($tag);  
+      
+      $attr = preg_quote($attr);  
+      $value = preg_quote($value);  
+      
+      $tag_regex = "/<(".$tag.")[^>]*$attr\s*=\s*".  
+                    "(['\"])$value\\2[^>]*>(.*?)<\/\\1>/"  
+      
+      preg_match_all($tag_regex,  
+                     $xml,  
+                     $matches,  
+                     PREG_PATTERN_ORDER);  
+      
+      return $matches[3];  
+    }  
+
+
+匹配十六进制颜色值
+web开发者的另一个有趣的工具，它允许你匹配和验证十六进制颜色值.
+Php代码  收藏代码
+
+    $string = "#555555";  
+    if (preg_match('/^#(?:(?:[a-fd]{3}){1,2})$/i', $string)) {  
+    echo "example 6 successful.";  
+    }  
+
+
+查找页面 title
+这段代码方便查找和打印 网页 <title> 和</title> 之间的内容
+Php代码  收藏代码
+
+    $fp = fopen("http://www.catswhocode.com/blog","r");  
+    while (!feof($fp) ){  
+        $page .= fgets($fp, 4096);  
+    }  
+      
+    $titre = eregi("<title>(.*)</title>",$page,$regs);  
+    echo $regs[1];  
+    fclose($fp);  
+
+
+解释 Apache 日志
+大多数网站使用的都是著名的Apache服务器，如果你的网站也是，那么使用PHP正则表达式解析 apache 服务器日志 怎么样？
+Php代码  收藏代码
+
+    //Logs: Apache web server  
+    //Successful hits to HTML files only.  Useful for counting the number of page views.  
+    '^((?#client IP or domain name)S+)s+((?#basic authentication)S+s+S+)s+[((?#date and time)[^]]+)]s+"(?:GET|POST|HEAD) ((?#file)/[^ ?"]+?.html?)??((?#parameters)[^ ?"]+)? HTTP/[0-9.]+"s+(?#status code)200s+((?#bytes transferred)[-0-9]+)s+"((?#referrer)[^"]*)"s+"((?#user agent)[^"]*)"$'  
+      
+    //Logs: Apache web server  
+    //404 errors only  
+    '^((?#client IP or domain name)S+)s+((?#basic authentication)S+s+S+)s+[((?#date and time)[^]]+)]s+"(?:GET|POST|HEAD) ((?#file)[^ ?"]+)??((?#parameters)[^ ?"]+)? HTTP/[0-9.]+"s+(?#status code)404s+((?#bytes transferred)[-0-9]+)s+"((?#referrer)[^"]*)"s+"((?#user agent)[^"]*)"$'  
+
+ 
+使用智能引号代替双引号
+如果你是一个印刷爱好者，你将喜欢这个允许用智能引号代替双引号的正则表达式，这个正则被WORDPRESS在其内容上使用
+Php代码  收藏代码
+
+    preg_replace('B"b([^"x84x93x94rn]+)b"B', '?1?', $text);  
+
+ 
+
+检验密码的复杂度
+这个正则表达式将检测输入的内容是否包含6个或更多字母，数字，下划线和连字符. 输入必须包含至少一个大写字母，一个小写字母和一个数字
+Php代码  收藏代码
+
+    'A(?=[-_a-zA-Z0-9]*?[A-Z])(?=[-_a-zA-Z0-9]*?[a-z])(?=[-_a-zA-Z0-9]*?[0-9])[-_a-zA-Z0-9]{6,}z'  
+
+ 
+
+WordPress: 使用正则获得 帖子上的图片
+我知道很多人是WORDPRESS的使用者，你可能会喜欢并且愿意使用 那些从帖子的内容检索下来的图像代码。使用这个代码在你的BLOG只需要复制下面代码到你的某个文件里
+Php代码  收藏代码
+
+    <?php if (have_posts()) : ?>  
+    <?php while (have_posts()) : the_post(); ?>  
+      
+    <?php  
+    $szPostContent = $post->post_content;  
+    $szSearchPattern = '~<img [^>]* />~';  
+      
+    // Run preg_match_all to grab all the images and save the results in $aPics  
+    preg_match_all( $szSearchPattern, $szPostContent, $aPics );  
+      
+    // Check to see if we have at least 1 image  
+    $iNumberOfPics = count($aPics[0]);  
+      
+    if ( $iNumberOfPics > 0 ) {  
+         // Now here you would do whatever you need to do with the images  
+         // For this example the images are just displayed  
+         for ( $i=0; $i < $iNumberOfPics ; $i++ ) {  
+              echo $aPics[0][$i];  
+         };  
+    };  
+      
+    endwhile;  
+    endif;  
+    ?>  
+
+
+自动生成笑脸图案
+被WordPress使用的另一个方法, 这段代码可使你把图像自动更换一个笑脸符号
+Php代码  收藏代码
+
+    $texte='A text with a smiley  ';  
+    echo str_replace(':-)','<img src="smileys/souriant.png">',$texte);  
+
+ 
+
+移除图片的链接
+Php代码  收藏代码
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
+    <?php  
+        $str = '  
+            <a href="http://www.5idev.com/">5idev</a>其他字符  
+            <a href="http://www.sohu.com/">sohu</a>  
+            <a href="http://www.sohu.com/"><img src="http://www.fashion-press.net/img/news/3176/mot_06.jpg" /></a>  
+            <br>';  
+      
+      
+        //echo  preg_replace("/(<a.*?>)(<img.*?>)(<\/a>)/", '$2', $str);   
+        echo  preg_replace("/(<a.*?>)(<img.*?>)(<\/a>)/", '\2', $str);   
+    ?>  
+
+ 
+PHP 常用正则表达式整理
+表单验证匹配
+验证账号，字母开头，允许 5-16 字节，允许字母数字下划线：^[a-zA-Z][a-zA-Z0-9_]{4,15}$
+验证账号，不能为空，不能有空格，只能是英文字母：^\S+[a-z A-Z]$
+验证账号，不能有空格，不能非数字：^\d+$
+验证用户密码，以字母开头，长度在 6-18 之间：^[a-zA-Z]\w{5,17}$
+验证是否含有 ^%&',;=?$\ 等字符：[^%&',;=?$\x22]+
+匹配Email地址：\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*
+匹配腾讯QQ号：[1-9][0-9]{4,}
+匹配日期，只能是 2004-10-22 格式：^\d{4}\-\d{1,2}-\d{1,2}$
+匹配国内电话号码：^\d{3}-\d{8}|\d{4}-\d{7,8}$
+评注：匹配形式如 010-12345678 或 0571-12345678 或 0831-1234567
+匹配中国邮政编码：^[1-9]\d{5}(?!\d)$
+匹配身份证：\d{14}(\d{4}|(\d{3}[xX])|\d{1})
+评注：中国的身份证为 15 位或 18 位
+不能为空且二十字节以上：^[\s|\S]{20,}$
+ 
+字符匹配
+匹配由 26 个英文字母组成的字符串：^[A-Za-z]+$
+匹配由 26 个大写英文字母组成的字符串：^[A-Z]+$
+匹配由 26 个小写英文字母组成的字符串：^[a-z]+$
+匹配由数字和 26 个英文字母组成的字符串：^[A-Za-z0-9]+$
+匹配由数字、26个英文字母或者下划线组成的字符串：^\w+$
+匹配空行：\n[\s| ]*\r 
+匹配任何内容：[\s\S]* 
+匹配中文字符：[\x80-\xff]+ 或者 [\xa1-\xff]+ 
+只能输入汉字：^[\x80-\xff],{0,}$ 
+匹配双字节字符(包括汉字在内)：[^\x00-\xff] 
+匹配数字 
+只能输入数字：^[0-9]*$ 
+只能输入n位的数字：^\d{n}$
+只能输入至少n位数字：^\d{n,}$ 
+只能输入m-n位的数字：^\d{m,n}$ 
+匹配正整数：^[1-9]\d*$
+匹配负整数：^-[1-9]\d*$
+匹配整数：^-?[1-9]\d*$
+匹配非负整数（正整数 + 0）：^[1-9]\d*|0$
+匹配非正整数（负整数 + 0）：^-[1-9]\d*|0$
+匹配正浮点数：^[1-9]\d*\.\d*|0\.\d*[1-9]\d*$
+匹配负浮点数：^-([1-9]\d*\.\d*|0\.\d*[1-9]\d*)$
+匹配浮点数：^-?([1-9]\d*\.\d*|0\.\d*[1-9]\d*|0?\.0+|0)$  
+匹配非负浮点数（正浮点数 + 0）：^[1-9]\d*\.\d*|0\.\d*[1-9]\d*|0?\.0+|0$  
+匹配非正浮点数（负浮点数 + 0）：^(-([1-9]\d*\.\d*|0\.\d*[1-9]\d*))|0?\.0+|0$
+ 
+其他  
+匹配HTML标记的正则表达式（无法匹配嵌套标签）：<(\S*?)[^>]*>.*?</\1>|<.*? />  
+匹配网址 URL ：[a-zA-z]+://[^\s]*   
+匹配 IP 地址：((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)   
+匹配完整域名：[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\.?
+ 
+提示
+    上述正则表达式通常都加了 ^ 与 $ 来限定字符的起始和结束，如果需要匹配的内容包括在字符串当中，可能需要考虑去掉 ^ 和 $ 限定符。
+    以上正则表达式仅供参考，使用时请检验后再使用s   
+	
+	
+	
+	正则表达式在 PHP 中的应用
+在 PHP 应用中，正则表达式主要用于：
+    正则匹配：根据正则表达式匹配相应的内容
+    正则替换：根据正则表达式匹配内容并替换
+    正则分割：根据正则表达式分割字符串  
+在 PHP 中有两类正则表达式函数，一类是 Perl 兼容正则表达式函数，一类是 POSIX 扩展正则表达式函数。二者差别不大，而且推荐使用Perl 兼容正则表达式函数，因此下文都是以 Perl 兼容正则表达式函数为例子说明。
+定界符 
+Perl 兼容模式的正则表达式函数，其正则表达式需要写在定界符中。任何不是字母、数字或反斜线（）的字符都可以作为定界符，通常我们使用 / 作为定界符。  定界符中的文字是正则表达式 后面可以加修正符 i忽略大小写
+模式修正符 	说明
+i 	模式中的字符将同时匹配大小写字母
+m 	字符串视为多行
+s 	将字符串视为单行，换行符作为普通字符
+x 	将模式中的空白忽略
+e 	preg_replace() 函数在替换字符串中对逆向引用作正常的替换，将其作为 PHP 代码求值，并用其结果来替换所搜索的字符串。
+A 	强制仅从目标字符串的开头开始匹配
+D 	模式中的 $ 元字符仅匹配目标字符串的结尾
+U 	匹配最近的字符串
+u 	模式字符串被当成 UTF-8 
+尽管正则表达式功能非常强大，但如果用普通字符串处理函数能完成的，就尽量不要用正则表达式函数，因为正则表达式效率会低得多。
+preg_match() 函数用于进行正则表达式匹配，成功返回 1 ，否则返回 0 。	
+int preg_match( string pattern, string subject [, array matches ] )	
+参数说明： 参数 	说明
+pattern 	正则表达式
+subject 	需要匹配检索的对象
+matches 	可选，存储匹配结果的数组， $matches[0] 将包含与整个模式匹配的文本，$matches[1] 将包含与第一个捕获的括号中的子模式所匹配的文本，以此类推	
+例子 1 ：
+<?php
+if(preg_match("/php/i", "PHP is the web scripting language of choice.", $matches)){
+    print "A match was found:". $matches[0];
+} else {
+    print "A match was not found.";
+}
+?>
+浏览器输出：
+A match was found: PHP
+preg_match() 第一次匹配成功后就会停止匹配，如果要实现全部结果的匹配，即搜索到subject结尾处，则需使用 preg_match_all() 函数。
+例子 2 ，从一个 URL 中取得主机域名 ：
+<?php
+// 从 URL 中取得主机名
+preg_match("/^(http:\/\/)?([^\/]+)/i","http://www.5idev.com/index.html", $matches);
+$host = $matches[2];
+// 从主机名中取得后面两段
+preg_match("/[^\.\/]+\.[^\.\/]+$/", $host, $matches);
+echo "域名为：{$matches[0]}";
+?>
+浏览器输出：
+域名为：5idev.com
+preg_match_all()
+preg_match_all() 函数用于进行正则表达式全局匹配，成功返回整个模式匹配的次数（可能为零），如果出错返回 FALSE 。
+语法：
+int preg_match_all( string pattern, string subject, array matches [, int flags ] ) 
+
+参数说明： 参数 	说明
+pattern 	正则表达式
+subject 	需要匹配检索的对象
+matches 	存储匹配结果的数组
+flags 	
+
+可选，指定匹配结果放入 matches 中的顺序，可供选择的标记有：
+
+    PREG_PATTERN_ORDER：默认，对结果排序使 $matches[0] 为全部模式匹配的数组，$matches[1] 为第一个括号中的子模式所匹配的字符串组成的数组，以此类推
+    PREG_SET_ORDER：对结果排序使 $matches[0] 为第一组匹配项的数组，$matches[1] 为第二组匹配项的数组，以此类推
+    PREG_OFFSET_CAPTURE：如果设定本标记，对每个出现的匹配结果也同时返回其附属的字符串偏移量
+
+下面的例子演示了将文本中所有 <pre></pre> 标签内的关键字（php）显示为红色。
+
+<?php
+$str = "<pre>学习php是一件快乐的事。</pre><pre>所有的phper需要共同努力！</pre>";
+$kw = "php";
+preg_match_all('/<pre>([\s\S]*?)<\/pre>/',$str,$mat);
+for($i=0;$i<count($mat[0]);$i++){
+    $mat[0][$i] = $mat[1][$i];
+    $mat[0][$i] = str_replace($kw, '<span style="color:#ff0000">'.$kw.'</span>', $mat[0][$i]);
+    $str = str_replace($mat[1][$i], $mat[0][$i], $str);
+}
+echo $str;
+?>
+
+正则匹配中文汉字
+
+正则匹配中文汉字根据页面编码不同而略有区别：
+
+    GBK/GB2312编码：[x80-xff]+ 或 [xa1-xff]+
+    UTF-8编码：[x{4e00}-x{9fa5}]+/u
+
+例子：
+
+<?php
+$str = "学习php是一件快乐的事。";
+preg_match_all("/[x80-xff]+/", $str, $match);
+//UTF-8 使用：
+//preg_match_all("/[x{4e00}-x{9fa5}]+/u", $str, $match);
+print_r($match);
+?>
+
+输出：
+
+Array
+(
+    [0] => Array
+        (
+            [0] => 学习
+            [1] => 是一件快乐的事。
+        )
+ 
+)
+
+
+    addcslashes — 以 C 语言风格使用反斜线转义字符串中的字符
+    addslashes — 使用反斜线引用字符串
+    bin2hex — 函数把包含数据的二进制字符串转换为十六进制值
+    chop — rtrim 的别名
+    chr — 返回指定的字符
+    chunk_split — 将字符串分割成小块
+    convert_cyr_string — 将字符由一种 Cyrillic 字符转换成另一种
+    convert_uudecode — 解码一个 uuencode 编码的字符串
+    convert_uuencode — 使用 uuencode 编码一个字符串
+    count_chars — 返回字符串所用字符的信息
+    crc32 — 计算一个字符串的 crc32 多项式
+    crypt — 单向字符串散列
+    echo — 输出一个或多个字符串
+    explode — 使用一个字符串分割另一个字符串
+    fprintf — 将格式化后的字符串写入到流
+    get_html_translation_table — 返回使用 htmlspecialchars 和 htmlentities 后的转换表
+    hebrev — 将逻辑顺序希伯来文（logical-Hebrew）转换为视觉顺序希伯来文（visual-Hebrew）
+    hebrevc — 将逻辑顺序希伯来文（logical-Hebrew）转换为视觉顺序希伯来文（visual-Hebrew），并且转换换行符
+    hex2bin — 转换十六进制字符串为二进制字符串
+    html_entity_decode — Convert all HTML entities to their applicable characters
+    htmlentities — Convert all applicable characters to HTML entities
+    htmlspecialchars_decode — 将特殊的 HTML 实体转换回普通字符
+    htmlspecialchars — Convert special characters to HTML entities
+    implode — 将一个一维数组的值转化为字符串
+    join — 别名 implode
+    lcfirst — 使一个字符串的第一个字符小写
+    levenshtein — 计算两个字符串之间的编辑距离
+    localeconv — Get numeric formatting information
+    ltrim — 删除字符串开头的空白字符（或其他字符）
+    md5_file — 计算指定文件的 MD5 散列值
+    md5 — 计算字符串的 MD5 散列值
+    metaphone — Calculate the metaphone key of a string
+    money_format — 将数字格式化成货币字符串
+    nl_langinfo — Query language and locale information
+    nl2br — 在字符串所有新行之前插入 HTML 换行标记
+    number_format — 以千位分隔符方式格式化一个数字
+    ord — 返回字符的 ASCII 码值
+    parse_str — 将字符串解析成多个变量
+    print — 输出字符串
+    printf — 输出格式化字符串
+    quoted_printable_decode — 将 quoted-printable 字符串转换为 8-bit 字符串
+    quoted_printable_encode — 将 8-bit 字符串转换成 quoted-printable 字符串
+    quotemeta — 转义元字符集
+    rtrim — 删除字符串末端的空白字符（或者其他字符）
+    setlocale — 设置地区信息
+    sha1_file — 计算文件的 sha1 散列值
+    sha1 — 计算字符串的 sha1 散列值
+    similar_text — 计算两个字符串的相似度
+    soundex — Calculate the soundex key of a string
+    sprintf — Return a formatted string
+    sscanf — 根据指定格式解析输入的字符
+    str_getcsv — 解析 CSV 字符串为一个数组
+    str_ireplace — str_replace 的忽略大小写版本
+    str_pad — 使用另一个字符串填充字符串为指定长度
+    str_repeat — 重复一个字符串
+    str_replace — 子字符串替换
+    str_rot13 — 对字符串执行 ROT13 转换
+    str_shuffle — 随机打乱一个字符串
+    str_split — 将字符串转换为数组
+    str_word_count — 返回字符串中单词的使用情况
+    strcasecmp — 二进制安全比较字符串（不区分大小写）
+    strchr — 别名 strstr
+    strcmp — 二进制安全字符串比较
+    strcoll — 基于区域设置的字符串比较
+    strcspn — 获取不匹配遮罩的起始子字符串的长度
+    strip_tags — 从字符串中去除 HTML 和 PHP 标记
+    stripcslashes — 反引用一个使用 addcslashes 转义的字符串
+    stripos — 查找字符串首次出现的位置（不区分大小写）
+    stripslashes — 反引用一个引用字符串
+    stristr — strstr 函数的忽略大小写版本
+    strlen — 获取字符串长度  //对待UTF8中文字符的长度是3个字节 ;对于GB2312则是2个字节
+	mb_strlen($str,‘UTF8‘);
+    strnatcasecmp — 使用“自然顺序”算法比较字符串（不区分大小写）
+    strnatcmp — 使用自然排序算法比较字符串
+    strncasecmp — 二进制安全比较字符串开头的若干个字符（不区分大小写）
+    strncmp — 二进制安全比较字符串开头的若干个字符
+    strpbrk — 在字符串中查找一组字符的任何一个字符
+    strpos — 查找字符串首次出现的位置
+    strrchr — 查找指定字符在字符串中的最后一次出现
+    strrev — 反转字符串
+    strripos — 计算指定字符串在目标字符串中最后一次出现的位置（不区分大小写）
+    strrpos — 计算指定字符串在目标字符串中最后一次出现的位置
+    strspn — 计算字符串中全部字符都存在于指定字符集合中的第一段子串的长度。
+    strstr — 查找字符串的首次出现
+    strtok — 标记分割字符串
+    strtolower — 将字符串转化为小写
+    strtoupper — 将字符串转化为大写
+    strtr — 转换指定字符
+    substr_compare — 二进制安全比较字符串（从偏移位置比较指定长度）
+    substr_count — 计算字串出现的次数
+    substr_replace — 替换字符串的子串
+    substr — 返回字符串的子串
+    trim — 去除字符串首尾处的空白字符（或者其他字符）
+    ucfirst — 将字符串的首字母转换为大写
+    ucwords — 将字符串中每个单词的首字母转换为大写
+    vfprintf — 将格式化字符串写入流
+    vprintf — 输出格式化字符串
+    vsprintf — 返回格式化字符串
+    wordwrap — 打断字符串为指定数量的字串
