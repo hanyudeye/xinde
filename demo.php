@@ -2,6 +2,14 @@
 <?php
 ini_set("display_errors", "On");  
 error_reporting(E_ALL | E_STRICT);
+echo __FILE__;
+echo "</br>";
+echo __file__;
+die();
+?>
+
+
+<?php
 $segs;
 $segs[]=3;
 $segs[]=6;
