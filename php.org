@@ -73,6 +73,7 @@
 	 array_uintersect_uassoc()	比较数组，返回交集（比较键和值，使用两个用户自定义的键名比较函数）。
 	 array_unique()	删除数组中的重复值。
 	 array_unshift()	在数组开头插入一个或多个元素。
+:  int array_unshift ( array &$array , mixed $var [, mixed $... ] )
 	 array_values()	返回数组中所有的值。
 	 array_walk()	对数组中的每个成员应用用户函数。
 	 array_walk_recursive()	对数组中的每个成员递归地应用用户函数。
@@ -633,6 +634,29 @@ $foo->x=2;
 ****    preg_replace — 执行一个正则表达式的搜索和替换
 : mixed preg_replace( mixed pattern, mixed replacement, mixed subject [, int limit ] )
 : $str = preg_replace('/\s/','-',$str);  这里要注意,匹配模式要加载/ /中间
+pattern 	正则表达式
+replacement 	替换的内容
+subject 	需要匹配替换的对象
+limit 	可选，指定替换的个数，如果省略 limit 或者其值为 -1，则所有的匹配项都会被替换
+
+    replacement 可以包含 \\n 形式或 $n 形式的逆向引用，首选使用后者。每个此种引用将被替换为与第 n 个被捕获的括号内的子模式所匹配的文本。n 可以从 0 到 99，其中 \\0 或 $0 指的是被整个模式所匹配的文本。对左圆括号从左到右计数（从 1 开始）以取得子模式的数目。
+    对替换模式在一个逆向引用后面紧接着一个数字时（如 \\11），不能使用 \\ 符号来表示逆向引用。因为这样将会使 preg_replace() 搞不清楚是想要一个 \\1 的逆向引用后面跟着一个数字 1 还是一个 \\11 的逆向引用。解决方法是使用 \${1}1。这会形成一个隔离的 $1 逆向引用，而使另一个 1 只是单纯的文字。
+    上述参数除 limit 外都可以是一个数组。如果 pattern 和 replacement 都是数组，将以其键名在数组中出现的顺序来进行处理，这不一定和索引的数字顺序相同。如果使用索引来标识哪个 pattern 将被哪个 replacement 来替换，应该在调用 preg_replace() 之前用 ksort() 函数对数组进行排序。
+
+    int preg_match ( string pattern, string subject [, array matches [, int flags]])
+  在 subject 字符串中搜索与 pattern 给出的正则表达式相匹配的内容。
+ 如果提供了 matches，则其会被搜索的结果所填充。$matches[0] 将包含与整个模式匹配的文本，$matches[1] 将包含与第一个捕获的括号中的子模式所匹配的文本，以此类推    
+模式修正符 	说明
+i 	模式中的字符将同时匹配大小写字母
+m 	字符串视为多行
+s 	将字符串视为单行，换行符作为普通字符
+x 	将模式中的空白忽略
+e 	preg_replace() 函数在替换字符串中对逆向引用作正常的替换，将其作为 PHP 代码求值，并用其结果来替换所搜索的字符串。
+A 	强制仅从目标字符串的开头开始匹配
+D 	模式中的 $ 元字符仅匹配目标字符串的结尾
+U 	匹配最近的字符串
+u 	模式字符串被当成 UTF-8 
+
 ****    preg_split — 通过一个正则表达式分隔字符串		
 *** JSON 函数 
     json_decode — 对 JSON 格式的字符串进行解码
@@ -674,7 +698,58 @@ $foo->x=2;
     socket_strerror — Return a string describing a socket error
     socket_write — Write to a socket
 **    类与对象
-**    命名空间
+*** 类的属性
+: __set()和__get()只对私有属性起作用，对于用public定义的属性，它们两个都懒理搭理
+*** 类的常量 const 
+: 调用 $this::PI / 类名::PI (双冒号)  注意写法,要不只是创建新的属性
+*** 静态成员 供所有类的实例共享的字段或方法
+**** 调用
+类的外部，“类名::$成员名”
+类的内部, “self::$成员名”
+**** 修改
+
+对于用public定义的静态成员，可以在外部更改它的值。private等则不行。
+*** 调用
+（一）this关键字：用于类的内部指代类的本身。来访问属性或方法或常量，如$this->属性名或方法名。$this::常量名。this还可以用在该类的子类中，来指代本身的属性或方法。
+（二）双冒号“::”关键字：用于调用常量、静态成员。
+（三）self关键字:在类的内部与双冒号配合调用静态成员，如 self::$staticVar.，在类的内部，不能用$this来调用静态成员。
+以后统一在调用方法或属性时用 “-> “,调用常量则用双冒号“::”，不会搞晕。
+*** 成员访问属性
+public(默认，可省略，也等同于php6的var声明),private（私有，也不能由子类使用），protected(私有，但可由子类使用) ，abstract(抽象，参下文)，final(阻止在子类中覆盖—也称重载，阻止被继承，用于修饰类名及方法，如final class test{ final function fun(){}} ，但不能用于属性),static(静态)
+**** 抽象类和抽象方法（abstract——注意：没有所谓抽象属性）:
+抽象可以理解成父类为子类定义了一个模板或基类。作用域abstract只在父类中声明，但在子类中实现。注意事项：
+1、抽象类不能被实例化，只能被子类（具体类）继承后实现。
+2、抽象类必须在其子类中实现该抽象类的所有抽象方法。否则会出错。
+3、在抽象方法中，只是声明，但不能具体实现：如abstract function gettow(){ return $this->p; }是错的，只能声明这个方法：abstract function gettow();（连方括号{}都不要出现）,抽象方法和抽象类主要用于复杂的类层次关系中。该层次关系需要确保每一个子类都包含并重载了某些特定的方法。这也可以通过接口实现
+4、属性不能被命名为抽象属性，如abstract $p = 5是错的。
+5、只有声明为抽象的类可以声明抽象方法，但如果方法声明为抽象，就不能具体实现。
+*** 类的管理
+**** instanceof 用于分析一个对象是否是某一个类的实例或子类或是实现了某个特定的接口：但要注意： 类名没有任何引号等定界符，否则会出错。如test不能用'test'
+**** 确定类是否存在：boolean class_exists(string class_name): class_exists(‘test');
+**** 返回类名：string get_class(object)，成功时返回实例的类名，失败则返回FALSE：
+**** 了解类的公用属性：array get_class_vars(‘className') ,返回关键数组：包含所有定义的public属性名及其相应的值。这个函数不能用实例名做变量
+**** 返回类方法：get_class_methods(‘test'); //或： get_class_methods($a);可用实例名做参数，返回包括构造函数在内的所有非私有方法。
+**** print_r(get_declared_classes())了解当前PHP版本中所有的类名。PHP5有149个。
+**** get_object_vars($a)返回实例中所有公用的属性及其值的关联数组。注意它和get_class_vars()的区别：
+/* (1) get_object_vars($a)是用实例名做参数，而get_class_vars(‘test')是用类名做参数。
+ get_object_vars($a)获得的属性值是实例运行后的值，而get_class_vars(‘test')获得的属性值是类中的初始定义。
+ 两者均返回关联数组，且均对未赋值的属性返回NULL的值。如类test中有定义了public $q;则返回Array ( [v] => 5 [q]=>) ,
+**** 返回父类的名称：get_parent_class($b);//或get_parent_class(‘test2′); 返回test
+**** 确定接口是否存在：boolean interface_exists($string interface[,boolean autoload])
+**** 确定对象类型： boolean is_a($obj,'className')，当$obj属于CLASSNAME类时，或属于其子类时，返回TRUE，如果$obj与class类型无关则返回FALSE。如：is_a($a,'test')
+**** 确定是否是某类的子对象：当$b是继承自TEST类时，返回TRUE，否则FALSE。boolean is_subclass_of($b,'test');
+**** 确定类或实例中，是否存在某方法。method_exists($a,'getv') //或用method_exists(‘test','getv')，此函数适用于非public定义的作用域的方法。
+*** 对象克隆：
+*** 在子类中调用父类的属性或方法：
+1、调用父类方法：在子类中调用父类的方法，有3种方法：
+$this->ParentFunction(); 或
+父类名::ParentFunction(); 或
+parent::parentFun();
+
+2、调用父类属性：只能用$this->ParentProperty;
+*** 接口
+接口：interface，可以理解成一组功能的共同规范，最大意义可能就是在多人协作时，为各自的开发规定一个共同的方法名称。
+**    命名空间 namespace XXX ;调用 XXX:classname
 **    Errors
 *** 错误显示
 ini_set("display_errors", "On");   
@@ -702,35 +777,314 @@ error_reporting(E_ALL); //-1是关闭
 **    预定义接口
 **    上下文（Context）选项和参数
 **    支持的协议和封装协议
-** 框架 
- 	CodeIgniter手册[ig'naiter]
-#############                           ###############    ############
-#           #==> Routing==> Security==> #             #    #  Models  #
-#           #           		#             #    #Libraries #
-# index.php #			        # application #<==># Helpers  #
-#           #             		#  controller #    #  plugins #
-#           #<== Caching<== View<====== #             #    # Scripts  #
-#############                           ###############    ############
-1.index.php 文件作为前端控制器,初始化运行CodeIgniter所需要的基本资源;
-2. Router检查HTTP请求,以确定如何处理该请求;
-3.如果存在缓存文件,将直接输出到浏览器,不用走下面正常的系统流程;
-4.在加载应用程序控制器之前,对HTTP请求以及任何用户提交的数据进行安全检查;
-5.控制器加载模型/核心类库/辅助函数以及其他所有处理请求所需的资源;
-6.最后,渲染视图并发送至浏览器,如果开启了缓存,视图会被先缓存起来用于后续的请求.
+** 正则
+foo ——————字符串“foo”  
+^foo ——————以“foo”开头的字符串  
+foo$ ——————以“foo”结尾的字符串  
+^foo$ ——————“foo”开头和结尾，（只能是他自己 ）  
+[abc]—————— a 或者b 或者c  
+[a-z] —————— a到z之间任意字母  
+[^A-Z]——————除了 A-Z这些之外的字符  
+(gif|jpg)——————“gif”或者 “jpeg”  
+[a-z]+—————— 一个或者多个 a到z之间任意字母  
+[0-9.-]—————— 0-9之间任意数字，或者 点 或者 横线  
+^[a-zA-Z0-9_]{1,}$—————— 至少一个字母数字下划线  
+([wx])([yz])—————— wy或wz或xy或xz  
+[^A-Za-z0-9]—————— 字符数字之外的字符  
+([A-Z]{3}|[0-9]{4})—————— 三个大写字母或者4个数字  
+ 
+    \B 匹配非单词边界。'er\B' 能匹配 "verb" 中的 'er'，但不能匹配 "never" 中的 'er'。  
+    \cx 匹配由 x 指明的控制字符。例如， \cM 匹配一个 Control-M 或回车符。x 的值必须为 A-Z 或 a-z 之一。否则，将 c 视为一个原义的 'c' 字符。  
+    \d 匹配一个数字字符。等价于 [0-9]。  
+    \D 匹配一个非数字字符。等价于 [^0-9]。  
+    \f 匹配一个换页符。等价于 \x0c 和 \cL。  
+    \n 匹配一个换行符。等价于 \x0a 和 \cJ。  
+    \r 匹配一个回车符。等价于 \x0d 和 \cM。  
+    \s 匹配任何空白字符，包括空格、制表符、换页符等等。等价于 [ \f\n\r\t\v]。  
+    \S 匹配任何非空白字符。等价于 [^ \f\n\r\t\v]。  
+    \t 匹配一个制表符。等价于 \x09 和 \cI。  
+    \v 匹配一个垂直制表符。等价于 \x0b 和 \cK。  
+    \w 匹配包括下划线的任何单词字符。等价于'[A-Za-z0-9_]'。  
+    \W 匹配任何非单词字符。等价于 '[^A-Za-z0-9_]'。  
+    \xn 匹配 n，其中 n 为十六进制转义值。十六进制转义值必须为确定的两个数字长。例如，'\x41' 匹配 "A"。'\x041' 则等价于 '\x04' & "1"。正则表达式中可以使用 ASCII 编码。.  
+    \num 匹配 num，其中 num 是一个正整数。对所获取的匹配的引用。例如，'(.)\1' 匹配两个连续的相同字符。  
+    \n 标识一个八进制转义值或一个向后引用。如果 \n 之前至少 n 个获取的子表达式，则 n 为向后引用。否则，如果 n 为八进制数字 (0-7)，则 n 为一个八进制转义值。  
+    \nm 标识一个八进制转义值或一个向后引用。如果 \nm 之前至少有 nm 个获得子表达式，则 nm 为向后引用。如果 \nm 之前至少有 n 个获取，则 n 为一个后跟文字 m 的向后引用。如果前面的条件都不满足，若 n 和 m 均为八进制数字 (0-7)，则 \nm 将匹配八进制转义值 nm。  
+    \nml 如果 n 为八进制数字 (0-3)，且 m 和 l 均为八进制数字 (0-7)，则匹配八进制转义值 nml。  
+    \un 匹配 n，其中 n 是一个用四个十六进制数字表示的 Unicode 字符。例如， \u00A9 匹配版权符号 (?)。  
 
-$route['(:any)'] = 'pages/view/$1';
-CodeIgniter 从上到下读取路由规则并将请求映射到第一个匹配的规则，每一个规则都是 一个正则表达式（左侧）映射到 一个控制器和方法（右侧）
-这里，第二条规则中 $routes 数组使用了通配符 (:any) 可以匹配所有的请求， 然后将参数传递给 Pages 类的 view() 方法。
- application/config/routes.php
- application/models/
- application/views/
- application/controllers/
+ 
+ 
+    常用的正则表达式
+    1、非负整数：”^\d+$”
+    2、正整数：”^[0-9]*[1-9][0-9]*$”
+    3、非正整数：”^((-\d+)|(0+))$”
+    4、负整数：”^-[0-9]*[1-9][0-9]*$”
+ 
+    5、整数：”^-?\d+$”
 
-$this->load->view('name'); 
-$this->load->model();
-URI是以一种抽象的，高层次概念定义统一资源标识，而URL和URN则是具体的资源标识的方式。URL和URN都是一种URI。URN统一资源命名符.URL这个名字正在被弃用	
+    6、非负浮点数：”^\d+(\.\d+)?$”
 
-DOM 可被 JavaScript 用来读取、改变 HTML、XHTML 以及 XML 文档。
-通过使用 getElementById() 和 getElementsByTagName() 方法
-通过使用一个元素节点的 parentNode、firstChild 以及 lastChild 属性
-getElementById() 和 getElementsByTagName() 这两种方法，可查找整个 HTML 文档中的任何 HTML 元素。
+	7、正浮点数：”^((0-9)+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$”
+
+    8、非正浮点数：”^((-\d+\.\d+)?)|(0+(\.0+)?))$”
+
+    9、负浮点数：”^(-((正浮点数正则式)))$”
+
+    10、英文字符串：”^[A-Za-z]+$”
+
+    11、英文大写串：”^[A-Z]+$”
+
+    12、英文小写串：”^[a-z]+$”
+
+    13、英文字符数字串：”^[A-Za-z0-9]+$”
+
+    14、英数字加下划线串：”^\w+$”
+
+    15、E-mail地址：”^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$”
+
+    16、URL：”^[a-zA-Z]+://(\w+(-\w+)*)(\.(\w+(-\w+)*))*(\?\s*)?$”
+
+PHP 常用正则表达式整理
+表单验证匹配
+验证账号，字母开头，允许 5-16 字节，允许字母数字下划线：^[a-zA-Z][a-zA-Z0-9_]{4,15}$
+验证账号，不能为空，不能有空格，只能是英文字母：^\S+[a-z A-Z]$
+验证账号，不能有空格，不能非数字：^\d+$
+验证用户密码，以字母开头，长度在 6-18 之间：^[a-zA-Z]\w{5,17}$
+验证是否含有 ^%&',;=?$\ 等字符：[^%&',;=?$\x22]+
+匹配Email地址：\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*
+匹配腾讯QQ号：[1-9][0-9]{4,}
+匹配日期，只能是 2004-10-22 格式：^\d{4}\-\d{1,2}-\d{1,2}$
+匹配国内电话号码：^\d{3}-\d{8}|\d{4}-\d{7,8}$
+评注：匹配形式如 010-12345678 或 0571-12345678 或 0831-1234567
+匹配中国邮政编码：^[1-9]\d{5}(?!\d)$
+匹配身份证：\d{14}(\d{4}|(\d{3}[xX])|\d{1})
+评注：中国的身份证为 15 位或 18 位
+不能为空且二十字节以上：^[\s|\S]{20,}$
+ 
+字符匹配
+匹配由 26 个英文字母组成的字符串：^[A-Za-z]+$
+匹配由 26 个大写英文字母组成的字符串：^[A-Z]+$
+匹配由 26 个小写英文字母组成的字符串：^[a-z]+$
+匹配由数字和 26 个英文字母组成的字符串：^[A-Za-z0-9]+$
+匹配由数字、26个英文字母或者下划线组成的字符串：^\w+$
+匹配空行：\n[\s| ]*\r 
+匹配任何内容：[\s\S]* 
+匹配中文字符：[\x80-\xff]+ 或者 [\xa1-\xff]+ 
+只能输入汉字：^[\x80-\xff],{0,}$ 
+匹配双字节字符(包括汉字在内)：[^\x00-\xff] 
+匹配数字 
+只能输入数字：^[0-9]*$ 
+只能输入n位的数字：^\d{n}$
+只能输入至少n位数字：^\d{n,}$ 
+只能输入m-n位的数字：^\d{m,n}$ 
+匹配正整数：^[1-9]\d*$
+匹配负整数：^-[1-9]\d*$
+匹配整数：^-?[1-9]\d*$
+匹配非负整数（正整数 + 0）：^[1-9]\d*|0$
+匹配非正整数（负整数 + 0）：^-[1-9]\d*|0$
+匹配正浮点数：^[1-9]\d*\.\d*|0\.\d*[1-9]\d*$
+匹配负浮点数：^-([1-9]\d*\.\d*|0\.\d*[1-9]\d*)$
+匹配浮点数：^-?([1-9]\d*\.\d*|0\.\d*[1-9]\d*|0?\.0+|0)$  
+匹配非负浮点数（正浮点数 + 0）：^[1-9]\d*\.\d*|0\.\d*[1-9]\d*|0?\.0+|0$  
+匹配非正浮点数（负浮点数 + 0）：^(-([1-9]\d*\.\d*|0\.\d*[1-9]\d*))|0?\.0+|0$
+ 
+其他  
+匹配HTML标记的正则表达式（无法匹配嵌套标签）：<(\S*?)[^>]*>.*?</\1>|<.*? />  
+匹配网址 URL ：[a-zA-z]+://[^\s]*   
+匹配 IP 地址：((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)   
+匹配完整域名：[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\.?
+ 
+提示
+    上述正则表达式通常都加了 ^ 与 $ 来限定字符的起始和结束，如果需要匹配的内容包括在字符串当中，可能需要考虑去掉 ^ 和 $ 限定符。
+    以上正则表达式仅供参考，使用时请检验后再使用s   
+	
+* CI php框架
+** 应用程序流程图
+***    index.php 文件作为前端控制器，初始化运行 CodeIgniter 所需的基本资源；
+: index.php 是唯一入口,因为其他文件开头都有
+: defined('BASEPATH') OR exit('No direct script access allowed');
+***    Router 检查 HTTP 请求，以确定如何处理该请求；
+***    如果存在缓存文件，将直接输出到浏览器，不用走下面正常的系统流程；
+***    在加载应用程序控制器之前，对 HTTP 请求以及任何用户提交的数据进行安全检查；
+***    控制器加载模型、核心类库、辅助函数以及其他所有处理请求所需的资源；
+***    最后一步，渲染视图并发送至浏览器，如果开启了缓存，视图被会先缓存起来用于 后续的请求。
+** 模型-视图-控制器  //用户请求一个资源  (数据库中存放资源/找到资源并构图/返回资源给用户)
+** 判断请求(生成资源/存储资源)通过浏览器返回给他页面
+** 安装说明
+1:  解压缩安装包；
+2:  将 CodeIgniter 文件夹及里面的文件上传到服务器，通常 index.php 文件将位于网站的根目录；
+3:  使用文本编辑器打开 application/config/config.php 文件设置你网站的根 URL，如果你想使用加密或会话，在这里设置上你的加密密钥；
+4:  如果你打算使用数据库，打开 application/config/database.php 文件设置数据库参数。
+** 请求流程
+*** 1.获取URL http://example.com/news/latest/10
+*** 2.路由  routes.php //路由的作用是分析成类和方法调用,路由条目中没有,就不分析了
+    $route['default_controller']='pages/view'; 控制器路径
+    $route['(:any)'] = 'pages/view/$1';  通配规则
+*** 3.建造控制器 news
+    #+BEGIN_SRC php
+class News extends CI_Controller{
+}    
+    #+END_SRC
+
+*** 4.创建数据模型 News_model
+****    1.创建数据库表
+#+BEGIN_SRC sql
+CREATE TABLE news (
+    id int(11) NOT NULL AUTO_INCREMENT,
+    title varchar(128) NOT NULL,
+    slug varchar(128) NOT NULL,
+    text text NOT NULL,
+    PRIMARY KEY (id),
+    KEY slug (slug)
+);
+#+END_SRC
+****    2.在application/models/目录
+#+BEGIN_SRC php
+class News_model extends CI_Model{
+
+public function __construct()
+{
+$this->load->database();
+}
+
+public function get_news($slug=FALSE)
+{
+if ($slug===FALSE)
+{
+$query=$this->db->get('news');
+return $query->result_array();
+}
+$query=$this->db->get_where('news',array('slug'=>$slug));
+return $query->row_array();
+}
+}
+#+END_SRC
+*** 5.控制器中加入model
+#+BEGIN_SRC php
+class News externs CI_controller{
+public function __construct(){
+parent::__construct();
+$this->load->model('news_model');
+$this->load->helper('url_help');
+}
+public function index()
+{
+$data['news']=$this->news_model->get_news();
+}
+public function view($slug){
+$data['news_item']=$this->news_model->get_news($slug);
+}
+}
+#+END_SRC
+*** 6.控制器中把数据传递给视图
+#+BEGIN_SRC php
+public function index(){
+: $data['news']=$this->news_model->get_news();
+$data['title']="Hello,world";
+
+$this->load->view('templates/header',$data);
+$this->load->view('news/index',$data);
+$this->load->view('templates/footer');   此视图不传数据
+}
+#+END_SRC
+*** 7.视图中调用数据 application/views/news/index.php ;这里就是前台啦
+#+BEGIN_SRC php
+<h2><?php echo $title; ?></h2>
+<?php foreach($news as $new_item):?>
+<h3><?php echo $news_item['title']; ?></h3>
+<div class="main">
+<?php echo $new_item['text']; ?>
+</div>
+<?php endforch; ?>
+#+END_SRC
+*** 8.修改路由
+#+BEGIN_SRC php
+$route['news/(:any)'] = 'news/view/$1';
+$route['news'] = 'news';
+#+END_SRC
+** 创建数据 差不多的
+*** 1.表单或jquery
+*** 2.控制器验证并插入数据
+#+BEGIN_SRC php
+class News extends CI_Controller{
+public function create()
+{
+if(INPUT==RIGHT)
+{
+$this->news_model->set_news();
+$this->load->view('news/success');    创建成功返回页面
+}
+}
+}
+#+END_SRC
+*** 3.插入数据的模块
+#+BEGIN_SRC php
+public function set_news()
+{
+$data=array(
+'title'=>$this->input->post('title'),
+'slug'=>$slug,
+'text'=>$this->input->post('text')
+);
+return $this->db->insert('news',$data);
+}
+#+END_SRC
+** 常规主题
+*** CodeIgniter URL
+**** (默认) URI分段方式 : example.com/class/function/ID
+**** 查询字符串格式 : index.php?c=controller&m=method
+*** 配置文件 config/config.php
+**** 后缀 .html
+**** 启用查询字符串格式
+#+BEGIN_SRC php
+$config['enable_query_strings'] = FALSE;
+$config['controller_trigger'] = 'c';
+$config['function_trigger'] = 'm';
+#+END_SRC
+**** 管理应用程序目录 $application_folder = 'application';
+*** 控制器
+**** 默认控制器 当 URI 没有分段参数时加载
+#+BEGIN_SRC php
+$route['default_controller'] = 'blog';
+#+END_SRC
+**** _remap
+: 如果你的控制包含一个 _remap() 方法，那么无论 URI 中包含什么参数时都会调用该方法
+**** 处理输出 
+: 如果你的控制器含有一个 _output() 方法，输出类将会调用该方法来显示数据， 而不是直接显示数据。该方法的第一个参数包含了最终输出的数据。
+#+BEGIN_SRC php
+public function _output($output)
+{
+    echo $output;
+}
+#+END_SRC
+**** 私有方法
+只要简单的将方法声明为 private 或 protected 或 _methodname [名字前加下划线]
+*** 视图
+**** 加载视图$this->load->view('view_name');
+**** 将视图作为数据返回
+: 如果你将该参数设置为 TRUE ， 该方法返回字符串，默认情况下为 FALSE ，视图将显示到浏览器。
+: $string = $this->load->view('myfile', '', TRUE);
+*** 模型  
+模型是专门用来和数据库打交道的 PHP 类
+**** 加载模型 $this->load->model('model_name');
+*** 辅助函数
+**** 加载辅助函数 $this->load->helper('url');
+*** 类库 位于 /system/libraries
+**** 加载类库$this->load->library('class_name');
+*** 网页缓存
+**** 开始缓存$this->output->cache($n);
+**** 删除缓存
+#+BEGIN_SRC php
+// Deletes cache for the currently requested URI
+$this->output->delete_cache();
+// Deletes cache for /foo/bar
+$this->output->delete_cache('/foo/bar');
+#+END_SRC
+*** 以 CLI 方式运行
+: $ php index.php tools message 重新路由了,单一入口
+*** 处理环境
+: ENVIRONMENT 常量
+: define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
+*** URI安全
+: CodeIgniter 严格限制 URI 中允许出现的字符，以此来减少恶意数据传到你的应用程序的可能性。
