@@ -47,9 +47,164 @@ source filename
 
 
 ** shell 命令大全
+***  安装和登录命令
+**** login 命令行模式时第一条命令默认调用了login
+login [name][－p ][－h 主机名称]
+－p:通知login保持现在的环境参数。
+－h:用来向远程登录的之间传输用户名。
+**** shutdown
+shutdown [－h][－i][－k][－m][－t]
+－t：在改变到其它运行级别之前，告诉init程序多久以后关机。
+－k：并不真正关机，只是送警告信号给每位登录者。
+－h：关机后关闭电源。
+－c：cancel current PRocess取消目前正在执行的关机程序。所以这个选项当然没有时间参数，但是可以输入一个用来解释的讯息，而这信息把会送到每位使用者。
+－F：在重启计算机时强迫fsck。
+－time：设定关机前的时间。
+－m: 把系统改为单用户模式。
+－i：关机时显示系统信息。
+**** halt 关闭系统
+halt [－n] [－w] [－d] [－f] [－i] [－p]
+－n：防止sync系统调用，它用在用fsck修补根分区之后，以阻止内核用老版本的超级块覆盖修补过的超级块。
+－w：并不是真正的重启或关机,只是写wtmp（/var/log/wtmp）纪录。
+－f：没有调用shutdown，而强制关机或重启。
+－i：关机（或重启）前，关掉所有的网络接口。
+－f：强迫关机，不呼叫shutdown这个指令。
+－p: 当关机的时候顺便做关闭电源的动作。
+－d：关闭系统，但不留下纪录。　
+**** reboot 重启
+reboot [－n] [－w] [－d] [－f] [－i]
+－n: 在重开机前不做把记忆体资料写回硬盘的动作。
+－w: 并不会真的重开机，只是把记录写到/var/log/wtmp文件里。
+－d: 不把记录写到/var/log/wtmp文件里（－n这个参数包含了－d）。
+－i: 在重开机之前先把所有与网络相关的装置停止。
+**** install
+**** mount
+mount －a [－fv] [－t vfstype] [－n] [－rw] [－F] device dir
+－h：显示辅助信息。
+－v：显示信息，通常和－f用来除错。
+－a：把/etc/fstab中定义的所有文件系统挂上。
+－F：这个命令通常和－a一起使用，它会为每一个mount的动作产生一个行程负责执行。在系统需要挂上大量NFS文件系统时可以加快加载的速度。
+－f：通常用于除错。它会使mount不执行实际挂上的动作，而是模拟整个挂上的过程，通常会和－v一起使用。
+－t vfstype：显示被加载文件系统的类型。
+－n：一般而言，mount挂上后会在/etc/mtab中写入一笔资料，在系统中没有可写入文件系统的情况下，可以用这个选项取消这个动作。
+ -o : iocharset=cp936 
+:  CD-ROM光盘用的文件系统：iso9660
+: 虽然vfat是指FAT 32系统，但事实上它也兼容FAT 16的文件系统类型。
+usb:Linux下使用闪盘非常简单。Linux对USB设备有很好的支持，当插入闪盘后，闪盘被识别为一个SCSI盘，通常输入以下命令：
+＃ mount /dev/sda1 /usb
+**** umount
+unmount －a [－fFnrsvw] [－t vfstype] [－n] [－rw] [－F] device dir
+**** chsh 命令的作用是更改使用者shell设定，它的使用权限是所有使用者。
+chsh [ －s ] [ －list] [ －－help ] [ －v ] [ username ]
+－l：显示系统所有Shell类型。
+－v：显示Shell版本号。
+
+**** exit
+exit命令没有参数，运行后退出系统进入登录界面。
+**** last 命令的作用是显示近期用户或终端的登录情况
+last[—n][－f file][－t tty] [—h 节点][－I —IP][—1][－y][1D]
+－n：指定输出记录的条数。
+－f file：指定用文件file作为查询用的log文件。
+－t tty：只显示指定的虚拟控制台上登录情况。
+－h 节点：只显示指定的节点上的登录情况。
+－i IP：只显示指定的IP上登录的情况。
+－1：用IP来显示远端地址。
+－y：显示记录的年、月、日。
+－ID：知道查询的用户名。
+－x:显示系统关闭、用户登录和退出的历史。
 *** 文档编辑
 **** grep
 *** 文件传输
 *** 网络通讯
 *** 系统设置
 *** 备份压缩
+*** 系统信息
+**** arch 显示机器的处理器架构(1)
+**** uname -m 显示机器的处理器架构(2)
+**** uname -r 显示正在使用的内核版本
+**** dmidecode -q 显示硬件系统部件 - (SMBIOS / DMI)
+**** hdparm -i /dev/hda 罗列一个磁盘的架构特性
+**** hdparm -tT /dev/sda 在磁盘上执行测试性读取操作
+**** cat /proc/cpuinfo 显示CPU info的信息
+**** cat /proc/interrupts 显示中断
+**** cat /proc/meminfo 校验内存使用
+**** cat /proc/swaps 显示哪些swap被使用
+**** cat /proc/version 显示内核的版本
+**** cat /proc/net/dev 显示网络适配器及统计
+**** cat /proc/mounts 显示已加载的文件系统
+**** lspci -tv 罗列 PCI 设备
+**** lsusb -tv 显示 USB 设备
+**** date 显示系统日期
+**** cal 2007 显示2007年的日历表
+**** date 041217002007.00 设置日期和时间 - 月日时分年.秒
+**** clock -w 将时间修改保存到 BIOS
+*** 文件处理命令
+**** tree 显示文件和目录由根目录开始的树形结构
+**** lstree 显示文件和目录由根目录开始的树形结构
+**** file
+**** iconv
+ -l 列出已知的编码
+ -f fromEncoding -t toEncoding inputFile > outputFile  改变文件的编码
+**** mkdir
+**** grep
+**** dd
+**** find
+-name 文件名
+-user 用户
+-type 类型 f d
+-atime accessed time
+-mtime modified time ;文件内容修改
+-ctime file status was last changed;文件属性修改
+find . -maxdepth 1 -name *.jpg -print -exec convert "{}" -resize 80x60 "thumbs/{}" ;
+**** mv
+**** ls
+**** diff
+**** cat
+**** ln
+**** touch -t 0712250000 file1 修改一个文件或目录的时间戳 - (YYMMDDhhmm)
+***  系统管理相关命令
+**** f
+**** top
+**** free
+**** quota
+**** at
+**** lp
+**** adduser
+**** groupadd
+**** kill
+**** crontab
+*** 网络操作命令
+**** ifconfig
+**** ip
+**** ping
+**** netstat
+**** telnet
+**** ftp
+**** route
+**** rlogin
+**** rcp
+**** finger
+**** mail
+****  nslookup；
+*** 系统安全相关命令
+**** passwd
+**** su
+**** umask
+**** chgrp
+**** chmod
+**** chown
+**** chattr
+**** sudo
+**** ps
+**** who
+***  其它命令
+**** tar
+**** unzip
+**** gunzip
+**** unarj
+**** mtools
+**** man
+**** unendcode
+**** uudecode
+** 术语
+*** MIME(Multipurpose Internet Mail Extensions)多用途互联网邮件扩展类型。
