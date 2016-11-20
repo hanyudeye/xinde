@@ -1,0 +1,353 @@
+* 对象
+** DOM 为了统一标准,背景(浏览器大战) 树形数据结构 基本成分:节点
+: 树的结构/ 访问方法通过 父/子/节点名
+*** HTML DOM 定义了所有 HTML 元素的对象和属性，以及访问它们的方法（接口）
+*** HTML DOM 方法
+: 通过使用 getElementById() 和 getElementsByTagName() 方法
+: 通过使用 getElementsByClassName() 方法
+: 通过使用一个元素节点的 parentNode、firstChild 以及 lastChild 属性
+*** HTML DOM属性
+**** 获取元素内容的最简单方法是使用 innerHTML 属性
+**** nodeName 属性规定节点的名称
+**** nodeValue 属性规定节点的值
+**** nodeType 属性返回节点的类型。nodeType 是只读的
+#+BEGIN_SRC 
+元素 	1
+属性 	2
+文本 	3
+注释 	8
+文档 	9
+#+END_SRC
+*** HTML DOM 修改
+**** 创建新的 HTML 元素
+#+BEGIN_SRC 
+var para=document.createElement("p");
+var node=document.createTextNode("This is new.");
+para.appendChild(node);
+#+END_SRC
+*** HTML DOM - 元素
+**** 创建新的 HTML 元素 - appendChild()您首先必须创建该元素，然后把它追加到已有的元素上。
+**** 创建新的 HTML 元素 - insertBefore()
+**** 删除已有的 HTML 元素
+#+BEGIN_SRC 
+var child=document.getElementById("p1");
+child.parentNode.removeChild(child);
+#+END_SRC
+**** 替换 HTML 元素
+: 如需替换 HTML DOM 中的元素，请使用 replaceChild() 方法：
+#+BEGIN_SRC 
+var parent=document.getElementById("div1");
+var child=document.getElementById("p1");
+parent.replaceChild(para,child);
+#+END_SRC
+
+*** HTML DOM事件
+**** window 事件属性
++ onload 页面结束加载之后触发。   
++ onresize  当浏览器窗口被调整大小时触发。 
+**** FORM 事件
++ onselect      script 在元素中文本被选中后触发。            
++ onsubmit      script 在提交表单时触发。                   
+**** 键盘事件
++ onkeydown  script 在用户按下按键时触发。
++ onkeypress script 在用户敲击按钮时触发。
++ onkeyup    script 当用户释放按键时触发。
+**** Mouse事件
++ onclick
++ ondblclick
++ onmousedown
++ onscroll
+**** Media事件
++ onabort
++ onplay
+**** onmousedown、onmouseup 以及 onclick 事件
+*** HTML DOM导航
+**** 根节点
+: document.documentElement - 全部文档
+: document.body - 文档的主体
+
+**** 节点列表
+#+BEGIN_SRC 
+ var x=document.getElementsByTagName("p");
+可以通过下标号访问这些节点。如需访问第二个 <p>，您可以这么写：
+y=x[1]; 
+#+END_SRC
+**** length 属性定义节点列表中节点的数量
+
+*** XML DOM
+** 浏览器
+*** console 非标准;对象提供浏览器控制台的接入
+**** console.log()
+* HTML5 文本    
+** <head>
+** <body>
+*** <div>
+**** 实体
+***** <article>>    定义文档内的文章
+***** <aside>      定义页面内容之外的内容
+***** <bdi>        定义与其他文本不同的文本方向
+***** <details>    定义用户可查看或隐藏的额外细节
+***** <dialog>     定义对话框或窗口
+***** <figcaption> 定义 <figure> 元素的标题
+***** <figure>     定义自包含内容，比如图示、图表、照片、代码清单
+***** <footer>     定义文档或节的页脚
+***** <header>     定义文档或节的页眉
+***** <main>       定义文档的主内容                        
+***** <mark>       定义重要或强调的内容
+***** <menuitem>   定义用户能够从弹出菜单调用的命令/菜单项目
+***** <meter>      定义已知范围（尺度）内的标量测量
+***** <nav>        定义文档内的导航链接
+***** <progress>   定义任务进度
+***** <rp>         定义在不支持 ruby 注释的浏览器中显示什么
+***** <rt>         定义关于字符的解释/发音（用于东亚字体）
+***** <ruby>       定义 ruby 注释（用于东亚字体）
+***** <section>    定义文档中的节
+***** <summary>    定义 <details> 元素的可见标题 
+***** <time>       定义日期/时间。
+***** <wbr>        定义可能的折行（line-break）
+***** <frame>      框架
+****** <p>
+******* <h1>
+******* <!--> 
+******* 格式化<b><big><em><i><code><kbd><ins>
+******* <a>
+******* <img>
+******* <table>!!!少用
+******* <ul><ol>
+
+
+
+
+
+
+
+
+* 样式 CSS 样式定义如何显示 HTML 元素
+** 选择器,依赖DOM
+*** 派生选择器
++ li strong {a:v;b:v}  
+*** id选择器
++ #red {color:red;}
+*** 类选择器
++ .center {text-align: center}
+*** 属性选择器
++ input [title="value"] //也可以不要value修饰
+
+** 样式
+*** CSS 框模型
+  * CSS 内边距
+  * CSS 边框
+  * CSS 外边距
+  * CSS 外边距合并
+*** CSS 定位
+  * CSS 相对定位
+  * CSS 绝对定位
+  * CSS 浮动
+*** CSS 样式
+  * CSS 背景
+  * CSS 文本
+  * CSS 字体
+  * CSS 链接
+  * CSS 列表
+  * CSS 表格
+  * CSS 轮廓
+
+
+* 客户端脚本 javascript
+** 对象
+*** 内建对象,String;Date;Array
+*** 对象构造器
+#+BEGIN_SRC javascript
+    function person(firstname,lastname,age,eyecolor)
+    {
+    this.firstname=firstname;
+    this.lastname=lastname;
+    this.age=age;
+    this.eyecolor=eyecolor;
+    }
+#+END_SRC
+*** JavaScript for...in 语句循环遍历对象的属性。
+*** 日期 Date() getTime() setFullYear() toUTString getDay()
+*** 数组 concat() join() sort() Array()
+*** RegExp 对象有 3 个方法：test()、exec() 以及 compile()。
+*** window.location 对象用于获得当前页面的地址 (URL)，并把浏览器重定向到新的页面。
+****  * location.hostname 返回 web 主机的域名
+****  * location.pathname 返回当前页面的路径和文件名
+****  * location.port 返回 web 主机的端口（80 或 443）
+****  * location.protocol 返回所使用的 web 协议（http:// 或
+    https://）
+****    location.href
+**** location.assign()  加载新的文档
+**** window.navigator 对象包含有关访问者浏览器的信息。
+
+* 客户端脚本jQuery javascript库,简化
+** 引入脚本执行<script src="my_jquery_functions.js"></script>
+** jQuery 选择器 $()
+*** 元素选择器 $("p")
+*** #id 选择器 $("#test") 
+*** .class 选择器 $(".class")
+*** 选取所有元素 $("*") 	
+*** document和 this
+#+BEGIN_SRC javascript -n
+$(document).ready(function(){
+  $("button").click(function(){
+    $(this).hide();
+  });
+});
+#+END_SRC
+*** 嵌套 $("a[target='_blank']") 	选取所有 target 属性值等于 "_blank" 的 <a> 元素
+** jQuery 效果
+*** jQuery  fade(淡出) 方法：
+****    fadeIn()
+****    fadeOut()
+****    fadeToggle()
+****    fadeTo()
+*** jQuery 滑动方法
+****    slideDown(speed,callback)
+****    slideUp()
+****    slideToggle()
+*** jQuery 动画 - animate() 方法
+**** $(selector).animate({params},speed,callback);
+*** jQuery 停止动画
+jQuery stop() 方法用于在动画或效果完成前对它们进行停止。
+** jQuery HTML
+*** jQuery - 获取内容和属性 | 配置
+**** 获得内容 - text()、html() 以及 val()
+#+BEGIN_SRC 
+    text() - 设置或返回所选元素的文本内容
+    html() - 设置或返回所选元素的内容（包括 HTML 标记）
+    val() - 设置或返回表单字段的值
+#+END_SRC
+**** 获取属性值 - attr()
+*** jQuery - 添加元素
+****    append() - 在被选元素的结尾插入内容
+****    prepend() - 在被选元素的开头插入内容
+****    after() - 在被选元素之后插入内容
+****    before() - 在被选元素之前插入内容
+*** jQuery - 删除元素
+****     remove() - 删除被选元素（及其子元素）
+****    empty() - 从被选元素中删除子元素
+*** jQuery - 获取并设置 CSS 类
+**** jQuery addClass() 方法
+#+BEGIN_SRC 
+$("button").click(function(){
+  $("h1,h2,p").addClass("blue");
+  $("div").addClass("important");
+});
+#+END_SRC
+**** jQuery removeClass() 方法
+**** jQuery toggleClass() 方法
+*** jQuery css() 方法
+: css() 方法设置或返回被选元素的一个或多个样式属性。
+**** 返回 CSS 属性
+: css("propertyname");
+**** 设置 CSS 属性
+: css("propertyname","value");
+**** 设置多个 CSS 属性
+: css({"propertyname":"value","propertyname":"value",...});
+#+BEGIN_SRC css
+$("p").css({"background-color":"yellow","font-size":"200%"});
+#+END_SRC
+*** jQuery 尺寸
+: 通过 jQuery，很容易处理元素和浏览器窗口的尺寸。
+[元素(width)]padding(innerwidth)]border(outerwidth)]margin(outerwidth(true))]
+****    width() 方法设置或返回元素的宽度（不包括内边距、边框或外边距）。
+****    height()
+****    innerWidth() 方法返回元素的宽度（包括内边距）
+****    innerHeight()
+****    outerWidth()方法返回元素的宽度（包括内边距和边框）
+****    outerHeight()
+*** jQuery 遍历
+**** 向上遍历 DOM 树
+*****    parent()返回被选元素的直接父元素
+*****    parents() 方法返回被选元素的所有祖先元素，它一路向上直到文档的根元素 (<html>)
+*****    parentsUntil() 返回介于两个给定元素之间的所有祖先元素
+#+BEGIN_SRC 
+$(document).ready(function(){
+  $("span").parentsUntil("div");
+});
+#+END_SRC
+**** jQuery 遍历 - 后代
+*****  children()
+*****  find()方法返回被选元素的后代元素，一路向下直到最后一个后代
+#+BEGIN_SRC 
+$(document).ready(function(){
+  $("div").find("span");
+});
+#+END_SRC
+**** jQuery 遍历 - 同胞(siblings)
+*****    siblings()返回被选元素的所有同胞元素
+*****    next()返回被选元素的下一个同胞元素
+*****    nextAll()
+*****    nextUntil()返回介于两个给定参数之间的所有跟随的同胞元素
+*****    prev() 方向相反
+*****    prevAll()
+*****    prevUntil()
+**** jQuery 遍历- 过滤
+***** jQuery first() 方法first() 方法返回被选元素的首个元素。
+***** last()
+***** eq()返回被选元素中带有指定索引号的元素。从0开始
+** jQuery Ajax 是与服务器交换数据的技术，它在不重载全部页面的情况下，实现了对部分网页的更新。
+*** jQuery load() 方法
+**** load() 方法从服务器加载数据，并把返回的数据放入被选元素中。
+: $(selector).load(URL,data,callback);
+: 必需的 URL 参数规定您希望加载的 URL。
+: 可选的 data 参数规定与请求一同发送的查询字符串键/值对集合。
+: 可选的 callback 参数是 load() 方法完成后所执行的函数名称。
+#+BEGIN_SRC 
+$("#div1").load("demo_test.txt #p1");
+#+END_SRC
+对象要符合DOM
+#+BEGIN_SRC 
+可选的 callback 参数规定当 load() 方法完成后所要允许的回调函数。回调函数可以设置不同的参数：
+    responseTxt - 包含调用成功时的结果内容
+    statusTXT - 包含调用的状态
+    xhr - 包含 XMLHttpRequest 对象
+下面的例子会在 load() 方法完成后显示一个提示框。如果 load() 方法已成功，则显示"外部内容加载成功！"，而如果失败，则显示错误消息：
+实例
+$("button").click(function(){
+  $("#div1").load("demo_test.txt",function(responseTxt,statusTxt,xhr){
+    if(statusTxt=="success")
+      alert("外部内容加载成功!");
+    if(statusTxt=="error")
+      alert("Error: "+xhr.status+": "+xhr.statusText);
+  });
+});
+#+END_SRC
+*** jQuery - AJAX get() 和 post() 方法
+: jQuery get() 和 post() 方法用于通过 HTTP GET 或 POST 请求从服务器请求数据。
+**** $.get() 方法通过 HTTP GET 请求从服务器上请求数据。
+: $.get(URL,callback);
+必需的 URL 参数规定您希望请求的 URL。
+可选的 callback 参数是请求成功后所执行的函数名。
+下面的例子使用 $.get() 方法从服务器上的一个文件中取回数据：
+#+BEGIN_SRC 
+$("button").click(function(){
+  $.get("demo_test.php",function(data,status){
+    alert("数据: " + data + "\n状态: " + status);
+  });
+});
+#+END_SRC
+**** $.post() 方法通过 HTTP POST 请求从服务器上请求数据。
+$.post(URL,data,callback);
+必需的 URL 参数规定您希望请求的 URL。
+可选的 data 参数规定连同请求发送的数据。
+可选的 callback 参数是请求成功后所执行的函数名。
+下面的例子使用 $.post() 连同请求一起发送数据：
+#+BEGIN_SRC 
+$("button").click(function(){
+    $.post("/try/ajax/demo_test_post.php",
+    {
+        name:"菜鸟教程",
+        url:"http://www.runoob.com"
+    },
+        function(data,status){
+        alert("数据: \n" + data + "\n状态: " + status);
+    });
+});
+#+END_SRC
+*** 事件
+**** ready将函数绑定到文档的就绪事件
+**** click /dblclick/focus/mouseover
+**** onchange 事件(text 对象)
+**** onmouseover 和 onmouseout 事件

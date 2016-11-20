@@ -1,0 +1,588 @@
+: jmp汇编 的是偏移地址,我们写是写绝对地址
+#+TITTLE: int中断
+**  int 10 显示中断
+#+CAPTION: 
+|  AH | 功能                       | 调用参数                               | 返回参数                        |
+|-----+----------------------------+----------------------------------------+---------------------------------|
+|   0 | 设置显示模式               | AL = video mode                        | AL = video mode flag  mode byte |
+|     |                            | 模式碼 (正常為 03h)                    |                                 |
+|     |                            | 00H: 40*25 16 色 8 頁 B8000H~B87CFH    | 文字模式                        |
+|     |                            | 01H: 80*25 16 色 8 頁 B8000H~B87CFH    |                                 |
+|     |                            | 02H: 80*25 16 色 8 頁 B8000H~B8F9FH    |                                 |
+|     |                            | 03H: 80*25 16 色 8 頁 B8000H~B8F9FH    |                                 |
+|     |                            | 07H: 80*25 2 色 8 頁 B8000H~B8F9FH     |                                 |
+|     |                            | 04H: 320*200 4 色 1 頁 B8000H~BBF3FH   | 绘图模式                        |
+|     |                            | 05H: 320*200 4 色 1 頁 B8000H~BBF3FH   |                                 |
+|     |                            | 06H: 640*200 2 色 1 頁 B8000H~BBF3FH   |                                 |
+|     |                            | 0DH: 320*200 16 色 8 頁 A0000H~A1F3FH  |                                 |
+|     |                            | 0EH: 640*200 16 色 4 頁 A0000H~A3E7FH  |                                 |
+|     |                            | 0FH: 640*350 2 色 2 頁 A0000H~A6D5FH   |                                 |
+|     |                            | 10H: 640*350 16 色 2 頁 A0000H~A6D5FH  |                                 |
+|     |                            | 11H: 640*480 2 色 1 頁 A0000H~A95FFH   |                                 |
+|     |                            | 12H: 640*480 16 色 1 頁 A0000H~A95FFH  |                                 |
+|     |                            | 13H: 320*200 256 色 1 頁 A0000H~AF9FFH |                                 |
+|   1 | 置光标类型                 | (CH)0―3 = 光标开始行                  |                                 |
+|     |                            | (CL)0―3 = 光标结束行                  |                                 |
+|   2 | 置光标位置                 | BH = 页号                              |                                 |
+|     |                            | DH = 行                                |                                 |
+|     |                            | DL = 列                                |                                 |
+|   3 | 读光标位置                 | BH = 页号                              |                                 |
+|     |                            | CH = 光标开始行                        |                                 |
+|     |                            | CL = 光标结束行                        |                                 |
+|     |                            | DH = 行                                |                                 |
+|     |                            | DL = 列                                |                                 |
+|   4 | 读光笔位置                 |                                        | AH=0 光笔未触发                 |
+|     |                            |                                        | AH=1 光笔触发                   |
+|     |                            |                                        | CH=象素行                       |
+|     |                            |                                        | BX=象素列                       |
+|     |                            |                                        | DH=字符行                       |
+|     |                            |                                        | DL=字符列                       |
+|     |                            |                                        |                                 |
+|   5 | 显示页                     | AL = 显示页号                          |                                 |
+|   6 | 屏幕初始化或上卷           | AL = 上卷行数                          |                                 |
+|     |                            | AL =0全屏幕为空白                      |                                 |
+|     |                            | BH = 卷入行属性                        |                                 |
+|     |                            | CH = 左上角行号                        |                                 |
+|     |                            | CL = 左上角列号                        |                                 |
+|     |                            | DH = 右下角行号                        |                                 |
+|     |                            | DL = 右下角列号                        |                                 |
+|   7 | 屏幕初始化或下卷           | AL = 上卷行数                          |                                 |
+|     |                            | AL =0全屏幕为空白                      |                                 |
+|     |                            | BH = 卷入行属性                        |                                 |
+|     |                            | CH = 左上角行号                        |                                 |
+|     |                            | CL = 左上角列号                        |                                 |
+|     |                            | DH = 右下角行号                        |                                 |
+|     |                            | DL = 右下角列号                        |                                 |
+|   8 | 读光标位置的属性和字符     | BH = 显示页                            | AH = 属性                       |
+|     |                            |                                        | AL = 字符                       |
+|   9 | 在光标位置显示字符及其属性 | BH = 显示页                            |                                 |
+|     |                            | AL = 字符                              |                                 |
+|     |                            | BL = 属性                              |                                 |
+|     |                            | CX = 字符重复次数                      |                                 |
+|   A | 在光标位置只显示字符       | BH = 显示页                            |                                 |
+|     |                            | AL = 字符                              |                                 |
+|     |                            | CX = 字符重复次数                      |                                 |
+|   E | 显示字符(光标前移)         | AL = 字符                              |                                 |
+|     |                            | BL = 前景色                            |                                 |
+| 13h | 显示字符串                 | ES:BP = 串地址                         |                                 |
+|     |                            | CX = 串长度                            |                                 |
+|     |                            | DH=row， DL = 起始行列                 |                                 |
+|     |                            | BH = 页号                              |                                 |
+|     |                            | AL = writemode，BL = 属性/颜色         |                                 |
+
+**  int 13 磁盘中断
+#+CAPTION:  int 13 磁盘操作
+| AH  | 功能                  | 调用参数                                  | 返回参数                                     |
+| 00  | 磁盘系统复位          | DL＝驱动器                                | CF＝0——操作成功，AH＝00H                     |
+|     |                       | 00H~7FH：软盘                             | 否则，AH＝状态代码                           |
+|     |                       | 80H~0FFH：硬盘                            |                                              |
+| 01  | 读取磁盘系统状态      | DL＝驱动器                                | AH＝00H，AL＝状态代码，其定义如下：          |
+|     |                       | 00H~7FH：软盘                             | 00H — 无错                                   |
+|     |                       | 80H~0FFH：硬盘                            | 01H — 非法命令                               |
+|     |                       |                                           | 02H — 地址目标未发现                         |
+|     |                       |                                           | 03H — 磁盘写保护(软盘)                       |
+|     |                       |                                           | 04H — 扇区未发现                             |
+|     |                       |                                           | 05H — 复位失败(硬盘)                         |
+|     |                       |                                           | 06H — 软盘取出(软盘)                         |
+|     |                       |                                           | 07H — 错误的参数表(硬盘)                     |
+|     |                       |                                           | 08H — DMA越界(软盘)                          |
+|     |                       |                                           | 09H — DMA超过64K界限                         |
+|     |                       |                                           | 0AH — 错误的扇区标志(硬盘)                   |
+|     |                       |                                           | 0BH — 错误的磁道标志(硬盘)                   |
+|     |                       |                                           | 0CH — 介质类型未发现(软盘)                   |
+|     |                       |                                           | 0DH — 格式化时非法扇区号(硬盘)               |
+|     |                       |                                           | 0EH — 控制数据地址目标被发现(硬盘)           |
+|     |                       |                                           | 0FH — DMA仲裁越界(硬盘)                      |
+|     |                       |                                           | 10H — 不正确的CRC或ECC编码                   |
+|     |                       |                                           | 11H — ECC校正数据错(硬盘)                    |
+|     |                       |                                           | 20H — 控制器失败                             |
+|     |                       |                                           | 40H — 查找失败                               |
+|     |                       |                                           | 80H — 磁盘超时(未响应)                       |
+|     |                       |                                           | AAH — 驱动器未准备好(硬盘)                   |
+|     |                       |                                           | BBH — 未定义的错误(硬盘)                     |
+|     |                       |                                           | CCH — 写错误(硬盘)                           |
+|     |                       |                                           | E0H — 状态寄存器错(硬盘)                     |
+|     |                       |                                           | FFH — 检测操作失败(硬盘)                     |
+| 02H | 读扇区                | AL＝扇区数                                | CF＝0——操作成功，AH＝00H，AL＝传输的扇区数   |
+|     |                       | CH＝柱面                                  | 否则，AH＝状态代码，参见功能号01H中的说明    |
+|     |                       | CL＝扇区                                  |                                              |
+|     |                       | DH＝磁头                                  |                                              |
+|     |                       | DL＝驱动器，00H~7FH：软盘；80H~0FFH：硬盘 | (#驱动器,相当于哪块磁盘)        |
+|     |                       | ES:BX＝缓冲区的地址                       |                                              |
+| 03H | 写扇区                | AL＝扇区数                                | CF＝0——操作成功，AH＝00H，AL＝传输的扇区数   |
+|     |                       | CH＝柱面                                  | 否则，AH＝状态代码                           |
+|     |                       | CL＝扇区                                  |                                              |
+|     |                       | DH＝磁头                                  |                                              |
+|     |                       | DL＝驱动器，00H~7FH：软盘；80H~0FFH：硬盘 |                                              |
+|     |                       | ES:BX＝缓冲区的地址                       |                                              |
+| 04H | 检验扇区              | AH＝04H                                   | CF＝0——操作成功，AH＝00H，AL＝被检验的扇区数 |
+|     |                       | AL＝扇区数                                | 否则，AH＝状态代码                           |
+|     |                       | CH＝柱面                                  |                                              |
+|     |                       | CL＝扇区                                  |                                              |
+|     |                       | DH＝磁头                                  |                                              |
+|     |                       | DL＝驱动器，00H~7FH：软盘；80H~0FFH：硬盘 |                                              |
+|     |                       | ES:BX＝缓冲区的地址                       |                                              |
+| 05H | 格式化磁道            | AL＝交替(Interleave)                      | CF＝0——操作成功，AH＝00H                     |
+|     |                       | CH＝柱面                                  | 否则，AH＝状态代码                           |
+|     |                       | DH＝磁头                                  |                                              |
+|     |                       | DL＝驱动器，00H~7FH：软盘；80H~0FFH：硬盘 |                                              |
+|     |                       | ES:BX＝地址域列表的地址                   |                                              |
+| 06H | 格式化坏磁道          | AL＝交替                                  | CF＝0——操作成功，AH＝00H                     |
+|     |                       | CH＝柱面                                  | 否则，AH＝状态代码，参见功能号01H中的说明    |
+|     |                       | DH＝磁头                                  |                                              |
+|     |                       | DL＝80H~0FFH：硬盘                        |                                              |
+|     |                       | ES:BX＝地址域列表的地址                   |                                              |
+| 07H | 格式化驱动器          | AL＝交替                                  | CF＝0——操作成功，AH＝00H                     |
+|     |                       | CH＝柱面                                  | 否则，AH＝状态代码，参见功能号01H中的说明    |
+|     |                       | DL＝80H~0FFH：硬盘                        |                                              |
+| 08H | 读取驱动器参数        | DL＝驱动器，00H~7FH：软盘；80H~0FFH：硬盘 | CF＝1——操作失败，AH＝状态代码                |
+|     |                       |                                           | 否则， BL＝01H — 360K                        |
+|     |                       |                                           | ＝02H — 1.2M                                 |
+|     |                       |                                           | ＝03H — 720K                                 |
+|     |                       |                                           | ＝04H — 1.44M                                |
+|     |                       |                                           | CH＝柱面数的低8位                            |
+|     |                       |                                           | CL的位7-6＝柱面数的高2位                     |
+|     |                       |                                           | CL的位5-0＝扇区数                            |
+|     |                       |                                           | DH＝磁头数                                   |
+|     |                       |                                           | DL＝驱动器数                                 |
+|     |                       |                                           | ES:DI＝磁盘驱动器参数表地址                  |
+| 09H | 初始化硬盘参数        | DL＝80H~0FFH：硬盘                        | CF＝0——操作成功，AH＝00H否则                 |
+|     |                       |                                           | AH＝状态代码，参见功能号01H中的说明          |
+| 0AH | 读长扇区, 每个扇区    | AL＝扇区数                                |                                              |
+|     | 随带四个字节的ECC编码 | CH＝柱面                                  | CF＝0——操作成功，AH＝00H，AL＝传输的扇区数   |
+|     |                       | CL＝扇区                                  | 否则，AH＝状态代码，参见功能号01H中的说明    |
+|     |                       | DH＝磁头                                  |                                              |
+|     |                       | DL＝80H~0FFH：硬盘                        |                                              |
+|     |                       | ES:BX＝缓冲区的地址                       |                                              |
+| 0BH | 写长扇区，每个扇区随  | AL＝扇区数                                | CF＝0——操作成功，AH＝00H，AL＝传输的扇区数   |
+|     | 带四个字节的ECC编码   | CH＝柱面                                  | 否则，AH＝状态代码，参见功能号01H中的说明    |
+|     |                       | CL＝扇区                                  |                                              |
+|     |                       | DH＝磁头                                  |                                              |
+|     |                       | DL＝80H~0FFH：硬盘                        |                                              |
+|     |                       | ES:BX＝缓冲区的地址                       |                                              |
+| 0CH | 查寻                  | CL(7-6位)＝柱面的高2位                    | CF＝0——操作成功，AH＝00H，                   |
+|     |                       | DH＝磁头                                  | 否则，AH＝状态代码，参见功能号01H中的说明    |
+|     |                       | DL＝80H~0FFH：硬盘                        |                                              |
+| 0DH | 硬盘系统复位          | DL＝80H~0FFH：硬盘                        | CF＝0——操作成功，AH＝00H，                   |
+| 0EH | 读扇区缓冲区          | ES:BX＝缓冲区的地址                       | 出口参数：CF＝0——操作成功                    |
+| 0FH | 写扇区缓冲区          | ES:BX＝缓冲区的地址                       | CF＝0——操作成功                              |
+| 10H | 读取驱动器状态        | DL＝80H~0FFH：硬盘                        | CF＝0——操作成功，AH＝00H                     |
+| 11H | 校准驱动器            | DL＝80H~0FFH：硬盘                        | CF＝0——操作成功，AH＝00H，                   |
+| 12H | 控制器RAM诊断         |                                           | CF＝0——操作成功，....                        |
+| 13H | 控制器驱动诊断        |                                           | CF＝0——操作成功，否则，...                   |
+| 14H | 控制器内部诊断        |                                           | CF＝0——操作成功，否则                        |
+| 15H | 读取磁盘类型          | DL＝驱动器，00H~7FH：软盘；               | CF＝1——操作失败，AH＝状态代码                |
+|     |                       | 80H~0FFH：硬盘                            | AH＝00H — 未安装驱动器                       |
+|     |                       |                                           | ＝01H — 无改变线支持的软盘驱动器             |
+|     |                       |                                           | ＝02H — 带有改变线支持的软盘驱动器           |
+|     |                       |                                           | ＝03H — 硬盘，CX:DX＝512字节的扇区数         |
+| 16H | 读取磁盘变化状态      | DL＝00H~7FH：软盘                         | CF＝0——磁盘未改变，AH＝00H                   |
+|     |                       |                                           | 否则，AH＝06H，参见功能号01H中的说明         |
+| 17H | 设置磁盘类型          | DL＝00H~7FH：软盘 AL＝00H — 未用          | CF＝0——操作成功，AH＝00H，                   |
+|     |                       | ＝01H — 360K在360K驱动器中                | 否则，AH＝状态编码，参见功能号01H中的说明    |
+|     |                       | ＝02H — 360K在1.2M驱动器中                |                                              |
+|     |                       | ＝03H — 1.2M在1.2M驱动器中                |                                              |
+|     |                       | ＝04H — 720K在720K驱动器中                |                                              |
+| 18H | 设置格式化媒体类型    | CH＝柱面数                                | CF＝0——操作成功，AH＝00H，                   |
+|     |                       | CL＝每磁道的扇区数                        | ES:DI＝介质类型参数表地址，                  |
+|     |                       | DL＝00H~7FH：软盘                         | 否则，AH＝状态编码，参见功能号01H中的说明    |
+| 19H | 磁头保护，仅在PS/2    |                                           |                                              |
+| 1AH | 格式化ESDI驱动器      | 仅在PS/2中有效，在此从略                  |                                              |
+
+**  int 16 键盘中断
+| AH  | 功能                                | 调用参数                           | 返回值                           |
+| 00H | 读取键盘输入                        |                                    | AL 字符的ASCII                   |
+|     | 按键按下才返回                      |                                    | AH 扫描码                        |
+| 01H | 确认键盘键入字符                    |                                    | AL 字符的ASCII                   |
+|     |                                     |                                    | AH Scan code                     |
+|     |                                     |                                    | ZF=1 未键入字符,无返回           |
+|     |                                     |                                    | ZF=0 NZ,返回上面的               |
+| 02H | Return shift-flag status            |                                    | AL Current shift status          |
+|     |                                     |                                    | 7 6 5 4 3 2 1 0                  |
+|     |                                     |                                    | Ins,Capa,Num,Scrol,Alt,C,左S,右S |
+| 03H | Set typematic rate and delay        | AL 05 (subfunction number)         |                                  |
+|     |                                     | BL 00H through 1FH, typematic rate |                                  |
+|     |                                     | (30 charßsec to 2 char/sec)        |                                  |
+|     |                                     | BH Delay rate:                     |                                  |
+|     |                                     | 00h = 250 ms                       |                                  |
+|     |                                     | 01h = 500 ms                       |                                  |
+|     |                                     | 02h = 750 ms                       |                                  |
+|     |                                     | 03h = 1000 ms                      |                                  |
+|     |                                     | 04h to 07h = Reserved              |                                  |
+| 05h | Add key to Keyboard buffer          | CL ASCII code                      | If Carry = 1:                    |
+|     |                                     | CH Scan code                       | AL Keyboard buffer full          |
+| 10h | Read extended character from buffer |                                    | AL ASCII keystroke pressed       |
+|     |                                     |                                    | AH Scan code of key              |
+| 11h | Return extended buffer status       |                                    | AL ASCII keystroke pressed       |
+|     |                                     |                                    | AH Scan code of key              |
+|     |                                     |                                    | ZF No keystroke available        |
+|     |                                     |                                    | NZ Keystroke in buffer           |
+| 12h | Return extended shift status        |                                    | AL Shift status:                 |
+|     |                                     |                                    | Bit 7 1 = Sys Req pressed        |
+|     |                                     |                                    | Bit 6 1 = Caps Lock active       |
+|     |                                     |                                    | Bit 5 1 = Num Lock active        |
+|     |                                     |                                    | Bit 4 1 = Scroll Lock active     |
+|     |                                     |                                    | Bit 3 1 = Right Alt active       |
+|     |                                     |                                    | Bit 2 1 = Right Ctrl active      |
+|     |                                     |                                    | Bit 1 1 = Left Alt active        |
+|     |                                     |                                    | Bit 0 1 = Left Ctrl active       |
+|     |                                     |                                    | AH Extended shift status:        |
+|     |                                     |                                    | Bit 7 1 = Insert active          |
+|     |                                     |                                    | Bit 6 1 = Caps Lock active       |
+|     |                                     |                                    | Bit 5 1 = Num Lock active        |
+|     |                                     |                                    | Bit 4 1 = Scroll Lock active     |
+|     |                                     |                                    | Bit 3 1 = Alt pressed            |
+|     |                                     |                                    | Bit 2 1 = Ctrl pressed           |
+|     |                                     |                                    | Bit 1 1 = Left Shift pressed     |
+|     |                                     |                                    | Bit 0 1 = Right Shift pressed    |
+
+** example
+INT 0x10功能0x13
+描述：
+        以电传打字机的方式显示字符串
+接受参数：
+        AH                      0x13
+        AL                      显示模式
+        BH                      视频页
+        BL                      属性值（如果AL=0x00或0x01）
+        CX                      字符串的长度
+        DH,DL           屏幕上显示起始位置的行、列值
+        ES:BP           字符串的段:偏移地址
+返回值：
+        无
+显示模式（AL）：
+        0x00:字符串只包含字符码，显示之后不更新光标位置，属性值在BL中
+        0x01:字符串只包含字符码，显示之后更新光标位置，属性值在BL中
+        0x02:字符串包含字符码及属性值，显示之后不更新光标位置
+        0x03:字符串包含字符码及属性值，显示之后更新光标位置
+
+# A bootsect, which print a string by BIOS interrupt video services(int 0x10)
+
+#+BEGIN_SRC asm -n -r
+.section .text
+.global _start
+.code16
+
+_start:
+        movw    %cx,    %ax
+        movw    %ax,    %ds
+        movw    %ax,    %es
+
+        movw    $msgstr,%bp
+        movw    len,    %cx
+        movb    $0x05,  %dh
+        movb    $0x08,  %dl
+        movb    $0x01,  %al
+        movb    $0x13,  %ah
+        movb    $0x01,  %bl
+        movb    $0x00,  %bh
+
+        int             $0x10
+1:
+        jmp             1b
+
+msgstr:
+        .asciz  "Hello babyos(print by BIOS int 0x10:0x13, mode 0x01)!"
+len:
+        .int    . - msgstr
+
+        .org    0x1fe,  0x90
+        .word   0xaa55
+#+END_SRC
+makefile:
+
+#+BEGIN_SRC makefile -n -r
+all: boot.img
+
+boot.o: boot.s
+        as -o $@ $<
+
+boot: boot.o
+        ld --oformat binary -N -Ttext 0x7c00 -o $@ $<
+
+boot.img: boot
+        dd if=boot of=boot.img bs=512 count=1
+
+clean:
+        rm ./boot ./boot.img ./boot.o
+#+END_SRC
+2.通过功能号0x09探究色彩控制
+
+上面的显示为什么是红色呢？我们可以通过实验来看一下颜色控制
+。
+
+------------------------------------------------------------------------
+                        INT 0x10功能0x09
+-------------------------------------------------------------------
+描述：
+        显示字符并设置其属性
+接受参数：
+        AH                      0x09
+        AL                      字符的ASCII码
+        BH                      视频页
+        BL                      属性值
+        CX                      重复次数
+返回值：
+        无
+注意：
+        在显示字符之后并不前进光标。在文本和图形模式下均可调用该功能
+        显示完字符后，如果还要继续显示字符，必须调用INT 0x10功能0x02前进光标
+-------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+                        INT 0x10功能0x02
+-------------------------------------------------------------------
+描述：
+        把光标定位在选定视频页的特定行列位置
+接受参数：
+        AH                      0x02
+        DH，DL          行、列值
+        BH                      视频页
+返回值：
+        无
+注意：
+        在80x25模式下，DH范围0～24，DL范围0～79
+-------------------------------------------------------------------------
+
+示例：
+
+实现一个从第4行～7行，第8列～71列，显示‘A’～‘Z’的程序，共显
+示256个字符，使用BL（0～255）
+
+: C 伪代码：
+
+#+BEGIN_SRC C  -n -r
+cx = 0x04;
+bh = 0x00;
+
+dh = 0x04;
+dl = 0x08;
+al = 'A';
+
+for (bl = 0; bl < 256; bl++)
+{
+        print_char();
+        
+        al++;
+        if (al == 'Z')
+                al = 'A';
+        
+        dl++;
+        if (dl == 72)
+        {
+                dh++;
+                dl = 4;
+        }
+        
+        set_cursor();
+}
+
+#+END_SRC
+汇编代码：
+
+#+BEGIN_SRC  asm -n -r
+# A bootsect, which print a colorful chars by BIOS INT 0x10, 0x09
+
+.section .text
+.global _start
+.code16
+
+_start:
+        movw    %cx,    %ax
+        movw    %ax,    %ds
+        movw    %ax,    %es
+
+        movw    $0x01,  %cx             # 字符显示重复次数
+        movb    $0x00,  %bh             # 视频页
+        
+        movb    $0x04,  %dh             # 显示起始行
+        movb    $0x08,  %dl             # 显示起始列
+        
+        movb    $'A',   %al             # 显示字符
+        movb    $0x00,  %bl             # 属性值
+
+1:
+        call    print_char
+        incb    %al
+        cmpb    $'Z',   %al
+        jne             2f
+        movb    $'A',   %al
+2:      
+        incb    %dl
+        cmpb    $72,    %dl
+        jne             3f
+        movb    $8,             %dl
+        incb    %dh
+3:
+        call    set_cursor
+        incb    %bl
+        cmp             $256,   %bl
+        jne             1b
+        jmp             1f
+
+print_char:
+        movb    $0x09,  %ah
+        int             $0x10
+        ret
+
+set_cursor:
+        movb    $0x02,  %ah
+        int             $0x10
+        ret
+
+1:
+        jmp             1b
+
+        .org    0x1fe,  0x90
+        .word   0xaa55
+#+END_SRC
+
+结果：
+[1356282645]
+
+可以显式地验证色彩控制BL：
+
+| 7    | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
+| I    | R | G | B | I | R | G | B |
+| 闪烁 | R | G | B | I | R | G | B |
+如上图所示，7～4位为背景色，I表示高亮，RGB表示红绿蓝，若显
+卡支持闪烁，则位7表示是否闪烁。
+色彩混合：
+----------------------------------------------
+| 混合的三种基色 | 不开启亮度位 | 开启亮度位 |
+| 红+绿+蓝       | 浅灰         | 白色       |
+| 绿+蓝          | 青色         | 浅青       |
+| 红+蓝          | 洋红         | 浅洋红     |
+| 红+绿          | 棕色         | 黄色       |
+| 无色彩         | 黑色         | 暗灰       |
+----------------------------------------------
+
+3.清屏
+
+可以发现屏幕上有许多Bochs的打印信息，看着不爽，想办法去掉它
+们。
+
+利用0x06号功能，上卷全部行，则可清屏。
+
+-----------------------------------------------------------
+INT 0x10 功能0x06
+------------------------------------------------------
+描述：
+上卷窗口
+参数：
+AH 6
+AL 上卷的行数（0表示全部）
+BH 空白区域的视频属性
+CH，CL 窗口左上角的行列位置
+DH，DL 窗口右下角的行列位置
+返回值：
+无
+------------------------------------------------------------
+示例：
+
+#+BEGIN_SRC asm -n
+
+# A bootsect, which print a colorful chars by BIOS INT 0x10, 0x09
+
+.section .text
+.global _start
+.code16
+
+_start:
+        movw    %cx,    %ax
+        movw    %ax,    %ds
+        movw    %ax,    %es
+
+        call    clear_screen    # 清屏
+
+        movw    $0x01,  %cx             # 字符显示重复次数
+        movb    $0x00,  %bh             # 视频页
+        
+        movb    $0x04,  %dh             # 显示起始行
+        movb    $0x08,  %dl             # 显示起始列
+        
+        movb    $'A',   %al             # 显示字符
+        movb    $0x00,  %bl             # 属性值
+
+1:
+        call    print_char              # 打印字符
+        incb    %al                             # 下一个字符
+        cmpb    $'Z',   %al             # 是否该重新从‘A’开始
+        jne             2f
+        movb    $'A',   %al
+2:      
+        incb    %dl                             # 下一个位置
+        cmpb    $72,    %dl             # 是否到下一行
+        jne             3f
+        movb    $8,             %dl
+        incb    %dh
+3:
+        call    set_cursor              # 设置光标位置
+        incb    %bl                             # 下一种属性
+        cmp             $0,             %bl             # 是否256种属性用完
+        jne             1b
+        jmp             1f                              # 结束
+
+clear_screen:                           # 清屏函数
+        movb    $0x06,  %ah             # 功能号0x06
+        movb    $0,             %al             # 上卷全部行，即清屏
+        movb    $0,             %ch             # 左上角行
+        movb    $0,             %ch             # 左上角列      
+        movb    $24,    %dh             # 右下角行
+        movb    $79,    %dl             # 右下角列
+        movb    $0x07,  %bh             # 空白区域属性
+        int             $0x10
+        ret
+
+print_char:
+        movb    $0x09,  %ah             # 功能号0x09
+        int             $0x10
+        ret
+
+set_cursor:
+        movb    $0x02,  %ah             # 功能号0x02
+        int             $0x10
+        ret
+
+1:
+        jmp             1b
+
+        .org    0x1fe,  0x90
+        .word   0xaa55
+
+#+END_SRC
+结果：
+
+[1356283975]
+
+4.直接写显存绘制字符串：
+
+示例：
+
+#+BEGIN_SRC asm -n -r
+#---------------------------------------------------------------
+# 直接写显存显示一些文字函数：
+#       显示计算机当前工作的显示模式    
+draw_some_text:
+        # 设置ES，DS的值
+        movw    $VIDEO_SEG_TEXT,%ax
+        movw    %ax,                    %es
+        xorw    %ax,                    %ax
+        movw    %ax,                    %ds
+
+        # 计算字符显示位置的显存地址(目标地址)
+        movw    $((80*TEXT_ROW+TEXT_COL) * 2),  %di
+        
+        # 源字符串地址
+        leaw    msgstr,                 %si
+        
+        movb    $TEXT_COLOR,    %al             # 属性值（颜色）
+        movw    len,                    %cx             # 显示的字符个数
+
+draw_a_char:                    
+        movsb
+        stosb
+        loop    draw_a_char
+
+        ret
+#+END_SRC
