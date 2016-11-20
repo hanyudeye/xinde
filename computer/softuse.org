@@ -289,11 +289,13 @@
 -H:
 -include:
 ***** 2. 编译为汇编代码   gcc -S test.i -o test.s
-汇编代码	masm=intel 
+masm=intel	汇编代码 
+-std 指定使用的语言标准
 ***** 3. gas  gcc -c test.s -o test.o
 :-Wa,option
 :-llibrary 连接名为library的库文件
 :-L 指定额外路径
+:-m32
 ***** 4. ld  gcc test.o -o test
 :-lobjc 这个-l选项的特殊形式用于连接Objective C程序.
 :-nostartfiles 不连接系统标准启动文件,而标准库文件仍然正常使用.
@@ -398,6 +400,129 @@ i386选项
 **** pstack 显示每个进程的栈跟踪
 **** indent 格式化C语言的源文件
 **** gdb 功能强大的程序调试器
+***** options
+-d 指定远程调试时串行接口的线路速度
+-batch 以批处理模式运行
+-c 指定要分析的核心转储文件
+-cd 指定工作目录
+-d 指定搜索源文件的目录
+-e 指定要执行的文件
+-f 调试时以标准格式输出文件名和行号
+-q 安静模式
+-s 指定符号的文件名
+-se 指定符号和要执行的文件名
+-tty 设置标准输出和输入设备
+-x 从指定的文件执行 gdb 命令
+
+***** commands
+由于 gnu 调试时忽略开始处断点, 需要在开始标签处执行一个空指令
+此时断点可以设置成 break *_start+1
+查看寄存器状态 info registers
+使用 print 命令查看特定寄存器或者变量的值, 加上修饰符可以得到不同的输出格式:
+print/d 显示十进制数字
+print/t 显示二进制数字
+print/x 显示 16 进制数字
+使用 x 命令可以查看特定内存的值:
+x/nyz
+其中 n 为要显示的字段数
+y 时输出格式, 它可以是:
+c 用于字符, d 用于十进制, x 用于 16 进制
+z 是要显示的字段长度, 它可以是:
+b 用于字节, h 用于 16 字节, w 用于 32 位字
+如:
+x/42cb 用于显示前 42 字节
+***** 声明指令:
+.ascii 文本字符串
+.asciz 以空字符结尾的字符串
+.byte 字节值
+.double 双精度浮点值
+.float 单精度浮点值
+.int 32 位整数
+.long 32 位整数, 和 int 相同
+.octa 16 字节整数
+.quad 8 字节整数
+.short 16 位整数
+.single 单精度浮点数(和 float 相同)
+定义静态符号:
+使用.equ 命令把常量值定义为可以在文本段中使用的符号,如:
+.section .data
+.equ LINUX_SYS_CALL, 0x80
+.section .text
+movl $LINUX_SYS_CALL, %eax
+***** bss 段
+和 data 段不同, 无需声明特定的数据类型, 只需声明为所需目的保留的原始内存部分即可。
+GNU 汇编器使用以下两个命令声明内存区域:
+.comm 声明为未初始化的通用内存区域
+.lcomm 声明为未初始化的本地内存区域
+
+.section .bss
+.lcomm buffer, 1000
+该语句把 1000 字节的内存地址赋予标签 buffer, 在声明本地通用内存区域的程序之外的函数是不能访问他们的.(不能在.globl 命令中使用他
+们)
+***** 循环:
+loop 循环直到 ECX 寄存器为 0
+loope/loopz 循环直到 ecx 寄存器为 0 或者没有设置 ZF 标志
+loopne/loopnz 循环直到 ecx 为 0 或者设置了 ZF 标
+***** rep 前缀
+REP 指令的特殊之处在与它不执行什么操作, 这条指令用于按照特定次数重复执行字符串指令, 有 ECX 寄存器控制,但不需要额外的 loop 指
+令, 如 rep movsl
+rep 的其他格式:
+repe 等于时重复
+repne 不等于时重复
+repnz 不为零时重复
+repz 为零时重复
+
+***** 函数
+GNU 汇编语言定义函数的语法:
+.type 标签(也就是函数名), @function
+ret 返回到调用处
+***** gnu 内联汇编的语法:
+asm 或__asm__("汇编代码");
+指令必须包含在引号里
+如果包含的指令超过一行 必须使用新行分隔符分隔
+使用 c 全局变量, 不能在内联汇编中使用局部变量, 注意在汇编语言代码中值被用做内存位置, 而不是立即数值
+如果不希望优化内联汇编, 则可以 volatile 修饰符如:__asm__ volatile("code");
+2,GCC 内联汇编的扩展语法
+__asm__("assembly code":output locations:input operands:changed registers);
+第一部分是汇编代码
+第二部分是输出位置, 包含内联汇编代码的输出值的寄存器和内存位置列表
+第三部分是输入操作数,包含内联汇编代码输入值的寄存器和内存位置的列表
+第四部分是改动的寄存器, 内联汇编改变的任何其他寄存器的列表
+这几个部分可以不全有, 但是没有的还必须使用:分隔
+1, 指定输入值和输出值, 输入值和输出值的列表格式为:
+"constraint"(variable), 其中 variable 是程序中声明的 c 变量, 在扩展 asm 格式中, 局部和全局变量都可以使用,使用定义把变量存放到哪(输入)或从哪里传送变量(输出)
+约束使用单一的字符, 如下:
+约束 描述
+a 使用%eax, %ax, %al 寄存器
+b 使用%ebx, %bx, %bl 寄存器
+c 使用%ecx, %cx, %cl 寄存器
+d 使用%edx, %dx, %dl 寄存器
+S 使用%esi, %si 寄存器
+D 使用%edi, %di 寄存器
+r 使用任何可用的通用寄存器
+q 使用%eax, %ebx, %ecx,%edx 之一
+A 对于 64 位值使用%eax, %edx 寄存器
+f 使用浮点寄存器
+t 使用第一个(顶部)的浮点寄存器
+u 使用第二个浮点寄存器
+m 使用变量的内存位置
+o 使用偏移内存位置
+V 只使用直接内存位置
+i 使用立即整数值
+n 使用值已知的立即整数值
+g 使用任何可用的寄存器和内存位置
+constrant(约束)
+除了这些约束之外, 输出值还包含一个约束修饰符:
+输出修饰符 描述
++ 可以读取和写入操作数
+= 只能写入操作数
+% 如果有必要操作数可以和下一个操作数切换
+& 在内联函数完成之前, 可以删除和重新使用操作数
+如:
+__asm__("assembly code": "=a"(result):"d"(data1),"c"(data2));
+把 c 变量 data1 存放在 edx 寄存器中, 把 c 变量 data2 存放到 ecx 寄存器中, 内联汇编的结果将存放在 eax 寄存器中, 然后传送给变量
+result
+***** 系统调用  include/asm-i386/unistd.h
 **** expr 一款表达式计算工具
 **** test shell环境中测试条件表达式工具
 **** php PHP语言的命令行接口
@@ -1165,6 +1290,10 @@ ssh-keygen -C 'you email address@gmail.com' -t rsa
 *** 创建一个版本库
 git init
 git clone <repo> <directory>
+git remote add origin ssh://software@172.16.0.30/~/yafeng/.git
+git remote add origin git@github.com:hanyudeye/os.git
+git push origin master
+git push -u origin master
 *** 将修改存入暂存区
 git add <modified files>/git add .
 *** 暂存区删除文件
@@ -1225,6 +1354,15 @@ git show 可以看某次的变更
 *** 查看远程分支
 git branch -r # 查看远程branch
 git checkout -b bug_fix_local bug_fix_remote #把本地端切换为远程的bug_fix_remote branch并命名为bug_fix_local
+** .gitignore
+*** 配置语法：
+　　以斜杠“/”开头表示目录；
+　　以星号“*”通配多个字符；
+　　以问号“?”通配单个字符
+　　以方括号“[]”包含单个字符的匹配列表；
+　　以叹号“!”表示不忽略(跟踪)匹配到的文件或目录；
+规则：/fd1/*
+　　　　  说明：忽略根目录下的 /fd1/ 目录的全部内容；
 * emacs 
 ** 键盘宏
    + C-x ( 开始录制宏
@@ -1445,6 +1583,793 @@ emacs-w3m
 * fsck.vat
 
 * Org Mode	
+*** 大纲编辑(outline)
+**** 定义标题 
+***** 快捷键
+  | 大纲快捷键     | 说明                                    |
+  |----------------+-----------------------------------------|
+  | S-TAB          | 循环切换整个文档的大纲状态              |
+  |----------------+-----------------------------------------|
+  | TAB            | 循环切换光标所在大纲的状态              |
+  | C-C C-N/P      | 下/上一标题                             |
+  | C-C C-F/B      | 下/上一标题(同级)                       |
+  | C-C C-U        | 跳到上一级标题                          |
+  | C-C C-J        | 切换到大纲浏览状态                      |
+  | M-RET          | 插入一个同级标题                        |
+  | M-S-RET        | 插入一个同级TODO 标题                   |
+  |----------------+-----------------------------------------|
+p | M-LEFT/RIGHT   | 将当前标题升/降级                       |
+  | M-S-LEFT/RIGHT | 将子树升/降级                           |
+  | M-S-UP/DOWN    | 将子树上/下移                           |
+  | C-C *          | 将本行设为标题/正文                     |
+  | C-C C-W        | 将子树或区域移动到另一标题处（跨缓冲区) |
+  | C-X N S/W      | 只显示当前子树/返回                     |
+  |----------------+-----------------------------------------|
+  | C-C C-X B      | 在新缓冲区显示当前分支（类似C-X N S)    |
+  | C-C /          | 只列出包含搜索结果的大纲，并高亮，支    |
+  |                | 持多种搜索方式                          |
+  | C-C C-C        | 取消高亮                                |
+  |----------------+-----------------------------------------|
+  | 显示快捷键     | 说明                                    |
+  |----------------+-----------------------------------------|
+  | C-C L          | 保存链接                                |
+  | C-C            | 创建或修改链接，可以引用已              |
+  | C-L            | 保存的链接                              |
+  | C-C/C-O        | 打开链接                                |
+  | C-C %          | 记录内部链接地址                        |
+  | C-C &          | 跳转到已记录的内部链接                  |
+  |----------------+-----------------------------------------|
+  更多的快捷键可以通过C-C C-X C-H查看。
+
+***** 大纲的显示方式
+M-x org-indent-mode
+如果想让某个文件默认用这种方式打开，可以在文件头部增加：
+    #+STARTUP: indent
+    
+如果希望打开所有org文件都默认用这种方式，可以在.emacs中配置
+：
+    (setq org-startup-indented t)
+***** 超链接和图文混排
+****** 创建链接
+对于符合链接规则的内容，org-mode会自动将其视为链接，包括括
+文件、网页、邮箱、新闻组、BBDB 数据库项、IRC 会话和记录等。
+下面是一些例子：
+
+    http://www.astro.uva.nl/~dominik            on the web
+    file:/home/dominik/images/jupiter.jpg       file, absolute path
+    /home/dominik/images/jupiter.jpg            same as above
+    file:papers/last.pdf                        file, relative path
+    file:projects.org                           another Org file
+    docview:papers/last.pdf::NNN                open file in doc-view mode at page NNN
+    id:B7423F4D-2E8A-471B-8810-C40F074717E9     Link to heading by ID
+    news:comp.emacs                             Usenet link
+    mailto:adent@galaxy.net                     Mail link
+    vm:folder                                   VM folder link
+    vm:folder#id                                VM message link
+    wl:folder#id                                WANDERLUST message link
+    mhe:folder#id                               MH-E message link
+    rmail:folder#id                             RMAIL message link
+    gnus:group#id                               Gnus article link
+    bbdb:R.*Stallman                            BBDB link (with regexp)
+    irc:/irc.com/#emacs/bob                     IRC link
+    info:org:External%20links                   Info node link (with encoded space)
+    
+对于文件链接，可以用::后面增加定位符的方式链接到文件的特定
+位置。定位符可以是行号或搜索选项。如：
+
+    file:~/code/main.c::255                     进入到 255 行
+    file:~/xx.org::My Target                    找到目标‘<<My Target>>’
+    file:~/xx.org/::#my-custom-id               查找自定义 id 的项
+    
+除了上述的自动链接外，还可以显示指定链接，采用如下格式：
+
+    [[link][description]]
+    [[link]]
+    
+显示指定的链接可以不显示原始的URL而是显示对该链接的描述。这
+种方式可以用相对路径链接本地文件。
+
+对于显示指定的链接，即可以手工输入，也可以用org-mode提供的
+快捷键进行编辑：
+
++---------------------------------------------------------+
+| 快捷  |       命令        |            说明             |
+|  键   |                   |                             |
+|-------+-------------------+-----------------------------|
+| C-c l |                   | 保存链接                    |
+|-------+-------------------+-----------------------------|
+| C-c   | org-insert-link   | 创建或修改链接，可以引用已  |
+| C-l   |                   | 保存的链接                  |
+|-------+-------------------+-----------------------------|
+| C-c   | org-open-at-point | 打开链接                    |
+| C-o   |                   |                             |
++---------------------------------------------------------+
+                                      
++------------------------------------+
+| C-c % |   | 记录内部链接地址       |
+|-------+---+------------------------|
+| C-c & |   | 跳转到已记录的内部链接 |
++------------------------------------+
+
+2.2 内部链接
+
+前面的例子都是外部链接，Org-mode还支持内部链接：
+
+    定义锚点 #<<my-anchor>>
+    [[my-anchor][内部链接]]
+    
+脚注可以看作是一种特殊的内部链接，但是要求具有"fn:"前缀：
+
+    添加脚注链接 [[fn:footprint1][脚注1]]
+    定义脚注 [fn:footprint1]
+    
+2.3 显示图片
+
+尽管不看重"所见即所得"，但有时候能够看到图文混排的内容还是
+很有必要的。通过iimage这个minor mode，可以在Org-mode中显示
+图片。
+
+下载 iimage.el 文件扔到 Emacs 的目录里，然后在 .emacs 里添
+加下面的代码：
+
+    ;; iimage mode
+    (autoload 'iimage-mode "iimage" "Support Inline image minor mode." t)
+    (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
+    
+然后就可以用命令
+
+M-x iimage-mode RET
+
+在当前模式里启动 iimage 这个 minor mode。
+
+iimage-mode目前只能显示以文件方式链接的图片。
+
+混排超链接也是组织内容的一种非常有效的方式。Org 支持多种超
+链接。对于符合要求的图片链接，可以形成图文混排。
+
+2.4 创建链接
+
+对于符合链接规则的内容，org-mode会自动将其视为链接，包括括
+文件、网页、邮箱、新闻组、BBDB 数据库项、IRC 会话和记录等。
+下面是一些例子：
+
+    http://www.astro.uva.nl/~dominik            on the web
+    file:/home/dominik/images/jupiter.jpg       file, absolute path
+    /home/dominik/images/jupiter.jpg            same as above
+    file:papers/last.pdf                        file, relative path
+    file:projects.org                           another Org file
+    docview:papers/last.pdf::NNN                open file in doc-view mode at page NNN
+    id:B7423F4D-2E8A-471B-8810-C40F074717E9     Link to heading by ID
+    news:comp.emacs                             Usenet link
+    mailto:adent@galaxy.net                     Mail link
+    vm:folder                                   VM folder link
+    vm:folder#id                                VM message link
+    wl:folder#id                                WANDERLUST message link
+    mhe:folder#id                               MH-E message link
+    rmail:folder#id                             RMAIL message link
+    gnus:group#id                               Gnus article link
+    bbdb:R.*Stallman                            BBDB link (with regexp)
+    irc:/irc.com/#emacs/bob                     IRC link
+    info:org:External%20links                   Info node link (with encoded space)
+    
+对于文件链接，可以用::后面增加定位符的方式链接到文件的特定
+位置。定位符可以是行号或搜索选项。如：
+
+    file:~/code/main.c::255                     进入到 255 行
+    file:~/xx.org::My Target                    找到目标‘<<My Target>>’
+    file:~/xx.org/::#my-custom-id               查找自定义 id 的项
+    
+除了上述的自动链接外，还可以显示指定链接，采用如下格式：
+
+    [[link][description]]
+    [[link]]
+    
+显示指定的链接可以不显示原始的URL而是显示对该链接的描述。这
+种方式可以用相对路径链接本地文件。
+
+对于显示指定的链接，即可以手工输入，也可以用org-mode提供的
+快捷键进行编辑：
+
++---------------------------------------------------------+
+| 快捷  |       命令        |            说明             |
+|  键   |                   |                             |
+|-------+-------------------+-----------------------------|
+| C-c l |                   | 保存链接                    |
+|-------+-------------------+-----------------------------|
+| C-c   | org-insert-link   | 创建或修改链接，可以引用已  |
+| C-l   |                   | 保存的链接                  |
+|-------+-------------------+-----------------------------|
+| C-c   | org-open-at-point | 打开链接                    |
+| C-o   |                   |                             |
++---------------------------------------------------------+
+                                      
++------------------------------------+
+| C-c % |   | 记录内部链接地址       |
+|-------+---+------------------------|
+| C-c & |   | 跳转到已记录的内部链接 |
++------------------------------------+
+
+2.5 内部链接
+
+前面的例子都是外部链接，Org-mode还支持内部链接：
+
+    定义锚点 #<<my-anchor>>
+    [[my-anchor][内部链接]]
+    
+脚注可以看作是一种特殊的内部链接，但是要求具有"fn:"前缀：
+
+    添加脚注链接 [[fn:footprint1][脚注1]]
+    定义脚注 [fn:footprint1]
+    
+2.6 显示图片
+
+尽管不看重"所见即所得"，但有时候能够看到图文混排的内容还是
+很有必要的。通过iimage这个minor mode，可以在Org-mode中显示
+图片。
+
+下载 iimage.el 文件扔到 Emacs 的目录里，然后在 .emacs 里添
+加下面的代码：
+
+    ;; iimage mode
+    (autoload 'iimage-mode "iimage" "Support Inline image minor mode." t)
+    (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
+    
+然后就可以用命令
+
+M-x iimage-mode RET
+
+在当前模式里启动 iimage 这个 minor mode。
+
+iimage-mode目前只能显示以文件方式链接的图片。
+
+3 轻量级标记语言
+
+前面的大纲和超链接都是使用标记来定义的。实际上，Org现在已经
+成为一种专门的轻量级标记语言，与Markdown、reStructedText、
+Textile、RDoc、MediaWiki等并列。
+
+相对于重量级标记语言（如html, xml)，轻量级标记语言的语法简
+单，书写容易。即使不经过渲染，也可以很容易阅读。用途越来越
+广泛。比如，gitHub的README文档除了支持纯文本外，还支持丰富
+的轻量级标记语言，其中就包括Org。
+
+关于这些语言的对比，可以参考这里。下面来看一下Org还支持哪些
+标记。
+
+3.1 字体
+
+    *粗体*
+    /斜体/
+    +删除线+
+    _下划线_
+    下标： H_2 O
+    上标： E=mc^2
+    等宽字：  =git=  或者 ～git～
+    
+3.2 表格
+
+Org 能够很容易地处理 ASCII 文本表格。任何以‘|’为首个非空字
+符的行都会被认为是表格的一部分。’|‘也是列分隔符。一个表格是
+下面的样子：
+
+    | Name  | Pone | Age |
+    |-------+------+-----|
+    | Peter | 1234 | 17  |
+    | Anna  | 4321 | 25  |
+    
+你可能认为要录入这样的表格很繁琐，实际上你只需要输入表头“|
+Name|Pone|Age”之后，按C-c RET,就可以生成整个表格的结构。类
+似的快捷键还有很多：
+
+3.2.1 创建和转换表格
+
++------------------------------------+
+|  快捷键  | 命令 |       说明       |
+|----------+------+------------------|
+| C-c 竖线 |      | 创建或转换成表格 |
++------------------------------------+
+
+3.2.2 调整和区域移动
+
++-------------------------------------------------+
+| 快捷键  | 命令 |              说明              |
+|---------+------+--------------------------------|
+| C-c C-c |      | 调整表格，不移动光标           |
+|---------+------+--------------------------------|
+| TAB     |      | 移动到下一区域，必要时新建一行 |
+|---------+------+--------------------------------|
+| S-TAB   |      | 移动到上一区域                 |
+|---------+------+--------------------------------|
+| RET     |      | 移动到下一行，必要时新建一行   |
++-------------------------------------------------+
+
+3.2.3 编辑行和列
+
++---------------------------------------------------------+
+|     快捷键     | 命令 |              说明               |
+|----------------+------+---------------------------------|
+| M-LEFT/RIGHT   |      | 移动列                          |
+|----------------+------+---------------------------------|
+| M-UP/DOWN      |      | 移动行                          |
+|----------------+------+---------------------------------|
+| M-S-LEFT/RIGHT |      | 删除/插入列                     |
+|----------------+------+---------------------------------|
+| M-S-UP/DOWN    |      | 删除/插入行                     |
+|----------------+------+---------------------------------|
+| C-c -          |      | 添加水平分割线                  |
+|----------------+------+---------------------------------|
+| C-c RET        |      | 添加水平分割线并跳到下一行      |
+|----------------+------+---------------------------------|
+| C-c ^          |      | 根据当前列排序，可以选择排序方  |
+|                |      | 式                              |
++---------------------------------------------------------+
+
+3.3 段落
+
+对于单个回车换行的文本，认为其属于同一个段落。在导出的时候
+将会转化为不换行的同一段。如果要新起一个段落，需要留出一个
+空行。这点与MediaWiki类似。
+
+3.4 列表
+
+Org 能够识别有序列表、无序列表和描述列表。
+
+  * 无序列表项以‘-’、‘+’或者‘*‘开头。
+  * 有序列表项以‘1.’或者‘1)’开头。
+  * 描述列表用‘::’将项和描述分开。
+  * 有序列表和无序列表都以缩进表示层级。只要对齐缩进，不管
+    是换行还是分块都认为是处于当前列表项。
+
+同一列表中的项的第一行必须缩进相同程度。当下一行的缩进与列
+表项的的开头的符号或者数字相同或者更小时，这一项就结束了。
+当所有的项都关上时，或者后面有两个空行时，列表就结束了。例
+如：
+
+      My favorite scenes are (in this order)
+      1. The attack of the Rohirrim
+      2. Eowyn's fight with the witch king
+          + this was already my favorite scene in the book
+          + I really like Miranda Otto.
+      Important actors in this film are:
+      - Elijah Wood :: He plays Frodo
+      - Sean Austin :: He plays Sam, Frodo's friend.
+    
+将显示为：
+
+    My favorite scenes are (in this order)
+   
+     1. The attack of the Rohirrim
+     2. Eowyn's fight with the witch king
+          o this was already my favorite scene in the book
+          o I really like Miranda Otto.
+   
+    Important actors in this film are:
+   
+    Elijah Wood
+        He plays Frodo
+    Sean Austin
+        He plays Sam, Frodo's friend.
+   
+3.4.1 列表操作快捷键
+
+为了便利，org-mode也支持很多列表操作的快捷键，大部分都与大
+纲的快捷键类似：
+
++---------------------------------------------------+
+|     快捷键     | 命令 |           说明            |
+|----------------+------+---------------------------|
+| TAB            |      | 折叠列表项                |
+|----------------+------+---------------------------|
+| M-RET          |      | 插入项                    |
+|----------------+------+---------------------------|
+| M-S-RET        |      | 插入带复选框的项          |
+|----------------+------+---------------------------|
+| M-S-UP/DOWN    |      | 移动列表项                |
+|----------------+------+---------------------------|
+| M-LEFT/RIGHT   |      | 升/降级列表项，不包括子项 |
+|----------------+------+---------------------------|
+| M-S-LEFT/RIGTH |      | 升/降级列表项，包括子项   |
+|----------------+------+---------------------------|
+| C-c C-c        |      | 改变复选框状态            |
+|----------------+------+---------------------------|
+| C-c -          |      | 更换列表标记（循环切换）  |
++---------------------------------------------------+
+
+3.5 分隔线
+
+五条短线或以上显示为分隔线。
+
+-----
+
+4 标签
+
+4.1 tag的作用
+
+对于信息的管理，有分类(category)和标签(tag)两种方式。这两种
+方式各有特点：
+
+通常分类是固定的，很少变化，而tag随时可以增加。分类通常表现
+为树状结构，比较清晰，但是树状结构过于简单，不能表达复杂的
+信息。比如，如果有多个分类树，处理起来就会比较麻烦。
+
+所以，这两种方式通常结合起来使用。比如blog系统中，通常既支
+持文章的分类（树），又支持为每篇文章作tag标记。
+
+org-mode作为最好的文档编辑利器 ，在支持文内大纲（也是树状结
+构）的同时，还方便的支持tag功能。tag可以在多篇文档中共用。
+
+4.2 标记tag
+
+在Org-mode中，可以对标题增加tag标记。标记的格式如下：
+
+    跟特留尼西特握手                    :苦差:薪水:逃不掉:
+    
+而且Org-mode的标签自动按照大纲树的结构继承。即子标题自动继
+承父标题的标签。比如：
+
+    * Meeting with the French group     :work:
+    ** Summary by Frank                 :boss:notes:
+    *** TODO Prepare slides for him     :action:
+    
+则最后一行标题具有 work, boss, notes, action 四个标签。
+
+如果希望文档中的所有标题都具有某些标签，只需要定义文档元数
+据：
+
+    #+FILETAGS: :Peter:Boss:Secret:
+    
+如果手工输入标签，在标题后设置标签，键入:后，M-Tab自动提供
+标签的补齐。
+
+更方便的做法是在正文部分用C-c C-q 或直接在标题上用C-c C-c创
+建标签，这种方式可以列出所有预定义的标签以便选取。
+
+4.3 预定义tag
+
+上面提到，除了可以输入标签外，还可以从预定义的标签中进行选
+择。预定义的方式有两种：
+
+  * 在当前文件头部定义
+   
+    这种方式预定义的标签只能在当前文件中使用。使用#+TAGS元数据进行标记，如：
+    
+        #+TAGS: { 桌面(d) 服务器(s) }  编辑器(e) 浏览器(f) 多媒体(m) 压缩(z)    
+    
+    每项之间必须用空格分隔，可以在括号中定义一个快捷键；花
+    括号里的为标签组，只能选择一个
+   
+    对标签定义进行修改后，要在标签定义的位置按 C-c C-c 刷新
+    才能生效。
+   
+  * 在配置文件中定义上面的标签定义只能在当前文件生效，如果
+    要在所有的.org 文件中生效，需要在 Emacs 配置文件 .emacs
+    中进行定义：
+
+    (setq org-tag-alist '(
+   
+                        (:startgroup . nil)
+                             ("桌面" . ?d) ("服务器" . ?s)
+                        (:endgroup . nil)
+                        ("编辑器" . ?e)
+                        ("浏览器" . ?f) 
+                        ("多媒体" . ?m)
+                        ))    
+    
+默认情况下，org会动态维护一个Tag列表，即当前输入的标签若不
+在列表中，则自动加入列表以供下次补齐使用。
+
+为了使这几种情况（默认列表、文件预设tags，全局预设tags）同
+时生效，需要在文件中增加一个空的TAGS定义：
+
+    #+TAGS:
+    
+4.4 按tag搜索
+
+使用标签可以更好的管理内容。org-mode提供了以下功能：
+
++---------------------------------------------------------+
+|  KEYS   |                    COMMENT                    |
+|---------+-----------------------------------------------|
+| C-c \   | 按tag搜索标题                                 |
+|---------+-----------------------------------------------|
+| C-c / m | 搜索并按树状结构显示                          |
+|---------+-----------------------------------------------|
+| C-c a m | 按标签搜索多个文件（需要将文件加入全局agenda) |
++---------------------------------------------------------+
+
+可以使用逻辑表达式限制条件，更准确灵活的搜索
+
+    +     和      a+b     同时有这两个标签
+    -     排除    a-b     有 a 但没有 b
+    |     或      a|b     有 a 或者有 b
+    &     和      a&b     同时有 a 和 b，可以用“+”替代
+    
+在查询视图中 C-c C-c 退出
+
+5 导出和发布
+
+更多： http://orgmode.org/manual/Exporting.html
+
+Org-mode可以完美的编辑，但是最终文档可能需要发布成其他的格
+式。 Org-Mode 支持多种文档的输出，包括：
+
+  * 文本
+  * 网页
+  * PDF（需要 Latex 支持）
+  * XOXO
+  * FreeMind/Xmind
+  * Docbook
+  * iCalendar（苹果 iCal 文件）
+  * ……
+
+5.1 准备工作
+
+为了更好的发布文档，还需要做一些准备工作。主要是为文档添加
+一些”元数据“，使得发布的时候能更好地识别文档的内容。
+
+5.1.1 文档元数据
+
+具体包括：
+
+    #+TITLE:       the title to be shown (default is the buffer name)
+    #+AUTHOR:      the author (default taken from user-full-name)
+    #+DATE:        a date, an Org timestamp1, or a format string for format-time-string
+    #+EMAIL:       his/her email address (default from user-mail-address)
+    #+DESCRIPTION: the page description, e.g. for the XHTML meta tag
+    #+KEYWORDS:    the page keywords, e.g. for the XHTML meta tag
+    #+LANGUAGE:    language for HTML, e.g. ‘en’ (org-export-default-language)
+    #+TEXT:        Some descriptive text to be inserted at the beginning.
+    #+TEXT:        Several lines may be given.
+    #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t ...
+    #+BIND:        lisp-var lisp-val, e.g.: org-export-latex-low-levels itemize
+                   You need to confirm using these, or configure org-export-allow-BIND
+    #+LINK_UP:     the ``up'' link of an exported page
+    #+LINK_HOME:   the ``home'' link of an exported page
+    #+LATEX_HEADER: extra line(s) for the LaTeX header, like \usepackage{xyz}
+    #+EXPORT_SELECT_TAGS:   Tags that select a tree for export
+    #+EXPORT_EXCLUDE_TAGS:  Tags that exclude a tree from export
+    #+XSLT:        the XSLT stylesheet used by DocBook exporter to generate FO file
+    
+其中#+OPTIONS是复合的选项，包括：
+
+    H:         set the number of headline levels for export
+    num:       turn on/off section-numbers
+    toc:       turn on/off table of contents, or set level limit (integer)
+    \n:        turn on/off line-break-preservation (DOES NOT WORK)
+    @:         turn on/off quoted HTML tags
+    ::         turn on/off fixed-width sections
+    |:         turn on/off tables
+    ^:         turn on/off TeX-like syntax for sub- and superscripts.  If
+               you write "^:{}", a_{b} will be interpreted, but
+               the simple a_b will be left as it is.
+    -:         turn on/off conversion of special strings.
+    f:         turn on/off footnotes like this[1].
+    todo:      turn on/off inclusion of TODO keywords into exported text
+    tasks:     turn on/off inclusion of tasks (TODO items), can be nil to remove
+               all tasks, todo to remove DONE tasks, or list of kwds to keep
+    pri:       turn on/off priority cookies
+    tags:      turn on/off inclusion of tags, may also be not-in-toc
+    <:         turn on/off inclusion of any time/date stamps like DEADLINES
+    *:         turn on/off emphasized text (bold, italic, underlined)
+    TeX:       turn on/off simple TeX macros in plain text
+    LaTeX:     configure export of LaTeX fragments.  Default auto
+    skip:      turn on/off skipping the text before the first heading
+    author:    turn on/off inclusion of author name/email into exported file
+    email:     turn on/off inclusion of author email into exported file
+    creator:   turn on/off inclusion of creator info into exported file
+    timestamp: turn on/off inclusion creation time into exported file
+    d:         turn on/off inclusion of drawers
+    
+这些元数据可以根据需要设置。建议放在文档的开头部分。如，本
+文采用的元数据如下：
+
+    #+TITLE: org-mode: 最好的文档编辑利器，没有之一
+    #+AUTHOR:Holbrook Wong
+    #+EMAIL: wanghaikuo@gmail.com
+    #+KEYWORDS: emacs, org-mode
+    #+OPTIONS: H:4 toc:t 
+    
+5.1.2 内容元数据
+
+通常在行首以“#+”开头，可以有多种用途。
+
+  * 分行区块
+    默认内容不换行，需要留出空行才能换行。定义了分行的区块
+    可以实现普通换行：
+   
+        #+BEGIN_VERSE
+         Great clouds overhead
+         Tiny black birds rise and fall
+         Snow covers Emacs
+             -- AlexSchroeder
+        #+END_VERSE
+        
+  * 缩进区块
+    通常用于引用，与默认格式相比左右都会留出缩进：
+   
+        #+BEGIN_QUOTE
+          缩进区块
+        #+END_QUOTE
+        
+  * 居中区块
+   
+        #+BEGIN_CENTER
+        Everything should be made as simple as possible, \\
+        but not any simpler
+        #+END_CENTER
+        
+  * 代码区块
+   
+        #+BEGIN_SRC ruby
+          require 'redcarpet'
+          md = Redcarpet.new("Hello, world.")
+          puts md.to_html
+        #+END_SRC
+        
+  * 例子
+   
+        : 单行的例子以冒号开头
+        
+        #+BEGIN_EXAMPLE
+         多行的例子
+         使用区块
+        #+END_EXAMPLE
+        
+  * 注释
+    以‘#‘开头的行被看作注释，不会被导出
+   
+    区块注释采用如下写法：
+   
+        #+BEGIN_COMMENT
+          块注释
+          ...
+         #+END_COMMENT
+        
+  * 表格与图片
+    对于表格和图片，可以在前面增加标题和标签的说明，以方便
+    交叉引用。
+   
+    比如在表格的前面添加：
+   
+        #+CAPTION: This is the caption for the next table (or link)
+        #+LABEL: tbl:table1
+        
+    则在需要的地方可以通过
+   
+        \ref{table1}
+        
+    来引用该表格。
+   
+5.1.3 嵌入Html
+
+对于导出html以及发布，嵌入html代码就很有用。比如下面的例子
+适用于格式化为cnblogs的代码块：
+
+    #+BEGIN_HTML
+      <div class="cnblogs_Highlighter">
+      <pre class="brush:cpp">
+      int main()
+      {
+        return 0;
+      }
+      </pre>
+      </div>
+    #+END_HTML
+    
+相当于在cnblogs的网页编辑器中插入"c++"代码。
+
+5.1.4 包含文件
+
+当导出文档时，你可以包含其他文件中的内容。比如，想包含你的
+“.emacs”文件，你可以用：
+
+     #+INCLUDE: "~/.emacs" src emacs-lisp
+
+可选的第二个第三个参数是组织方式（例如，“quote”，“example”
+，或者“src”），如果是 “src”，语言用来格式化内容。组织方式是
+可选的，如果不给出，文本会被当作 Org 模式的正常处理。用 C-c
+,可以访问包含的文件。
+
+5.1.5 嵌入 LaTex
+
+对于需要包含数学符号和特殊方程的科学笔记，Org 模式支持嵌入
+LaTeX 代码到文件中。你可以直接使用类 TeX 的宏来输入特殊符号
+，输入方程，或者整个 LaTeX 环境。
+
+    Angles are written as Greek letters \alpha, \beta and \gamma. The mass if
+    the sun is M_sun = 1.989 x 10^30 kg. The radius of the sun is R_{sun} =
+    6.96 x 10^8 m. If $a^2=b$ and $b=2$, then the solution must be either
+    $a=+\sqrt{2}$ or $a=-\sqrt{2}$.
+    \begin{equation}
+    x=\sqrt{b}
+    \end{equation}
+    
+特殊设置之后，导出 HTML 时 LaTeX 代码片断会生成图片并包含进
+来。
+
+5.2 导出
+
+做好准备工作后，就可以导出了。使用命令：
+
+C-c C-e
+
+然后选择相应的格式，就可以导出对应的文件了。
+
+5.3 发布
+
+Org 包含一个发布管理系统，可以配置一个由相互链接的 Org 文件
+组成的工程项目的自动向 HTML 转换。你也可以设置 Org，将导出
+的 HTML 页面和相应的附件如图片，源代码文件等自动上传到服务
+器。
+
+下面是一个例子：
+
+(setq org-publish-project-alist
+     '(("org"
+        :base-directory "~/org/"
+        :publishing-directory "~/public_html"
+        :section-numbers nil
+        :table-of-contents nil
+        :style "<link rel=\"stylesheet\"
+               href=\"../other/mystyle.css\"
+               type=\"text/css\"/>")))
+
+发布相关的命令：
+
++------------------------------------------------+
+|   命令    |                说明                |
+|-----------+------------------------------------|
+| C-c C-e C | 提示指明一个项目，将所有的文件发布 |
+|-----------+------------------------------------|
+| C-c C-e P | 发布包含当前文件的项目             |
+|-----------+------------------------------------|
+| C-c C-e F | 只发布当前文件                     |
+|-----------+------------------------------------|
+| C-c C-e E | 发布所有项目                       |
++------------------------------------------------+
+
+Org 用时间戳来查看文件是否改变。上面的命令只发布修改过的文
+件。你可以给它们加上前缀来强制重新发布所有的文件。
+
+
+
+
+
+
+** TODO 待办事项（TODO ）
+#+beg org-mode可以利用Emacs的时间空间插入当前时间。
+  输入C-c . 会出现一个日历，我们点选相应的时间即可插入
+  时间前可以加DEADLINE:和SCHEDULED:表示时间的类型如：
+#+end 富文本
+** 记笔记
+      + 2.4 创建链接
+      + 2.5 内部链接
+      + 2.6 显示图片
+  * 3 轻量级标记语言
+      + 3.1 字体
+      + 3.2 表格
+          o 3.2.1 创建和转换表格
+          o 3.2.2 调整和区域移动
+          o 3.2.3 编辑行和列
+      + 3.3 段落
+      + 3.4 列表
+          o 3.4.1 列表操作快捷键
+      + 3.5 分隔线
+  * 4 标签
+      + 4.1 tag的作用
+      + 4.2 标记tag
+      + 4.3 预定义tag
+      + 4.4 按tag搜索
+  * 5 导出和发布
+      + 5.1 准备工作
+          o 5.1.1 文档元数据
+          o 5.1.2 内容元数据
+          o 5.1.3 嵌入Html
+          o 5.1.4 包含文件
+          o 5.1.5 嵌入 LaTex
+      + 5.2 导出
+      + 5.3 发布
+
 ** 标题
 *** 文章标题 #+TITLE: xx
 *** 正文标题 *
@@ -1487,11 +2412,8 @@ I    #+include: line
 对于表格和图片，可以在前面增加标题和标签的说明，以方便交叉引用。比如在表格的前面添加：
 #+CAPTION: This is the caption for the next table (or link)
 则在需要的地方可以通过\ref{table1}来引用该表格。 
-** TODO 待办事项（TODO ）
-#+beg org-mode可以利用Emacs的时间空间插入当前时间。
-  输入C-c . 会出现一个日历，我们点选相应的时间即可插入
-  时间前可以加DEADLINE:和SCHEDULED:表示时间的类型如：
-#+end 富文本
+[[image.gpg]]
+
 ** 代码格式化
 #符合emacs 模式时
 #+BEGIN_SRC emacs-lisp -n -r
