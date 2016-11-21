@@ -1,4 +1,3 @@
-
 * Linux应用
 ** 系统管理
 *** 系统安全
@@ -106,22 +105,6 @@
 **** dumpe2fs 用于打印“ext2/ext3”文件系统的超级块和快组信息
 **** fsck 检查并且试图修复文件系统中的错误
 **** mount 用于加载文件系统到指定的加载点
- mount  [-t vfstype] [-o options] device dir
- 1.-t vfstype 文件系统类型
-　　光盘或光盘镜像：iso9660
-　　DOS fat16文件系统：msdos
-　　Windows 9x fat32文件系统：vfat
-　　Windows NT ntfs文件系统：ntfs
-　　Mount Windows文件网络共享：smbfs
-　　UNIX(LINUX) 文件网络共享：nfs
-2.-o options 主要用来描述设备或档案的挂接方式。常用的参数有：
-　　loop：用来把一个文件当成硬盘分区挂接上系统
-　　ro：采用只读方式挂接设备
-　　rw：采用读写方式挂接设备
-　　iocharset：指定访问文件系统所用字符集,不能显示中文 iocharset=cp936
-3.device 要挂接(mount)的设备。
-4.dir设备在系统上的挂接点(mount point)。
-sudo mount -t smbfs -o username=user,password='' //10.0.1.1/windowsshare /mnt 浏览windows 共享文件夹
 **** mke2fs 创建磁盘分区上的“etc2/etc3”文件系统
 *** 系统关机和重启
 **** halt 关闭正在运行的Linux操作系统
@@ -398,14 +381,6 @@ i386选项
 : --prefix-symbols=string
 **** ldconfig 动态链接库管理命令
 **** readelf 用于显示elf格式文件的信息
-: -a       --all
-***** elf header
-描述了这个elf文件的一些信息，如数据格式是big-endian 或者little-endian
-运行平台、section header 的个数等。
-****** section headers是一个表，表中的每个条目描述了一个section，
-如section在文件中的偏移，大小等。
-****** section中就是elf文件中“真正”的信息了。
-
 **** objcopy拷贝一个目标文件的内容到另一个目标文件中,bfdnamels是BFD库中描述的标准格式名
 : --info 显示支持的architecture 与 目标文件格式
 : -I bfdname或--input-target=bfdname  用来指明源文件的格式,取值elf32-little，elf32-big等，可用用objdump –i查看相应的信息
@@ -422,11 +397,6 @@ i386选项
 : -N symbolname 去除掉由symbolname指定的符号信息
 
 **** objdump 显示二进制文件信息
-: -a|--archive-header 列出 archive头/列表用'ar tv'
-: -d反汇编
-: -S|--source
-: -m MACHINE| --architecture=MACHINE
-: -G|--stabs
 **** pstack 显示每个进程的栈跟踪
 **** indent 格式化C语言的源文件
 **** gdb 功能强大的程序调试器
@@ -444,24 +414,11 @@ i386选项
 -tty 设置标准输出和输入设备
 -x 从指定的文件执行 gdb 命令
 
-***** 常用的调试命令
-列出源码 ;l 3 （开始行）                              
-设置断点 ;b <行号>;b <函数名称>;b *<函数名称>;b *<代码地址> 
-调试程序 ;r 
-继续执行 ;c
-删除断点 ; clear <行号>
-删除断点 ;  d <编号>
-执行一行 ;    n /s
-结束循环 ;   until
-p $1 ($1为历史记录变量); 
-p <数组名>显示数组元素;
-p <*数组指针>显示数组int a[N]的特定值：
-显示变量类型;    whatis p
-显示各类信息   info b 显示断点信息
-info r 寄存器信息
-info local 当前函数中的局部变量信息;
-info prog 显示被调试程序的执行状态
-break *_start+1 由于 gnu 调试时忽略开始处断点, 需要在开始标签处执行一个空指令
+***** commands
+由于 gnu 调试时忽略开始处断点, 需要在开始标签处执行一个空指令
+此时断点可以设置成 break *_start+1
+查看寄存器状态 info registers
+使用 print 命令查看特定寄存器或者变量的值, 加上修饰符可以得到不同的输出格式:
 print/d 显示十进制数字
 print/t 显示二进制数字
 print/x 显示 16 进制数字
@@ -474,11 +431,98 @@ z 是要显示的字段长度, 它可以是:
 b 用于字节, h 用于 16 字节, w 用于 32 位字
 如:
 x/42cb 用于显示前 42 字节
-print-stack      查看堆栈               
-u start end      反汇编内存                       
-trace on          反汇编每一条                    
-trace-reg on    每执行一条打印cpu               
-xp /32bx 0x90000  查询从0x90000开始的32个字节内容 
+***** 声明指令:
+.ascii 文本字符串
+.asciz 以空字符结尾的字符串
+.byte 字节值
+.double 双精度浮点值
+.float 单精度浮点值
+.int 32 位整数
+.long 32 位整数, 和 int 相同
+.octa 16 字节整数
+.quad 8 字节整数
+.short 16 位整数
+.single 单精度浮点数(和 float 相同)
+定义静态符号:
+使用.equ 命令把常量值定义为可以在文本段中使用的符号,如:
+.section .data
+.equ LINUX_SYS_CALL, 0x80
+.section .text
+movl $LINUX_SYS_CALL, %eax
+***** bss 段
+和 data 段不同, 无需声明特定的数据类型, 只需声明为所需目的保留的原始内存部分即可。
+GNU 汇编器使用以下两个命令声明内存区域:
+.comm 声明为未初始化的通用内存区域
+.lcomm 声明为未初始化的本地内存区域
+
+.section .bss
+.lcomm buffer, 1000
+该语句把 1000 字节的内存地址赋予标签 buffer, 在声明本地通用内存区域的程序之外的函数是不能访问他们的.(不能在.globl 命令中使用他
+们)
+***** 循环:
+loop 循环直到 ECX 寄存器为 0
+loope/loopz 循环直到 ecx 寄存器为 0 或者没有设置 ZF 标志
+loopne/loopnz 循环直到 ecx 为 0 或者设置了 ZF 标
+***** rep 前缀
+REP 指令的特殊之处在与它不执行什么操作, 这条指令用于按照特定次数重复执行字符串指令, 有 ECX 寄存器控制,但不需要额外的 loop 指
+令, 如 rep movsl
+rep 的其他格式:
+repe 等于时重复
+repne 不等于时重复
+repnz 不为零时重复
+repz 为零时重复
+
+***** 函数
+GNU 汇编语言定义函数的语法:
+.type 标签(也就是函数名), @function
+ret 返回到调用处
+***** gnu 内联汇编的语法:
+asm 或__asm__("汇编代码");
+指令必须包含在引号里
+如果包含的指令超过一行 必须使用新行分隔符分隔
+使用 c 全局变量, 不能在内联汇编中使用局部变量, 注意在汇编语言代码中值被用做内存位置, 而不是立即数值
+如果不希望优化内联汇编, 则可以 volatile 修饰符如:__asm__ volatile("code");
+2,GCC 内联汇编的扩展语法
+__asm__("assembly code":output locations:input operands:changed registers);
+第一部分是汇编代码
+第二部分是输出位置, 包含内联汇编代码的输出值的寄存器和内存位置列表
+第三部分是输入操作数,包含内联汇编代码输入值的寄存器和内存位置的列表
+第四部分是改动的寄存器, 内联汇编改变的任何其他寄存器的列表
+这几个部分可以不全有, 但是没有的还必须使用:分隔
+1, 指定输入值和输出值, 输入值和输出值的列表格式为:
+"constraint"(variable), 其中 variable 是程序中声明的 c 变量, 在扩展 asm 格式中, 局部和全局变量都可以使用,使用定义把变量存放到哪(输入)或从哪里传送变量(输出)
+约束使用单一的字符, 如下:
+约束 描述
+a 使用%eax, %ax, %al 寄存器
+b 使用%ebx, %bx, %bl 寄存器
+c 使用%ecx, %cx, %cl 寄存器
+d 使用%edx, %dx, %dl 寄存器
+S 使用%esi, %si 寄存器
+D 使用%edi, %di 寄存器
+r 使用任何可用的通用寄存器
+q 使用%eax, %ebx, %ecx,%edx 之一
+A 对于 64 位值使用%eax, %edx 寄存器
+f 使用浮点寄存器
+t 使用第一个(顶部)的浮点寄存器
+u 使用第二个浮点寄存器
+m 使用变量的内存位置
+o 使用偏移内存位置
+V 只使用直接内存位置
+i 使用立即整数值
+n 使用值已知的立即整数值
+g 使用任何可用的寄存器和内存位置
+constrant(约束)
+除了这些约束之外, 输出值还包含一个约束修饰符:
+输出修饰符 描述
++ 可以读取和写入操作数
+= 只能写入操作数
+% 如果有必要操作数可以和下一个操作数切换
+& 在内联函数完成之前, 可以删除和重新使用操作数
+如:
+__asm__("assembly code": "=a"(result):"d"(data1),"c"(data2));
+把 c 变量 data1 存放在 edx 寄存器中, 把 c 变量 data2 存放到 ecx 寄存器中, 内联汇编的结果将存放在 eax 寄存器中, 然后传送给变量
+result
+***** 系统调用  include/asm-i386/unistd.h
 **** expr 一款表达式计算工具
 **** test shell环境中测试条件表达式工具
 **** php PHP语言的命令行接口
@@ -513,56 +557,13 @@ xp /32bx 0x90000  查询从0x90000开始的32个字节内容
 **** locate/slocate 查找文件或目录
 **** which 查找并显示给定命令的绝对路径
 **** find 在指定目录下查找文件
-find pathname -options [-print -exec -ok ...]
-  : -print： find命令将匹配的文件输出到标准输出。
-  : -exec： find命令对匹配的文件执行该参数所给出的shell命令。相应命令的形式为'command' {  } \;，注意{   }和\；之间的空格。
-  : -ok：和-exec的作用相同，只不过以一种更为安全的模式来执行该参数所给出的shell命令，在执行每一个命令之前，都会给出提示，让用户来确定是否执行。
-
-  : -name   按照文件名查找文件。
-  : -perm   按照文件权限来查找文件。
-  : -prune  使用这一选项可以使find命令不在当前指定的目录中查找，如果同时使用-depth选项，那么-prune将被find命令忽略。
-  : -user   按照文件属主来查找文件。
-  : -group  按照文件所属的组来查找文件。
-  : -mtime -n +n  按照文件的更改时间来查找文件， - n表示文件更改时间距
-  : 现在n天以内，+ n表示文件更改时间距现在n天以前。find命令还有-atime和-ctime 选项，但它们都和-m time选项。
-  : -nogroup  查找无有效所属组的文件，即该文件所属的组在/etc/groups中不存在。
-  : -nouser   查找无有效属主的文件，即该文件的属主在/etc/passwd中不存在。
-  : -newer file1 ! file2  查找更改时间比文件file1新但比文件file2旧的文件。
-  : -type  查找某一类型的文件，诸如：
-  + b - 块设备文件。
-  + d - 目录。
-  + c - 字符设备文件。
-  + p - 管道文件。
-  + l - 符号链接文件。
-  + f - 普通文件。
-  + -size n：[c] 查找文件长度为n块的文件，带有c时表示文件长度以字节计。
-  + -depth：在查找文件时，首先查找当前目录中的文件，然后再在其子目录中查找。
-  + -fstype：查找位于某一类型文件系统中的文件，这些文件系统类型通常可以在配置文件/etc/fstab中找到，该配置文件中包含了本系统中有关文件系统的信息。
-  + -mount：在查找文件时不跨越文件系统mount点。
-  + -follow：如果find命令遇到符号链接文件，就跟踪至链接所指向的文件。
-  + -cpio：对匹配的文件使用cpio命令，将这些文件备份到磁带设备中。
-
-另外,下面三个的区别:
-  : -amin n   查找系统中最后N分钟访问的文件  -n n天以内;+n n天之前
-  : -atime n  查找系统中最后n*24小时访问的文件
-  :  -cmin n   查找系统中最后N分钟被改变文件状态的文件
-  :  -ctime n  查找系统中最后n*24小时被改变文件状态的文件
-  :  -mmin n   查找系统中最后N分钟被改变文件数据的文件
-  :  -mtime n  查找系统中最后n*24小时被改变文件数据的文件
-  : find  ./    -mtime    -1    -type f    -ok   ls -l    {} \;  
-  : find .    -perm -007    -exec ls -l {} \;  
-
 **** whereis 查找二进制程序、代码等相关文件路径
 *** 文件内容查看
 **** hexdump 显示文件十六进制格式
--c 每单元以字节为单位，显示出对应的ASCII码
--C 每单元以字节为单位，同时显示十六机制和ASCII码
 **** od 输出文件的八进制、十六进制等格式编码的字节
 **** cut 连接文件并打印到标准输出设备上
 **** tail 在屏幕上显示指定文件的末尾若干行
 **** head 在屏幕上显示指定文件的开头若干行
--c  xx xx字节
--n 行
 **** less 分屏上下翻页浏览文件内容
 **** more 显示文件内容，每次显示一屏
 *** 文件处理
@@ -574,18 +575,6 @@ find pathname -options [-print -exec -ok ...]
 **** touch 创建新的空文件
 **** rename 用字符串替换的方式批量改变文件名
 **** dd 复制文件并对原文件的内容进行转换和格式化处理
-: `if=FILE'     Read from FILE instead of standard input.
-: `of=FILE'     Write to FILE instead of standard output.  Unless `conv=notrunc' is given, `dd' truncates FILE to zero bytes (or the size specified with `seek=').
-: ibs=BYTES 指定每次输入多少字节,默认512
-: obs=BYTES 输出
-: skip=N   跳过 ibs指定字节的N块东西,如果iflag=skip_bytes,则跳过N 字节,就跟ibs指定多少无关了
-: seek=N 跳过obs指定字节的N块东西,如果oflag=seek_bytes,则跳过N 字节,就跟obs指定多少无关了
-: count=N 复制 N 块 ibs指定的东西,如果iflag=skip_bytes,则...
-: `conv=CONVERSION[,CONVERSION]...'转换
-  ascii / ebcdic/ibm/block/lcase/notrunc/fsync
-: iflag=FLAG[,FLAG]...
-  append/cio/direct/sync/binary/text/skip_bytes/seek_bytes
-  
 **** dirname 去除文件名中的非目录部分
 **** updatedb 创建或更新slocate命令所必需的数据库文件
 **** ln 用来为文件创件连接
@@ -886,141 +875,108 @@ awk '/SCC/{getline; print}' URFILE
 -l<lisp代码文件>：加载指定的lisp代码文件；
 -batch：以批处理模式运行emacs编辑器。
 
+***** emacs命令操作大全
+基本命令
+C-x C-c : 退出Emacs
+C-x C-f : 打开一个文件，如果文件不存在，则创建一个文件
+C-g : 取消未完成的命令
+
+编辑
+C-z (redefined): Undo；原来C-z是挂起Emacs（然后用fg命令调出）；C-x u 是默认的命令； 移动一下光标，再C-z就可以redo
+M-d : 删除光标后的词语
+
+移动光标
+
+C-v : 向前翻页
+M-v : 向后翻页
 M-r : 将光标移动到屏幕中间那行
 C-a : 移到行首
 M-a : 移到句首，从行首到句首之间可能有空格
+C-e : 移到行尾
 M-e : 移到句尾
 M-{ : 向上移动一段
+M-} : 向下移动一段
+C-right : 向前移动一个单词
 C-left : 向后移动一个单词
+C-up : 向前移动一段
 C-down : 向后移动一段
+M-< : 移到整个文本开头
 M-> : 移到整个文本末尾
 C-u 数字 命令 : 执行多次(数字表示次数)该命令；"M-数字 命令" 也可以
 M-x goto-line : 移动到某一行
 C-l : 重绘屏幕，效果就是当前编辑行移动窗口中央
 
 Buffer 相关
+
 C-x k : 关闭当前buffer
 C-x b : 切换到前一个编辑的buffer
+C-x C-b : 列出当前所有buffer
 C-x C-s : 保存当前buffer
 C-x s : 保存所有未保存的buffer，会提示你是否需要保存
+C-x C-w : 文件另存为
 
 拷贝与粘贴
+
 M-space (redefined): 设置mark; C-@ 是默认命令
+C-w (redefined) : 剪切一块区域；如果没有设置mark，则是剪切一行
+M-w (redefined) : 拷贝一块区域；如果没有设置mark, 则是拷贝一行
+C-k : 从当前位置剪切到行尾
 C-y : 粘贴
 M-y : 用C-y拉回最近被除去的文本后，换成 M-y可以拉回以前被除去的文本。键入多次的M-y可以拉回更早以前被除去的文本。
-C-x r k : 执行矩形区域的剪切 [范围是光标处到缓冲头的一个矩形],可以选择区块
+C-x r k : 执行矩形区域的剪切
 C-x r y : 执行矩形区域的粘贴
 
 窗口操作
+C-x 0 : 关闭当前窗口
+C-x 1 : 将当前窗口最大化
+C-x 2 : 垂直分割窗口
+C-x 3 : 水平分割窗口
 M-o (redefined) : 在窗口之间切换; C-x o 是默认命令
 C-x 5 1/2/3/0 : 对frame类似的操作
+C-x < : 窗口内容右卷
 C-x > : 窗口内容左卷（这两个命令在垂直分割窗口后比较有用）
+(C-u) C-x ^ : 加高当前窗口，如果有C-u，则每次加高4行
+(C-u) C-x } : 加宽当前窗口
+(C-u) C-x { : 压窄当前窗口
 ESC C-v : 在其它窗口进行卷屏操作
 
 搜索和替换
+
+C-s : 向前搜索（增量式搜索）；连续C-s，跳到下一个搜索到的目标
+C-s RET : 普通搜索
+C-r : 向前搜索
 C-s RET C-w : 按单词查询
 M-% : 查询替换，也就是替换前会询问一下
 M-x replace-string : 普通替换
 
 Tags
+
 M-! etags .c .h : 创建TAGS文件
 M-. : 跳到tag所在位置
 M-x list-tags : 列出tags
 
 书签
+
 C-x r m : 设置书签bookmark
 C-x r b : 跳到bookmark处
 
 帮助
+
+C-h ? : 查看帮助信息
+C-h f : 查看一个函数
+C-h v : 查看一个变量
+C-h k : 查看一个键绑定 (C－h c 也是查看键绑定，但是信息较简略)
 C-h C-f : 查看一个函数的info，非常有用
 C-h i : 看Info
 
 其它
+
 C-M-\ : 对选中区域，按照某种格式(比如C程序)进行格式化
 C-x h : 全部选中
 M-! : 执行外部shell命令
 M-x shell : 模拟shell的buffer
 M-x term : 模拟terminal, C-c k 关闭terminal
 C-x C-q : 修改buffer的只读属性
-
-键盘宏
-C-x ( 开始录制宏
-C-x ) 录制结束
-
-C-x i 插入文件
-C-/ 撤销
-
-注释
-多行注释 C-x r t
-反注释	 C-x r k
-关闭窗口 C-x 0
-窗口移动 M-x windmove-left /right /down
-替换windows换行M-x replace-string RET C-q C-m RET RET
-
-gdb –annotate=3 test回车就进入了调试模式
-annotate = 0是最基本的模式和在命令行使用gdb完全一样。
-annotate = 1是单步调试模式，出现上下两个窗口，上面是gdb运行的buffer，下面是你代码的buffer，会在代码 buffer中，同步指示当前运行的语句的位置。
-annotate = 2是产生注解的模式。
-annotate = 3是信息最完整的模式。此时的 Emacs 分5个 buffer，从上到下、从左到右依次是：gdb 调试窗口、变量实时变化显示窗口、源代码窗口、栈窗口、断点信息
-无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。
-gdb-many-windows 切换单窗格/多窗格模式
-gdb-restore-windows 恢复窗格布局	
-vim
-	ngg跳到指定行	| :n 指定行 |vim +n FileName 打开文件既跳转
-	:set number 显示行号 autoindent cindent(c语言自动缩进)
-	:syntax on 
-
-
-
-du	磁盘使用
-	-b filename ->filename 占用多少字节 -k -m (多少K,兆)
-
-
-emacs-w3m
-	例如收到的一封电子邮件里有一个指向某个Web站点，或FTP站点的URL地址，于是想去看一看。 移动到该URL地址处并输入 ESC x w3-follow-URL-at-point 就会转到那个站点去。
-	如果对那个站点上的东西感兴趣，则可以把它添加到收藏夹里，或者用 C-x C-w (另存为)组合键把该 主页上的内容保存到一个文件里去。
-	也可以在不退出Emacs的情况下浏览自己编写的HTML文档，输入 ESC x w3-open-local RET filename RET 命令即可。
-
-	快捷键	功能
-	q	关闭窗口
-	Q	直接离开
-	U	打开 URL
-	V	打开文件
-	C-x-k	关闭当前标签页
-	G	在标签页中打开一个网址
-	c-c c-p	上一标签
-	c-c c-n	下一标签
-	S	用google进行搜索
-	B	后退
-	ESC I	图片另存为 
-	=   	显示当前页面属性 
-	N	前进
-	H	主页
-	R	刷新
-	C-n	下一行
-	C-p	向上一行
-	C-b	向后
-	C-f	向前
-	C-v	向下滚屏
-	ESC v	向上滚屏
-	F   	提交表单 
-	打开链接	RET
-	>		向右滚屏
-	<		向左滚屏
-	,		向左移动一格
-	.		向右移动一格
-	 书签
-	快捷键	功能
-	a	添加当前页到书签
-	ESC a	添加该URL到书签
-	v   显示书签
-	E   编辑书签
-	C-k 删除书签
-	C-_ 撤消书签
-	M   用外部浏览器打开当前页面
-	ESC M	用外部浏览器打开链接
-	C-c C-k	停止载入
-
 ***** Emacs 插件	
 # ido, 类似于helm,和helm各有千秋我都用,五五开,
 # imenu 显示当前文件函数列表,可以直接跳转到那去,完全可配置
@@ -1120,7 +1076,6 @@ emacs-w3m
 **** scp 加密的方式在本地主机和远程主机之间复制文件
 **** ncftp 是增强的的FTP工具
 **** rcp 使在两台Linux主机之间的文件复制操作更简单
-
 ** 硬件 | 监测 | 内核 | Shell
 *** Shell内建命令
 **** sh shell命令解释器
@@ -1196,7 +1151,6 @@ emacs-w3m
 **** get_module 获取Linux内核模块的详细信息
 **** kexec 从当前正在运行的内核引导到一个新内核
 **** dmesg 显示Linux系统启动信息
-# 查看  一般看最后几行 tail
 **** uname 显示Linux系统信息
 **** depmod 分析可载入模块的相依性
 **** bmodinfo 显示给定模块的详细信息
@@ -1237,7 +1191,6 @@ emacs-w3m
 **** vgscan 扫描并显示系统中的卷组
 **** vgcreate 用于创建LVM卷组
 **** fdisk 查看磁盘使用情况和磁盘分区
--l 查看磁盘
 **** badblocks 查找磁盘中损坏的区块
 **** vgdisplay 显示LVM卷组的信息
 **** mkbootdisk 可建立目前系统的启动盘
@@ -1246,6 +1199,7 @@ emacs-w3m
 **** lilo 安装核心载入开机管理程序
 **** df 显示磁盘的相关信息
 **** parted 磁盘分区和分区大小调整工具
+
 
 * Shell 编程
 ** Shell 输入/输出重定向
@@ -1264,6 +1218,23 @@ n <& m 	将输入文件 m 和 n 合并。
 source filename
 #+END_SRC
 
+
+* readelf
+: -a       --all
+  Equivalent to specifying --file-header, --program-headers, --sections, --symbols, --relocs, --dynamic, --notes and--version-info
+  [1] elf header描述了这个elf文件的一些信息，如数据格式是big-endian 或者little-endian、运行平台、section header 的个数等。
+  [2] section headers是一个表，表中的每个条目描述了一个section，如section在文件中的偏移，大小等。
+  [3] section中就是elf文件中“真正”的信息了。
+
+* objdump   displays information about object files
+: objdump '-a,-d,-D,-e,-f,-g,-G,-h,-H,-p,-P,-r,-R,-s,-S,-t,-T,-V,-x' OBJFILE...
+: 对需要编译的程序员很有用
+: -a|--archive-header 列出 archive头/列表用'ar tv'
+: -d反汇编
+: -S|--source
+: -m MACHINE| --architecture=MACHINE
+: -G|--stabs
+* gdb	
 * samba
   创建共享目录:
   mkdir /home/xxx/share   sudo chmod 777 /home/xxx/share  说明：xxx为你的ubuntu的用户名　　　  share你可以随便起个名字做为共享文件夹	
@@ -1290,6 +1261,9 @@ source filename
 * ubuntu
   休眠		 pm-hibernate
   待机	 
+
+* grep
+  排除	v
 
 * git
 ** Git 工作流程
@@ -1389,13 +1363,224 @@ git checkout -b bug_fix_local bug_fix_remote #把本地端切换为远程的bug_
 　　以叹号“!”表示不忽略(跟踪)匹配到的文件或目录；
 规则：/fd1/*
 　　　　  说明：忽略根目录下的 /fd1/ 目录的全部内容；
+* emacs 
+** 键盘宏
+   + C-x ( 开始录制宏
+   + C-x ) 录制结束
+   + C-u [执行次数] C-x e 执行键盘宏
+   + 录制过程：
+   + 删除若干空格(左移偏移量) 命令 C-d
+   + 下一行 C-n
+   + 行头 C-a
+** 选择块
+   C-x C-q 切换为只读或者读写模式
+   C-x i 插入文件
+	撤销 C-/
+	多行注释 C-x r t
+	反注释	 C-x r k
+	关闭窗口 C-x 0
+	窗口移动 M-x windmove-left /right /down
+	替换windows换行M-x replace-string RET C-q C-m RET RET
 
 
+	gdb –annotate=3 test回车就进入了调试模式
+	annotate = 0是最基本的模式和在命令行使用gdb完全一样。
+	annotate = 1是单步调试模式，出现上下两个窗口，上面是gdb运行的buffer，下面是你代码的buffer，会在代码 buffer中，同步指示当前运行的语句的位置。
+	annotate = 2是产生注解的模式。
+	annotate = 3是信息最完整的模式。此时的 Emacs 分5个 buffer，从上到下、从左到右依次是：gdb 调试窗口、变量实时变化显示窗口、源代码窗口、栈窗口、断点信息
+	无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。
+	gdb-many-windows 切换单窗格/多窗格模式
+	gdb-restore-windows 恢复窗格布局	
+		
+		常用的调试命令，可以简写
+		命令 		意义					用法
+		list 		从第一行开始列出源码（默认10行）	  l; l 3 （开始行）
+		break		设置断点。				  b <行号>;b <函数名称>;b *<函数名称>;b *<代码地址>
+		run		开始调试程序	  			  r
+		continue   	继续执行被调试程序，直至下一个断点	  c
+		clear 		删除特定行的断点 			  clear <行号>
+		delete 		删除断点，编号从1开始   		  d <编号>
+		next line	执行一行源程序代码，此行代码中的函数调用也一并执行。 	        n
+		step line       执行一行源程序代码，如果此行代码中有函数调用，则进入该函数 	  s
+		until 		结束当前循环 				   until
+		print 		print p ;print $1 ($1为历史记录变量); p <数组名>显示数组元素：p <*数组指针>显示数组int a[N]的特定值：
+				   	① p *a@10;② p (int [10])*10
+		whatis 		可以显示某个变量的类型			    whatis p
+		info 		用于显示各类信息 			    如：info b 显示断点信息;info r 寄存器信息;info local 显示当                                                                            前函数中的局部变量信息;info prog 显示被调试程序的执行状态
+		quit 		退出gdb调试				    q
+
+vim
+	ngg跳到指定行	| :n 指定行 |vim +n FileName 打开文件既跳转
+	:set number 显示行号 autoindent cindent(c语言自动缩进)
+	:syntax on 
+
+
+
+du	磁盘使用
+	-b filename ->filename 占用多少字节 -k -m (多少K,兆)
+
+
+emacs-w3m
+	例如收到的一封电子邮件里有一个指向某个Web站点，或FTP站点的URL地址，于是想去看一看。 移动到该URL地址处并输入 ESC x w3-follow-URL-at-point 就会转到那个站点去。
+	如果对那个站点上的东西感兴趣，则可以把它添加到收藏夹里，或者用 C-x C-w (另存为)组合键把该 主页上的内容保存到一个文件里去。
+	也可以在不退出Emacs的情况下浏览自己编写的HTML文档，输入 ESC x w3-open-local RET filename RET 命令即可。
+
+	快捷键	功能
+	q	关闭窗口
+	Q	直接离开
+	U	打开 URL
+	V	打开文件
+	C-x-k	关闭当前标签页
+	G	在标签页中打开一个网址
+	c-c c-p	上一标签
+	c-c c-n	下一标签
+	S	用google进行搜索
+	B	后退
+	ESC I	图片另存为 
+	=   	显示当前页面属性 
+	N	前进
+	H	主页
+	R	刷新
+	C-n	下一行
+	C-p	向上一行
+	C-b	向后
+	C-f	向前
+	C-v	向下滚屏
+	ESC v	向上滚屏
+	F   	提交表单 
+	打开链接	RET
+	>		向右滚屏
+	<		向左滚屏
+	,		向左移动一格
+	.		向右移动一格
+	 书签
+	快捷键	功能
+	a	添加当前页到书签
+	ESC a	添加该URL到书签
+	v   显示书签
+	E   编辑书签
+	C-k 删除书签
+	C-_ 撤消书签
+	M   用外部浏览器打开当前页面
+	ESC M	用外部浏览器打开链接
+	C-c C-k	停止载入
+
+* bochs
+** bximage--->创建软盘/硬盘映像
+#+title:	debug command
+| 断点                            | b 0x7c00         |
+| 查看寄存器信息                  | info cpu         |
+|                                 | r                |
+|                                 | fp               |
+|                                 | sreg             |
+|                                 | creg             |
+| 断点信息                        | info break       |
+| 执行                            | c                |
+|                                 | n                |
+|                                 | s  N             |
+| 查看堆栈                        | print-stack      |
+| 查看物理地址内容                | xp /nuf addr     |
+| .. 线性.......                  | x /nuf addr      |
+| 查看帮助                        | help xx          |
+| 反汇编内存                      | u start end      |
+| 反汇编每一条                    | trace on         |
+| 每执行一条打印cpu               | trace-reg on     |
+| 查询从0x90000开始的32个字节内容 | xp /32bx 0x90000 |
+* head
+-c  xx xx字节
+-n 行
+* hexdump
+-c 每单元以字节为单位，显示出对应的ASCII码
+-C 每单元以字节为单位，同时显示十六机制和ASCII码
 * qemu	
   [-fda fdb] Use file as floppy disk 0/1 image	     
+* dd copies a file with a changeable I/O block size
+: data defined
+  if=boot.bin of=a.img bs=512 count=1 conv=notrunc
+: `if=FILE'     Read from FILE instead of standard input.
+: `of=FILE'     Write to FILE instead of standard output.  Unless `conv=notrunc' is given, `dd' truncates FILE to zero bytes (or the size specified with `seek=').
+: ibs=BYTES 指定每次输入多少字节,默认512
+: obs=BYTES 输出
+: skip=N   跳过 ibs指定字节的N块东西,如果iflag=skip_bytes,则跳过N 字节,就跟ibs指定多少无关了
+: seek=N 跳过obs指定字节的N块东西,如果oflag=seek_bytes,则跳过N 字节,就跟obs指定多少无关了
+: count=N 复制 N 块 ibs指定的东西,如果iflag=skip_bytes,则...
+: `conv=CONVERSION[,CONVERSION]...'转换
+  ascii / ebcdic/ibm/block/lcase/notrunc/fsync
+: iflag=FLAG[,FLAG]...
+  append/cio/direct/sync/binary/text/skip_bytes/seek_bytes
+  
 * apt
 : apt-cache search 'expression'
 : apt-get source libc6-dev 下载源代码
+
+* mount
+ mount  [-t vfstype] [-o options] device dir
+** 1.-t vfstype 指定文件系统的类型，通常不必指定。mount 会自动选择正确的类型。常用类型有：
+　　光盘或光盘镜像：iso9660
+　　DOS fat16文件系统：msdos
+　　Windows 9x fat32文件系统：vfat
+　　Windows NT ntfs文件系统：ntfs
+　　Mount Windows文件网络共享：smbfs
+　　UNIX(LINUX) 文件网络共享：nfs
+** 　2.-o options 主要用来描述设备或档案的挂接方式。常用的参数有：
+　　loop：用来把一个文件当成硬盘分区挂接上系统
+　　ro：采用只读方式挂接设备
+　　rw：采用读写方式挂接设备
+　　iocharset：指定访问文件系统所用字符集,不能显示中文 iocharset=cp936
+** 3.device 要挂接(mount)的设备。
+** 4.dir设备在系统上的挂接点(mount point)。
+** sudo mount -t smbfs -o username=user,password='' //10.0.1.1/windowsshare /mnt 浏览windows 共享文件夹
+* fdisk -l查看磁盘
+* find	find pathname -options [-print -exec -ok ...]
+  : 搜索文件,并执行操作
+  : pathname: find命令所查找的目录路径。例如用.来表示当前目录，用/来表示系统根目录。
+  : -print： find命令将匹配的文件输出到标准输出。
+  : -exec： find命令对匹配的文件执行该参数所给出的shell命令。相应命令的形式为'command' {  } \;，注意{   }和\；之间的空格。
+  : -ok：和-exec的作用相同，只不过以一种更为安全的模式来执行该参数所给出的shell命令，在执行每一个命令之前，都会给出提示，让用户来确定是否执行。
+
+  : -name   按照文件名查找文件。
+  : -perm   按照文件权限来查找文件。
+  : -prune  使用这一选项可以使find命令不在当前指定的目录中查找，如果同时使用-depth选项，那么-prune将被find命令忽略。
+  : -user   按照文件属主来查找文件。
+  : -group  按照文件所属的组来查找文件。
+  : -mtime -n +n  按照文件的更改时间来查找文件， - n表示文件更改时间距
+  : 现在n天以内，+ n表示文件更改时间距现在n天以前。find命令还有-atime和-ctime 选项，但它们都和-m time选项。
+  : -nogroup  查找无有效所属组的文件，即该文件所属的组在/etc/groups中不存在。
+  : -nouser   查找无有效属主的文件，即该文件的属主在/etc/passwd中不存在。
+  : -newer file1 ! file2  查找更改时间比文件file1新但比文件file2旧的文件。
+  : -type  查找某一类型的文件，诸如：
+  + b - 块设备文件。
+  + d - 目录。
+  + c - 字符设备文件。
+  + p - 管道文件。
+  + l - 符号链接文件。
+  + f - 普通文件。
+  + -size n：[c] 查找文件长度为n块的文件，带有c时表示文件长度以字节计。
+  + -depth：在查找文件时，首先查找当前目录中的文件，然后再在其子目录中查找。
+  + -fstype：查找位于某一类型文件系统中的文件，这些文件系统类型通常可以在配置文件/etc/fstab中找到，该配置文件中包含了本系统中有关文件系统的信息。
+  + -mount：在查找文件时不跨越文件系统mount点。
+  + -follow：如果find命令遇到符号链接文件，就跟踪至链接所指向的文件。
+  + -cpio：对匹配的文件使用cpio命令，将这些文件备份到磁带设备中。
+
+*** 另外,下面三个的区别:
+  : -amin n   查找系统中最后N分钟访问的文件  -n n天以内;+n n天之前
+  : -atime n  查找系统中最后n*24小时访问的文件
+  :  -cmin n   查找系统中最后N分钟被改变文件状态的文件
+  :  -ctime n  查找系统中最后n*24小时被改变文件状态的文件
+  :  -mmin n   查找系统中最后N分钟被改变文件数据的文件
+  :  -mtime n  查找系统中最后n*24小时被改变文件数据的文件
+  : find  ./    -mtime    -1    -type f    -ok   ls -l    {} \;  
+  : find .    -perm -007    -exec ls -l {} \;  
+
+* awk
+	: awk '{print $1}'
+
+* dmesg
+# linux 错误消息控制
+# clear 
+# 查看  一般看最后几行 tail
+
+* fsck.vat
 
 * Org Mode	
 *** 大纲编辑(outline)

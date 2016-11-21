@@ -1,16 +1,16 @@
 * 对象
-** window对象
-*** HTML document
-**** 节点对象
-document.getElementById()  id属性
-document.getElementsByTagName()  标签
-document.getElementsByClassName() class属性
+** DOM 为了统一标准,背景(浏览器大战) 树形数据结构 基本成分:节点
+: 树的结构/ 访问方法通过 父/子/节点名
+*** HTML DOM 定义了所有 HTML 元素的对象和属性，以及访问它们的方法（接口）
+*** HTML DOM 方法
+: 通过使用 getElementById() 和 getElementsByTagName() 方法
+: 通过使用 getElementsByClassName() 方法
 : 通过使用一个元素节点的 parentNode、firstChild 以及 lastChild 属性
-**** 节点属性
-***** innerHTML: 获取元素内容,很多东西
-***** nodeName 规定节点的名称
-***** nodeValue 规定节点的值 (文本节点有值)
-***** nodeType 返回节点的类型。nodeType 是只读的
+*** HTML DOM属性
+**** 获取元素内容的最简单方法是使用 innerHTML 属性
+**** nodeName 属性规定节点的名称
+**** nodeValue 属性规定节点的值
+**** nodeType 属性返回节点的类型。nodeType 是只读的
 #+BEGIN_SRC 
 元素 	1
 属性 	2
@@ -18,22 +18,22 @@ document.getElementsByClassName() class属性
 注释 	8
 文档 	9
 #+END_SRC
-****  修改
-***** 创建新的 HTML 元素
+*** HTML DOM 修改
+**** 创建新的 HTML 元素
 #+BEGIN_SRC 
 var para=document.createElement("p");
 var node=document.createTextNode("This is new.");
 para.appendChild(node);
 #+END_SRC
-**** HTML DOM - 元素
-***** 创建新的 HTML 元素 - appendChild()您首先必须创建该元素，然后把它追加到已有的元素上。
-***** 创建新的 HTML 元素 - insertBefore()
-***** 删除已有的 HTML 元素
+*** HTML DOM - 元素
+**** 创建新的 HTML 元素 - appendChild()您首先必须创建该元素，然后把它追加到已有的元素上。
+**** 创建新的 HTML 元素 - insertBefore()
+**** 删除已有的 HTML 元素
 #+BEGIN_SRC 
 var child=document.getElementById("p1");
 child.parentNode.removeChild(child);
 #+END_SRC
-***** 替换 HTML 元素
+**** 替换 HTML 元素
 : 如需替换 HTML DOM 中的元素，请使用 replaceChild() 方法：
 #+BEGIN_SRC 
 var parent=document.getElementById("div1");
@@ -41,43 +41,43 @@ var child=document.getElementById("p1");
 parent.replaceChild(para,child);
 #+END_SRC
 
-**** HTML DOM事件
-***** window 事件属性
+*** HTML DOM事件
+**** window 事件属性
 + onload 页面结束加载之后触发。   
 + onresize  当浏览器窗口被调整大小时触发。 
-***** FORM 事件
+**** FORM 事件
 + onselect      script 在元素中文本被选中后触发。            
 + onsubmit      script 在提交表单时触发。                   
-***** 键盘事件
+**** 键盘事件
 + onkeydown  script 在用户按下按键时触发。
 + onkeypress script 在用户敲击按钮时触发。
 + onkeyup    script 当用户释放按键时触发。
-***** Mouse事件
+**** Mouse事件
 + onclick
 + ondblclick
 + onmousedown
 + onscroll
-***** Media事件
+**** Media事件
 + onabort
 + onplay
-***** onmousedown、onmouseup 以及 onclick 事件
-**** HTML DOM导航
-***** 根节点
+**** onmousedown、onmouseup 以及 onclick 事件
+*** HTML DOM导航
+**** 根节点
 : document.documentElement - 全部文档
 : document.body - 文档的主体
 
-***** 节点列表
+**** 节点列表
 #+BEGIN_SRC 
  var x=document.getElementsByTagName("p");
 可以通过下标号访问这些节点。如需访问第二个 <p>，您可以这么写：
 y=x[1]; 
 #+END_SRC
-***** length 属性定义节点列表中节点的数量
+**** length 属性定义节点列表中节点的数量
 
-*** XML xmldoc
-*** 浏览器
-**** console 非标准;对象提供浏览器控制台的接入
-***** console.log()
+*** XML DOM
+** 浏览器
+*** console 非标准;对象提供浏览器控制台的接入
+**** console.log()
 * HTML5 文本    
 ** <head>
 ** <body>
@@ -120,6 +120,8 @@ y=x[1];
 
 
 
+
+
 * 样式 CSS 样式定义如何显示 HTML 元素
 ** 选择器,依赖DOM
 *** 派生选择器
@@ -150,6 +152,7 @@ y=x[1];
   * CSS 表格
   * CSS 轮廓
 
+
 * 客户端脚本 javascript
 ** 对象
 *** 内建对象,String;Date;Array
@@ -163,9 +166,9 @@ y=x[1];
     this.eyecolor=eyecolor;
     }
 #+END_SRC
-** JavaScript for...in 语句循环遍历对象的属性。
-** 日期 Date() getTime() setFullYear() toUTString getDay()
-** 数组 concat() join() sort() Array()
+*** JavaScript for...in 语句循环遍历对象的属性。
+*** 日期 Date() getTime() setFullYear() toUTString getDay()
+*** 数组 concat() join() sort() Array()
 *** RegExp 对象有 3 个方法：test()、exec() 以及 compile()。
 *** window.location 对象用于获得当前页面的地址 (URL)，并把浏览器重定向到新的页面。
 ****  * location.hostname 返回 web 主机的域名
