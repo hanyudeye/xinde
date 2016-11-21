@@ -1,4 +1,3 @@
-
 * Linux应用
 ** 系统管理
 *** 系统安全
@@ -430,7 +429,7 @@ i386选项
 **** pstack 显示每个进程的栈跟踪
 **** indent 格式化C语言的源文件
 **** gdb 功能强大的程序调试器
-***** options
+***** options gdb <program> [core]|[PID]
 -d 指定远程调试时串行接口的线路速度
 -batch 以批处理模式运行
 -c 指定要分析的核心转储文件
@@ -443,10 +442,31 @@ i386选项
 -se 指定符号和要执行的文件名
 -tty 设置标准输出和输入设备
 -x 从指定的文件执行 gdb 命令
-
 ***** 常用的调试命令
-列出源码 ;l 3 （开始行）                              
-设置断点 ;b <行号>;b <函数名称>;b *<函数名称>;b *<代码地址> 
+shell <command>
+make <make -args>
+
+运行参数
+set args 设定参数
+show args 查看运行参数
+运行环境
+path<dir> 设定程序的运行路径。
+show paths 查看程序的运行路径。
+set environment varname[=value]设置环境变量。如:set env USER=hchen
+show environment[varname]查看环境变量
+工作目录
+cd <dir>相当于 shell 的 cd 命令。
+pwd 显示当前的工作目录。
+程序的输入输出
+info terminal 显示程序用到的终端的模式
+使用重定向空值程序输出。如 run>outfile
+tty 命令可以指定写输入输出的终端设备。如 tty /dev/ttyb
+列出源码 ;l 3 （开始行） 根据本地文件,没有就列不出 
+设置断点 ;b filename: <行号>;break +offset -offset 当前行号前后
+b filename: <函数名称>;
+b *<函数名称>;
+b *<代码地址> 
+break...if<condition>
 调试程序 ;r 
 继续执行 ;c
 删除断点 ; clear <行号>
@@ -458,6 +478,7 @@ p <数组名>显示数组元素;
 p <*数组指针>显示数组int a[N]的特定值：
 显示变量类型;    whatis p
 显示各类信息   info b 显示断点信息
+finish 退出函数
 info r 寄存器信息
 info local 当前函数中的局部变量信息;
 info prog 显示被调试程序的执行状态
@@ -465,6 +486,20 @@ break *_start+1 由于 gnu 调试时忽略开始处断点, 需要在开始标签
 print/d 显示十进制数字
 print/t 显示二进制数字
 print/x 显示 16 进制数字
+
+x/FMT ADDRESS.
+ADDRESS is an expression for the memory address to examine.
+FMT is a repeat count followed by a format letter and a size letter.
+Format letters are o(octal), x(hex), d(decimal), u(unsigned decimal),
+  t(binary), f(float), a(address), i(instruction), c(char), s(string)
+  and z(hex, zero padded on the left).
+Size letters are b(byte), h(halfword), w(word), g(giant, 8 bytes).
+The specified number of objects of the specified size are printed
+according to the format.
+7.0版本以上gdb的disas命令可以携带/m参数，让汇编与c源码同时显示：disas /m main
+
+
+
 使用 x 命令可以查看特定内存的值:
 x/nyz
 其中 n 为要显示的字段数
@@ -887,38 +922,25 @@ awk '/SCC/{getline; print}' URFILE
 -batch：以批处理模式运行emacs编辑器。
 
 M-r : 将光标移动到屏幕中间那行
-C-a : 移到行首
-M-a : 移到句首，从行首到句首之间可能有空格
 M-e : 移到句尾
 M-{ : 向上移动一段
 C-left : 向后移动一个单词
 C-down : 向后移动一段
-M-> : 移到整个文本末尾
-C-u 数字 命令 : 执行多次(数字表示次数)该命令；"M-数字 命令" 也可以
 M-x goto-line : 移动到某一行
-C-l : 重绘屏幕，效果就是当前编辑行移动窗口中央
 
 Buffer 相关
-C-x k : 关闭当前buffer
-C-x b : 切换到前一个编辑的buffer
-C-x C-s : 保存当前buffer
 C-x s : 保存所有未保存的buffer，会提示你是否需要保存
 
 拷贝与粘贴
 M-space (redefined): 设置mark; C-@ 是默认命令
-C-y : 粘贴
-M-y : 用C-y拉回最近被除去的文本后，换成 M-y可以拉回以前被除去的文本。键入多次的M-y可以拉回更早以前被除去的文本。
 C-x r k : 执行矩形区域的剪切 [范围是光标处到缓冲头的一个矩形],可以选择区块
 C-x r y : 执行矩形区域的粘贴
 
 窗口操作
-M-o (redefined) : 在窗口之间切换; C-x o 是默认命令
 C-x 5 1/2/3/0 : 对frame类似的操作
 C-x > : 窗口内容左卷（这两个命令在垂直分割窗口后比较有用）
-ESC C-v : 在其它窗口进行卷屏操作
 
 搜索和替换
-C-s RET C-w : 按单词查询
 M-% : 查询替换，也就是替换前会询问一下
 M-x replace-string : 普通替换
 
@@ -933,7 +955,6 @@ C-x r b : 跳到bookmark处
 
 帮助
 C-h C-f : 查看一个函数的info，非常有用
-C-h i : 看Info
 
 其它
 C-M-\ : 对选中区域，按照某种格式(比如C程序)进行格式化
@@ -942,10 +963,6 @@ M-! : 执行外部shell命令
 M-x shell : 模拟shell的buffer
 M-x term : 模拟terminal, C-c k 关闭terminal
 C-x C-q : 修改buffer的只读属性
-
-键盘宏
-C-x ( 开始录制宏
-C-x ) 录制结束
 
 C-x i 插入文件
 C-/ 撤销
@@ -957,75 +974,38 @@ C-/ 撤销
 窗口移动 M-x windmove-left /right /down
 替换windows换行M-x replace-string RET C-q C-m RET RET
 
-gdb –annotate=3 test回车就进入了调试模式
-annotate = 0是最基本的模式和在命令行使用gdb完全一样。
-annotate = 1是单步调试模式，出现上下两个窗口，上面是gdb运行的buffer，下面是你代码的buffer，会在代码 buffer中，同步指示当前运行的语句的位置。
-annotate = 2是产生注解的模式。
-annotate = 3是信息最完整的模式。此时的 Emacs 分5个 buffer，从上到下、从左到右依次是：gdb 调试窗口、变量实时变化显示窗口、源代码窗口、栈窗口、断点信息
+调试
+gdb –annotate=3 test
 无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。
 gdb-many-windows 切换单窗格/多窗格模式
 gdb-restore-windows 恢复窗格布局	
-vim
-	ngg跳到指定行	| :n 指定行 |vim +n FileName 打开文件既跳转
-	:set number 显示行号 autoindent cindent(c语言自动缩进)
-	:syntax on 
-
-
-
-du	磁盘使用
-	-b filename ->filename 占用多少字节 -k -m (多少K,兆)
-
-
-emacs-w3m
-	例如收到的一封电子邮件里有一个指向某个Web站点，或FTP站点的URL地址，于是想去看一看。 移动到该URL地址处并输入 ESC x w3-follow-URL-at-point 就会转到那个站点去。
-	如果对那个站点上的东西感兴趣，则可以把它添加到收藏夹里，或者用 C-x C-w (另存为)组合键把该 主页上的内容保存到一个文件里去。
-	也可以在不退出Emacs的情况下浏览自己编写的HTML文档，输入 ESC x w3-open-local RET filename RET 命令即可。
-
-	快捷键	功能
+***** Emacs 插件	
+# ido, 类似于helm,和helm各有千秋我都用,五五开,
+# imenu 显示当前文件函数列表,可以直接跳转到那去,完全可配置
+# flymake 实时语法检查,通吃所有语言
+# flyspell 拼写检查,爱死了,是我见过的所有拼写检查最强大,如果你知道如何配置.
+****** emacs-w3m
+	C-x C-w 保存
 	q	关闭窗口
 	Q	直接离开
 	U	打开 URL
-	V	打开文件
 	C-x-k	关闭当前标签页
 	G	在标签页中打开一个网址
-	c-c c-p	上一标签
-	c-c c-n	下一标签
-	S	用google进行搜索
 	B	后退
 	ESC I	图片另存为 
 	=   	显示当前页面属性 
 	N	前进
-	H	主页
 	R	刷新
-	C-n	下一行
-	C-p	向上一行
-	C-b	向后
-	C-f	向前
-	C-v	向下滚屏
-	ESC v	向上滚屏
 	F   	提交表单 
-	打开链接	RET
-	>		向右滚屏
-	<		向左滚屏
-	,		向左移动一格
-	.		向右移动一格
-	 书签
-	快捷键	功能
 	a	添加当前页到书签
 	ESC a	添加该URL到书签
 	v   显示书签
 	E   编辑书签
 	C-k 删除书签
 	C-_ 撤消书签
-	M   用外部浏览器打开当前页面
-	ESC M	用外部浏览器打开链接
+	M   用外部浏览器打开链接
 	C-c C-k	停止载入
 
-***** Emacs 插件	
-# ido, 类似于helm,和helm各有千秋我都用,五五开,
-# imenu 显示当前文件函数列表,可以直接跳转到那去,完全可配置
-# flymake 实时语法检查,通吃所有语言
-# flyspell 拼写检查,爱死了,是我见过的所有拼写检查最强大,如果你知道如何配置.
 **** jed 主要用于编辑代码的编辑器
 **** joe 强大的纯文本编辑器
 **** ed 单行纯文本编辑器
@@ -1390,9 +1370,11 @@ git checkout -b bug_fix_local bug_fix_remote #把本地端切换为远程的bug_
 规则：/fd1/*
 　　　　  说明：忽略根目录下的 /fd1/ 目录的全部内容；
 
-
 * qemu	
   [-fda fdb] Use file as floppy disk 0/1 image	     
+* du	磁盘使用
+	-b filename ->filename 占用多少字节 -k -m (多少K,兆)
+
 * apt
 : apt-cache search 'expression'
 : apt-get source libc6-dev 下载源代码
@@ -2241,3 +2223,4 @@ I    #+include: line
 1.C-c C-e a 导出为文本文件。
 2.C-c C-e h 导出为 HTML 文件 
 
+* linux 系统调用
