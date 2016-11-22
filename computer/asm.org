@@ -1,122 +1,122 @@
-* asm ����  ����,���Է������Ѷ��ķ���,��˼������
-���������û���ʹ��
-** �Ĵ���
-80386 �����¼Ĵ���:
-ͨ�üĴ���: %eax,%ebx,%ecx,%edx,%edi,%esi,%ebp,%esp;
-�μĴ���:%cs(code),%ds(data),%ss(stack), %es,%fs,%gs;
-���ƼĴ���:%cr0,%cr2,%cr3;
-debug �Ĵ���:%db0,%db1,%db2,%db3,%db6,%db7;
-���ԼĴ���:%tr6,%tr7;
-����Ĵ���ջ:%st(0),%st(1),%st(2),%st(3),%st(4),%st(5),%st(6),%st(7)��
-** ������
+* asm 机器  怕啰嗦,所以发明了难懂的符号,意思不明了
+把所有引用换成使用
+** 寄存器
+80386 有如下寄存器:
+通用寄存器: %eax,%ebx,%ecx,%edx,%edi,%esi,%ebp,%esp;
+段寄存器:%cs(code),%ds(data),%ss(stack), %es,%fs,%gs;
+控制寄存器:%cr0,%cr2,%cr3;
+debug 寄存器:%db0,%db1,%db2,%db3,%db6,%db7;
+测试寄存器:%tr6,%tr7;
+浮点寄存器栈:%st(0),%st(1),%st(2),%st(3),%st(4),%st(5),%st(6),%st(7)。
+** 立即数
 $0x04
 para= 0x04  $para
-** ���ų���
-���ų���ֱ��ʹ�� ��
+** 符号常量
+符号常数直接使用 如
 value: .long 0x12a3f2de
 movl value , %ebx
-ָ��ִ�еĽ���ǽ����� 0x12a3f2de װ��Ĵ��� ebx��
-** ʹ�÷��ŵ�ַ
-movl $value, % ebx ������ value �ĵ�ַװ��Ĵ���ebx
-** Memory ʹ��
-Intel �﷨�ļ���ڴ����õĸ�ʽΪ:
+指令执行的结果是将常数 0x12a3f2de 装入寄存器 ebx。
+** 使用符号地址
+movl $value, % ebx 将符号 value 的地址装入寄存器ebx
+** Memory 使用
+Intel 语法的间接内存引用的格式为:
 section:[base+index*scale+displacement]
-���� AT&T �﷨�ж�Ӧ����ʽΪ:
+而在 AT&T 语法中对应的形式为:
 section:displacement(base,index,scale)
-** ����ָ��:
-.ascii �ı��ַ���
-.asciz �Կ��ַ���β���ַ���
-.byte �ֽ�ֵ
-.double ˫���ȸ���ֵ
-.float �����ȸ���ֵ
-.int 32 λ����
-.long 32 λ����, �� int ��ͬ
-.octa 16 �ֽ�����
-.quad 8 �ֽ�����
-.short 16 λ����
-.single �����ȸ�����(�� float ��ͬ)
-���徲̬����:
-ʹ��.equ ����ѳ���ֵ����Ϊ�������ı�����ʹ�õķ���,��:
+** 声明指令:
+.ascii 文本字符串
+.asciz 以空字符结尾的字符串
+.byte 字节值
+.double 双精度浮点值
+.float 单精度浮点值
+.int 32 位整数
+.long 32 位整数, 和 int 相同
+.octa 16 字节整数
+.quad 8 字节整数
+.short 16 位整数
+.single 单精度浮点数(和 float 相同)
+定义静态符号:
+使用.equ 命令把常量值定义为可以在文本段中使用的符号,如:
 .section .data
 .equ LINUX_SYS_CALL, 0x80
 .section .text
 movl $LINUX_SYS_CALL, %eax
-** bss ��
-�� data �β�ͬ, ���������ض�����������, ֻ������Ϊ����Ŀ�ı�����ԭʼ�ڴ沿�ּ��ɡ�
-GNU �����ʹ�������������������ڴ�����:
-.comm ����Ϊδ��ʼ����ͨ���ڴ�����
-.lcomm ����Ϊδ��ʼ���ı����ڴ�����
+** bss 段
+和 data 段不同, 无需声明特定的数据类型, 只需声明为所需目的保留的原始内存部分即可。
+GNU 汇编器使用以下两个命令声明内存区域:
+.comm 声明为未初始化的通用内存区域
+.lcomm 声明为未初始化的本地内存区域
 
 .section .bss
 .lcomm buffer, 1000
-������ 1000 �ֽڵ��ڴ��ַ�����ǩ buffer, ����������ͨ���ڴ�����ĳ���֮��ĺ����ǲ��ܷ������ǵ�.(������.globl ������ʹ����
-��)
-** ѭ��:
-loop ѭ��ֱ�� ECX �Ĵ���Ϊ 0
-loope/loopz ѭ��ֱ�� ecx �Ĵ���Ϊ 0 ����û������ ZF ��־
-loopne/loopnz ѭ��ֱ�� ecx Ϊ 0 ���������� ZF ��
-** rep ǰ׺
-REP ָ�������֮����������ִ��ʲô����, ����ָ�����ڰ����ض������ظ�ִ���ַ���ָ��, �� ECX �Ĵ�������,������Ҫ����� loop ָ
-��, �� rep movsl
-rep ��������ʽ:
-repe ����ʱ�ظ�
-repne ������ʱ�ظ�
-repnz ��Ϊ��ʱ�ظ�
-repz Ϊ��ʱ�ظ�
+该语句把 1000 字节的内存地址赋予标签 buffer, 在声明本地通用内存区域的程序之外的函数是不能访问他们的.(不能在.globl 命令中使用他
+们)
+** 循环:
+loop 循环直到 ECX 寄存器为 0
+loope/loopz 循环直到 ecx 寄存器为 0 或者没有设置 ZF 标志
+loopne/loopnz 循环直到 ecx 为 0 或者设置了 ZF 标
+** rep 前缀
+REP 指令的特殊之处在与它不执行什么操作, 这条指令用于按照特定次数重复执行字符串指令, 有 ECX 寄存器控制,但不需要额外的 loop 指
+令, 如 rep movsl
+rep 的其他格式:
+repe 等于时重复
+repne 不等于时重复
+repnz 不为零时重复
+repz 为零时重复
 
-** ����
-GNU ������Զ��庯�����﷨:
-.type ��ǩ(Ҳ���Ǻ�����), @function
-ret ���ص����ô�
-** gnu ���������﷨:
-asm ��__asm__("������");
-ָ����������������
-���������ָ���һ�� ����ʹ�����зָ����ָ�
-ʹ�� c ȫ�ֱ���, ���������������ʹ�þֲ�����, ע���ڻ�����Դ�����ֵ�������ڴ�λ��, ������������ֵ
-�����ϣ���Ż��������, ����� volatile ���η���:__asm__ volatile("code");
-2,GCC ����������չ�﷨
+** 函数
+GNU 汇编语言定义函数的语法:
+.type 标签(也就是函数名), @function
+ret 返回到调用处
+** gnu 内联汇编的语法:
+asm 或__asm__("汇编代码");
+指令必须包含在引号里
+如果包含的指令超过一行 必须使用新行分隔符分隔
+使用 c 全局变量, 不能在内联汇编中使用局部变量, 注意在汇编语言代码中值被用做内存位置, 而不是立即数值
+如果不希望优化内联汇编, 则可以 volatile 修饰符如:__asm__ volatile("code");
+2,GCC 内联汇编的扩展语法
 __asm__("assembly code":output locations:input operands:changed registers);
-��һ�����ǻ�����
-�ڶ����������λ��, ������������������ֵ�ļĴ������ڴ�λ���б�
-�������������������,������������������ֵ�ļĴ������ڴ�λ�õ��б�
-���Ĳ����ǸĶ��ļĴ���, �������ı���κ������Ĵ������б�
-�⼸�����ֿ��Բ�ȫ��, ����û�еĻ�����ʹ��:�ָ�
-1, ָ������ֵ�����ֵ, ����ֵ�����ֵ���б���ʽΪ:
-"constraint"(variable), ���� variable �ǳ����������� c ����, ����չ asm ��ʽ��, �ֲ���ȫ�ֱ���������ʹ��,ʹ�ö���ѱ�����ŵ���(����)������ﴫ�ͱ���(���)
-Լ��ʹ�õ�һ���ַ�, ����:
-Լ�� ����
-a ʹ��%eax, %ax, %al �Ĵ���
-b ʹ��%ebx, %bx, %bl �Ĵ���
-c ʹ��%ecx, %cx, %cl �Ĵ���
-d ʹ��%edx, %dx, %dl �Ĵ���
-S ʹ��%esi, %si �Ĵ���
-D ʹ��%edi, %di �Ĵ���
-r ʹ���κο��õ�ͨ�üĴ���
-q ʹ��%eax, %ebx, %ecx,%edx ֮һ
-A ���� 64 λֵʹ��%eax, %edx �Ĵ���
-f ʹ�ø���Ĵ���
-t ʹ�õ�һ��(����)�ĸ���Ĵ���
-u ʹ�õڶ�������Ĵ���
-m ʹ�ñ������ڴ�λ��
-o ʹ��ƫ���ڴ�λ��
-V ֻʹ��ֱ���ڴ�λ��
-i ʹ����������ֵ
-n ʹ��ֵ��֪����������ֵ
-g ʹ���κο��õļĴ������ڴ�λ��
-constrant(Լ��)
-������ЩԼ��֮��, ���ֵ������һ��Լ�����η�:
-������η� ����
-+ ���Զ�ȡ��д�������
-= ֻ��д�������
-% ����б�Ҫ���������Ժ���һ���������л�
-& �������������֮ǰ, ����ɾ��������ʹ�ò�����
-��:
+第一部分是汇编代码
+第二部分是输出位置, 包含内联汇编代码的输出值的寄存器和内存位置列表
+第三部分是输入操作数,包含内联汇编代码输入值的寄存器和内存位置的列表
+第四部分是改动的寄存器, 内联汇编改变的任何其他寄存器的列表
+这几个部分可以不全有, 但是没有的还必须使用:分隔
+1, 指定输入值和输出值, 输入值和输出值的列表格式为:
+"constraint"(variable), 其中 variable 是程序中声明的 c 变量, 在扩展 asm 格式中, 局部和全局变量都可以使用,使用定义把变量存放到哪(输入)或从哪里传送变量(输出)
+约束使用单一的字符, 如下:
+约束 描述
+a 使用%eax, %ax, %al 寄存器
+b 使用%ebx, %bx, %bl 寄存器
+c 使用%ecx, %cx, %cl 寄存器
+d 使用%edx, %dx, %dl 寄存器
+S 使用%esi, %si 寄存器
+D 使用%edi, %di 寄存器
+r 使用任何可用的通用寄存器
+q 使用%eax, %ebx, %ecx,%edx 之一
+A 对于 64 位值使用%eax, %edx 寄存器
+f 使用浮点寄存器
+t 使用第一个(顶部)的浮点寄存器
+u 使用第二个浮点寄存器
+m 使用变量的内存位置
+o 使用偏移内存位置
+V 只使用直接内存位置
+i 使用立即整数值
+n 使用值已知的立即整数值
+g 使用任何可用的寄存器和内存位置
+constrant(约束)
+除了这些约束之外, 输出值还包含一个约束修饰符:
+输出修饰符 描述
++ 可以读取和写入操作数
+= 只能写入操作数
+% 如果有必要操作数可以和下一个操作数切换
+& 在内联函数完成之前, 可以删除和重新使用操作数
+如:
 __asm__("assembly code": "=a"(result):"d"(data1),"c"(data2));
-�� c ���� data1 ����� edx �Ĵ�����, �� c ���� data2 ��ŵ� ecx �Ĵ�����, �������Ľ��������� eax �Ĵ�����, Ȼ���͸�����
+把 c 变量 data1 存放在 edx 寄存器中, 把 c 变量 data2 存放到 ecx 寄存器中, 内联汇编的结果将存放在 eax 寄存器中, 然后传送给变量
 result
-** ϵͳ����  include/asm-i386/unistd.h
+** 系统调用  include/asm-i386/unistd.h
 NNN
-** ��
+** 宏
 #+BEGIN_SRC asm
 #ifndef _BOOT
 #define _BOOT	
