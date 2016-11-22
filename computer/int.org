@@ -70,7 +70,7 @@
 |     |                            | BH = 页号                              |                                 |
 |     |                            | AL = writemode，BL = 属性/颜色         |                                 |
 
-**  int 13 磁盘中断
+** int 13 磁盘中断
 #+CAPTION:  int 13 磁盘操作
 | AH  | 功能                  | 调用参数                                  | 返回参数                                     |
 | 00  | 磁盘系统复位          | DL＝驱动器                                | CF＝0——操作成功，AH＝00H                     |
@@ -189,7 +189,7 @@
 | 19H | 磁头保护，仅在PS/2    |                                           |                                              |
 | 1AH | 格式化ESDI驱动器      | 仅在PS/2中有效，在此从略                  |                                              |
 
-**  int 16 键盘中断
+** int 16 键盘中断
 | AH  | 功能                                | 调用参数                           | 返回值                           |
 | 00H | 读取键盘输入                        |                                    | AL 字符的ASCII                   |
 |     | 按键按下才返回                      |                                    | AH 扫描码                        |
@@ -236,6 +236,185 @@
 |     |                                     |                                    | Bit 1 1 = Left Shift pressed     |
 |     |                                     |                                    | Bit 0 1 = Right Shift pressed    |
 
+** int 0x80 linux系统调用
+   | %eax | NameSource | %ebx          | %ecx | %edx |   |
+   |    1 | sys_exit   | kernel/exit.c | int  | -    | - |
+   2sys_forkarch/i386/kernel/process.cstruct pt_regs--
+   3sys_readfs/read_write.cunsigned intchar *size_t
+   4sys_writefs/read_write.cunsigned intconst char *size_t
+   5sys_openfs/open.cconst char *intint
+   6sys_closefs/open.cunsigned int--
+   7sys_waitpidkernel/exit.cpid_tunsigned int *int
+   8sys_creatfs/open.cconst char *int-
+   9sys_linkfs/namei.cconst char *const char *-
+   10sys_unlinkfs/namei.cconst char *--
+   11sys_execvearch/i386/kernel/process.cstruct pt_regs--
+   12sys_chdirfs/open.cconst char *--
+   13sys_timekernel/time.cint *--
+   14sys_mknodfs/namei.cconst char *intdev_t
+   15sys_chmodfs/open.cconst char *mode_t-
+   16sys_lchownfs/open.cconst char *uid_tgid_t
+   18sys_statfs/stat.cchar *struct __old_kernel_stat *-
+   19sys_lseekfs/read_write.cunsigned intoff_tunsigned int
+   20sys_getpidkernel/sched.c---
+   21sys_mountfs/super.cchar *char *char *
+   22sys_oldumountfs/super.cchar *--
+   23sys_setuidkernel/sys.cuid_t--
+   24sys_getuidkernel/sched.c---
+   25sys_stimekernel/time.cint *--
+   26sys_ptracearch/i386/kernel/ptrace.clonglonglong
+   27sys_alarmkernel/sched.cunsigned int--
+   28sys_fstatfs/stat.cunsigned intstruct __old_kernel_stat *-
+   29sys_pausearch/i386/kernel/sys_i386.c---
+   30sys_utimefs/open.cchar *struct utimbuf *-
+   33sys_accessfs/open.cconst char *int-
+   34sys_nicekernel/sched.cint--
+   36sys_syncfs/buffer.c---
+   37sys_killkernel/signal.cintint-
+   38sys_renamefs/namei.cconst char *const char *-
+   39sys_mkdirfs/namei.cconst char *int-
+   40sys_rmdirfs/namei.cconst char *--
+   41sys_dupfs/fcntl.cunsigned int--
+   42sys_pipearch/i386/kernel/sys_i386.cunsigned long *--
+   43sys_timeskernel/sys.cstruct tms *--
+   45sys_brkmm/mmap.cunsigned long--
+   46sys_setgidkernel/sys.cgid_t--
+   47sys_getgidkernel/sched.c---
+   48sys_signalkernel/signal.cint__sighandler_t-
+   49sys_geteuidkernel/sched.c---
+   50sys_getegidkernel/sched.c---
+   51sys_acctkernel/acct.cconst char *--
+   52sys_umountfs/super.cchar *int-
+   54sys_ioctlfs/ioctl.cunsigned intunsigned intunsigned long
+   55sys_fcntlfs/fcntl.cunsigned intunsigned intunsigned long
+   57sys_setpgidkernel/sys.cpid_tpid_t-
+   59sys_oldunamearch/i386/kernel/sys_i386.cstruct oldold_utsname *--
+   60sys_umaskkernel/sys.cint--
+   61sys_chrootfs/open.cconst char *--
+   62sys_ustatfs/super.cdev_tstruct ustat *-
+   63sys_dup2fs/fcntl.cunsigned intunsigned int-
+   64sys_getppidkernel/sched.c---
+   65sys_getpgrpkernel/sys.c---
+   66sys_setsidkernel/sys.c---
+   67sys_sigactionarch/i386/kernel/signal.cintconst struct old_sigaction *struct old_sigaction *
+   68sys_sgetmaskkernel/signal.c---
+   69sys_ssetmaskkernel/signal.cint--
+   70sys_setreuidkernel/sys.cuid_tuid_t-
+   71sys_setregidkernel/sys.cgid_tgid_t-
+   72sys_sigsuspendarch/i386/kernel/signal.cintintold_sigset_t
+   73sys_sigpendingkernel/signal.cold_sigset_t *--
+   74sys_sethostnamekernel/sys.cchar *int-
+   75sys_setrlimitkernel/sys.cunsigned intstruct rlimit *-
+   76sys_getrlimitkernel/sys.cunsigned intstruct rlimit *-
+   77sys_getrusagekernel/sys.cintstruct rusage *-
+   78sys_gettimeofdaykernel/time.cstruct timeval *struct timezone *-
+   79sys_settimeofdaykernel/time.cstruct timeval *struct timezone *-
+   80sys_getgroupskernel/sys.cintgid_t *-
+   81sys_setgroupskernel/sys.cintgid_t *-
+   82old_selectarch/i386/kernel/sys_i386.cstruct sel_arg_struct *--
+   83sys_symlinkfs/namei.cconst char *const char *-
+   84sys_lstatfs/stat.cchar *struct __old_kernel_stat *-
+   85sys_readlinkfs/stat.cconst char *char *int
+   86sys_uselibfs/exec.cconst char *--
+   87sys_swaponmm/swapfile.cconst char *int-
+   88sys_rebootkernel/sys.cintintint
+   89old_readdirfs/readdir.cunsigned intvoid *unsigned int
+   90old_mmaparch/i386/kernel/sys_i386.cstruct mmap_arg_struct *--
+   91sys_munmapmm/mmap.cunsigned longsize_t-
+   92sys_truncatefs/open.cconst char *unsigned long-
+   93sys_ftruncatefs/open.cunsigned intunsigned long-
+   94sys_fchmodfs/open.cunsigned intmode_t-
+   95sys_fchownfs/open.cunsigned intuid_tgid_t
+   96sys_getprioritykernel/sys.cintint-
+   97sys_setprioritykernel/sys.cintintint
+   99sys_statfsfs/open.cconst char *struct statfs *-
+   100sys_fstatfsfs/open.cunsigned intstruct statfs *-
+   101sys_iopermarch/i386/kernel/ioport.cunsigned longunsigned longint
+   102sys_socketcallnet/socket.cintunsigned long *-
+   103sys_syslogkernel/printk.cintchar *int
+   104sys_setitimerkernel/itimer.cintstruct itimerval *struct itimerval *
+   105sys_getitimerkernel/itimer.cintstruct itimerval *-
+   106sys_newstatfs/stat.cchar *struct stat *-
+   107sys_newlstatfs/stat.cchar *struct stat *-
+   108sys_newfstatfs/stat.cunsigned intstruct stat *-
+   109sys_unamearch/i386/kernel/sys_i386.cstruct old_utsname *--
+   110sys_ioplarch/i386/kernel/ioport.cunsigned long--
+   111sys_vhangupfs/open.c---
+   112sys_idlearch/i386/kernel/process.c---
+   113sys_vm86oldarch/i386/kernel/vm86.cunsigned longstruct vm86plus_struct *-
+   114sys_wait4kernel/exit.cpid_tunsigned long *int options
+   115sys_swapoffmm/swapfile.cconst char *--
+   116sys_sysinfokernel/info.cstruct sysinfo *--
+   117sys_ipc (*Note)arch/i386/kernel/sys_i386.cuintintint
+   118sys_fsyncfs/buffer.cunsigned int--
+   119sys_sigreturnarch/i386/kernel/signal.cunsigned long--
+   120sys_clonearch/i386/kernel/process.cstruct pt_regs--
+   121sys_setdomainnamekernel/sys.cchar *int-
+   122sys_newunamekernel/sys.cstruct new_utsname *--
+   123sys_modify_ldtarch/i386/kernel/ldt.cintvoid *unsigned long
+   124sys_adjtimexkernel/time.cstruct timex *--
+   125sys_mprotectmm/mprotect.cunsigned longsize_tunsigned long
+   126sys_sigprocmaskkernel/signal.cintold_sigset_t *old_sigset_t *
+   127sys_create_modulekernel/module.cconst char *size_t-
+   128sys_init_modulekernel/module.cconst char *struct module *-
+   129sys_delete_modulekernel/module.cconst char *--
+   130sys_get_kernel_symskernel/module.cstruct kernel_sym *--
+   131sys_quotactlfs/dquot.cintconst char *int
+   132sys_getpgidkernel/sys.cpid_t--
+   133sys_fchdirfs/open.cunsigned int--
+   134sys_bdflushfs/buffer.cintlong-
+   135sys_sysfsfs/super.cintunsigned longunsigned long
+   136sys_personalitykernel/exec_domain.cunsigned long--
+   138sys_setfsuidkernel/sys.cuid_t--
+   139sys_setfsgidkernel/sys.cgid_t--
+   140sys_llseekfs/read_write.cunsigned intunsigned longunsigned long
+   141sys_getdentsfs/readdir.cunsigned intvoid *unsigned int
+   142sys_selectfs/select.cintfd_set *fd_set *
+   143sys_flockfs/locks.cunsigned intunsigned int-
+   144sys_msyncmm/filemap.cunsigned longsize_tint
+   145sys_readvfs/read_write.cunsigned longconst struct iovec *unsigned long
+   146sys_writevfs/read_write.cunsigned longconst struct iovec *unsigned long
+   147sys_getsidkernel/sys.cpid_t--
+   148sys_fdatasyncfs/buffer.cunsigned int--
+   149sys_sysctlkernel/sysctl.cstruct __sysctl_args *--
+   150sys_mlockmm/mlock.cunsigned longsize_t-
+   151sys_munlockmm/mlock.cunsigned longsize_t-
+   152sys_mlockallmm/mlock.cint--
+   153sys_munlockallmm/mlock.c---
+   154sys_sched_setparamkernel/sched.cpid_tstruct sched_param *-
+   155sys_sched_getparamkernel/sched.cpid_tstruct sched_param *-
+   156sys_sched_setschedulerkernel/sched.cpid_tintstruct sched_param *
+   157sys_sched_getschedulerkernel/sched.cpid_t--
+   158sys_sched_yieldkernel/sched.c---
+   159sys_sched_get_priority_maxkernel/sched.cint--
+   160sys_sched_get_priority_minkernel/sched.cint--
+   161sys_sched_rr_get_intervalkernel/sched.cpid_tstruct timespec *-
+   162sys_nanosleepkernel/sched.cstruct timespec *struct timespec *-
+   163sys_mremapmm/mremap.cunsigned longunsigned longunsigned long
+   164sys_setresuidkernel/sys.cuid_tuid_tuid_t
+   165sys_getresuidkernel/sys.cuid_t *uid_t *uid_t *
+   166sys_vm86arch/i386/kernel/vm86.cstruct vm86_struct *--
+   167sys_query_modulekernel/module.cconst char *intchar *
+   168sys_pollfs/select.cstruct pollfd *unsigned intlong
+   169sys_nfsservctlfs/filesystems.cintvoid *void *
+   170sys_setresgidkernel/sys.cgid_tgid_tgid_t
+   171sys_getresgidkernel/sys.cgid_t *gid_t *gid_t *
+   172sys_prctlkernel/sys.cintunsigned longunsigned long
+   173sys_rt_sigreturnarch/i386/kernel/signal.cunsigned long--
+   174sys_rt_sigactionkernel/signal.cintconst struct sigaction *struct sigaction *
+   175sys_rt_sigprocmaskkernel/signal.cintsigset_t *sigset_t *
+   176sys_rt_sigpendingkernel/signal.csigset_t *size_t-
+   177sys_rt_sigtimedwaitkernel/signal.cconst sigset_t *siginfo_t *const struct timespec *
+   178sys_rt_sigqueueinfokernel/signal.cintintsiginfo_t *
+   179sys_rt_sigsuspendarch/i386/kernel/signal.csigset_t *size_t-
+   180sys_preadfs/read_write.cunsigned intchar *size_t
+   181sys_pwritefs/read_write.cunsigned intconst char *size_t
+   182sys_chownfs/open.cconst char *uid_tgid_t
+   183sys_getcwdfs/dcache.cchar *unsigned long-
+   184sys_capgetkernel/capability.ccap_user_header_tcap_user_data_t-
+   185sys_capsetkernel/capability.ccap_user_header_tconst cap_user_data_t-
+   186sys_sigaltstackarch/i386/kernel/signal.cconst stack_t *stack_t *-
+   187sys_sendfilemm/filemap.cintintoff_t *
 ** example
 INT 0x10功能0x13
 描述：
