@@ -38,3 +38,144 @@ describe-coding-system
 ***** 接下来用什么编码编写文件 C-x <RET> c coding <RET>
 ***** 重新用编码载入文件 C-x <RET> r coding <RET>
 ***** 一块区域重新编码 M-x recode-region <RET> rightcoding <RET> wrongcoding
+* emacs 功能强大的全屏文本编辑器
+** emacs(选项)(参数)
++<行号>：启动emacs编辑器，并将光标移动到制定行号的行；
+-q：启动emacs编辑器，而不加载初始化文件；
+-u<用户>：启动emacs编辑器时，加载指定用户的初始化文件；
+-t<文件>：启动emacs编辑器时，把指定的文件作为中端，不适用标准输入（stdin）与标准输出（stdout）；
+-f<函数>：执行指定lisp（广泛应用于人工智能领域的编程语言）函数；
+-l<lisp代码文件>：加载指定的lisp代码文件；
+-batch：以批处理模式运行emacs编辑器。
+
+M-r : 将光标移动到屏幕中间那行
+M-e : 移到句尾
+M-{ : 向上移动一段
+C-left : 向后移动一个单词
+C-down : 向后移动一段
+M-x goto-line : 移动到某一行
+
+Buffer 相关
+C-x s : 保存所有未保存的buffer，会提示你是否需要保存
+
+拷贝与粘贴
+M-space (redefined): 设置mark; C-@ 是默认命令
+C-x r k : 执行矩形区域的剪切 [范围是光标处到缓冲头的一个矩形],可以选择区块
+C-x r y : 执行矩形区域的粘贴
+
+窗口操作
+C-x 5 1/2/3/0 : 对frame类似的操作
+C-x > : 窗口内容左卷（这两个命令在垂直分割窗口后比较有用）
+
+搜索和替换
+M-% : 查询替换，也就是替换前会询问一下
+M-x replace-string : 普通替换
+
+Tags
+M-! etags .c .h : 创建TAGS文件
+M-. : 跳到tag所在位置
+M-x list-tags : 列出tags
+
+书签
+C-x r m : 设置书签bookmark
+C-x r b : 跳到bookmark处
+
+帮助
+C-h C-f : 查看一个函数的info，非常有用
+
+其它
+C-M-\ : 对选中区域，按照某种格式(比如C程序)进行格式化
+C-x h : 全部选中
+M-! : 执行外部shell命令
+M-x shell : 模拟shell的buffer
+M-x term : 模拟terminal, C-c k 关闭terminal
+C-x C-q : 修改buffer的只读属性
+
+C-x i 插入文件
+C-/ 撤销
+
+注释
+多行注释 C-x r t
+反注释	 C-x r k
+关闭窗口 C-x 0
+窗口移动 M-x windmove-left /right /down
+替换windows换行M-x replace-string RET C-q C-m RET RET
+
+调试
+gdb –annotate=3 test
+无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。
+gdb-many-windows 切换单窗格/多窗格模式
+gdb-restore-windows 恢复窗格布局	
+** Emacs 插件	
+# ido, 类似于helm,和helm各有千秋我都用,五五开,
+# imenu 显示当前文件函数列表,可以直接跳转到那去,完全可配置
+# flymake 实时语法检查,通吃所有语言
+# flyspell 拼写检查,爱死了,是我见过的所有拼写检查最强大,如果你知道如何配置.
+*** emacs-w3m
+     C-x C-w 保存
+     q	关闭窗口
+     Q	直接离开
+     U	打开 URL
+     C-x-k	关闭当前标签页
+     G	在标签页中打开一个网址
+     B	后退
+     ESC I	图片另存为 
+     =   	显示当前页面属性 
+     N	前进
+     R	刷新
+     F   	提交表单 
+     a	添加当前页到书签
+     ESC a	添加该URL到书签
+     v   显示书签
+     E   编辑书签
+     C-k 删除书签
+     C-_ 撤消书签
+     M   用外部浏览器打开链接
+     C-c C-k	停止载入
+
+* info 树的导航
+** node
+n next node (相对于当前(自身)节点)
+p 
+^ 
+d  <root node == info node>
+<  file top node 
+>  file last node 
+[  backward node
+] forward node 
+f Follow a cross reference. 文件之间的 交叉参考，交叉引用
+l Move back in history to the last node you were at. 历史记录中跳转
+r Move forward in history to the node you returned from after using l.
+L Go to menu of visited nodes. 历史列表
+T Go to table of contents of the current Info file. 把info 文件用列表形式展示
+s 搜索
+SPC scroll forward
+DEL scroll backward
+* elisp
+** 数据
+*** 数据描述
+*** 数据区分
+*** 数据类型
+**** 基本类型
+***** Numbers
+integer
+#b101100 ⇒ 44
+#o54 ⇒ 44
+     #x2c ⇒ 44
+     #24r1k ⇒ 44
+float
+cons
+symbol
+string
+vector
+hash-table
+subr
+byte-code
+**** 类型自定义,lisp knows it's 类型,不会执行
+**** 特定类型
+***** editing types
+****** buffer
+** 方法
+*** 数据使用
+
+#b10
