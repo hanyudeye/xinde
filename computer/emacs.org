@@ -159,23 +159,98 @@ DEL scroll backward
 **** 基本类型
 ***** Numbers
 integer
-#b101100 ⇒ 44
-#o54 ⇒ 44
-     #x2c ⇒ 44
-     #24r1k ⇒ 44
+#b101100 ⇒ 44(二进制)
+#o54 ⇒ 44(八进制)
+#x2a ⇒ 44(十六进制)
+#24r1b ⇒ 35(RADIXrINTEGER) #表示 b+INTEGER*RADIX 
+most-positive-fixnum
+most-negative-fixnum
 float
-cons
-symbol
-string
-vector
-hash-table
-subr
-byte-code
+-0.01
+非法求值 返回 NaN (/ 0.0 0.0)
+positive infinity
+     1.0e+INF
+negative infinity
+     `-1.0e+INF'
+Not-a-number
+     `0.0e+NaN' or `-0.0e+NaN'.
+****** 方法
+floatp
+integerp
+numberp 
+natnump 是否自然数
+zerop
+eq(同一类型,不光数字) / = (number类型)
+/= 整除
+< > <= >=
+max min
+****** 转换
+truncate 截断小数部分,向下转换
+floor 基数,和上面差不多
+ceiling 向上转换
+****** 算数操作
+(setq val (2+  3))
+(+ val 5)
+****** 位操作
+(lsh 5 1) => 10 (lsh -1 -2)
+(ash 5 1) =>算数左移(ash -1 -2)
+***** strings
+****** 方法
+(make-string 5 ?x) =>"xxxxx"
+(string ?a ?b ?c) =>"abc"
+(substring "abcdefg" 0 3) =>"abc"
+(concat "abc" "-def") =>"abc-def"
+(split-string "   two words  ")=>("two" "words")
+(char-equal ?x ?x) =>t
+(string= "abc" "abc")=>t
+***** lists
+****** 方法
+(consp '(3 3))=>t 组合体
+(consp (cons 3 5))=>t 
+(atom '(3 3)) =>t 原子
+(listp '(1)) =>t  (listp '(1 3 3)) nlistp
+(null '()) =>t 
+(car '(a b c)) cdr (car-safe object) (cdr-safe object)
+(pop listname) (nth n list) (nth 2 '(1 2 3 4))=>3
+(nthcdr n list) (nthcdr 1 '(1 2 3 4))=>(2 3 4)
+(list 1 2 '(3 4) 5) (make-list 3 'pig)
+(append '(x y) 'z) =>( x y . z)
+***** sequences
+***** 方法
+sequencep (length sequence)
+(elt [1 2 3 4] 2) =>3 (element)
+(arrayp [a])
+(make-vectory length object)
 **** 类型自定义,lisp knows it's 类型,不会执行
 **** 特定类型
 ***** editing types
 ****** buffer
+*** Symbols a unique name
+**** 方法
+symbolp
+(make-symbol "foo")
+(get symbol property)
+(put symbol property value)
+**** variable (当符号用于操作求值时)
+(setq a 123) =>123 
+(eval 'a)=>123
+a =>123 
+***** global variables
+(setq x '(a b))
+***** constant variables 
+nil
+***** local variables
+(setq y 2)
+(let ((y 1) (z y)) (list y z))
+***** void variables
+**** form
+(fset 'first 'car)
 ** 方法
 *** 数据使用
 
 #b10
+** 控制结构
+*** if progn cond and  or while
+** 排错
+catch throw
+error 
