@@ -5,7 +5,49 @@
 ***** 索引数组 - 带有数字索引的数组 $arr; $arr[]=1;$arr[]=3;| $arr=array();
 ***** 关联数组 - 带有指定键的数组
 ***** 多维数组 - 包含一个或多个数组的数组
-****** array function
+
+*** 变量作用域
+变量作用域：相对于函数而言
+**** local（局部）
+**** global（全局）来自于$var= $GLOBALS["var"] === global $var(建立一个引用,不能赋值)
+**** static（静态）
+*** 常量数据
+****  定义 define("const",33);
+****  预定义(全局)
+***** __file__ | __FILE__ 函数返回的是脚本所在在的路径
+***** 服务器数据 $_SERVER
+	$_SERVER["SERVER_PORT"]  //获取端口  
+	$_SERVER['HTTP_HOST']  	 //获取域名或主机地址 如test.cn
+  	$_SERVER['SERVER_NAME']  //获取域名或主机地址 注：只是主域名如test.cn
+	$_SERVER["REQUEST_URI"]  //获取域名后的详细地址 如：/index.php?id=123 ...  
+	$_SERVER['SERVER_ROOT']  //请求的网页主目录
+: $_SERVER['SCRIPT_NAME']  //包含当前脚本的路径
+: $_SERVER['PHP_SELF']  //获取PHP文件名 
+: 以 CGI 方式運行，二者就有明顯不同的差異,一般差不多的
+	$_SERVER["QUERY_STRING"]  //获取PHP后的网址参数  
+	$_SERVER['HTTP_REFERER']  //来源网页的详细地址  
+	HTTPReferer是header的一部分，当浏览器向web服务器发送请求的时候，一般会带上Referer，告诉服务器我是从哪个页面链接过来的，
+	服务器基此可以获得一些信息用于处理
+  $_SESSION["7ad25498e6faec7e_userid"]=$manager['adminid'];
+***** 客户机数据 $_POST  $_GET 
+*** 生成器
+** 内部处理
+*** 表达式
+*** 运算符
+*** 流程控制
+**** 函数 调用的参数是一份拷贝
+***** 定义 function
+***** 定义引用返回function &functionname
+引用返回用在当你想用函数找到引用该被绑定的一个变量上面.
+#+BEGIN_SRC php -n -r 
+    function &find_var($param){
+return $found_var;
+}
+$foo=&find_var($bar);
+$foo->x=2;
+#+END_SRC
+**** 库函数
+***** array 
 	foreach($array as $key=>$value){}遍历数组
 	each() 函数返回当前元素的键名和键值，并将内部指针向前移动。
 	该元素的键名和键值会被返回带有四个元素的数组中。两个元素（1 和 Value）包含键值，两个元素（0 和 Key）包含键名。
@@ -105,7 +147,7 @@
 	 uksort()	使用用户自定义的比较函数对数组中的键名进行排序。
 
 : print_r(array_filter($array1, "odd"));
-**** date
+***** date
 	 date(Y年m月d日l星期/M英文月,而不是数字)
 	 ((int)date('h')+8)时间,东八区要加8小时
 	 h - 带有首位零的 12 小时小时格式
@@ -189,58 +231,6 @@
 	 timezone_transitions_get() 	返回时区的所有转换。
 	 timezone_version_get() 	返回时区数据库的版本。
 
-**** Directory 函数
-	 chdir()	改变当前的目录。
-	 chroot()	改变根目录。
-	 closedir()	关闭目录句柄。
-	 dir()	返回 Directory 类的实例。
-	 getcwd()	返回当前工作目录。
-	 opendir()	打开目录句柄。
-	 readdir()	返回目录句柄中的条目。
-	 rewinddir()	重置目录句柄。
-	 scandir()	返回指定目录中的文件和目录的数组。
-
-*** 变量作用域
-变量作用域：相对于函数而言
-**** local（局部）
-**** global（全局）来自于$var= $GLOBALS["var"] === global $var(建立一个引用,不能赋值)
-**** static（静态）
-*** 常量数据
-****  定义 define("const",33);
-****  预定义(全局)
-***** __file__ | __FILE__ 函数返回的是脚本所在在的路径
-***** 服务器数据 $_SERVER
-	$_SERVER["SERVER_PORT"]  //获取端口  
-	$_SERVER['HTTP_HOST']  	 //获取域名或主机地址 如test.cn
-  	$_SERVER['SERVER_NAME']  //获取域名或主机地址 注：只是主域名如test.cn
-	$_SERVER["REQUEST_URI"]  //获取域名后的详细地址 如：/index.php?id=123 ...  
-	$_SERVER['SERVER_ROOT']  //请求的网页主目录
-: $_SERVER['SCRIPT_NAME']  //包含当前脚本的路径
-: $_SERVER['PHP_SELF']  //获取PHP文件名 
-: 以 CGI 方式運行，二者就有明顯不同的差異,一般差不多的
-	$_SERVER["QUERY_STRING"]  //获取PHP后的网址参数  
-	$_SERVER['HTTP_REFERER']  //来源网页的详细地址  
-	HTTPReferer是header的一部分，当浏览器向web服务器发送请求的时候，一般会带上Referer，告诉服务器我是从哪个页面链接过来的，
-	服务器基此可以获得一些信息用于处理
-  $_SESSION["7ad25498e6faec7e_userid"]=$manager['adminid'];
-***** 客户机数据 $_POST  $_GET 
-*** 生成器
-** 内部处理
-*** 表达式
-*** 运算符
-*** 流程控制
-**** 函数 调用的参数是一份拷贝
-***** 定义 function
-***** 定义引用返回function &functionname
-引用返回用在当你想用函数找到引用该被绑定的一个变量上面.
-#+BEGIN_SRC php -n -r 
-    function &find_var($param){
-return $found_var;
-}
-$foo=&find_var($bar);
-$foo->x=2;
-#+END_SRC
-**** 库函数
 ***** file
 	  fopen("filename",'w')  //可以指定绝对路径或相对路径
 	  "r" 	只读方式打开，将文件指针指向文件头。
@@ -355,6 +345,17 @@ $foo->x=2;
 	  unset(varname)取消配置；
 	  empty(varname) 对于值是0的数返回true，这里要当心
 
+***** Directory 函数
+	 chdir()	改变当前的目录。
+	 chroot()	改变根目录。
+	 closedir()	关闭目录句柄。
+	 dir()	返回 Directory 类的实例。
+	 getcwd()	返回当前工作目录。
+	 opendir()	打开目录句柄。
+	 readdir()	返回目录句柄中的条目。
+	 rewinddir()	重置目录句柄。
+	 scandir()	返回指定目录中的文件和目录的数组。
+
 ***** PHP 过滤器用于对来自非安全来源的数据（比如用户输入）进行验证和过滤。
 	  filter_has_var() 	检查是否存在指定输入类型的变量。 	5
 	  filter_id() 	返回指定过滤器的 ID 号。 	5
@@ -437,9 +438,9 @@ $foo->x=2;
       crc32 — 计算一个字符串的 crc32 多项式
       crypt — 单向字符串散列
 ******    echo — 输出一个或多个字符串
+实际不是函数,没有参数
 ******    explode — 使用一个字符串分割另一个字符串
 : array explode ( string $delimiter , string $string [, int $limit ] )
-
     fprintf — 将格式化后的字符串写入到流
     get_html_translation_table — 返回使用 htmlspecialchars 和 htmlentities 后的转换表
     hebrev — 将逻辑顺序希伯来文（logical-Hebrew）转换为视觉顺序希伯来文（visual-Hebrew）
@@ -464,7 +465,7 @@ $foo->x=2;
     number_format — 以千位分隔符方式格式化一个数字
     ord — 返回字符的 ASCII 码值
     parse_str — 将字符串解析成多个变量
-    print — 输出字符串
+    print — 输出字符串;    实际不是函数,没参数
     printf — 输出格式化字符串
     quoted_printable_decode — 将 quoted-printable 字符串转换为 8-bit 字符串
     quoted_printable_encode — 将 8-bit 字符串转换成 quoted-printable 字符串
