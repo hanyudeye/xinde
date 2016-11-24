@@ -2135,8 +2135,392 @@ Org 用时间戳来查看文件是否改变。上面的命令只发布修改过�
 
 
 
+使用org-mode来GTD（1）— 入门
+GTD，org-mode概要
 
+GTD（Getting Things Done）是美国的商业顾问David Allen提倡的一种提高生产效率的时间管理系统。利用GTD可以缓解压力，专心地工作，学习。详细可以参考他的两部书《尽管去做：无压工作的艺术》，《结果第一：平衡工作和生活的52条原则》。
+
+Org-Mode是为Emacs编写的个人信息管理以及编写大纲的工具。因为Emacs强大的特性，用其来实践GTD系统是再方便不过的了。这里我将介绍一些org-mode的特性。需要深入了解的可以看这里。
+操作方法
+
+收集
+
+    调用 remember-mode (C-c r)
+    选择 Todo（GTD）或者是 notes
+        选择情境标签（OFFICE, HOME, READING, DVD, etc...）
+        选择Todo的状态（TODO, STARTED, WAITING, etc...）
+        设置任务结束时间（C-c C-d）
+        设置任务的开始时间（C-c C-s）
+
+每天的操作
+
+    首先确认当天的任务
+        确认当天所有的任务 (C-c a d)
+        利用情境确认当天的预定任务 (C-c a h)
+        在时间轴上确认任务 (C-c a L)
+    任务由 TODO 状态转换为 DONE 状态 (C-c C-t 或者 shift+左右)
+    如果有新的预定使用 remember-mode (F8) 来添加任务
+
+周回顾
+
+    打开 org 文件 （C-c g）
+    检查 INBOX 中积攒的任务
+    选择合适的项目分类 （C-c C-w）
+    设置任务的结束时间 （C-c C-d）
+    设置任务的开始时间（C-c C-s）
+
+org-mode 的设置
+
+org-mode的设置可以在 .emacs 中设置，也可以在 org 文件中设置。
+
+先看看 org-mode 所需要的文件。
+
+1
+            2
+            3
+            4
+            5
+            6
+
+	
+
+~/.emacs
+            ~/elisp/org-mode.el
+            ~/org/gtd.org
+            ~/org/notes.grg
+            ~/org/someday.org
+            ~/org/birthday.org
+
+首先是在 ~/.emacs 文件中加载 org-mode.el。其中文件位于 ~/elisp/org-mode.el。
+
+1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+            9
+            10
+            11
+            12
+            13
+            14
+            15
+            16
+            17
+            18
+            19
+            20
+            21
+            22
+            23
+            24
+            25
+            26
+            27
+            28
+            29
+            30
+            31
+            32
+            33
+            34
+            35
+            36
+            37
+            38
+            39
+            40
+            41
+            42
+            43
+            44
+            45
+            46
+            47
+            48
+            49
+            50
+            51
+            52
+            53
+            54
+            55
+            56
+            57
+            58
+            59
+            60
+            61
+            62
+            63
+            64
+            65
+            66
+            67
+            68
+            69
+            70
+            71
+            72
+            73
+            74
+            75
+            76
+            77
+            78
+            79
+            80
+            81
+            82
+            83
+            84
+            85
+            86
+            87
+            88
+            89
+            90
+            91
+            92
+            93
+            94
+            95
+            96
+            97
+            98
+            99
+            100
+            101
+            102
+            103
+            104
+            105
+            106
+
+	
+
+(load "org-mode")
+            (custom-set-variables
+            ;; custom-set-variables was added by Custom.
+              ;; If you edit it by hand, you could mess it up, so be careful.
+              ;; Your init file should contain only one such instance.
+              ;; If there is more than one, they won't work right.
+             '(auto-raise-tool-bar-buttons t t)
+            '(auto-resize-tool-bars t t)
+            '(calendar-week-start-day 1)
+            '(case-fold-search t)
+            '(org-agenda-files (quote ("~/org/birthday.org" "~/org/gtd.org")))
+            '(org-agenda-ndays 7)
+            '(org-agenda-repeating-timestamp-show-all nil)
+            '(org-agenda-restore-windows-after-quit t)
+            '(org-agenda-show-all-dates t)
+            '(org-agenda-skip-deadline-if-done t)
+            '(org-agenda-skip-scheduled-if-done t)
+            '(org-agenda-sorting-strategy (quote ((agenda time-up priority-down tag-up) (todo tag-up))))
+            '(org-agenda-start-on-weekday nil)
+            ;;  '(org-agenda-todo-ignore-deadlines t)
+            ;;  '(org-agenda-todo-ignore-scheduled t)
+            ;;  '(org-agenda-todo-ignore-with-date t)
+             '(org-agenda-window-setup (quote other-window))
+            '(org-deadline-warning-days 7)
+            '(org-export-html-style "<link rel=\"stylesheet\" type=\"text/css\" href=\"mystyles.css\">")
+            '(org-fast-tag-selection-single-key nil)
+            '(org-log-done (quote (done)))
+            '(org-refile-targets (quote (("gtd.org" :maxlevel . 1) ("someday.org" :level . 1))))
+            '(org-reverse-note-order nil)
+            '(org-tags-column -78)
+            '(org-tags-match-list-sublevels nil)
+            '(org-time-stamp-rounding-minutes 5)
+            '(org-use-fast-todo-selection t)
+            '(org-use-tag-inheritance nil)
+            '(unify-8859-on-encoding-mode t nil (ucs-tables)))
+            ;; These lines only if org-mode is not part of the X/Emacs distribution.
+            (autoload 'org-mode "org" "Org mode" t)
+            (autoload 'org-diary "org" "Diary entries from Org mode")
+            (autoload 'org-agenda "org" "Multi-file agenda from Org mode" t)
+            (autoload 'org-store-link "org" "Store a link to the current location" t)
+            (autoload 'orgtbl-mode "org" "Org tables as a minor mode" t)
+            (autoload 'turn-on-orgtbl "org" "Org tables as a minor mode")
+            (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+            (define-key global-map "\C-cl" 'org-store-link)
+            (define-key global-map "\C-ca" 'org-agenda)
+            ;(setq org-log-done nil)
+            (setq org-log-done t)
+            (setq org-agenda-include-diary nil)
+            (setq org-deadline-warning-days 7)
+            (setq org-timeline-show-empty-dates t)
+            (setq org-insert-mode-line-in-empty-file t)
+            (require 'org-install)
+            (autoload 'remember "remember" nil t)
+            (autoload 'remember-region "remember" nil t)
+            (setq org-directory "~/org/")
+            (setq org-default-notes-file "~/org/notes.org")
+            (setq remember-annotation-functions '(org-remember-annotation))
+            (setq remember-handler-functions '(org-remember-handler))
+            (add-hook 'remember-mode-hook 'org-remember-apply-template)
+            (define-key global-map "\C-cr" 'org-remember)
+            (setq org-remember-templates
+            '(
+            ("Todo" ?t "* TODO %^{任务} %^g\n%?\nAdded: %U" "~/org/gtd.org" "INBOX")
+            ("Note" ?n "\n* %U %^{笔记} %^g \n%i%?\n %a" "~/org/notes.org")
+            ))
+            (setq org-agenda-exporter-settings
+            '((ps-number-of-columns 1)
+            (ps-landscape-mode t)
+            (htmlize-output-type 'css)))
+            (setq org-agenda-custom-commands
+            '(
+            ("p" "Projects"
+            ((tags "PROJECT")))
+            ("h" "Office and Home Lists"
+            ((agenda)
+            (tags-todo "OFFICE")
+            (tags-todo "HOME")
+            (tags-todo "WEB")
+            (tags-todo "CALL")
+            ))
+            ("d" "Daily Action List"
+            (
+            (agenda "" ((org-agenda-ndays 1)
+                    (org-agenda-sorting-strategy
+                     (quote ((agenda time-up priority-down tag-up) )))
+                    (org-deadline-warning-days 0)
+                    ))))))
+            (setq org-todo-keywords '((sequence "TODO" "APPT" "STARTED" "DONE")))
+            (defun gtd ()
+            (interactive)
+            (find-file "~/org/gtd.org"))
+            (global-set-key (kbd "C-c g") 'gtd)
+            (add-hook 'org-agenda-mode-hook 'hl-line-mode)
+
+org 文件的设置 ::
+
+~/org/gtd.rog
+
+
+1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+            9
+            10
+            11
+            12
+            13
+            14
+            15
+            16
+            17
+            18
+            19
+            20
+            21
+            22
+            23
+            24
+            25
+
+	
+
+#+STARTUP: showall
+            * INBOX
+            #+CATEGORY: INBOX
+            * Research
+            #+CATEGORY: Research
+            * Project A
+            #+CATEGORY: Project A
+            * Private
+            #+CATEGORY: Private
+            * Archive
+            #+CATEGORY: Archive
+            * org-mode configuration
+            #+STARTUP: hidestars
+            #+STARTUP: logdone
+            #+PROPERTY: Effort_ALL  0:10 0:20 0:30 1:00 2:00 4:00 6:00 8:00
+            #+COLUMNS: %38ITEM(Details) %TAGS(Context) %7TODO(To Do) %5Effort(Time){:} %6CLOCKSUM{Total}
+            #+PROPERTY: Effort_ALL 0 0:10 0:20 0:30 1:00 2:00 3:00 4:00 8:00
+            #+TAGS: { OFFICE(o) HOME(h) WEB(w) DOWNTOWN(d) CALL(c) }
+            #+TAGS: PROJECT(p) READING(r)
+            #+TODO: TODO(t) STARTED(s) WAITING(w) APPT(a) | DONE(d) CANCELLED(c) DEFERRED(f)
+
+~/org/notes.org
+
+
+1
+            2
+            3
+            4
+            5
+            6
+
+	
+
+#+STARTUP: showall
+            #+STARTUP: hidestars
+            #+TAGS: OFFICE(o) RESEARCH(r) DIARY(d) BOOK(b) FILMS(f) IDEA(i) WEB(w) COMPUTER(c)
+            * 笔记
+            ** [2010-02-02 星期二 18:53] 今天写博 使用org-mode来GTD（1）                    :OFFICE:
+
+~/org/someday.org
+
+也许某天会做的事。
+
+1
+            2
+            3
+            4
+
+	
+
+#+STARTUP: showall
+            * Someday
+            ** 计算机升级。
+            ** 去马尔代夫旅游。
+
+~/org/birthday.org
+
+这里记录预先决定的日常安排。比如生日节假日。
+与其他设备无缝连接
+
+使用Emacs的tramp1可以无缝地访问远程的设备。同样也可以连接 org-mode 的文件。下面是在HOST机器上设置 org-mode 与tramp关联的方法。
+
+比如下面设置的地方
+
+1
+
+	
+
+"~/org/foo.org"
+
+替换为
+
+1
+
+	
+
+"/domain-name/org/foo.org"
+
+如果是 Windows 的 NTEmacs 为:
+
+1
+
+	
+
+"/plink:domain-name/org/foo.org"
+
+1. TRAMP 代表”Transparent Remote (file) Access, Multiple Protocol”，他是 Emacs 的一个用于远程文件编辑的扩展包。用来访问scp/ssh/smb服务器上的文件，可以做到像读写本地文件一样编辑远程的文件。
 ** TODO 待办事项（TODO ）
+** TODO [#A] Write letter to Sam Fortune 优先级A,b,c,a最高
+tag
+时间输入 范围 2pm+2
+ (setq org-log-done 'time)
 #+beg org-mode可以利用Emacs的时间空间插入当前时间。
   输入C-c . 会出现一个日历，我们点选相应的时间即可插入
   时间前可以加DEADLINE:和SCHEDULED:表示时间的类型如：
@@ -2227,3 +2611,36 @@ I    #+include: line
 2.C-c C-e h 导出为 HTML 文件 
 
 * linux 系统调用
+
+
+1、进入HTML模式
+前面讲了一些和主旨无关的话，主要目的是让你意识到学习HTML或其他标记语言的必要性。但本文不是教你如何学习HTML语言，而是讲述如何在 Emacs中利用各种HTML模式来写HTML文档，所以这里假定你已经基本掌握了HTML标记语言的使用。
+让Emacs进入HTML模式很简单，直接打开一个HTML文件即可，也可以使用 M-x html-mode指令。进入 HTML模时候，Emacs的菜单栏中会出现"HTML"和"SGML"菜单，仔细观摩一下。
+Emacs提供了一个简单的HTML模板来缓解一些懒人因不愿过多输入代码的抱怨情绪，C-c C-t html，然后需要输入title内容回车，即可调入该模板。C-c C-v可以调出浏览器看看当前HTML代码的显示效果。M-x html-autoview-mode，可以实现在Emacs保存HTML文档之时打开浏览器查看文档显示效果。
+
+
+Emacs HTML模式提供了标签之间的光标快速移动的键盘绑定：
+
+
+    C-c C-f，光标移到其当前所在位置的下一个HTML标签位置
+    C-c C-b，光标移到其当前所在位置的前一个HTML标签位置 
+
+
+3、隐藏/显示HTML标记
+当你觉得正在编写的HTML文档中无处不在的HTML标记破坏了文档的美感，可以试试C-c Tab，暂时将HTML标记隐藏起来，只显示你的文本内容。在HTML隐藏状态下继续编辑文档，Emacs会保护其隐藏的所有标记，所以你没有必要担心会不小心把它们给删掉了，而且当你的光标移动到一个被隐藏的标记位置上时，Emacs会在Mini-buffer中显示该标记名。
+在HTML标记隐藏状态下，再次C-c Tab，即可将所有被隐藏的HTML标记重新显示出来。
+4、HTML模式其它一些常用的键绑定
+C-c 1～6，可以自动插入h1～h6的标题。譬如键入C-c 1，就会在当前位置自动插入h1标题。
+C-c Enter，可以实现在光标位置插入段落标记。这个键绑定，我不是很喜欢。因为我习惯使用 … 风格的段落标记。但是可以先使用这个键绑定作出段落标记的前一半，然后使用C-c /将其封闭。对于其它未提供闭合功能的键绑定，都可以使用这种方法。
+C-c C-c h，可以实现在光标位置插入超级连接标记。C-c C-c n可以实现在光标当前位置处插入一个anchor(锚标)，以备在文档其他位置建立跳转到该位置的超级链接。这两个键盘绑定，需要在Mini-buffer中输入超级连接地址或锚标名称。动手一试便知了。
+C-c C-c u，在光标位置处插入无序列表标记。C-c C-c o，在光标当前位置插入有序列表标记。C-c C-c l，在当前位置插入一个列表项。与C-c C-c p一样，所插入的标记依然是不封闭的。
+C-c C-c i，在光标位置插入图像引入标记，即，需要在Mini-buffer中指定图片的 URL。
+C-c C-j，在光标位置处插入换行符
+。C-c C-c -，在光标位置处插入水平线标记，即。
+如果想看看某个标记的解释，可以将光标移到该标记上，C-c ?，在Mini-buffer中显示解释。
+想知道更多一些的键绑定功能，可以C-c C-h，看看说明。
+5、HTML模式中的特殊字符输入
+在HTML中，已经被用作HTML标记的字符，如果要在HTML文本中将它们显示出来，直接键入是不行的。譬如我要在HTML页面中显示，浏览器会将它视为段落标记来处理。为了解决这个问题，我们可以C-c C-n ，再键入字母p，最后再C-c C-n >来实现。通过这个小例子，应该知道C-c C-n的功用了吧。对于其它字符，只要键盘上有的，但 HTML语言已经征用了的，都可以使用这个键绑定来输入。
+对于键盘上没有的字符，譬如拉丁文－1中的字符，该如何输入呢？Emacs HTML模式提供了许多语言模式。使用键绑定C-c 8可以打开SGML name entity小模式，这个键绑定是以开关方式执行的，即再次键入C-c 8即可关闭这个该模式。打开 SGML name entity小模式后，键入C-x RET k，选择语言模式，我们要使用拉丁文－1，那么就可以键入 latin-1，回车即可进入拉丁文－1字符插入模式。在向HTML文档中插入拉丁文-1字符时，使用键绑定C-x 8为前缀。譬如，我要在文档中插入"&yen;"，只需要键入C-x 8 Y即可。此时，在HTML源文件中，会将&yen;显示为其字符实体，即"& yen"，而在Mini-buffer中会同时显示所插入的实际符号"&yen;"，此时只需执行一次Undo(C-x u或C-_)，就可以将Mini-buffer中的实际符号送入到源文件中了。
+可以在HTML定义的标准字符表中查找你所需要的字符实体，这个字符表可以在网上搜一搜了。
+
