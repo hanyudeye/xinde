@@ -378,41 +378,198 @@ y=x[1];
 *** XML xmldoc
 *** 浏览器
 * HTML5 文本    
+都是有结构的标签,表示的含义是元素,元素包含属性
+** 标题
+<h1>-<h6>
+** 段落
+<p>
+** 格式化
+<b>粗体 <em>着重文字<i> <small>
+** 链接
+<a>
 ** <head>
-** <body>
-*** <div>
-**** 实体
-***** <article>>    定义文档内的文章
-***** <aside>      定义页面内容之外的内容
-***** <bdi>        定义与其他文本不同的文本方向
-***** <details>    定义用户可查看或隐藏的额外细节
-***** <dialog>     定义对话框或窗口
-***** <figcaption> 定义 <figure> 元素的标题
-***** <figure>     定义自包含内容，比如图示、图表、照片、代码清单
-***** <footer>     定义文档或节的页脚
-***** <header>     定义文档或节的页眉
-***** <main>       定义文档的主内容                        
-***** <mark>       定义重要或强调的内容
-***** <menuitem>   定义用户能够从弹出菜单调用的命令/菜单项目
-***** <meter>      定义已知范围（尺度）内的标量测量
-***** <nav>        定义文档内的导航链接
-***** <progress>   定义任务进度
-***** <rp>         定义在不支持 ruby 注释的浏览器中显示什么
-***** <rt>         定义关于字符的解释/发音（用于东亚字体）
-***** <ruby>       定义 ruby 注释（用于东亚字体）
-***** <section>    定义文档中的节
-***** <summary>    定义 <details> 元素的可见标题 
-***** <time>       定义日期/时间。
-***** <wbr>        定义可能的折行（line-break）
-***** <frame>      框架
-****** <p>
-******* <h1>
-******* <!--> 
-******* 格式化<b><big><em><i><code><kbd><ins>
-******* <a>
-******* <img>
-******* <table>!!!少用
-******* <ul><ol>
+*** <title> 文档标题
+*** <base> 定义页面中所有链接默认的链接目标地址,就像定义PATH路径一样,这会影响所有路径属性,不要用
+*** <meta>有两个属性,分别是http-equiv 和name
+**** 1、name 属性 ：
+　　<meta name="Generator" contect="">用以说明生成工具（如Microsoft FrontPage 4.0）等；
+　　<meta name="KEYWords" contect="">向搜索引擎说明你的网页的关键词；
+　　<meta name="DEscription" contect="">告诉搜索引擎你的站点的主要内容；
+　　<meta name="Author" contect="姓名">告诉搜索引擎你的站点的制作的作者；
+　　<meta name="Robots" contect= "all|none|index|noindex|follow|nofollow">
+　　其中的属性说明如下：
+　　设定为all：文件将被检索，且页面上的链接可以被查询；
+　　设定为none：文件将不被检索，且页面上的链接不可以被查询；
+　　设定为index：文件将被检索；
+　　设定为follow：页面上的链接可以被查询；
+　　设定为noindex：文件将不被检索，但页面上的链接可以被查询；
+　　设定为nofollow：文件将被检索，页面上的链接不可以被查询。
+
+**** 2、http-equiv属性 ：
+　　<meta http-equiv="Content-Type" contect="text/html";charset=gb_2312-80">
+　　<meta http-equiv="Content-Language" contect="zh-CN">
+　　用以说明主页制作所使用的文字以及语言；
+　　<meta http-equiv="Refresh" contect="n;url=http://yourlink">
+　　定时让网页在指定的时间n内，跳转到页面http://yourlink；
+　　<meta http-equiv="Expires" contect="Mon,12 May 2001 00:20:00 GMT">
+　　可以用于设定网页的到期时间，一旦过期则必须到服务器上重新调用。
+　　需要注意的是必须使用GMT时间格式；
+　　<meta http-equiv="Pragma" contect="no-cache">
+　　是用于设定禁止浏览器从本地机的缓存中调阅页面内容，设定后一旦离开网页就无法从Cache中再调出；
+　　<meta http-equiv="set-cookie" contect="Mon,12 May 2001 00:20:00 GMT">
+　　cookie设定，如果网页过期，存盘的cookie将被删除。需要注意的也是必须使用GMT时间格式；
+　　<meta http-equiv="Pics-label" contect="">
+　　网页等级评定，在IE的internet选项中有一项内容设置，可以防止浏览一些受限制的网站，
+　　而网站的限制级别就是通过meta属性来设置的；
+　　<meta http-equiv="windows-Target" contect="_top">
+　　强制页面在当前窗口中以独立页面显示，可以防止自己的网页被别人当作一个frame页调用；
+　　<meta http-equiv="Page-Enter" contect="revealTrans(duration=10,transtion= 50)">
+　　<meta http-equiv="Page-Exit" contect="revealTrans(duration=20，transtion=6)">
+　　设定进入和离开页面时的特殊效果，这个功能即FrontPage中的“格式/网页过渡”，不过所加的页面不能够是一个frame页面。
+*** <link> 标签定义了文档与外部资源之间的关系。
+<link> 标签通常用于链接到样式表:
+<link rel="stylesheet" type="text/css" href="mystyle.css">
+*** <style> 
+#+BEGIN_SRC 
+<style type="text/css">
+body {background-color:yellow}
+p {color:blue}
+</style>
+#+END_SRC
+*** <script>
+** <img>
+<img src="url" alt="some_text" width="304" height="228"> 
+** <table>
+** 列表
+*** 有序列表 order list(顺序)
+ol li
+*** 无序列表
+ul li
+** div 和span 
+HTML 可以通过 <div> 和 <span>将元素组合起来
+** 表单 <form>
+*** 输入元素 
+**** 文本域
+<input type="text" name="name">
+**** 密码字段
+<input type="password" name="pwd">
+**** 单选按钮（Radio Buttons）
+<input type="radio" name="sex" value="male">Male<br>
+<input type="radio" name="sex" value="female">Female
+**** 复选框
+<input type="checkbox" name="vehicle" value="Bike">I have a bike<br>
+<input type="checkbox" name="vehicle" value="Car">I have a car 
+**** 提交按钮
+<input type="submit" value="Submit">
+**** 下拉列表
+<select name="cars">
+<option value="volvo">Volvo</option>
+<option value="saab">Saab</option>
+<option value="fiat">Fiat</option>
+<option value="audi">Audi</option>
+</select>
+**** 按钮
+<input type="button" value="Hello world!">
+**** 文本域
+<textarea rows="10" cols="30">
+我是一个文本框。
+</textarea>
+**** <datalist>定义选项列表。请与 input 元素配合使用该元素
+#+BEGIN_SRC 
+<input list="browsers">
+ 
+<datalist id="browsers">
+  <option value="Internet Explorer">
+  <option value="Firefox">
+  <option value="Chrome">
+  <option value="Opera">
+  <option value="Safari">
+</datalist>
+#+END_SRC
+** 框架
+<iframe src="demo_iframe.htm" frameborder="0"></iframe>
+** canvas
+<canvas> 	标签定义图形，比如图表和其他图像。该标签基于 JavaScript 的绘图 API
+canvas 元素本身是没有绘图能力的。所有的绘制工作必须在 JavaScript 内部完成
+#+BEGIN_SRC 
+<!DOCTYPE html> 
+<html>
+<head> 
+<meta charset="utf-8"> 
+<title>菜鸟教程(runoob.com)</title> 
+</head> 
+<body>
+
+<canvas id="myCanvas">你的浏览器不支持 HTML5 canvas 标签。</canvas>
+
+<script>
+var c=document.getElementById('myCanvas');
+var ctx=c.getContext('2d');
+ctx.fillStyle='#FF0000';
+ctx.fillRect(0,0,80,100);
+</script>
+
+</body>
+</html>
+#+END_SRC
+#+BEGIN_SRC 
+<canvas id="myCanvas" width="200" height="100" style="border:1px solid #000000;">
+您的浏览器不支持 HTML5 canvas 标签。
+</canvas>
+#+END_SRC
+** 多媒体
+*** <audio>支持 MP3,Wav,Ogg
+#+BEGIN_SRC 
+<audio controls>
+  <source src="horse.ogg" type="audio/ogg">
+  <source src="horse.mp3" type="audio/mpeg">
+  您的浏览器不支持 audio 元素。
+</audio>
+#+END_SRC
+属性
+autoplayNew 	autoplay 	如果出现该属性，则音频在就绪后马上播放。
+controlsNew 	controls 	如果出现该属性，则向用户显示音频控件（比如播放/暂停按钮）。
+loopNew 	loop 	如果出现该属性，则每当音频结束时重新开始播放。
+mutedNew 	muted 	如果出现该属性，则音频输出为静音。
+preloadNew 	auto
+metadata
+none 	规定当网页加载时，音频是否默认被加载以及如何被加载。
+srcNew 	URL 	规定音频文件的 URL。
+*** <video>
+*** <source>定义多媒体资源 <video> 和 <audio>
+** 新的语义和结构:为了创建更好的页面结构
+*** <article>>    定义文档内的文章
+*** <aside>      定义页面内容之外的内容
+*** <bdi>        定义与其他文本不同的文本方向
+*** <details>    定义用户可查看或隐藏的额外细节
+*** <dialog>     定义对话框或窗口
+*** <figcaption> 定义 <figure> 元素的标题
+*** <figure>     定义自包含内容，比如图示、图表、照片、代码清单
+*** <footer>     定义文档或节的页脚
+*** <header>     定义文档或节的页眉
+*** <main>       定义文档的主内容                        
+*** <mark>       定义重要或强调的内容
+*** <menuitem>   定义用户能够从弹出菜单调用的命令/菜单项目
+*** <meter>      定义已知范围（尺度）内的标量测量
+*** <nav>        定义文档内的导航链接
+*** <progress>   定义任务进度
+*** <rp>         定义在不支持 ruby 注释的浏览器中显示什么
+*** <rt>         定义关于字符的解释/发音（用于东亚字体）
+*** <ruby>       定义 ruby 注释（用于东亚字体）
+*** <section>    定义文档中的节
+*** <summary>    定义 <details> 元素的可见标题 
+*** <time>       定义日期/时间。
+*** <wbr>        定义可能的折行（line-break）
+**** <frame>      框架
+***** <p>
+****** <h1>
+****** <!--> 
+****** 格式化<b><big><em><i><code><kbd><ins>
+****** <a>
+****** <img>
+****** <table>!!!少用
+****** <ul><ol>
+
 * 样式 CSS 样式定义如何显示 HTML 元素
 ** 选择器,依赖DOM
 *** 派生选择器
@@ -815,70 +972,3 @@ $("button").click(function(){
 **** onchange 事件(text 对象)
 **** onmouseover 和 onmouseout 事件
 
-* 内联元素（行内元素）内联元素(inline element)
-* a - 锚点
-* abbr - 缩写
-* acronym - 首字
-* bdo - bidi override
-* big - 大字体
-* br - 换行
-* cite - 引用
-* code - 计算机代码(在引用源码的时候需要)
-* dfn - 定义字段
-* em - 强调
-* font - 字体设定(不推荐)
-* i - 斜体
-* img - 图片
-* input - 输入框
-* kbd - 定义键盘文本
-* label - 表格标签
-* q - 短引用
-* samp - 定义范例计算机代码
-* select - 项目选择
-* small - 小字体文本
-* span - 常用内联容器，定义文本内区块
-* strike - 中划线
-* strong - 粗体强调
-* sub - 下标
-* sup - 上标
-* textarea - 多行文本输入框
-* tt - 电传文本
-* u - 下划线
-* var - 定义变量
-
-块元素(block element)
-* address - 地址
-* blockquote - 块引用
-* dir - 目录列表
-* div - 常用块级容易，也是css layout的主要标签
-* dl - 定义列表
-* fieldset - form控制组
-* form - 交互表单
-* h1 - 大标题
-* h2 - 副标题
-* h3 - 3级标题
-* h4 - 4级标题
-* h5 - 5级标题
-* h6 - 6级标题
-* hr - 水平分隔线
-* isindex - input prompt
-* menu - 菜单列表
-* noframes - frames可选内容，（对于不支持frame的浏览器显示此区块内容
-* noscript - ）可选脚本内容（对于不支持script的浏览器显示此内容）
-* ol - 排序表单
-* p - 段落
-* pre - 格式化文本
-* table - 表格
-* ul - 非排序列表
-
-可变元素
-可变元素为根据上下文语境决定该元素为块元素或者内联元素。
-
-* applet - java applet
-* button - 按钮
-* del - 删除文本
-* iframe - inline frame
-* ins - 插入的文本
-* map - 图片区块(map)
-* object - object对象
-* script - 客户端脚本
