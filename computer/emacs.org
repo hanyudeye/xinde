@@ -1,4 +1,4 @@
-* emacs [editor] can DIY for youself
+* Emacs [editor] can DIY for yourself
 ** concepts
 *** Screen
 **** frame 框架
@@ -277,3 +277,299 @@ error
 *** key sequences 
 * emacs basic
 ** files buffers modes display commands quit help 
+* emacs 
+** Chapter 1.   Emacs Basics
+*** Section 1.2.   Understanding Files and Buffers
+*** Section 1.3.   A Word About Modes
+Majode
+Texundamental /View /Shell  /Outline /Indented text /Paragraph indent text /Picture 
+HtmML/LateX/Compilation/cc/Java/Perl/SQL/Emacs Lisp/Lisp/Lisp interaction 
+Minode
+autll(enables word wrap)/Overwrite(replaces characters instead of inserting them)/Auto-save/Isearch/Flyspell/flyspell prog/
+abbparagraph indent/refill/Artist(creating ASCII drawings using the mouse/ISO accents/Font lock(highlighting text)
+comtion /Enriched/Info/VC (various version control systems)
+
+*** Section 1.4.   Starting Emacs
+*** Section 1.5.   About the Emacs Display
+***e mode line
+*** Section 1.6.   Emacs Commands
+*** Section 1.7.   Opening a File
+insfile/find file
+C-x                     find-alternate-file
+*** Section 1.8.   Saving Files
+wriile/save-buffer
+*** Section 1.9.   Leaving Emacs
+savffers-kill-terminal
+*** Section 1.10.  Getting Help
+describe-function/describe-key/describe-variable
+** Chapter 2.   Editing
+*** Section 2.1.   Moving the Cursor
+refill-mode(不满一行80个字就要凑满) auto-fill fill-paragraph fill-region
+ C-f              forward-char                 Move forward one character (right).
+ C-b              backward-char                Move backward one character (left).
+ C-p              previous-line                Move to previous line (up).
+ C-n              next-line                    Move to next line (down).
+ M-f              forward-word                 Move one word forward .
+ M-b              backward-word                Move one word backward .
+ C-a              beginning-of-line            Move to beginning of line.
+ C-e              end-of-line                  Move to end of line.
+ M-e              forward-sentence             Move forward one sentence.
+ M-a              backward-sentence            Move backward one sentence.
+ M-}              forward-paragraph            Move forward one paragraph.
+ M-{              backward-paragraph           Move backward one paragraph.
+ C-v              scroll-up                    Move forward one screen.
+ M-v              scroll-down                  Move backward one screen.
+ C-x ]            forward-page                 Move forward one page.
+ C-x [            backward-page                Move backward one page.
+ M-<              beginning-of-buffer    Move to beginning of file.
+ M->              end-of-buffer          Move to end of file.
+ (none )          goto-line              Go to line n of file.
+ (none )          goto-char              Go to character n of file.
+ C-l              recenter               Redraw screen with current line in the center.
+ M- n             digit-argument         Repeat the next command n times.
+ C-u n            universal-argument     Repeat the next command n times (four times if you omit n)
+*** Section 2.2.   Deleting Text
+kill-ring
+C-d             delete-char                 Delete character under cursor.
+Del             delete-backward-char        Delete previous character.
+M-d             kill-word                   Delete next word.
+M-Del           backward-kill-word          Delete previous word.
+C-k             kill-line                   Delete from cursor to end of line.
+M-k             kill-sentence               Delete next sentence.
+C-x Del         backward-kill-sentence      Delete previous sentence.
+C-y             yank                        Restore what you've deleted.
+C-w Edit    Cut kill-region                 Delete a marked region (see next section).
+(none )         kill-paragraph              Delete next paragraph.
+(none )         backward-kill-paragraph     Delete previous paragraph.
+
+*** Section 2.3.   Marking Text to Delete, Move, or Copy
+ C-@ or C-Space        set-mark-command                 Mark the beginning (or end) of a region.
+ C-x C-x               exchange-point-and-mark          Exchange location of cursor and mark.
+ C-w                   kill-region                      Delete the region.
+ C-y                   yank                             Paste most recently killed or copied text.
+ M-w                   kill-ring-save                   Copy the region (so it can be pasted with C-y).
+ M-h                   mark-paragraph                   Mark paragraph.
+ C-x C-p               mark-page                        Mark page.
+ C-x h                 mark-whole-buffer                Mark buffer.
+ M-y                   yank-pop                         After C-y , pastes earlier deletion.
+
+*** Section 2.4.   Emacs and the Clipboard
+*** Section 2.5.   Editing Tricks and Shortcuts
+ C-t             transpose-chars                       Transpose two letters.
+ M-t             transpose-words                       Transpose two words.
+ C-x C-t         transpose-lines                       Transpose two lines.
+ (none )         transpose-sentences                   Transpose two sentences.
+ (none )         transpose-paragraphs                  Transpose two paragraphs.
+ M-c             capitalize-word                       Capitalize first letter of word.
+ M-u             upcase-word                           Uppercase word.
+ M-l             downcase-word                         Lowercase word.
+ Meta - M-c      negative-argument; capitalize-word    Capitalize previous word.
+ Meta - M-u      negative-argument; upcase-word        Uppercase previous word.
+ Meta - M-l      negative-argument; downcase-word      Lowercase previous word
+*** Section 2.6.   Canceling Commands and Undoing Changes
+ C-g             keyboard-quit                         Abort current command.
+ C-x u           advertised-undo [8]                   Undo last edit (can be done repeatedly).
+ C-_             undo                                  Undo last edit (can be done repeatedly).
+ (none )         revert-buffer                         Restore buffer to the state it was in when the file was last saved (or auto-saved).
+*** Section 2.7.   Making Emacs Work the Way You Want
+(define-key global-map "\C-x\C-u" 'undo)
+** Chapter 3.   Search and Replace
+*** Section 3.1.    Different Kinds of Searches
+*** Section 3.2.   Search and Replace
+C-M-s Enter    Search     re-search-forward          Search for a regular expression
+C-M-r Enter    Search     re-search-backward         Search for a regular expression
+C-M-s Edit     Search     isearch-forward-regexp     regular expression.
+C-M-% Edit     Replace    query-replace-regexp       Query-replace a regular expression.
+*** Section 3.3.   Checking Spelling Using Ispell
+ispell-change-directory
+ispell-buffer
+ispell-word
+ispell-complete-word
+ispell-region
+flyspell-buffer
+*** Section 3.4.   Word Abbreviations
+      (setq-default abbrev-mode t)
+      (read-abbrev-file "~/.abbrev_defs")
+      (setq save-abbrevs t)
+
+** Chapter 4.    Using Buffers, Windows, and Frames
+*** Section 4.1.    Understanding Buffers, Windows, and Frames
+*** Section 4.2.    Working with Multiple Buffers
+*** Section 4.3.   Working with Windows
+*** Section 4.4.   Working with Frames
+*** Section 4.5.   More About Buffers
+C-x C-q            Read-Only Buffers
+*** Section 4.6.   More About Windows
+balance-windows    C-x +
+compare-windows
+*** Section 4.7.    Holding Your Place with Bookmarks
+** Chapter 5.    Emacs as a Work Environment
+*** Section 5.1.    Executing Commands in Shell Buffers
+*** Section 5.2.    Using Dired, the Directory Editor
+ A                dired-do-search                                   Do a regular expression search on marked files;
+ B                dired-do-byte-compile
+ C                dired-do-copy    
+ d                dired-flag-file-deletion
+ D                dired-do-delete     Query for immediate deletion.
+ e                dired-find-file     Edit file.
+ f                dired-advertised-find-file
+ g                revert-buffer       Reread the directory from disk.
+ G                dired-do-chgrp      Change group permissions.
+ h                describe-mode       Display descriptive help text for Dired.
+ H                dired-do-hardlink   Create a hard link to this file;                                           
+ i                dired-maybe-insert-subdir         
+ k                dired-do-kill-lines Remove line from display (don't delete file).
+ L                dired-do-load       Load file.
+ m or * m Mark    dired-mark          Mark with * .
+ M                dired-do-chmod      Use chmod command on this file.
+ n                dired-next-line     Move to next line.
+ o                dired-find-file-other-window
+ C-o              dired-display-file  Find file in another window; don't move there.
+ O                dired-do-chown      Change ownership of file.
+ p                dired-previous-line
+ P                dired-do-print      Print file.
+ q                quit-window         Quit Dired.
+ Q                dired-do-query-replace        Query replace string in marked files.
+ R                dired-do-rename    Rename file.
+ S                dired-do-symlink
+ s                dired-sort-toggle-or-edit
+ t                dired-toggle-marks
+ u                dired-unmark       Remove mark.
+ v                dired-view-file    View file (read-only).
+ w                dired-copy-filename-as-kill
+ x                dired-do-flagged-delete
+ y                dired-show-file-type   Display information on the type of the file using the file command.
+ Z                dired-do-compress      Compress or uncompress file.
+ ~                dired-flag-backup-files Flag backup files for deletion; C-u ~ removes flags
+ #                dired-flag-auto-save-files            Flag auto-save files for deletion; C-u # removes flags.
+ &                dired-flag-garbage-files    Flag "garbage" files for deletion.
+ .                dired-clean-directory       Flag numbered backups for deletion (if any).
+ =                dired-diff                  Compare this file to another file (the one at the mark).
+ M-=              dired-backup-diff           Compare this file with its backup file.
+ !                dired-do-shell-command      Ask for shell command to execute on the current
+ +                dired-create-directory      Create a directory.
+ >                dired-next-dirline          Move to next directory.
+ <                dired-prev-dirline          Move to previous directory.
+ ^                dired-up-directory          Find the parent directory in a new Dired buffer.
+ $                dired-hide-subdir           Hide or show the current directory or                
+ M-$              dired-hide-all              Hide all subdirectories, leaving only their names;
+C-M-n             dired-next-subdir   Move to next subdirectory (if you've inserted subdirectories using i ).
+C-M-p             dired-prev-subdir  Move to previous subdirectory (if you've inserted subdirectories using i ).                 
+C-M-u             dired-tree-up                  If you've inserted subdirectories using i , move to the parent directory in this buffer.
+* c Mark      Change dired-change-
+                                        from * (generic mark) to D (flagged for
+Marks                marks
+                                        deletion).
+* ! or M-Del Mark    dired-unmark-all-
+                                        Remove all marks from all files.
+     Unmark All      files
+* * Mark      Mark   dired-mark-
+                                        Mark executables; C-u * unmarks.
+Executables          executables
+* / Mark      Mark   dired-mark-
+                                        Mark directories; C-u / unmarks.
+Directories          directories
+* @ Mark       Mark  dired-mark-
+                                        Mark symlinks; C-u * @ unmarks.
+Symlinks             symlinks
+M-} Mark       Next  dired-next-
+                                        Move to the next file marked with * or D .
+Marked               marked-file
+M-{ Mark             dired-prev-
+                                        Move to previous file marked with * or D .
+Previous Marked      marked-file
+% d Regexp           dired-flag-files-  Flag for deletion files that match regular
+Flag                 regexp             expression.
+% g Regexp           dired-mark-files-  Mark files whose contents match regular
+Mark Containing      containing-regexp  expression.
+% l Regexp
+                     dired-downcase     Lowercase marked files.
+Downcase
+% R Regexp           dired-do-rename-   Rename files with filenames that match regular
+Mark                 regexp             expression.
+% u Regexp
+                     dired-upcase       Uppercase marked files.
+Upcase
+
+*** Section 5.3.   Printing from Emacs
+*** Section 5.4.    Reading Manpages in Emacs
+*** Section 5.5.    Using Time Management Tools
+** Chapter 6.   Writing Macros
+*** Section 6.1.   Defining a Macro
+*** Section 6.2.    Tips for Creating Good Macros
+*** Section 6.3.    A More Complicated Macro Example
+*** Section 6.4.   Editing a Macro
+*** Section 6.5.   The Macro Ring
+*** Section 6.6.    Binding Your Macro to a Key
+*** Section 6.7.    Naming, Saving, and Executing Your Macros
+*** Section 6.8.   Building More Complicated Macros
+*** Section 6.9.    Executing Macros on a Region
+*** Section 6.10.    Beyond Macros
+** Chapter 7.    Simple Text Formatting and Specialized Editing
+*** Section 7.1.   Using Tabs
+*** Section 7.2.   Indenting Text
+*** Section 7.3.   Centering Text
+*** Section 7.4.   Using Outline Mode
+*** Section 7.5.   Rectangle Editing
+*** Section 7.6.   Making Simple Drawings
+** Chapter 8.   Markup Language Support
+ Section 8.1.   Comments
+ Section 8.2.   Font-Lock Mode
+ Section 8.3.   Writing HTML
+ Section 8.4.   Writing XML
+ Section 8.5.    Marking up Text for TEX and LATEX
+Chapter 9.   Computer Language Support
+ Section 9.1.    Emacs as an IDE
+ Section 9.2.   Writing Code
+ Section 9.3.    C and C++ Support
+ Section 9.4.   Java Support
+ Section 9.5.    The Java Development Environment for Emacs (JDEE)
+ Section 9.6.   Perl Support
+ Section 9.7.   SQL Support
+ Section 9.8.   The Lisp Modes
+Chapter 10.   Customizing Emacs
+ Section 10.1.    Using Custom
+ Section 10.2.    Modifying the .emacs File Directly
+ Section 10.3.    Modifying Fonts and Colors
+ Section 10.4.    Customizing Your Key Bindings
+ Section 10.5.    Setting Emacs Variables
+ Section 10.6.    Finding Emacs Lisp Packages
+ Section 10.7.    Starting Modes via Auto-Mode Customization
+ Section 10.8.    Making Emacs Work the Way You Think It Should
+Chapter 11.   Emacs Lisp Programming
+ Section 11.1.    Introduction to Lisp
+ Section 11.2.    Lisp Primitive Functions
+ Section 11.3.    Useful Built-in Emacs Functions
+ Section 11.4.    Building an Automatic Template System
+ Section 11.5.    Programming a Major Mode
+ Section 11.6.    Customizing Existing Modes
+ Section 11.7.    Building Your Own Lisp Library
+Chapter 12.   Version Control
+ Section 12.1.    The Uses of Version Control
+ Section 12.2.    Version Control Concepts
+ Section 12.3.    How VC Helps with Basic Operations
+ Section 12.4.    Editing Comment Buffers
+ Section 12.5.    VC Command Summary
+ Section 12.6.    VC Mode Indicators
+ Section 12.7.    Which Version Control System?
+ Section 12.8.    Individual VC Commands
+ Section 12.9.    Customizing VC
+ Section 12.10.    Extending VC
+ Section 12.11.     What VC Is Not
+ Section 12.12.    Using VC Effectively
+ Section 12.13.    Comparing with Ediff
+Chapter 13.   Platform-Specific Considerations
+ Section 13.1.    Emacs and Unix
+ Section 13.2.    Emacs and Mac OS X
+ Section 13.3.    Emacs and Windows
+Chapter 14.   The Help System
+ Section 14.1.    Using the Tutorial
+ Section 14.2.    Help Commands
+ Section 14.3.    Help with Complex Emacs Commands
+ Section 14.4.    Navigating Emacs Documentation
+ Section 14.5.   Completion
+Appendix A.   Emacs Variables
+Appendix B.    Emacs Lisp Packages
+Appendix C.    Bugs and Bug Fixes
+Appendix D.   Online Resources
+ Appendix E. Quick Reference
