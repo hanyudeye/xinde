@@ -479,86 +479,153 @@ calendar
  C-n                           calendar-forward-week         Move forward a week.
  C-p                           calendar-backward-week        Move backward a week.
  M-}                           calendar-forward-month        Move forward one month.
- M-{                           calendar-backward-month     Move backward a month.
- C-x ]                                calendar-forward-year         Move forward a year.
- C-x [                               calendar-backward-year        Move backward a year.
+ M-{                           calendar-backward-month       Move backward a month.
+ C-x ]                         calendar-forward-year         Move forward a year.
+ C-x [                         calendar-backward-year        Move backward a year.
 diary
 (setq european-calendar-style 't)指定欧洲日历类型
 ** Chapter 6.   Writing Macros
 *** Section 6.1.   Defining a Macro
+F3 or C-x ( 
+F4 or C-x )
 *** Section 6.2.    Tips for Creating Good Macros
 *** Section 6.3.    A More Complicated Macro Example
 *** Section 6.4.   Editing a Macro
+edit-kbd-macro C-x C-k e
+exit the macro editing buffer C-c C-c
 *** Section 6.5.   The Macro Ring
+ kmacro-view-macro
+ C-x C-k C-d (for kmacro-delete-ring-head ). This deletes the most recently defined keyboard macro.
+ C-x C-k C-t (for kmacro-swap-ring ). This transposes macros 1 and 2.
+ C-c C-k C-p (for kmacro-cycle-ring-previous ).
+ C-x C-k C-p to move to the previous macro.
 *** Section 6.6.    Binding Your Macro to a Key
+ The key sequences C-x C-k 0 through 9 and capital A through Z are reserved for user macro bindings.
+ C-x C-k n (for name-last-kbd-macro ) 调用时用Ｍ-x name
+ C-x C-k r (for apply-macro-to-region-lines ) 在一块region(选区)执行macro
 *** Section 6.7.    Naming, Saving, and Executing Your Macros
 *** Section 6.8.   Building More Complicated Macros
 *** Section 6.9.    Executing Macros on a Region
 *** Section 6.10.    Beyond Macros
+ C-u C-x q      (none)                   Insert a recursive edit in a macro definition.
+ C-M-c          exit-recursive-edit      Exit a recursive edit.
+ C-x C-k b      kmacro-bind-to-key       Bind a macro to a key (C-x C-k 0 -9 and A -Z are reserved for macro bindings).
 ** Chapter 7.    Simple Text Formatting and Specialized Editing
 *** Section 7.1.   Using Tabs
+edit-tab-stops (设定tab的宽度)
+typewriter-style tabs, press C-q Tab
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)Emacs inserts only spaces when you press Tab 
 *** Section 7.2.   Indenting Text
+C-j (for newline-and-indent )
+C-x Tab (for indent-rigidly )
+C-M \ (for indent-region)
+C-M-o (for split-line )
+       increase-left-margin
+       decrease-left-margin
+       increase-right-margin
+       decrease-right-margin
 *** Section 7.3.   Centering Text
+word wrap auto-fill mode
+center-region
+center-line
+center-paragraph
+set-justification-center                 Center selected text.
 *** Section 7.4.   Using Outline Mode
 *** Section 7.5.   Rectangle Editing
 *** Section 7.6.   Making Simple Drawings
 ** Chapter 8.   Markup Language Support
- Section 8.1.   Comments
- Section 8.2.   Font-Lock Mode
- Section 8.3.   Writing HTML
- Section 8.4.   Writing XML
- Section 8.5.    Marking up Text for TEX and LATEX
-Chapter 9.   Computer Language Support
- Section 9.1.    Emacs as an IDE
- Section 9.2.   Writing Code
- Section 9.3.    C and C++ Support
- Section 9.4.   Java Support
- Section 9.5.    The Java Development Environment for Emacs (JDEE)
- Section 9.6.   Perl Support
- Section 9.7.   SQL Support
- Section 9.8.   The Lisp Modes
-Chapter 10.   Customizing Emacs
- Section 10.1.    Using Custom
- Section 10.2.    Modifying the .emacs File Directly
- Section 10.3.    Modifying Fonts and Colors
- Section 10.4.    Customizing Your Key Bindings
- Section 10.5.    Setting Emacs Variables
- Section 10.6.    Finding Emacs Lisp Packages
- Section 10.7.    Starting Modes via Auto-Mode Customization
- Section 10.8.    Making Emacs Work the Way You Think It Should
-Chapter 11.   Emacs Lisp Programming
- Section 11.1.    Introduction to Lisp
- Section 11.2.    Lisp Primitive Functions
- Section 11.3.    Useful Built-in Emacs Functions
- Section 11.4.    Building an Automatic Template System
- Section 11.5.    Programming a Major Mode
- Section 11.6.    Customizing Existing Modes
- Section 11.7.    Building Your Own Lisp Library
-Chapter 12.   Version Control
- Section 12.1.    The Uses of Version Control
- Section 12.2.    Version Control Concepts
- Section 12.3.    How VC Helps with Basic Operations
- Section 12.4.    Editing Comment Buffers
- Section 12.5.    VC Command Summary
- Section 12.6.    VC Mode Indicators
- Section 12.7.    Which Version Control System?
- Section 12.8.    Individual VC Commands
- Section 12.9.    Customizing VC
- Section 12.10.    Extending VC
- Section 12.11.     What VC Is Not
- Section 12.12.    Using VC Effectively
- Section 12.13.    Comparing with Ediff
-Chapter 13.   Platform-Specific Considerations
- Section 13.1.    Emacs and Unix
- Section 13.2.    Emacs and Mac OS X
- Section 13.3.    Emacs and Windows
-Chapter 14.   The Help System
- Section 14.1.    Using the Tutorial
- Section 14.2.    Help Commands
- Section 14.3.    Help with Complex Emacs Commands
- Section 14.4.    Navigating Emacs Documentation
- Section 14.5.   Completion
-Appendix A.   Emacs Variables
+*** Section 8.1.   Comments
+ M-; (for indent-for-comment ) 
+*** Section 8.2.   Font-Lock Mode  
+for coloring code to make it easier to read.
+*** Section 8.3.   Writing HTML
+C-c C-t (for sgml-tag ) 
+(setq user-mail-address "cdickens@great-beyond.com")
+(setq user-full-name "Charles Dickens")
+C-c Tab sgml-tags-invisible(网页视图模式)
+C-c C-v(for browse-url-of-buffer )
+C-c C-s(html-autoview-mode )每次保存浏览器打开
+*** Section 8.4.   Writing XML
+*** Section 8.5.    Marking up Text for TEX and LATEX
+** Chapter 9.   Computer Language Support
+*** Section 9.1.    Emacs as an IDE
+C-x `            next-error
+C-c C-c    Visit the source code for the current error message.
+*** Section 9.2.   Writing Code
+(autoload 'function "filename" "description" t)
+(autoload 'php-mode "php-mode" "PHP editing mode." t)
+(setq auto-mode-alist (cons '("\\.php$" . php-mode) auto-mode-alist))
+C-h s (for describe-syntax )
+comment
+M-; (for indent-for-comment ).
+C-x ; (for set-comment-column ).
+comment-region
+kill-comment
+C-M-\         indent-region             Indent each line between the cursor and mark.
+M-m           back-to-indentation       Move to the first nonblank character on the line.
+M-^           delete-indentation        Join this line to the previous one.
+etags
+etags *.[ch]
+visit-tags-table(default is TAGS file)
+M- . find-tag
+C-x 4 . (for find-tag-other-window )
+M- , (for tags-loop-continue ) 
+tags-query-replace
+list-tags
+
+Fonts and Font-lock Mode
+font-lock-mode
+(global-font-lock-mode t)
+*** Section 9.3.    C and C++ Support
+
+*** Section 9.4.   Java Support
+*** Section 9.5.    The Java Development Environment for Emacs (JDEE)
+*** Section 9.6.   Perl Support
+*** Section 9.7.   SQL Support
+*** Section 9.8.   The Lisp Modes
+***Chapter 10.   Customizing Emacs
+*** Section 10.1.    Using Custom
+*** Section 10.2.    Modifying the .emacs File Directly
+*** Section 10.3.    Modifying Fonts and Colors
+*** Section 10.4.    Customizing Your Key Bindings
+*** Section 10.5.    Setting Emacs Variables
+*** Section 10.6.    Finding Emacs Lisp Packages
+*** Section 10.7.    Starting Modes via Auto-Mode Customization
+*** Section 10.8.    Making Emacs Work the Way You Think It Should
+***Chapter 11.   Emacs Lisp Programming
+*** Section 11.1.    Introduction to Lisp
+*** Section 11.2.    Lisp Primitive Functions
+*** Section 11.3.    Useful Built-in Emacs Functions
+*** Section 11.4.    Building an Automatic Template System
+*** Section 11.5.    Programming a Major Mode
+*** Section 11.6.    Customizing Existing Modes
+*** Section 11.7.    Building Your Own Lisp Library
+***Chapter 12.   Version Control
+*** Section 12.1.    The Uses of Version Control
+*** Section 12.2.    Version Control Concepts
+*** Section 12.3.    How VC Helps with Basic Operations
+*** Section 12.4.    Editing Comment Buffers
+*** Section 12.5.    VC Command Summary
+*** Section 12.6.    VC Mode Indicators
+*** Section 12.7.    Which Version Control System?
+*** Section 12.8.    Individual VC Commands
+*** Section 12.9.    Customizing VC
+*** Section 12.10.    Extending VC
+*** Section 12.11.     What VC Is Not
+*** Section 12.12.    Using VC Effectively
+*** Section 12.13.    Comparing with Ediff
+***Chapter 13.   Platform-Specific Considerations
+*** Section 13.1.    Emacs and Unix
+*** Section 13.2.    Emacs and Mac OS X
+*** Section 13.3.    Emacs and Windows
+***Chapter 14.   The Help System
+*** Section 14.1.    Using the Tutorial
+*** Section 14.2.    Help Commands
+*** Section 14.3.    Help with Complex Emacs Commands
+*** Section 14.4.    Navigating Emacs Documentation
+*** Section 14.5.   Completion
+***Appendix A.   Emacs Variables
 Appendix B.    Emacs Lisp Packages
 Appendix C.    Bugs and Bug Fixes
 Appendix D.   Online Resources
