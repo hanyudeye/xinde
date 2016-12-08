@@ -610,13 +610,81 @@ customize-apropos(恰当的)
  \C-j or \n                                    Newline
  \C-m or \r                                    Enter
  \C-i or \t                                    Tab
-
 *** Section 10.5.    Setting Emacs Variables
+(setq-default left-margin 4)
 *** Section 10.6.    Finding Emacs Lisp Packages
+C-h p (for finder-by-keyword )
 *** Section 10.7.    Starting Modes via Auto-Mode Customization
 *** Section 10.8.    Making Emacs Work the Way You Think It Should
-***Chapter 11.   Emacs Lisp Programming
+--no-init-file , -q load neither ~/.emacs nor default.el
+--no-site-file do not load site-start.el
+-debug
+(setq inhibit-default-init t) ; no global initialization(不会加载初始化文件了,一行的.emacs)
+emacs -u xxx 使用xxx的配置文件
+** Chapter 11.   Emacs Lisp Programming
 *** Section 11.1.    Introduction to Lisp
+(function-name argument1 argument2 ...)=== method_name (argument1,argument2,...) java
+number:5489, 5.489e3, 548.9e1, and so on   
+characters (+ ?a 3) (+ ?\t 2) (+ ?\C-b 1) ?A
+string "hello world,\" nimeide .\" "
+bool t nil false(不存在)
+symbol to refer with a single quote (')
+# global variable
+(setq var 3) (+ var 2)  
+(setq thisvar 2
+       thatvar 1
+       theothervar 3 )
+Defining Functions
+   (defun count-words-buffer ( )
+      (let ((count 0))
+        (save-excursion
+           (goto-char (point-min))
+           (while (< (point) (point-max))
+              (forward-word 1)
+              (setq count (1+ count)))
+           (message "buffer contains %d words." count))))
+# execute
+(count-words-buffer)
+# make it available for interactive use
+(interactive "prompt-string")
+ Code                                     User is prompted for :
+ b       Name of an existing buffer
+ e       Event (mouse action or function key press)
+ f       Name of an existing file
+ n       Number (integer)
+ s       String
+         Most of these have uppercase variations
+ B       Name of a buffer that may not exist
+ F       Name of a file that may not exist
+ N       Number, unless command is invoked with a prefix argument, in which case use the
+         prefix argument and skip this prompt
+ S       Symbol
+(interactive "nPercent: ") 
+(defun replace-string (from to)
+   (interactive "sReplace string: \nsReplace string %s with: ")
+   ...)
+
+# let 设定local variable
+(let ((var1 value1) (var2 value2) ... )   
+   statement-block)
+(+ (let ((chang 2) (kuan 3)) (+ chang kuan)) 1)
+# save-excursion tells emacs to remember the location of cursor at the beginning of the function,and go back there after executing
+# any statements in its body.
+(while condition           statement-block)
+# message
+ %s                   String or symbol
+ %c                   Character
+ %d                   Integer
+ %e                   Floating point in scientific notation 
+ %f                   Floating point in decimal-point notation
+ %g                   Floating point in whichever format yields the shortest string
+For example:
+(message "\"%s\" is a string, %d is a number, and %c is a character"
+             "hi there" 142 ?q)
+(message "This book was printed in %f, also known as %e." 2004 2004)
+(message "This book was printed in %.3e, also known as %.0f." 2004 2004)
+
+
 *** Section 11.2.    Lisp Primitive Functions
 *** Section 11.3.    Useful Built-in Emacs Functions
 *** Section 11.4.    Building an Automatic Template System
