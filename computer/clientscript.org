@@ -1004,3 +1004,32 @@ $("button").click(function(){
 ** utf-8签名与不签名
 区别:有了签名后,浏览器直接根据签名即可判断出使用UTF-8编码简析.
 不带签名,浏览器根据内容判断.所以签名的更容易被浏览器以正确的方式解析.
+** jQuery ajax() 方法
+      $.ajax({
+          type: "POST",
+          url: url,
+          data: config,
+          datatype: "html",
+          success: function (data) {
+
+              var strJSON = data; //得到的JSON
+              var d = eval("(" + strJSON + ")");
+              if (d.Issuccess) {
+
+                  VodkaTool.GotoUrl(tourl);
+              } else {
+                  VodkaTool.MessageBox(d.msg, false);
+                  $("#servername").focus();
+                  return false;
+              }
+          }
+      });
+
+* VodkaTool
+** post
+***  VodkaTool.PostAjax(url, config, tourl);
+***  VodkaTool.StateChange(state_a, url, id);
+***  VodkaTool.GotoUrl(url);
+
+* 手机版
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"> 

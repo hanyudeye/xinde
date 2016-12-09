@@ -684,9 +684,61 @@ For example:
 (message "This book was printed in %f, also known as %e." 2004 2004)
 (message "This book was printed in %.3e, also known as %.0f." 2004 2004)
 
-
+#+BEGIN_SRC lisp
+(defun count-words-buffer ( )
+   "Count the number of words in the current buffer;
+print a message in the minibuffer with the result."
+   (interactive)
+   (save-excursion
+     (let ((count 0))
+         (goto-char (point-min))
+         (while (< (point) (point-max))
+           (forward-word 1)
+           (setq count (1+ count)))
+(message "buffer contains %d words." count))))
+#+END_SRC
 *** Section 11.2.    Lisp Primitive Functions
+ Arithmetic      +,-,*,/
+                 % (remainder)  得到余数
+                 1+ (increment)     (参数加上1)
+                 1- (decrement)
+                 max , min (function 返回最大/小的值)
+ Comparison > , < , >= , <=
+                 /= (not equal)
+                 = (for numbers and characters)  只能是比较整数和字符
+                 equal (for strings and other complex objects)
+ Logic           and , or , not
+(and (> 4 2) (> 3 1) (> 2 3))
+
+Statement Blocks/返回值是最后一个表达式的值
+    (progn
+       statement-block) 
+       # let 可以省略 progn
+    (let (var1 var2 ...)    
+       statement-block)
+(let ( kuai (chang 2))
+(+ chang 1)
+)
+
+(if condition true-case false-block)
+
 *** Section 11.3.    Useful Built-in Emacs Functions
+(replace-regexp "\\<program\\('s\\|s\\)?\\>" "module\\1")
+ .                                   Match any character.
+ *                                   Match 0 or more occurrences of preceding char or group.
+ +                                   Match 1 or more occurrences of preceding char or group.
+ ?                                   Match 0 or 1 occurrences of preceding char or group.
+ [...]                               Set of characters; see below.
+ \\(                                 Begin a group.
+ \\)                                 End a group.
+ \\|                                 Match the subexpression before or after \\|.
+ ^                                   At beginning of regexp, match beginning of line or string.
+ $                                   At end of regexp, match end of line or string.
+ \n                                  Match Newline within a regexp.
+ \t                                  Match Tab within a regexp.
+ \\<                                 Match beginning of word.
+ \\>                                 Match end of word.
+
 *** Section 11.4.    Building an Automatic Template System
 *** Section 11.5.    Programming a Major Mode
 *** Section 11.6.    Customizing Existing Modes
