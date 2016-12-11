@@ -1,4 +1,4 @@
-* Linux应用 
+* Linux应用 在线文档 LDP(Linux document project)
 ** 系统管理
 *** 系统安全
 **** syslog 系统默认的日志守护进程
@@ -6,6 +6,7 @@
 **** logwatch 可定制和可插入式的日志监视系统
 **** lastb 列出登入系统失败的用户相关信息
 **** sudo 以其他身份来执行命令
+sudo -i 切换为root用户
 **** lastlog 显示系统中所有用户最近一次登录信息
 **** logrotate 统日志进行轮转、压缩和删除
 **** chroot 把根目录换成指定的目的目录
@@ -127,6 +128,7 @@ sudo mount -t smbfs -o username=user,password='' //10.0.1.1/windowsshare /mnt �
 **** ctrlaltdel 设置组合键Ctrl+Alt+Del的功能
 **** reboot 重新启动正在运行的Linux操作系统
 **** shutdown 用来执行系统关机的命令
+shutdown [-cfFhknr (参数名称)] [-t 秒数] [时间][警告信息] 
 **** poweroff 用来关闭计算机操作系统并且切断系统电源
 ** 网络管理
 *** 网络应用
@@ -622,7 +624,8 @@ find pathname -options [-print -exec -ok ...]
   append/cio/direct/sync/binary/text/skip_bytes/seek_bytes
   
 **** dirname 去除文件名中的非目录部分
-**** updatedb 创建或更新slocate命令所必需的数据库文件
+**** updatedb 创建或更新locate命令所必需的数据库文件
+一般只会对系统目录创建索引
 **** ln 用来为文件创件连接
 **** cat 连接文件并打印到标准输出设备上
 *** 文件编辑
@@ -1126,6 +1129,8 @@ gdb-restore-windows 恢复窗格布局
 **** exit 退出当前的shell
 **** jobs 显示Linux中的任务列表及任务状态
 **** help 显示帮助信息
+    shell 内建的 可以用匹配模式,也就是正则
+    help -s 命令名  仅简短信息
 **** history 用于显示历史命令
 **** logout 退出当前登录的Shell
 **** export 设置或显示系统环境变量
@@ -1184,6 +1189,11 @@ gdb-restore-windows 恢复窗格布局
 **** depmod 分析可载入模块的相依性
 **** bmodinfo 显示给定模块的详细信息
 **** modprobe 自动处理可载入模块
+***** 触摸板和小红点
+关闭:sudo modprobe -r psmouse
+开启:sudo modprobe  psmouse
+只关闭触摸板: synclient touchpadoff=1
+开启:synclient touchpadoff=0
 **** rmmod 从运行的内核中移除指定的内核模块
 **** insmod 将给定的模块加载到内核中
 **** lsmod 显示已载入系统的模块
@@ -1225,6 +1235,22 @@ gdb-restore-windows 恢复窗格布局
 **** vgdisplay 显示LVM卷组的信息
 **** mkbootdisk 可建立目前系统的启动盘
 **** grub 多重引导程序grub的命令行shell工具
+     查看分区信息 cat (hd0,6)/etc/fstab
+     指定/boot所在分区 root (hd[0=n],y)
+     指定Linux内核 kernel /boot/vmlinux-XX ro root=/dev/hdaX
+     指定initrd文件 initrd /boot/initrdXX.img
+     引导系统 boot
+     menu.lst
+     default=0   #默认启动哪个系统,从0开始,title 开头的是第0个系统
+     timeout=5
+     title Ubuntu
+     root (hd0,6)
+     splashimage=(hd0,6)/boot/grub/splash.xpm.gz #grub的背景画面,注释加 '#' /nosplash 没背景
+     hiddenmenu # 隐藏grub菜单
+     kernel XX
+     initrd XX
+     ---------
+     title WinXP #第 1 个系统
 **** convertquota 把老的配额文件转换为新的格式
 **** lilo 安装核心载入开机管理程序
 **** df 显示磁盘的相关信息
@@ -1271,8 +1297,47 @@ source filename
 	     samba服务器配置
 
 * ubuntu
+** Unix 的诞生
+Multics
+ 在Dennis Ritchie帮助下,Thompson 在PDP-7上用汇编语言重写了这个游戏
+unix开始用汇编写的,太慢,后改用C语言
+现在UNIX和Linux好像在同一公司了
+** Linux 历史 参考了UNIX
+引入了GNU 工具
+** Linux应用
+1. 传统服务器 LAMP(Linux, Apache, MySQL, Perl/PHP/Python)
+2. 大型数据库 Oracle/DB2/postgreSQL
+** 发行版
+Debian 有测试版/stable(稳定版)和不稳定版
+1.升级灵活 apt-get/dpkg 方式
+apt-get update/dist-upgrade
+2.支持 邮件列表可以得到开发人员的免费解答(不是普通人员哦)
+3.错误跟踪
+** ubuntu
+*** 软件类型
+    main restricted(受限的,无源码) universe(社区维护) multiverse(非自由)
+*** 桌面系统
+**** X-Window System->WM
+*** 网络服务器     
+** X-window unix 系统 GUI ,理念挺先进的
+X 是一种服务,就像TCP协议一样
+X服务器和X客户机之间的通信可以通过网络进行
+提供用户接口: 管理接口和应用接口
+*** 窗口管理
+**** 焦点策略
+     focus-follows-mouse
+     sloppy-fucus
+     click-to-focus
+**** 窗口部件
+*** X 的实现原理
+    一个X-window 包含多个Screen,而screen 则是一个实际的Monitor或是device.
+     WWW, Mail Server, File Server, FTP
+
+
+
+
+
   休眠		 pm-hibernate
-  待机	 
 
 * git
 ** Git 工作流程
@@ -2644,3 +2709,107 @@ C-c C-j，在光标位置处插入换行符
 对于键盘上没有的字符，譬如拉丁文－1中的字符，该如何输入呢？Emacs HTML模式提供了许多语言模式。使用键绑定C-c 8可以打开SGML name entity小模式，这个键绑定是以开关方式执行的，即再次键入C-c 8即可关闭这个该模式。打开 SGML name entity小模式后，键入C-x RET k，选择语言模式，我们要使用拉丁文－1，那么就可以键入 latin-1，回车即可进入拉丁文－1字符插入模式。在向HTML文档中插入拉丁文-1字符时，使用键绑定C-x 8为前缀。譬如，我要在文档中插入"&yen;"，只需要键入C-x 8 Y即可。此时，在HTML源文件中，会将&yen;显示为其字符实体，即"& yen"，而在Mini-buffer中会同时显示所插入的实际符号"&yen;"，此时只需执行一次Undo(C-x u或C-_)，就可以将Mini-buffer中的实际符号送入到源文件中了。
 可以在HTML定义的标准字符表中查找你所需要的字符实体，这个字符表可以在网上搜一搜了。
 
+* Linux 内核
+** 进程管理(process management)
+** timer(定时器)
+** interrupt management
+** memory management
+** module management
+** VFS layer
+** file system
+** device driver
+** inter-process communication
+** network management
+** system init
+* arch linux
+** install
+*** pre-installation
+     need 800MB of diskspace ;network;
+**** 1.1 verify the boot mode
+  if exist the efivars directory,then UEFI motherboard boot
+  ls /sys/firmware/efi/efivars
+else the system is booted in BIOS(or CSM) mode
+**** 1.2 set the keyboard layout
+ default console keymap is US.
+all: ls /usr/share/kbd/keymaps/**/*.map.gz
+layout changed: loadkeys de-latin1
+console fonts: /usr/share/kbd/consolefonts/
+set font: setfont
+**** 1.3 connect the Internet
+default wired devices: dhcpcd
+different network: systemd-networkd and netctl;first stop dhcpcd@interface.service
+无线 wifi-menu
+**** 1.4 update the system clock
+timedatectl set-ntp true
+check the service status: timedatectl status
+timedatectl set-timezone Asia/Shanghai
+**** 1.5 partition the disks
+fdisk or parted for both MBR and GPT, or
+gdisk for GPT only
+display partitions: lsblk or fdisk -l
+/(root) directory must be available
+如果要LVM,disk encryption or RAID,现在就做
+**** 1.6 format the partions
+mkfs,mkswap
+**** 1.7 Mount the file system
+mount /dev/sda1 /mnt
+mount /dev/XX /mnt/boot 100MB 够了
+mount /dev/xxx /mnt/home
+swapon /dev/xxx
+*** Installation
+**** 2.1 Select the mirrors
+packages to be installed from the mirror servers,need downloaded.
+defined in /etc/pacman.d/mirrorlist 
+**** 2.2 Install the base packages
+base package group: pacstrap /mnt base base-devel
+ohter packages: append their names to pacstrap or pacman
+*** Configure the system
+**** 3.1 Fstab (-U or -L to define by UUID or labels)
+     genfstab -U /mnt >> /mnt/etc/fstab
+     check the resulting file in /mnt/etc/fstab
+**** 3.2 Chroot
+     arch-chroot /mnt
+**** Time zone
+list-timezones
+set: ln -s /usr/share/zoneinfo/zone/subzone /etc/localtime
+generate /etc/adjtime: hwclock --systohc --utc
+**** Locale
+uncomment en_US.UTF-8 UTF-8 and other needed localizations in
+/etc/locale.gen,and generate them with:
+# locale-gen
+set the LANG variable 
+# echo LANG=en_US.UTF-8 > /etc/locale.conf
+if required,set the console keymap and font in vconsole.conf
+**** Hostname
+create:
+# echo myhostname >/etc/hostname
+add: /etc/hosts
+127.0.1.1 myhostname.localdomain myhostname
+**** Network configuration
+For wireless configuration, install the iw,wpa_supplicant,and dialog packages, and firmware packages.
+systemctl enable dhcpcd@enp2s0.service
+**** Initramfs RAM磁盘
+create a new initial RAM disk with:
+# mkinitcpio -p linux
+**** Root password
+# passwd
+**** Boot loader
+pacman -S grub
+grub-install /dev/sda
+grub-mkconfig -o /boot/grub/grub.cfg
+**** 用户
+useradd -m -g users -G wheel -s /bin/bash ikke
+passwd ikke
+
+安装 sudo
+pacman -S sudo
+打开 /etc/sudoers 文件，找到 root ALL=(ALL) ALL 并依葫芦画瓢添加 ikke ALL=(ALL) ALL 即可。
+
+*** Reboot
+# exit 
+# umount -R /mnt
+# reboot
+*** Post-installation
+
+
+     
