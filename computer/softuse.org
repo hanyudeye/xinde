@@ -18,7 +18,7 @@ sudo -i 切换为root用户
 **** systemctl 系统服务管理器指令
 **** w 显示目前登入系统的用户信息
 **** watch 周期性的方式执行给定的指令
-**** pidof 查找指定名称的进程的进程号ID号
+**** pidof 查找指定名称的进程的进程号ID号　
 **** skill 向选定的进程发送信号冻结进程
 **** pgrep 设置用户的认证信息，包括用户密码、密码过期时间等
 **** renice 修改正在运行的进程的调度优先级
@@ -35,10 +35,12 @@ sudo -i 切换为root用户
 **** ps 报告当前系统的进程状态
 **** init init进程是所有Linux进程的父进程
 **** crontab 提交和管理用户的需要周期性执行的任务
+/var/spool/cron 
 **** pkill 可以按照进程名杀死进程
 **** atrm 删除待执行任务队列中的指定任务
 **** atq 列出当前用户的at任务列表
 **** at 在指定时间执行一个任务
+at TIME HH:MM YYY-MM-DD /+ n {hours,days,weeks}
 *** 用户和工作组管理
 **** chage 修改帐号和密码的有效期限
 **** id 显示用户的ID以及所属群组的ID
@@ -122,7 +124,7 @@ sudo -i 切换为root用户
 3.device 要挂接(mount)的设备。
 4.dir设备在系统上的挂接点(mount point)。
 sudo mount -t smbfs -o username=user,password='' //10.0.1.1/windowsshare /mnt 浏览windows 共享文件夹
-**** mke2fs 创建磁盘分区上的“etc2/etc3”文件系统
+**** mke2fs 创建磁盘分区上的“etc2/etc3”文系统
 *** 系统关机和重启
 **** halt 关闭正在运行的Linux操作系统
 **** ctrlaltdel 设置组合键Ctrl+Alt+Del的功能
@@ -283,8 +285,6 @@ shutdown [-cfFhknr (参数名称)] [-t 秒数] [时间][警告信息]
 **** yum 基于RPM的软件包管理器
 **** dpkg-trigger Debian Linux下的软件包触发器
 **** rpm RPM软件包的管理工具
-**** rcconf Debian Linux下的运行等级服务配置工具
-**** rpmbuild 创建RPM的二进制软件包和源码软件包
 **** rpmverify 验证已安装的RPM软件包的正确性
 **** rpmquery 从RPM数据库中查询软件包信息
 **** patch 为开放源代码软件安装补丁程序
@@ -293,8 +293,6 @@ shutdown [-cfFhknr (参数名称)] [-t 秒数] [时间][警告信息]
 **** dpkg-preconfigure Debian Linux中软件包安装之前询问问题
 **** dpkg-split Debian Linux中将大软件包分割成小包
 **** dpkg-query Debian Linux中软件包的查询工具
-**** dpkg-divert Debian Linux中创建并管理一个转向列表
-**** dpkg-deb Debian Linux下的软件包管理工具
 *** 编程开发
 **** gcc 基于C/C++的预处理器和编译器
 -o：指定生成的输出文件,所以编译多个文件是,-o 没有意义；
@@ -1107,6 +1105,49 @@ gdb-restore-windows 恢复窗格布局
 ** 硬件 | 监测 | 内核 | Shell
 *** Shell内建命令
 **** sh shell命令解释器
+declare -i a=3
+-a : 数组
+-f: function
+-i: integer
+-r:readonly
+-x:通过环境输出变量
+
+# TITLE shell 的逻辑判断式
+| 功能     | 逻辑标识 | 表示意思                    |
+|----------+----------+-----------------------------|
+| 文件目录 | -f       | 文件是否存在                |
+|          | -d       | 目录                        |
+|          | -b       | block                       |
+|          | -c       | character文件               |
+|          | -S       | socket                      |
+|          | -L       | 符号链接                    |
+|          | -e       | 某个东西                    |
+|----------+----------+-----------------------------|
+| 程序     | -G       | 是否由GID所执行的程序所拥有 |
+|          | -O       | UID                         |
+|          | -p       | name pipe or FIFO           |
+|----------+----------+-----------------------------|
+| 文件属性 | -r       | 可读                        |
+|          | -w       | 写                          |
+|          | -x       | 执行                        |
+|          | -s       | 非空白                      |
+|          | -u       | SUID属性                    |
+|          | -g       | SGID                        |
+|----------+----------+-----------------------------|
+| 文件间   | -nt      | 第一个比第二个新            |
+|          | -ot      | 旧                          |
+|          | -ef      | 同一文件(link之类)          |
+|----------+----------+-----------------------------|
+| 逻辑     | &&       | AND的意思                   |
+|          | 两竖     | OR                          |
+|----------+----------+-----------------------------|
+
+
+
+
+
+
+
 **** trap 指定在接收到信号后将要采取的动作
 **** let 简单的计算器
 **** seq 以指定增量从首数开始打印数字到尾数 sequential sequence
@@ -1254,6 +1295,7 @@ gdb-restore-windows 恢复窗格布局
 **** convertquota 把老的配额文件转换为新的格式
 **** lilo 安装核心载入开机管理程序
 **** df 显示磁盘的相关信息
+-ia i节点使用情况
 **** parted 磁盘分区和分区大小调整工具
 
 * Shell 编程
@@ -1302,12 +1344,12 @@ Multics
  在Dennis Ritchie帮助下,Thompson 在PDP-7上用汇编语言重写了这个游戏
 unix开始用汇编写的,太慢,后改用C语言
 现在UNIX和Linux好像在同一公司了
-** Linux 历史 参考了UNIX
+*** Linux 历史 参考了UNIX
 引入了GNU 工具
 ** Linux应用
 1. 传统服务器 LAMP(Linux, Apache, MySQL, Perl/PHP/Python)
 2. 大型数据库 Oracle/DB2/postgreSQL
-** 发行版
+*** 发行版
 Debian 有测试版/stable(稳定版)和不稳定版
 1.升级灵活 apt-get/dpkg 方式
 apt-get update/dist-upgrade
@@ -1319,7 +1361,7 @@ apt-get update/dist-upgrade
 *** 桌面系统
 **** X-Window System->WM
 *** 网络服务器     
-** X-window unix 系统 GUI ,理念挺先进的
+*** X-window unix 系统 GUI ,理念挺先进的
 X 是一种服务,就像TCP协议一样
 X服务器和X客户机之间的通信可以通过网络进行
 提供用户接口: 管理接口和应用接口
@@ -1331,12 +1373,56 @@ X服务器和X客户机之间的通信可以通过网络进行
 **** 窗口部件
 *** X 的实现原理
     一个X-window 包含多个Screen,而screen 则是一个实际的Monitor或是device.
-     WWW, Mail Server, File Server, FTP
+**** /etc/X11/xorg.conf 配置文件,用于X.org server man xorg.conf
+xorg.conf, xorg.conf.d - configuration files for Xorg X server
+#+BEGIN_SRC 
+Section "section名称"
+选项名称   "选项值"
+选项名称   "选项值"
+选项名称   "选项值"
+  ...
+EndSection
+#+END_SRC
+Files          File pathnames
+ServerFlags    Server flags
+Module         Dynamic module loading
+Extensions     Extension enabling
+InputDevice    Input device description
+InputClass     Input class description
+Device         Graphics device description
+VideoAdaptor   Xv video adaptor description
+Monitor        Monitor description
+Modes          Video modes descriptions
+Screen         Screen configuration
+ServerLayout   Overall layout
+DRI            DRI-specific configuration
+Vendor         Vendor-specific configuration
 
-
-
-
-
+** gnome应用
+gnome-screenshot gimp
+** web服务     WWW, Mail Server, File Server, FTP
+** 软件包管理
+*** dpkg
+dpkg -i <package> 安装
+dpkg -c <package> 列出内容
+dpkg -l <package> 提取信息
+dpkg -r <package> 移除以安装软件包
+dpkg -P <package> 完全删除,包括配置文件
+dpkg -L <package> 列出所有文件清单
+*** apt-get apt-cache apt-cdrom
+apt-cache showsrc <package> 查看软件信息
+apt-get source <package> 获取源码
+install /remove /update (更新列表)/upgrade(升级可用)/help
+*** synaptic
+*** 打包工具 checkinstall
+** shell
+*** terminals (不同的终端),终端特性文件
+Linux一般vt100 或 linux
+*** 有了图形后,就是xorg
+出现了xterm 伪终端
+*** 为了在终端运行程序,发明了shell
+*** 开启远程登录服务openssh-server
+*** 命令替换 $(locate XXX)= `command`
   休眠		 pm-hibernate
 
 * git
@@ -1362,12 +1448,14 @@ ssh-keygen -C 'you email address@gmail.com' -t rsa
 # Title 可以随便命名，Key 的内容拷贝自 ~/.ssh/id_rsa.pub 中的内容，完成后，可以再使用 ssh -v git@github.com 进行测试。
 ** 管理 工作区、暂存区和版本库
 *** 创建一个版本库
-git init
-git clone <repo> <directory>
-git remote add origin ssh://software@172.16.0.30/~/yafeng/.git
+git init <directory>
+git clone git://git.kernel.org/pub/scm/git/git.git <directory>
 git remote add origin git@github.com:hanyudeye/os.git
 git push origin master
 git push -u origin master
+*** git tag
+*** git branch
+*** git checkout
 *** 将修改存入暂存区
 git add <modified files>/git add .
 *** 暂存区删除文件
@@ -1401,6 +1489,15 @@ git diff   尚未缓存的改动：
 git diff --cached   查看已缓存的改动：
 git diff HEAD  查看已缓存的与未缓存的所有改动：
 git diff --stat   显示摘要而非整个diff
+ A: 你本地新增的文件（服务器上没有）.
+C: 文件的一个新拷贝.
+D: 你本地删除的文件（服务器上还在）.
+M: 文件的内容或者mode被修改了.
+R: 文件名被修改了。
+T: 文件的类型被修改了。
+U: 文件没有被合并(你需要完成合并才能进行提交)。
+X: 未知状态(很可能是遇到git的bug了，你可以向git提交bug report)。
+在man git diff-files中可以查到这些标志的说明
 ** Git 分支管理
 *** 创建分支命令：
 git branch (branchname)
@@ -1440,7 +1537,7 @@ git checkout -b bug_fix_local bug_fix_remote #把本地端切换为远程的bug_
 
 * qemu	
   [-fda fdb] Use file as floppy disk 0/1 image	     
-* du	磁盘使用
+* du	目录或文件大小
 	-b filename ->filename 占用多少字节 -k -m (多少K,兆)
 
 * apt
