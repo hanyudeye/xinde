@@ -1101,3 +1101,26 @@ $this->output->delete_cache('/foo/bar');
 
 * Internet error
 ** 500 Internal server error
+* SQL
+orderby(asc desc)升序 降序
+#+BEGIN_SRC php
+	$data=array(
+                "fields"=>"usershop.*,user.*",
+    				"table"=>"usershop",  //右表
+                    "leftjoin"=>array("user"=>"user.userid=usershop.userid"), //左表
+                      "like"=>$like,
+    				"where"=>array("usershop.shopid"=>$shopid),
+                     "orderby"=>array("usershop.usershopid"=>"desc"),
+    		);
+#+END_SRC
+#+BEGIN_SRC 
+SQL LEFT JOIN 关键字
+LEFT JOIN 关键字会从左表 (table_name1) 那里返回所有的行，即使在右表 (table_name2) 中没有匹配的行。
+LEFT JOIN 关键字语法
+
+SELECT column_name(s)
+FROM table_name1
+LEFT JOIN table_name2 
+ON table_name1.column_name=table_name2.column_name
+
+#+END_SRC
