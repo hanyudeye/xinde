@@ -1,138 +1,3 @@
-* Emacs [editor] can DIY for yourself
-** concepts
-*** Screen
-**** frame 框架
-menu/scroll bar/mode line/[tool bar]/the window(show buffer content)/echo area
-**** point 
-**** Echo area  === Minibuffer (when input)
-**** Mode line
-**** menu bar
-*** User Input
-**** input events
-*** Keys
-**** keys and commands
-*** Commands
-*** Initialization File 
-**** `~/.emacs',or `~/.emacs.el',or `~/.emacs.d/init.el'
-*** lisp libraries
-**** load-path
-** 基本编缉命令 
-*** Basic editing commands
-*** The Minibuffer 显示或输入数据
-**** editing in the minibuffer
-*** completion
-** 修改命令 
-** 高级特性
-*** Modes
-*** Input mode
-**** 输入法切换 `C-\' (toggle-input-method')
-*** 编码
-**** 查看文件当前编码/显示文件编码顺序
-describe-coding-system
-**** 编码设置
-(setq default-buffer-file-coding-system 'utf-8)  默认buffer编码是utf-8,(写文件)
-(prefer-coding-system 'utf-8)   指定文件编码,此时buffer新建和读取
-都默认是utf-8,也可以M-x prefer-coding-system 只执行一次
-**** 匹配文件编码
-***** 保存文件时采用的编码C-x <RET> f coding <RET>
-***** 接下来用什么编码编写文件 C-x <RET> c coding <RET>
-***** 重新用编码载入文件 C-x <RET> r coding <RET>
-***** 一块区域重新编码 M-x recode-region <RET> rightcoding <RET> wrongcoding
-* emacs 功能强大的全屏文本编辑器
-** emacs(选项)(参数)
-+<行号>：启动emacs编辑器，并将光标移动到制定行号的行；
--q：启动emacs编辑器，而不加载初始化文件；
--u<用户>：启动emacs编辑器时，加载指定用户的初始化文件；
--t<文件>：启动emacs编辑器时，把指定的文件作为中端，不适用标准输入（stdin）与标准输出（stdout）；
--f<函数>：执行指定lisp（广泛应用于人工智能领域的编程语言）函数；
--l<lisp代码文件>：加载指定的lisp代码文件；
--batch：以批处理模式运行emacs编辑器。
-
-M-r : 将光标移动到屏幕中间那行
-M-e : 移到句尾
-M-{ : 向上移动一段
-C-left : 向后移动一个单词
-C-down : 向后移动一段
-M-x goto-line : 移动到某一行
-
-Buffer 相关
-C-x s : 保存所有未保存的buffer，会提示你是否需要保存
-
-拷贝与粘贴
-M-space (redefined): 设置mark; C-@ 是默认命令
-C-x r k : 执行矩形区域的剪切 [范围是光标处到缓冲头的一个矩形],可以选择区块
-C-x r y : 执行矩形区域的粘贴
-
-窗口操作
-C-x 5 1/2/3/0 : 对frame类似的操作
-C-x > : 窗口内容左卷（这两个命令在垂直分割窗口后比较有用）
-
-搜索和替换
-M-% : 查询替换，也就是替换前会询问一下
-M-x replace-string : 普通替换
-
-Tags
-M-! etags .c .h : 创建TAGS文件
-M-. : 跳到tag所在位置
-M-x list-tags : 列出tags
-
-书签
-C-x r m : 设置书签bookmark
-C-x r b : 跳到bookmark处
-
-帮助
-C-h C-f : 查看一个函数的info，非常有用
-
-其它
-C-M-\ : 对选中区域，按照某种格式(比如C程序)进行格式化
-C-x h : 全部选中
-M-! : 执行外部shell命令
-M-x shell : 模拟shell的buffer
-M-x term : 模拟terminal, C-c k 关闭terminal
-C-x C-q : 修改buffer的只读属性
-
-C-x i 插入文件
-C-/ 撤销
- 
-注释
-多行注释 C-x r t
-反注释	 C-x r k
-关闭窗口 C-x 0
-窗口移动 M-x windmove-left /right /down
-替换windows换行M-x replace-string RET C-q C-m RET RET
-
-调试
-gdb –annotate=3 test
-无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。
-gdb-many-windows 切换单窗格/多窗格模式
-gdb-restore-windows 恢复窗格布局	
-** Emacs 插件	
-# ido, 类似于helm,和helm各有千秋我都用,五五开,
-# imenu 显示当前文件函数列表,可以直接跳转到那去,完全可配置
-# flymake 实时语法检查,通吃所有语言
-# flyspell 拼写检查,爱死了,是我见过的所有拼写检查最强大,如果你知道如何配置.
-*** emacs-w3m
-     C-x C-w 保存
-     q	关闭窗口
-     Q	直接离开
-     U	打开 URL
-     C-x-k	关闭当前标签页
-     G	在标签页中打开一个网址
-     B	后退
-     ESC I	图片另存为 
-     =   	显示当前页面属性 
-     N	前进
-     R	刷新
-     F   	提交表单 
-     a	添加当前页到书签
-     ESC a	添加该URL到书签
-     v   显示书签
-     E   编辑书签
-     C-k 删除书签
-     C-_ 撤消书签
-     M   用外部浏览器打开链接
-     C-c C-k	停止载入
-
 * info 树的导航
 ** node
 n next node (相对于当前(自身)节点)
@@ -275,11 +140,56 @@ error
 ** debugging
 ** keymaps
 *** key sequences 
-* emacs basic
-** files buffers modes display commands quit help 
 * emacs 
+** emacs(选项)(参数)
++<行号>：启动emacs编辑器，并将光标移动到制定行号的行；
+-q：启动emacs编辑器，而不加载初始化文件；
+-u<用户>：启动emacs编辑器时，加载指定用户的初始化文件；
+-t<文件>：启动emacs编辑器时，把指定的文件作为中端，不适用标准输入（stdin）与标准输出（stdout）；
+-f<函数>：执行指定lisp（广泛应用于人工智能领域的编程语言）函数；
+-l<lisp代码文件>：加载指定的lisp代码文件；
+-batch：以批处理模式运行emacs编辑器。
+
+调试
+gdb –annotate=3 test
+无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。
+gdb-many-windows 切换单窗格/多窗格模式
+gdb-restore-windows 恢复窗格布局	
+** Emacs 插件	
+# ido, 类似于helm,和helm各有千秋我都用,五五开,
+# imenu 显示当前文件函数列表,可以直接跳转到那去,完全可配置
+# flymake 实时语法检查,通吃所有语言
+# flyspell 拼写检查,爱死了,是我见过的所有拼写检查最强大,如果你知道如何配置.
+*** emacs-w3m
+     C-x C-w 保存
+     q	关闭窗口
+     Q	直接离开
+     U	打开 URL
+     C-x-k	关闭当前标签页
+     G	在标签页中打开一个网址
+     B	后退
+     ESC I	图片另存为 
+     =   	显示当前页面属性 
+     N	前进
+     R	刷新
+     F   	提交表单 
+     a	添加当前页到书签
+     ESC a	添加该URL到书签
+     v   显示书签
+     E   编辑书签
+     C-k 删除书签
+     C-_ 撤消书签
+     M   用外部浏览器打开链接
+     C-c C-k	停止载入
+
 ** Chapter 1.   Emacs Basics
-*** Section 1.2.   Understanding Files and Buffers
+*** Section 1.2.   Files and Buffers Screen
+**** frame 框架
+menu/scroll bar/mode line/[tool bar]/the window(show buffer content)/echo area
+**** point 
+**** Echo area  === Minibuffer (when input)
+**** Mode line
+**** menu bar
 *** Section 1.3.   A Word About Modes
 Majode
 Texundamental /View /Shell  /Outline /Indented text /Paragraph indent text /Picture 
@@ -289,13 +199,13 @@ autll(enables word wrap)/Overwrite(replaces characters instead of inserting them
 abbparagraph indent/refill/Artist(creating ASCII drawings using the mouse/ISO accents/Font lock(highlighting text)
 comtion /Enriched/Info/VC (various version control systems)
 
-*** Section 1.4.   Starting Emacs
 *** Section 1.5.   About the Emacs Display
-***e mode line
+****  mode line
 *** Section 1.6.   Emacs Commands
 *** Section 1.7.   Opening a File
-insfile/find file
-C-x                     find-alternate-file
+insertfile/find file
+C-x i 插入文件
+C-x C-v  find-alternate-file
 *** Section 1.8.   Saving Files
 wriile/save-buffer
 *** Section 1.9.   Leaving Emacs
@@ -319,6 +229,8 @@ refill-mode(不满一行80个字就要凑满) auto-fill fill-paragraph fill-regi
  M-{              backward-paragraph           Move backward one paragraph.
  C-v              scroll-up                    Move forward one screen.
  M-v              scroll-down                  Move backward one screen.
+ C-x >           scroll-right
+ C-x <           scroll-left
  C-x ]            forward-page                 Move forward one page.
  C-x [            backward-page                Move backward one page.
  M-<              beginning-of-buffer    Move to beginning of file.
@@ -352,7 +264,6 @@ C-w Edit    Cut kill-region                 Delete a marked region (see next sec
  C-x C-p               mark-page                        Mark page.
  C-x h                 mark-whole-buffer                Mark buffer.
  M-y                   yank-pop                         After C-y , pastes earlier deletion.
-
 *** Section 2.4.   Emacs and the Clipboard
 *** Section 2.5.   Editing Tricks and Shortcuts
  C-t             transpose-chars                       Transpose two letters.
@@ -380,6 +291,9 @@ C-M-s Enter    Search     re-search-forward          Search for a regular expres
 C-M-r Enter    Search     re-search-backward         Search for a regular expression
 C-M-s Edit     Search     isearch-forward-regexp     regular expression.
 C-M-% Edit     Replace    query-replace-regexp       Query-replace a regular expression.
+M-%   query-replace
+replace-string
+C-s     isearch-forward
 *** Section 3.3.   Checking Spelling Using Ispell
 ispell-change-directory
 ispell-buffer
@@ -396,13 +310,21 @@ flyspell-buffer
 *** Section 4.1.    Understanding Buffers, Windows, and Frames
 *** Section 4.2.    Working with Multiple Buffers
 *** Section 4.3.   Working with Windows
+M-x windmove-left /right /down/up
 *** Section 4.4.   Working with Frames
+C-x 5 1/2/3/0 : 对frame类似的操作
+0:(delete-frame)
+1:只剩一个frame了 (delete-other-frames)
+2:分割成两个frame (make-frame-command)
+
 *** Section 4.5.   More About Buffers
 C-x C-q            Read-Only Buffers
 *** Section 4.6.   More About Windows
 balance-windows    C-x +
 compare-windows
 *** Section 4.7.    Holding Your Place with Bookmarks
+C-x r m : 设置书签bookmark
+C-x r b : 跳到bookmark处
 ** Chapter 5.    Emacs as a Work Environment
 *** Section 5.1.    Executing Commands in Shell Buffers
 *** Section 5.2.    Using Dired, the Directory Editor
@@ -480,6 +402,7 @@ calendar
  C-p                           calendar-backward-week        Move backward a week.
  M-}                           calendar-forward-month        Move forward one month.
  M-{                           calendar-backward-month       Move backward a month.
+ M-r : 将光标移动到屏幕中间那行
  C-x ]                         calendar-forward-year         Move forward a year.
  C-x [                         calendar-backward-year        Move backward a year.
 diary
@@ -533,10 +456,16 @@ center-paragraph
 set-justification-center                 Center selected text.
 *** Section 7.4.   Using Outline Mode
 *** Section 7.5.   Rectangle Editing
+C-x r y : 执行矩形区域的粘贴
+C-x r t  (string-rectangle START END STRING)  replace rectangle contents with STRING on each line
+C-x r k  kill-rectangle 执行矩形区域的剪切 [范围是光标处到缓冲头的一个矩形],可以选择区块
 *** Section 7.6.   Making Simple Drawings
 ** Chapter 8.   Markup Language Support
 *** Section 8.1.   Comments
- M-; (for indent-for-comment ) 
+M-; ( indent-for-comment ).
+C-x ; ( set-comment-column ).
+comment-region
+kill-comment
 *** Section 8.2.   Font-Lock Mode  
 for coloring code to make it easier to read.
 *** Section 8.3.   Writing HTML
@@ -557,11 +486,6 @@ C-c C-c    Visit the source code for the current error message.
 (autoload 'php-mode "php-mode" "PHP editing mode." t)
 (setq auto-mode-alist (cons '("\\.php$" . php-mode) auto-mode-alist))
 C-h s (for describe-syntax )
-comment
-M-; (for indent-for-comment ).
-C-x ; (for set-comment-column ).
-comment-region
-kill-comment
 C-M-\         indent-region             Indent each line between the cursor and mark.
 M-m           back-to-indentation       Move to the first nonblank character on the line.
 M-^           delete-indentation        Join this line to the previous one.
@@ -599,7 +523,12 @@ update .emacs file:
 *** Section 10.1.    Using Custom
 customize-apropos(恰当的)
 *** Section 10.2.    Modifying the .emacs File Directly
+**** `~/.emacs',or `~/.emacs.el',or `~/.emacs.d/init.el'
+**** lisp libraries
+***** load-path
 *** Section 10.3.    Modifying Fonts and Colors
+*** section 10.3.    Input mode
+**** 输入法切换 `C-\' (toggle-input-method')
 *** Section 10.4.    Customizing Your Key Bindings
 (define-key keymap "keystroke" 'command-name)
 (global-set-key "keystroke" 'command-name)==(define-key global-map ...) 
@@ -621,6 +550,22 @@ C-h p (for finder-by-keyword )
 -debug
 (setq inhibit-default-init t) ; no global initialization(不会加载初始化文件了,一行的.emacs)
 emacs -u xxx 使用xxx的配置文件
+*** seciton 10.9.     编码
+**** 查看文件当前编码/显示文件编码顺序
+describe-coding-system
+**** 编码设置
+(prefer-coding-system 'utf-8)   指定文件编码,此时buffer新建和读取
+都默认是utf-8,也可以M-x prefer-coding-system 只执行一次
+**** 匹配文件编码
+***** 保存文件时采用的编码C-x <RET> f coding <RET>
+(setq buffer-file-coding-system 'utf-8) 这样修改文件后,或打开文件后,就用这种编码保存
+***** 接下来用什么编码编写文件 C-x <RET> c coding <RET>
+***** 重新用编码载入文件 C-x <RET> r coding <RET>
+***** 一块区域重新编码 M-x recode-region <RET> rightcoding <RET> wrongcoding
+**** 输入二进制值,非格式化字符查看ascii表
+(quoted-insert ARG)    C-q ARG ARG是八进制形式的
+(setq read-quoted-char-radix 10) 改成十进制形式
+(setq read-quoted-char-radix 16) 十六进制形式
 ** Chapter 11.   Emacs Lisp Programming
 *** Section 11.1.    Introduction to Lisp
 (function-name argument1 argument2 ...)=== method_name (argument1,argument2,...) java
@@ -773,18 +718,3 @@ Appendix C.    Bugs and Bug Fixes
 Appendix D.   Online Resources
  Appendix E. Quick Reference
  
-
-* emacs 输入编码的数字
- C-q X 是一个通用的输入特殊字符的解决办法，X 表示一个特殊 字符， 在几乎所有的模式下，输入 C-q 然后是一个就可以输入这个 特殊字符。
-
-一般来说、所有的特殊的字符都和某一个特定的函数绑定在一起 了，例如 C-a , ASCII 1 , 表示 beginning-of-line 。 换行的字符就是 C-j ， ASCII 10 。
-
-除了输入 C-j ，还可以输入回车字符的 ASCII 的 8 进制数， 例如 C-q 1 2 。 因为 C-j 对应的 ACSII 是 10, 012 八进制 ， 0xA 十六进制。
-
-(setq read-quoted-char-radix 10)
-or
-(setq read-quoted-char-radix 16)
-
-可以改为把八进制改为十进制或者十六进制。或者用命令
-
-M-x set-variable <RET> read-quoted-char-radix <RET>10  

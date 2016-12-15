@@ -1065,8 +1065,8 @@ MIME类型(Multipurpose Internet Mail Extensions)多用途互联网邮件扩展�
 </head>
 </html>
 
-然后把HTML5元素 灵活处理
-if(modernizr.canvas){
+然后把HTML5元素 灵活处理//注意Modernizr 'M'要大写
+if(Modernizr.canvas){
 //开始画写什么吧!
 }else{
 //对于不支持canvas的浏览器
@@ -1074,36 +1074,178 @@ if(modernizr.canvas){
 #+END_SRC
 
 *** 2.4 画布 <canvas>依赖分辨率的位图画布
+自己写的 元素支持某方法
+#+BEGIN_SRC 
+function supports_canvas(){
+return !!document.createElement('canvas').getContext;
+}
+浮游在内存中,测试是否拥有getcontext()方法,用双重否定强制让这个检测方法返回一个布尔值
+#+END_SRC
+*** 2.5 画布文本 
+!! 注意:canvas 文本api 比canvas api 晚
+#+BEGIN_SRC javascript
+function supports_canvas_text(){
+if(!supports_canvas()){return false;}
+var dummy_canvas = document.createElement('canvas');
+var context = dummy_canvas.getContext('2d');
+return typeof context.fillText == 'function';
+}
+或者使用 Modernizr.canvastext
+#+END_SRC
+*** 2.6 视频 <video> 视频控制需要用到JavaScript
+检测
+return !!document.createElement('video').canPlayType;
+or Modernizr.video
+*** 2.7 视频格式 
+检测,,晕 +_+
+return document.createElement('video').canPlayType('video/mp4; codecs="avc1.42E1E, mp4a.40.2"');
+返回值不再是bool,而是string
+"probably"   浏览器有充分把握可以播放此格式
+"maybe"     有可能
+""(空字符串")   无法播放
 
-2.5 画布文本 17
+#+BEGIN_SRC javascript
+检测 ogg格式 ;;这要学习视频 编码
+function supports_ogg_theora_video(){
+if(!support_video()){return false;}
+var v= document.createElement("video");
+return v.canPlayType('video/ogg;codecs="theora,vorbis"');
+}
+or Modernizr.video.ogg
+#+END_SRC
+*** 2.8 本地存储 
+与cookie 类似,不过容量更大
+cookie 每次请求页面总会发送回服务器,而本地存储可以在本地用javascript获取
+检测 如果window对象有一个localStorage属性,则支持
+return ('localStorage' in window) && window['localStorage'] !==null;
+Modernizr.localstorage   Modernizr库中的属性名都是小写
+*** 2.9 Web Workers (多线程支持)
+return !!window.Worker;
+or Modernizr.webworkers
+*** 2.10 离线Web应用 
+return !!window.applicationCache
+or Modernizr.applicationcache
+*** 2.11 地理位置 不属于html5标准
+return !!navigator.geolocation
+Modernizr.geolocation
+*** 2.12 输入框类型 
+<input type="search"> 搜索框
+number 数字输入框
+range 范围选择滑块
+color 颜色选择器
+url 网址输入框
+email 邮件
+date  日期;精确到年月日
+month 月份;精确到月份
+week 星期 
+time 时间戳;精确到小时 分钟
+datetime 精确日期/时间戳
+datetime-local 当地时间和日期,本地化 年月日 时分秒
 
-2.6 视频 18
+检测
+return document.createElement("input").setAttribute("type","color").type !== "text";
+Modernizr.inputtypes.date ....
+*** 2.13 占位文本 
+就是 placeholder属性
+*** 2.14 表单自动聚焦 
+autofocus 属性
+return 'autofocus' in document.createElement("input")
+Modernizr.input.autofocus
+*** 2.15 微数据 
+return !!document.getItems;
+Modernizr 目前不支持,没查过
+** 第3章 从这一切的含义 
+*** 3.1 引言 
+#+BEGIN_SRC html
 
-2.7 视频格式 19
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+: doctype 渲染模式; 默认quirks 模式 ;html 标准模式 ;准标准模式
+:一般 <!DOCTYPE html> 标准模式就好了
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+:xmlns xml 过时了 ;lang 指定语种
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+:Content-Type: text/html; charset="utf-8" 服务器发送的字节编码 ,不懂
+:html5 中 <meta charset="utf-8" />
+  <meta name="robots" content="noindex" />
+  <title>My Weblog</title>
+  <link rel="stylesheet" type="text/css" href="style-original.css" />
+  <link rel="alternate" type="application/atom+xml" title="My Weblog feed" href="/feed/" />
+  <link rel="search" type="application/opensearchdescription+xml" title="My Weblog search" href="opensearch.xml" />
+</head>
 
-2.8 本地存储 21
+<body>
 
-2.9 Web Workers 23
+  <div id="header">
+    <h1>My Weblog</h1>
+    <p class="tagline">A lot of effort went into making this effortless.</p>
 
-2.10 离线Web应用 23
+    <div id="nav">
+      <ul>
+        <li><a href="../semantics.html">home</a></li>
+        <li><a href="../semantics.html">blog</a></li>
+        <li><a href="../semantics.html">gallery</a></li>
+        <li><a href="../semantics.html">about</a></li>
+      </ul>
+    </div>
 
-2.11 地理位置 24
+  </div>
 
-2.12 输入框类型 25
+  <div class="entry">
+    <p class="post-date">October 22, 2009</p>
+    <h2>
+      <a href="../semantics.html" rel="bookmark" title="link to this post">Travel day</a>
+    </h2>
 
-2.13 占位文本 27
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec hendrerit felis accumsan turpis pretium tempor. Duis eu turpis nunc, ut euismod nisl. Aliquam erat volutpat. Proin eu eros mollis dui fringilla sodales. Curabitur venenatis tincidunt felis ac congue. Maecenas at odio dui, sit amet congue sapien. Proin placerat feugiat eros, non mollis quam pharetra at. Duis gravida eleifend ligula nec auctor. Fusce nulla diam, fringilla non ultrices in, iaculis eu tellus. Sed mollis consequat turpis sit amet facilisis. Donec pretium luctus aliquet. Curabitur placerat varius purus vel congue. Aliquam erat volutpat. Curabitur vitae eros sed turpis sollicitudin mattis. Morbi venenatis pulvinar nunc, at vulputate massa placerat a. Nam et tortor id nisi consequat tempor eget sit amet risus. Praesent bibendum, velit eu hendrerit porttitor, elit mauris posuere nisl, non pellentesque est leo a quam.</p>
 
-2.14 表单自动聚焦 27
+  </div>
 
-2.15 微数据 28
+  <div class="entry">
+    <p class="post-date">October 17, 2009</p>
+    <h2>
+      <a href="../semantics.html" rel="bookmark" title="link to this post">I'm going to Prague!</a>
+    </h2>
 
-2.16 扩展阅读 29
+    <p>Sed ante mi, sagittis sed euismod sit amet, convallis et nibh. Etiam sit amet odio dui, id semper turpis. Mauris risus mauris, imperdiet pulvinar vehicula et, hendrerit vitae dui. Phasellus ultrices lacus rhoncus purus posuere rutrum. Maecenas mattis eleifend scelerisque. Nulla quam sem, facilisis ac ultrices et, tincidunt eu dolor. Mauris arcu est, porttitor eu blandit nec, pulvinar sed enim. Praesent diam felis, cursus at facilisis eu, mollis ut elit. Praesent rutrum porta euismod. Nulla facilisi. Suspendisse potenti. In auctor ultricies eleifend. Proin erat dolor, malesuada non tempus nec, tincidunt in mi.</p>
 
-第3章 从这一切的含义 31
+  </div>
 
-3.1 引言 31
+  <p class="c sectionSign"></p>
 
-3.2 文档类型 31
+<table id="arc">
+<tr><th>October</th><td></td></tr>
+<tr><th>5</th><td><a href="../semantics.html">Vos vestros servate, meos mihi linquite mores</a></td></tr>
+<tr><th>September</th><td></td></tr>
+<tr><th>30</th><td><a href="../semantics.html">Ut sementem feceris ita metes</a></td></tr>
+<tr><th>August</th><td></td></tr>
+<tr><th>4</th><td><a href="../semantics.html">Risu inepto res ineptior nulla est</a></td></tr>
+<tr><th>July</th><td></td></tr>
+<tr><th>6</th><td><a href="../semantics.html">Vitanda est improba siren desidia</a></td></tr>
+<tr><th>April</th><td></td></tr>
+<tr><th>21</th><td><a href="../semantics.html">Mendacem oportet esse memorem</a></td></tr>
+<tr><th>7</th><td><a href="../semantics.html">Libenter homines id quod volunt credunt</a></td></tr>
+<tr><th>March</th><td></td></tr>
+<tr><th>27</th><td><a href="../semantics.html">Gutta cavat lapidem</a></td></tr>
+<tr><th>21</th><td><a href="../semantics.html">Amoto quaeramus seria ludo</a></td></tr>
+<tr><th>18</th><td><a href="../semantics.html">Non est ars quae ad effectum casu venit</a></td></tr>
+<tr><th>January</th><td></td></tr>
+<tr><th>11</th><td><a href="../semantics.html">Quid rides?...De te fabula narratur</a></td></tr>
+</table>
+
+  <div id="footer">
+
+    <p class=sectionSign>
+
+    <p>&copy; 2009 <a href="../semantics.html">Mark Pilgrim</a></p>
+
+  </div>
+
+</body>
+</html>
+
+#+END_SRC
+*** 3.2 文档类型 
 
 3.3 根元素 33
 
