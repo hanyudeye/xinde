@@ -149,7 +149,7 @@ error
 -f<函数>：执行指定lisp（广泛应用于人工智能领域的编程语言）函数；
 -l<lisp代码文件>：加载指定的lisp代码文件；
 -batch：以批处理模式运行emacs编辑器。
-
+--debug-init
 调试
 gdb –annotate=3 test
 无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。
@@ -459,6 +459,7 @@ set-justification-center                 Center selected text.
 C-x r y : 执行矩形区域的粘贴
 C-x r t  (string-rectangle START END STRING)  replace rectangle contents with STRING on each line
 C-x r k  kill-rectangle 执行矩形区域的剪切 [范围是光标处到缓冲头的一个矩形],可以选择区块
+
 *** Section 7.6.   Making Simple Drawings
 ** Chapter 8.   Markup Language Support
 *** Section 8.1.   Comments
@@ -670,7 +671,7 @@ Statement Blocks/返回值是最后一个表达式的值
 
 *** Section 11.3.    Useful Built-in Emacs Functions
 (replace-regexp "\\<program\\('s\\|s\\)?\\>" "module\\1")
- .                                   Match any character.
+ .                                   Match any character except a new line.
  *                                   Match 0 or more occurrences of preceding char or group.
  +                                   Match 1 or more occurrences of preceding char or group.
  ?                                   Match 0 or 1 occurrences of preceding char or group.
@@ -719,3 +720,34 @@ Appendix C.    Bugs and Bug Fixes
 Appendix D.   Online Resources
  Appendix E. Quick Reference
  
+不敢独享，与大家分享。也可以在Emacs中用C-x C-h列出全部命令，查找C-x r c，所有列模式命令都是以C-x r开始的
+C-x r C-@                    point-to-register
+C-x r SPC                    point-to-register
+C-x r +        increment-register
+C-x r b        bookmark-jump
+C-x r c        clear-rectangle
+先用C-space或者C-@设一个mark，移动光标到另一点，使用C-x r c可以清楚mark到光标处的矩形区域，该区域留下空白。
+C-x r d        delete-rectangle
+删除矩形区域，不留空白，后面的字符前移
+C-x r f        frame-configuration-to-register
+C-x r g        insert-register
+C-x r i        insert-register
+将某个寄存器的内容插入某处
+C-x r j        jump-to-register
+C-x r k        kill-rectangle
+就是剪切某个选定的矩形区域，用C-x r y可以贴上
+C-x r l        bookmark-bmenu-list
+C-x r m        bookmark-set
+C-x r n        number-to-register
+C-x r o        open-rectangle
+在选定的矩形区域插入空白
+C-x r r        copy-rectangle-to-register
+将选定的矩形区域复制到某个寄存器
+C-x r s        copy-to-register
+C-x r t        string-rectangle
+在选定区域所有列前插入同样的字符
+C-x r w        window-configuration-to-register
+C-x r x        copy-to-register
+C-x r y        yank-rectangle
+类似于矩形区域的粘贴，就是将刚用C-x r k剪切的矩形区域粘贴过来
+C-x r C-SPC    point-to-register
