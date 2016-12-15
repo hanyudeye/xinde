@@ -251,46 +251,6 @@ sudo ifconfig eth0 down/up
 
 **** squidclient squid服务器的客户端管理工具
 **** smbclient 交互方式访问samba服务器
-apt-get install samba smbclient smbfs
-***** SAMBA目录结构
-/usr/sbin/smbd: samba守护进程的启动程序,用于为smb客户提供文件和打印服务
-/etc/samba/smb.conf: 主配置文件
-/usr/sbin/nmbd:提供netBios服务和浏览支持的启动程序
-/usr/bin/smbclient:类似与FTP客户端
-/usr/bin/smbmount:smb 共享系统加载程序
-/usr/bin/testparm: 对/etc/samba/smb.conf 文件的语法检测工具
-/usr/bin/smbstatus: smb服务状态查询工具
-/usr/bin/smbtar:smb服务数据资源备份工具.
-***** samba 服务启停
-sudo /etc/init.d/samba start stop restart
-***** 配置 smb.conf
-[global]
-workgroup = UEC
-netbios name=UEC-server
-server string = samba server
-log file = /usr/local/samba/var/log.%m
-// 这里 security = share 实现匿名访问
-security = user
-guest account = guest
-[gcp]
-//设置客户端用户界面显示的共享确认字符串
-comment = this is shared gcp docs
-path = /gcp
-guest ok = yes
-read only = no 
-browseable = yes
-[john]
-comment = this is shared john docs 
-// 共享路径
-path = /john
-guest ok = yes
-read only = no
-
-writeable共享资源是否可写 no
-create mask 设置新建目录属性 0600
-directory mask 设置目录属性 0700
-printable 是否可打印 yes
-
 **** showmount 显示NFS服务器加载的信息
 **** nfsstat 列出NFS客户端和服务器的工作状态
 **** mysqladmin MySQL服务器管理客户端
@@ -1114,31 +1074,6 @@ gdb-restore-windows 恢复窗格布局
 **** fgrep 为文件搜索文字字符串
 **** split 分割任意大小的文件
 **** grep 强大的文本搜索工具
-因为用 换行符为分隔,所以不能匹配 换行符本身
-grep OPTIONS PATTERN INPUT_FILE_NAMES
-***** command-line option 
-****** matching control
-'-e PATTERN'  use PATTERN as the pattern
-'-f FILE'  obtain patterns from FILE,one per line
-'-i' '--ignore-case'
-'-v' '--invert-match'  select non-matching lines
-'-w' '--word-regexp' 一行中只有这个单词
-echo -e 'hello\nhell' |grep hell
-echo -e 'hello\nhell' |grep -w hell
-'-x' '--line-regexp' 仅完全匹配一行,跟 -w 差不多
-****** general output control
-'-c' '--count'  仅打印匹配的数量
-'--color[=WHEN]' '--colour[=WHEN]'  WHEN is 'never', 'always', or 'auto' 色彩 根据 环境变量 'GREP_COLORS'判断,默认'01;31'(bold red)
-'-L' '--files-without-match' 输出不匹配的文件名
-'-l' '--files-with-matches' 与上面相反
-'-m NUM'  '--max-count=NUM' 匹配了NUM条后就不要匹配了
-'-o' ''--only-matching'   仅输出匹配串
-'-q'  '--quiet'  '--silent' 不输出东西,要的是返回值,可以作为判断用
-predated
-***** environment variables
-***** exit status
-***** grep programs
-
 **** comm 两个文件之间的比较
 **** printf 格式化并输出结果
 **** expand 将文件的制表符转换为空白字符
