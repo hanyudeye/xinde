@@ -669,22 +669,27 @@ Statement Blocks/返回值是最后一个表达式的值
 
 (if condition true-case false-block)
 
-*** Section 11.3.    Useful Built-in Emacs Functions
+*** Section 11.3.    Syntax of Regular Expressions
+**** special character ‘$^.*+?[\’ 需要加\ 转义
 (replace-regexp "\\<program\\('s\\|s\\)?\\>" "module\\1")
  .                                   Match any character except a new line.
- *                                   Match 0 or more occurrences of preceding char or group.
- +                                   Match 1 or more occurrences of preceding char or group.
- ?                                   Match 0 or 1 occurrences of preceding char or group.
- [...]                               Set of characters; see below.
+ *                                   Match 0 or more occurrences of preceding char or group. 默认最大匹配,加了?就可以限制长度了
+ +                                   Match 1 or more occurrences of preceding char or group. 'ca+r'   car caaar ..
+ ?                                   Match 0 or 1 occurrences of preceding char or group.  ‘ca?r’ar car
+ [...]                               Set of characters; 字符集中的一个/ ^ ;特殊字符不用转义了 ‘[]a]’
+ '[:alnum:]'  character class 形式 letter or digit
  \\(                                 Begin a group.
  \\)                                 End a group.
  \\|                                 Match the subexpression before or after \\|.
- ^                                   At beginning of regexp, match beginning of line or string.
- $                                   At end of regexp, match end of line or string.
+ ^                                   At beginning of regexp, match beginning of line or string. 换行符后面开始匹配
+ $                                   At end of regexp, match end of line or string. 这个匹配换行符
  \n                                  Match Newline within a regexp.
  \t                                  Match Tab within a regexp.
  \\<                                 Match beginning of word.
  \\>                                 Match end of word.
+‘\{N\}’ 重复N次 ‘x\{4\}’ matches the string ‘xxxx’ and nothing else.
+‘\{N,M\}' 重复 N到M次   xxx xxxx xxxxx 
+
 
 *** Section 11.4.    Building an Automatic Template System
 *** Section 11.5.    Programming a Major Mode

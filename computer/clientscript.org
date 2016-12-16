@@ -139,7 +139,7 @@ className 	Sets or returns the class attribute of an element
 dir 	(设置文字方向) ltr默认。从左向右的文本方向。rtl 	从右向左的文本方向。	
 lang 	Sets or returns the language code for an element
 title 	Sets or returns an element's advisory title 
-*** Form
+*** document.forms[0] 文档中第一个表单节点
 **** 集合
 elements[] 	包含表单中所有元素的数组。
 **** 属性
@@ -158,7 +158,7 @@ submit() 	提交表单。
 **** 事件
 onreset 	在重置表单元素之前调用。 
 onsubmit 	在提交表单之前调用。 
-*** image
+*** images
 **** 属性
 align    	设置或返回与内联内容的对齐方式。 
 border 	设置或返回图像周围的边框。
@@ -1155,7 +1155,7 @@ Modernizr.input.autofocus
 return !!document.getItems;
 Modernizr 目前不支持,没查过
 ** 第3章 从这一切的含义 
-*** 3.1 引言 
+*** 3.1  original html
 #+BEGIN_SRC html
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -1170,10 +1170,19 @@ Modernizr 目前不支持,没查过
   <meta name="robots" content="noindex" />
   <title>My Weblog</title>
   <link rel="stylesheet" type="text/css" href="style-original.css" />
+:普通的链接(<a href>) 只是简单地链到另一个网页
+:链接关系(link relations) 提供一种方式解释为什么要链接到那个页面,就像做一种解释
+:一样,如"我链接到另一个网页,是因为...."
+.....他是一个样式表,包含浏览器应当用于当前文档上的CSS规则.
+.....他提供一个包含页面内容的标准订阅格式(如RSS)
+:ctylesheet type可以去掉,因为只有一种css类型
   <link rel="alternate" type="application/atom+xml" title="My Weblog feed" href="/feed/" />
+:tyle 可以是RSS或Atom等,表示Xml 格式的atom聚合内容
   <link rel="search" type="application/opensearchdescription+xml" title="My Weblog search" href="opensearch.xml" />
 </head>
-
+: rel="archives" 表示所引用的文档描述了一组收藏,如blog可以链到该博客的索引目录
+: rel="author"  链到该页面作者的相关信息.可以是一个"关于作者"页面,或 mailto:地址
+: rel="shortcut icon" href="/xx.ico" 就是地址栏旁的小图标
 <body>
 
   <div id="header">
@@ -1245,210 +1254,295 @@ Modernizr 目前不支持,没查过
 </html>
 
 #+END_SRC
-*** 3.2 文档类型 
-
-3.3 根元素 33
-
-3.4 <head>元素 34
-
-3.4.1 字符编码 35
-
-3.4.2 朋友和（链接）关系 36
-
-3.5 HTML5中新增的语义元素 41
-
-3.6 题外话：浏览器如何处理未知元素 42
-
-3.7 页头 45
-
-3.8 文章 47
-
-3.9 日期和时间 49
-
-3.10 导航 51
-
-3.11 页脚 52
-
-3.12 扩展阅读 55
-
-第4章 Canvas绘图 57
-
-4.1 引言 57
-
-4.2 简单的图形 58
-
-4.3 Canvas坐标系 60
-
-4.4 路径 61
-
-4.5 文本 63
-
-4.6 颜色渐变 67
-
-4.7 图片 70
-
-4.8 IE怎么办？ 73
-
-4.9 一个完整的例子 75
-
-4.10 扩展阅读 79
-
-第5章 网络上的视频 81
-
-5.1 前言 81
-
-5.2 视频容器 81
-
-5.3 视频编解码器 83
-
-5.3.1 H.264 84
-
-5.3.2 Theora 84
-
-5.3.3 VP8 85
-
-5.4 音频编解码器 85
-
-5.4.1 MPEG-1 音频层 3 86
-
-5.4.2 高级音频编码 87
-
-5.4.3 Vorbis 87
-
-5.5 在网页中怎么工作 88
-
-5.6 H.264视频的授权问题 90
-
-5.7 使用Firefogg编码Ogg视频 91
-
-5.8 使用ffmpegtheora批量编码Ogg视频 98
-
-5.9 使用HandBrake编码H.264视频 100
-
-5.10 使用HandBrake批量编码H.264视频 107
-
-5.11 使用ffmpeg编码WebM视频 108
-
-5.12 最后，标记 110
-
-5.12.1 MIME类型很重要 113
-
-5.13 IE怎么办？ 114
-
-5.14 完整的例子 114
-
-5.14 扩展阅读 115
-
-第6章 地理位置 117
-
-6.1 引言 117
-
-6.2 地理位置API 117
-
-6.3 代码展示 118
-
-6.4 容错处理 120
-
-6.5 方案！我要方案！ 121
-
-6.6 那IE怎么办？ 123
-
-6.7 geo.js来拯救 123
-
-6.8 一个完整的例子 125
-
-6.9 扩展阅读 126
-
-第7章 Web应用本地存储的过去、现在和未来 127
-
-7.1 引言 127
-
-7.2 HTML5之前的伪本地存储简史 128
-
-7.3 HTML5存储介绍 129
-
-7.4 使用HTML5存储 130
-
-7.4.1 跟踪HTML5存储区的改动 131
-
-7.4.2 现有浏览器的局限性 132
-
-7.5 HTML5存储实践 132
-
-7.6 超越键值对的存储形式 134
-
-7.7 扩展阅读 135
-
-第8章 离线Web应用 137
-
-8.1 引言 137
-
-8.2 缓存清单 138
-
-8.2.1 “网络”段 139
-
-8.2.2 “默认”部分 140
-
-8.3 事件流 141
-
-8.4 调试的艺术——杀了我！现在就杀了我！ 142
-
-8.5 让我们来构建一个离线Web应用！ 145
-
-8.6 扩展阅读 146
-
-第9章 疯狂的表单 147
-
-9.1 引言 147
-
-9.2 占位文本 147
-
-9.3 自动聚焦 148
-
-9.4 Email地址 150
-
-9.5 Web地址 151
-
-9.6 数字类型输入框：数字选择器 153
-
-9.7 数字类型输入框：滑块 155
-
-9.8 日期选择器 156
-
-9.9 搜索框 158
-
-9.10 颜色选择器 160
-
-9.11 还有一点…… 160
-
-9.12 扩展阅读 161
-
-第10章 “分布式”、“可扩展性”及其他华丽词藻 163
-
-10.1 引言 163
-
-10.2 什么是微数据？ 164
-
-10.3 微数据的数据模型 165
-
-10.4 标注“人” 168
-
-10.4.1 Google Rich Snippets介绍 174
-
-10.5 标注“组织” 176
-
-10.6 标注“事件” 180
-
-10.6.1 Google Rich Snippets的回归 184
-
-10.7 标注“点评” 186
-
-10.8 扩展阅读 190
-
-附录A 全方位特性检测指南 191
-
-元素列表 191
-** 带过来
+*** 3.2 html5
+#+BEGIN_SRC html
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Dive Into HTML5</title>
+<link rel="alternate" type="application/atom+xml" href="https://github.com/diveintomark/diveintohtml5/commits/master.atom">
+<link rel="stylesheet" href="screen.css">
+<style>
+h1:before{content:''}
+h1,h2,h3{padding:0;margin:0;border:0;line-height:128px;text-align:center;clear:both}
+h1{margin-top:128px;font-size:72px;text-transform:uppercase}
+h2{font-size:48px}
+ol{margin:1em 0 0 0;padding:0}
+li{clear:both;width:100%;margin:0 0 1em 0;padding:0;overflow:hidden}
+.title,.number{background:#fff}
+.title{float:left;padding-right:3px}
+.number{margin:0;float:right;padding-left:3px}
+.f{margin-top:6.224em}
+</style>
+<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="mobile.css">
+<link rel="prefetch" href="introduction.html">
+<hgroup>
+<h1>Dive Into HTML5</h1>
+<h2>by<br>Mark Pilgrim</h2>
+<h3>with contributions from the community</h3>
+</hgroup>
+
+<p class="a rotatedFloralHeartBullet">
+
+<p class="f">Dive Into <abbr>HTML5</abbr> elaborates on a hand-picked selection of features from the <a href="http://www.whatwg.org/html5">HTML5</a> specification and other fine standards. We encourage you to <a href="//www.amazon.com/HTML5-Up-Running-Mark-Pilgrim/dp/0596806027">buy the printed work</a> &mdash; Mark Pilgrim&rsquo;s artfully titled &ldquo;HTML5: Up <i class="baa">&amp;</i> Running&rdquo; &mdash; published on paper by O&rsquo;Reilly, under the Google Press imprint. Your kind and sincere <a href="about.html">feedback is always welcome</a>, and this work shall remain online under the <a rel="license" href="//creativecommons.org/licenses/by/3.0/">CC-BY-3.0 license</a>.
+
+<p>This particular edition of Dive Into HTML5 is advanced by <a href="//github.com/diveintomark?tab=members">the diveintomark team</a>. We work hard to add and update content, links, APIs, and actively maintain this fine resource; refreshing and reflecting the relevant and current state of HTML5, just as Mark Pilgrim did during his tenure. We attribute this work in the manner specified by Mark, and we make modifications to the site's content. We do not in any way suggest that he endorses us or our use of his work. We hope you do.
+
+<h3>Table of Contents</h3>
+
+<!-- toc -->
+<ol>
+<li><a href="introduction.html">Introduction: Five Things You Should Know About <abbr>HTML5</abbr></a>
+<li><a href="past.html">A Quite Biased History of <abbr>HTML5</abbr></a>
+<li><a href="detect.html">Detecting <abbr>HTML5</abbr> Features: It&rsquo;s Elementary, My Dear Watson</a>
+<li><a href="semantics.html">What Does It All Mean?</a>
+<li><a href="canvas.html">Let&rsquo;s Call It a Draw(ing Surface)</a>
+<li><a href="video.html">Video in a Flash (Without That Other Thing)</a>
+<li><a href="geolocation.html">You Are Here (And So Is Everybody Else)</a>
+<li><a href="storage.html">A Place To Put Your Stuff</a>
+<li><a href="offline.html">Let&rsquo;s Take This Offline</a>
+<li><a href="forms.html">A Form of Madness</a>
+<li><a href="extensibility.html">&ldquo;Distributed,&rdquo; &ldquo;Extensibility,&rdquo; And Other Fancy Words</a>
+<li><a href="history.html">Manipulating History for Fun <i>&amp;</i> Profit</a>
+<li class="app"><a href="everything.html">The All-In-One Almost-Alphabetical Guide to Detecting Everything</a>
+<li class="app"><a href="peeks-pokes-and-pointers.html"><abbr>HTML5</abbr> Peeks, Pokes and Pointers</a>
+</ol>
+<!-- /toc -->
+
+<p class="a rotatedFloralHeartBullet">
+
+<p class="c">&ldquo;If you&rsquo;re good at something, never do it for free.&rdquo; <span class="u">&mdash;</span><cite>The Joker</cite><br>(but that doesn&rsquo;t mean you should keep it to yourself)
+
+<p class="c">Copyright MMIX&ndash;MMXI <a href="about.html">Mark Pilgrim</a>
+
+<form action="http://www.google.com/cse"><div><input type="hidden" name="cx" value="017884302975346027366:bgclqh8nvse"><input type="hidden" name="ie" value="UTF-8"><input type="search" name="q" size="25" placeholder="powered by Google&trade;">&nbsp;<input type="submit" name="sa" value="Search"></div></form>
+<script src="j/jquery.js"></script>
+<script src="j/dih5.js"></script>
+<script>
+$(function() {
+  $("ol").css("list-style", "none");
+  $("li").each(function(i) {
+    var num = i;
+    if ($(this).hasClass("app")) {
+      num = String.fromCharCode(53+num);
+    }
+    $(this).wrapInner('<span class="title"></span>').append('<span class="number">'+num+'</span>').css("background", "#fff url(i/dot.png) repeat-x 0 0.8em");
+  });
+});
+window._gaq=[['_setAccount','UA-26147692-1'],['_setDomainName', 'diveintohtml5.info'],['_setAllowHash', false],['_trackPageview'],['_trackPageLoadTime']];(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.src='//www.google-analytics.com/ga.js';s.parentNode.insertBefore(g,s)}(document,'script'));
+</script>
+#+END_SRC
+*** 3.3 根元素 
+*** 3.4 <head>元素 
+*** 3.4.1 字符编码 
+*** 3.4.2 朋友和（链接）关系 
+*** 3.5 HTML5中新增的语义元素 
+**** <article>>    定义文档内的文章
+**** <aside>      定义页面内容之外的内容
+**** <bdi>        定义与其他文本不同的文本方向
+**** <details>    定义用户可查看或隐藏的额外细节
+**** <dialog>     定义对话框或窗口
+**** <figcaption> 定义 <figure> 元素的标题
+**** <figure>     定义自包含内容，比如图示、图表、照片、代码清单
+**** <footer>     定义文档或节的页脚
+**** <header>     定义文档或节的页眉
+**** <main>       定义文档的主内容                        
+**** <mark>       定义重要或强调的内容
+**** <menuitem>   定义用户能够从弹出菜单调用的命令/菜单项目
+**** <meter>      定义已知范围（尺度）内的标量测量
+**** <nav>        定义文档内的导航链接
+**** <progress>   定义任务进度
+**** <rp>         定义在不支持 ruby 注释的浏览器中显示什么
+**** <rt>         定义关于字符的解释/发音（用于东亚字体）
+**** <ruby>       定义 ruby 注释（用于东亚字体）
+**** <section>    定义文档中的节
+**** <summary>    定义 <details> 元素的可见标题 
+**** <time>       定义日期/时间。
+**** <wbr>        定义可能的折行（line-break）
+***** <frame>      框架
+****** <p>
+******* <h1>
+******* <!--> 
+******* 格式化<b><big><em><i><code><kbd><ins>
+******* <a>
+******* <img>
+******* <table>!!!少用
+******* <ul><ol>
+
+*** 3.6 题外话：浏览器如何处理未知元素 
+浏览器有支持清单列表 nsElementTable.cpp 
+
+IE 问题 是 对于不能识别的 元素不应用样式,解决方法是 用js;如 <scritp>document.createElement("unknow");</script>
+unknow{display:block;border:f1px solid red}
+多个解决方法
+var e=("abbr,article,aside,audio,...").split(',');
+for(var i=0;i<e.length;i++){document.createElement(e[i]);
+或直接使用开源版本 
+<!--[if lt IE 9]
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+记得放在头部欧!!!
+*** 3.7 页头 
+<div> 元素没任何语义,so 使用
+<header>
+</header>
+这里的问题是 <header>中的标题怎么弄
+#+BEGIN_SRC html
+<header>
+  <hgroup>
+    <h1>MY weblog</h1>
+    <h2>副标题 主要写一些感兴趣的东西,欢迎拍砖</h2>
+  </hgroup>
+#+END_SRC
+测试 https://gsnedders.html5.org/outliner/
+*** 3.8 文章 
+可以用
+<article> 而不是无语义的<div> 而对于 大纲 h1-6的算法已经改了,可以有多个h1
+#+BEGIN_SRC html
+<article>
+  <header>
+    <p class="post-date">october 22,2009</p>
+    <h1>
+      <a href="#"
+         rel="bookmark"
+         title="link to this post">
+         Tralel day
+      </a>
+     </h1>
+   </header>
+  ......
+</article>
+#+END_SRC
+*** 3.9 日期和时间 
+啊啊啊 ,上面的 <p>也要改改了
+<time datetime="2009-10-22" pubdate>October 22, 2009</time>
+机器可识别的时间戳,datetime 格式要正确
+人可识别的文本内容
+可选的pubdate 如果在 <article>中,指此article的发布时间,不是,指整个文档的发布时间
+*** 3.10 导航 
+原始的
+#+BEGIN_SRC html
+<div id="nav">
+ <ul>
+  <li><a>home</a></li>
+  <li><a>blog</a></li>
+  ...
+ </ul>
+</div>
+#+END_SRC
+html5
+#+BEGIN_SRC html
+<nav>
+ <ul>
+  <li><a>home</a></li>
+  <li><a>blog</a></li>
+  ...
+ </ul>
+</nav>
+#+END_SRC
+*** 3.11 页脚 
+<footer></footer>
+*** 3.12 扩展阅读 
+*** 第4章 Canvas绘图 
+*** 4.1 引言 
+*** 4.2 简单的图形 
+每个canvas 都有一个上下文环境
+ var b_context=canvasobject.getContext("2d");
+有了2d上下文,就可以开始绘制了2d图形了
+b.context.fillRect(50,25,150,100);
+
+:fillStyle 可以设置CSS颜色,默认黑色
+:fileRect(x,y,width,height) 矩形
+:strokeStyle 和fillStyle 一样,可以设置CSS颜色,图案或颜色渐变
+:strokeRect(x,y,width,height)只绘制矩形边缘
+:clearRect(x,y,width,height)清除指定矩形区域的像素
+*** 4.3 Canvas坐标系 
+*** 4.4 路径 
+*** 4.5 文本 
+*** 4.6 颜色渐变 
+*** 4.7 图片 
+*** 4.8 IE怎么办？ 
+*** 4.9 一个完整的例子 
+*** 4.10 扩展阅读 
+*** 第5章 网络上的视频 
+*** 5.1 前言 
+*** 5.2 视频容器 
+*** 5.3 视频编解码器 
+*** 5.3.1 H.264 
+*** 5.3.2 Theora 
+*** 5.3.3 VP8 
+*** 5.4 音频编解码器 
+*** 5.4.1 MPEG-1 音频层 3 
+*** 5.4.2 高级音频编码 
+*** 5.4.3 Vorbis 
+*** 5.5 在网页中怎么工作 
+*** 5.6 H.264视频的授权问题 
+*** 5.7 使用Firefogg编码Ogg视频 
+*** 5.8 使用ffmpegtheora批量编码Ogg视频 
+*** 5.9 使用HandBrake编码H.264视频 
+*** 5.10 使用HandBrake批量编码H.264视频 
+*** 5.11 使用ffmpeg编码WebM视频 
+*** 5.12 最后，标记 
+*** 5.12.1 MIME类型很重要 
+*** 5.13 IE怎么办？
+*** 5.14 完整的例子
+*** 5.14 扩展阅读 
+*** 第6章 地理位置 
+*** 6.1 引言 
+*** 6.2 地理位置API 
+*** 6.3 代码展示 
+*** 6.4 容错处理 
+*** 6.5 方案！我要方案！ 
+*** 6.6 那IE怎么办？ 
+*** 6.7 geo.js来拯救 
+*** 6.8 一个完整的例子 
+*** 6.9 扩展阅读 
+*** 第7章 Web应用本地存储的过去、现在和未来 
+*** 7.1 引言 
+*** 7.2 HTML5之前的伪本地存储简史 
+*** 7.3 HTML5存储介绍 
+*** 7.4 使用HTML5存储 
+*** 7.4.1 跟踪HTML5存储区的改动 
+*** 7.4.2 现有浏览器的局限性 
+*** 7.5 HTML5存储实践 
+*** 7.6 超越键值对的存储形式 
+*** 7.7 扩展阅读 
+*** 第8章 离线Web应用 
+*** 8.1 引言 
+*** 8.2 缓存清单 
+*** 8.2.1 “网络”段 
+*** 8.2.2 “默认”部分 
+*** 8.3 事件流 
+*** 8.4 调试的艺术——杀了我！现在就杀了我！ 
+*** 8.5 让我们来构建一个离线Web应用！ 
+*** 8.6 扩展阅读 
+*** 第9章 疯狂的表单 
+*** 9.1 引言 
+*** 9.2 占位文本 
+*** 9.3 自动聚焦 
+*** 9.4 Email地址 
+*** 9.5 Web地址 
+*** 9.6 数字类型输入框：数字选择器 
+*** 9.7 数字类型输入框：滑块 
+*** 9.8 日期选择器 
+*** 9.9 搜索框 
+*** 9.10 颜色选择器 
+*** 9.11 还有一点…… 
+*** 9.12 扩展阅读 
+*** 第10章 “分布式”、“可扩展性”及其他华丽词藻 
+*** 10.1 引言 
+*** 10.2 什么是微数据？ 
+*** 10.3 微数据的数据模型 
+*** 10.4 标注“人” 
+*** 10.4.1 Google Rich Snippets介绍 
+*** 10.5 标注“组织” 
+*** 10.6 标注“事件” 
+*** 10.6.1 Google Rich Snippets的回归 
+*** 10.7 标注“点评” 
+*** 10.8 扩展阅读 
+*** 
+
+附录A 全方位特性检测指南 
+元素列表 
 
 简单对Web请求响应如何处理进行的整理，难免有理解不到位，理解有偏差的地方，如有理解有误的地方，希望大牛批评指正。
 
