@@ -298,10 +298,15 @@ sudo ifconfig eth0 down/up
 **** gpm 提供文字模式下的滑鼠事件处理
 **** bc 算术操作精密运算工具
 **** cal 显示当前日历或指定日期的日历
+cal 1988
+cal -m
 **** cksum 检查文件的CRC是否正确
 
 **** qemu Emulator
   [-fda fdb] Use file as floppy disk 0/1 image	     
+**** at 
+at 17:20 tomorrow /bin/date
+at 23:59 23/1/1444 echo the hello!
 *** 软件包管理
 **** dnf 新一代的RPM软件包管理器
 **** dpkg-reconfigure Debian Linux中重新配制一个已经安装的软件包
@@ -578,6 +583,9 @@ xp /32bx 0x90000  查询从0x90000开始的32个字节内容
 **** cmp 比较两个文件是否有差异
 **** diff3 比较3个文件不同的地方
 **** locate/slocate 查找文件或目录
+-n 至多显示n 个输出
+-r 使用正则做寻找条件
+-d 指定资料库的路径
 **** which 查找并显示给定命令的绝对路径
 **** find 在指定目录下查找文件
 find pathname -options [-print -exec -ok ...]
@@ -626,12 +634,14 @@ find pathname -options [-print -exec -ok ...]
 -C 每单元以字节为单位，同时显示十六机制和ASCII码
 **** od 输出文件的八进制、十六进制等格式编码的字节
 **** cut 连接文件并打印到标准输出设备上
+cut -cnum1-num2 filename  显示每行从开头算起 num1 到num2 的文字
 **** tail 在屏幕上显示指定文件的末尾若干行
 **** head 在屏幕上显示指定文件的开头若干行
 -c  xx xx字节
 -n 行
 **** less 分屏上下翻页浏览文件内容
 **** more 显示文件内容，每次显示一屏
+more +20 filename 从第20行开始显示
 *** 文件处理
 **** iconv 转换文件的编码方式
 **** nl 在Linux系统中计算文件内容行号
@@ -658,6 +668,8 @@ find pathname -options [-print -exec -ok ...]
 一般只会对系统目录创建索引
 **** ln 用来为文件创件连接
 **** cat 连接文件并打印到标准输出设备上
+-n --number 输出行号
+-b --number-nonblank 行不编号
 *** 文件编辑
 **** nano 字符终端文本编辑器
 **** sed 功能强大的流式文本编辑器
@@ -1051,12 +1063,24 @@ gdb-restore-windows 恢复窗格布局
 **** pushd 将目录加入命令堆叠中
 **** dirs 显示目录记录
 **** rmdir 用来删除空目录
+-p 子目录若空,一并删除
 **** mkdir 用来创建目录
 **** rm 用于删除给定的文件和目录
+-i 删除前询问
+-r 递归
+-f 强制
 **** pwd 绝对路径方式显示用户当前工作目录
 **** ls 显示目录内容列表
+-r 反序输出
+-t 时间排序
+-R 输出目录下文件
+-F  在列出的档案名称后加一符号；例如可执行档则加 "*",  目录则加 "/" 
 **** mv 用来对文件或目录重新命名
+
 **** cp 将源文件或目录复制到目标文件或目录中
+-a     尽可能将档案状态权限等资料都照原状予以复制。 
+-r     若source中含有目录名则将目录下之档案亦皆依序拷贝至目的地。 
+-f     若目的地已经有相同档名的档案存在则在复制前先予以删除再行复制。 
 **** cd 切换用户当前工作目录
 *** 文件权限属性设置
 **** dos2unix 将DOS格式文本文件转换成Unix格式
@@ -1064,6 +1088,14 @@ gdb-restore-windows 恢复窗格布局
 **** umask 用来设置限制新建文件权限的掩码
 **** lsattr 查看文件的第二扩展文件系统属性
 **** chmod 用来变更文件或目录的权限
+chmod [-cfvR] [--help] [--version] mode file... 
+:[ugoa...][[+-=][rwxX]...][,...], u 
+                       , 
+    -c:若该档案权限确实已经更改才显示其更改动作 
+    -f:若该档案权限无法被更改也不要显示错误讯息 
+    -v:显示权限变更的详细资料 
+    -R:对目前目录下的所有档案与子目录进行相同的权限变更 即以递回的方式逐个变更) 
+chmod -R user:group filename
 **** chown 用来变更文件或目录的拥有者或所属群组
 **** chgrp 用来变更文件或目录的所属群组
 **** chattr 用来改变文件属性
@@ -1073,6 +1105,9 @@ gdb-restore-windows 恢复窗格布局
 **** egrep 在文件内查找指定的字符串
 **** fgrep 为文件搜索文字字符串
 **** split 分割任意大小的文件
+-b,--bytes=SIZE b k m 
+-l,--lines=NUMBER 每一输出文件的行数
+split filename backname
 **** grep 强大的文本搜索工具
 **** comm 两个文件之间的比较
 **** printf 格式化并输出结果
@@ -3565,3 +3600,5 @@ PHP 常用正则表达式整理
 	
 
      
+
+ 

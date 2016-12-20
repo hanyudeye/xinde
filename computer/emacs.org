@@ -17,260 +17,244 @@ s 搜索
 SPC scroll forward
 DEL scroll backward
 * elisp
-** 1   List Processing
-   1.1 Lisp Lists 
+***   1.8 Arguments
+****       1.8.1 Arguments’ Data Types
+****       1.8.2 An Argument as the Value of a Variable or List
+(+ 2 fill-column)
+(number-to-string (+ 2 fill-column))
+int-to-string
+****        1.8.3 Variable Number of Arguments
+****       1.8.4 Using the Wrong Type Object as an Argument 
+(+ 2 'hello)
+****       1.8.5 The message Function 
+(message "The name of this buffer is :%s." (buffer-name))
+***    1.9 Setting the Value of a Variable
+****       1.9.1 Using set 
+(set 'flowers '(rose violet daisy buttercup))
+****       1.9.2 Using setq
+(setq flowers '(rose violet daisy buttercupaa))
+****       1.9.3 Counting 
+(setq count 0) (setq count (+ count 3)) count
+** 2   Practicing Evaluation 
+***    2.1   Buffer Names
+(buffer-name) (buffer-file-name) (current-buffer) (other-buffer)
+***   2.2   Getting Buffers
+***   2.3   Switching Buffers 
+(switch-to-buffer (other-buffer))
+***   2.4   Buffer Size and the Location of Point
+(buffer-size)
+(other-window) (point)
+** 3   How To Write Function Definitions
+***   3.1 The defun Special Form
+(defun function-name(arguments ...)
+"optional-documentation..."
+(interactive argument-passing-info) ;optional
+body ...)
 #+BEGIN_SRC lisp
-’(rose
-         violet
-         daisy
-         buttercup)
+(defun multiply-by-seven (num)
+"返回乘以7的值"
+(interactive "p\ncZap to char: ")
+(* 7 num))
 #+END_SRC
 #+BEGIN_SRC lisp
-(+
-      2
-      3)
+    In this function, the expression, (interactive "p"), is a list of two elements.
+The "p" tells Emacs to pass the prefix argument to the function and use its value
+for the argument of the function.
+前缀参数,在M-Number中指定的
 #+END_SRC
-       1.1.1 Lisp Atoms
-       1.1.2 Whitespace in Lists
-       1.1.3 GNU Emacs Helps You Type Lists
-   1.2 Run a Program 
-   1.3 Generate an Error Message
-   1.4 Symbol Names and Function Definitions
-   1.5 The Lisp Interpreter 
-       1.5.1 Byte Compiling 
-   1.6 Evaluation 
-       1.6.1 Evaluating Inner Lists
-   1.7 Variables . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
-       1.7.1 Error Message for a Symbol Without a Function . . . . . . . . . . . . . . . . 10
-       1.7.2 Error Message for a Symbol Without a Value . . . . . . . . . . . . . . . . . . . 10
-   1.8 Arguments. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
-       1.8.1 Arguments’ Data Types . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
-       1.8.2 An Argument as the Value of a Variable or List . . . . . . . . . . . . . . . . . 12
-       1.8.3 Variable Number of Arguments . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
-       1.8.4 Using the Wrong Type Object as an Argument . . . . . . . . . . . . . . . . . . 13
-       1.8.5 The message Function . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
-   1.9 Setting the Value of a Variable . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
-       1.9.1 Using set . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
-       1.9.2 Using setq . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
-       1.9.3 Counting . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
-   1.10 Summary . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
-   1.11 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
-2   Practicing Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
-   2.1   Buffer Names . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         19
-   2.2   Getting Buffers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          21
-   2.3   Switching Buffers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            22
-   2.4   Buffer Size and the Location of Point . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                23
-   2.5   Exercise . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   24
-Table of Contents                                                                                                                              iii
-3   How To Write Function Definitions . . . . . . . . . . . . . . . . . . . . . 25
-   3.1 The defun Special Form . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                        25
-   3.2 Install a Function Definition . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                         27
-       3.2.1 Change a Function Definition . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                28
-   3.3 Make a Function Interactive . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                           28
-      3.3.1 An Interactive multiply-by-seven .. . . . . . . . . . . . . . . . . . . . . . . . . . . .                                          29
-   3.4 Different Options for interactive . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                 30
-   3.5 Install Code Permanently . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                        31
-   3.6 let . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32
-       3.6.1 The Parts of a let Expression . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                 33
-       3.6.2 Sample let Expression . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                           33
-       3.6.3 Uninitialized Variables in a let Statement . . . . . . . . . . . . . . . . . . . . . .                                            34
-   3.7 The if Special Form . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                   34
-       3.7.1 The type-of-animal Function in Detail . . . . . . . . . . . . . . . . . . . . . . . .                                             35
-   3.8 If–then–else Expressions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                      36
-   3.9 Truth and Falsehood in Emacs Lisp . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                   37
-   3.10 save-excursion .. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                  38
-       3.10.1 Template for a save-excursion Expression . . . . . . . . . . . . . . . . . . . .                                                 39
-   3.11 Review . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       40
-   3.12 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        43
-4   A Few Buffer–Related Functions . . . . . . . . . . . . . . . . . . . . . . . . 44
-   4.1 Finding More Information. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                         44
-   4.2 A Simplified beginning-of-buffer Definition . . . . . . . . . . . . . . . . . . . . . . .                                               45
-   4.3 The Definition of mark-whole-buffer.. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                       46
-       4.3.1 Body of mark-whole-buffer .. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                  47
-   4.4 The Definition of append-to-buffer .. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                     48
-       4.4.1 The append-to-buffer Interactive Expression . . . . . . . . . . . . . . . . . .                                                   49
-       4.4.2 The Body of append-to-buffer .. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                       50
-       4.4.3 save-excursion in append-to-buffer . . . . . . . . . . . . . . . . . . . . . . . . .                                              51
-   4.5 Review . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      53
-   4.6 Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       54
-5   A Few More Complex Functions . . . . . . . . . . . . . . . . . . . . . . . . 55
-   5.1 The Definition of copy-to-buffer .. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                   55
-   5.2 The Definition of insert-buffer . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                 56
-       5.2.1 The Interactive Expression in insert-buffer . . . . . . . . . . . . . . . . . . .                                                 56
-           A Read-only Buffer . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                  57
-           ‘b’ in an Interactive Expression . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                          57
-       5.2.2 The Body of the insert-buffer Function . . . . . . . . . . . . . . . . . . . . . .                                                57
-       5.2.3 insert-buffer With an if Instead of an or . . . . . . . . . . . . . . . . . . . .                                                 57
-       5.2.4 The or in the Body . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                      58
-       5.2.5 The let Expression in insert-buffer . . . . . . . . . . . . . . . . . . . . . . . . . .                                           59
-       5.2.6 New Body for insert-buffer . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                    60
-   5.3 Complete Definition of beginning-of-buffer .. . . . . . . . . . . . . . . . . . . . . . .                                               61
-iv
-      5.3.1 Optional Arguments . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                         61
-      5.3.2 beginning-of-buffer with an Argument . . . . . . . . . . . . . . . . . . . . . . .                                                 62
-          What happens in a large buffer . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                             63
-          What happens in a small buffer . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                               64
-      5.3.3 The Complete beginning-of-buffer .. . . . . . . . . . . . . . . . . . . . . . . . . .                                              65
-   5.4 Review . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      66
-   5.5 optional Argument Exercise . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                              67
-6   Narrowing and Widening . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 68
-   6.1 The save-restriction Special Form . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 68
-   6.2 what-line . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 69
-   6.3 Exercise with Narrowing . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 70
-7   car, cdr, cons: Fundamental Functions . . . . . . . . . . . . . . . . . . 72
-   7.1 car and cdr . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .           72
-   7.2 cons . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  73
-      7.2.1 Find the Length of a List: length . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                      74
-   7.3 nthcdr . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      75
-   7.4 nth . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 76
-   7.5 setcar . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      77
-   7.6 setcdr . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      78
-   7.7 Exercise . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      78
-8   Cutting and Storing Text . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 79
-   8.1 zap-to-char . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .             79
-      8.1.1 The interactive Expression . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                   80
-      8.1.2 The Body of zap-to-char . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                81
-      8.1.3 The search-forward Function . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                    81
-      8.1.4 The progn Special Form . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                             82
-      8.1.5 Summing up zap-to-char . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                 83
-   8.2 kill-region . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .             83
-      8.2.1 condition-case .. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                      85
-      8.2.2 Lisp macro . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .               86
-   8.3 copy-region-as-kill .. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                        86
-      8.3.1 The Body of copy-region-as-kill. . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                           88
-          The kill-append function . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                           89
-          The kill-new function . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                      90
-   8.4 Digression into C . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .               94
-   8.5 Initializing a Variable with defvar . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                               96
-      8.5.1 defvar and an asterisk . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                           97
-   8.6 Review . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      98
-   8.7 Searching Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                 99
-Table of Contents                                                                                                                         v
-9   How Lists are Implemented. . . . . . . . . . . . . . . . . . . . . . . . . . . . . 100
-   9.1 Symbols as a Chest of Drawers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 102
-   9.2 Exercise . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 103
-10    Yanking Text Back . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 104
-   10.1 Kill Ring Overview . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 104
-   10.2 The kill-ring-yank-pointer Variable. . . . . . . . . . . . . . . . . . . . . . . . . . . . 104
-   10.3 Exercises with yank and nthcdr . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 105
-11    Loops and Recursion . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 106
-   11.1 while . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 106
-       11.1.1 A while Loop and a List . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                         107
-       11.1.2 An Example: print-elements-of-list .. . . . . . . . . . . . . . . . . . . . .                                             108
-       11.1.3 A Loop with an Incrementing Counter . . . . . . . . . . . . . . . . . . . . . . . .                                       109
-          Example with incrementing counter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                               109
-          The parts of the function definition . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                          110
-          Putting the function definition together . . . . . . . . . . . . . . . . . . . . . . . . . . .                                111
-       11.1.4 Loop with a Decrementing Counter . . . . . . . . . . . . . . . . . . . . . . . . . . .                                    113
-          Example with decrementing counter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                               113
-          The parts of the function definition . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                          113
-          Putting the function definition together . . . . . . . . . . . . . . . . . . . . . . . . . . .                                114
-   11.2 Save your time: dolist and dotimes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                  115
-          The dolist Macro . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .              115
-          The dotimes Macro . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .               116
-   11.3 Recursion . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     117
-       11.3.1 Building Robots: Extending the Metaphor . . . . . . . . . . . . . . . . . . . .                                           117
-       11.3.2 The Parts of a Recursive Definition . . . . . . . . . . . . . . . . . . . . . . . . . . .                                 118
-       11.3.3 Recursion with a List . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                   119
-       11.3.4 Recursion in Place of a Counter . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                               120
-          An argument of 3 or 4 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                 121
-       11.3.5 Recursion Example Using cond . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                122
-       11.3.6 Recursive Patterns . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                  123
-          Recursive Pattern: every . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                  123
-          Recursive Pattern: accumulate . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                         124
-          Recursive Pattern: keep . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                 125
-       11.3.7 Recursion without Deferments . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                              126
-       11.3.8 No Deferment Solution . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                       127
-   11.4 Looping Exercise . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            129
-vi
-12    Regular Expression Searches . . . . . . . . . . . . . . . . . . . . . . . . . . 130
-   12.1 The Regular Expression for sentence-end . . . . . . . . . . . . . . . . . . . . . . . . .                                       130
-   12.2 The re-search-forward Function . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                131
-   12.3 forward-sentence .. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                 132
-      The while loops. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        134
-      The regular expression search . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                   135
-   12.4 forward-paragraph: a Goldmine of Functions . . . . . . . . . . . . . . . . . . . . .                                            136
-      The let* expression . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .           136
-      The forward motion while loop. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                        138
-   12.5 Create Your Own ‘TAGS’ File . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                         141
-   12.6 Review . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  143
-   12.7 Exercises with re-search-forward .. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                 144
-13    Counting: Repetition and Regexps . . . . . . . . . . . . . . . . . . . 145
-   13.1 The count-words-region Function . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                 145
-      13.1.1 The Whitespace Bug in count-words-region .. . . . . . . . . . . . . . . .                                                  148
-   13.2 Count Words Recursively . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                     150
-   13.3 Exercise: Counting Punctuation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                            155
-14    Counting Words in a defun . . . . . . . . . . . . . . . . . . . . . . . . . . . . 156
-   14.1 What to Count? . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            156
-   14.2 What Constitutes a Word or Symbol?. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                   157
-   14.3 The count-words-in-defun Function . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                     158
-   14.4 Count Several defuns Within a File . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                161
-   14.5 Find a File . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .     161
-   14.6 lengths-list-file in Detail . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                         162
-   14.7 Count Words in defuns in Different Files . . . . . . . . . . . . . . . . . . . . . . . . . .                                    164
-      14.7.1 The append Function . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                      165
-   14.8 Recursively Count Words in Different Files . . . . . . . . . . . . . . . . . . . . . . . . .                                    166
-   14.9 Prepare the Data for Display in a Graph . . . . . . . . . . . . . . . . . . . . . . . . . . .                                   167
-      14.9.1 Sorting Lists . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .            167
-      14.9.2 Making a List of Files . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                     168
-      14.9.3 Counting function definitions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                            171
-15    Readying a Graph . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 175
-   15.1  The graph-body-print Function . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                              180
-   15.2  The recursive-graph-body-print Function . . . . . . . . . . . . . . . . . . . . . .                                            182
-   15.3  Need for Printed Axes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                183
-   15.4  Exercise . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 183
-Table of Contents                                                                                                                            vii
-16    Your ‘.emacs’ File . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 184
-   16.1   Site-wide Initialization Files . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                      184
-   16.2   Specifying Variables using defcustom . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                  185
-   16.3   Beginning a ‘.emacs’ File . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                     187
-   16.4   Text and Auto Fill Mode . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                       188
-   16.5   Mail Aliases . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .        189
-   16.6   Indent Tabs Mode . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                190
-   16.7   Some Keybindings . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                190
-   16.8   Keymaps . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       191
-   16.9   Loading Files . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         192
-   16.10   Autoloading . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .          193
-   16.11   A Simple Extension: line-to-top-of-window .. . . . . . . . . . . . . . . . . . .                                                 194
-   16.12   X11 Colors . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         195
-   16.13   Miscellaneous Settings for a ‘.emacs’ File . . . . . . . . . . . . . . . . . . . . . . . . .                                     196
-   16.14   A Modified Mode Line . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                     198
-17    Debugging . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 201
-   17.1   debug . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   201
-   17.2   debug-on-entry. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .               202
-   17.3   debug-on-quit and (debug) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                             203
-   17.4   The edebug Source Level Debugger . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                                  204
-   17.5   Debugging Exercises . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                 205
-18    Conclusion . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 207
-Appendix A               The the-the Function. . . . . . . . . . . . . . . . . . . . . . . 209
-Appendix B               Handling the Kill Ring . . . . . . . . . . . . . . . . . . . . . 211
-   B.1   The current-kill Function. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                           211
-   B.2   yank . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 215
-   B.3   yank-pop . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .       216
-   B.4   The ‘ring.el’ File . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .               217
-viii
-Appendix C                A Graph with Labelled Axes . . . . . . . . . . . . . . 218
-     C.1 The print-graph Varlist . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   219
-     C.2 The print-Y-axis Function . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         219
-        C.2.1 Side Trip: Compute a Remainder . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .                 220
-        C.2.2 Construct a Y Axis Element . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .             222
-        C.2.3 Create a Y Axis Column . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         223
-        C.2.4 The Not Quite Final Version of print-Y-axis . . . . . . . . . . . . . . . . .                              224
-     C.3 The print-X-axis Function . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .         225
-        C.3.1 X Axis Tic Marks . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 226
-     C.4 Printing the Whole Graph . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    229
-        C.4.1 Testing print-graph . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .    231
-        C.4.2 Graphing Numbers of Words and Symbols . . . . . . . . . . . . . . . . . . . . .                            232
-        C.4.3 A lambda Expression: Useful Anonymity . . . . . . . . . . . . . . . . . . . . . .                          233
-        C.4.4 The mapcar Function . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      234
-        C.4.5 Another Bug . . . Most Insidious . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .               235
-        C.4.6 The Printed Graph. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   237
+***   3.2 Install a Function Definition
+****       3.2.1 Change a Function Definition
+***   3.3 Make a Function Interactive 
+****      3.3.1 An Interactive multiply-by-seven 
+***   3.4 Different Options for interactive
+***   3.5 Install Code Permanently
+***   3.6 let
+****       3.6.1 The Parts of a let Expression
+#+BEGIN_SRC 
+      (let ((variable value )
+              (variable value )
+              ...)
+         body ...)
+#+END_SRC
+****       3.6.2 Sample let Expression
+#+BEGIN_SRC lisp
+      (let ((zebra 'stripes)
+              (tiger 'fierce))
+         (message "One kind of animal has %s and another is %s."
+                    zebra tiger))
+
+#+END_SRC
+****        3.6.3 Uninitialized Variables in a let Statement 
+***    3.7 The if Special Form
+     (if true-or-false-test
+          action-to-carry-out-if-test-is-true )
+*****        3.7.1 The type-of-animal Function in Detail 
+***    3.8 If–then–else Expressions 
+***    3.9 Truth and Falsehood in Emacs Lisp 
+***    3.10 save-excursion .
+****        3.10.1 Template for a save-excursion Expression 
+**    3.11 Review 
+**    3.12 Exercises 
+** 4   A Few Buffer–Related Functions 
+**    4.1 Finding More Information
+**    4.2 A Simplified beginning-of-buffer Definition 
+**    4.3 The Definition of mark-whole-buffer.
+**        4.3.1 Body of mark-whole-buffer .
+**    4.4 The Definition of append-to-buffer .
+**        4.4.1 The append-to-buffer Interactive Expression 
+**        4.4.2 The Body of append-to-buffer .
+**        4.4.3 save-excursion in append-to-buffer 
+**    4.5 Review 
+**    4.6 Exercises 
+** 5   A Few More Complex Functions 
+**    5.1 The Definition of copy-to-buffer .
+**    5.2 The Definition of insert-buffer 
+**        5.2.1 The Interactive Expression in insert-buffer 
+**            A Read-only Buffer 
+**            ‘b’ in an Interactive Expression 
+**        5.2.2 The Body of the insert-buffer Function 
+**        5.2.3 insert-buffer With an if Instead of an or 
+**        5.2.4 The or in the Body 
+**        5.2.5 The let Expression in insert-buffer 
+**        5.2.6 New Body for insert-buffer 
+**    5.3 Complete Definition of beginning-of-buffer .
+** iv
+**       5.3.1 Optional Arguments 
+**       5.3.2 beginning-of-buffer with an Argument 
+**           What happens in a large buffer 
+**           What happens in a small buffer 
+**       5.3.3 The Complete beginning-of-buffer .
+**    5.4 Review 
+**    5.5 optional Argument Exercise 
+** 6   Narrowing and Widening 
+**    6.1 The save-restriction Special Form 
+**    6.2 what-line 
+**    6.3 Exercise with Narrowing 
+** 7   car, cdr, cons: Fundamental Functions 
+**    7.1 car and cdr 
+**    7.2 cons 
+**       7.2.1 Find the Length of a List: length 
+**    7.3 nthcdr 
+**    7.4 nth 
+**    7.5 setcar 
+**    7.6 setcdr 
+**    7.7 Exercise 
+** 8   Cutting and Storing Text 
+**    8.1 zap-to-char 
+**       8.1.1 The interactive Expression 
+**       8.1.2 The Body of zap-to-char 
+**       8.1.3 The search-forward Function 
+**       8.1.4 The progn Special Form 
+**       8.1.5 Summing up zap-to-char 
+**    8.2 kill-region 
+**       8.2.1 condition-case .
+**       8.2.2 Lisp macro 
+**    8.3 copy-region-as-kill .
+**       8.3.1 The Body of copy-region-as-kill
+**           The kill-append function 
+**           The kill-new function 
+**    8.4 Digression into C 
+**    8.5 Initializing a Variable with defvar 
+**       8.5.1 defvar and an asterisk 
+**    8.6 Review 
+**    8.7 Searching Exercises 
+** Table of Contents                                                                                                                         v
+** 9   How Lists are Implemented
+**    9.1 Symbols as a Chest of Drawers 
+**    9.2 Exercise 
+** 10    Yanking Text Back 
+**    10.1 Kill Ring Overview 
+**    10.2 The kill-ring-yank-pointer Variable
+**    10.3 Exercises with yank and nthcdr 
+** 11    Loops and Recursion 
+**    11.1 while 
+**        11.1.1 A while Loop and a List 
+**        11.1.2 An Example: print-elements-of-list .
+**        11.1.3 A Loop with an Incrementing Counter 
+**           Example with incrementing counter 
+**           The parts of the function definition 
+**           Putting the function definition together 
+**        11.1.4 Loop with a Decrementing Counter 
+**           Example with decrementing counter 
+**           The parts of the function definition 
+**           Putting the function definition together 
+**    11.2 Save your time: dolist and dotimes 
+**           The dolist Macro 
+**           The dotimes Macro 
+**    11.3 Recursion 
+**        11.3.1 Building Robots: Extending the Metaphor 
+**        11.3.2 The Parts of a Recursive Definition 
+**        11.3.3 Recursion with a List 
+**        11.3.4 Recursion in Place of a Counter 
+**           An argument of 3 or 4 
+**        11.3.5 Recursion Example Using cond 
+**        11.3.6 Recursive Patterns 
+**           Recursive Pattern: every 
+**           Recursive Pattern: accumulate 
+**           Recursive Pattern: keep 
+**        11.3.7 Recursion without Deferments 
+**        11.3.8 No Deferment Solution 
+**    11.4 Looping Exercise 
+** vi
+** 12    Regular Expression Searches 
+**    12.1 The Regular Expression for sentence-end 
+**    12.2 The re-search-forward Function 
+**    12.3 forward-sentence .
+**       The while loops
+**       The regular expression search 
+**    12.4 forward-paragraph: a Goldmine of Functions 
+**       The let* expression 
+**       The forward motion while loop
+**    12.5 Create Your Own ‘TAGS’ File 
+**    12.6 Review 
+**    12.7 Exercises with re-search-forward .
+** 13    Counting: Repetition and Regexps 
+**    13.1 The count-words-region Function 
+**       13.1.1 The Whitespace Bug in count-words-region .
+**    13.2 Count Words Recursively 
+**    13.3 Exercise: Counting Punctuation 
+** 14    Counting Words in a defun 
+**    14.1 What to Count? 
+**    14.2 What Constitutes a Word or Symbol?
+**    14.3 The count-words-in-defun Function 
+**    14.4 Count Several defuns Within a File 
+**    14.5 Find a File 
+**    14.6 lengths-list-file in Detail 
+**    14.7 Count Words in defuns in Different Files 
+**       14.7.1 The append Function 
+**    14.8 Recursively Count Words in Different Files 
+**    14.9 Prepare the Data for Display in a Graph 
+**       14.9.1 Sorting Lists 
+**       14.9.2 Making a List of Files 
+**       14.9.3 Counting function definitions 
+** 15    Readying a Graph 
+**    15.1  The graph-body-print Function 
+**    15.2  The recursive-graph-body-print Function 
+**    15.3  Need for Printed Axes 
+**    15.4  Exercise 
+** Table of Contents                                                                                                                            vii
+** 16    Your ‘.emacs’ File 
+**    16.1   Site-wide Initialization Files 
+**    16.2   Specifying Variables using defcustom 
+**    16.3   Beginning a ‘.emacs’ File 
+**    16.4   Text and Auto Fill Mode 
+**    16.5   Mail Aliases 
+**    16.6   Indent Tabs Mode 
+**    16.7   Some Keybindings 
+**    16.8   Keymaps 
+**    16.9   Loading Files 
+**    16.10   Autoloading 
+**    16.11   A Simple Extension: line-to-top-of-window .
+**    16.12   X11 Colors 
+**    16.13   Miscellaneous Settings for a ‘.emacs’ File 
+**    16.14   A Modified Mode Line 
+** 17    Debugging 
+**    17.1   debug 
+**    17.2   debug-on-entry
+**    17.3   debug-on-quit and (debug) 
+**    17.4   The edebug Source Level Debugger 
+
 ** 数据
-*** 数据描述
-*** 数据区分
-*** 数据类型
-**** 基本类型
-***** Numbers
 integer
 #b101100 ⇒ 44(二进制)
 #o54 ⇒ 44(八进制)
@@ -1005,3 +989,485 @@ C-x r x        copy-to-register
 C-x r y        yank-rectangle
 类似于矩形区域的粘贴，就是将刚用C-x r k剪切的矩形区域粘贴过来
 C-x r C-SPC    point-to-register
+* lisp
+; LISP 原子常量： 数值，字符串(带双引号的文本)，紧跟单引号的列表
+3.1415926 [在这里按 C-x C-e 查看结果]
+"i ahadd"
+("i ahadd") ; ERROR 不紧跟 ' 号的列表第一个符号必须是已定义的函数名
+'("i ahadd")
+'(one two three four)
+'(this list has (a list inside of it)) [在这里按 C-x C-e 查看结果]
+
+; 求值，非常类似于前缀表达式
+(* (+ 2 3) (- 1 3))
+'(* (+ 2 3) (- 1 3)) ; 注意，这是一个文本
+
+string 操作 (concat "abc" "def")	   
+(substring "The quick brown fox jumped. " 16 19)
+
+
+; 全局变量定义 set setq 
+(set 'PI 3.1415926) ; 第一个变量符号必须紧跟单引号 '
+PI
+(setq E 2.71) ; 第一个变量会自动加上单引号 '
+E
+
+; 局部变量定义 let
+(let
+( (person 'me)
+(dream '(a house))
+)
+(message "%s dream is %s." person dream)
+)
+
+person ; Error: person 未定义
+
+; 一个计数器
+(setq counter 0)
+(setq counter (+ counter 1))
+counter
+
+fill-column ; EMACS 内建变量
+(* 2 fill-column)
+(fill-column) ; ERROR： fill-column 是未定义的函数
+
+
+(this is an unquoted list) ; Error： this 是未定义的函数
+(error info) ; Error： info 是未定义的变量
+
+; 内建函数 message， 类似于 C 的 prinf
+(message "the name of this buffer is %s." (buffer-name))
+(message "the buffer is %s." (current-buffer))
+(message "the name of this buffer is %s." (buffer-file-name))
+(message "the value of this fill-column is %d." fill-column)
+
+; buffer-size point 等都是内建函数，只是不需任何参数列表
+(buffer-size)
+(point)
+(point-max)
+(point-min)
+(other-buffer)
+(switch-to-buffer (other-buffer))
+
+; 函数定义
+(defun multiply(x y)
+"将给定的两个数相乘"
+(* x y)
+)
+(multiply 3 5)
+
+
+; if 测试
+; (if (expr) (action-if-true) (action-if-false)[可选])
+; LISP nil为假 ， 非 nil 为真 
+(if () 'true 'false) ; 空列表() 视为假
+(if (- 1 1) 'true 'false) ; 零 非假，因为它不是空列表，而是 0
+
+; while 测试
+; (while (expr) (action1-if-true) (action2-if-true) ... (actionN-if-true))
+
+(let ((i 10) (result ""))
+(while (>= i 0)
+(setq result (append result (list i)))
+(setq i (1- i))
+)
+(message "result = %s." result)
+)
+
+; cond 测试
+; (cond (expr1 action1-if-true)
+; (expr2 action2-if-true)
+; ...
+; (exprN actionN-if-true)
+; 
+; )
+; 类似于 switch-case
+(defun signof(num)
+"测试给定数的符号"
+(let ((sign))
+(cond
+((> num 0) (message "%d is a positive." num))
+((eq num 0) (message "%d is zero." num))
+((< num 0) (message "%d is a negative." num))
+)
+)
+)
+(signof 1)
+(signof -1)
+(signof 0)
+
+; 交互函数定义
+(defun IsGreaterThanZero(num)
+"测试是否给定参数是否大于零"
+(interactive "p")
+(if (> num 0)
+(message "%d is greater than 0. " num)
+(message "%d is not greater than 0." num)
+)
+)
+; 可以作为非交互函数调用
+(IsGreaterThanZero 0)
+(IsGreaterThanZero 1)
+(IsGreaterThanZero -1)
+
+; 调用内建函数
+(concat "abc" "123")
+(concat "oh" (list 1 2) "god!" )
+(substring "hei, look!" 5 9)
+(concat "hei, " (substring "hei, look!" 5 9) "!") ; 嵌套表达式
+
+; 带任意数量参数的函数
+(*) (* 3) (* 1 2 3 4 5)
+(+) (+ 3) (+ 1 2 3 4 5)
+(concat) (concat "1") (concat "1" () "(+ 33 44)")
+
+; 参数类型出错 hello 必须是数值
+(+ "hello" 2) ; ERROR
+
+; 这是给出的错误消息
+Debugger entered--Lisp error: (wrong-type-argument number-or-marker-p "hello")
+
+; 递归函数
+(defun refac(num)
+"递归计算阶乘 n! = 1 * 2 * ... * n"
+(interactive "p")
+(if (eq num 0) 1
+(* (refac(1- num)) num)
+)
+)
+(defun printfac(num)
+"打印阶乘值"
+(interactive "p")
+(message "%d! = %d." num (refac num))
+)
+(refac 0)
+(refac 1)
+(refac 3)
+* Peter Norvig：自学编程，十年磨一剑
+让我们来仔细看看《3天学会C++》这种速成教材实际上意味着什么：
+●学会：在3天时间里你几乎没有时间去写任何有意义的程序，就更不要谈什么从编程中获得经验和教训这种事情了。你也不可能有时间和有经验的程序员一起工作和交流，也不会体验到在真正的C++环境下工作是什么感觉。长话短说吧，你就是没时间，也学不到什么。所以这种书籍最多也就让你有个粗浅的印象，但是绝对不可能有深入的理解。就像亚历山大教皇说的那样，“浅尝辄止是很危险的”。
+●C++: 如果你有其他编程语言的基础，那么3天之内你也许可以学到C++的一些语法，但即使是这样，你还是无法了解如何使用该语言编程。简言之，如果你之前是一个Basic程序员，那么经过3天的学习，你会成为一个“能使用C++语法编写Basic风格程序的程序员”，不过这样是没法发挥出C++语言本身的优势的（说句不好听的，你连怎么犯C++的典型错误都不会）。仅仅知道一点语法意味着什么呢？Allan Perlis曾经说过：“一个无法改变你思维方式的编程语言是不值得学习的。”；另一种可能性是，你可以只学一点点C++知识(类似的，或者一点点JavaScript,或者一点点Flex Script)，然后就可以利用现有的工具制作应用接口，完成特定的编程任务了。但是这样的行为并不意味着你“会”编程了，你只是会使用这个工具完成任务而已。
+●3天：很不幸，3天是远远不够的，往下看你就知道了。
+
+研究人员(Bloom (1985)、 Bryan & Harter (1899，见文后参考书目)、Hayes (1989)、Simmon & Chase (1973，见文后参考书目) 的一系列调查研究显示，在各个领域内，要想获得专业级别的水平，大约需要10年时间的努力。参与此项调查的领域包括：国际象棋，作曲，发报，绘画，钢琴演奏，游泳，网球等。科学家们从神经心理学和拓扑学的角度对这些领域进行研究，并得出结论。若要在某一领域内达到专家级的水平，其关键在于“审慎地重复”，也就是说，并非是机械地，一遍又一遍地练习，而是要不断地挑战自我，试图超越自身当前的水平，通过不断的尝试挑战，并在尝试的过程中和尝试之后对自身的表现进行分析和总结，吸取经验，纠正之前犯过的各种错误。把这一“审慎”的过程不断重复，才能取得成功。
+所谓的“捷径”是不存在的，即使对于莫扎特这种天才来说，也没有捷径可走，尽管4岁就开始作曲，可是他也花了13年的时间，才真正地写出了世界级的作品。再举一个例子，甲壳虫乐队（The Beatles）,他们似乎在1964年凭借一系列热门单曲和其在艾德沙利文秀（The Ed Sullivan show）上的演出一炮而红，但是你也许不知道，他们早在1957年就在利物浦和汉堡两地进行小规模演出了，而在此之前的非正式演出更是不计其数。甲壳虫乐队的主要成名曲《Sgt. Peppers》，则是1967年才发行的。Malcolm Gladwell公布了他对柏林音乐学院所作的一项研究的报告，该研究对比了一个班里的学习成绩为上、中下三个档次的学生，并逐一询问他们进行音乐练习的时间
+这三个档次中的所有人，大约都是在5岁的时候开始练习音乐的，一开始的时候大家练习音乐的时间都差不多，大约一周2到3小时。但是到了八岁左右，大家的区别就开始体现了。后来成为班里最好的那一部分学生开始比别的学生练习得更多，大概每周6到9小时，12岁的时候每周8小时，14岁的时候每周16小时，往后则越来越多，直到20岁左右，他们每周练习音乐的时间已经超过30小时了。在20岁的年纪，那些精英级别的演奏家们都有累计超过10000小时的音乐练习时间。相比之下，仅有部分优等生能达到8000小时的累计练习时间，而那些音乐教师级别的学生，他们的累计练习时间只有4000小时左右。
+所以，也许这个让你能达到专业等级的神奇时间应该是10000小时，而不是10年。（Henri Cartier-Bresson (1908-2004)说过，“（作为摄影师），你所拍摄的头10000张照片都是垃圾”，但即使是垃圾作品，他拍一张照片也要花接近一小时。）Samuel Johnson (1709-1784)认为这个时间应该更长：“在任何一个领域要想做到极好,势必穷尽一生的精力，否则根本无法企及。” Chaucer (1340-1400)也发出过“生命如此短暂，技能如此高深”的感叹。Hippocrates (c. 400BC)因写下了如下的句子而被人称颂：“ars longa, vita brevis”，该句是来自于一个更长的引用：”Ars longa, vita brevis, occasio praeceps, experimentum periculosum, iudicium difficile”, 这段话翻译成英语就是：“生命很短暂，但是技艺却很高深，机遇转瞬即逝，探索难以捉摸，抉择困难重重”。这段话是用拉丁文写的。在拉丁文里，ars可以翻译为“技艺”或者“艺术”，但是在古希腊文里，ars只能做“技能”的意思，而没有“艺术”的意思。
+
+ 
+
+你想当程序员么？
+
+下面是我列举的程序员成功“食谱”
+
+●沉醉于编程，编程是为了兴趣。保持这种充满兴趣的感觉，以便于你能将其投入到你的10年/10000小时的编程时间中。
+●程序. 最好的学习方式是“在实践中学习”。更技术一些地说：“一个人在某个专业领域方面能够达到最高水平，并不是因为这个人经验增长了以后而自动获得的，而是这个人为了进步所做出了专门的努力之后产生的结果。”(p. 366)“最有效的学习包括如下几个要素：明确并且难度适当的任务，适应学习者个人情况，及时的信息反馈，有重新开始和改正错误的机会）(p. 20-21) 《Cognition in Practice: Mind, Mathematics, and Culture in Everyday Life》这本书提供了上述有趣的观点
+●同其他程序员交流，多阅读其他人写的程序。这些远比你看书或者上培训班重要
+●如果你愿意的话，就选择去读一个计算机科学专业吧（当然你还可以去念这个专业的研究生）。如果你能做到这点，那么你就有机会找到一些需要计算机学位认证的工作，也会让你对这个行业有更深的理解。不过，如果你不是上学的料，那么你可以（当然需要有足够的毅力）靠自己学习，或者通过工作来积累经验。无论你采用哪种途径，光依靠书本是远远不够的。“如果说仅仅靠学习油画和调色技术无法创造出顶尖的画家的话，那么光学习计算机科学课程更不能造就顶尖的程序员。”，Eric Raymond这样说过，他著有《新黑客字典》一书。我所聘用过的最好的程序员仅仅只有高中文凭; 他写了很多伟大的软件，他有他自己的新闻组，并且通过股权赚够了钱，还开了家属于自己的夜店。（作者说的这个人是Jamie Zawinski，他是网景浏览器（Netscape）的早期开发这者之一，也是开源项目Mozilla和XEmacs的主要贡献者，他开了一家叫做DNA_lounge的夜店，位于旧金山的SoMa区——译者注）
+●与其他程序员一起做项目。在某些项目中要尽量做到最好，在某些项目中却别做那么好。当你是最好的时候，你的领导能力就会得到锻炼，并激发你高瞻远瞩的视野。当你做得不好的时候，你就能知道你的领导怎么做事，以及他们不喜欢哪些事（因为领导总是把那些他们不爱做的杂事丢给他们认为不得力的人去做）
+●尝试跟随其他程序员一起做项目。尝试去理解其他人所写的代码。看看如果你无法找到代码的作者本人的情况下，理解和修正他写的代码需要花费什么样的代价。同时也思考，如何规划你自己的程序代码，让它们更容易被其他人理解和维护。
+●至少学习半打编程语言。包括一种支持类抽象的语言（例如Java或者C++），一种支持函数抽象的语言（例如Lisp或者ML）,一种支持语法抽象的语言（例如Lisp）,一种支持声明式编程的语言（例如Prolog或者C++模板），一种支持协同程序的语言（例如Icon或者Scheme）,一种支持平行并发编程的语言（例如Sial）
+●牢记“计算机科学”中包含着“计算机”这个词。了解计算机需要花多长的时间执行一条指令，花多长时间从内存中获取一个字(word)（包括缓存命中和不命中两种情况），如果连续从磁盘中获取数据，时间消耗如何？以及需要花多少时间才能再磁盘上定位一个新的位置？
+●尽量参与语言的标准化过程。往大了说，你可以试着加入ANSI C++委员会这样的专业组织，往小了讲，你也可以从自己的代码规范入手，限定代码缩进是需要2个空格宽还是4个空格宽。无论采用哪种方式，你都需要了解其他人对于语言的喜好，以及他们的喜好的程度，甚至你要知道他们为什么产生这样的喜好的原因。
+●有良好的意识，能尽快适应语言标准化的成果。
+
+要掌握上面所说的所有内容，光靠看书学习应该是很难做到的。当我的第一个孩子出生的时候，我几乎阅读了市面上所有的《如何…》指南书籍，但是我读完了以后还是觉得自己是个菜鸟。30个月以后，我的第二个孩子快出生时，我难道还要做一个书虫么？不！相反，我此时更依赖我的个人经验，这些经验相比于那些上千页的书籍，则更加有效和让我放心。
+Fred Brooks所著的著名的论文《No Silver Bullets| 没有银弹》里向我们揭示了发现和培养软件设计人才的三步骤：
+1.有组织地辨认顶尖的软件设计人才，越早越好
+2.安排一个职业导师，为其职业前景指点迷津，并谨慎对待自己的职业履历
+3.为成长中的设计师们提供机会，让他们能够互相激发促进。
+即使一部分人已经具备了成为优秀软件设计人员的潜质，也需要经历工作的慢慢琢磨，方可展现才华。Alan Perlis则说得更加直接：“任何人都可以被‘教’成一个雕塑匠，但米开朗基罗则被‘教’如何不要成为一个雕塑匠，因为他要做的是雕塑大师，。这个道理放到编程大师身上同样管用。”Perlis认为，伟大的软件开发人员都有一种内在的特质，这种特质往往比他们所接受的训练更重要。但是这些特质是从哪里来的呢？是与生俱来的？还是通过后天勤奋而来？正如Auguste Gusteau（动画电影《料理鼠王》里的幻象大厨）所说，“谁都能做饭，但只有那些无所畏惧的人才能成为大厨！”我很情愿地说，将你生命中的大部分时间花在审慎地练习和提高上，这很重要！但是“无所畏惧”的精神，才是将促使这些练习成果凝聚成形的途径。或者，就像是《料理鼠王》里那个与Gusteau作对的刻薄的美食评论家Anton Ego说的那样：“不是任何人都能成为伟大的艺术家，不过，伟大的艺术家在成名前可能是任何人。”
+所以尽管去书店大买Java/Ruby/Javascript/PHP书籍吧；你也许会发现他们真的挺管用。但是这样做不会改变你的人生，也不会让你在整体经验上有什么提高。24小时，几天，几周，做一个真正的程序员？光靠读书可读不出来。你尝试过连续24个月不懈努力提高自己么？呵呵，如果你做到了，好吧，那么你开始上路了……
+
+== 启动Emacs, 缓冲区和工作模式==
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 
+;; 第一步首先启动Emacs: (在windows中可以双击emacs图标，在Linux中可以输入% emacs & )，
+;; 然后在键盘上键入q 跳过系统欢迎的信息，
+;; 先观察在Emacs屏幕的底部，会给出一堆关于当前的工作情况的信息，其中灰色的一行叫做状态行，
+;; 在其中你会发现 *scratch* 的字样，这表示你当前的缓冲区(buffer)的名字。
+;; 缓冲区也叫做工作区，在Emacs中打开一个文件，实际只是在Emacs中构造该文件的一个副本，放到缓冲区中，
+;; 在Emacs中对该文件的编辑也是针对该副本的编辑，唯有保存改动时，Emacs才会把缓冲区中的内容在复制到原文件中去。
+;; 状态行下面的那行，叫做辅助输入区(minibuffer),该minibuffer用于显示计算结果，以及和用户做交互。
+;;
+;; 
+;; 如何切换Emacs的工作模式 
+;; Emacs有各种各样功能各异的模式，工作模式的含义其实就是Emacs对当前的文本编辑工作
+;; 更加的敏感，比如高亮和缩进，并且支持一些特殊的命令。
+;; 为了实验本教程中的lisp命令，我们要让Emacs工作在lisp-interaction-mode工作模式下，
+;; 这个模式可以让我们在缓冲区中和Emacs进行互动，并且直接执行Lisp命令,得到结果。
+;; 进入lisp-interaction-mode的方法： 把光标移动到辅助输入区，键入M-x lisp-interaction-mode 
+;; 然后回车。
+ 
+== 表达式，变量和函数 ==
+ 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 冒号在Lisp中表示注释
+;; 在Elisp中做运算，调用函数的最简单的方式是
+;; (function arg1 arg2) 
+;; 这相当于通常的function(arg1,arg2)，下面的表达式，对两个数字进行加法运算
+(+ 2 2)
+ 
+;; Elisp中表达式可以通过括号来嵌套
+(+ 2 (+ 1 1))
+
+4
+ 
+;; 在lisp-interaction-mode模式中，我们可以直接计算一个表达式,计算的方法是
+(+ 3 (+ 1 2))
+;; 
+6
+^ 把光标放在这里，并且键入Ctrl-j (之后将简写成C-j)
+;; C-j是一个快捷命令，在后台，该快捷键将调用求值命令，并且把计算的结果
+;; 插入到当前的缓冲区中
+ 
+;; 如果不希望Emacs在缓冲区中插入计算结果，我们还可以在表达式的末尾使用C-x C-e组合键
+;; C-x C-e的意思是: 先按下Ctrl-x 再按下Ctrl-e 
+;; 这个命令会让Emacs在辅助缓冲区，也就是Emacs窗口的最底部那行显示计算结果
+ 
+;; ELisp中的赋值函数是是setq，下面的表达式给变量my-name赋值"Bastien"
+(setq my-name "Bastien")
+;; ^ 把光标停在这里，再键入C-x C-e
+ 
+;; 下面insert函数的作用是在光标所在出插入字符Hello
+(insert "Hello!")
+;; ^ 把光标停在这里，再键入C-x C-e
+ 
+;; insert函数还可以两个常量字符，比如
+(insert "Hello" " world!")
+
+;; insert函数还可以接受变量作为参数，我们之前已经给my-name变量赋过值了
+;; 所以下面命令的输出结果是 "Hello, I am Bastien"
+(insert "Hello, I am " my-name)
+
+;; defun命令用来定义一个函数,语法是
+;; (defun 函数名 (参数列表) (函数体))
+(defun hello () (insert "Hello, I am " my-name))
+;; ^ 把光标停在这里，再键入C-x C-e 执行defun命令来定义函数
+;; 通过defun命令，你已经在Emacs中安装了这个hello函数，这个函数就成为了Emacs的一部分，知道你退出Emacs或者改变hello的定义
+ 
+;; 从下面开始，我们将不再提醒读者使用C-x C-e来定义函数和执行ELisp指令
+ 
+;; 在Elisp中直接输入函数的名称就是调用该函数。
+;; 下面的命令的输入结果是: Hello, I am Bastien
+(hello)
+ 
+;; 前面定义的hello函数不接受任何参数,过于简单，
+;; 现在我们重新定义hello函数，让它接受一个参数name。 
+(defun hello (name) (insert "Hello " name))
+ 
+;; 然后调用新的hello函数，并且提供一个参数。
+;; 下面命令的输出结果是"Hello you"
+(hello "you")
+ 
+== progn,let和交互式函数== 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; 执行switch-to-buffer-other-window命令，将在在一个新的窗口中打开一个buffer
+;; 该buffer命名叫做 test, 并且把光标移到新的buffer的窗口中。
+(switch-to-buffer-other-window "*test*")
+ 
+;; 要回到原来的buffer中，可以使用鼠标点击原来的buffer
+;; 或者使用组合键 C-x o 
+;; C-x o的意思是: 先按下Ctrl-x 再按下o
+ 
+;; 如果要执行一系列的指令，可以使用流程函数progn，把函数命令连接起来.
+;; 下面的命令,先打开一个新的buffer,再执行hello函数，该hello函数的参数是"you"
+(progn
+(switch-to-buffer-other-window "*test*")
+(hello "you"))
+ 
+;; 如果要清空一个buffer,可以调用erase-buffer函数。下面的命令先清空test buffer,再调用hello函数做打印
+(progn
+(switch-to-buffer-other-window "*test*")
+(erase-buffer)
+(hello "there"))
+ 
+;; 在这一系列的质量后面再添加调用一个other-window函数，这样在hello函数被调用完毕之后
+;; 光标自动回到之前的buffer窗口中
+(progn
+(switch-to-buffer-other-window "*test*")
+(erase-buffer)
+(hello "you")
+(other-window 1))
+ 
+;; let函数用来做局部变量的定义 下面的一系列命令中
+;; let函数首先定义local-name变量的值为“you”
+;; 然后接着执行括号中其它的语句块部分，这个功能和progn类似
+(let ((local-name "you"))
+(switch-to-buffer-other-window "*test*")
+(erase-buffer)
+(hello local-name)
+(other-window 1))
+ 
+;; format函数可以用做格式化的输出 其中%s表示该s的地方将被之后提供的一个字符串,即visitor替换
+;; \n表示换行
+(format "Hello %s!\n" "visitor")
+ 
+;; 现在我们利用format函数来改进之前定义的hello函数
+(defun hello (name)
+(insert (format "Hello %s!\n" name)))
+ 
+;; 执行这个函数结果是"Hello you"，并且光标换到下一行
+(hello "you")
+ 
+;; 下面我们再设计一个greeting函数，该函数接受一个参数name,
+;; 在函数体的内部又使用了let函数，给一个局部变量your-name赋值
+;; 最后把参数和局部变量格式化的打印出来
+(defun greeting (name)
+(let ((your-name "Bastien"))
+(insert (format "Hello %s!\n\nI am %s."
+name 
+your-name ; 局部变量
+))))
+ 
+;; 执行greeting函数，并提供"you"字符串作为参数
+(greeting "you")
+ 
+;; read-from-minibuffer函数提供和用户交互的功能，这个函数可以帮助Elisp程序从用户处得到输入
+(read-from-minibuffer "Enter your name: ")
+ 
+;; 比如如果我们希望greeting函数能够从用户处得到姓名，并且做打印格式化的欢迎信息。
+;; 可以先调用read-from-minibuffer在minibuffer中提示用户输入姓名，
+;; 然后把得到的结果赋给局部变量your-name，
+;; 最后insert函数在当前buffer中插入格式化的输出
+(defun greeting (from-name)
+(let ((your-name (read-from-minibuffer "Enter your name: ")))
+(insert (format "Hello!\n\nI am %s and you are %s."
+from-name ; 格式化输出参数1
+your-name ; 格式化输出参数2
+))))
+ 
+;; 执行这个函数
+(greeting "Bastien")
+ 
+;; 再稍加改进greeting 把结果打印在新的buffer中
+(defun greeting (from-name)
+(let ((your-name (read-from-minibuffer "Enter your name: ")))
+(switch-to-buffer-other-window "*test*")
+(erase-buffer)
+(insert (format "Hello %s!\n\nI am %s." your-name from-name))
+(other-window 1)))
+ 
+;; 执行这个函数
+(greeting "Bastien")
+ 
+== 列表和综合实例 ==
+ 
+;; Lisp中使用括号构造列表，使用setq给变量赋值。
+;; 下面的命令先构造一个列表，再把这个列表赋给list-of-names变量
+(setq list-of-names '("Sarah" "Chloe" "Mathilde"))
+;; ^这里的单引号表示这是一个列表
+ 
+;; 如果想要得到列表中的第一个元素，可以使用car函数
+(car list-of-names)
+ 
+;; 如果想要得到列表中的除第一个元素以外的其它元素，可以使用cdr函数
+(cdr list-of-names)
+ 
+;; 以后push函数可以在列表的头部插入新的元素，所以下面的命令将改变list-of-name中元素的个数
+(push "Stephanie" list-of-names)
+ 
+;; mapcar函数对列表中的把列表中的每一个元素分别取出来，赋给hello函数
+(mapcar 'hello list-of-names)
+ 
+;; 重新定义greeting函数，在一个新的，清空的buffer中，对list-of-names列表中的每一个元素，调用hello函数
+;; 调用完毕之后，再让光标回到原的buffer中
+(defun greeting ()
+(switch-to-buffer-other-window "*test*")
+(erase-buffer)
+(mapcar 'hello list-of-names)
+(other-window 1))
+ 
+;;执行这个函数，我们将得到一个名叫test的buffer，其中的内容是
+;; Hello Stephanie!
+;; Hello Sarah!
+;; Hello Chloe!
+;; Hello Mathilde!
+;; 暂时先不要关闭这个buffer!后面还有用！ 
+(greeting)
+ 
+;; 下面我们对buffer做一些更有意思的事情！
+;; 定义一个replace-hello-by-bonjour函数，顾名思义，就是把hello替换成bonjour
+;; 该函数首先把光标移到一个叫做test的buffer中
+;; 再把光标移到该buffer的开头
+;; 从头开始搜索字符串Hello,并且替换成Bonjour
+;; 结束之后在把光标移会到一开始的buffer中。
+(defun replace-hello-by-bonjour ()
+(switch-to-buffer-other-window "*test*")
+(goto-char (point-min)) ;该函数把光标移到buffer的开头
+(while (search-forward "Hello")
+(replace-match "Bonjour"))
+(other-window 1))
+ 
+;; 其中 (search-forward "Hello") 在当前的buffer中做前向搜索
+;; (while x y) 当x 的条件满足时执行y指令 ，当x返回nil时，while循环结束
+ 
+;; 执行这个函数 替换test buffer中的hello
+(replace-hello-by-bonjour)
+ 
+;; test buffer中的结果如下
+;; Bonjour Stephanie!
+;; Bonjour Sarah!
+;; Bonjour Chloe!
+;; Bonjour Mathilde!
+ 
+;; 在minibuff中，还会有一条错误信息 "Search failed: Hello".
+;; 把(search-forward "Hello")一句换成如下就不会有错误信息了
+;; (search-forward "Hello" nil t)
+ 
+;; 其中 nil参数表示 搜索的区域不加限制，直到buffer结束
+;; 其中t参数指示search-foward函数 跳过错误信息 直接退出
+ 
+;; 新hello-to-bonjour如下：
+(defun hello-to-bonjour ()
+(switch-to-buffer-other-window "*test*")
+(erase-buffer)
+;; 对list-of-names列表中的每个元素 使用hello函数
+(mapcar 'hello list-of-names)
+(goto-char (point-min))
+;; 搜索Hello替换成Bonjour
+(while (search-forward "Hello" nil t)
+(replace-match "Bonjour"))
+(other-window 1))
+ 
+;; 执行这个函数
+(hello-to-bonjour)
+ 
+;; 下面的boldify-names 函数 ，
+;; 首先把光标挪到名叫test的buffer的开头，
+;; 然后使用regular expression 搜索 “Bonjour + 其它任何内容” 的pattern，
+;; 然后对找到的字符加粗。 
+(defun boldify-names ()
+(switch-to-buffer-other-window "*test*")
+(goto-char (point-min))
+(while (re-search-forward "Bonjour \\(.+\\)!" nil t)
+(add-text-properties (match-beginning 1) ;返回匹配模式中，最先匹配的位置
+(match-end 1) ;返回最后匹配的位置
+(list 'face 'bold)))
+(other-window 1))
+ 
+;; 执行这个函数 
+(boldify-names)
+ 
+== 帮助和参考==
+ 
+;; 在Emacs中我们可以通过如下的方式得到变量和函数的帮助信息
+;; C-h v a-variable RET
+;; C-h f a-function RET
+;;
+;; 下面的命令将打开整个Emacs Manual
+;;
+;; C-h i m elisp RET
+;;
+;; Emacs Lisp 教程
+;; https://www.gnu.org/software/emacs/manual/html_node/eintr/index.html
+ 
+;; Thanks to these people for their feedback and suggestions:
+;; - Wes Hardaker
+;; - notbob
+;; - Kevin Montuori
+;; - Arne Babenhauserheide
+;; - Alan Schmitt
+;; - LinXitoW
