@@ -1471,3 +1471,1230 @@ your-name ; 格式化输出参数2
 ;; - Arne Babenhauserheide
 ;; - Alan Schmitt
 ;; - LinXitoW
+* Org Mode	
+*** 大纲编辑(outline)
+**** 定义标题 
+***** 快捷键
+  | 大纲快捷键     | 说明                                    |
+  |----------------+-----------------------------------------|
+  | S-TAB          | 循环切换整个文档的大纲状态              |
+  |----------------+-----------------------------------------|
+  | TAB            | 循环切换光标所在大纲的状态              |
+  | C-C C-N/P      | 下/上一标题                             |
+  | C-C C-F/B      | 下/上一标题(同级)                       |
+  | C-C C-U        | 跳到上一级标题                          |
+  | C-C C-J        | 切换到大纲浏览状态                      |
+  | M-RET          | 插入一个同级标题                        |
+  | M-S-RET        | 插入一个同级TODO 标题                   |
+  |----------------+-----------------------------------------|
+p | M-LEFT/RIGHT   | 将当前标题升/降级                       |
+  | M-S-LEFT/RIGHT | 将子树升/降级                           |
+  | M-S-UP/DOWN    | 将子树上/下移                           |
+  | C-C *          | 将本行设为标题/正文                     |
+  | C-C C-W        | 将子树或区域移动到另一标题处（跨缓冲区) |
+  | C-X N S/W      | 只显示当前子树/返回                     |
+  |----------------+-----------------------------------------|
+  | C-C C-X B      | 在新缓冲区显示当前分支（类似C-X N S)    |
+  | C-C /          | 只列出包含搜索结果的大纲，并高亮，支    |
+  |                | 持多种搜索方式                          |
+  | C-C C-C        | 取消高亮                                |
+  |----------------+-----------------------------------------|
+  | 显示快捷键     | 说明                                    |
+  |----------------+-----------------------------------------|
+  | C-C L          | 保存链接                                |
+  | C-C            | 创建或修改链接，可以引用已              |
+  | C-L            | 保存的链接                              |
+  | C-C/C-O        | 打开链接                                |
+  | C-C %          | 记录内部链接地址                        |
+  | C-C &          | 跳转到已记录的内部链接                  |
+  |----------------+-----------------------------------------|
+  更多的快捷键可以通过C-C C-X C-H查看。
+
+***** 大纲的显示方式
+M-x org-indent-mode
+如果想让某个文件默认用这种方式打开，可以在文件头部增加：
+    #+STARTUP: indent
+    
+如果希望打开所有org文件都默认用这种方式，可以在.emacs中配置
+：
+    (setq org-startup-indented t)
+***** 超链接和图文混排
+****** 创建链接
+对于符合链接规则的内容，org-mode会自动将其视为链接，包括括
+文件、网页、邮箱、新闻组、BBDB 数据库项、IRC 会话和记录等。
+下面是一些例子：
+
+    http://www.astro.uva.nl/~dominik            on the web
+    file:/home/dominik/images/jupiter.jpg       file, absolute path
+    /home/dominik/images/jupiter.jpg            same as above
+    file:papers/last.pdf                        file, relative path
+    file:projects.org                           another Org file
+    docview:papers/last.pdf::NNN                open file in doc-view mode at page NNN
+    id:B7423F4D-2E8A-471B-8810-C40F074717E9     Link to heading by ID
+    news:comp.emacs                             Usenet link
+    mailto:adent@galaxy.net                     Mail link
+    vm:folder                                   VM folder link
+    vm:folder#id                                VM message link
+    wl:folder#id                                WANDERLUST message link
+    mhe:folder#id                               MH-E message link
+    rmail:folder#id                             RMAIL message link
+    gnus:group#id                               Gnus article link
+    bbdb:R.*Stallman                            BBDB link (with regexp)
+    irc:/irc.com/#emacs/bob                     IRC link
+    info:org:External%20links                   Info node link (with encoded space)
+    
+对于文件链接，可以用::后面增加定位符的方式链接到文件的特定
+位置。定位符可以是行号或搜索选项。如：
+
+    file:~/code/main.c::255                     进入到 255 行
+    file:~/xx.org::My Target                    找到目标‘<<My Target>>’
+    file:~/xx.org/::#my-custom-id               查找自定义 id 的项
+    
+除了上述的自动链接外，还可以显示指定链接，采用如下格式：
+
+    [[link][description]]
+    [[link]]
+    
+显示指定的链接可以不显示原始的URL而是显示对该链接的描述。这
+种方式可以用相对路径链接本地文件。
+
+对于显示指定的链接，即可以手工输入，也可以用org-mode提供的
+快捷键进行编辑：
+
++---------------------------------------------------------+
+| 快捷  |       命令        |            说明             |
+|  键   |                   |                             |
+|-------+-------------------+-----------------------------|
+| C-c l |                   | 保存链接                    |
+|-------+-------------------+-----------------------------|
+| C-c   | org-insert-link   | 创建或修改链接，可以引用已  |
+| C-l   |                   | 保存的链接                  |
+|-------+-------------------+-----------------------------|
+| C-c   | org-open-at-point | 打开链接                    |
+| C-o   |                   |                             |
++---------------------------------------------------------+
+                                      
++------------------------------------+
+| C-c % |   | 记录内部链接地址       |
+|-------+---+------------------------|
+| C-c & |   | 跳转到已记录的内部链接 |
++------------------------------------+
+
+2.2 内部链接
+
+前面的例子都是外部链接，Org-mode还支持内部链接：
+
+    定义锚点 #<<my-anchor>>
+    [[my-anchor][内部链接]]
+    [[http://www.baidu.com][百度]] 
+脚注可以看作是一种特殊的内部链接，但是要求具有"fn:"前缀：
+
+    添加脚注链接 [[fn:footprint1][脚注1]]
+    定义脚注 [fn:footprint1]
+    
+2.3 显示图片
+
+尽管不看重"所见即所得"，但有时候能够看到图文混排的内容还是
+很有必要的。通过iimage这个minor mode，可以在Org-mode中显示
+图片。
+
+下载 iimage.el 文件扔到 Emacs 的目录里，然后在 .emacs 里添
+加下面的代码：
+
+    ;; iimage mode
+    (autoload 'iimage-mode "iimage" "Support Inline image minor mode." t)
+    (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
+    
+然后就可以用命令
+
+M-x iimage-mode RET
+
+在当前模式里启动 iimage 这个 minor mode。
+
+iimage-mode目前只能显示以文件方式链接的图片。
+
+混排超链接也是组织内容的一种非常有效的方式。Org 支持多种超
+链接。对于符合要求的图片链接，可以形成图文混排。
+
+2.4 创建链接
+
+对于符合链接规则的内容，org-mode会自动将其视为链接，包括括
+文件、网页、邮箱、新闻组、BBDB 数据库项、IRC 会话和记录等。
+下面是一些例子：
+
+    http://www.astro.uva.nl/~dominik            on the web
+    file:/home/dominik/images/jupiter.jpg       file, absolute path
+    /home/dominik/images/jupiter.jpg            same as above
+    file:papers/last.pdf                        file, relative path
+    file:projects.org                           another Org file
+    docview:papers/last.pdf::NNN                open file in doc-view mode at page NNN
+    id:B7423F4D-2E8A-471B-8810-C40F074717E9     Link to heading by ID
+    news:comp.emacs                             Usenet link
+    mailto:adent@galaxy.net                     Mail link
+    vm:folder                                   VM folder link
+    vm:folder#id                                VM message link
+    wl:folder#id                                WANDERLUST message link
+    mhe:folder#id                               MH-E message link
+    rmail:folder#id                             RMAIL message link
+    gnus:group#id                               Gnus article link
+    bbdb:R.*Stallman                            BBDB link (with regexp)
+    irc:/irc.com/#emacs/bob                     IRC link
+    info:org:External%20links                   Info node link (with encoded space)
+    
+对于文件链接，可以用::后面增加定位符的方式链接到文件的特定
+位置。定位符可以是行号或搜索选项。如：
+
+    file:~/code/main.c::255                     进入到 255 行
+    file:~/xx.org::My Target                    找到目标‘<<My Target>>’
+    file:~/xx.org/::#my-custom-id               查找自定义 id 的项
+    
+除了上述的自动链接外，还可以显示指定链接，采用如下格式：
+
+    [[link][description]]
+    [[link]]
+    
+显示指定的链接可以不显示原始的URL而是显示对该链接的描述。这
+种方式可以用相对路径链接本地文件。
+
+对于显示指定的链接，即可以手工输入，也可以用org-mode提供的
+快捷键进行编辑：
+
++---------------------------------------------------------+
+| 快捷  |       命令        |            说明             |
+|  键   |                   |                             |
+|-------+-------------------+-----------------------------|
+| C-c l |                   | 保存链接                    |
+|-------+-------------------+-----------------------------|
+| C-c   | org-insert-link   | 创建或修改链接，可以引用已  |
+| C-l   |                   | 保存的链接                  |
+|-------+-------------------+-----------------------------|
+| C-c   | org-open-at-point | 打开链接                    |
+| C-o   |                   |                             |
++---------------------------------------------------------+
+                                      
++------------------------------------+
+| C-c % |   | 记录内部链接地址       |
+|-------+---+------------------------|
+| C-c & |   | 跳转到已记录的内部链接 |
++------------------------------------+
+
+2.5 内部链接
+
+前面的例子都是外部链接，Org-mode还支持内部链接：
+
+    定义锚点 #<<my-anchor>>
+    [[my-anchor][内部链接]]
+    
+脚注可以看作是一种特殊的内部链接，但是要求具有"fn:"前缀：
+
+    添加脚注链接 [[fn:footprint1][脚注1]]
+    定义脚注 [fn:footprint1]
+    
+2.6 显示图片
+
+尽管不看重"所见即所得"，但有时候能够看到图文混排的内容还是
+很有必要的。通过iimage这个minor mode，可以在Org-mode中显示
+图片。
+
+下载 iimage.el 文件扔到 Emacs 的目录里，然后在 .emacs 里添
+加下面的代码：
+
+    ;; iimage mode
+    (autoload 'iimage-mode "iimage" "Support Inline image minor mode." t)
+    (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
+    
+然后就可以用命令
+
+M-x iimage-mode RET
+
+在当前模式里启动 iimage 这个 minor mode。
+
+iimage-mode目前只能显示以文件方式链接的图片。
+
+3 轻量级标记语言
+
+前面的大纲和超链接都是使用标记来定义的。实际上，Org现在已经
+成为一种专门的轻量级标记语言，与Markdown、reStructedText、
+Textile、RDoc、MediaWiki等并列。
+
+相对于重量级标记语言（如html, xml)，轻量级标记语言的语法简
+单，书写容易。即使不经过渲染，也可以很容易阅读。用途越来越
+广泛。比如，gitHub的README文档除了支持纯文本外，还支持丰富
+的轻量级标记语言，其中就包括Org。
+
+关于这些语言的对比，可以参考这里。下面来看一下Org还支持哪些
+标记。
+
+3.1 字体
+
+    *粗体*
+    /斜体/
+    +删除线+
+    _下划线_
+    下标： H_2 O
+    上标： E=mc^2
+    等宽字：  =git=  或者 ～git～
+    
+3.2 表格
+
+Org 能够很容易地处理 ASCII 文本表格。任何以‘|’为首个非空字
+符的行都会被认为是表格的一部分。’|‘也是列分隔符。一个表格是
+下面的样子：
+
+    | Name  | Pone | Age |
+    |-------+------+-----|
+    | Peter | 1234 | 17  |
+    | Anna  | 4321 | 25  |
+    
+你可能认为要录入这样的表格很繁琐，实际上你只需要输入表头“|
+Name|Pone|Age”之后，按C-c RET,就可以生成整个表格的结构。类
+似的快捷键还有很多：
+
+3.2.1 创建和转换表格
+
++------------------------------------+
+|  快捷键  | 命令 |       说明       |
+|----------+------+------------------|
+| C-c 竖线 |      | 创建或转换成表格 |
++------------------------------------+
+
+3.2.2 调整和区域移动
+
++-------------------------------------------------+
+| 快捷键  | 命令 |              说明              |
+|---------+------+--------------------------------|
+| C-c C-c |      | 调整表格，不移动光标           |
+|---------+------+--------------------------------|
+| TAB     |      | 移动到下一区域，必要时新建一行 |
+|---------+------+--------------------------------|
+| S-TAB   |      | 移动到上一区域                 |
+|---------+------+--------------------------------|
+| RET     |      | 移动到下一行，必要时新建一行   |
++-------------------------------------------------+
+
+3.2.3 编辑行和列
+
++---------------------------------------------------------+
+|     快捷键     | 命令 |              说明               |
+|----------------+------+---------------------------------|
+| M-LEFT/RIGHT   |      | 移动列                          |
+|----------------+------+---------------------------------|
+| M-UP/DOWN      |      | 移动行                          |
+|----------------+------+---------------------------------|
+| M-S-LEFT/RIGHT |      | 删除/插入列                     |
+|----------------+------+---------------------------------|
+| M-S-UP/DOWN    |      | 删除/插入行                     |
+|----------------+------+---------------------------------|
+| C-c -          |      | 添加水平分割线                  |
+|----------------+------+---------------------------------|
+| C-c RET        |      | 添加水平分割线并跳到下一行      |
+|----------------+------+---------------------------------|
+| C-c ^          |      | 根据当前列排序，可以选择排序方  |
+|                |      | 式                              |
++---------------------------------------------------------+
+
+3.3 段落
+
+对于单个回车换行的文本，认为其属于同一个段落。在导出的时候
+将会转化为不换行的同一段。如果要新起一个段落，需要留出一个
+空行。这点与MediaWiki类似。
+
+3.4 列表
+
+Org 能够识别有序列表、无序列表和描述列表。
+
+  * 无序列表项以‘-’、‘+’或者‘*‘开头。
+  * 有序列表项以‘1.’或者‘1)’开头。
+  * 描述列表用‘::’将项和描述分开。
+  * 有序列表和无序列表都以缩进表示层级。只要对齐缩进，不管
+    是换行还是分块都认为是处于当前列表项。
+
+同一列表中的项的第一行必须缩进相同程度。当下一行的缩进与列
+表项的的开头的符号或者数字相同或者更小时，这一项就结束了。
+当所有的项都关上时，或者后面有两个空行时，列表就结束了。例
+如：
+
+      My favorite scenes are (in this order)
+      1. The attack of the Rohirrim
+      2. Eowyn's fight with the witch king
+          + this was already my favorite scene in the book
+          + I really like Miranda Otto.
+      Important actors in this film are:
+      - Elijah Wood :: He plays Frodo
+      - Sean Austin :: He plays Sam, Frodo's friend.
+    
+将显示为：
+
+    My favorite scenes are (in this order)
+   
+     1. The attack of the Rohirrim
+     2. Eowyn's fight with the witch king
+          o this was already my favorite scene in the book
+          o I really like Miranda Otto.
+   
+    Important actors in this film are:
+   
+    Elijah Wood
+        He plays Frodo
+    Sean Austin
+        He plays Sam, Frodo's friend.
+   
+3.4.1 列表操作快捷键
+
+为了便利，org-mode也支持很多列表操作的快捷键，大部分都与大
+纲的快捷键类似：
+
++---------------------------------------------------+
+|     快捷键     | 命令 |           说明            |
+|----------------+------+---------------------------|
+| TAB            |      | 折叠列表项                |
+|----------------+------+---------------------------|
+| M-RET          |      | 插入项                    |
+|----------------+------+---------------------------|
+| M-S-RET        |      | 插入带复选框的项          |
+|----------------+------+---------------------------|
+| M-S-UP/DOWN    |      | 移动列表项                |
+|----------------+------+---------------------------|
+| M-LEFT/RIGHT   |      | 升/降级列表项，不包括子项 |
+|----------------+------+---------------------------|
+| M-S-LEFT/RIGTH |      | 升/降级列表项，包括子项   |
+|----------------+------+---------------------------|
+| C-c C-c        |      | 改变复选框状态            |
+|----------------+------+---------------------------|
+| C-c -          |      | 更换列表标记（循环切换）  |
++---------------------------------------------------+
+
+3.5 分隔线
+
+五条短线或以上显示为分隔线。
+
+-----
+
+4 标签
+
+4.1 tag的作用
+
+对于信息的管理，有分类(category)和标签(tag)两种方式。这两种
+方式各有特点：
+
+通常分类是固定的，很少变化，而tag随时可以增加。分类通常表现
+为树状结构，比较清晰，但是树状结构过于简单，不能表达复杂的
+信息。比如，如果有多个分类树，处理起来就会比较麻烦。
+
+所以，这两种方式通常结合起来使用。比如blog系统中，通常既支
+持文章的分类（树），又支持为每篇文章作tag标记。
+
+org-mode作为最好的文档编辑利器 ，在支持文内大纲（也是树状结
+构）的同时，还方便的支持tag功能。tag可以在多篇文档中共用。
+
+4.2 标记tag
+
+在Org-mode中，可以对标题增加tag标记。标记的格式如下：
+
+    跟特留尼西特握手                    :苦差:薪水:逃不掉:
+    
+而且Org-mode的标签自动按照大纲树的结构继承。即子标题自动继
+承父标题的标签。比如：
+
+    * Meeting with the French group     :work:
+    ** Summary by Frank                 :boss:notes:
+    *** TODO Prepare slides for him     :action:
+    
+则最后一行标题具有 work, boss, notes, action 四个标签。
+
+如果希望文档中的所有标题都具有某些标签，只需要定义文档元数
+据：
+
+    #+FILETAGS: :Peter:Boss:Secret:
+    
+如果手工输入标签，在标题后设置标签，键入:后，M-Tab自动提供
+标签的补齐。
+
+更方便的做法是在正文部分用C-c C-q 或直接在标题上用C-c C-c创
+建标签，这种方式可以列出所有预定义的标签以便选取。
+
+4.3 预定义tag
+
+上面提到，除了可以输入标签外，还可以从预定义的标签中进行选
+择。预定义的方式有两种：
+
+  * 在当前文件头部定义
+   
+    这种方式预定义的标签只能在当前文件中使用。使用#+TAGS元数据进行标记，如：
+    
+        #+TAGS: { 桌面(d) 服务器(s) }  编辑器(e) 浏览器(f) 多媒体(m) 压缩(z)    
+    
+    每项之间必须用空格分隔，可以在括号中定义一个快捷键；花
+    括号里的为标签组，只能选择一个
+   
+    对标签定义进行修改后，要在标签定义的位置按 C-c C-c 刷新
+    才能生效。
+   
+  * 在配置文件中定义上面的标签定义只能在当前文件生效，如果
+    要在所有的.org 文件中生效，需要在 Emacs 配置文件 .emacs
+    中进行定义：
+
+    (setq org-tag-alist '(
+   
+                        (:startgroup . nil)
+                             ("桌面" . ?d) ("服务器" . ?s)
+                        (:endgroup . nil)
+                        ("编辑器" . ?e)
+                        ("浏览器" . ?f) 
+                        ("多媒体" . ?m)
+                        ))    
+    
+默认情况下，org会动态维护一个Tag列表，即当前输入的标签若不
+在列表中，则自动加入列表以供下次补齐使用。
+
+为了使这几种情况（默认列表、文件预设tags，全局预设tags）同
+时生效，需要在文件中增加一个空的TAGS定义：
+
+    #+TAGS:
+    
+4.4 按tag搜索
+
+使用标签可以更好的管理内容。org-mode提供了以下功能：
+
++---------------------------------------------------------+
+|  KEYS   |                    COMMENT                    |
+|---------+-----------------------------------------------|
+| C-c \   | 按tag搜索标题                                 |
+|---------+-----------------------------------------------|
+| C-c / m | 搜索并按树状结构显示                          |
+|---------+-----------------------------------------------|
+| C-c a m | 按标签搜索多个文件（需要将文件加入全局agenda) |
++---------------------------------------------------------+
+
+可以使用逻辑表达式限制条件，更准确灵活的搜索
+
+    +     和      a+b     同时有这两个标签
+    -     排除    a-b     有 a 但没有 b
+    |     或      a|b     有 a 或者有 b
+    &     和      a&b     同时有 a 和 b，可以用“+”替代
+    
+在查询视图中 C-c C-c 退出
+
+5 导出和发布
+
+更多： http://orgmode.org/manual/Exporting.html
+
+Org-mode可以完美的编辑，但是最终文档可能需要发布成其他的格
+式。 Org-Mode 支持多种文档的输出，包括：
+
+  * 文本
+  * 网页
+  * PDF（需要 Latex 支持）
+  * XOXO
+  * FreeMind/Xmind
+  * Docbook
+  * iCalendar（苹果 iCal 文件）
+  * ……
+
+5.1 准备工作
+
+为了更好的发布文档，还需要做一些准备工作。主要是为文档添加
+一些”元数据“，使得发布的时候能更好地识别文档的内容。
+
+5.1.1 文档元数据
+
+具体包括：
+
+    #+TITLE:       the title to be shown (default is the buffer name)
+    #+AUTHOR:      the author (default taken from user-full-name)
+    #+DATE:        a date, an Org timestamp1, or a format string for format-time-string
+    #+EMAIL:       his/her email address (default from user-mail-address)
+    #+DESCRIPTION: the page description, e.g. for the XHTML meta tag
+    #+KEYWORDS:    the page keywords, e.g. for the XHTML meta tag
+    #+LANGUAGE:    language for HTML, e.g. ‘en’ (org-export-default-language)
+    #+TEXT:        Some descriptive text to be inserted at the beginning.
+    #+TEXT:        Several lines may be given.
+    #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t ...
+    #+BIND:        lisp-var lisp-val, e.g.: org-export-latex-low-levels itemize
+                   You need to confirm using these, or configure org-export-allow-BIND
+    #+LINK_UP:     the ``up'' link of an exported page
+    #+LINK_HOME:   the ``home'' link of an exported page
+    #+LATEX_HEADER: extra line(s) for the LaTeX header, like \usepackage{xyz}
+    #+EXPORT_SELECT_TAGS:   Tags that select a tree for export
+    #+EXPORT_EXCLUDE_TAGS:  Tags that exclude a tree from export
+    #+XSLT:        the XSLT stylesheet used by DocBook exporter to generate FO file
+    
+其中#+OPTIONS是复合的选项，包括：
+
+    H:         set the number of headline levels for export
+    num:       turn on/off section-numbers
+    toc:       turn on/off table of contents, or set level limit (integer)
+    \n:        turn on/off line-break-preservation (DOES NOT WORK)
+    @:         turn on/off quoted HTML tags
+    ::         turn on/off fixed-width sections
+    |:         turn on/off tables
+    ^:         turn on/off TeX-like syntax for sub- and superscripts.  If
+               you write "^:{}", a_{b} will be interpreted, but
+               the simple a_b will be left as it is.
+    -:         turn on/off conversion of special strings.
+    f:         turn on/off footnotes like this[1].
+    todo:      turn on/off inclusion of TODO keywords into exported text
+    tasks:     turn on/off inclusion of tasks (TODO items), can be nil to remove
+               all tasks, todo to remove DONE tasks, or list of kwds to keep
+    pri:       turn on/off priority cookies
+    tags:      turn on/off inclusion of tags, may also be not-in-toc
+    <:         turn on/off inclusion of any time/date stamps like DEADLINES
+    *:         turn on/off emphasized text (bold, italic, underlined)
+    TeX:       turn on/off simple TeX macros in plain text
+    LaTeX:     configure export of LaTeX fragments.  Default auto
+    skip:      turn on/off skipping the text before the first heading
+    author:    turn on/off inclusion of author name/email into exported file
+    email:     turn on/off inclusion of author email into exported file
+    creator:   turn on/off inclusion of creator info into exported file
+    timestamp: turn on/off inclusion creation time into exported file
+    d:         turn on/off inclusion of drawers
+    
+这些元数据可以根据需要设置。建议放在文档的开头部分。如，本
+文采用的元数据如下：
+
+    #+TITLE: org-mode: 最好的文档编辑利器，没有之一
+    #+AUTHOR:Holbrook Wong
+    #+EMAIL: wanghaikuo@gmail.com
+    #+KEYWORDS: emacs, org-mode
+    #+OPTIONS: H:4 toc:t 
+    
+5.1.2 内容元数据
+
+通常在行首以“#+”开头，可以有多种用途。
+
+  * 分行区块
+    默认内容不换行，需要留出空行才能换行。定义了分行的区块
+    可以实现普通换行：
+   
+        #+BEGIN_VERSE
+         Great clouds overhead
+         Tiny black birds rise and fall
+         Snow covers Emacs
+             -- AlexSchroeder
+        #+END_VERSE
+        
+  * 缩进区块
+    通常用于引用，与默认格式相比左右都会留出缩进：
+   
+        #+BEGIN_QUOTE
+          缩进区块
+        #+END_QUOTE
+        
+  * 居中区块
+   
+        #+BEGIN_CENTER
+        Everything should be made as simple as possible, \\
+        but not any simpler
+        #+END_CENTER
+        
+  * 代码区块
+   
+        #+BEGIN_SRC ruby
+          require 'redcarpet'
+          md = Redcarpet.new("Hello, world.")
+          puts md.to_html
+        #+END_SRC
+        
+  * 例子
+   
+        : 单行的例子以冒号开头
+        
+        #+BEGIN_EXAMPLE
+         多行的例子
+         使用区块
+        #+END_EXAMPLE
+        
+  * 注释
+    以‘#‘开头的行被看作注释，不会被导出
+   
+    区块注释采用如下写法：
+   
+        #+BEGIN_COMMENT
+          块注释
+          ...
+         #+END_COMMENT
+        
+  * 表格与图片
+    对于表格和图片，可以在前面增加标题和标签的说明，以方便
+    交叉引用。
+   
+    比如在表格的前面添加：
+   
+        #+CAPTION: This is the caption for the next table (or link)
+        #+LABEL: tbl:table1
+        
+    则在需要的地方可以通过
+   
+        \ref{table1}
+        
+    来引用该表格。
+   
+5.1.3 嵌入Html
+
+对于导出html以及发布，嵌入html代码就很有用。比如下面的例子
+适用于格式化为cnblogs的代码块：
+
+    #+BEGIN_HTML
+      <div class="cnblogs_Highlighter">
+      <pre class="brush:cpp">
+      int main()
+      {
+        return 0;
+      }
+      </pre>
+      </div>
+    #+END_HTML
+    
+相当于在cnblogs的网页编辑器中插入"c++"代码。
+
+5.1.4 包含文件
+
+当导出文档时，你可以包含其他文件中的内容。比如，想包含你的
+“.emacs”文件，你可以用：
+
+     #+INCLUDE: "~/.emacs" src emacs-lisp
+
+可选的第二个第三个参数是组织方式（例如，“quote”，“example”
+，或者“src”），如果是 “src”，语言用来格式化内容。组织方式是
+可选的，如果不给出，文本会被当作 Org 模式的正常处理。用 C-c
+,可以访问包含的文件。
+
+5.1.5 嵌入 LaTex
+
+对于需要包含数学符号和特殊方程的科学笔记，Org 模式支持嵌入
+LaTeX 代码到文件中。你可以直接使用类 TeX 的宏来输入特殊符号
+，输入方程，或者整个 LaTeX 环境。
+
+    Angles are written as Greek letters \alpha, \beta and \gamma. The mass if
+    the sun is M_sun = 1.989 x 10^30 kg. The radius of the sun is R_{sun} =
+    6.96 x 10^8 m. If $a^2=b$ and $b=2$, then the solution must be either
+    $a=+\sqrt{2}$ or $a=-\sqrt{2}$.
+    \begin{equation}
+    x=\sqrt{b}
+    \end{equation}
+    
+特殊设置之后，导出 HTML 时 LaTeX 代码片断会生成图片并包含进
+来。
+
+5.2 导出
+
+做好准备工作后，就可以导出了。使用命令：
+
+C-c C-e
+
+然后选择相应的格式，就可以导出对应的文件了。
+
+5.3 发布
+
+Org 包含一个发布管理系统，可以配置一个由相互链接的 Org 文件
+组成的工程项目的自动向 HTML 转换。你也可以设置 Org，将导出
+的 HTML 页面和相应的附件如图片，源代码文件等自动上传到服务
+器。
+
+下面是一个例子：
+
+(setq org-publish-project-alist
+     '(("org"
+        :base-directory "~/org/"
+        :publishing-directory "~/public_html"
+        :section-numbers nil
+        :table-of-contents nil
+        :style "<link rel=\"stylesheet\"
+               href=\"../other/mystyle.css\"
+               type=\"text/css\"/>")))
+
+发布相关的命令：
+
++------------------------------------------------+
+|   命令    |                说明                |
+|-----------+------------------------------------|
+| C-c C-e C | 提示指明一个项目，将所有的文件发布 |
+|-----------+------------------------------------|
+| C-c C-e P | 发布包含当前文件的项目             |
+|-----------+------------------------------------|
+| C-c C-e F | 只发布当前文件                     |
+|-----------+------------------------------------|
+| C-c C-e E | 发布所有项目                       |
++------------------------------------------------+
+
+Org 用时间戳来查看文件是否改变。上面的命令只发布修改过的文
+件。你可以给它们加上前缀来强制重新发布所有的文件。
+
+
+
+
+
+使用org-mode来GTD（1）— 入门
+GTD，org-mode概要
+
+GTD（Getting Things Done）是美国的商业顾问David Allen提倡的一种提高生产效率的时间管理系统。利用GTD可以缓解压力，专心地工作，学习。详细可以参考他的两部书《尽管去做：无压工作的艺术》，《结果第一：平衡工作和生活的52条原则》。
+
+Org-Mode是为Emacs编写的个人信息管理以及编写大纲的工具。因为Emacs强大的特性，用其来实践GTD系统是再方便不过的了。这里我将介绍一些org-mode的特性。需要深入了解的可以看这里。
+操作方法
+
+收集
+
+    调用 remember-mode (C-c r)
+    选择 Todo（GTD）或者是 notes
+        选择情境标签（OFFICE, HOME, READING, DVD, etc...）
+        选择Todo的状态（TODO, STARTED, WAITING, etc...）
+        设置任务结束时间（C-c C-d）
+        设置任务的开始时间（C-c C-s）
+
+每天的操作
+
+    首先确认当天的任务
+        确认当天所有的任务 (C-c a d)
+        利用情境确认当天的预定任务 (C-c a h)
+        在时间轴上确认任务 (C-c a L)
+    任务由 TODO 状态转换为 DONE 状态 (C-c C-t 或者 shift+左右)
+    如果有新的预定使用 remember-mode (F8) 来添加任务
+
+周回顾
+
+    打开 org 文件 （C-c g）
+    检查 INBOX 中积攒的任务
+    选择合适的项目分类 （C-c C-w）
+    设置任务的结束时间 （C-c C-d）
+    设置任务的开始时间（C-c C-s）
+
+org-mode 的设置
+
+org-mode的设置可以在 .emacs 中设置，也可以在 org 文件中设置。
+
+先看看 org-mode 所需要的文件。
+
+1
+            2
+            3
+            4
+            5
+            6
+
+	
+
+~/.emacs
+            ~/elisp/org-mode.el
+            ~/org/gtd.org
+            ~/org/notes.grg
+            ~/org/someday.org
+            ~/org/birthday.org
+
+首先是在 ~/.emacs 文件中加载 org-mode.el。其中文件位于 ~/elisp/org-mode.el。
+
+1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+            9
+            10
+            11
+            12
+            13
+            14
+            15
+            16
+            17
+            18
+            19
+            20
+            21
+            22
+            23
+            24
+            25
+            26
+            27
+            28
+            29
+            30
+            31
+            32
+            33
+            34
+            35
+            36
+            37
+            38
+            39
+            40
+            41
+            42
+            43
+            44
+            45
+            46
+            47
+            48
+            49
+            50
+            51
+            52
+            53
+            54
+            55
+            56
+            57
+            58
+            59
+            60
+            61
+            62
+            63
+            64
+            65
+            66
+            67
+            68
+            69
+            70
+            71
+            72
+            73
+            74
+            75
+            76
+            77
+            78
+            79
+            80
+            81
+            82
+            83
+            84
+            85
+            86
+            87
+            88
+            89
+            90
+            91
+            92
+            93
+            94
+            95
+            96
+            97
+            98
+            99
+            100
+            101
+            102
+            103
+            104
+            105
+            106
+
+	
+
+(load "org-mode")
+            (custom-set-variables
+            ;; custom-set-variables was added by Custom.
+              ;; If you edit it by hand, you could mess it up, so be careful.
+              ;; Your init file should contain only one such instance.
+              ;; If there is more than one, they won't work right.
+             '(auto-raise-tool-bar-buttons t t)
+            '(auto-resize-tool-bars t t)
+            '(calendar-week-start-day 1)
+            '(case-fold-search t)
+            '(org-agenda-files (quote ("~/org/birthday.org" "~/org/gtd.org")))
+            '(org-agenda-ndays 7)
+            '(org-agenda-repeating-timestamp-show-all nil)
+            '(org-agenda-restore-windows-after-quit t)
+            '(org-agenda-show-all-dates t)
+            '(org-agenda-skip-deadline-if-done t)
+            '(org-agenda-skip-scheduled-if-done t)
+            '(org-agenda-sorting-strategy (quote ((agenda time-up priority-down tag-up) (todo tag-up))))
+            '(org-agenda-start-on-weekday nil)
+            ;;  '(org-agenda-todo-ignore-deadlines t)
+            ;;  '(org-agenda-todo-ignore-scheduled t)
+            ;;  '(org-agenda-todo-ignore-with-date t)
+             '(org-agenda-window-setup (quote other-window))
+            '(org-deadline-warning-days 7)
+            '(org-export-html-style "<link rel=\"stylesheet\" type=\"text/css\" href=\"mystyles.css\">")
+            '(org-fast-tag-selection-single-key nil)
+            '(org-log-done (quote (done)))
+            '(org-refile-targets (quote (("gtd.org" :maxlevel . 1) ("someday.org" :level . 1))))
+            '(org-reverse-note-order nil)
+            '(org-tags-column -78)
+            '(org-tags-match-list-sublevels nil)
+            '(org-time-stamp-rounding-minutes 5)
+            '(org-use-fast-todo-selection t)
+            '(org-use-tag-inheritance nil)
+            '(unify-8859-on-encoding-mode t nil (ucs-tables)))
+            ;; These lines only if org-mode is not part of the X/Emacs distribution.
+            (autoload 'org-mode "org" "Org mode" t)
+            (autoload 'org-diary "org" "Diary entries from Org mode")
+            (autoload 'org-agenda "org" "Multi-file agenda from Org mode" t)
+            (autoload 'org-store-link "org" "Store a link to the current location" t)
+            (autoload 'orgtbl-mode "org" "Org tables as a minor mode" t)
+            (autoload 'turn-on-orgtbl "org" "Org tables as a minor mode")
+            (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+            (define-key global-map "\C-cl" 'org-store-link)
+            (define-key global-map "\C-ca" 'org-agenda)
+            ;(setq org-log-done nil)
+            (setq org-log-done t)
+            (setq org-agenda-include-diary nil)
+            (setq org-deadline-warning-days 7)
+            (setq org-timeline-show-empty-dates t)
+            (setq org-insert-mode-line-in-empty-file t)
+            (require 'org-install)
+            (autoload 'remember "remember" nil t)
+            (autoload 'remember-region "remember" nil t)
+            (setq org-directory "~/org/")
+            (setq org-default-notes-file "~/org/notes.org")
+            (setq remember-annotation-functions '(org-remember-annotation))
+            (setq remember-handler-functions '(org-remember-handler))
+            (add-hook 'remember-mode-hook 'org-remember-apply-template)
+            (define-key global-map "\C-cr" 'org-remember)
+            (setq org-remember-templates
+            '(
+            ("Todo" ?t "* TODO %^{任务} %^g\n%?\nAdded: %U" "~/org/gtd.org" "INBOX")
+            ("Note" ?n "\n* %U %^{笔记} %^g \n%i%?\n %a" "~/org/notes.org")
+            ))
+            (setq org-agenda-exporter-settings
+            '((ps-number-of-columns 1)
+            (ps-landscape-mode t)
+            (htmlize-output-type 'css)))
+            (setq org-agenda-custom-commands
+            '(
+            ("p" "Projects"
+            ((tags "PROJECT")))
+            ("h" "Office and Home Lists"
+            ((agenda)
+            (tags-todo "OFFICE")
+            (tags-todo "HOME")
+            (tags-todo "WEB")
+            (tags-todo "CALL")
+            ))
+            ("d" "Daily Action List"
+            (
+            (agenda "" ((org-agenda-ndays 1)
+                    (org-agenda-sorting-strategy
+                     (quote ((agenda time-up priority-down tag-up) )))
+                    (org-deadline-warning-days 0)
+                    ))))))
+            (setq org-todo-keywords '((sequence "TODO" "APPT" "STARTED" "DONE")))
+            (defun gtd ()
+            (interactive)
+            (find-file "~/org/gtd.org"))
+            (global-set-key (kbd "C-c g") 'gtd)
+            (add-hook 'org-agenda-mode-hook 'hl-line-mode)
+
+org 文件的设置 ::
+
+~/org/gtd.rog
+
+
+1
+            2
+            3
+            4
+            5
+            6
+            7
+            8
+            9
+            10
+            11
+            12
+            13
+            14
+            15
+            16
+            17
+            18
+            19
+            20
+            21
+            22
+            23
+            24
+            25
+
+	
+
+#+STARTUP: showall
+            * INBOX
+            #+CATEGORY: INBOX
+            * Research
+            #+CATEGORY: Research
+            * Project A
+            #+CATEGORY: Project A
+            * Private
+            #+CATEGORY: Private
+            * Archive
+            #+CATEGORY: Archive
+            * org-mode configuration
+            #+STARTUP: hidestars
+            #+STARTUP: logdone
+            #+PROPERTY: Effort_ALL  0:10 0:20 0:30 1:00 2:00 4:00 6:00 8:00
+            #+COLUMNS: %38ITEM(Details) %TAGS(Context) %7TODO(To Do) %5Effort(Time){:} %6CLOCKSUM{Total}
+            #+PROPERTY: Effort_ALL 0 0:10 0:20 0:30 1:00 2:00 3:00 4:00 8:00
+            #+TAGS: { OFFICE(o) HOME(h) WEB(w) DOWNTOWN(d) CALL(c) }
+            #+TAGS: PROJECT(p) READING(r)
+            #+TODO: TODO(t) STARTED(s) WAITING(w) APPT(a) | DONE(d) CANCELLED(c) DEFERRED(f)
+
+~/org/notes.org
+
+
+1
+            2
+            3
+            4
+            5
+            6
+
+	
+
+#+STARTUP: showall
+            #+STARTUP: hidestars
+            #+TAGS: OFFICE(o) RESEARCH(r) DIARY(d) BOOK(b) FILMS(f) IDEA(i) WEB(w) COMPUTER(c)
+            * 笔记
+            ** [2010-02-02 星期二 18:53] 今天写博 使用org-mode来GTD（1）                    :OFFICE:
+
+~/org/someday.org
+
+也许某天会做的事。
+
+1
+            2
+            3
+            4
+
+	
+
+#+STARTUP: showall
+            * Someday
+            ** 计算机升级。
+            ** 去马尔代夫旅游。
+
+~/org/birthday.org
+
+这里记录预先决定的日常安排。比如生日节假日。
+与其他设备无缝连接
+
+使用Emacs的tramp1可以无缝地访问远程的设备。同样也可以连接 org-mode 的文件。下面是在HOST机器上设置 org-mode 与tramp关联的方法。
+
+比如下面设置的地方
+
+1
+
+	
+
+"~/org/foo.org"
+
+替换为
+
+1
+
+	
+
+"/domain-name/org/foo.org"
+
+如果是 Windows 的 NTEmacs 为:
+
+1
+
+	
+
+"/plink:domain-name/org/foo.org"
+
+1. TRAMP 代表”Transparent Remote (file) Access, Multiple Protocol”，他是 Emacs 的一个用于远程文件编辑的扩展包。用来访问scp/ssh/smb服务器上的文件，可以做到像读写本地文件一样编辑远程的文件。
+** TODO 待办事项（TODO ）
+** TODO [#A] Write letter to Sam Fortune 优先级A,b,c,a最高
+tag
+时间输入 范围 2pm+2
+ (setq org-log-done 'time)
+#+beg org-mode可以利用Emacs的时间空间插入当前时间。
+  输入C-c . 会出现一个日历，我们点选相应的时间即可插入
+  时间前可以加DEADLINE:和SCHEDULED:表示时间的类型如：
+#+end 富文本
+** 记笔记
+      + 2.4 创建链接
+      + 2.5 内部链接
+      + 2.6 显示图片
+  * 3 轻量级标记语言
+      + 3.1 字体
+      + 3.2 表格
+          o 3.2.1 创建和转换表格
+          o 3.2.2 调整和区域移动
+          o 3.2.3 编辑行和列
+      + 3.3 段落
+      + 3.4 列表
+          o 3.4.1 列表操作快捷键
+      + 3.5 分隔线
+  * 4 标签
+      + 4.1 tag的作用
+      + 4.2 标记tag
+      + 4.3 预定义tag
+      + 4.4 按tag搜索
+  * 5 导出和发布
+      + 5.1 准备工作
+          o 5.1.1 文档元数据
+          o 5.1.2 内容元数据
+          o 5.1.3 嵌入Html
+          o 5.1.4 包含文件
+          o 5.1.5 嵌入 LaTex
+      + 5.2 导出
+      + 5.3 发布
+
+** 标题
+*** 文章标题 #+TITLE: xx
+*** 正文标题 *
+** 字体
+   *粗体*
+   /斜体/
+   +删除线+
+   _下划线_
+   下标: H_2 O H 2 O 
+   上标: E=mc^2
+   等宽字:=git=
+   # 注释 
+   :抽屉:
+** 列表
+*** 无序    -|+|*
+*** 有序    1.|1
+*** 描述    ::
+** 内容元数据
+s    #+begin_src ... #+end_src 
+e    #+begin_example ... #+end_example  : 单行的例子以冒号开头
+q    #+begin_quote ... #+end_quote      通常用于引用，与默认格式相比左右都会留出缩进
+v    #+begin_verse ... #+end_verse      默认内容不换行，需要留出空行才能换行
+c    #+begin_center ... #+end_center 
+l    #+begin_latex ... #+end_latex 
+L    #+latex: 
+h    #+begin_html ... #+end_html 
+H    #+html: 
+a    #+begin_ascii ... #+end_ascii 
+A    #+ascii: 
+i    #+index: line 
+I    #+include: line
+上面的单字母为快捷键字母，如输入一个<s 然后TAB后就变为
+注释 
+** 以‘#‘开头的行被看作注释，不会被导出区块注释采用如下写法：
+#+BEGIN_COMMENT
+  块注释
+  ...
+#+END_COMMENT
+** 表格与图片 
+对于表格和图片，可以在前面增加标题和标签的说明，以方便交叉引用。比如在表格的前面添加：
+#+CAPTION: This is the caption for the next table (or link)
+则在需要的地方可以通过\ref{table1}来引用该表格。 
+[[image.gpg]]
+
+** 代码格式化
+#符合emacs 模式时
+#+BEGIN_SRC emacs-lisp -n -r
+     (defun org-xor (a b)          (ref:df)
+        "Exclusive or."             
+        (if a (not b) b))
+#+END_SRC
+
+** 格式导出与发布 
+1.C-c C-e a 导出为文本文件。
+2.C-c C-e h 导出为 HTML 文件 
