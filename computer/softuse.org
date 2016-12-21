@@ -263,6 +263,55 @@ sudo ifconfig eth0 down/up
 *** 常用工具命令
 **** pssh 批量管理执行
 **** screen 用于命令行终端切换
+# screen [-AmRvx -ls -wipe][-d <作业名称>][-h <行数>][-r <作业名称>][-s ][-S <作业名称>]
+参数说明
+-A 　将所有的视窗都调整为目前终端机的大小。
+-d <作业名称> 　将指定的screen作业离线。
+-h <行数> 　指定视窗的缓冲区行数。
+-m 　即使目前已在作业中的screen作业，仍强制建立新的screen作业。
+-r <作业名称> 　恢复离线的screen作业。
+-R 　先试图恢复离线的作业。若找不到离线的作业，即建立新的screen作业。
+-s 　指定建立新视窗时，所要执行的shell。
+-S <作业名称> 　指定screen作业的名称。
+-v 　显示版本信息。
+-x 　恢复之前离线的screen作业。
+-ls或--list 　显示目前所有的screen作业。
+-wipe 　检查目前所有的screen作业，并删除已经无法使用的screen作业。
+
+四、常用screen参数
+
+screen -S yourname -> 新建一个叫yourname的session
+screen -ls -> 列出当前所有的session
+screen -r yourname -> 回到yourname这个session
+screen -d yourname -> 远程detach某个session
+screen -d -r yourname -> 结束当前session并回到yourname这个session
+
+在每个screen session 下，所有命令都以 ctrl+a(C-a) 开始。
+C-a ? -> 显示所有键绑定信息
+C-a c -> 创建一个新的运行shell的窗口并切换到该窗口
+C-a n -> Next，切换到下一个 window 
+C-a p -> Previous，切换到前一个 window 
+C-a 0..9 -> 切换到第 0..9 个 window
+Ctrl+a [Space] -> 由视窗0循序切换到视窗9
+C-a C-a -> 在两个最近使用的 window 间切换 
+C-a x -> 锁住当前的 window，需用用户密码解锁
+C-a d -> detach，暂时离开当前session，将目前的 screen session (可能含有多个 windows) 丢到后台执行，并会回到还没进 screen 时的状态，此时在 screen session 里，每个 window 内运行的 process (无论是前台/后台)都在继续执行，即使 logout 也不影响。 
+C-a z -> 把当前session放到后台执行，用 shell 的 fg 命令则可回去。
+C-a w -> 显示所有窗口列表
+C-a t -> Time，显示当前时间，和系统的 load 
+C-a k -> kill window，强行关闭当前的 window
+C-a [ -> 进入 copy mode，在 copy mode 下可以回滚、搜索、复制就像用使用 vi 一样
+    C-b Backward，PageUp 
+    C-f Forward，PageDown 
+    H(大写) High，将光标移至左上角 
+    L Low，将光标移至左下角 
+    0 移到行首 
+    $ 行末 
+    w forward one word，以字为单位往前移 
+    b backward one word，以字为单位往后移 
+    Space 第一次按为标记区起点，第二次按为终点 
+    Esc 结束 copy mode 
+C-a ] -> Paste，把刚刚在 copy mode 选定的内容贴上  
 **** speedtest-cli 命令行下测试服务器外网速度
 **** clockdiff 检测两台linux主机的时间差
 **** ntpdate 使用网络计时协议（NTP）设置日期和时间
@@ -2374,3 +2423,368 @@ PHP 常用正则表达式整理
      
 
  
+
+* shell高级编程例子
+例子清单:  
+2-1.  清除:清除/var/log 下的 log 文件  
+2-2.  清除:一个改良的清除脚本  
+2-3. cleanup:一个增强的和广义的删除 logfile 的脚本  
+3-1.  代码块和 I/O 重定向  
+3-2.  将一个代码块的结果保存到文件  
+3-3.  在后台运行一个循环  
+3-4.  备份最后一天所有修改的文件.  
+4-1.  变量赋值和替换  
+4-2.  一般的变量赋值  
+4-3.  变量赋值,一般的和比较特殊的  
+4-4.  整型还是 string?  
+4-5.  位置参数  
+4-6. wh,whois 节点名字查询  
+4-7.  使用 shift  
+
+----------------------- Page 8-----------------------
+
+5-1. echo 一些诡异的变量  
+5-2.  转义符  
+6-1. exit/exit 状态  
+6-2.  否定一个条件使用!  
+7-1.  什么情况下为真?  
+7-2.  几个等效命令 test,/usr/bin/test,[],和/usr/bin/[  
+7-3.  算数测试使用(( ))  
+7-4. test 死的链接文件  
+7-5.  数字和字符串比较  
+7-6.  测试字符串是否为 null  
+
+7-7. zmore  
+8-1.  最大公约数  
+8-2.  使用算术操作符  
+8-3.  使用&&和||进行混合状态的 test  
+8-4.  数字常量的处理  
+9-1. $IFS 和空白  
+9-2.  时间输入  
+9-3.  再来一个时间输入  
+
+9-4. Timed read  
+9-5.  我是 root?  
+9-6. arglist:通过$*和$@列出所有的参数  
+9-7.  不一致的$*和$@行为  
+9-8.  当$IFS 为空时的$*和$@  
+9-9.  下划线变量  
+9-10.  在一个文本文件的段间插入空行  
+9-11.  利用修改文件名,来转换图片格式  
+9-12.  模仿 getopt 命令  
+9-13.  提取字符串的一种可选的方法  
+9-14.  使用参数替换和 error messages  
+9-15.  参数替换和"usage"messages  
+9-16.  变量长度  
+9-17.  参数替换中的模式匹配  
+9-18.  重命名文件扩展名  
+9-19.  使用模式匹配来分析比较特殊的字符串  
+9-20.  对字符串的前缀或后缀使用匹配模式  
+9-21.  使用 declare 来指定变量的类型  
+9-22.  间接引用  
+9-23.  传递一个间接引用给 awk  
+9-24.  产生随机数  
+9-25.  从一副扑克牌中取出一张随机的牌  
+9-26.  两个指定值之间的随机数  
+9-27.  使用随机数来摇一个骰子  
+9-28.  重新分配随机数种子  
+9-29.  使用 awk 产生伪随机数  
+
+----------------------- Page 9-----------------------
+
+9-30. C 风格的变量处理  
+10-1.  循环的一个简单例子  
+10-2.  每个[list]元素带两个参数的 for 循环  
+10-3.  文件信息:对包含在变量中的文件列表进行操作  
+10-4.  在 for 循环中操作文件  
+10-5.  在 for 循环中省略[list]  
+10-6.  使用命令替换来产生 for 循环的[list]  
+10-7.  对于二进制文件的一个 grep 替换  
+10-8.  列出系统上的所有用户  
+10-9.  在目录的所有文件中查找源字串  
+10-10.  列出目录中所有的符号连接文件  
+10-11.  将目录中的符号连接文件名保存到一个文件中  
+10-12.  一个 C 风格的 for 循环  
+10-13.  在 batch mode 中使用efax  
+10-14.  简单的 while 循环  
+10-15.  另一个while 循环  
+10-16.  多条件的 while 循环  
+10-17. C 风格的 while 循环  
+10-18. until 循环  
+10-19.  嵌套循环  
+10-20. break 和 continue 命令在循环中的效果  
+10-21.  多层循环的退出  
+10-22.  多层循环的 continue  
+10-23.  在实际的任务中使用"continue N"  
+10-24.  使用 case  
+10-25.  使用 case 来创建菜单  
+10-26.  使用命令替换来产生 case 变量  
+10-27.  简单字符串匹配  
+10-28.  检查是否是字母输入  
+10-29.  用 select 来创建菜单  
+10-30.  用函数中 select 结构来创建菜单  
+11-1.  一个 fork 出多个自己实例的脚本  
+
+11-2. printf  
+11-3.  使用 read,变量分配  
+11-4.  当使用一个不带变量参数的 read 命令时,将会发生什么?  
+11-5. read 命令的多行输入  
+11-6.  检测方向键  
+11-7.  通过文件重定向来使用 read  
+11-8.  管道输出到 read 中的问题  
+11-9.  修改当前的工作目录  
+11-10.  用"let"命令来作算术操作.  
+11-11.  显示 eval 命令的效果  
+11-12.  强制登出(log-off)  
+11-13.  另一个"rot13"的版本  
+
+----------------------- Page 10-----------------------
+
+11-14.  在 Perl 脚本中使用 eval 命令来强制变量替换  
+11-15.  使用 set 来改变脚本的位置参数  
+11-16.  重新分配位置参数  
+11-17. Unset 一个变量  
+11-18.  使用 export 命令传递一个变量到一个内嵌 awk 的脚本中  
+11-19.  使用 getopts 命令来读取传递给脚本的选项/参数.  
+11-20. "Including"一个数据文件  
+11-21.  一个没什么用的,source 自身的脚本  
+11-22. exec 的效果  
+11-23.  一个 exec 自身的脚本  
+11-24.  在继续处理之前,等待一个进程的结束  
+11-25.  一个结束自身的脚本.  
+12-1.  使用 ls 命令来创建一个烧录 CDR 的内容列表  
+
+12-2. Hello or Good-bye  
+12-3.  删除当前目录下文件名中包含一些特殊字符(包括空白)的文件..  
+12-4.  通过文件的  inode  号来删除文件  
+12-5. Logfile:  使用  xargs  来监控系统  log  
+12-6.  把当前目录下的文件拷贝到另一个文件中  
+12-7.  通过名字 Kill 进程  
+12-8.  使用 xargs 分析单词出现的频率  
+12-9.  使用  expr  
+12-10.  使用  date  命令  
+12-11.  分析单词出现的频率  
+12-12.  那个文件是脚本?  
+12-13.  产生 10 进制随机数  
+12-14.  使用  tail  命令来监控系统 log  
+12-15.  在一个脚本中模仿  "grep"  的行为  
+12-16.  在 1913 年的韦氏词典中查找定义  
+12-17.  检查列表中单词的正确性  
+12-18.  转换大写:  把一个文件的内容全部转换为大写.  
+12-19.  转换小写:  将当前目录下的所有文全部转换为小写.  
+12-20. Du: DOS  到  UNIX  文本文件的转换.  
+12-21. rot13: rot13,  弱智加密.  
+
+12-22. Generating "Crypto-Quote" Puzzles  
+12-23.  格式化文件列表.  
+12-24.  使用  column  来格式化目录列表  
+12-25. nl:  一个自己计算行号的脚本.  
+12-26. manview:  查看格式化的 man 页  
+12-27.  使用  cpio  来拷贝一个目录树  
+12-28.  解包一个  rpm  归档文件    
+12-29.  从  C  文件中去掉注释  
+
+12-30. Exploring /usr/X11R6/bin  
+12-31.  一个"改进过"的  strings    命令  
+12-32.  在一个脚本中使用  cmp  来比较 2 个文件.  
+
+----------------------- Page 11-----------------------
+
+    12-33. basename  和  dirname  
+    12-34.  检查文件完整性    
+    12-35. Uudecod  编码后的文件  
+    12-36.  查找滥用的连接来报告垃圾邮件发送者  
+    12-37.  分析一个垃圾邮件域  
+    12-38.  获得一份股票报价  
+    12-39.  更新  Fedora Core 4    
+    12-40.  使用  ssh  
+    12-41.  一个可以 mail 自己的脚本  
+    12-42.  按月偿还贷款  
+    12-43.  数制转换  
+    12-44.  使用  "here document"  来调用  bc  
+    12-45.  计算圆周率  
+    12-46.  将 10 进制数字转换为 16 进制数字  
+    12-47.  因子分解  
+    12-48.  计算直角三角形的斜边  
+    12-49.  使用  seq  来产生循环参数  
+    12-50.  字母统计  
+    12-51.  使用 getopt 来分析命令行选项  
+    12-52.  一个拷贝自身的脚本  
+    12-53.  练习 dd  
+    12-54.  记录按键  
+    12-55.  安全的删除一个文件  
+    12-56.  文件名产生器  
+    12-57.  将米转换为英里  
+    12-58.  使用  m4  
+    13-1.  设置一个新密码  
+    13-2.  设置一个擦除字符  
+    13-3.  关掉终端对于密码的 echo  
+    13-4.  按键检测  
+
+    13-5. Checking a remote server for identd<rojy bug>  
+    13-6. pidof  帮助杀掉一个进程  
+    13-7.  检查一个 CD 镜像  
+    13-8.  在一个文件中创建文件系统  
+    13-9.  添加一个新的硬盘驱动器  
+    13-10.  使用 umask 来将输出文件隐藏起来  
+    13-11. killall,  来自于  /etc/rc.d/init.d  
+    14-1.  愚蠢的脚本策略  
+    14-2.  从循环的输出中产生一个变量  
+    14-3.  找 anagram(回文构词法,  可以将一个有意义的单词,  变换为 1 个或多个有意义的单词,  但 
+是还是原来的子母集合)  
+    16-1.  使用 exec 重定向标准输入  
+    16-2.  使用 exec 来重定向 stdout  
+    16-3.  使用 exec 在同一脚本中重定向 stdin 和 stdout  
+
+----------------------- Page 12-----------------------
+
+16-4.  避免子 shell  
+16-5. while 循环的重定向  
+16-6.  另一种while 循环的重定向  
+16-7. until 循环重定向  
+16-8. for 循环重定向  
+16-9. for 循环重定向  loop (将标准输入和标准输出都重定向了)  
+16-10.  重定向 if/then 测试结构  
+16-11.  用于上面例子的"names.data"数据文件  
+16-12.  记录日志事件  
+17-1.  广播:  发送消息给每个登录上的用户  
+17-2.  仿造文件:  创建一个两行的仿造文件  
+17-3.  使用 cat 的多行消息  
+17-4.  带有抑制 tab 功能的多行消息  
+17-5.  使用参数替换的 here document  
+17-6.  上传一个文件对到"Sunsite"的 incoming 目录  
+17-7.  关闭参数替换  
+17-8.  一个产生另外一个脚本的脚本  
+17-9. Here documents 与函数  
+17-10. "匿名" here Document  
+17-11.  注释掉一段代码块    
+17-12.  一个自文档化(self-documenting)的脚本  
+17-13.  在一个文件的开头添加文本  
+20-1.  子 shell 中的变量作用域  
+20-2.  列出用户的配置文件  
+20-3.  在子 shell 里进行串行处理  
+21-1.  在受限的情况下运行脚本  
+23-1.  简单函数  
+23-2.  带着参数的函数  
+23-3.  函数和被传给脚本的命令行参数  
+23-4.  传递间接引用给函数  
+23-5.  解除传递给函数的参数引用  
+23-6.  再次尝试解除传递给函数的参数引用  
+23-7.  两个数中的最大者  
+23-8.  把数字转化成罗马数字  
+23-9.  测试函数最大的返回值  
+23-10.  比较两个大整数  
+23-11.  用户名的真实名  
+23-12.  局部变量的可见范围  
+23-13.  用局部变量来递归  
+23-14.  汉诺塔  
+24-1.  脚本中的别名  
+24-2. unalias:  设置和删除别名  
+25-1.  使用"与列表(and list)"来测试命令行参数  
+25-2.  用"与列表"的另一个命令行参数测试  
+
+----------------------- Page 13-----------------------
+
+25-3. "或列表"和"与列表"的结合使用  
+26-1.  简单的数组用法  
+26-2.  格式化一首诗  
+26-3.  多种数组操作  
+26-4.  用于数组的字符串操作符  
+26-5.  将脚本的内容传给数组  
+26-6.  一些数组专用的工具  
+26-7.  关于空数组和空数组元素  
+26-8.  初始化数组  
+26-9.  复制和连接数组  
+26-10.  关于连接数组的更多信息  
+26-11.  一位老朋友:  冒泡排序  
+26-12.  内嵌数组和间接引用  
+26-13.  复杂数组应用: 埃拉托色尼素数筛子  
+26-14.  模拟下推的堆栈  
+26-15.  复杂的数组应用:  列出一种怪异的数学序列  
+26-16.  模拟二维数组,并使它倾斜  
+27-1.  利用/dev/tcp  来检修故障  
+27-2.  搜索与一个 PID 相关的进程  
+27-3.  网络连接状态  
+28-1.  隐藏 cookie 而不再使用  
+28-2.  用/dev/zero 创建一个交换临时文件  
+28-3.  创建 ramdisk  
+29-1.  一个错误的脚本  
+29-2.  丢失关键字(keyword)  
+29-3.  另一个错误脚本  
+29-4.  用"assert"测试条件  
+29-5.  捕捉  exit  
+29-6.  在 Control-C 后清除垃圾  
+29-7.  跟踪变量  
+29-8.  运行多进程  (在多处理器的机器里)  
+31-1.  数字和字符串比较是不相等同的  
+31-2.  子 SHELL 缺陷  
+31-3.  把 echo 的输出用管道输送给 read 命令  
+33-1. shell  包装  
+33-2.  稍微复杂一些的 shell 包装  
+33-3.  写到日志文件的 shell 包装  
+33-4.  包装 awk 的脚本  
+33-5.  另一个包装 awk 的脚本  
+33-6.  把 Perl 嵌入 Bash 脚本  
+33-7. Bash  和  Perl  脚本联合使用  
+33-8.  递归调用自己本身的(无用)脚本  
+33-9.  递归调用自己本身的(有用)脚本  
+33-10.  另一个递归调用自己本身的(有用)脚本  
+
+----------------------- Page 14-----------------------
+
+33-11.  一个  "彩色的"  地址资料库  
+33-12.  画盒子  
+33-13.  显示彩色文本  
+33-14. "赛马"  游戏  
+33-15.  返回值技巧  
+33-16.  整型还是 string?  
+33-17.  传递和返回数组  
+33-18. anagrams 游戏  
+33-19.  在 shell 脚本中调用的窗口部件  
+34-1.  字符串扩展  
+34-2.  间接变量引用  -  新方法  
+34-3.  使用间接变量引用的简单数据库应用  
+34-4.  用数组和其他的小技巧来处理四人随机打牌  
+
+  
+A-1. mailformat: Formatting an e-mail message  
+A-2. rn: A simple-minded file rename utility  
+A-3. blank-rename: renames filenames containing blanks  
+A-4. encryptedpw: Uploading to an ftp site, using a locally encrypted password  
+A-5. copy-cd: Copying a data CD  
+A-6. Collatz series  
+A-7. days-between: Calculate number of days between two dates  
+A-8. Make a "dictionary"  
+A-9. Soundex conversion  
+A-10. "Game of Life"  
+A-11. Data file for "Game of Life"  
+A-12. behead: Removing mail and news message headers  
+A-13. ftpget: Downloading files via ftp  
+A-14. password: Generating random 8-character passwords  
+A-15. fifo: Making daily backups, using named pipes  
+A-16. Generating prime numbers using the modulo operator  
+A-17. tree: Displaying a directory tree  
+A-18. string functions: C-like string functions  
+A-19. Directory information  
+A-20. Object-oriented database  
+A-21. Library of hash functions  
+A-22. Colorizing text using hash functions  
+A-23. Mounting USB keychain storage devices  
+A-24. Preserving weblogs  
+A-25. Protecting literal strings  
+A-26. Unprotecting literal strings  
+A-27. Spammer Identification  
+A-28. Spammer Hunt  
+A-29. Making wget easier to use  
+A-30. A "podcasting" script  
+
+----------------------- Page 15-----------------------
+
+A-31. Basics Reviewed  
+A-32. An expanded cd command  
+C-1. Counting Letter Occurrences  
+K-1. Sample .bashrc file  
+L-1. VIEWDATA.BAT: DOS Batch File  
+L-2. viewdata.sh: Shell Script Conversion of VIEWDATA.BAT  
+P-1. Print the server environment  
+  
