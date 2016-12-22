@@ -41,6 +41,9 @@ sudo -i 切换为root用户
 **** atq 列出当前用户的at任务列表
 **** at 在指定时间执行一个任务
 at TIME HH:MM YYY-MM-DD /+ n {hours,days,weeks}
+**** script 录制并回放终端会话
+script -t 2>time.log -a output.session   录制
+scriptreplay time.log output.session 回放
 *** 用户和工作组管理
 **** chage 修改帐号和密码的有效期限
 **** id 显示用户的ID以及所属群组的ID
@@ -332,6 +335,7 @@ C-a ] -> Paste，把刚刚在 copy mode 选定的内容贴上
 **** users 显示当前登录系统的所有用户
 **** sleep 将目前动作延迟一段时间
 **** md5sum 计算和校验文件报文摘要的工具程序
+
 **** mesg 设置当前终端的写权限
 **** mtools 显示mtools支持的指令
 **** login 登录系统或切换用户身份
@@ -346,6 +350,7 @@ C-a ] -> Paste，把刚刚在 copy mode 选定的内容贴上
 **** dircolors 置ls命令在显示目录或文件时所用的色彩
 **** gpm 提供文字模式下的滑鼠事件处理
 **** bc 算术操作精密运算工具
+sqrt(100) 8^2
 **** cal 显示当前日历或指定日期的日历
 cal 1988
 cal -m
@@ -653,6 +658,7 @@ find pathname -options [-print -exec -ok ...]
   : -nouser   查找无有效属主的文件，即该文件的属主在/etc/passwd中不存在。
   : -newer file1 ! file2  查找更改时间比文件file1新但比文件file2旧的文件。
   : -type  查找某一类型的文件，诸如：
+  : -iname 忽略大小写
   + b - 块设备文件。
   + d - 目录。
   + c - 字符设备文件。
@@ -669,13 +675,13 @@ find pathname -options [-print -exec -ok ...]
 另外,下面三个的区别:
   : -amin n   查找系统中最后N分钟访问的文件  -n n天以内;+n n天之前
   : -atime n  查找系统中最后n*24小时访问的文件
-  :  -cmin n   查找系统中最后N分钟被改变文件状态的文件
-  :  -ctime n  查找系统中最后n*24小时被改变文件状态的文件
-  :  -mmin n   查找系统中最后N分钟被改变文件数据的文件
-  :  -mtime n  查找系统中最后n*24小时被改变文件数据的文件
+  : -cmin n   查找系统中最后N分钟被改变文件状态的文件
+  : -ctime n  查找系统中最后n*24小时被改变文件状态的文件
+  : -mmin n   查找系统中最后N分钟被改变文件数据的文件
+  : -mtime n  查找系统中最后n*24小时被改变文件数据的文件
   : find  ./    -mtime    -1    -type f    -ok   ls -l    {} \;  
   : find .    -perm -007    -exec ls -l {} \;  
-
+  : ! 否定参数
 **** whereis 查找二进制程序、代码等相关文件路径
 *** 文件内容查看
 **** hexdump 显示文件十六进制格式
@@ -717,6 +723,7 @@ more +20 filename 从第20行开始显示
 一般只会对系统目录创建索引
 **** ln 用来为文件创件连接
 **** cat 连接文件并打印到标准输出设备上
+cat - file1 file2   把标准输入 文件1 文件2 连接
 -n --number 输出行号
 -b --number-nonblank 行不编号
 *** 文件编辑
@@ -1172,6 +1179,7 @@ split filename backname
 **** ispell 检查文件中出现的拼写错误
 **** uniq 报告或忽略文件中的重复行
 **** tee 把数据重定向到给定文件和屏幕上
+
 **** paste 将多个文件按列队列合并
 **** sort 将文件进行排序并输出
 **** unexpand 将文件的空白字符转换为制表符
@@ -1180,6 +1188,9 @@ split filename backname
 **** join 两个文件中指定栏位内容相同的行连接起来
 **** col 过滤控制字符
 **** tr 将字符进行替换压缩和删除
+-d 删除不在集合的内容
+-s 压缩重复字符
+-c 使用补集,一般 -d 删除不在补集的内容
 **** colrm 删除文件中的指定列
 *** 文件压缩与解压
 **** lha 压缩或解压缩lzh格式文件
