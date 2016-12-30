@@ -551,6 +551,31 @@ filesystem  filename 文件属性
 *** B.1  Our Header File                                               
 *** B.2  Standard Error Routines                                       
 *** Appendix C.   Solutions to Selected Exercises                      
+** 文件I/O
+(UNIX 文件io)
+(文件 打开 读 写..)
+(文件 open read write lseek close)
+(文件 文件描述符 )
+(惯例打开使用 STDIN_FILENO STDOUT_FILENO STDERR_FILENO)
+(linux 进程 (文件描述符 1048576))
+(include fcntl.h)
+int open(const char *pathname, int oflag,... /*mode_t mode */);
+可选一个
+O_RDONLY  只读打开
+O_WRONLY  只写打开
+O_RDWR    读写打开
 
+可选多个
+O_APPEND
+O_CREAT
+O_EXCL
+O_TRUNC
+O_NONBLOCK
 
+O_DSYNC
+O_RSYNC
+O_SYNC
+LINUX 三者相同 
+(特点 open 描述符 返回最小 描述符数值)
 
+(创建文件 creat(const char *pathname,mode_t mode) open(pathname, o_wronly | o_creat | o_trunc, mode))
