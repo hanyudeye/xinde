@@ -1,4 +1,146 @@
-!抽象化
-* os
-** 需求 编译器 软盘/硬盘 源码 
-[[[[../image/elf1.png]]]]
+* 工具
+编辑器-》文本
+编译器-》代码
+make工具-》串联代码
+模拟器-》执行代码
+* demo
+** 点亮屏幕
+#+begin_src asm
+;显示os标识 
+org 0x7c00
+;在某一地址放置代码
+jmp entry
+entry:
+ mov ax,0
+
+ 
+#+end_src   
+
+** string.h
+   #+begin_src c
+#ifndef _STRING_H_
+#define _STRING_H_
+    
+#ifndef NULL
+#define NULL ((void *) 0)
+#endif
+
+#ifndef _SIZE_T
+#define _SIZE_T
+typedef unsigned int size_t;
+#endif
+extern char *strerror (int errno);
+/*
+* elf
+**  ELF32文件结构
+[[../image/elf1.png]]
+
+#+BEGIN_SRC c
+#define EI_NIDENT    16
+typedef struct elf32_hdr{
+  unsigned char    e_ident[EI_NIDENT];  //开始的16个字节
+  Elf32_Half    e_type;  //文件类型
+  Elf32_Half    e_machine;  //运行的机器类型
+  Elf32_Word    e_version;  //版本
+  Elf32_Addr    e_entry;  //程序入口地址
+  Elf32_Off    e_phoff;  //程序头表在文件中的偏移
+  Elf32_Off    e_shoff;  //节头表在文件中的偏移
+  Elf32_Word    e_flags;  //标记
+  Elf32_Half    e_ehsize;  //elf文件头大小
+  Elf32_Half    e_phentsize;  //程序头表项的大小
+  Elf32_Half    e_phnum;  //程序头表中表项项的个数
+  Elf32_Half    e_shentsize;  //节头表项大小
+  Elf32_Half    e_shnum;  //节头表中表项的个数
+  Elf32_Half    e_shstrndx;  //节头表的字符串节所在节头表中下标
+} Elf32_Ehdr;
+#+END_SRC
+节头表项对应的代码定义为：
+#+BEGIN_SRC c
+typedef struct elf32_shdr {
+  Elf32_Word    sh_name;  //节的名字，在符号表中的下标
+  Elf32_Word    sh_type;  //节的类型，描述符号，代码，数据，重定位等
+  Elf32_Word    sh_flags;  //读写执行标记
+  Elf32_Addr    sh_addr;  //节在执行时的虚拟地址
+  Elf32_Off    sh_offset;  //节在文件中的偏移量
+  Elf32_Word    sh_size;  //节的大小
+  Elf32_Word    sh_link;  //其它节的索引
+  Elf32_Word    sh_info;  //节的其它信息
+  Elf32_Word    sh_addralign;  //节对齐
+  Elf32_Word    sh_entsize;  //节拥有固定大小项的大小
+} Elf32_Shdr;
+#+END_SRC
+* ubuntu
+** 系统本身的功能
+*** 界面处理
+*** 内存处理
+*** 多任务处理
+*** 设备处理
+*** 网络设备处理
+* 操作系统(抽象成酒店领班)
+** !抽象设备与环境
+** 多用户
+*** 用户和组
+** 多任务
+   
+* 文件系统
+** 系统结构
+** 硬链接和软链接
+** 文件类型
+** 文件描述符和索引节点
+** 访问权限和文件模式
+*** 用户（拥有者） 组 其他
+*** r w x suid sgid 
+** 文件操作的系统调用
+*** 打开文件
+*** 访问文件
+*** 关闭文件
+*** 更名及删除
+
+* linux 内核
+***   内核的引导
+**** BIOS
+0xfffffff0->OS系统利用基本IO初始化，保护模式不再使用->0x7c00
+**** bootloader 
+: 载入/boot 目录下的内核文件
+: 小内核zImage -> 0x00010000
+: 大内核bzImage ->0x00100000
+: 把位于×zImage 偏移为0x200 的setup() 拷贝到0x00090200,并跳转到此
+**** setup() 初始化硬件，为内核执行建立环境
+1. 调用BIOS,建立系统物理内存布局表
+2.设置键盘重复延时和速率
+3.初始化视频卡
+4.检查IBM微通道总线（MCA)
+5.检查ps/2指针设备
+15.跳转到startup_32()汇编语言函数 (在 0x1000 or 0x10000)
+**** startup_32() 配置32位模式
+**** start_kernel() 初始化内核
+***** 调用sched_init() 初始化调度程序
+***** build_all_zonelists() 初始化内存管理区
+***** page_alloc_init() 初始化伙伴系统分配程序
+***** trap_init()  init_IRQ
+***** kernel_thread()->sbin/init
+**** 系统初始化
+: 确定运行级别
+: 在init的配置文件中有这么一行： si::sysinit:/etc/rc.d/rc.sysinit　它调用执行了/etc/rc.d/rc.sysinit，而rc.sysinit是一个bash shell的脚本，它主要是完成一些系统初始化的工作，rc.sysinit是每一个运行级别都要首先运行的重要脚本
+**** 建立终端
+: rc执行完毕后，返回init。这时基本系统环境已经设置好了，各种守护进程也已经启动了。
+: init接下来会打开6个终端，以便用户登录系统。在inittab中的以下6行就是定义了6个终端：
+#+BEGIN_SRC 
+      1:2345:respawn:/sbin/mingetty tty1
+      2:2345:respawn:/sbin/mingetty tty2
+      3:2345:respawn:/sbin/mingetty tty3
+#+END_SRC
+**** 用户登录系统
+   （1）命令行登录
+   （2）ssh登录
+   （3）图形界面登录
+* linux source
+** boot
+   INITSEG = DEF_INITSEG
+   SYSSEG = DEF_INITSEG
+   SETUPSEG = DEF_SYSSEG
+.code16
+.globl begtext, begdata, begbss, endbss,endtext, enddata, endbss
+* unix
+1.unix 把设备看成文件
+2.

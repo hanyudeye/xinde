@@ -1,4 +1,4 @@
-* Linux应用 在线文档 LDP(Linux document project)
+* 命令 在线文档 LDP(Linux document project)
 ** 系统管理
 *** 系统安全
 **** syslog 系统默认的日志守护进程
@@ -6,7 +6,7 @@
 **** logwatch 可定制和可插入式的日志监视系统
 **** lastb 列出登入系统失败的用户相关信息
 **** sudo 以其他身份来执行命令
-sudo -i 切换为root用户
+     sudo -i 切换为root用户
 **** lastlog 显示系统中所有用户最近一次登录信息
 **** logrotate 统日志进行轮转、压缩和删除
 **** chroot 把根目录换成指定的目的目录
@@ -365,6 +365,12 @@ at 23:59 23/1/1444 echo the hello!
 **** dnf 新一代的RPM软件包管理器
 **** dpkg-reconfigure Debian Linux中重新配制一个已经安装的软件包
 **** dpkg Debian Linux系统上安装、创建和管理软件包
+dpkg -i <package> 安装
+dpkg -c <package> 列出内容
+dpkg -l <package> 提取信息
+dpkg -r <package> 移除以安装软件包
+dpkg -P <package> 完全删除,包括配置文件
+dpkg -L <package> 列出所有文件清单
 **** apt-sortpkgs Debian Linux下对软件包索引文件进行排序的工具
 **** apt-key 管理Debian Linux系统中的软件包密钥
 **** aptitude Debian Linux系统中软件包管理工具
@@ -1194,6 +1200,7 @@ grep -A 5 foo file  显示foo及后5行
 **** join 两个文件中指定栏位内容相同的行连接起来
 **** col 过滤控制字符
 **** tr 将字符进行替换压缩和删除
+tr [option] source-char-list replace-char-list
 -d 删除不在集合的内容
 -s 压缩重复字符
 -c 使用补集,一般 -d 删除不在补集的内容
@@ -1237,8 +1244,6 @@ grep -A 5 foo file  显示foo及后5行
 
 ** 硬件 | 监测 | 内核 | Shell
 *** Shell内建命令
-
-
 **** trap 指定在接收到信号后将要采取的动作
 **** let 简单的计算器
 **** seq 以指定增量从首数开始打印数字到尾数 sequential sequence
@@ -1390,505 +1395,28 @@ grep -A 5 foo file  显示foo及后5行
 -ia i节点使用情况
 **** parted 磁盘分区和分区大小调整工具
 
-* Shell 编程
-** 变量及声明, 不声明,默认是字符串类型;变量有两个属性,
-赋值属性,这里是一个框 引用属性,这里是框里的内容,要加$
-declare -i a=3
--a : 数组
--f: function
--i: integer
--r:readonly
--x:通过环境输出变量
-** 逻辑判断
-# TITLE shell 的逻辑判断式
-| 功能     | 逻辑标识 | 表示意思                    |
-|----------+----------+-----------------------------|
-| 文件目录 | -f       | 文件是否存在                |
-|          | -d       | 目录                        |
-|          | -b       | block                       |
-|          | -c       | character文件               |
-|          | -S       | socket                      |
-|          | -L       | 符号链接                    |
-|          | -e       | 某个东西                    |
-|----------+----------+-----------------------------|
-| 程序     | -G       | 是否由GID所执行的程序所拥有 |
-|          | -O       | UID                         |
-|          | -p       | name pipe or FIFO           |
-|----------+----------+-----------------------------|
-| 文件属性 | -r       | 可读                        |
-|          | -w       | 写                          |
-|          | -x       | 执行                        |
-|          | -s       | 非空白                      |
-|          | -u       | SUID属性                    |
-|          | -g       | SGID                        |
-|----------+----------+-----------------------------|
-| 文件间   | -nt      | 第一个比第二个新            |
-|          | -ot      | 旧                          |
-|          | -ef      | 同一文件(link之类)          |
-|----------+----------+-----------------------------|
-| 逻辑     | &&       | AND的意思                   |
-|          | 两竖     | OR                          |
-|----------+----------+-----------------------------|
-
-** 运算符
-= != > < -eq -ne -lt -gt -le -ge -a (and) -o (or) -z (空字符)
--n (非空)
-
-** 条件判断
-#+BEGIN_SRC bash
-if [[ one && two ]];then
-elif [[ && ]];then
-else
-fi
-#+END_SRC
-#+BEGIN_SRC bash
-case 种类方式(string) in
-   one)
-       xx
-       ;;
-   two)
-       xx
-       ;;
-     *)
-       xx
-       exit 1;
-esac
-#+END_SRC
-#+BEGIN_SRC bash
-for ((i=1;i<=100;i=i+1))
-do
-    xx
-done
-
-where []
-do
-done
-
-until []
-do
-done
-#+END_SRC
-** 调试 sh [-nvx] scripts
--n:查询语法,不执行
--v:显示脚本内容,执行
--x:将有使用到的脚本显示,跟-v略有不同
-
-** 例子
-整数比较
--eq 等于,如:if [ "$a" -eq "$b" ]
--ne 不等于,如:if [ "$a" -ne "$b" ]
--gt 大于,如:if [ "$a" -gt "$b" ]
--ge 大于等于,如:if [ "$a" -ge "$b" ]
--lt 小于,如:if [ "$a" -lt "$b" ]
--le 小于等于,如:if [ "$a" -le "$b" ]
-< 小于(需要双括号),如:(("$a" < "$b"))
-<= 小于等于(需要双括号),如:(("$a" <= "$b"))
-> 大于(需要双括号),如:(("$a" > "$b"))
->= 大于等于(需要双括号),如:(("$a" >= "$b"))
-
-字符串比较
-= 等于,如:if [ "$a" = "$b" ]
-== 等于,如:if [ "$a" == "$b" ],与=等价
-注意:==的功能在[[]]和[]中的行为是不同的,如下:
-
-1 [[ $a == z* ]] # 如果$a以"z"开头(模式匹配)那么将为true
-2 [[ $a == "z*" ]] # 如果$a等于z*(字符匹配),那么结果为true
-3
-4 [ $a == z* ] # File globbing 和word splitting将会发生
-5 [ "$a" == "z*" ] # 如果$a等于z*(字符匹配),那么结果为true
-
-一点解释,关于File globbing是一种关于文件的速记法,比如"*.c"就是,再如~也是.
-但是file globbing并不是严格的正则表达式,虽然绝大多数情况下结构比较像.
-
-!= 不等于,如:if [ "$a" != "$b" ]
-这个操作符将在[[]]结构中使用模式匹配.
-< 小于,在ASCII字母顺序下.如:
-if [[ "$a" < "$b" ]]
-if [ "$a" \< "$b" ]
-注意:在[]结构中"<"需要被转义.
-> 大于,在ASCII字母顺序下.如:
-if [[ "$a" > "$b" ]]
-if [ "$a" \> "$b" ]
-注意:在[]结构中">"需要被转义.
-具体参考Example 26-11来查看这个操作符应用的例子.
--z 字符串为"null".就是长度为0.
--n 字符串不为"null"
-
-注意:
-
-使用-n在[]结构中测试必须要用""把变量引起来.使用一个未被""的字符串来使用! -z
-或者就是未用""引用的字符串本身,放到[]结构中。虽然一般情况下可
-以工作,但这是不安全的.习惯于使用""来测试字符串是一种好习惯.
-
-awk '{print $2}' class.txt | grep '^[0-9.]' > res
-
-SHELL下的数字比较及计算
-
-比较：
-
-方法一： if [ ${A} -lt ${B} ]; then ...
-这是最基本的比较方法，使用lt(小于),gt(大于),le(小于等于),ge(大于等于)，优点：还没发现；缺点：只能比较整数，使用lt,gt等不直
-观
-
-方法二： if ((${A} < ${B})) then ...
-这是CShell风格比较，优点：不用使用lt,gt等难记的字符串；缺点：还是只能比较整数
-
-方法三： if (echo ${A} ${B} | awk '!($1>$2){exit 1}') then ...
-这是使用awk比较，优点：可以比较小数；缺点：表达式太复杂，难记
-
-方法四： if (echo ${A} - ${B} | bc -q | grep -q "^-"); then ...
-这是使用bc计算比较，优点：可以比较小数；缺点：表达式更复杂，难记
-
-计算：
-方法一：typeset C=$(expr ${A} + ${B});
-SHELL中的基本工具，优点：方便检测变量是否为数字；缺点：只能计算整数，且只能计算加减法，不能计算乘除法
-
-方法二：let "C=${A}+${B}"; 或 let "C=A+B"
-内嵌命令计算，优点：能计算乘除法及位运算等；缺点：只能计算整数
-
-方法三：typeset C=$((A+B))
-CShell风格的计算，优点：能计算乘除法及位运算等，简介，编写方便；缺点：不能计算小数
-
-方法四：typeset C=${echo ${A} ${B} | awk '{print $1+$2}')
-使用awk计算，优点：能计算小数，可以实现多种计算方式，计算灵活；缺点：表达式太复杂
-
-方法五：typeset C=${echo ${A} + ${B} | bc -q)
-使用awk计算，优点：能计算小数，计算方式比awk还多，计算灵活；缺点：表达式太复杂，小数点后面的位数必须使用scale=N来设置，否
-则可能会将结果截断为整数
-
-特殊字符
-
-符号使用
-；一般情况我们输出完一个命令需要按一个回车，如果你想在一行执行多个命令，中间可以用；号分割 cd /home ; ls
-\* 表示任意字符（正则）
-? 任一个字符
-[abc] 列表项之一
-[^abc] 对于列表取非也可以使用范围 [a-z] [0-9] [A-Z](所有字符和数字)
-{} 循环列表时用 touch_{1,2,3}时就会建立touch_1,touch_2,touch_3循环出这三个文件，也会用 echo ${ab}c
-~ home目录cd ~ （普通通话进入的是/home目录下用户自己的家目录）
-$ 提取变量值
-`` $() 命令替换touch `date +%F_\`date +%T\`` touch $(date +%F_$(date +%T))
-$[] 整数计算 echo $[2+3] - * / % 浮点数用 echo "scale=3; 10/3" | bc -l (bc用于计算的)
-\ 转义后面的字符串 echo \\ 输出\ 转义特殊字符，为防止被SHELL解释bash中的特殊字符
-"" '' 带空格串将空格视为串的一部分 echo "abc xyz" echo 'abc xyz'
-`` 命令替换取命令的执行结果
-$() 同上，但它弥补了``的嵌套缺陷
-@ 无特殊含义
-# 注释（一般编程都需要加注释，让其他团队队员对自己写的程序功能了解）
-$ 变量取值
-$() 命令替换
-${} 变量名的范围
-% 杀后台经常jobs号，取模运算(大家对取模应该并不陌生)
-^ 取非和！雷同
-& 用进程后台处理， &&用于逻辑与
-\* 匹配任意字符串；计算乘法
-() 子进程执行
-- 减号，区间，cd - 回到上层目录，杀掉当前jobs
-
-_ （下划线）无特殊含义
-+ 加号；杀掉当前jobs（进程）
-= 赋值
-| 管道，|| 逻辑或
-\ 转义当一些特殊符号如$是一个变量需要转义才不被bash解析
-{} 命令列表 {ls;cd /;}
-[] 字符通配符，[]也是用于测试命令
-：空命令真值
-；命令结束符
-"" 软引 '' 硬引
-< 输入重定向
-> 输出重定向
->& 合并2和1输出
-, 枚举分隔符
-. 当前目录
-/ 目录分隔符
-? 单个字符
-回车命令执行
-
-这篇文章主要介绍了Linux Shell中的特殊符号和含义简明总结,本文汇总了包含了绝大部份的Shell特殊符号,对每一个符号的作用做了总
-结,需要的朋友可以参考下
-
-在Linux Shell中有很多的特殊符号，这对于我们写Shell脚本时要特别留意：一方面要知道这些特殊符号的用法，这些符号用好了可以达到
-事半功倍的效果；但另一方面要避免这些特殊符号的过度使用而导致脚本难以调试、难以阅读。
-
-这些特殊符号罗列出来大致如下：
-复制代码代码如下:
-# ; ;; . , / / ‘string'| ! $ ${} $? $$ $* “string”* ** ? : ^ $# $@ `command`{} [] [[]] () (()) || && {xx,yy,zz,…}~ ~+ ~- &
-/ + – %= == !=
-
-输出/输入重导向：
-复制代码代码如下:
-> >> < << : > &> 2&> 2<>>& >&2
-
-下面就逐一介绍这些特殊符号的含义和用法……
-
-# 井号 (comments)
-这几乎是个满场都有的符号。
-#!/bin/bash
-井号也常出现在一行的开头，或者位于完整指令之后，这类情况表示符号后面的是注解文字，不会被执行。
-# This line is comments.
-echo “a = $a” # a = 0
-由于这个特性，当临时不想执行某行指令时，只需在该行开头加上 # 就行了。这常用在撰写过程中。
-#echo “a = $a” # a = 0
-如果被用在指令中，或者引号双引号括住的话，或者在倒斜线的后面，那他就变成一般符号，不具上述的特殊功能。
-
-~ 帐户的 home 目录
-算是个常见的符号，代表使用者的 home 目录：cd ~；也可以直接在符号后加上某帐户的名称：cd ~user
-或者当成是路径的一部份：~/bin；~+ 当前的工作目录，这个符号代表当前的工作目录，她和内建指令 pwd 的作用是相同的。
-# echo ~+/var/log
-~- 上次的工作目录，这个符号代表上次的工作目录。
-# echo ~-/etc/httpd/logs
-
-; 分号 (Command separator)
-在 shell 中，担任”连续指令”功能的符号就是”分号”。譬如以下的例子：cd ~/backup ; mkdir startup ; cp ~/.* startup/.
-
-;; 连续分号 (Terminator)
-专用在 case 的选项，担任 Terminator 的角色。
-case “$fop” inhelp) echo “Usage: Command -help -version filename” ;;version) echo “version 0.1″ ;;esac
-
-. 逗号 (dot)
-在 shell 中，使用者应该都清楚，一个 dot 代表当前目录，两个 dot 代表上层目录。
-CDPATH=.:~:/home:/home/web:/var:/usr/local
-在上行 CDPATH 的设定中，等号后的 dot 代表的就是当前目录的意思。
-如果档案名称以 dot 开头，该档案就属特殊档案，用 ls 指令必须加上 -a 选项才会显示。除此之外，在 regular expression 中，一个
-dot 代表匹配一个字元。
-
-‘string' 单引号 (single quote)
-被单引号用括住的内容，将被视为单一字串。在引号内的代表变数的$符号，没有作用，也就是说，他被视为一般符号处理，防止任何变量
-替换。
-heyyou=homeecho ‘$heyyou' # We get $heyyou
-
-“string” 双引号 (double quote)
-被双引号用括住的内容，将被视为单一字串。它防止通配符扩展，但允许变量扩展。这点与单引数的处理方式不同。
-heyyou=homeecho “$heyyou” # We get home
-`command` 倒引号 (backticks)
-在前面的单双引号，括住的是字串，但如果该字串是一列命令列，会怎样？答案是不会执行。要处理这种情况，我们得用倒单引号来做。
-fdv=`date +%F`echo “Today $fdv”
-在倒引号内的 date +%F 会被视为指令，执行的结果会带入 fdv 变数中。
-
-, 逗点 (comma)
-这个符号常运用在运算当中当做”区隔”用途。如下例
-#!/bin/bashlet “t1 = ((a = 5 + 3, b = 7 – 1, c = 15 / 3))”echo “t1 = $t1, a = $a, b = $b”
-
-/ 斜线 (forward slash)
-在路径表示时，代表目录。
-cd /etc/rc.dcd ../..cd /
-通常单一的 / 代表 root 根目录的意思；在四则运算中，代表除法的符号。
-let “num1 = ((a = 10 / 2, b = 25 / 5))”
-
-\ 倒斜线 (escape)
-在交互模式下的escape 字元，有几个作用；放在指令前，有取消 aliases 的作用；放在特殊符号前，则该特殊符号的作用消失；放在指令
-的最末端，表示指令连接下一行。
-# type rm
-rm is aliased to `rm -i'
-# \rm .\*.log
-上例，我在 rm 指令前加上 escape 字元，作用是暂时取消别名的功能，将 rm 指令还原。
-# bkdir=/home
-# echo “Backup dir, \$bkdir = $bkdir”
-Backup dir, $bkdir = /home
-上例 echo 内的 \$bkdir，escape 将 $ 变数的功能取消了，因此，会输出 $bkdir，而第二个 $bkdir 则会输出变数的内容 /home。
-
-| 管道 (pipeline)
-pipeline 是 UNIX 系统，基础且重要的观念。连结上个指令的标准输出，做为下个指令的标准输入。
-who | wc -l
-善用这个观念，对精简 script 有相当的帮助。
-
-! 惊叹号(negate or reverse)
-通常它代表反逻辑的作用，譬如条件侦测中，用 != 来代表”不等于”
-if [ "$?" != 0 ]thenecho “Executes error”exit 1fi
-在规则表达式中她担任 “反逻辑” 的角色
-ls a[!0-9]
-上例，代表显示除了a0, a1 …. a9 这几个文件的其他文件。
-
-: 冒号
-在 bash 中，这是一个内建指令：”什么事都不干”，但返回状态值 0。
-:
-echo $? # 回应为 0
-: > f.$$
-上面这一行，相当于 cat /dev/null > f.$$。不仅写法简短了，而且执行效率也好上许多。
-有时，也会出现以下这类的用法
-: ${HOSTNAME?} ${USER?} ${MAIL?}
-这行的作用是，检查这些环境变数是否已设置，没有设置的将会以标准错误显示错误讯息。像这种检查如果使用类似 test 或 if 这类的做
-法，基本上也可以处理，但都比不上上例的简洁与效率。
-除了上述之外，还有一个地方必须使用冒号
-PATH=$PATH:$HOME/fbin:$HOME/fperl:/usr/local/mozilla
-在使用者自己的HOME 目录下的 .bash_profile 或任何功能相似的档案中，设定关于”路径”的场合中，我们都使用冒号，来做区隔。
-
-? 问号 (wild card)
-在文件名扩展(Filename expansion)上扮演的角色是匹配一个任意的字元，但不包含 null 字元。
-# ls a?a1
-善用她的特点，可以做比较精确的档名匹配。
-
-\* 星号 (wild card)
-相当常用的符号。在文件名扩展(Filename expansion)上，她用来代表任何字元，包含 null 字元。
-# ls a*a a1 access_log
-在运算时，它则代表 “乘法”。
-let “fmult=2*3″
-除了内建指令 let，还有一个关于运算的指令 expr，星号在这里也担任”乘法”的角色。不过在使用上得小心，他的前面必须加上escape 字
-元。
-
-\** 次方运算
-两个星号在运算时代表 “次方” 的意思。
-let “sus=2**3″echo “sus = $sus” # sus = 8
-
-$ 钱号(dollar sign)
-变量替换(Variable Substitution)的代表符号。
-vrs=123echo “vrs = $vrs” # vrs = 123
-另外，在 Regular Expressions 里被定义为 “行” 的最末端 (end-of-line)。这个常用在 grep、sed、awk 以及 vim(vi) 当中。
-
-${} 变量的正规表达式
-bash 对 ${} 定义了不少用法。以下是取自线上说明的表列
-${parameter:-word} ${parameter:=word} ${parameter:?word} ${parameter:+word} ${parameter:offset} ${parameter:offset:length}
-${!prefix*} ${#parameter} ${parameter#word} ${parameter##word} ${parameter%word} ${parameter%%word} ${parameter/pattern/
-string} ${parameter//pattern/string}
-
-$*引用script 的执行引用变量，引用参数的算法与一般指令相同，指令本身为0，其后为1，然后依此类推。引用变量的代表方式如下：
-$0, $1, $2, $3, $4, $5, $6, $7, $8, $9, ${10}, ${11}…..
-个位数的，可直接使用数字，但两位数以上，则必须使用 {} 符号来括住。
-$* 则是代表所有引用变量的符号。使用时，得视情况加上双引号。
-echo “$*”
-还有一个与 $* 具有相同作用的符号，但效用与处理方式略为不同的符号。
-
-$@
-$@ 与 $* 具有相同作用的符号，不过她们两者有一个不同点。
-符号 $* 将所有的引用变量视为一个整体。但符号 $@ 则仍旧保留每个引用变量的区段观念。
-$#
-这也是与引用变量相关的符号，她的作用是告诉你，引用变量的总数量是多少。
-echo “$#”
-
-$? 状态值 (status variable)
-一般来说，UNIX(linux) 系统的进程以执行系统调用exit() 来结束的。这个回传值就是status值。回传给父进程，用来检查子进程的执行
-状态。
-一般指令程序倘若执行成功，其回传值为 0；失败为 1。
-tar cvfz dfbackup.tar.gz /home/user > /dev/nullecho “$?”$$
-由于进程的ID是唯一的，所以在同一个时间，不可能有重复性的 PID。有时，script 会需要产生临时文件，用来存放必要的资料。而此
-script 亦有可能在同一时间被使用者们使用。在这种情况下，固定文件名在写法上就显的不可靠。唯有产生动态文件名，才能符合需要。
-符号$$ 或许可以符合这种需求。它代表当前shell 的 PID。
-echo “$HOSTNAME, $USER, $MAIL” > ftmp.$$
-使用它来作为文件名的一部份，可以避免在同一时间，产生相同文件名的覆盖现象。
-ps: 基本上，系统会回收执行完毕的 PID，然后再次依需要分配使用。所以 script 即使临时文件是使用动态档名的写法，如果 script 执
-行完毕后仍不加以清除，会产生其他问题。
-() 指令群组 (command group)
-用括号将一串连续指令括起来，这种用法对 shell 来说，称为指令群组。如下面的例子：(cd ~ ; vcgh=`pwd` ; echo $vcgh)，指令群组
-有一个特性，shell会以产生 subshell 来执行这组指令。因此，在其中所定义的变数，仅作用于指令群组本身。我们来看个例子
-# cat ftmp-01#!/bin/basha=fsh(a=incg ; echo -e “/n $a /n”)echo $a# ./ftmp-01incgfsh
-除了上述的指令群组，括号也用在 array 变数的定义上；另外也应用在其他可能需要加上escape 字元才能使用的场合，如运算式。
-
-(())
-这组符号的作用与 let 指令相似，用在算数运算上，是 bash 的内建功能。所以，在执行效率上会比使用 let 指令要好许多。
-#!/bin/bash(( a = 10 ))echo -e “inital value, a = $a/n”(( a++ ))echo “after a++, a = $a”
-
-{} 大括号 (Block of code)
-有时候 script 当中会出现，大括号中会夹着一段或几段以”分号”做结尾的指令或变数设定。
-# cat ftmp-02#!/bin/basha=fsh{a=inbc ; echo -e “/n $a /n”}echo $a# ./ftmp-02inbcinbc
-这种用法与上面介绍的指令群组非常相似，但有个不同点，它在当前的 shell 执行，不会产生 subshell。
-大括号也被运用在 “函数” 的功能上。广义地说，单纯只使用大括号时，作用就像是个没有指定名称的函数一般。因此，这样写 script 也
-是相当好的一件事。尤其对输出输入的重导向上，这个做法可精简 script 的复杂度。
-此外，大括号还有另一种用法，如下
-{xx,yy,zz,…}
-这种大括号的组合，常用在字串的组合上，来看个例子
-mkdir {userA,userB,userC}-{home,bin,data}
-我们得到 userA-home, userA-bin, userA-data, userB-home, userB-bin, userB-data, userC-home, userC-bin, userC-data，这几个目
-录。这组符号在适用性上相当广泛。能加以善用的话，回报是精简与效率。像下面的例子
-chown root /usr/{ucb/{ex,edit},lib/{ex?.?*,how_ex}}
-如果不是因为支援这种用法，我们得写几行重复几次呀！
-
-[] 中括号
-常出现在流程控制中，扮演括住判断式的作用。if [ "$?" != 0 ]thenecho “Executes error”exit 1fi
-这个符号在正则表达式中担任类似 “范围” 或 “集合” 的角色
-rm -r 200[1234]
-上例，代表删除 2001, 2002, 2003, 2004 等目录的意思。
-
-[[]]
-这组符号与先前的 [] 符号，基本上作用相同，但她允许在其中直接使用 || 与 && 逻辑等符号。
-#!/bin/bashread akif [[ $ak > 5 || $ak < 9 ]]thenecho $akfi || 逻辑符号这个会时常看到，代表 or 逻辑的符号。 && 逻辑符号这
-个也会常看到，代表 and 逻辑的符号。 & 后台工作单一个& 符号，且放在完整指令列的最后端，即表示将该指令列放入后台中工作。 tar
-cvfz data.tar.gz data > /dev/null &
-/ 单字边界
-这组符号在规则表达式中，被定义为”边界”的意思。譬如，当我们想找寻 the 这个单字时，如果我们用
-grep the FileA
-你将会发现，像 there 这类的单字，也会被当成是匹配的单字。因为 the 正巧是 there 的一部份。如果我们要必免这种情况，就得加上
-“边界” 的符号
-grep ‘/' FileA
-
-+ 加号 (plus)
-在运算式中，她用来表示 “加法”。
-expr 1 + 2 + 3
-此外在规则表达式中，用来表示”很多个”的前面字元的意思。
-# grep '10/+9′ fileB109100910000910000931010009#这个符号在使用时，前面必须加上 escape 字元。
-
-- 减号 (dash)
-在运算式中，她用来表示 “减法”。
-expr 10 – 2
-此外也是系统指令的选项符号。
-ls -expr 10 – 2
-在 GNU 指令中，如果单独使用 – 符号，不加任何该加的文件名称时，代表”标准输入”的意思。这是 GNU 指令的共通选项。譬如下例
-tar xpvf -
-这里的 – 符号，既代表从标准输入读取资料。
-不过，在 cd 指令中则比较特别
-cd -
-这代表变更工作目录到”上一次”工作目录。
-
-% 除法 (Modulo)
-在运算式中，用来表示 “除法”。
-expr 10 % 2
-此外，也被运用在关于变量的规则表达式当中的下列
-${parameter%word}${parameter%%word}
-一个 % 表示最短的 word 匹配，两个表示最长的 word 匹配。
-** i/o
-read
-** 命令行参数
-$1 $2 $0 
-** Shell 输入/输出重定向
-command > file 	将输出重定向到 file。
-command < file 	将输入重定向到 file。
-command >> file 	将输出以追加的方式重定向到 file。
-n > file 	将文件描述符为 n 的文件重定向到 file。
-n >> file 	将文件描述符为 n 的文件以追加的方式重定向到 file。
-n >& m 	将输出文件 m 和 n 合并。
-n <& m 	将输入文件 m 和 n 合并。
-<< tag 	将开始标记 tag 和结束标记 tag 之间的内容作为输入。
-** Shell 文件包含
-#+BEGIN_SRC 
-. filename   # 注意点号(.)和文件名中间有一空格
-或
-source filename
-#+END_SRC
-*** 命令替换 $(locate XXX)= `command`
+软件不能运行，如果缺少库
+#example
+ ldd firefox
+ 可以
+sudo ln -s /usr/lib/libpng.so.15 /usr/lib/libpng.so.14
 * ubuntu
-** Unix 的诞生
-Multics
- 在Dennis Ritchie帮助下,Thompson 在PDP-7上用汇编语言重写了这个游戏
-unix开始用汇编写的,太慢,后改用C语言
-现在UNIX和Linux好像在同一公司了
-*** Linux 历史 参考了UNIX
-引入了GNU 工具
-** Linux应用
-1. 传统服务器 LAMP(Linux, Apache, MySQL, Perl/PHP/Python)
-2. 大型数据库 Oracle/DB2/postgreSQL
-*** 发行版
-Debian 有测试版/stable(稳定版)和不稳定版
-1.升级灵活 apt-get/dpkg 方式
+** 发行版
+1.升级 apt-get/dpkg 方式
 apt-get update/dist-upgrade
-2.支持 邮件列表可以得到开发人员的免费解答(不是普通人员哦)
-3.错误跟踪
-** ubuntu
+2.错误跟踪
 *** 软件类型
     main restricted(受限的,无源码) universe(社区维护) multiverse(非自由)
-*** 桌面系统
-**** X-Window System->WM
-*** 网络服务器     
 *** X-window unix 系统 GUI ,理念挺先进的
 X 是一种服务,就像TCP协议一样
 X服务器和X客户机之间的通信可以通过网络进行
 提供用户接口: 管理接口和应用接口
-*** 窗口管理
+** 窗口管理
 **** 焦点策略
      focus-follows-mouse
      sloppy-fucus
      click-to-focus
-**** 窗口部件
 *** X 的实现原理
-    一个X-window 包含多个Screen,而screen 则是一个实际的Monitor或是device.
 **** /etc/X11/xorg.conf 配置文件,用于X.org server man xorg.conf
 xorg.conf, xorg.conf.d - configuration files for Xorg X server
 #+BEGIN_SRC 
@@ -1913,11 +1441,10 @@ Screen         Screen configuration
 ServerLayout   Overall layout
 DRI            DRI-specific configuration
 Vendor         Vendor-specific configuration
-
 ** gnome应用
 gnome-screenshot gimp
 ** web服务     WWW, Mail Server, File Server, FTP
-*** apache
+*** apache web 服务器
 /etc/init.d/apach2 start
 /etc/apache2/apache2.conf
 **** global environemt:全局环节参数设置
@@ -1965,7 +1492,6 @@ DocumentRoot /var/www/mainserver
 
 #这是另外一个IP地址
 NameVirtualHost 123.20.30.50
-
 <VirtualHost 123.20.30.50>
 DocumentRoot /var/www/domain1
 ServerName www.domain.com
@@ -2008,24 +1534,13 @@ DocumentRoot /var/www/otherdomain-8080
 ServerName www.domain.com
 #你可以在这里添加其他配置
 </VirtualHost>
-
-# 这里的ServerName什么意思?
 #+END_SRC
-
 ** 软件包管理
-*** dpkg
-dpkg -i <package> 安装
-dpkg -c <package> 列出内容
-dpkg -l <package> 提取信息
-dpkg -r <package> 移除以安装软件包
-dpkg -P <package> 完全删除,包括配置文件
-dpkg -L <package> 列出所有文件清单
 *** apt-get apt-cache apt-cdrom
 apt-cache showsrc <package> 查看软件信息
 apt-get source <package> 获取源码
 install /remove /update (更新列表)/upgrade(升级可用)/help
 apt-cache search 'expression'
-*** synaptic
 *** 打包工具 checkinstall
 ** shell
 *** terminals (不同的终端),终端特性文件
@@ -2035,7 +1550,6 @@ Linux一般vt100 或 linux
 *** 为了在终端运行程序,发明了shell
 *** 开启远程登录服务openssh-server
 *** 休眠 pm-hibernate
-
 ** 网络工具 man network
 *** 设置IP,这里是网络IP,内部网,什么IP都行,只要不冲突
 **** 静态IP 长期固定分配
@@ -2060,10 +1574,9 @@ DNS IP 210.23.23.1
 开启的网络服务 netstat -tulp
 监听网络的服务 netstat -lnp
 连接状态 netstat -anp
-
 *** 启用 /etc/init.d/servername start stop restart 
 *** 启动过程
-BIOD
+BIOS
 MBR(boot loader)
 kernel loading
 init program
@@ -2182,37 +1695,6 @@ git checkout -b bug_fix_local bug_fix_remote #把本地端切换为远程的bug_
 　　　　  说明：忽略根目录下的 /fd1/ 目录的全部内容；
 
 * linux 系统调用
-* 1、进入HTML模式
-
-让Emacs进入HTML模式很简单，直接打开一个HTML文件即可，也可以使用 M-x html-mode指令。进入 HTML模时候，Emacs的菜单栏中会出现"HTML"和"SGML"菜单，仔细观摩一下。
-Emacs提供了一个简单的HTML模板来缓解一些懒人因不愿过多输入代码的抱怨情绪，C-c C-t html，然后需要输入title内容回车，即可调入该模板。C-c C-v可以调出浏览器看看当前HTML代码的显示效果。M-x html-autoview-mode，可以实现在Emacs保存HTML文档之时打开浏览器查看文档显示效果。
-
-
-Emacs HTML模式提供了标签之间的光标快速移动的键盘绑定：
-
-
-    C-c C-f，光标移到其当前所在位置的下一个HTML标签位置
-    C-c C-b，光标移到其当前所在位置的前一个HTML标签位置 
-
-
-3、隐藏/显示HTML标记
-当你觉得正在编写的HTML文档中无处不在的HTML标记破坏了文档的美感，可以试试C-c Tab，暂时将HTML标记隐藏起来，只显示你的文本内容。在HTML隐藏状态下继续编辑文档，Emacs会保护其隐藏的所有标记，所以你没有必要担心会不小心把它们给删掉了，而且当你的光标移动到一个被隐藏的标记位置上时，Emacs会在Mini-buffer中显示该标记名。
-在HTML标记隐藏状态下，再次C-c Tab，即可将所有被隐藏的HTML标记重新显示出来。
-4、HTML模式其它一些常用的键绑定
-C-c 1～6，可以自动插入h1～h6的标题。譬如键入C-c 1，就会在当前位置自动插入h1标题。
-C-c Enter，可以实现在光标位置插入段落标记。这个键绑定，我不是很喜欢。因为我习惯使用 … 风格的段落标记。但是可以先使用这个键绑定作出段落标记的前一半，然后使用C-c /将其封闭。对于其它未提供闭合功能的键绑定，都可以使用这种方法。
-C-c C-c h，可以实现在光标位置插入超级连接标记。C-c C-c n可以实现在光标当前位置处插入一个anchor(锚标)，以备在文档其他位置建立跳转到该位置的超级链接。这两个键盘绑定，需要在Mini-buffer中输入超级连接地址或锚标名称。动手一试便知了。
-C-c C-c u，在光标位置处插入无序列表标记。C-c C-c o，在光标当前位置插入有序列表标记。C-c C-c l，在当前位置插入一个列表项。与C-c C-c p一样，所插入的标记依然是不封闭的。
-C-c C-c i，在光标位置插入图像引入标记，即，需要在Mini-buffer中指定图片的 URL。
-C-c C-j，在光标位置处插入换行符
-。C-c C-c -，在光标位置处插入水平线标记，即。
-如果想看看某个标记的解释，可以将光标移到该标记上，C-c ?，在Mini-buffer中显示解释。
-想知道更多一些的键绑定功能，可以C-c C-h，看看说明。
-5、HTML模式中的特殊字符输入
-在HTML中，已经被用作HTML标记的字符，如果要在HTML文本中将它们显示出来，直接键入是不行的。譬如我要在HTML页面中显示，浏览器会将它视为段落标记来处理。为了解决这个问题，我们可以C-c C-n ，再键入字母p，最后再C-c C-n >来实现。通过这个小例子，应该知道C-c C-n的功用了吧。对于其它字符，只要键盘上有的，但 HTML语言已经征用了的，都可以使用这个键绑定来输入。
-对于键盘上没有的字符，譬如拉丁文－1中的字符，该如何输入呢？Emacs HTML模式提供了许多语言模式。使用键绑定C-c 8可以打开SGML name entity小模式，这个键绑定是以开关方式执行的，即再次键入C-c 8即可关闭这个该模式。打开 SGML name entity小模式后，键入C-x RET k，选择语言模式，我们要使用拉丁文－1，那么就可以键入 latin-1，回车即可进入拉丁文－1字符插入模式。在向HTML文档中插入拉丁文-1字符时，使用键绑定C-x 8为前缀。譬如，我要在文档中插入"&yen;"，只需要键入C-x 8 Y即可。此时，在HTML源文件中，会将&yen;显示为其字符实体，即"& yen"，而在Mini-buffer中会同时显示所插入的实际符号"&yen;"，此时只需执行一次Undo(C-x u或C-_)，就可以将Mini-buffer中的实际符号送入到源文件中了。
-可以在HTML定义的标准字符表中查找你所需要的字符实体，这个字符表可以在网上搜一搜了。
-
 * Linux 内核
 ** 进程管理(process management)
 ** timer(定时器)
@@ -2436,11 +1918,29 @@ PHP 常用正则表达式整理
     上述正则表达式通常都加了 ^ 与 $ 来限定字符的起始和结束，如果需要匹配的内容包括在字符串当中，可能需要考虑去掉 ^ 和 $ 限定符。
     以上正则表达式仅供参考，使用时请检验后再使用s   
 	
+* i3wm
+** 快捷键
+Mod d 调用demnu,运行程序
+Mod Enter 创建新终端
+Mod num 切换到不同工作区
+Mod Shift num 移动一个窗口到指定工作区
+Mod j/k/l/; 切换窗口焦点
+Mod Shift j/k/l 切换不同窗口位置
+Mod u 隐藏/显示标题（这是我配置中加上去的）
 
-     
+Mod r 进入窗口大小调整模式
+j/k/l/; 调整窗口大小
 
- 
+Mod e 默认正常分列
+Mod w 标签式布局
+Mod s 堆叠布局
+Mod f 全屏窗口
+Mod1 Shift r 重启i3
+Mod1 Shift e 退出i3
+Mod1 Shift Space 切换浮动/非浮动
 
+使用 i3wm 还有一个原因，就是它的配置清晰明了，一看就懂，上面列出的快捷键还不全，大家可以自己到配置文件中找到所有的快捷键，当然也可自定义。
+信息栏 i3wm 有一个自带的扩展，但通常可能更倾向于使用 conky，i3wm 可以直接调用它。
 * shell高级编程例子
 例子清单:  
 2-1.  清除:清除/var/log 下的 log 文件  
@@ -2457,9 +1957,6 @@ PHP 常用正则表达式整理
 4-5.  位置参数  
 4-6. wh,whois 节点名字查询  
 4-7.  使用 shift  
-
------------------------ Page 8-----------------------
-
 5-1. echo 一些诡异的变量  
 5-2.  转义符  
 6-1. exit/exit 状态  
@@ -2470,7 +1967,6 @@ PHP 常用正则表达式整理
 7-4. test 死的链接文件  
 7-5.  数字和字符串比较  
 7-6.  测试字符串是否为 null  
-
 7-7. zmore  
 8-1.  最大公约数  
 8-2.  使用算术操作符  
@@ -2506,8 +2002,6 @@ PHP 常用正则表达式整理
 9-27.  使用随机数来摇一个骰子  
 9-28.  重新分配随机数种子  
 9-29.  使用 awk 产生伪随机数  
-
------------------------ Page 9-----------------------
 
 9-30. C 风格的变量处理  
 10-1.  循环的一个简单例子  
@@ -2554,8 +2048,6 @@ PHP 常用正则表达式整理
 11-11.  显示 eval 命令的效果  
 11-12.  强制登出(log-off)  
 11-13.  另一个"rot13"的版本  
-
------------------------ Page 10-----------------------
 
 11-14.  在 Perl 脚本中使用 eval 命令来强制变量替换  
 11-15.  使用 set 来改变脚本的位置参数  
@@ -2604,8 +2096,6 @@ PHP 常用正则表达式整理
 12-30. Exploring /usr/X11R6/bin  
 12-31.  一个"改进过"的  strings    命令  
 12-32.  在一个脚本中使用  cmp  来比较 2 个文件.  
-
------------------------ Page 11-----------------------
 
     12-33. basename  和  dirname  
     12-34.  检查文件完整性    
@@ -2805,3 +2295,1234 @@ L-1. VIEWDATA.BAT: DOS Batch File
 L-2. viewdata.sh: Shell Script Conversion of VIEWDATA.BAT  
 P-1. Print the server environment  
   
+       git [--version] [--help] [-C <path>] [-c <name>=<value>]
+           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]
+           [-p|--paginate|--no-pager] [--no-replace-objects] [--bare]
+           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]
+           <command> [<args>]
+
+       Git is a fast, scalable, distributed revision control
+       system with an unusually rich command set that provides
+       both high-level operations and full access to internals.
+
+       See gittutorial(7) to get started, then see giteveryday(7)
+       for a useful minimum set of commands. The Git User’s
+       Manual[1] has a more in-depth introduction.
+
+       After you mastered the basic concepts, you can come back to
+       this page to learn what commands Git offers. You can learn
+       more about individual Git commands with "git help command".
+       gitcli(7) manual page gives you an overview of the
+       command-line command syntax.
+
+       Formatted and hyperlinked version of the latest Git
+       documentation can be viewed at
+       http://git-htmldocs.googlecode.com/git/git.html.
+
+OPTIONS
+       --version
+           Prints the Git suite version that the git program came
+           from.
+
+       --help
+           Prints the synopsis and a list of the most commonly
+           used commands. If the option --all or -a is given then
+           all available commands are printed. If a Git command is
+           named this option will bring up the manual page for
+           that command.
+
+           Other options are available to control how the manual
+           page is displayed. See git-help(1) for more
+           information, because git --help ...  is converted
+           internally into git help ....
+
+       -C <path>
+           Run as if git was started in <path> instead of the
+           current working directory. When multiple -C options are
+           given, each subsequent non-absolute -C <path> is
+           interpreted relative to the preceding -C <path>.
+
+           This option affects options that expect path name like
+           --git-dir and --work-tree in that their interpretations
+           of the path names would be made relative to the working
+           directory caused by the -C option. For example the
+           following invocations are equivalent:
+
+               git --git-dir=a.git --work-tree=b -C c status
+               git --git-dir=c/a.git --work-tree=c/b status
+
+       -c <name>=<value>
+           Pass a configuration parameter to the command. The
+           value given will override values from configuration
+           files. The <name> is expected in the same format as
+           listed by git config (subkeys separated by dots).
+
+           Note that omitting the = in git -c foo.bar ...  is
+           allowed and sets foo.bar to the boolean true value
+           (just like [foo]bar would in a config file). Including
+           the equals but with an empty value (like git -c
+           foo.bar= ...) sets foo.bar to the empty string.
+
+       --exec-path[=<path>]
+           Path to wherever your core Git programs are installed.
+           This can also be controlled by setting the
+           GIT_EXEC_PATH environment variable. If no path is
+           given, git will print the current setting and then
+           exit.
+
+       --html-path
+           Print the path, without trailing slash, where Git’s
+           HTML documentation is installed and exit.
+
+       --man-path
+           Print the manpath (see man(1)) for the man pages for
+           this version of Git and exit.
+
+       --info-path
+           Print the path where the Info files documenting this
+           version of Git are installed and exit.
+
+       -p, --paginate
+           Pipe all output into less (or if set, $PAGER) if
+           standard output is a terminal. This overrides the
+           pager.<cmd> configuration options (see the
+           "Configuration Mechanism" section below).
+
+       --no-pager
+           Do not pipe Git output into a pager.
+
+       --git-dir=<path>
+           Set the path to the repository. This can also be
+           controlled by setting the GIT_DIR environment variable.
+           It can be an absolute path or relative path to current
+           working directory.
+
+       --work-tree=<path>
+           Set the path to the working tree. It can be an absolute
+           path or a path relative to the current working
+           directory. This can also be controlled by setting the
+           GIT_WORK_TREE environment variable and the
+           core.worktree configuration variable (see core.worktree
+           in git-config(1) for a more detailed discussion).
+
+       --namespace=<path>
+           Set the Git namespace. See gitnamespaces(7) for more
+           details. Equivalent to setting the GIT_NAMESPACE
+           environment variable.
+
+       --bare
+           Treat the repository as a bare repository. If GIT_DIR
+           environment is not set, it is set to the current
+           working directory.
+
+       --no-replace-objects
+           Do not use replacement refs to replace Git objects. See
+           git-replace(1) for more information.
+
+       --literal-pathspecs
+           Treat pathspecs literally (i.e. no globbing, no
+           pathspec magic). This is equivalent to setting the
+           GIT_LITERAL_PATHSPECS environment variable to 1.
+
+       --glob-pathspecs
+           Add "glob" magic to all pathspec. This is equivalent to
+           setting the GIT_GLOB_PATHSPECS environment variable to
+           1. Disabling globbing on individual pathspecs can be
+           done using pathspec magic ":(literal)"
+
+       --noglob-pathspecs
+           Add "literal" magic to all pathspec. This is equivalent
+           to setting the GIT_NOGLOB_PATHSPECS environment
+           variable to 1. Enabling globbing on individual
+           pathspecs can be done using pathspec magic ":(glob)"
+
+       --icase-pathspecs
+           Add "icase" magic to all pathspec. This is equivalent
+           to setting the GIT_ICASE_PATHSPECS environment variable
+           to 1.
+
+GIT COMMANDS
+       We divide Git into high level ("porcelain") commands and
+       low level ("plumbing") commands.
+
+HIGH-LEVEL COMMANDS (PORCELAIN)
+       We separate the porcelain commands into the main commands
+       and some ancillary user utilities.
+
+   Main porcelain commands
+       git-add(1)
+           Add file contents to the index.
+
+       git-am(1)
+           Apply a series of patches from a mailbox.
+
+       git-archive(1)
+           Create an archive of files from a named tree.
+
+       git-bisect(1)
+           Use binary search to find the commit that introduced a
+           bug.
+
+       git-branch(1)
+           List, create, or delete branches.
+
+       git-bundle(1)
+           Move objects and refs by archive.
+
+       git-checkout(1)
+           Switch branches or restore working tree files.
+
+       git-cherry-pick(1)
+           Apply the changes introduced by some existing commits.
+
+       git-citool(1)
+           Graphical alternative to git-commit.
+
+       git-clean(1)
+           Remove untracked files from the working tree.
+
+       git-clone(1)
+           Clone a repository into a new directory.
+
+       git-commit(1)
+           Record changes to the repository.
+
+       git-describe(1)
+           Describe a commit using the most recent tag reachable
+           from it.
+
+       git-diff(1)
+           Show changes between commits, commit and working tree,
+           etc.
+
+       git-fetch(1)
+           Download objects and refs from another repository.
+
+       git-format-patch(1)
+           Prepare patches for e-mail submission.
+
+       git-gc(1)
+           Cleanup unnecessary files and optimize the local
+           repository.
+
+       git-grep(1)
+           Print lines matching a pattern.
+
+       git-gui(1)
+           A portable graphical interface to Git.
+
+       git-init(1)
+           Create an empty Git repository or reinitialize an
+           existing one.
+
+       git-log(1)
+           Show commit logs.
+
+       git-merge(1)
+           Join two or more development histories together.
+
+       git-mv(1)
+           Move or rename a file, a directory, or a symlink.
+
+       git-notes(1)
+           Add or inspect object notes.
+
+       git-pull(1)
+           Fetch from and integrate with another repository or a
+           local branch.
+
+       git-push(1)
+           Update remote refs along with associated objects.
+
+       git-rebase(1)
+           Forward-port local commits to the updated upstream
+           head.
+
+       git-reset(1)
+           Reset current HEAD to the specified state.
+
+       git-revert(1)
+           Revert some existing commits.
+
+       git-rm(1)
+           Remove files from the working tree and from the index.
+
+       git-shortlog(1)
+           Summarize git log output.
+
+       git-show(1)
+           Show various types of objects.
+
+       git-stash(1)
+           Stash the changes in a dirty working directory away.
+
+       git-status(1)
+           Show the working tree status.
+
+       git-submodule(1)
+           Initialize, update or inspect submodules.
+
+       git-tag(1)
+           Create, list, delete or verify a tag object signed with
+           GPG.
+
+       git-worktree(1)
+           Manage multiple working trees.
+
+       gitk(1)
+           The Git repository browser.
+
+   Ancillary Commands
+       Manipulators:
+
+       git-config(1)
+           Get and set repository or global options.
+
+       git-fast-export(1)
+           Git data exporter.
+
+       git-fast-import(1)
+           Backend for fast Git data importers.
+
+       git-filter-branch(1)
+           Rewrite branches.
+
+       git-mergetool(1)
+           Run merge conflict resolution tools to resolve merge
+           conflicts.
+
+       git-pack-refs(1)
+           Pack heads and tags for efficient repository access.
+
+       git-prune(1)
+           Prune all unreachable objects from the object database.
+
+       git-reflog(1)
+           Manage reflog information.
+
+       git-relink(1)
+           Hardlink common objects in local repositories.
+
+       git-remote(1)
+           Manage set of tracked repositories.
+
+       git-repack(1)
+           Pack unpacked objects in a repository.
+
+       git-replace(1)
+           Create, list, delete refs to replace objects.
+
+       Interrogators:
+
+       git-annotate(1)
+           Annotate file lines with commit information.
+
+       git-blame(1)
+           Show what revision and author last modified each line
+           of a file.
+
+       git-cherry(1)
+           Find commits yet to be applied to upstream.
+
+       git-count-objects(1)
+           Count unpacked number of objects and their disk
+           consumption.
+
+       git-difftool(1)
+           Show changes using common diff tools.
+
+       git-fsck(1)
+           Verifies the connectivity and validity of the objects
+           in the database.
+
+       git-get-tar-commit-id(1)
+           Extract commit ID from an archive created using
+           git-archive.
+
+       git-help(1)
+           Display help information about Git.
+
+       git-instaweb(1)
+           Instantly browse your working repository in gitweb.
+
+       git-merge-tree(1)
+           Show three-way merge without touching index.
+
+       git-rerere(1)
+           Reuse recorded resolution of conflicted merges.
+
+       git-rev-parse(1)
+           Pick out and massage parameters.
+
+       git-show-branch(1)
+           Show branches and their commits.
+
+       git-verify-commit(1)
+           Check the GPG signature of commits.
+
+       git-verify-tag(1)
+           Check the GPG signature of tags.
+
+       git-whatchanged(1)
+           Show logs with difference each commit introduces.
+
+       gitweb(1)
+           Git web interface (web frontend to Git repositories).
+
+   Interacting with Others
+       These commands are to interact with foreign SCM and with
+       other people via patch over e-mail.
+
+       git-archimport(1)
+           Import an Arch repository into Git.
+
+       git-cvsexportcommit(1)
+           Export a single commit to a CVS checkout.
+
+       git-cvsimport(1)
+           Salvage your data out of another SCM people love to
+           hate.
+
+       git-cvsserver(1)
+           A CVS server emulator for Git.
+
+       git-imap-send(1)
+           Send a collection of patches from stdin to an IMAP
+           folder.
+
+       git-p4(1)
+           Import from and submit to Perforce repositories.
+
+       git-quiltimport(1)
+           Applies a quilt patchset onto the current branch.
+
+       git-request-pull(1)
+           Generates a summary of pending changes.
+
+       git-send-email(1)
+           Send a collection of patches as emails.
+
+       git-svn(1)
+           Bidirectional operation between a Subversion repository
+           and Git.
+
+LOW-LEVEL COMMANDS (PLUMBING)
+       Although Git includes its own porcelain layer, its
+       low-level commands are sufficient to support development of
+       alternative porcelains. Developers of such porcelains might
+       start by reading about git-update-index(1) and git-read-
+       tree(1).
+
+       The interface (input, output, set of options and the
+       semantics) to these low-level commands are meant to be a
+       lot more stable than Porcelain level commands, because
+       these commands are primarily for scripted use. The
+       interface to Porcelain commands on the other hand are
+       subject to change in order to improve the end user
+       experience.
+
+       The following description divides the low-level commands
+       into commands that manipulate objects (in the repository,
+       index, and working tree), commands that interrogate and
+       compare objects, and commands that move objects and
+       references between repositories.
+
+   Manipulation commands
+       git-apply(1)
+           Apply a patch to files and/or to the index.
+
+       git-checkout-index(1)
+           Copy files from the index to the working tree.
+
+       git-commit-tree(1)
+           Create a new commit object.
+
+       git-hash-object(1)
+           Compute object ID and optionally creates a blob from a
+           file.
+
+       git-index-pack(1)
+           Build pack index file for an existing packed archive.
+
+       git-merge-file(1)
+           Run a three-way file merge.
+
+       git-merge-index(1)
+           Run a merge for files needing merging.
+
+       git-mktag(1)
+           Creates a tag object.
+
+       git-mktree(1)
+           Build a tree-object from ls-tree formatted text.
+
+       git-pack-objects(1)
+           Create a packed archive of objects.
+
+       git-prune-packed(1)
+           Remove extra objects that are already in pack files.
+
+       git-read-tree(1)
+           Reads tree information into the index.
+
+       git-symbolic-ref(1)
+           Read, modify and delete symbolic refs.
+
+       git-unpack-objects(1)
+           Unpack objects from a packed archive.
+
+       git-update-index(1)
+           Register file contents in the working tree to the
+           index.
+
+       git-update-ref(1)
+           Update the object name stored in a ref safely.
+
+       git-write-tree(1)
+           Create a tree object from the current index.
+
+   Interrogation commands
+       git-cat-file(1)
+           Provide content or type and size information for
+           repository objects.
+
+       git-diff-files(1)
+           Compares files in the working tree and the index.
+
+       git-diff-index(1)
+           Compare a tree to the working tree or index.
+
+       git-diff-tree(1)
+           Compares the content and mode of blobs found via two
+           tree objects.
+
+       git-for-each-ref(1)
+           Output information on each ref.
+
+       git-ls-files(1)
+           Show information about files in the index and the
+           working tree.
+
+       git-ls-remote(1)
+           List references in a remote repository.
+
+       git-ls-tree(1)
+           List the contents of a tree object.
+
+       git-merge-base(1)
+           Find as good common ancestors as possible for a merge.
+
+       git-name-rev(1)
+           Find symbolic names for given revs.
+
+       git-pack-redundant(1)
+           Find redundant pack files.
+
+       git-rev-list(1)
+           Lists commit objects in reverse chronological order.
+
+       git-show-index(1)
+           Show packed archive index.
+
+       git-show-ref(1)
+           List references in a local repository.
+
+       git-unpack-file(1)
+           Creates a temporary file with a blob’s contents.
+
+       git-var(1)
+           Show a Git logical variable.
+
+       git-verify-pack(1)
+           Validate packed Git archive files.
+
+       In general, the interrogate commands do not touch the files
+       in the working tree.
+
+   Synching repositories
+       git-daemon(1)
+           A really simple server for Git repositories.
+
+       git-fetch-pack(1)
+           Receive missing objects from another repository.
+
+       git-http-backend(1)
+           Server side implementation of Git over HTTP.
+
+       git-send-pack(1)
+           Push objects over Git protocol to another repository.
+
+       git-update-server-info(1)
+           Update auxiliary info file to help dumb servers.
+
+       The following are helper commands used by the above; end
+       users typically do not use them directly.
+
+       git-http-fetch(1)
+           Download from a remote Git repository via HTTP.
+
+       git-http-push(1)
+           Push objects over HTTP/DAV to another repository.
+
+       git-parse-remote(1)
+           Routines to help parsing remote repository access
+           parameters.
+
+       git-receive-pack(1)
+           Receive what is pushed into the repository.
+
+       git-shell(1)
+           Restricted login shell for Git-only SSH access.
+
+       git-upload-archive(1)
+           Send archive back to git-archive.
+
+       git-upload-pack(1)
+           Send objects packed back to git-fetch-pack.
+
+   Internal helper commands
+       These are internal helper commands used by other commands;
+       end users typically do not use them directly.
+
+       git-check-attr(1)
+           Display gitattributes information.
+
+       git-check-ignore(1)
+           Debug gitignore / exclude files.
+
+       git-check-mailmap(1)
+           Show canonical names and email addresses of contacts.
+
+       git-check-ref-format(1)
+           Ensures that a reference name is well formed.
+
+       git-column(1)
+           Display data in columns.
+
+       git-credential(1)
+           Retrieve and store user credentials.
+
+       git-credential-cache(1)
+           Helper to temporarily store passwords in memory.
+
+       git-credential-store(1)
+           Helper to store credentials on disk.
+
+       git-fmt-merge-msg(1)
+           Produce a merge commit message.
+
+       git-interpret-trailers(1)
+           help add structured information into commit messages.
+
+       git-mailinfo(1)
+           Extracts patch and authorship from a single e-mail
+           message.
+
+       git-mailsplit(1)
+           Simple UNIX mbox splitter program.
+
+       git-merge-one-file(1)
+           The standard helper program to use with
+           git-merge-index.
+
+       git-patch-id(1)
+           Compute unique ID for a patch.
+
+       git-sh-i18n(1)
+           Git’s i18n setup code for shell scripts.
+
+       git-sh-setup(1)
+           Common Git shell script setup code.
+
+       git-stripspace(1)
+           Remove unnecessary whitespace.
+
+CONFIGURATION MECHANISM
+       Git uses a simple text format to store customizations that
+       are per repository and are per user. Such a configuration
+       file may look like this:
+
+           #
+           # A '#' or ';' character indicates a comment.
+           #
+
+           ; core variables
+           [core]
+                   ; Don't trust file modes
+                   filemode = false
+
+           ; user identity
+           [user]
+                   name = "Junio C Hamano"
+                   email = "gitster@pobox.com"
+
+       Various commands read from the configuration file and
+       adjust their operation accordingly. See git-config(1) for a
+       list and more details about the configuration mechanism.
+
+IDENTIFIER TERMINOLOGY
+       <object>
+           Indicates the object name for any type of object.
+
+       <blob>
+           Indicates a blob object name.
+
+       <tree>
+           Indicates a tree object name.
+
+       <commit>
+           Indicates a commit object name.
+
+       <tree-ish>
+           Indicates a tree, commit or tag object name. A command
+           that takes a <tree-ish> argument ultimately wants to
+           operate on a <tree> object but automatically
+           dereferences <commit> and <tag> objects that point at a
+           <tree>.
+
+       <commit-ish>
+           Indicates a commit or tag object name. A command that
+           takes a <commit-ish> argument ultimately wants to
+           operate on a <commit> object but automatically
+           dereferences <tag> objects that point at a <commit>.
+
+       <type>
+           Indicates that an object type is required. Currently
+           one of: blob, tree, commit, or tag.
+
+       <file>
+           Indicates a filename - almost always relative to the
+           root of the tree structure GIT_INDEX_FILE describes.
+
+SYMBOLIC IDENTIFIERS
+       Any Git command accepting any <object> can also use the
+       following symbolic notation:
+
+       HEAD
+           indicates the head of the current branch.
+
+       <tag>
+           a valid tag name (i.e. a refs/tags/<tag> reference).
+
+       <head>
+           a valid head name (i.e. a refs/heads/<head> reference).
+
+       For a more complete list of ways to spell object names, see
+       "SPECIFYING REVISIONS" section in gitrevisions(7).
+
+FILE/DIRECTORY STRUCTURE
+       Please see the gitrepository-layout(5) document.
+
+       Read githooks(5) for more details about each hook.
+
+       Higher level SCMs may provide and manage additional
+       information in the $GIT_DIR.
+
+TERMINOLOGY
+       Please see gitglossary(7).
+
+ENVIRONMENT VARIABLES
+       Various Git commands use the following environment
+       variables:
+
+   The Git Repository
+       These environment variables apply to all core Git commands.
+       Nb: it is worth noting that they may be used/overridden by
+       SCMS sitting above Git so take care if using a foreign
+       front-end.
+
+       GIT_INDEX_FILE
+           This environment allows the specification of an
+           alternate index file. If not specified, the default of
+           $GIT_DIR/index is used.
+
+       GIT_INDEX_VERSION
+           This environment variable allows the specification of
+           an index version for new repositories. It won’t affect
+           existing index files. By default index file version 2
+           or 3 is used. See git-update-index(1) for more
+           information.
+
+       GIT_OBJECT_DIRECTORY
+           If the object storage directory is specified via this
+           environment variable then the sha1 directories are
+           created underneath - otherwise the default
+           $GIT_DIR/objects directory is used.
+
+       GIT_ALTERNATE_OBJECT_DIRECTORIES
+           Due to the immutable nature of Git objects, old objects
+           can be archived into shared, read-only directories.
+           This variable specifies a ":" separated (on Windows ";"
+           separated) list of Git object directories which can be
+           used to search for Git objects. New objects will not be
+           written to these directories.
+
+       GIT_DIR
+           If the GIT_DIR environment variable is set then it
+           specifies a path to use instead of the default .git for
+           the base of the repository. The --git-dir command-line
+           option also sets this value.
+
+       GIT_WORK_TREE
+           Set the path to the root of the working tree. This can
+           also be controlled by the --work-tree command-line
+           option and the core.worktree configuration variable.
+
+       GIT_NAMESPACE
+           Set the Git namespace; see gitnamespaces(7) for
+           details. The --namespace command-line option also sets
+           this value.
+
+       GIT_CEILING_DIRECTORIES
+           This should be a colon-separated list of absolute
+           paths. If set, it is a list of directories that Git
+           should not chdir up into while looking for a repository
+           directory (useful for excluding slow-loading network
+           directories). It will not exclude the current working
+           directory or a GIT_DIR set on the command line or in
+           the environment. Normally, Git has to read the entries
+           in this list and resolve any symlink that might be
+           present in order to compare them with the current
+           directory. However, if even this access is slow, you
+           can add an empty entry to the list to tell Git that the
+           subsequent entries are not symlinks and needn’t be
+           resolved; e.g.,
+           GIT_CEILING_DIRECTORIES=/maybe/symlink::/very/slow/non/symlink.
+
+       GIT_DISCOVERY_ACROSS_FILESYSTEM
+           When run in a directory that does not have ".git"
+           repository directory, Git tries to find such a
+           directory in the parent directories to find the top of
+           the working tree, but by default it does not cross
+           filesystem boundaries. This environment variable can be
+           set to true to tell Git not to stop at filesystem
+           boundaries. Like GIT_CEILING_DIRECTORIES, this will not
+           affect an explicit repository directory set via GIT_DIR
+           or on the command line.
+
+       GIT_COMMON_DIR
+           If this variable is set to a path, non-worktree files
+           that are normally in $GIT_DIR will be taken from this
+           path instead. Worktree-specific files such as HEAD or
+           index are taken from $GIT_DIR. See gitrepository-
+           layout(5) and git-worktree(1) for details. This
+           variable has lower precedence than other path variables
+           such as GIT_INDEX_FILE, GIT_OBJECT_DIRECTORY...
+
+   Git Commits
+       GIT_AUTHOR_NAME, GIT_AUTHOR_EMAIL, GIT_AUTHOR_DATE,
+       GIT_COMMITTER_NAME, GIT_COMMITTER_EMAIL,
+       GIT_COMMITTER_DATE, EMAIL
+           see git-commit-tree(1)
+
+   Git Diffs
+       GIT_DIFF_OPTS
+           Only valid setting is "--unified=??" or "-u??" to set
+           the number of context lines shown when a unified diff
+           is created. This takes precedence over any "-U" or
+           "--unified" option value passed on the Git diff command
+           line.
+
+       GIT_EXTERNAL_DIFF
+           When the environment variable GIT_EXTERNAL_DIFF is set,
+           the program named by it is called, instead of the diff
+           invocation described above. For a path that is added,
+           removed, or modified, GIT_EXTERNAL_DIFF is called with
+           7 parameters:
+
+               path old-file old-hex old-mode new-file new-hex new-mode
+
+           where:
+
+       <old|new>-file
+           are files GIT_EXTERNAL_DIFF can use to read the
+           contents of <old|new>,
+
+       <old|new>-hex
+           are the 40-hexdigit SHA-1 hashes,
+
+       <old|new>-mode
+           are the octal representation of the file modes.
+
+           The file parameters can point at the user’s working
+           file (e.g.  new-file in "git-diff-files"), /dev/null
+           (e.g.  old-file when a new file is added), or a
+           temporary file (e.g.  old-file in the index).
+           GIT_EXTERNAL_DIFF should not worry about unlinking the
+           temporary file --- it is removed when GIT_EXTERNAL_DIFF
+           exits.
+
+           For a path that is unmerged, GIT_EXTERNAL_DIFF is
+           called with 1 parameter, <path>.
+
+           For each path GIT_EXTERNAL_DIFF is called, two
+           environment variables, GIT_DIFF_PATH_COUNTER and
+           GIT_DIFF_PATH_TOTAL are set.
+
+       GIT_DIFF_PATH_COUNTER
+           A 1-based counter incremented by one for every path.
+
+       GIT_DIFF_PATH_TOTAL
+           The total number of paths.
+
+   other
+       GIT_MERGE_VERBOSITY
+           A number controlling the amount of output shown by the
+           recursive merge strategy. Overrides merge.verbosity.
+           See git-merge(1)
+
+       GIT_PAGER
+           This environment variable overrides $PAGER. If it is
+           set to an empty string or to the value "cat", Git will
+           not launch a pager. See also the core.pager option in
+           git-config(1).
+
+       GIT_EDITOR
+           This environment variable overrides $EDITOR and
+           $VISUAL. It is used by several Git commands when, on
+           interactive mode, an editor is to be launched. See also
+           git-var(1) and the core.editor option in git-config(1).
+
+       GIT_SSH, GIT_SSH_COMMAND
+           If either of these environment variables is set then
+           git fetch and git push will use the specified command
+           instead of ssh when they need to connect to a remote
+           system. The command will be given exactly two or four
+           arguments: the username@host (or just host) from the
+           URL and the shell command to execute on that remote
+           system, optionally preceded by -p (literally) and the
+           port from the URL when it specifies something other
+           than the default SSH port.
+
+           $GIT_SSH_COMMAND takes precedence over $GIT_SSH, and is
+           interpreted by the shell, which allows additional
+           arguments to be included.  $GIT_SSH on the other hand
+           must be just the path to a program (which can be a
+           wrapper shell script, if additional arguments are
+           needed).
+
+           Usually it is easier to configure any desired options
+           through your personal .ssh/config file. Please consult
+           your ssh documentation for further details.
+
+       GIT_ASKPASS
+           If this environment variable is set, then Git commands
+           which need to acquire passwords or passphrases (e.g.
+           for HTTP or IMAP authentication) will call this program
+           with a suitable prompt as command-line argument and
+           read the password from its STDOUT. See also the
+           core.askPass option in git-config(1).
+
+       GIT_TERMINAL_PROMPT
+           If this environment variable is set to 0, git will not
+           prompt on the terminal (e.g., when asking for HTTP
+           authentication).
+
+       GIT_CONFIG_NOSYSTEM
+           Whether to skip reading settings from the system-wide
+           $(prefix)/etc/gitconfig file. This environment variable
+           can be used along with $HOME and $XDG_CONFIG_HOME to
+           create a predictable environment for a picky script, or
+           you can set it temporarily to avoid using a buggy
+           /etc/gitconfig file while waiting for someone with
+           sufficient permissions to fix it.
+
+       GIT_FLUSH
+           If this environment variable is set to "1", then
+           commands such as git blame (in incremental mode), git
+           rev-list, git log, git check-attr and git check-ignore
+           will force a flush of the output stream after each
+           record have been flushed. If this variable is set to
+           "0", the output of these commands will be done using
+           completely buffered I/O. If this environment variable
+           is not set, Git will choose buffered or record-oriented
+           flushing based on whether stdout appears to be
+           redirected to a file or not.
+
+       GIT_TRACE
+           Enables general trace messages, e.g. alias expansion,
+           built-in command execution and external command
+           execution.
+
+           If this variable is set to "1", "2" or "true"
+           (comparison is case insensitive), trace messages will
+           be printed to stderr.
+
+           If the variable is set to an integer value greater than
+           2 and lower than 10 (strictly) then Git will interpret
+           this value as an open file descriptor and will try to
+           write the trace messages into this file descriptor.
+
+           Alternatively, if the variable is set to an absolute
+           path (starting with a / character), Git will interpret
+           this as a file path and will try to write the trace
+           messages into it.
+
+           Unsetting the variable, or setting it to empty, "0" or
+           "false" (case insensitive) disables trace messages.
+
+       GIT_TRACE_PACK_ACCESS
+           Enables trace messages for all accesses to any packs.
+           For each access, the pack file name and an offset in
+           the pack is recorded. This may be helpful for
+           troubleshooting some pack-related performance problems.
+           See GIT_TRACE for available trace output options.
+
+       GIT_TRACE_PACKET
+           Enables trace messages for all packets coming in or out
+           of a given program. This can help with debugging object
+           negotiation or other protocol issues. Tracing is turned
+           off at a packet starting with "PACK" (but see
+           GIT_TRACE_PACKFILE below). See GIT_TRACE for available
+           trace output options.
+
+       GIT_TRACE_PACKFILE
+           Enables tracing of packfiles sent or received by a
+           given program. Unlike other trace output, this trace is
+           verbatim: no headers, and no quoting of binary data.
+           You almost certainly want to direct into a file (e.g.,
+           GIT_TRACE_PACKFILE=/tmp/my.pack) rather than displaying
+           it on the terminal or mixing it with other trace
+           output.
+
+           Note that this is currently only implemented for the
+           client side of clones and fetches.
+
+       GIT_TRACE_PERFORMANCE
+           Enables performance related trace messages, e.g. total
+           execution time of each Git command. See GIT_TRACE for
+           available trace output options.
+
+       GIT_TRACE_SETUP
+           Enables trace messages printing the .git, working tree
+           and current working directory after Git has completed
+           its setup phase. See GIT_TRACE for available trace
+           output options.
+
+       GIT_TRACE_SHALLOW
+           Enables trace messages that can help debugging fetching
+           / cloning of shallow repositories. See GIT_TRACE for
+           available trace output options.
+
+       GIT_LITERAL_PATHSPECS
+           Setting this variable to 1 will cause Git to treat all
+           pathspecs literally, rather than as glob patterns. For
+           example, running GIT_LITERAL_PATHSPECS=1 git log --
+           '*.c' will search for commits that touch the path *.c,
+           not any paths that the glob *.c matches. You might want
+           this if you are feeding literal paths to Git (e.g.,
+           paths previously given to you by git ls-tree, --raw
+           diff output, etc).
+
+       GIT_GLOB_PATHSPECS
+           Setting this variable to 1 will cause Git to treat all
+           pathspecs as glob patterns (aka "glob" magic).
+
+       GIT_NOGLOB_PATHSPECS
+           Setting this variable to 1 will cause Git to treat all
+           pathspecs as literal (aka "literal" magic).
+
+       GIT_ICASE_PATHSPECS
+           Setting this variable to 1 will cause Git to treat all
+           pathspecs as case-insensitive.
+
+       GIT_REFLOG_ACTION
+           When a ref is updated, reflog entries are created to
+           keep track of the reason why the ref was updated (which
+           is typically the name of the high-level command that
+           updated the ref), in addition to the old and new values
+           of the ref. A scripted Porcelain command can use
+           set_reflog_action helper function in git-sh-setup to
+           set its name to this variable when it is invoked as the
+           top level command by the end user, to be recorded in
+           the body of the reflog.
+
+       GIT_REF_PARANOIA
+           If set to 1, include broken or badly named refs when
+           iterating over lists of refs. In a normal,
+           non-corrupted repository, this does nothing. However,
+           enabling it may help git to detect and abort some
+           operations in the presence of broken refs. Git sets
+           this variable automatically when performing destructive
+           operations like git-prune(1). You should not need to
+           set it yourself unless you want to be paranoid about
+           making sure an operation has touched every ref (e.g.,
+           because you are cloning a repository to make a backup).
+
+       GIT_ALLOW_PROTOCOL
+           If set, provide a colon-separated list of protocols
+           which are allowed to be used with fetch/push/clone.
+           This is useful to restrict recursive submodule
+           initialization from an untrusted repository. Any
+           protocol not mentioned will be disallowed (i.e., this
+           is a whitelist, not a blacklist). If the variable is
+           not set at all, all protocols are enabled. The protocol
+           names currently used by git are:
+
+           ·   file: any local file-based path (including file://
+               URLs, or local paths)
+
+           ·   git: the anonymous git protocol over a direct TCP
+               connection (or proxy, if configured)
+
+           ·   ssh: git over ssh (including host:path syntax,
+               git+ssh://, etc).
+
+           ·   rsync: git over rsync
+
+           ·   http: git over http, both "smart http" and "dumb
+               http". Note that this does not include https; if
+               you want both, you should specify both as
+               http:https.
+
+           ·   any external helpers are named by their protocol
+               (e.g., use hg to allow the git-remote-hg helper)
+
+DISCUSSION
+       More detail on the following is available from the Git
+       concepts chapter of the user-manual[2] and gitcore-
+       tutorial(7).
+
+       A Git project normally consists of a working directory with
+       a ".git" subdirectory at the top level. The .git directory
+       contains, among other things, a compressed object database
+       representing the complete history of the project, an
+       "index" file which links that history to the current
+       contents of the working tree, and named pointers into that
+       history such as tags and branch heads.
+
+       The object database contains objects of three main types:
+       blobs, which hold file data; trees, which point to blobs
+       and other trees to build up directory hierarchies; and
+       commits, which each reference a single tree and some number
+       of parent commits.
+
+       The commit, equivalent to what other systems call a
+       "changeset" or "version", represents a step in the
+       project’s history, and each parent represents an
+       immediately preceding step. Commits with more than one
+       parent represent merges of independent lines of
+       development.
+
+       All objects are named by the SHA-1 hash of their contents,
+       normally written as a string of 40 hex digits. Such names
+       are globally unique. The entire history leading up to a
+       commit can be vouched for by signing just that commit. A
+       fourth object type, the tag, is provided for this purpose.
+
+       When first created, objects are stored in individual files,
+       but for efficiency may later be compressed together into
+       "pack files".
+
+       Named pointers called refs mark interesting points in
+       history. A ref may contain the SHA-1 name of an object or
+       the name of another ref. Refs with names beginning
+       ref/head/ contain the SHA-1 name of the most recent commit
+       (or "head") of a branch under development. SHA-1 names of
+       tags of interest are stored under ref/tags/. A special ref
+       named HEAD contains the name of the currently checked-out
+       branch.
+
+       The index file is initialized with a list of all paths and,
+       for each path, a blob object and a set of attributes. The
+       blob object represents the contents of the file as of the
+       head of the current branch. The attributes (last modified
+       time, size, etc.) are taken from the corresponding file in
+       the working tree. Subsequent changes to the working tree
+       can be found by comparing these attributes. The index may
+       be updated with new content, and new commits may be created
+       from the content stored in the index.
+
+       The index is also capable of storing multiple entries
+       (called "stages") for a given pathname. These stages are
+       used to hold the various unmerged version of a file when a
+       merge is in progress.
+
+FURTHER DOCUMENTATION
+       See the references in the "description" section to get
+       started using Git. The following is probably more detail
+       than necessary for a first-time user.
+
+       The Git concepts chapter of the user-manual[2] and gitcore-
+       tutorial(7) both provide introductions to the underlying
+       Git architecture.
+
+       See gitworkflows(7) for an overview of recommended
+       workflows.
+
+       See also the howto[3] documents for some useful examples.
+
+       The internals are documented in the Git API
+       documentation[4].
+
+       Users migrating from CVS may also want to read gitcvs-
+       migration(7).
+
+AUTHORS
+       Git was started by Linus Torvalds, and is currently
+       maintained by Junio C Hamano. Numerous contributions have
+       come from the Git mailing list <git@vger.kernel.org[5]>.
+       http://www.openhub.net/p/git/contributors/summary gives you
+       a more complete list of contributors.
+
+       If you have a clone of git.git itself, the output of git-
+       shortlog(1) and git-blame(1) can show you the authors for
+       specific parts of the project.
+
+REPORTING BUGS
+       Report bugs to the Git mailing list
+       <git@vger.kernel.org[5]> where the development and
+       maintenance is primarily done. You do not have to be
+       subscribed to the list to send a message there.
+
+SEE ALSO
+       gittutorial(7), gittutorial-2(7), giteveryday(7), gitcvs-
+       migration(7), gitglossary(7), gitcore-tutorial(7),
+       gitcli(7), The Git User’s Manual[1], gitworkflows(7)
+
+GIT
+       Part of the git(1) suite
+
+NOTES
+        1. Git User’s Manual
+           file:///usr/share/doc/git/html/user-manual.html
+
+        2. Git concepts chapter of the user-manual
+           file:///usr/share/doc/git/html/user-manual.html#git-concepts
+
+        3. howto
+           file:///usr/share/doc/git/html/howto-index.html
+
+        4. Git API documentation
+           file:///usr/share/doc/git/html/technical/api-index.html
+
+        5. git@vger.kernel.org
+           mailto:git@vger.kernel.org
+
+Git 2.7.4                   03/23/2016                      GIT(1)
+* Linux桌面使用之道 也是一种哲学
+何为道，我觉得就是好用。功能强大，不死板（可配置），足以。
+1.可以分割，放大，缩小，移动。
+2.打开，关闭。
+3.文件管理用emacs 比自带的高效。
+4.这些软件和用户和开发者是一个精英荟萃的圈子.重要的是你要理解这个圈子的风格.
+5.少而精 软件数量少,品质高,功能强,依赖小,界面通用.
+6.长期坚持  * 久经考验(例如Emacs的开发历史有35年以上)
+7.原谅我又用Emacs举例,用Emacs可以看网页,收邮件,写程序,做笔记,写博客,读rss.
+  * 联网我自己写脚本,因为GUI工具如wicd之类的依赖多而且曾经折腾过我.
+  * 听音乐我用命令行工具mpd和mpc
+  * 播放视频我用mplayer(命令行),等等.
+  * 硬盘清理我用bleachbit(清理常用软件产生的临时文件),localepurge(删
+    除无用的多国语言),ncdu(检查硬盘如何被占用)
+8. 在Linux上更新完系统或者安装最新软件包后,可以考虑手动将/etc目录下的文
+件用git备份.
+sudo git add /etc/
+sudo git commit -am "backup"
+
+一旦某软件工作不正常了,可以检查其/etc下默认配置文件的修改纪录,将配置
+文件恢复到上一个正常工作的版本.
+sudo git log /etc/mysql/my.cnf #check history
+sudo git checkout commit_ref(version) /etc/mysql/my.cnf #restoren file
+
+
+* firefox keysnail快捷键

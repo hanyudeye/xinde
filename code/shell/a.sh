@@ -76,7 +76,17 @@
 
 #find . \( -name "log*" -o -name "*.sh" \) -print 两者中的一个
 
+# no1=4;
+# no2=5;
+# result=$(expr $no1+$no2);
+# echo $result;
+# echo "4*0.56"|bc
 
+# no=54;
+# result=`echo "$no*1.5"|bc`;
+# echo $result;
 
-
+# no=1001000
+# echo "obase=10;ibase=2;$no"|bc
+echo "sqrt(100)" |bc 
 exit 0
