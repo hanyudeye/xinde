@@ -1,12 +1,11 @@
 * c 
-** 编译器 gcc
 ** 程序结构
-*** 预处理器指令
-*** 函数
-*** 变量
+预处理器指令
+函数
+变量
 定义 int i; //声明，也是定义
 声明 extern int i; //声明，不是定义
-*** 常量
+常量
 使用 #define 预处理器。 //预处理器会处理掉,不用编译器处理
 使用 const 关键字。
 *** C 存储类 定义 C 程序中变量/函数的范围（可见性）和生命周期
@@ -15,9 +14,9 @@
 : 不能对它应用一元的 '&' 运算符（因为它没有内存位置
 **** static 存储类指示编译器在程序的生命周期内保持局部变量的存在，而不需要在每次它进入和离开作用域时进行创建和销毁
 **** extern 存储类用于提供一个全局变量的引用，全局变量对所有的程序文件都是可见的。
-*** 语句 & 表达式
-*** 注释 /* comment */ or //
-*** C 结构体
+语句 & 表达式
+注释 /* comment */ or //
+C 结构体
 #+BEGIN_SRC c
 struct [structure tag]
 {
@@ -27,7 +26,7 @@ struct [structure tag]
    member definition;
 } [one or more structure variables]; 
 #+END_SRC
-*** C 共用体
+C 共用体
 #+BEGIN_SRC c
 union [union tag]
 {
@@ -37,7 +36,7 @@ union [union tag]
    member definition;
 } [one or more union variables];  
 #+END_SRC
-*** C 位域 (节省空间)
+C 位域 (节省空间)
 #+BEGIN_SRC c
 struct
 {
@@ -45,7 +44,7 @@ struct
   unsigned int heightValidated : 1;
 } status;
 #+END_SRC
-*** C typedef (别名)
+C typedef (别名)
 : typedef unsigned char BYTE;
 *** C 输入 & 输出
 **** getchar() & putchar() 函数
@@ -96,22 +95,22 @@ the entire header file file
  C 标准库的 assert.h头文件提供了一个名为 assert 的宏，它可用于验证程序做出的假设，并在假设为假时输出诊断消息。
 已定义的宏 assert 指向另一个宏 NDEBUG，宏 NDEBUG 不是 <assert.h> 的一部分。如果已在引用 <assert.h> 的源文件中定义 NDEBUG 为宏名称，则 assert 宏的定义如下：
 #define assert(ignore) ((void)0)
-*** <ctype.h>
+<ctype.h>
 这些函数接受 int 作为参数，它的值必须是 EOF 或表示为一个无符号字符。
-**** int isalnum(int c)该函数检查所传的字符是否是字母和数字。
-**** int isalpha(int c)该函数检查所传的字符是否是字母。
-**** int iscntrl(int c)该函数检查所传的字符是否是控制字符。
-**** int isdigit(int c)该函数检查所传的字符是否是十进制数字。
-**** int isgraph(int c)该函数检查所传的字符是否有图形表示法。
-**** int islower(int c)该函数检查所传的字符是否是小写字母。
-**** int isprint(int c)该函数检查所传的字符是否是可打印的。
-**** int ispunct(int c)该函数检查所传的字符是否是标点符号字符。
-**** int isspace(int c)该函数检查所传的字符是否是空白字符。
-**** int isupper(int c)该函数检查所传的字符是否是大写字母。
-**** int isxdigit(int c)该函数检查所传的字符是否是十六进制数字。
-**** int tolower(int c)该函数把大写字母转换为小写字母。
-**** int toupper(int c)该函数把小写字母转换为大写字母。
-*** <float.h>
+int isalnum(int c)该函数检查所传的字符是否是字母和数字。
+int isalpha(int c)该函数检查所传的字符是否是字母。
+int iscntrl(int c)该函数检查所传的字符是否是控制字符。
+int isdigit(int c)该函数检查所传的字符是否是十进制数字。
+int isgraph(int c)该函数检查所传的字符是否有图形表示法。
+int islower(int c)该函数检查所传的字符是否是小写字母。
+int isprint(int c)该函数检查所传的字符是否是可打印的。
+int ispunct(int c)该函数检查所传的字符是否是标点符号字符。
+int isspace(int c)该函数检查所传的字符是否是空白字符。
+int isupper(int c)该函数检查所传的字符是否是大写字母。
+int isxdigit(int c)该函数检查所传的字符是否是十六进制数字。
+int tolower(int c)该函数把大写字母转换为小写字母。
+int toupper(int c)该函数把小写字母转换为大写字母。
+<float.h>
 库宏
 下面的值是特定实现的，且是通过 #define 指令来定义的，这些值都不得低于下边所给出的值。请注意，所有的实例 FLT 是指类型 float，DBL 是指类型 double，LDBL 是指类型 long double。
 | FLT_ROUNDS          | 定义浮点加法的舍入模式，-1,不确定;0,趋于0;1,去最近的值;2,正无穷;3,负无穷            |
@@ -557,16 +556,41 @@ LINUX 三者相同
 (特点 open 描述符 返回最小 描述符数值)
 
 (创建文件 creat(const char *pathname,mode_t mode) open(pathname, o_wronly | o_creat | o_trunc, mode))
-* PHP(物质/联系/便利)
-数组
+* PHP
+** 变量
+四种标量类型：
+boolean（布尔型）
+integer（整型）
+float（浮点型，也称作 double)
+string（字符串）
+
+两种复合类型：
+array（数组）
+object（对象）class  
+
+最后是两种特殊类型：
+resource（资源）
+NULL（无类型）
+
+在下列情况下一个变量被认为是 NULL：
+被赋值为 NULL。
+尚未被赋值。
+被 unset()。
+
+为了确保代码的易读性，本手册还介绍了一些伪类型：
+mixed（混合类型）
+number（数字类型）
+callback（回调类型）
+一些函数如 call_user_func() 或 usort() 可以接受用户自定义的回调函数作为参数。回调函数不止可以是简单函数，还可以是对象的方法，包括静态类方法。
+可以理解为 在某种情况下执行某种方法，而不是直接执行.对于类的参数，则要更详细，要给出类名.
+1. call_user_func(array('MyClass', 'myCallbackMethod')); 
+2. call_user_func('MyClass::myCallbackMethod');
+3. call_user_func(array('B', 'parent::who')); // A   对于继承的类,要引用A的方法时
+
 变量作用域
 local（局部）
 global（全局）来自于$var= $GLOBALS["var"] === global $var(建立一个引用,不能赋值)
-**** static（静态）
-*** 常量数据
-****  定义 define("const",33);
-****  预定义(全局)
-***** __file__ | __FILE__ 函数返回的是脚本所在在的路径
+static（静态）
 ***** 服务器数据 $_SERVER
 	$_SERVER["SERVER_PORT"]  //获取端口  
 	$_SERVER['HTTP_HOST']  	 //获取域名或主机地址 如test.cn
@@ -582,6 +606,12 @@ global（全局）来自于$var= $GLOBALS["var"] === global $var(建立一个引
 	服务器基此可以获得一些信息用于处理
   $_SESSION["7ad25498e6faec7e_userid"]=$manager['adminid'];
 ***** 客户机数据 $_POST  $_GET 
+
+** 常量数据
+   定义 define("const",33);
+   预定义(全局)==魔术常量 
+   __file__ | __FILE__ 函数返回的是脚本所在在的路径
+   __line__ 文件中的当前行号。
 *** 生成器
 **** 函数 调用的参数是一份拷贝
 ***** 定义 function
@@ -596,104 +626,104 @@ $foo->x=2;
 #+END_SRC
 **** 库函数
 ***** array 
-	foreach($array as $key=>$value){}遍历数组
-	each() 函数返回当前元素的键名和键值，并将内部指针向前移动。
-	该元素的键名和键值会被返回带有四个元素的数组中。两个元素（1 和 Value）包含键值，两个元素（0 和 Key）包含键名。
-	array()创建数组
-	current() - 返回数组中的当前元素的值
-	end() - 将内部指针指向数组中的最后一个元素，并输出
-	next() - 将内部指针指向数组中的下一个元素，并输出
-	prev() - 将内部指针指向数组中的上一个元素，并输出
-	reset() - 将内部指针指向数组中的第一个元素，并输出
-	array_values() 函数返回一个包含给定数组中所有键值的数组，但不保留键名。
-	int count ( mixed $var [, int $mode = COUNT_NORMAL ] )统计一个数组里的所有元素，或者一个对象里的东西。
-	is_array() - 检测变量是否是数组
-	array_count_values() returns an array using the values of array as keys and their frequency in array as values. 返回一个数组，统计的是每个值的数量，相等，数量加１
-	 array_unique(array) 删除数组中重复的值,返回新数组
-	 array array_filter ( array $array [, callable $callback [, int $flag = 0 ]] )  过滤器,把每个值传给callback函数,如果返回值为真，就返回过来
-	 usort()	使用用户自定义的比较函数对数组进行排序。
-	 array_slice(array,start,length,preserve) 函数在数组中根据条件取出一段值，并返回。
-	 array()	创建数组。
-	 array_change_key_case()	把数组中所有键更改为小写或大写。
-	 array_chunk()	把一个数组分割为新的数组块。
-	 array_column()	返回输入数组中某个单一列的值。
-	 array_combine()	通过合并两个数组来创建一个新数组。
-	 array_count_values()	用于统计数组中所有值出现的次数。
-	 array_diff()	比较数组，返回差集（只比较键值）。
-	 array_diff_assoc()	比较数组，返回差集（比较键名和键值）。
-	 array_diff_key()	比较数组，返回差集（只比较键名）。
-	 array_diff_uassoc()	比较数组，返回差集（比较键名和键值，使用用户自定义的键名比较函数）。
-	 array_diff_ukey()	比较数组，返回差集（只比较键名，使用用户自定义的键名比较函数）。
-	 array_fill()	用给定的键值填充数组。
-	 array_fill_keys()	用指定键名的给定键值填充数组。
-	 array_filter()	用回调函数过滤数组中的元素。
-	 array_flip()	交换数组中的键和值。
-	 array_intersect()	比较数组，返回交集（只比较键值）。
-	 array_intersect_assoc()	比较数组，返回交集（比较键名和键值）。
-	 array_intersect_key()	比较数组，返回交集（只比较键名）。
-	 array_intersect_uassoc()	比较数组，返回交集（比较键名和键值，使用用户自定义的键名比较函数）。
-	 array_intersect_ukey()	比较数组，返回交集（只比较键名，使用用户自定义的键名比较函数）。
-	 array_key_exists()	检查指定的键名是否存在于数组中。
-	 array_keys()	返回数组中所有的键名。
-	 array_map()	把数组中的每个值发送到用户自定义函数，返回新的值。
-	 array_merge()	把一个或多个数组合并为一个数组。
-	 array_merge_recursive()	递归地合并一个或多个数组。
-	 array_multisort()	对多个数组或多维数组进行排序。
-	 array_pad()	用值将数组填补到指定长度。
-	 array_pop()	删除数组的最后一个元素（出栈）。
-	 array_product()	计算数组中所有值的乘积。
-	 array_push()	将一个或多个元素插入数组的末尾（入栈）。
-	 array_rand()	返回数组中一个或多个随机的键。
-	 array_reduce()	通过使用用户自定义函数，以字符串返回数组。
-	 array_replace()	使用后面数组的值替换第一个数组的值。
-	 array_replace_recursive()	递归地使用后面数组的值替换第一个数组的值。
-	 array_reverse()	以相反的顺序返回数组。
-	 array_search()	搜索数组中给定的值并返回键名。
-	 array_shift()	删除数组中首个元素，并返回被删除元素的值。
-	 array_slice()	返回数组中被选定的部分。
-	 array_splice()	删除并替换数组中指定的元素。
-	 array_sum()	返回数组中值的和。
-	 array_udiff()	比较数组，返回差集（只比较值，使用一个用户自定义的键名比较函数）。
-	 array_udiff_assoc()	比较数组，返回差集（比较键和值，使用内建函数比较键名，使用用户自定义函数比较键值）。
-	 array_udiff_uassoc()	比较数组，返回差集（比较键和值，使用两个用户自定义的键名比较函数）。
-	 array_uintersect()	比较数组，返回交集（只比较值，使用一个用户自定义的键名比较函数）。
-	 array_uintersect_assoc()	比较数组，返回交集（比较键和值，使用内建函数比较键名，使用用户自定义函数比较键值）。
-	 array_uintersect_uassoc()	比较数组，返回交集（比较键和值，使用两个用户自定义的键名比较函数）。
-	 array_unique()	删除数组中的重复值。
-	 array_unshift()	在数组开头插入一个或多个元素。
+	  foreach($array as $key=>$value){}遍历数组
+	  each() 函数返回当前元素的键名和键值，并将内部指针向前移动。
+	  该元素的键名和键值会被返回带有四个元素的数组中。两个元素（1 和 Value）包含键值，两个元素（0 和 Key）包含键名。
+	  array()创建数组
+	  current() - 返回数组中的当前元素的值
+	  end() - 将内部指针指向数组中的最后一个元素，并输出
+	  next() - 将内部指针指向数组中的下一个元素，并输出
+	  prev() - 将内部指针指向数组中的上一个元素，并输出
+	  reset() - 将内部指针指向数组中的第一个元素，并输出
+	  array_values() 函数返回一个包含给定数组中所有键值的数组，但不保留键名。
+	  int count ( mixed $var [, int $mode = COUNT_NORMAL ] )统计一个数组里的所有元素，或者一个对象里的东西。
+	  is_array() - 检测变量是否是数组
+	  array_count_values() 返回一个数组，统计的是每个值的数量，相等，数量加１
+	  array_unique(array) 删除数组中重复的值,返回新数组
+	  array array_filter ( array $array [, callable $callback [, int $flag = 0 ]] )  过滤器,把每个值传给callback函数,如果返回值为真，就返回过来
+	  usort()	使用用户自定义的比较函数对数组进行排序。
+	  array_slice(array,start,length,preserve) 函数在数组中根据条件取出一段值，并返回。
+	  array()	创建数组。
+	  array_change_key_case()	把数组中所有键更改为小写或大写。
+	  array_chunk()	把一个数组分割为新的数组块。
+	  array_column()	返回输入数组中某个单一列的值。
+	  array_combine()	通过合并两个数组来创建一个新数组。
+	  array_count_values()	用于统计数组中所有值出现的次数。
+	  array_diff()	比较数组，返回差集（只比较键值）。
+	  array_diff_assoc()	比较数组，返回差集（比较键名和键值）。
+	  array_diff_key()	比较数组，返回差集（只比较键名）。
+	  array_diff_uassoc()	比较数组，返回差集（比较键名和键值，使用用户自定义的键名比较函数）。
+	  array_diff_ukey()	比较数组，返回差集（只比较键名，使用用户自定义的键名比较函数）。
+	  array_fill()	用给定的键值填充数组。
+	  array_fill_keys()	用指定键名的给定键值填充数组。
+	  array_filter()	用回调函数过滤数组中的元素。
+	  array_flip()	交换数组中的键和值。
+	  array_intersect()	比较数组，返回交集（只比较键值）。
+	  array_intersect_assoc()	比较数组，返回交集（比较键名和键值）。
+	  array_intersect_key()	比较数组，返回交集（只比较键名）。
+	  array_intersect_uassoc()	比较数组，返回交集（比较键名和键值，使用用户自定义的键名比较函数）。
+	  array_intersect_ukey()	比较数组，返回交集（只比较键名，使用用户自定义的键名比较函数）。
+	  array_key_exists()	检查指定的键名是否存在于数组中。
+	  array_keys()	返回数组中所有的键名。
+	  array_map()	把数组中的每个值发送到用户自定义函数，返回新的值。
+	  array_merge()	把一个或多个数组合并为一个数组。
+	  array_merge_recursive()	递归地合并一个或多个数组。
+	  array_multisort()	对多个数组或多维数组进行排序。
+	  array_pad()	用值将数组填补到指定长度。
+	  array_pop()	删除数组的最后一个元素（出栈）。
+	  array_product()	计算数组中所有值的乘积。
+	  array_push()	将一个或多个元素插入数组的末尾（入栈）。
+	  array_rand()	返回数组中一个或多个随机的键。
+	  array_reduce()	通过使用用户自定义函数，以字符串返回数组。
+	  array_replace()	使用后面数组的值替换第一个数组的值。
+	  array_replace_recursive()	递归地使用后面数组的值替换第一个数组的值。
+	  array_reverse()	以相反的顺序返回数组。
+	  array_search()	搜索数组中给定的值并返回键名。
+	  array_shift()	删除数组中首个元素，并返回被删除元素的值。
+	  array_slice()	返回数组中被选定的部分。
+	  array_splice()	删除并替换数组中指定的元素。
+	  array_sum()	返回数组中值的和。
+	  array_udiff()	比较数组，返回差集（只比较值，使用一个用户自定义的键名比较函数）。
+	  array_udiff_assoc()	比较数组，返回差集（比较键和值，使用内建函数比较键名，使用用户自定义函数比较键值）。
+	  array_udiff_uassoc()	比较数组，返回差集（比较键和值，使用两个用户自定义的键名比较函数）。
+	  array_uintersect()	比较数组，返回交集（只比较值，使用一个用户自定义的键名比较函数）。
+	  array_uintersect_assoc()	比较数组，返回交集（比较键和值，使用内建函数比较键名，使用用户自定义函数比较键值）。
+	  array_uintersect_uassoc()	比较数组，返回交集（比较键和值，使用两个用户自定义的键名比较函数）。
+	  array_unique()	删除数组中的重复值。
+	  array_unshift()	在数组开头插入一个或多个元素。
 :  int array_unshift ( array &$array , mixed $var [, mixed $... ] )
-	 array_values()	返回数组中所有的值。
-	 array_walk()	对数组中的每个成员应用用户函数。
-	 array_walk_recursive()	对数组中的每个成员递归地应用用户函数。
-	 arsort()	对关联数组按照键值进行降序排序。
-	 asort()	对关联数组按照键值进行升序排序。
-	 compact()	创建包含变量名和它们的值的数组。
-	 count()	返回数组中元素的数目。
-	 current()	返回数组中的当前元素。
-	 each()	返回数组中当前的键／值对。
-	 end()	将数组的内部指针指向最后一个元素。
-	 extract()	从数组中将变量导入到当前的符号表。
-	 in_array()	检查数组中是否存在指定的值。
+	  array_values()	返回数组中所有的值。
+	  array_walk()	对数组中的每个成员应用用户函数。
+	  array_walk_recursive()	对数组中的每个成员递归地应用用户函数。
+	  arsort()	对关联数组按照键值进行降序排序。
+	  asort()	对关联数组按照键值进行升序排序。
+	  compact()	创建包含变量名和它们的值的数组。
+	  count()	返回数组中元素的数目。
+	  current()	返回数组中的当前元素。
+	  each()	返回数组中当前的键／值对。
+	  end()	将数组的内部指针指向最后一个元素。
+	  extract()	从数组中将变量导入到当前的符号表。
+	  in_array()	检查数组中是否存在指定的值。
 : bool in_array ( mixed $needle , array $haystack [, bool $strict = FALSE ] )
 : 在 haystack[干草堆] 中搜索 needle[针]，如果没有设置 strict[严格的] 则使用宽松的比较。 
-	 key()	从关联数组中取得键名。
-	 krsort()	对数组按照键名逆向排序。
-	 ksort()	对数组按照键名排序。
-	 list()	把数组中的值赋给一些变量。
-	 natcasesort()	用“自然排序”算法对数组进行不区分大小写字母的排序。
-	 natsort()	用“自然排序”算法对数组排序。
-	 next()	将数组中的内部指针向前移动一位。
-	 pos()	current() 的别名。
-	 prev()	将数组的内部指针倒回一位。
-	 range()	创建包含指定范围单元的数组。
-	 reset()	将数组的内部指针指向第一个元素。
-	 rsort()	对数组逆向排序。
-	 shuffle()	将数组打乱。
-	 sizeof()	count() 的别名。
-	 sort()	对数组排序。
-	 uasort()	使用用户自定义的比较函数对数组中的键值进行排序。
-	 uksort()	使用用户自定义的比较函数对数组中的键名进行排序。
-
+	  key()	从关联数组中取得键名。
+	  krsort()	对数组按照键名逆向排序。
+	  ksort()	对数组按照键名排序。
+	  list()	把数组中的值赋给一些变量。
+	  natcasesort()	用“自然排序”算法对数组进行不区分大小写字母的排序。
+	  natsort()	用“自然排序”算法对数组排序。
+	  next()	将数组中的内部指针向前移动一位。
+	  pos()	current() 的别名。
+	  prev()	将数组的内部指针倒回一位。
+	  range()	创建包含指定范围单元的数组。
+	  reset()	将数组的内部指针指向第一个元素。
+	  rsort()	对数组逆向排序。
+	  shuffle()	将数组打乱。
+	  sizeof()	count() 的别名。
+	  sort()	对数组排序。
+	  uasort()	使用用户自定义的比较函数对数组中的键值进行排序。
+	  uksort()	使用用户自定义的比较函数对数组中的键名进行排序。
+      
 : print_r(array_filter($array1, "odd"));
 ***** date
 	 date(Y年m月d日l星期/M英文月,而不是数字)
@@ -1237,7 +1267,14 @@ json_last_error — 返回最后发生的错误
       socket_shutdown — Shuts down a socket for receiving, sending, or both
       socket_strerror — Return a string describing a socket error
       socket_write — Write to a socket
+** 执行运算符
+`` 等效于 shell_exec()
 ** 类与对象
+构造函数
+__construct()
+parent::__construct();
+析构函数
+__destruct()
 *** 类的属性
 : __set()和__get()只对私有属性起作用，对于用public定义的属性，它们两个都懒理搭理
 *** 类的常量 const 
@@ -1314,6 +1351,13 @@ use XXX\yyy;
 	 PHP Filesystem 函数
 
 *** 异常处理
+try{
+throw new Exception("wrong");
+}catch(Exception $e){
+$e->getMessage();
+getCode
+getLine
+}
 *** 引用的解释
 *** 预定义变量
 *** 预定义异常
@@ -1323,11 +1367,16 @@ use XXX\yyy;
 * php 扩展
 ** zip
  Windows 用户需要在 php.ini 里使 php_zip.dll 可用，以便使用这些函数。
-
 Linux 系统 ¶
-
 为了使用这些函数，必须在编译 PHP 时用 --enable-zip 配置选项来提供 zip 支持。
-
+** PECL php扩展仓库
+下载: pecl install extname
+这里可以指定版本   extname-0.1
+或者svn: $ svn checkout http://svn.php.net/repository/pecl/extname/trunk extname
+然后在php.ini 中激活扩展
+php-config  php配置信息
+* thinkphp
+** composer
 * CI php框架(报刊/杂志)
 ** 应用程序流程图
 ***    index.php 文件作为前端控制器，初始化运行 CodeIgniter 所需的基本资源；
@@ -5382,7 +5431,7 @@ expr 10 % 2
 ${parameter%word}${parameter%%word}
 一个 % 表示最短的 word 匹配，两个表示最长的 word 匹配。
 ** i/o
-read
+   read
 ** 命令行参数
 $1 $2 $0 
 ** Shell 输入/输出重定向
@@ -6244,6 +6293,12 @@ your-name ; 格式化输出参数2
 -f [TYPE] 编译成 elf32 elf64 coff aout 等格式
 -o o 输出obj文件 -l 输出列表文件
 -h 帮助 -hf 针对格式的帮助
-** 寻址
+*** 寻址
 mov ax,[var] 取地址  
 mov ax,var 取值
+** gas 
+NASM 分别使用 dd、dw 和 db 指令声明 32 位、16 位和 8 位数字，而 GAS 分别使用 .long、.int 和 .byte。
+GAS 还有其他指令，比如 .ascii、.asciz 和 .string。
+在 GAS 中，像声明其他标签一样声明变量（使用冒号），但是在 NASM 中，只需在内存分配指令（dd、dw 等等）前面输入变量名，后面加上变量的值。
+NASM 使用方括号间接引用一个内存位置指向的地址值：[var1]。
+GAS 使用$引用同样的值：$var1)。 

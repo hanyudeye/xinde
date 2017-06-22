@@ -56,7 +56,7 @@
 #include <fcntl.h>
 
 #define	QUOTE 0x80 /* 引用标志位，限制了字符集为 7 位 ASCII */
-
+//1000 0000
 /* 语法树节点字段定义 */
 #define	DTYP 0 /* type: 节点类型 */
 #define	DLEF 1 /* left: 左子节点或输入重定向文件描述符 */

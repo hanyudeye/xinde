@@ -566,13 +566,14 @@ b *<代码地址>
 break...if<condition>
 调试程序 ;r 
 继续执行 ;c
-删除断点 ; clear <行号>
-删除断点 ;  d <编号>
-执行一行 ;    n /s
-结束循环 ;   until
+删除断点 ;clear <行号>
+删除断点 ;d <编号>
+执行一行 ;n /s
+结束循环 ;until
 p $1 ($1为历史记录变量); 
 p <数组名>显示数组元素;
 p <*数组指针>显示数组int a[N]的特定值：
+p &var 显示变量地址
 显示变量类型;    whatis p
 显示各类信息   info b 显示断点信息
 finish 退出函数
@@ -594,8 +595,6 @@ Size letters are b(byte), h(halfword), w(word), g(giant, 8 bytes).
 The specified number of objects of the specified size are printed
 according to the format.
 7.0版本以上gdb的disas命令可以携带/m参数，让汇编与c源码同时显示：disas /m main
-
-
 
 使用 x 命令可以查看特定内存的值:
 x/nyz
@@ -663,8 +662,8 @@ find pathname -options [-print -exec -ok ...]
   : -nogroup  查找无有效所属组的文件，即该文件所属的组在/etc/groups中不存在。
   : -nouser   查找无有效属主的文件，即该文件的属主在/etc/passwd中不存在。
   : -newer file1 ! file2  查找更改时间比文件file1新但比文件file2旧的文件。
-  : -type  查找某一类型的文件，诸如：
   : -iname 忽略大小写
+  : -type  查找某一类型的文件，诸如：
   + b - 块设备文件。
   + d - 目录。
   + c - 字符设备文件。
@@ -1918,7 +1917,8 @@ PHP 常用正则表达式整理
     上述正则表达式通常都加了 ^ 与 $ 来限定字符的起始和结束，如果需要匹配的内容包括在字符串当中，可能需要考虑去掉 ^ 和 $ 限定符。
     以上正则表达式仅供参考，使用时请检验后再使用s   
 	
-* i3wm
+* i3wm- an improved dynamic, tiling window manager
+窗口是三维的，不光有上下左右，还有前后。一个容器里可以有多个window,不同容器是独立的。还有别的workspace。
 ** 快捷键
 Mod d 调用demnu,运行程序
 Mod Enter 创建新终端
@@ -1941,6 +1941,294 @@ Mod1 Shift Space 切换浮动/非浮动
 
 使用 i3wm 还有一个原因，就是它的配置清晰明了，一看就懂，上面列出的快捷键还不全，大家可以自己到配置文件中找到所有的快捷键，当然也可自定义。
 信息栏 i3wm 有一个自带的扩展，但通常可能更倾向于使用 conky，i3wm 可以直接调用它。
+** SYNOPSIS
+       i3 [-a] [-c configfile] [-C] [-d all] [-v] [-V]
+
+OPTIONS
+       -a Disables autostart.
+       -c Specifies an alternate configuration file path.
+       -C Check the configuration file for validity and exit.
+       -d all Enables debug logging. The all parameter is present for historical reasons.
+       -v Display version number (and date of the last commit).
+       -V Be verbose.
+       --force-xinerama
+           Use Xinerama instead of RandR. This option should only be used if you are stuck with the old nVidia closed source driver
+           (older than 302.17) which does not support RandR.
+       --get-socketpath
+           Retrieve the i3 IPC socket path from X11, print it, then exit.
+       --shmlog-size <limit>
+           Limits the size of the i3 SHM log to <limit> bytes. Setting this to 0 disables SHM logging entirely. The default is 0 bytes.
+
+DESCRIPTION(描述)
+       i3 was created because wmii, our favorite window manager at the time, didn’t provide some features we wanted (multi-monitor done
+       right, for example), had some bugs, didn’t progress since quite some time and wasn’t easy to hack at all (source code
+       inspiring us to create i3.
+
+       Please be aware that i3 is primarily targeted at advanced users and developers.
+
+   IMPORTANT NOTE TO nVidia BINARY DRIVER USERS
+       If you are using the nVidia binary graphics driver (also known as blob) before version 302.17, you need to use the
+       --force-xinerama flag (in your ~/.xsession) when starting i3, like so:
+
+           exec i3 --force-xinerama -V >>~/.i3/i3log 2>&1
+
+       See also docs/multi-monitor for the full explanation.
+
+   TERMINOLOGY(术语)
+       Tree
+           i3 keeps your layout in a tree data structure.
+
+       Window(窗口)
+           An X11 window, like the Firefox browser window or a terminal emulator.
+
+       Split(独立) container(容器)
+           A split container contains multiple other split containers or windows.
+
+           Containers can be used in various layouts. The default mode is called "default" and just resizes each client equally so that
+           it fits.
+
+       Workspace(工作区)
+           A workspace is a set of containers. Other window managers call this "Virtual Desktops".
+
+           In i3, each workspace is assigned to a specific virtual screen. By default, screen 1 has workspace 1, screen 2 has workspace 2
+           and so on... However, when you create a new workspace (by simply switching to it), it’ll be assigned(分配) the screen you are
+           currently on.
+
+       Output
+           Using XRandR, you can have an X11 screen spanning multiple real monitors(连接多个物理屏幕). Furthermore, you can set them up in cloning mode or
+           with positions (monitor 1 is left of monitor 2).
+
+           i3 uses the RandR API to query which outputs are available and which screens are connected to these outputs.
+
+KEYBINDINGS(按键绑定)
+       Here is a short overview of the default keybindings:
+
+       Mod1+Enter
+           Open a new terminal emulator window.
+
+       Mod1+d
+           Open dmenu for starting any application by typing (part of) its name.
+
+       j/k/l/;
+           Direction keys (left, down, up, right). They are on your homerow (see the mark on your "j" key). Alternatively, you can use
+           the cursor keys.
+
+       Mod1+<direction>
+           Focus window in <direction>.
+
+       Mod1+Shift+<direction>
+           Move window to <direction>.
+
+       Mod1+<number>
+           Switch to workspace <number>.
+
+       Mod1+Shift+<number>
+           Move window to workspace <number>.
+
+       Mod1+f
+           Toggle fullscreen mode.
+
+       Mod1+s
+           Enable stacking layout for the current container.
+
+       Mod1+e
+           Enable default layout for the current container.
+
+       Mod1+w
+           Enable tabbed layout for the current container.
+
+       Mod1+Shift+Space
+           Toggle tiling/floating for the current container.
+
+       Mod1+Space
+           Select the first tiling container if the current container is floating and vice-versa.
+
+       Mod1+Shift+q
+           Kills the current window. This is equivalent to "clicking on the close button", meaning a polite request to the application to
+ close this window. For example, Firefox will save its session upon such a request. If the application does not support that,
+           the window will be killed and it depends on the application what happens.
+
+       Mod1+Shift+r
+           Restarts i3 in place. Your layout will be preserved.
+
+       Mod1+Shift+e
+           Exits i3.
+
+FILES
+   ~/.i3/config (or ~/.config/i3/config)
+       When starting, i3 looks for configuration files in the following order:
+
+        1. ~/.config/i3/config (or $XDG_CONFIG_HOME/i3/config if set)
+
+        2. /etc/xdg/i3/config (or $XDG_CONFIG_DIRS/i3/config if set)
+
+        3. ~/.i3/config
+
+        4. /etc/i3/config
+
+       You can specify a custom path using the -c option.
+
+       Sample configuration.
+
+           # i3 config file (v4)
+
+           # Font for window titles. Will also be used by the bar unless a different font
+           # is used in the bar {} block below.
+           # This font is widely installed, provides lots of unicode glyphs, right-to-left
+           # text rendering and scalability on retina/hidpi displays (thanks to pango).
+           font pango:DejaVu Sans Mono 8
+           # Before i3 v4.8, we used to recommend this one as the default:
+           # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
+           # The font above is very space-efficient, that is, it looks good, sharp and
+           # clear in small sizes. However, its unicode glyph coverage is limited, the old
+           # X core fonts rendering does not support right-to-left and this being a bitmap
+           # font, it doesn’t scale on retina/hidpi displays.
+
+           # use Mouse+Mod1 to drag floating windows to their wanted position
+           floating_modifier Mod1
+
+           # start a terminal
+           bindsym Mod1+Return exec /usr/bin/urxvt
+
+           # kill focused window
+           bindsym Mod1+Shift+q kill
+
+           # start dmenu (a program launcher)
+           bindsym Mod1+d exec /usr/bin/dmenu_run
+
+           # change focus
+           bindsym Mod1+j focus left
+           bindsym Mod1+k focus down
+           bindsym Mod1+l focus up
+           bindsym Mod1+semicolon focus right
+
+           # alternatively, you can use the cursor keys:
+           bindsym Mod1+Left focus left
+           bindsym Mod1+Down focus down
+           bindsym Mod1+Up focus up
+           bindsym Mod1+Right focus right
+
+           # move focused window
+           bindsym Mod1+Shift+j move left
+           bindsym Mod1+Shift+k move down
+           bindsym Mod1+Shift+l move up
+           bindsym Mod1+Shift+semicolon move right
+
+           # alternatively, you can use the cursor keys:
+           bindsym Mod1+Shift+Left move left
+           bindsym Mod1+Shift+Down move down
+           bindsym Mod1+Shift+Up move up
+           bindsym Mod1+Shift+Right move right
+
+           # split in horizontal orientation
+           bindsym Mod1+h split h
+
+           # split in vertical orientation
+           bindsym Mod1+v split v
+
+           # enter fullscreen mode for the focused container
+           bindsym Mod1+f fullscreen toggle
+
+           # change container layout (stacked, tabbed, default)
+           bindsym Mod1+s layout stacking
+           bindsym Mod1+w layout tabbed
+           bindsym Mod1+e layout default
+
+           # toggle tiling / floating
+           bindsym Mod1+Shift+space floating toggle
+
+           # change focus between tiling / floating windows
+           bindsym Mod1+space focus mode_toggle
+
+           # focus the parent container
+           bindsym Mod1+a focus parent
+
+           # focus the child container
+           #bindsym Mod1+d focus child
+
+           # switch to workspace
+           bindsym Mod1+1 workspace 1
+           bindsym Mod1+2 workspace 2
+           # ..
+
+           # move focused container to workspace
+           bindsym Mod1+Shift+1 move workspace 1
+           bindsym Mod1+Shift+2 move workspace 2
+           # ...
+
+           # reload the configuration file
+           bindsym Mod1+Shift+c reload
+           # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+           bindsym Mod1+Shift+r restart
+           # exit i3 (logs you out of your X session)
+           bindsym Mod1+Shift+e exit
+
+           # display workspace buttons plus a statusline generated by i3status
+           bar {
+               status_command i3status
+           }
+
+   ~/.xsession
+       This file is where you should configure your locales and start i3. It is run by your login manager (xdm, slim, gdm, ...) as soon
+       as you login.
+
+       Sample xsession.
+
+           # Disable DPMS turning off the screen
+           xset -dpms
+           xset s off
+
+           # Disable bell
+           xset -b
+
+           # Enable zapping (C-A-<Bksp> kills X)
+           setxkbmap -option terminate:ctrl_alt_bksp
+
+           # Enforce correct locales from the beginning:
+           # LC_ALL is unset since it overwrites everything
+           # LANG=de_DE.UTF-8 is used, except for:
+           # LC_MESSAGES=C never translates program output
+           # LC_TIME=en_DK leads to yyyy-mm-dd hh:mm date/time output
+           unset LC_ALL
+           export LANG=de_DE.UTF-8
+           export LC_MESSAGES=C
+           export LC_TIME=en_DK.UTF-8
+
+           # Use XToolkit in java applications
+           export AWT_TOOLKIT=XToolkit
+
+           # Set background color
+           xsetroot -solid "#333333"
+
+           # Enable core dumps in case something goes wrong
+           ulimit -c unlimited
+
+           # Start i3 and log to ~/.i3/logfile
+           echo "Starting at $(date)" >> ~/.i3/logfile
+           exec /usr/bin/i3 -V -d all >> ~/.i3/logfile
+
+ENVIRONMENT
+   I3SOCK
+       This variable overwrites the IPC socket path (placed in /tmp/i3-%u.XXXXXX/ipc-socket.%p by default, where %u is replaced with your
+       UNIX username, %p is replaced with i3’s PID and XXXXXX is a string of random characters from the portable filename character set
+       (see mkdtemp(3))). The IPC socket is used by external programs like i3-msg(1) or i3bar(1).
+
+TODO
+       There is still lot of work to do. Please check our bugtracker for up-to-date information about tasks which are still not finished.
+
+SEE ALSO
+       You should have a copy of the userguide (featuring nice screenshots/graphics which is why this is not integrated into this
+       manpage), the debugging guide, and the "how to hack" guide. If you are building from source, run: make -C docs
+
+       You can also access these documents online at http://i3wm.org/
+
+       i3-input(1), i3-msg(1), i3bar(1), i3-nagbar(1), i3-config-wizard(1), i3-migrate-config-to-v4(1)
+
+AUTHOR
+       Michael Stapelberg and contributors
+
+i3 4.11                                                         10/24/2015                                                          I3(1)
+
 * shell高级编程例子
 例子清单:  
 2-1.  清除:清除/var/log 下的 log 文件  
@@ -3524,5 +3812,19 @@ sudo git commit -am "backup"
 sudo git log /etc/mysql/my.cnf #check history
 sudo git checkout commit_ref(version) /etc/mysql/my.cnf #restoren file
 
+9. 顺便说一下,国内的服务不要用,安全原因,不言自明.
+Dropbox实在是妙用无穷(例如,国外有人把Dropbox和git结合使用),我只是用
 
+10. 备份整个硬盘是用Clonezilla,只是备份操作系统的话用以下命令,
+tar zcvpf mylinux.tgz --exclude=/proc/* --exclude=/lost+found --exclude='mylinux.tgz' --exclude=/mnt/* --exclude=/home/username/* --exclude=/sys/* /
+我建议用前者,因为省事.
+
+11. 阅读官方和社区文档.
+Arch Linux和Gentoo Linux的特点是用户一般水准较高,所以文档技术含量很高。
+
+12. 常用软件的诊断修复
+strace -o err.txt firefox
+读一下err.txt就可以知道是哪个库出问题了.相信我,这是不需要任何编程知识的,外加google就可以了.
+13. 系统启动失败
+可以用linux 启动光盘启动，然后chroot,其作用是以指定目录作为操作系统根目录，然后就可以用工具升级或降级kernel了。
 * firefox keysnail快捷键
