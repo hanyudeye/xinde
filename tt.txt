@@ -1,0 +1,315 @@
+<?php
+namespace app\readplat\controller;
+use think\Auth;
+use think\Session;
+use think\Request;
+use think\Db;
+
+class Index extends \think\Controller
+{
+  
+	
+	public function index()
+    {
+    	$request = Request::instance();
+		$template = 'template/' . $request->module() . '/default/' . $request->controller()   . '/index.html';
+        $condition = array();
+        $condition=getCompany($condition); 
+		$condition['isdeteled']=0;
+        //推荐书籍
+		$books =  Db::name('readplat_book')->where($condition)->order('createdDate desc')->limit(0,10)->select();
+        $this->assign('books', $books);
+        //最热书籍
+		$hotbooks =  Db::name('readplat_book')->where($condition)->order('readNum desc')->limit(0,10)->select();
+        $this->assign('hotbooks', $hotbooks);
+
+
+        //美文
+		 $condition = array();
+        $condition=getCompany($condition); 
+		$condition['isDeleted']=0;
+        $hiswords= Db::name('readplat_hiswords')->where($condition)->order('createdDate desc')->limit(0,10)->select();
+        
+        foreach($hiswords as $key=>$hisword)
+        {
+            $hiswords[$key]['content']= mb_substr(strip_tags($hisword['content']),0,55,'utf-8');
+        }
+       $this->assign('hiswords', $hiswords);
+       //最热美文
+       $hothiswords= Db::name('readplat_hiswords')->where($condition)->order('viewNum desc')->limit(0,10)->select();
+       
+       foreach($hothiswords as $key=>$hisword)
+       {
+           $hothiswords[$key]['content']= mb_substr(strip_tags($hisword['content']),0,55,'utf-8');
+       }
+       $this->assign('hothiswords', $hothiswords);
+       
+       //书香笔记
+       $condition=array();
+       $condition=getCompany($condition,'readplat_note.'); 
+       $notes=Db::view('readplat_note')
+             ->view('stu_class','classFullName','readplat_note.classCode=stu_class.classCode','LEFT')
+             ->where($condition)
+             ->order('createdDate desc')
+             ->limit(0,10)
+             ->select();
+      
+       //查询出所有的等级
+	 
+	   foreach($notes as $key=>$note)
+       {
+           $user= Db::view('edu_user')
+               ->view('sys_ranks','name as rankname','sys_ranks.id=edu_user.rank')     
+               ->where(['edu_user.account'=>$note['createdAccount']])->find();
+           $notes[$key]['avatar'] = $user['avatar'];
+           $notes[$key]['rank'] = $user['rankname'];
+         
+       }
+       $this->assign('notes', $notes);
+       //最热笔记
+       $hotnotes=Db::view('readplat_note')
+                ->view('stu_class','classFullName','readplat_note.classCode=stu_class.classCode','LEFT')
+                ->where($condition)
+                ->order('viewNum desc')
+                ->limit(0,10)
+                ->select();
+       foreach($hotnotes as $key=>$note)
+       {
+           $user= Db::view('edu_user')
+                ->view('sys_ranks','name as rankname','sys_ranks.id=edu_user.rank')     
+                ->where(['edu_user.account'=>$note['createdAccount']])->find();
+           $hotnotes[$key]['avatar'] = $user['avatar'];
+           $hotnotes[$key]['rank'] = $user['rankname'];
+      }
+       
+       $this->assign('hotnotes', $hotnotes);
+
+       //最新活动1条
+       $condition=array();
+       $condition['type'] = ['like','activity%'];
+       $condition=getCompany($condition);
+       $activity='';
+       $activity['id']=0;
+       $activity['summary']='';
+       $activity['title']='';
+       $new_activity= Db::name('readplat_activity')->where($condition)->order('createdDate desc')->find();
+       if(!empty($new_activity))
+       {
+           $activity['id']=$new_activity['id'];
+           $activity['title']=$new_activity['title'];
+           $activity['summary']=mb_substr($new_activity['summary'],0,100,'utf-8');
+       }
+       $this->assign('activity', $activity);
+       //最新资讯
+       $condition=array();
+       $condition=getCompany($condition);
+       $notices= Db::name('readplat_notice')->where($condition)->order('createdDate desc')->limit(0,5)->select();
+       $this->assign('notices', $notices);
+    
+       
+       //今日名言
+       
+       $adage = Db::name('readplat_saying')->where([])->find();
+
+       $this->assign('adage', $adage);
+       
+       //累计签到天数
+       $account =  Session::get('account');
+       $daoNum =  Db::name('readplat_signin')->where(['createdAccount'=>$account])->count('id');       
+       $this->assign('daoNum', $daoNum);
+       
+       //补全4位
+       $number= str_pad($daoNum,4,"0",STR_PAD_LEFT);
+      //截取1，2，3，4
+       $firstNum = substr($number,0,1);
+       $secondNum = substr($number,1,1);
+       $thirdNum = substr($number,2,1);
+       $fourNum = substr($number,3,1);
+       
+       $this->assign('firstNum', $firstNum);
+       $this->assign('secondNum', $secondNum);
+       $this->assign('thirdNum', $thirdNum);
+       $this->assign('fourNum', $fourNum);
+       
+        return $this->fetch($template);
+    } 
+    
+    
+    public function getList()
+    {
+        $page = 1;
+		$pagesize = 10;
+        
+        if(input('request.page')){
+			$page = input('request.page');
+		}
+		
+		if(input('request.pagesize')){
+			$pagesize = input('request.pagesize');
+		}
+        
+        $start = ($page - 1) * $pagesize;
+        
+        $condition = array();
+        $condition['a.is_del'] = 0;
+       // $condition['a.company'] = Session::get('company');
+        $condition['b.category'] = input('request.category');
+        $condition['b.type'] = "article";
+
+		$result=Db::table('shop_article')
+			->alias('a')
+			->join('shop_relation b','a.id = b.id','LEFT')
+			->where($condition)
+			->limit($start,$pagesize)
+			->select();
+
+        
+        //获得总记录数
+		if($page == 1){
+			$counts =Db::table('shop_article')
+								->alias('a')
+								->join('shop_relation b','a.id = b.id','LEFT')
+								->where($condition)
+								->count('a.id');
+								
+			$totalPage =  ceil($counts / $pagesize);
+			
+			$result['page']['counts'] = $counts;
+			$result['page']['totalPage'] = $totalPage;
+			
+		}
+		
+			//$result['category'] =  input('request.category');
+	
+        echo json_encode($result);
+		exit();
+        
+    }
+    
+    public function sendMsgIndex()
+    {
+        $telephone = input('request.telephone');
+        $user= Db::name('user')->where(['account'=>$telephone])->find();
+        if($user!='')
+        {
+            exit(json_encode(['status' => 0, 'msg' => "该手机号已经注册！"]));
+            return;
+        }
+
+            $num= rand(1000,9999);
+
+            $this->sendMessage($num,'',$telephone,"SMS_60755241");
+            exit(json_encode(['status' => 1, 'msg' => "已经发送！",'num'=>$num]));
+            return;
+    }
+    
+    public function sendMessage($code='',$plan='',$phone='',$sms='')
+    {
+       
+		//global $app;
+        //include $app->getBasePath()."lib/sms/TopSdk.php";
+		require EXTEND_PATH.'sms/TopSdk.php';
+        date_default_timezone_get('Asia/Shanghai');
+        
+        $c=new \TopClient();
+        $c->appkey = "23583885";
+        $c->secretKey = "d6e4ae58e26eb4397868007d5abb921e";
+        
+        $req= new \AlibabaAliqinFcSmsNumSendRequest();
+        $req->setExtend("");
+        $req->setSmsType("normal");
+        $req->setSmsFreeSignName("读书平台注册");
+        
+        $req->setSmsParam("{name:'$code',grade:'$plan'}");
+        $req->setRecNum($phone);
+        $req->setSmsTemplateCode($sms);
+        $resp = $c->execute($req);
+        
+    }
+
+    public function register(){
+        $telephone = input('request.telephone');
+        $password = input('request.password');
+        
+        $website= $_SERVER['SERVER_NAME']; 
+        $company=Db::name('company')->where(array('website'=>$website))->find();
+        if(empty($company))
+        {
+            $companyID=0;
+        }else{
+			$companyID=$company['id'];
+		}
+        
+        if(preg_match("/^1\d{10}$/",$telephone)){  
+            
+        }else{  
+            echo json_encode(['status' => 0, 'msg'=>'不是手机号码!']);
+            exit();  
+        }  
+        
+        $user= Db::name('user')->where(['account'=>$telephone])->find();
+        if($user!='')
+        {
+            exit(json_encode(['status' => 0, 'msg' => "该手机号已经注册！"]));
+            return;
+        }
+        
+		$data = [
+			'account' => $telephone,
+            'password' =>  md5($password),
+            'join' => date('Y-m-d',time()), 
+			'is_del' => 0,
+            'created'=>date('Y-m-d H:i:s',time()),
+            'company'=>$companyID,
+            'admin'=>'front',
+            'mobile'=>$telephone,
+            'realname'=>$telephone,
+            'avatar'=>'front/readplat/images/headportrait.gif',
+            'skin'=>'skin01'
+		];
+       $id=Db::name('user')->insertGetId($data);
+       
+       Session::set('realname',$telephone);
+       Session::set('account',$telephone);
+       Session::set('userID',$id);
+       Session::set('skin','skin01');
+       Session::set('classCode','');
+       Session::set('avatar',$data['avatar']);
+       Session::set('rank',0);
+       Session::set('company',$companyID);
+       Session::set('gradeCode','');
+       Session::set('userType','guest');
+       
+       //当前学期
+       $year = Db::name('stu_schoolyear')->where(["isDelete"=>0])->find();
+       $schoolyear= $year['startYear'];
+       
+       $student=Db::name('stu_studentyear')->where(array('schoolYear'=>$schoolyear,'company'=>$companyID,'account'=>$telephone))->find();
+       if($student!='')
+       {
+           Session::set('classCode',$student['classCode']);
+       }
+       
+       exit(json_encode(['status' => 1, 'msg' => "注册成功"]));
+
+    }
+    
+    public function resetPwd(){
+    	$oldpwd  =  md5(input('request.oldpwd'));
+    	$newpwd  =  md5(input('request.newpwd'));
+
+    	//查询原密码
+    	$uid = Session::get('userID');
+    	$user = Db::name('user')->where(array('id'=> $uid))->find();
+    	$pwd  = $user['password'];
+
+      
+    	if($oldpwd != $pwd){
+    		$result = ['status'=>0, 'msg'=> '原密码不正确，请重试'];
+    		exit(json_encode($result));
+    	}
+    	$flag = Db::name('user')->where(array('id'=> $uid))->update(array('password' => $newpwd));
+
+    	exit(json_encode(['status' => 1, 'msg' => "修改密码成功！"]));
+    }
+}

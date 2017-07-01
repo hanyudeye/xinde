@@ -1,0 +1,594 @@
+* html
+  www技术：(一个请求url字符串, 返回很多的数据）
+  web 浏览器请求一个页面时,Web服务器会在发送实际页面内容前,先发送一些头信息(header)
+  浏览器需要这些头信息解析随后的页面内容..(交流嘛)
+  Content-Type:text/html (内容类型或MIME类型)
+  MIME类型(Multipurpose Internet Mail Extensions)多用途互联网邮件扩展类型,是描述消息内容类型的因特网标准。
+  | jpeg       | image/jpeg               |
+  | png        | image/png                |
+  | javascript | application/x-javascript |
+  | css        | text/css                 |
+  | xhtml      | application/xhtml+xml(严格形式,但一般用宽松形式) |
+
+  当浏览器渲染Web页面的时候,它会构造一个文档对象模型(DOM),用一个对象的集合表示
+  页面上的HTML元素.除此还有window和document这些不和特定页面元素绑定的全局对象.
+  对象有共有属性
+  还有私有属性
+  #+BEGIN_SRC html
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTML5</title>
+<link rel="alternate" type="application/atom+xml" href="https://github.com/diveintomark/diveintohtml5/commits/master.atom">
+<link rel="stylesheet" href="screen.css">
+<style>
+h1:before{content:''}
+h1,h2,h3{padding:0;margin:0;border:0;line-height:128px;text-align:center;clear:both}
+h1{margin-top:128px;font-size:72px;text-transform:uppercase}
+h2{font-size:48px}
+ol{margin:1em 0 0 0;padding:0}
+li{clear:both;width:100%;margin:0 0 1em 0;padding:0;overflow:hidden}
+.title,.number{background:#fff}
+.title{float:left;padding-right:3px}
+.number{margin:0;float:right;padding-left:3px}
+.f{margin-top:6.224em}
+</style>
+<link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="mobile.css">
+<link rel="prefetch" href="introduction.html">
+<hgroup>
+<h1>Dive Into HTML5</h1>
+<h2>by<br>Mark Pilgrim</h2>
+<h3>with contributions from the community</h3>
+</hgroup>
+<p class="a rotatedFloralHeartBullet">
+<p class="f">Dive Into <abbr>HTML5</abbr> elaborates on a hand-picked selection of features from the 
+<a href="http://www.whatwg.org/html5">HTML5</a> 
+specification and other fine standards. We encourage you to
+ <a href="//www.amazon.com/HTML5-Up-Running-Mark-Pilgrim/dp/0596806027">buy the printed work</a> 
+&mdash; Mark Pilgrim&rsquo;s artfully titled &ldquo;HTML5: Up 
+<i class="baa">&amp;</i> 
+Running&rdquo; &mdash; published on paper by O&rsquo;Reilly, under the Google Press imprint. Your kind and sincere
+ <a href="about.html">feedback is always welcome</a>
+, and this work shall remain online under the 
+<a rel="license" href="//creativecommons.org/licenses/by/3.0/">CC-BY-3.0 license</a>.
+<p>This particular edition of Dive Into HTML5 is advanced by
+ <a href="//github.com/diveintomark?tab=members">the diveintomark team</a>.
+<h3>Table of Contents</h3>
+
+<!-- toc -->
+<ol>
+<li><a href="introduction.html">Introduction: Five Things You Should Know About <abbr>HTML5</abbr></a>
+<li><a href="past.html">A Quite Biased History of <abbr>HTML5</abbr></a>
+<li><a href="detect.html">Detecting <abbr>HTML5</abbr> Features: It&rsquo;s Elementary, My Dear Watson</a>
+<li><a href="semantics.html">What Does It All Mean?</a>
+<li><a href="canvas.html">Let&rsquo;s Call It a Draw(ing Surface)</a>
+<li><a href="video.html">Video in a Flash (Without That Other Thing)</a>
+<li><a href="geolocation.html">You Are Here (And So Is Everybody Else)</a>
+<li><a href="storage.html">A Place To Put Your Stuff</a>
+<li><a href="offline.html">Let&rsquo;s Take This Offline</a>
+<li><a href="forms.html">A Form of Madness</a>
+<li><a href="extensibility.html">&ldquo;Distributed,&rdquo; &ldquo;Extensibility,&rdquo; And Other Fancy Words</a>
+<li><a href="history.html">Manipulating History for Fun <i>&amp;</i> Profit</a>
+<li class="app"><a href="everything.html">The All-In-One Almost-Alphabetical Guide to Detecting Everything</a>
+<li class="app"><a href="peeks-pokes-and-pointers.html"><abbr>HTML5</abbr> Peeks, Pokes and Pointers</a>
+</ol>
+<!-- /toc -->
+
+<p class="a rotatedFloralHeartBullet">
+<p class="c">&ldquo;If you&rsquo;re good at something, never do it for free.&rdquo; <span class="u">&mdash;</span><cite>The Joker</cite><br>(but that doesn&rsquo;t mean you should keep it to yourself)
+<p class="c">Copyright MMIX&ndash;MMXI <a href="about.html">Mark Pilgrim</a>
+<form action="http://www.google.com/cse"><div><input type="hidden" name="cx" value="017884302975346027366:bgclqh8nvse"><input type="hidden" name="ie" value="UTF-8"><input type="search" name="q" size="25" placeholder="powered by Google&trade;">&nbsp;<input type="submit" name="sa" value="Search"></div></form>
+<script src="j/jquery.js"></script>
+<script src="j/dih5.js"></script>
+<script>
+$(function() {
+  $("ol").css("list-style", "none");
+  $("li").each(function(i) {
+    var num = i;
+    if ($(this).hasClass("app")) {
+      num = String.fromCharCode(53+num);
+    }
+    $(this).wrapInner('<span class="title"></span>').append('<span class="number">'+num+'</span>').css("background", "#fff url(i/dot.png) repeat-x 0 0.8em");
+  });
+});
+window._gaq=[['_setAccount','UA-26147692-1'],['_setDomainName', 'diveintohtml5.info'],['_setAllowHash', false],['_trackPageview'],['_trackPageLoadTime']];(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.src='//www.google-analytics.com/ga.js';s.parentNode.insertBefore(g,s)}(document,'script'));
+</script>
+  #+END_SRC
+
+  画布文本 
+  !! 注意:canvas 文本api 比canvas api 晚
+  #+BEGIN_SRC javascript
+function supports_canvas_text(){
+if(!supports_canvas()){return false;}
+var dummy_canvas = document.createElement('canvas');
+var context = dummy_canvas.getContext('2d');
+return typeof context.fillText == 'function';
+}
+或者使用 Modernizr.canvastext
+  #+END_SRC
+  表单 <form>
+  <input type="text" name="name">
+  <input type="password" name="pwd">
+  单选按钮（Radio Buttons）
+  <input type="radio" name="sex" value="male">Male<br>
+  <input type="radio" name="sex" value="female">Female
+  复选框
+  <input type="checkbox" name="vehicle" value="Bike">I have a bike<br>
+  <input type="checkbox" name="vehicle" value="Car">I have a car 
+  提交按钮
+  <input type="submit" value="Submit">
+  下拉列表
+  <select name="cars">
+  <option value="volvo">Volvo</option>
+  <option value="saab">Saab</option>
+  <option value="fiat">Fiat</option>
+  <option value="audi">Audi</option>
+  </select>
+  按钮
+  <input type="button" value="Hello world!">
+  文本域
+  <textarea rows="10" cols="30">
+  我是一个文本框。
+  </textarea>
+  <datalist>定义选项列表。请与 input 元素配合使用该元素
+  #+BEGIN_SRC 
+<input list="browsers">
+ 
+<datalist id="browsers">
+  <option value="Internet Explorer">
+  <option value="Firefox">
+  <option value="Chrome">
+  <option value="Opera">
+  <option value="Safari">
+</datalist>
+  #+END_SRC
+  框架 <iframe src="demo_iframe.htm" frameborder="0"></iframe>
+* DOM
+*** window 对象 代表一个浏览器窗口或一个框架(当前对象[全局对象]),
+**** 属性
+closed 	返回窗口是否已被关闭
+defaultStatus 	设置或返回窗口状态栏中的默认文本
+document 	对 Document 对象的只读引用。
+history 	对 History 对象的只读引用。
+innerheight 	返回窗口的文档显示区的高度。
+innerwidth 	返回窗口的文档显示区的宽度。
+length 	设置或返回窗口中的框架数量。
+location 	用于窗口或框架的 Location 对象。请参阅 Location 对象。 
+name 	            设置或返回窗口的名称。
+Navigator 	对 Navigator 对象的只读引用。请参数 Navigator 对象。
+opener 	返回对创建此窗口的窗口的引用。 	
+outerheight 	返回窗口的外部高度。 
+outerwidth 	返回窗口的外部宽度。 
+pageXOffset 	设置或返回当前页面相对于窗口显示区左上角的 X 位置。
+pageYOffset 	设置或返回当前页面相对于窗口显示区左上角的 Y 位置。
+parent 	返回父窗口。 	
+Screen 	对 Screen 对象的只读引用。请参数 Screen 对象。
+self 	            返回对当前窗口的引用。等价于 Window 属性。 	
+status 	            设置窗口状态栏的文本。
+top 	            返回最顶层的先辈窗口。
+window 	window 属性等价于 self 属性，它包含了对窗口自身的引用。
+screenLeft        IE、Safari 和 Opera 支持 screenLeft 和 screenTop
+screenTop
+screenX             Firefox 和 Safari 支持 screenX 和 screenY。   
+screenY             只读整数。声明了窗口的左上角在屏幕上的的 x 坐标和 y 坐标。
+
+**** 方法
+alert() 	           显示带有一段消息和一个确认按钮的警告框。
+blur() 	           把键盘焦点从顶层窗口移开。
+clearInterval() 	取消由 setInterval() 设置的 timeout。 
+clearTimeout() 取消由 setTimeout() 方法设置的 timeout。
+close() 	关闭浏览器窗口。 
+confirm() 	显示带有一段消息以及确认按钮和取消按钮的对话框。
+createPopup() 	创建一个 pop-up 窗口
+focus() 	把键盘焦点给予一个窗口
+moveBy() 	可相对窗口的当前坐标把它移动指定的像素
+moveTo() 	把窗口的左上角移动到一个指定的坐标。
+open() 	打开一个新的浏览器窗口或查找一个已命名的窗口
+print()    	打印当前窗口的内容。
+prompt() 	显示可提示用户输入的对话框。 
+resizeBy() 	按照指定的像素调整窗口的大小。
+resizeTo() 	把窗口的大小调整到指定的宽度和高度。
+scrollBy() 	按照指定的像素值来滚动内容。 
+scrollTo() 	把内容滚动到指定的坐标。
+setInterval() 	按照指定的周期（以毫秒计）来调用函数或计算表达式。
+setTimeout() 	在指定的毫秒数后调用函数或计算表达式。
+*** Navigator JavaScript对象
+**** 属性
+appCodeName 	返回浏览器的代码名。 
+appMinorVersion 	返回浏览器的次级版本。
+appName 	返回浏览器的名称。 
+appVersion 	返回浏览器的平台和版本信息。
+browserLanguage 	返回当前浏览器的语言。
+cookieEnabled 	返回指明浏览器中是否启用 cookie 的布尔值。
+cpuClass 	返回浏览器系统的 CPU 等级。 
+onLine 	返回指明系统是否处于脱机模式的布尔值。
+platform 	返回运行浏览器的操作系统平台。 
+systemLanguage 	返回 OS 使用的默认语言。
+userAgent 	返回由客户机发送服务器的 user-agent 头部的值。 
+userLanguage 	返回 OS 的自然语言设置。
+**** 方法
+javaEnabled() 	规定浏览器是否启用 Java。
+taintEnabled() 	规定浏览器是否启用数据污点 (data tainting)
+*** screen
+**** 属性
+availHeight 	返回显示屏幕的高度 (除 Windows 任务栏之外)。
+availWidth 	返回显示屏幕的宽度 (除 Windows 任务栏之外)。 
+bufferDepth 	设置或返回在 off-screen bitmap buffer 中调色板的比特深度。
+colorDepth 	返回目标设备或缓冲器上的调色板的比特深度。
+deviceYDPI 	返回显示屏幕的每英寸垂直点数。 
+fontSmoothingEnabled 	返回用户是否在显示控制面板中启用了字体平滑
+height 	返回显示屏幕的高度。 
+logicalXDPI 	返回显示屏幕每英寸的水平方向的常规点数。 
+logicalYDPI 	返回显示屏幕每英寸的垂直方向的常规点数。 
+pixelDepth 	返回显示屏幕的颜色分辨率（比特每像素）
+width 	            返回显示器屏幕的宽度。 
+*** history
+**** 属性
+length              返回浏览器历史列表中的 URL 数量
+**** 方法
+back() 	            加载 history 列表中的前一个 URL 	
+forward() 	加载 history 列表中的下一个 URL 
+go() 	            加载 history 列表中的某个具体页面 [Num|URL] e: -1 前一个页面	
+*** Location
+**** 属性
+hash 	            设置或返回从井号 (#) 开始的 URL（锚）。
+host 	            设置或返回主机名和当前 URL 的端口号。 
+hostname 	设置或返回当前 URL 的主机名。 
+href 	            设置或返回完整的 URL。
+pathname 	设置或返回当前 URL 的路径部分。 
+port 	            设置或返回当前 URL 的端口号。
+protocol 	设置或返回当前 URL 的协议。 
+search 	设置或返回从问号 (?) 开始的 URL（查询部分）。
+**** 方法
+assign() 	加载新的文档。 
+reload() 	重新加载当前文档。
+replace() 	用新的文档替换当前文档。 
+*** document
+**** 集合
+all[]       	提供对文档中所有 HTML 元素的访问。 document.all[0],不会用样式,script
+anchors[] 	返回对文档中所有 Anchor 对象的引用。 
+applets 	返回对文档中所有 Applet 对象的引用。
+forms[] 	返回对文档中所有 Form 对象引用。
+images[] 	返回对文档中所有 Image 对象引用。
+links[] 	            返回对文档中所有 Area 和 Link 对象引用。
+**** 属性
+body    	提供对 <body> 元素的直接访问。对于定义了框架集的文档，该属性引用最外层的 <frameset>。 	  	  	  	 
+cookie 	设置或返回与当前文档有关的所有 cookie。
+domain 	返回当前文档的域名。 	
+lastModified 	返回文档被最后修改的日期和时间。 该值来自于 Last-Modified HTTP 头部，它是由 Web 服务器发送的可选项	
+referrer 	返回载入当前文档的文档的 URL。
+title 	            返回当前文档的标题。 
+URL 	            返回当前文档的 URL。 
+**** 方法
+close() 	           关闭用 document.open() 方法打开的输出流，并显示选定的数据。 
+getElementById() 	返回对拥有指定 id 的第一个对象的引用。
+getElementsByName() 	返回带有指定名称的对象集合。 	
+getElementsByTagName() 	返回带有指定标签名的对象集合。
+getElementsByClassName() 	返回带有指定 class 的对象集合。
+open() 	           打开一个流，以收集来自任何 document.write() 或 document.writeln() 方法的输出。
+write()    	向文档写 HTML 表达式 或 JavaScript 代码。 
+writeln() 	等同于 write() 方法，不同的是在每个表达式之后写一个换行符。 
+#+BEGIN_SRC javascript
+<script type="text/javascript">
+function createNewDoc()
+  {
+  var newDoc=document.open("text/html","replace");
+  var txt="<html><body>学习 DOM 非常有趣！</body></html>";
+  newDoc.write(txt);
+  newDoc.close();
+  }
+</script>
+#+END_SRC
+*** 公共属性
+className 	Sets or returns the class attribute of an element
+dir 	(设置文字方向) ltr默认。从左向右的文本方向。rtl 	从右向左的文本方向。	
+lang 	Sets or returns the language code for an element
+title 	Sets or returns an element's advisory title 
+*** document.forms[0] 文档中第一个表单节点
+**** 集合
+     elements[] 	包含表单中所有元素的数组。
+**** 属性
+     acceptCharset 	服务器可接受的字符集。 
+     action    	设置或返回表单的 action 属性。 
+     enctype 	设置或返回表单用来编码内容的 MIME 类型。 	
+     id        	设置或返回表单的 id。 
+     length 	返回表单中的元素数目。 
+     method 	设置或返回将数据发送到服务器的 HTTP 方法。
+     name   	设置或返回表单的名称。 
+     target   	设置或返回表单提交结果的 Frame 或 Window 名。
+
+**** 方法
+     reset() 	把表单的所有输入元素重置为它们的默认值。 
+     submit() 	提交表单。
+**** 事件
+     onreset 	在重置表单元素之前调用。 
+     onsubmit 	在提交表单之前调用。 
+*** images
+**** 属性
+     align    	设置或返回与内联内容的对齐方式。 
+     border 	设置或返回图像周围的边框。
+     complete 	返回浏览器是否已完成对图像的加载。 
+     height 	设置或返回图像的高度。 
+     hspace 	设置或返回图像左侧和右侧的空白。
+     id        	设置或返回图像的 id。
+     isMap  	返回图像是否是服务器端的图像映射。
+     longDesc 	设置或返回指向包含图像描述的文档的 URL。 
+     lowsrc 	设置或返回指向图像的低分辨率版本的 URL。
+     name   	设置或返回图像的名称。 
+     src       	设置或返回图像的 URL。
+     useMap 	设置或返回客户端图像映射的 usemap 属性的值。 
+     vspace 	设置或返回图像的顶部和底部的空白。 
+     width   	设置或返回图像的宽度。 
+**** 事件
+     onabort 	当用户放弃图像的装载时调用的事件句柄。
+     onerror 	在装载图像的过程中发生错误时调用的事件句柄。
+     onload 	当图像装载完毕时调用的事件句柄。
+*** link  元素可定义两个链接文档之间的关系,包括超链接
+**** 属性
+     charset 	设置或返回目标 URL 的字符编码 	
+     disabled 	设置或返回目标 URL 是否当被禁用 	
+     href 	            设置或返回被链接资源的 URL 
+     hreflang 	设置或返回目标 URL 的基准语言 	
+     id 	设置或返回某个 <link> 元素的 id 	
+     media 	设置或返回文档显示的设备类型 	
+     name 	设置或返回 <link> 元素的名称 
+     rel 	设置或返回当前文档与目标 URL之间的关系 
+     rev 	设置或返回目标 URL 与当前文档之间的关系 
+     type 	设置或返回目标 URL 的 MIME 类型 
+*** meta 元信息
+**** 属性
+     content 	设置或返回 <meta> 元素的 content 属性的值
+     httpEquiv 	把 content 属性连接到一个 HTTP 头部 	
+     name  	把 content 属性连接到某个名称 	
+     scheme 	设置或返回用于解释 content 属性的值的格式 
+*** Style 对象代表一个单独的样式声明。可从应用样式的文档或元素访问Style 对象
+    document.getElementById("id").style.property="值"
+**** 属性
+***** 背景
+      background 	在一行中设置所有的背景属性 
+      backgroundAttachment 	设置背景图像是否固定或随页面滚动 
+      backgroundColor 	设置元素的背景颜色 
+      backgroundImage 	设置元素的背景图像 
+      backgroundPosition 	设置背景图像的起始位置 
+      backgroundPositionX 	设置backgroundPosition属性的X坐标 
+      backgroundPositionY 	设置backgroundPosition属性的Y坐标 
+      backgroundRepeat 	设置是否及如何重复背景图像
+***** 边框和边距
+      border             	在一行设置四个边框的所有属性 	
+      borderBottom  	在一行设置底边框的所有属性 
+      borderBottomColor 	设置底边框的颜色 	
+      borderBottomStyle 	设置底边框的样式 	
+      borderBottomWidth 	设置底边框的宽度 	
+      borderColor     	设置所有四个边框的颜色 (可设置四种颜色) 	
+      borderLeft       	在一行设置左边框的所有属性 
+      borderLeftColor 	设置左边框的颜色 	
+      borderLeftStyle 	设置左边框的样式 	
+      borderLeftWidth 	设置左边框的宽度 	
+      borderRight 	            在一行设置右边框的所有属性
+      borderRightColor 	设置右边框的颜色 	
+      borderRightStyle 	设置右边框的样式 	
+      borderRightWidth 	设置右边框的宽度 	
+      borderStyle 	            设置所有四个边框的样式 (可设置四种样式) 
+      borderTop 	            在一行设置顶边框的所有属性 
+      borderTopColor 	设置顶边框的颜色 		
+      borderTopStyle 	设置顶边框的样式 		
+      borderTopWidth 	设置顶边框的宽度 		
+      borderWidth 	设置所有四条边框的宽度 (可设置四种宽度) 
+      margin 	设置元素的边距 (可设置四个值)
+      marginBottom 设置元素的底边距
+      marginLeft 	设置元素的左边距 	
+      marginRight 	设置元素的右边据
+      marginTop 	设置元素的顶边距 	
+      outline 	在一行设置所有的outline属性 
+      outlineColor 	设置围绕元素的轮廓颜色 	
+      outlineStyle 	设置围绕元素的轮廓样式 	
+      outlineWidth 	设置围绕元素的轮廓宽度 	
+      padding 	设置元素的填充 (可设置四个值)
+      paddingBottom设置元素的下填充
+      paddingLeft 	设置元素的左填充
+      paddingRight 	设置元素的右填充
+      paddingTop 	设置元素的顶填充 	
+***** 布局
+      clear    	设置在元素的哪边不允许其他的浮动元素 	
+      clip      	设置元素的形状 	
+      content 	设置元信息 	
+      counterIncrement 	设置其后是正数的计数器名称的列表。其中整数指示每当元素出现时计数器的增量。默认是1。
+      counterReset 	设置其后是正数的计数器名称的列表。其中整数指示每当元素出现时计数器被设置的值。默认是0。
+      cssFloat 	设置图像或文本将出现（浮动）在另一元素中的何处。 	
+      cursor   	设置显示的指针类型 
+      direction 	设置元素的文本方向 	
+      display 	设置元素如何被显示 	inherit父的属性继承
+      height 	设置元素的高度 
+      markerOffset 	设置marker box的principal box距离其最近的边框边缘的距离
+      marks 	            设置是否cross marks或crop marks应仅仅被呈现于page box边缘之外 	
+      maxHeight 	设置元素的最大高度 	
+      maxWidth 	设置元素的最大宽度 	
+      minHeight 	设置元素的最小高度 	
+      minWidth 	设置元素的最小宽度 	
+****** overflow 	规定如何处理不适合元素盒的内容 	
+       overflow-x: hidden;隐藏水平滚动条
+       verticalAlign 	设置对元素中的内容进行垂直排列 
+       visibility 	设置元素是否可见 
+       width 	            设置元素的宽度
+***** 列表
+      listStyle 	在一行设置列表的所有属性 
+      listStyleImage 	把图像设置为列表项标记 
+      listStylePosition改变列表项标记的位置 	
+      listStyleType 	设置列表项标记的类型
+***** 定位
+      bottom 	设置元素的底边缘距离父元素底边缘的之上或之下的距离 	
+      left       	置元素的左边缘距离父元素左边缘的左边或右边的距离 	
+      position 	把元素放置在static, relative, absolute 或 fixed 的位置 	
+      right 	            置元素的右边缘距离父元素右边缘的左边或右边的距离 	
+      top 	            设置元素的顶边缘距离父元素顶边缘的之上或之下的距离 	
+      zIndex 	设置元素的堆叠次序
+***** 文本
+      color 	设置文本的颜色 
+      font 	在一行设置所有的字体属性 
+      fontFamily 	设置元素的字体系列。
+      fontSize 	设置元素的字体大小。
+      fontSizeAdjust 	设置/调整文本的尺寸 
+      fontStretch 	设置如何紧缩或伸展字体
+      fontStyle 	设置元素的字体样式 
+      fontVariant 	用小型大写字母字体来显示文本 
+      fontWeight 	设置字体的粗细 
+      letterSpacing 	设置字符间距 
+      lineHeight 	设置行间距 
+      quotes 	设置在文本中使用哪种引号 
+      textAlign 	排列文本 
+      textDecoration 	设置文本的修饰 
+      textIndent 	缩紧首行的文本 
+      textShadow 	设置文本的阴影效果
+      textTransform 	对文本设置大写效果 
+      whiteSpace 	设置如何设置文本中的折行和空白符 	
+      wordSpacing 	设置文本中的词间距 
+***** Table 
+      borderCollapse 	设置表格边框是否合并为单边框，或者像在标准的HTML中那样分离。 
+      borderSpacing 	设置分隔单元格边框的距离 
+      captionSide 	设置表格标题的位置 	
+      emptyCells 	设置是否显示表格中的空单元格
+      tableLayout 	设置用来显示表格单元格、行以及列的算法
+*** node
+**** 节点属性
+***** innerHTML: 获取元素内容,很多东西
+***** nodeName 规定节点的名称
+***** nodeValue 规定节点的值 (文本节点有值)
+***** nodeType 返回节点的类型。nodeType 是只读的
+      #+BEGIN_SRC 
+元素 	1
+属性 	2
+文本 	3
+注释 	8
+文档 	9
+      #+END_SRC
+      : 通过使用一个元素节点的 parentNode、firstChild 以及 lastChild 属性
+****  修改
+***** 创建新的 HTML 元素
+      #+BEGIN_SRC 
+var para=document.createElement("p");
+var node=document.createTextNode("This is new.");
+para.appendChild(node);
+      #+END_SRC
+**** HTML DOM - 元素
+***** 创建新的 HTML 元素 - appendChild()您首先必须创建该元素，然后把它追加到已有的元素上。
+***** 创建新的 HTML 元素 - insertBefore()
+***** 删除已有的 HTML 元素
+      #+BEGIN_SRC 
+var child=document.getElementById("p1");
+child.parentNode.removeChild(child);
+      #+END_SRC
+***** 替换 HTML 元素
+      : 如需替换 HTML DOM 中的元素，请使用 replaceChild() 方法：
+      #+BEGIN_SRC 
+var parent=document.getElementById("div1");
+var child=document.getElementById("p1");
+parent.replaceChild(para,child);
+      #+END_SRC
+
+**** HTML DOM事件
+***** window 事件属性
+      + onload 页面结束加载之后触发。   
+      + onresize  当浏览器窗口被调整大小时触发。 
+***** FORM 事件
+      + onselect      script 在元素中文本被选中后触发。            
+      + onsubmit      script 在提交表单时触发。                   
+***** 键盘事件
+      + onkeydown  script 在用户按下按键时触发。
+      + onkeypress script 在用户敲击按钮时触发。
+      + onkeyup    script 当用户释放按键时触发。
+***** Mouse事件
+      + onclick
+      + ondblclick
+      + onmousedown
+      + onscroll
+***** Media事件
+      + onabort
+      + onplay
+***** onmousedown、onmouseup 以及 onclick 事件
+**** HTML DOM导航
+***** 根节点
+      : document.documentElement - 全部文档
+      : document.body - 文档的主体
+
+***** 节点列表
+      #+BEGIN_SRC 
+ var x=document.getElementsByTagName("p");
+可以通过下标号访问这些节点。如需访问第二个 <p>，您可以这么写：
+y=x[1]; 
+      #+END_SRC
+***** length 属性定义节点列表中节点的数量
+
+*** console用来可以查看错误信息、打印调试信息、调试js代码，还可以当作Javascript API查看
+**** log 输出变量值
+**** console.dir(dom) 查看dom API
+* canvas
+  <canvas> 	标签定义图形，比如图表和其他图像。该标签基于 JavaScript 的绘图 API
+  canvas 元素本身是没有绘图能力的。所有的绘制工作必须在 JavaScript 内部完成
+  #+BEGIN_SRC 
+<!DOCTYPE html> 
+<html>
+<head> 
+<meta charset="utf-8"> 
+<title>菜鸟教程(runoob.com)</title> 
+</head> 
+<body>
+
+<canvas id="myCanvas">你的浏览器不支持 HTML5 canvas 标签。</canvas>
+
+<script>
+var c=document.getElementById('myCanvas');
+var ctx=c.getContext('2d');
+ctx.fillStyle='#FF0000';
+ctx.fillRect(0,0,80,100);
+</script>
+
+</body>
+</html>
+  #+END_SRC
+  #+BEGIN_SRC 
+<canvas id="myCanvas" width="200" height="100" style="border:1px solid #000000;">
+您的浏览器不支持 HTML5 canvas 标签。
+</canvas>
+  #+END_SRC
+** 多媒体
+*** <audio>支持 MP3,Wav,Ogg
+    #+BEGIN_SRC 
+<audio controls>
+  <source src="horse.ogg" type="audio/ogg">
+  <source src="horse.mp3" type="audio/mpeg">
+  您的浏览器不支持 audio 元素。
+</audio>
+    #+END_SRC
+    属性
+    autoplayNew 	autoplay 	如果出现该属性，则音频在就绪后马上播放。
+    controlsNew 	controls 	如果出现该属性，则向用户显示音频控件（比如播放/暂停按钮）。
+    loopNew 	loop 	如果出现该属性，则每当音频结束时重新开始播放。
+    mutedNew 	muted 	如果出现该属性，则音频输出为静音。
+    preloadNew 	auto
+    metadata
+    none 	规定当网页加载时，音频是否默认被加载以及如何被加载。
+    srcNew 	URL 	规定音频文件的 URL。
+*** <video>
+*** <source>定义多媒体资源 <video> 和 <audio>
+** 新的语义和结构:为了创建更好的页面结构
+   <article>>    定义文档内的文章
+   <aside>      定义页面内容之外的内容
+   <bdi>        定义与其他文本不同的文本方向
+   <details>    定义用户可查看或隐藏的额外细节
+   <dialog>     定义对话框或窗口
+   <figcaption> 定义 <figure> 元素的标题
+   <figure>     定义自包含内容，比如图示、图表、照片、代码清单
+   <footer>     定义文档或节的页脚
+   <header>     定义文档或节的页眉
+   <main>       定义文档的主内容                        
+   <mark>       定义重要或强调的内容
+   <menuitem>   定义用户能够从弹出菜单调用的命令/菜单项目
+   <meter>      定义已知范围（尺度）内的标量测量
+   <nav>        定义文档内的导航链接
+   <progress>   定义任务进度
+   <rp>         定义在不支持 ruby 注释的浏览器中显示什么
+   <rt>         定义关于字符的解释/发音（用于东亚字体）
+   <ruby>       定义 ruby 注释（用于东亚字体）
+   <section>    定义文档中的节
+   <summary>    定义 <details> 元素的可见标题 
+   <time>       定义日期/时间。
+   <wbr>        定义可能的折行（line-break）

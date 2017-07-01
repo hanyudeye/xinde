@@ -1,0 +1,1805 @@
+cli: php php.php   <?php echo "a"; ?>
+* PHP
+** 变量
+四种标量类型：
+boolean（布尔型）
+integer（整型）
+float（浮点型，也称作 double)
+string（字符串）
+
+两种复合类型：
+array（数组）
+object（对象）class  
+
+最后是两种特殊类型：
+resource（资源）
+NULL（无类型）
+
+在下列情况下一个变量被认为是 NULL：
+被赋值为 NULL。
+尚未被赋值。
+被 unset()。
+
+为了确保代码的易读性，本手册还介绍了一些伪类型：
+mixed（混合类型）
+number（数字类型）
+callback（回调类型）
+一些函数如 call_user_func() 或 usort() 可以接受用户自定义的回调函数作为参数。回调函数不止可以是简单函数，还可以是对象的方法，包括静态类方法。
+可以理解为 在某种情况下执行某种方法，而不是直接执行.对于类的参数，则要更详细，要给出类名.
+1. call_user_func(array('MyClass', 'myCallbackMethod')); 
+2. call_user_func('MyClass::myCallbackMethod');
+3. call_user_func(array('B', 'parent::who')); // A   对于继承的类,要引用A的方法时
+
+变量作用域
+local（局部）
+global（全局）来自于$var= $GLOBALS["var"] === global $var(建立一个引用,不能赋值)
+static（静态）
+***** 服务器数据 $_SERVER
+	$_SERVER["SERVER_PORT"]  //获取端口  
+	$_SERVER['HTTP_HOST']  	 //获取域名或主机地址 如test.cn
+  	$_SERVER['SERVER_NAME']  //获取域名或主机地址 注：只是主域名如test.cn
+	$_SERVER["REQUEST_URI"]  //获取域名后的详细地址 如：/index.php?id=123 ...  
+	$_SERVER['SERVER_ROOT']  //请求的网页主目录
+: $_SERVER['SCRIPT_NAME']  //包含当前脚本的路径
+: $_SERVER['PHP_SELF']  //获取PHP文件名 
+: 以 CGI 方式運行，二者就有明顯不同的差異,一般差不多的
+	$_SERVER["QUERY_STRING"]  //获取PHP后的网址参数  
+	$_SERVER['HTTP_REFERER']  //来源网页的详细地址  
+	HTTPReferer是header的一部分，当浏览器向web服务器发送请求的时候，一般会带上Referer，告诉服务器我是从哪个页面链接过来的，
+	服务器基此可以获得一些信息用于处理
+  $_SESSION["7ad25498e6faec7e_userid"]=$manager['adminid'];
+***** 客户机数据 $_POST  $_GET 
+
+** 常量数据
+   定义 define("const",33);
+   预定义(全局)==魔术常量 
+   __file__ | __FILE__ 函数返回的是脚本所在在的路径
+   __line__ 文件中的当前行号。
+*** 生成器
+**** 函数 调用的参数是一份拷贝
+***** 定义 function
+***** 定义引用返回function &functionname
+      引用返回用在当你想用函数找到引用该被绑定的一个变量上面.
+      #+BEGIN_SRC php -n -r 
+    function &find_var($param){
+return $found_var;
+}
+$foo=&find_var($bar);
+$foo->x=2;
+      #+END_SRC
+**** 库函数
+***** array 
+	    foreach($array as $key=>$value){}遍历数组
+	    each() 函数返回当前元素的键名和键值，并将内部指针向前移动。
+	    该元素的键名和键值会被返回带有四个元素的数组中。两个元素（1 和 Value）包含键值，两个元素（0 和 Key）包含键名。
+	    array()创建数组
+	    current() - 返回数组中的当前元素的值
+	    end() - 将内部指针指向数组中的最后一个元素，并输出
+	    next() - 将内部指针指向数组中的下一个元素，并输出
+	    prev() - 将内部指针指向数组中的上一个元素，并输出
+	    reset() - 将内部指针指向数组中的第一个元素，并输出
+	    array_values() 函数返回一个包含给定数组中所有键值的数组，但不保留键名。
+	    int count ( mixed $var [, int $mode = COUNT_NORMAL ] )统计一个数组里的所有元素，或者一个对象里的东西。
+	    is_array() - 检测变量是否是数组
+	    array_count_values() 返回一个数组，统计的是每个值的数量，相等，数量加１
+	    array_unique(array) 删除数组中重复的值,返回新数组
+	    array array_filter ( array $array [, callable $callback [, int $flag = 0 ]] )  过滤器,把每个值传给callback函数,如果返回值为真，就返回过来
+	    usort()	使用用户自定义的比较函数对数组进行排序。
+	    array_slice(array,start,length,preserve) 函数在数组中根据条件取出一段值，并返回。
+	    array()	创建数组。
+	    array_change_key_case()	把数组中所有键更改为小写或大写。
+	    array_chunk()	把一个数组分割为新的数组块。
+	    array_column()	返回输入数组中某个单一列的值。
+	    array_combine()	通过合并两个数组来创建一个新数组。
+	    array_count_values()	用于统计数组中所有值出现的次数。
+	    array_diff()	比较数组，返回差集（只比较键值）。
+	    array_diff_assoc()	比较数组，返回差集（比较键名和键值）。
+	    array_diff_key()	比较数组，返回差集（只比较键名）。
+	    array_diff_uassoc()	比较数组，返回差集（比较键名和键值，使用用户自定义的键名比较函数）。
+	    array_diff_ukey()	比较数组，返回差集（只比较键名，使用用户自定义的键名比较函数）。
+	    array_fill()	用给定的键值填充数组。
+	    array_fill_keys()	用指定键名的给定键值填充数组。
+	    array_filter()	用回调函数过滤数组中的元素。
+	    array_flip()	交换数组中的键和值。
+	    array_intersect()	比较数组，返回交集（只比较键值）。
+	    array_intersect_assoc()	比较数组，返回交集（比较键名和键值）。
+	    array_intersect_key()	比较数组，返回交集（只比较键名）。
+	    array_intersect_uassoc()	比较数组，返回交集（比较键名和键值，使用用户自定义的键名比较函数）。
+	    array_intersect_ukey()	比较数组，返回交集（只比较键名，使用用户自定义的键名比较函数）。
+	    array_key_exists()	检查指定的键名是否存在于数组中。
+	    array_keys()	返回数组中所有的键名。
+	    array_map()	把数组中的每个值发送到用户自定义函数，返回新的值。
+	    array_merge()	把一个或多个数组合并为一个数组。
+	    array_merge_recursive()	递归地合并一个或多个数组。
+	    array_multisort()	对多个数组或多维数组进行排序。
+	    array_pad()	用值将数组填补到指定长度。
+	    array_pop()	删除数组的最后一个元素（出栈）。
+	    array_product()	计算数组中所有值的乘积。
+	    array_push()	将一个或多个元素插入数组的末尾（入栈）。
+	    array_rand()	返回数组中一个或多个随机的键。
+	    array_reduce()	通过使用用户自定义函数，以字符串返回数组。
+	    array_replace()	使用后面数组的值替换第一个数组的值。
+	    array_replace_recursive()	递归地使用后面数组的值替换第一个数组的值。
+	    array_reverse()	以相反的顺序返回数组。
+	    array_search()	搜索数组中给定的值并返回键名。
+	    array_shift()	删除数组中首个元素，并返回被删除元素的值。
+	    array_slice()	返回数组中被选定的部分。
+	    array_splice()	删除并替换数组中指定的元素。
+	    array_sum()	返回数组中值的和。
+	    array_udiff()	比较数组，返回差集（只比较值，使用一个用户自定义的键名比较函数）。
+	    array_udiff_assoc()	比较数组，返回差集（比较键和值，使用内建函数比较键名，使用用户自定义函数比较键值）。
+	    array_udiff_uassoc()	比较数组，返回差集（比较键和值，使用两个用户自定义的键名比较函数）。
+	    array_uintersect()	比较数组，返回交集（只比较值，使用一个用户自定义的键名比较函数）。
+	    array_uintersect_assoc()	比较数组，返回交集（比较键和值，使用内建函数比较键名，使用用户自定义函数比较键值）。
+	    array_uintersect_uassoc()	比较数组，返回交集（比较键和值，使用两个用户自定义的键名比较函数）。
+	    array_unique()	删除数组中的重复值。
+	    array_unshift()	在数组开头插入一个或多个元素。
+      :  int array_unshift ( array &$array , mixed $var [, mixed $... ] )
+	    array_values()	返回数组中所有的值。
+	    array_walk()	对数组中的每个成员应用用户函数。
+	    array_walk_recursive()	对数组中的每个成员递归地应用用户函数。
+	    arsort()	对关联数组按照键值进行降序排序。
+	    asort()	对关联数组按照键值进行升序排序。
+	    compact()	创建包含变量名和它们的值的数组。
+	    count()	返回数组中元素的数目。
+	    current()	返回数组中的当前元素。
+	    each()	返回数组中当前的键／值对。
+	    end()	将数组的内部指针指向最后一个元素。
+	    extract()	从数组中将变量导入到当前的符号表。
+	    in_array()	检查数组中是否存在指定的值。
+      : bool in_array ( mixed $needle , array $haystack [, bool $strict = FALSE ] )
+      : 在 haystack[干草堆] 中搜索 needle[针]，如果没有设置 strict[严格的] 则使用宽松的比较。 
+	    key()	从关联数组中取得键名。
+	    krsort()	对数组按照键名逆向排序。
+	    ksort()	对数组按照键名排序。
+	    list()	把数组中的值赋给一些变量。
+	    natcasesort()	用“自然排序”算法对数组进行不区分大小写字母的排序。
+	    natsort()	用“自然排序”算法对数组排序。
+	    next()	将数组中的内部指针向前移动一位。
+	    pos()	current() 的别名。
+	    prev()	将数组的内部指针倒回一位。
+	    range()	创建包含指定范围单元的数组。
+	    reset()	将数组的内部指针指向第一个元素。
+	    rsort()	对数组逆向排序。
+	    shuffle()	将数组打乱。
+	    sizeof()	count() 的别名。
+	    sort()	对数组排序。
+	    uasort()	使用用户自定义的比较函数对数组中的键值进行排序。
+	    uksort()	使用用户自定义的比较函数对数组中的键名进行排序。
+      
+      : print_r(array_filter($array1, "odd"));
+***** date
+	    date(Y年m月d日l星期/M英文月,而不是数字)
+	    ((int)date('h')+8)时间,东八区要加8小时
+	    h - 带有首位零的 12 小时小时格式
+	    i - 带有首位零的分钟 (minute)
+	    s - 带有首位零的秒（00 -59）(second)
+	    a - 小写的午前和午后（am 或 pm）ante (before) meridiem post meridiem
+	    cal_days_in_month()	针对指定的年份和历法，返回一个月中的天数。
+	    cal_from_jd()	把儒略日计数转换为指定历法的日期。
+	    cal_info()	返回有关指定历法的信息。
+	    cal_to_jd()	把指定历法中的日期转换为儒略日计数。
+	    easter_date()	返回指定年份的复活节午夜的 Unix 时间戳。
+	    easter_days()	返回指定年份的复活节与 3 月 21 日之间的天数。
+	    frenchtojd()	把法国共和历的日期转换成为儒略日计数。
+	    gregoriantojd()	把格利高里历法的日期转换成为儒略日计数。
+	    jddayofweek()	返回日期在周几。
+	    jdmonthname()	返回月的名称。
+	    jdtofrench()	把儒略日计数转换为法国共和历的日期。
+	    jdtogregorian()	将格利高里历法转换成为儒略日计数。
+	    jdtojewish()	把儒略日计数转换为犹太历法的日期。
+	    jdtojulian()	把儒略日计数转换为儒略历法的日期。
+	    jdtounix()	把儒略日计数转换为 Unix 时间戳。
+	    jewishtojd()	把犹太历法的日期转换为儒略日计数。
+	    juliantojd()	把儒略历法的日期转换为儒略日计数。
+	    unixtojd()	把 Unix 时间戳转换为儒略日计数。
+
+	    Date/Time 函数的行为受到 php.ini 中设置的影响：
+	    date.timezone 	默认时区（所有的 Date/Time 函数使用该选项） 	
+	    date.default_latitude 	默认纬度（date_sunrise() 和 date_sunset() 使用该选项）
+	    date.default_longitude 	默认经度（date_sunrise() 和 date_sunset() 使用该选项）
+	    date.sunrise_zenith 	默认日出天顶（date_sunrise() 和 date_sunset() 使用该选项）
+	    date.sunset_zenith 	默认日落天顶（date_sunrise() 和 date_sunset() 使用该选项）
+	    PHP 5 Date/Time 函数
+	    函数 	描述
+	    checkdate() 	验证格利高里日期。
+	    date_add() 	添加日、月、年、时、分和秒到日期。
+	    date_create_from_format() 	返回根据指定格式进行格式化的新的 DateTime 对象。
+	    date_create() 	返回新的 DateTime 对象。
+	    date_date_set() 	设置新日期。
+	    date_default_timezone_get() 	返回由所有的 Date/Time 函数使用的默认时区。
+	    date_default_timezone_set() 	设置由所有的 Date/Time 函数使用的默认时区。
+	    date_diff() 	返回两个日期间的差值。
+	    date_format() 	返回根据指定格式进行格式化的日期。
+	    date_get_last_errors() 	返回日期字符串中的警告/错误。
+	    date_interval_create_from_date_string() 	从字符串的相关部分建立 DateInterval。
+	    date_interval_format() 	格式化时间间隔。
+	    date_isodate_set() 	设置 ISO 日期。
+	    date_modify() 	修改时间戳。
+	    date_offset_get() 	返回时区偏移。
+	    date_parse_from_format() 	根据指定的格式返回带有关于指定日期的详细信息的关联数组。
+	    date_parse() 	返回带有关于指定日期的详细信息的关联数组。
+	    date_sub() 	从指定日期减去日、月、年、时、分和秒。
+	    date_sun_info() 	返回包含有关指定日期与地点的日出/日落和黄昏开始/黄昏结束的信息的数组。
+	    date_sunrise() 	返回指定日期与位置的日出时间。
+	    date_sunset() 	返回指定日期与位置的日落时间。
+	    date_time_set() 	设置时间。
+	    date_timestamp_get() 	返回 Unix 时间戳。
+	    date_timestamp_set() 	设置基于 Unix 时间戳的日期和时间。
+	    date_timezone_get() 	返回给定 DateTime 对象的时区。
+	    date_timezone_set() 	设置 DateTime 对象的时区。
+	    date() 	格式化本地日期和时间。
+	    getdate() 	返回某个时间戳或者当前本地的日期/时间的日期/时间信息。
+	    gettimeofday() 	返回当前时间。
+	    gmdate() 	格式化 GMT/UTC 日期和时间。
+	    gmmktime() 	返回 GMT 日期的 UNIX 时间戳。
+	    gmstrftime() 	根据区域设置对 GMT/UTC 日期和时间进行格式化。
+	    idate() 	将本地时间/日期格式化为整数。
+	    localtime() 	返回本地时间。
+	    microtime() 	返回当前时间的微秒数。
+	    mktime() 	返回日期的 Unix 时间戳。
+	    strftime() 	根据区域设置对本地时间/日期进行格式化。
+	    strptime() 	解析由 strftime() 生成的时间/日期。
+	    strtotime() 	将任何英文文本的日期或时间描述解析为 Unix 时间戳。
+	    time() 	返回当前时间的 Unix 时间戳。
+	    timezone_abbreviations_list() 	返回包含夏令时、偏移量和时区名称的关联数组。
+	    timezone_identifiers_list() 	返回带有所有时区标识符的索引数组。
+	    timezone_location_get() 	返回指定时区的位置信息。
+	    timezone_name_from_abbr() 	根据时区缩略语返回时区名称。
+	    timezone_name_get() 	返回时区的名称。
+	    timezone_offset_get() 	返回相对于 GMT 的时区偏移。
+	    timezone_open() 	创建新的 DateTimeZone 对象。
+	    timezone_transitions_get() 	返回时区的所有转换。
+	    timezone_version_get() 	返回时区数据库的版本。
+
+***** file
+	    fopen("filename",'w')  //可以指定绝对路径或相对路径
+	    "r" 	只读方式打开，将文件指针指向文件头。
+	    "r+" 	读写方式打开，将文件指针指向文件头。
+	    "w" 	写入方式打开，将文件指针指向文件头并将文件大小截为零。如果文件不存在则尝试创建之。
+	    "w+" 	读写方式打开，将文件指针指向文件头并将文件大小截为零。如果文件不存在则尝试创建之。
+	    "a" 	写入方式打开，将文件指针指向文件末尾。如果文件不存在则尝试创建之。
+	    "a+" 	读写方式打开，将文件指针指向文件末尾。如果文件不存在则尝试创建之。
+	    "x" 	创建并以写入方式打开，将文件指针指向文件头。如果文件已存在，则报错.
+	    basename() 	返回路径中的文件名部分。
+	    chgrp() 	改变文件组。 	
+	    chmod() 	改变文件模式。 
+	    chown() 	改变文件所有者。 	
+	    clearstatcache() 	清除文件状态缓存。 	
+	    fopen() 可以通过http路径打开,可以在php.ini 中配置allow_url_fopen   //unix中要注意文件的访问权限
+	    copy() 	复制文件。
+	    fread(filepoint,length)	读取打开的文件。
+	    fwrite(file,string,length)   
+	    file_get_contents(filepath) 函数把整个文件读入一个字符串中。
+	    file_put_contents(filepath,filecontent) 在ftp中要用到flags和context标志
+	    basename()
+	    is_readable()
+	    fgets()
+	    fgetss() 去掉文件中的html格式
+	    readfile(filename) 输出到浏览器
+	    file(file) 返回值是文件内容
+	    fgetc()
+	    file_exists()
+	    filesize()
+	    unlink() 删除文件
+	    rewind()
+	    fseek()
+	    ftell()
+	    delete() 	参见 unlink() 或 unset()。 	 
+	    dirname() 	返回路径中的目录名称部分。 	
+	    disk_free_space() 	返回目录的可用空间。 	
+	    disk_total_space() 	返回一个目录的磁盘总容量。
+	    diskfreespace() 	disk_free_space() 的别名。
+	    fclose() 	关闭打开的文件。 	
+	    feof() 	测试文件指针是否到了文件结束的位置。 	
+	    fflush() 	向打开的文件输出缓冲内容。 
+	    fgetc() 	从打开的文件中返回字符。 
+	    fgetcsv() 	从打开的文件中解析一行，校验 CSV 字段。 	
+	    fgets() 	从打开的文件中返回一行。 	
+	    fgetss() 	从打开的文件中读取一行并过滤掉 HTML 和 PHP 标记。 	  file() 	把文件读入一个数组中。 	
+	    file_exists() 	检查文件或目录是否存在。
+	    file_get_contents() 	将文件读入字符串。 	
+	    file_put_contents() 	将字符串写入文件。 	
+	    fileatime() 	返回文件的上次访问时间。 	
+	    filectime() 	返回文件的上次改变时间。 	
+	    filegroup() 	返回文件的组 ID。 	
+	    fileinode() 	返回文件的 inode 编号。 
+	    filemtime() 	返回文件的上次修改时间。
+	    fileowner() 	文件的 user ID （所有者）。
+	    fileperms() 	返回文件的权限。 	
+	    filesize() 	返回文件大小。 	
+	    filetype() 	返回文件类型。 	
+	    flock() 	锁定或释放文件。
+	    fnmatch() 	根据指定的模式来匹配文件名或字符串。 	
+	    fopen() 	打开一个文件或 URL。 	
+	    fpassthru() 	从打开的文件中读数据，直到 EOF，并向输出缓冲写结果
+	    fputcsv() 	将行格式化为 CSV 并写入一个打开的文件中。 	
+	    fputs() 	fwrite() 的别名。 	
+	    fread() 	读取打开的文件。 	
+	    fscanf() 	根据指定的格式对输入进行解析。
+	    fseek() 	在打开的文件中定位。 	
+	    fstat() 	返回关于一个打开的文件的信息。
+	    ftell() 	返回文件指针的读/写位置 
+	    ftruncate() 	将文件截断到指定的长度。
+	    fwrite() 	写入文件。 	
+	    glob() 	返回一个包含匹配指定模式的文件名/目录的数组。 	
+	    is_dir() 	判断指定的文件名是否是一个目录。 	
+	    is_executable() 	判断文件是否可执行。 	
+	    is_file() 	判断指定文件是否为常规的文件。 	
+	    is_link() 	判断指定的文件是否是连接。 	
+	    is_readable() 	判断文件是否可读。 	
+	    is_uploaded_file() 	判断文件是否是通过 HTTP POST 上传的。 	
+	    is_writable() 	判断文件是否可写。 	
+	    is_writeable() 	is_writable() 的别名。 	
+	    link() 	创建一个硬连接。 	
+	    linkinfo() 	返回有关一个硬连接的信息。 	
+	    lstat() 	返回关于文件或符号连接的信息。 	
+	    mkdir() 	创建目录。 	
+	    move_uploaded_file() 	将上传的文件移动到新位置。 	
+	    parse_ini_file() 	解析一个配置文件。 	
+	    pathinfo() 	返回关于文件路径的信息。 	
+	    pclose() 	关闭有 popen() 打开的进程。 	
+	    popen() 	打开一个进程。 	
+	    readfile() 	读取一个文件，并输出到输出缓冲。 	
+	    readlink() 	返回符号连接的目标。 	
+	    realpath() 	返回绝对路径名。 	
+	    rename() 	重名名文件或目录。 	
+	    rewind() 	倒回文件指针的位置。 	
+	    rmdir() 	删除空的目录。 	
+	    set_file_buffer() 	设置已打开文件的缓冲大小。 	
+	    stat() 	返回关于文件的信息。 	
+	    symlink() 	创建符号连接。 	
+	    tempnam() 	创建唯一的临时文件。
+	    tmpfile() 	建立临时文件。 	
+	    touch() 	设置文件的访问和修改时间。 	
+	    umask() 	改变文件的文件权限。 	
+	    unlink() 	删除文件。
+
+	    isset(varname)判断变量是否已经配置，就是变量存不存在值
+	    unset(varname)取消配置；
+	    empty(varname) 对于值是0的数返回true，这里要当心
+
+***** Directory 函数
+	    chdir()	改变当前的目录。
+	    chroot()	改变根目录。
+	    closedir()	关闭目录句柄。
+	    dir()	返回 Directory 类的实例。
+	    getcwd()	返回当前工作目录。
+	    opendir()	打开目录句柄。
+	    readdir()	返回目录句柄中的条目。
+	    rewinddir()	重置目录句柄。
+	    scandir()	返回指定目录中的文件和目录的数组。
+
+***** PHP 过滤器用于对来自非安全来源的数据（比如用户输入）进行验证和过滤。
+	    filter_has_var() 	检查是否存在指定输入类型的变量。 	5
+	    filter_id() 	返回指定过滤器的 ID 号。 	5
+	    filter_input() 	从脚本外部获取输入，并进行过滤。 	5
+	    filter_input_array() 	从脚本外部获取多项输入，并进行过滤。 	5
+	    filter_list() 	返回包含所有得到支持的过滤器的一个数组。 	5
+	    filter_var_array() 	获取多项变量，并进行过滤。 	5
+	    filter_var() 	获取一个变量，并进行过滤。
+***** HTTP 函数允许您在其他输出被发送之前，对由 Web 服务器发送到浏览器的信息进行操作。
+	    header() 	向客户端发送原始的 HTTP 报头。
+	    headers_list() 	返回已发送的（或待发送的）响应头部的一个列表。
+	    headers_sent() 	检查 HTTP 报头是否发送/已发送到何处。
+	    setcookie() 	定义与 HTTP 报头的其余部分一共发送的 cookie。
+	    setrawcookie() 	定义与 HTTP 报头的其余部分一共发送的 cookie（不进行 URL 编码）。
+
+***** 数学 (Math) 函数能处理 integer 和 float 范围内的值。
+	    abs() 	绝对值。 	3
+	    acos() 	反余弦。 	3
+	    acosh() 	反双曲余弦。 	4
+	    asin() 	反正弦。 	3
+	    asinh() 	反双曲正弦。 	4
+	    atan() 	反正切。 	3
+	    atan2() 	两个参数的反正切。 	3
+	    atanh() 	反双曲正切。 	4
+	    base_convert() 	在任意进制之间转换数字。 	3
+	    bindec() 	把二进制转换为十进制。 	3
+	    ceil() 	向上舍入为最接近的整数。 	3
+	    cos() 	余弦。 	3
+	    cosh() 	双曲余弦。 	4
+	    decbin() 	把十进制转换为二进制。 	3
+	    dechex() 	把十进制转换为十六进制。 	3
+	    decoct() 	把十进制转换为八进制。 	3
+	    deg2rad() 	将角度转换为弧度。 	3
+	    exp() 	返回 Ex 的值。 	3
+	    expm1() 	返回 Ex - 1 的值。 	4
+	    floor() 	向下舍入为最接近的整数。 	3
+	    fmod() 	返回除法的浮点数余数。 	4
+	    getrandmax() 	显示随机数最大的可能值。 	3
+	    hexdec() 	把十六进制转换为十进制。 	3
+	    hypot() 	计算直角三角形的斜边长度。 	4
+	    is_finite() 	判断是否为有限值。 	4
+	    is_infinite() 	判断是否为无限值。 	4
+	    is_nan() 	判断是否为合法数值。 	4
+	    lcg_value() 	返回范围为 (0, 1) 的一个伪随机数。 	4
+	    log() 	自然对数。 	3
+	    log10() 	以 10 为底的对数。 	3
+	    log1p() 	返回 log(1 + number)。 	4
+	    max() 	返回最大值。 	3
+	    min() 	返回最小值。 	3
+	    mt_getrandmax() 	显示随机数的最大可能值。 	3
+	    mt_rand() 	使用 Mersenne Twister 算法返回随机整数。 	3
+	    mt_srand() 	播种 Mersenne Twister 随机数生成器。 	3
+	    octdec() 	把八进制转换为十进制。 	3
+	    pi() 	返回圆周率的值。 	3
+	    pow() 	返回 x 的 y 次方。 	3
+	    rad2deg() 	把弧度数转换为角度数。 	3
+	    rand() 	返回随机整数。 	3
+	    round() 	对浮点数进行四舍五入。 	3
+	    sin() 	正弦。 	3
+	    sinh() 	双曲正弦。 	4
+	    sqrt() 	平方根。 	3
+	    srand() 	播下随机数发生器种子。 	3
+	    tan() 	正切。 	3
+	    tanh() 	双曲正切。
+
+***** string	
+      mb_substr(strip_tags( $list["content"]),0,20) 截取字符串 对中文的支持
+      ucfirst(string)->string第一个字大写
+      addcslashes — 以 C 语言风格使用反斜线转义字符串中的字符
+      addslashes — 使用反斜线引用字符串
+      bin2hex — 函数把包含数据的二进制字符串转换为十六进制值
+      chop — rtrim 的别名
+      chr — 返回指定的字符
+      chunk_split — 将字符串分割成小块
+      convert_cyr_string — 将字符由一种 Cyrillic 字符转换成另一种
+      convert_uudecode — 解码一个 uuencode 编码的字符串
+      convert_uuencode — 使用 uuencode 编码一个字符串
+      count_chars — 返回字符串所用字符的信息
+      crc32 — 计算一个字符串的 crc32 多项式
+      crypt — 单向字符串散列
+******    explode — 使用一个字符串分割另一个字符串
+       : array explode ( string $delimiter , string $string [, int $limit ] )
+       fprintf — 将格式化后的字符串写入到流
+       get_html_translation_table — 返回使用 htmlspecialchars 和 htmlentities 后的转换表
+       hebrev — 将逻辑顺序希伯来文（logical-Hebrew）转换为视觉顺序希伯来文（visual-Hebrew）
+       hebrevc — 将逻辑顺序希伯来文（logical-Hebrew）转换为视觉顺序希伯来文（visual-Hebrew），并且转换换行符
+       hex2bin — 转换十六进制字符串为二进制字符串
+       html_entity_decode — Convert all HTML entities to their applicable characters
+       htmlentities — Convert all applicable characters to HTML entities
+       htmlspecialchars_decode — 将特殊的 HTML 实体转换回普通字符
+       htmlspecialchars — Convert special characters to HTML entities
+       implode — 将一个一维数组的值转化为字符串
+       join — 别名 implode
+       lcfirst — 使一个字符串的第一个字符小写
+       levenshtein — 计算两个字符串之间的编辑距离
+       localeconv — Get numeric formatting information
+       ltrim — 删除字符串开头的空白字符（或其他字符）
+       md5_file — 计算指定文件的 MD5 散列值
+       md5 — 计算字符串的 MD5 散列值
+       metaphone — Calculate the metaphone key of a string
+       money_format — 将数字格式化成货币字符串
+       nl_langinfo — Query language and locale information
+       nl2br — 在字符串所有新行之前插入 HTML 换行标记
+       number_format — 以千位分隔符方式格式化一个数字
+       ord — 返回字符的 ASCII 码值
+       parse_str — 将字符串解析成多个变量
+       print — 输出字符串;    实际不是函数,没参数
+       printf — 输出格式化字符串
+       quoted_printable_decode — 将 quoted-printable 字符串转换为 8-bit 字符串
+       quoted_printable_encode — 将 8-bit 字符串转换成 quoted-printable 字符串
+       quotemeta — 转义元字符集
+       rtrim — 删除字符串末端的空白字符（或者其他字符）
+       setlocale — 设置地区信息
+       sha1_file — 计算文件的 sha1 散列值
+       sha1 — 计算字符串的 sha1 散列值
+       similar_text — 计算两个字符串的相似度
+       soundex — Calculate the soundex key of a string
+       sprintf — Return a formatted string
+       sscanf — 根据指定格式解析输入的字符
+       str_getcsv — 解析 CSV 字符串为一个数组
+       str_ireplace — str_replace 的忽略大小写版本
+       str_pad — 使用另一个字符串填充字符串为指定长度
+       str_repeat — 重复一个字符串
+       str_replace — 子字符串替换
+       str_rot13 — 对字符串执行 ROT13 转换
+       str_shuffle — 随机打乱一个字符串
+       str_split — 将字符串转换为数组
+       str_word_count — 返回字符串中单词的使用情况
+       strcasecmp — 二进制安全比较字符串（不区分大小写）
+       strchr — 别名 strstr
+       strcmp — 二进制安全字符串比较
+       strcoll — 基于区域设置的字符串比较
+       strcspn — 获取不匹配遮罩的起始子字符串的长度
+       strip_tags — 从字符串中去除 HTML 和 PHP 标记
+       stripcslashes — 反引用一个使用 addcslashes 转义的字符串
+       stripos — 查找字符串首次出现的位置（不区分大小写）
+       stripslashes — 反引用一个引用字符串
+       stristr — strstr 函数的忽略大小写版本
+       strlen — 获取字符串长度
+       strnatcasecmp — 使用“自然顺序”算法比较字符串（不区分大小写）
+       strnatcmp — 使用自然排序算法比较字符串
+       strncasecmp — 二进制安全比较字符串开头的若干个字符（不区分大小写）
+       strncmp — 二进制安全比较字符串开头的若干个字符
+       strpbrk — 在字符串中查找一组字符的任何一个字符
+       strpos — 查找字符串首次出现的位置
+       strrchr — 查找指定字符在字符串中的最后一次出现
+       strrev — 反转字符串
+       strripos — 计算指定字符串在目标字符串中最后一次出现的位置（不区分大小写）
+       strrpos — 计算指定字符串在目标字符串中最后一次出现的位置
+       strspn — 计算字符串中全部字符都存在于指定字符集合中的第一段子串的长度。
+       strstr — 查找字符串的首次出现
+       strtok — 标记分割字符串
+       strtolower — 将字符串转化为小写
+       strtoupper — 将字符串转化为大写
+       strtr — 转换指定字符
+       substr_compare — 二进制安全比较字符串（从偏移位置比较指定长度）
+       substr_count — 计算字串出现的次数
+       substr_replace — 替换字符串的子串
+       substr — 返回字符串的子串
+       trim — 去除字符串首尾处的空白字符（或者其他字符）
+       ucfirst — 将字符串的首字母转换为大写
+       ucwords — 将字符串中每个单词的首字母转换为大写
+       vfprintf — 将格式化字符串写入流
+       vprintf — 输出格式化字符串
+       vsprintf — 返回格式化字符串
+       wordwrap — 打断字符串为指定数量的字串
+
+***** 网络 函数
+      checkdnsrr — 给指定的主机（域名）或者IP地址做DNS通信检查
+      closelog — 关闭系统日志链接
+      define_syslog_variables — Initializes all syslog related variables
+      dns_check_record — 别名 checkdnsrr
+      dns_get_mx — 别名 getmxrr
+      dns_get_record — 获取指定主机的DNS记录
+      fsockopen — 打开一个网络连接或者一个Unix套接字连接
+      gethostbyaddr — 获取指定的IP地址对应的主机名  //这个只能查到本机的主机名,可能跟域名反向解析有关,不能反向解析,只能解析host文件里面的
+      gethostbyname — Get the IPv4 address corresponding to a given Internet host name
+      gethostbynamel — Get a list of IPv4 addresses corresponding to a given Internet host name
+      gethostname — Gets the host name
+      getmxrr — Get MX records corresponding to a given Internet host name
+      getprotobyname — Get protocol number associated with protocol name
+      getprotobynumber — Get protocol name associated with protocol number
+      getservbyname — Get port number associated with an Internet service and protocol
+      getservbyport — Get Internet service which corresponds to port and protocol
+      header_register_callback — Call a header function
+      header_remove — Remove previously set headers
+      header — 发送原生 HTTP 头
+      headers_list — Returns a list of response headers sent (or ready to send)
+      headers_sent — Checks if or where headers have been sent
+      http_response_code — Get or Set the HTTP response code
+      inet_ntop — Converts a packed internet address to a human readable representation
+      inet_pton — Converts a human readable IP address to its packed in_addr representation
+      ip2long — 将一个IPV4的字符串互联网协议转换成数字格式
+      long2ip — Converts an long integer address into a string in (IPv4) Internet standard dotted format
+      openlog — Open connection to system logger
+      pfsockopen — 打开一个持久的网络连接或者Unix套接字连接。
+      setcookie — Send a cookie
+      setrawcookie — Send a cookie without urlencoding the cookie value
+      socket_get_status — 别名 stream_get_meta_data
+      socket_set_blocking — 别名 stream_set_blocking
+      socket_set_timeout — 别名 stream_set_timeout
+      syslog — Generate a system log message
+
+***** pthreads
+		  Threaded — Threaded 类
+      Threaded::chunk — 操作
+      Threaded::count — Manipulation
+      Threaded::extend — Runtime Manipulation
+      Threaded::from — Creation
+      Threaded::getTerminationInfo — Error Detection
+      Threaded::isRunning — State Detection
+      Threaded::isTerminated — State Detection
+      Threaded::isWaiting — State Detection
+      Threaded::lock — Synchronization
+      Threaded::merge — Manipulation
+      Threaded::notify — Synchronization
+      Threaded::pop — Manipulation
+      Threaded::run — Execution
+      Threaded::shift — Manipulation
+      Threaded::synchronized — Synchronization
+      Threaded::unlock — Synchronization
+      Threaded::wait — Synchronization
+		  Thread — Thread 类
+      Thread::detach — 执行
+      Thread::getCreatorId — 识别
+      Thread::getCurrentThread — 识别
+      Thread::getCurrentThreadId — 识别
+      Thread::getThreadId — 识别
+      Thread::globally — 执行
+      Thread::isJoined — 状态监测
+      Thread::isStarted — 状态检测
+      Thread::join — 同步
+      Thread::kill — 执行
+      Thread::start — 执行
+***** Worker — Worker 类
+      Worker::getStacked — 栈分析
+      Worker::isShutdown — 状态检测
+      Worker::isWorking — 状态检测
+      Worker::shutdown — 同步
+      Worker::stack — 栈操作
+      Worker::unstack — 栈操作
+	    Collectable — The Collectable class
+      Collectable::isGarbage — Determine whether an object has been marked as garbage
+      Collectable::setGarbage — Mark an object as garbage
+      Modifiers — 方法修饰符
+***** Pool — Pool 类
+      Pool::collect — 回收已完成任务的引用
+      Pool::__construct — 创建新的 Worker 对象池
+      Pool::resize — 改变 Pool 对象的可容纳 Worker 对象的数量
+      Pool::shutdown — 停止所有的 Worker 对象
+      Pool::submit — 提交对象以执行
+      Pool::submitTo — 提交对象以执行
+***** Mutex — Mutex 类
+      Mutex::create — 创建一个互斥量
+      Mutex::destroy — 销毁互斥量
+      Mutex::lock — 给互斥量加锁
+      Mutex::trylock — 尝试给互斥量加锁
+      Mutex::unlock — 释放互斥量上的锁
+***** Cond — Cond 类
+      Cond::broadcast — 广播条件变量
+      Cond::create — 创建一个条件变量
+      Cond::destroy — 销毁条件变量
+      Cond::signal — 发送唤醒信号
+      Cond::wait — 等待
+		  
+***** PCRE 函数 Perl Compatible Regular Expressions 兼容正则
+******    preg_filter — 执行一个正则表达式搜索和替换
+******    preg_grep — 返回匹配模式的数组条目
+******    preg_last_error — 返回最后一个PCRE正则执行产生的错误代码
+******    preg_match_all — 执行一个全局正则表达式匹配
+******    preg_match — 执行一个正则表达式匹配
+******    preg_quote — 转义正则表达式字符
+******    preg_replace_callback_array — Perform a regular expression search and replace using callbacks
+******    preg_replace_callback — 执行一个正则表达式搜索并且使用一个回调进行替换
+******    preg_replace — 执行一个正则表达式的搜索和替换
+       : mixed preg_replace( mixed pattern, mixed replacement, mixed subject [, int limit ] )
+       : $str = preg_replace('/\s/','-',$str);  这里要注意,匹配模式要加载/ /中间
+       pattern 	正则表达式
+       replacement 	替换的内容
+       subject 	需要匹配替换的对象
+       limit 	可选，指定替换的个数，如果省略 limit 或者其值为 -1，则所有的匹配项都会被替换
+
+       replacement 可以包含 \\n 形式或 $n 形式的逆向引用，首选使用后者。每个此种引用将被替换为与第 n 个被捕获的括号内的子模式所匹配的文本。n 可以从 0 到 99，其中 \\0 或 $0 指的是被整个模式所匹配的文本。对左圆括号从左到右计数（从 1 开始）以取得子模式的数目。
+       对替换模式在一个逆向引用后面紧接着一个数字时（如 \\11），不能使用 \\ 符号来表示逆向引用。因为这样将会使 preg_replace() 搞不清楚是想要一个 \\1 的逆向引用后面跟着一个数字 1 还是一个 \\11 的逆向引用。解决方法是使用 \${1}1。这会形成一个隔离的 $1 逆向引用，而使另一个 1 只是单纯的文字。
+       上述参数除 limit 外都可以是一个数组。如果 pattern 和 replacement 都是数组，将以其键名在数组中出现的顺序来进行处理，这不一定和索引的数字顺序相同。如果使用索引来标识哪个 pattern 将被哪个 replacement 来替换，应该在调用 preg_replace() 之前用 ksort() 函数对数组进行排序。
+
+       int preg_match ( string pattern, string subject [, array matches [, int flags]])
+       在 subject 字符串中搜索与 pattern 给出的正则表达式相匹配的内容。
+       如果提供了 matches，则其会被搜索的结果所填充。$matches[0] 将包含与整个模式匹配的文本，$matches[1] 将包含与第一个捕获的括号中的子模式所匹配的文本，以此类推    
+       模式修正符 	说明
+       i 	模式中的字符将同时匹配大小写字母
+       m 	字符串视为多行
+       s 	将字符串视为单行，换行符作为普通字符
+       x 	将模式中的空白忽略
+       e 	preg_replace() 函数在替换字符串中对逆向引用作正常的替换，将其作为 PHP 代码求值，并用其结果来替换所搜索的字符串。
+       A 	强制仅从目标字符串的开头开始匹配
+       D 	模式中的 $ 元字符仅匹配目标字符串的结尾
+       U 	匹配最近的字符串
+       u 	模式字符串被当成 UTF-8 
+
+******    preg_split — 通过一个正则表达式分隔字符串		
+***** JSON 函数 
+      json_decode — 对 JSON 格式的字符串进行解码
+      json_encode — 对变量进行 JSON 编码
+      json_last_error_msg — Returns the error string of the last json_encode() or json_decode() call
+      json_last_error — 返回最后发生的错误
+
+***** Socket 函数
+
+      socket_accept — Accepts a connection on a socket
+      socket_bind — 给套接字绑定名字
+      socket_clear_error — 清除套接字或者最后的错误代码上的错误
+      socket_close — 关闭套接字资源
+      socket_cmsg_space — Calculate message buffer size
+      socket_connect — 开启一个套接字连接
+      socket_create_listen — Opens a socket on port to accept connections
+      socket_create_pair — Creates a pair of indistinguishable sockets and stores them in an array
+      socket_create — 创建一个套接字（通讯节点）
+      socket_get_option — Gets socket options for the socket
+      socket_getopt — 别名 socket_get_option
+      socket_getpeername — Queries the remote side of the given socket which may either result in host/port or in a Unix filesystem path, dependent on its type
+      socket_getsockname — Queries the local side of the given socket which may either result in host/port or in a Unix filesystem path, dependent on its type
+      socket_import_stream — Import a stream
+      socket_last_error — Returns the last error on the socket
+      socket_listen — Listens for a connection on a socket
+      socket_read — Reads a maximum of length bytes from a socket
+      socket_recv — 从已连接的socket接收数据
+      socket_recvfrom — Receives data from a socket whether or not it is connection-oriented
+      socket_recvmsg — Read a message
+      socket_select — Runs the select() system call on the given arrays of sockets with a specified timeout
+      socket_send — Sends data to a connected socket
+      socket_sendmsg — Send a message
+      socket_sendto — Sends a message to a socket, whether it is connected or not
+      socket_set_block — Sets blocking mode on a socket resource
+      socket_set_nonblock — Sets nonblocking mode for file descriptor fd
+      socket_set_option — Sets socket options for the socket
+      socket_setopt — 别名 socket_set_option
+      socket_shutdown — Shuts down a socket for receiving, sending, or both
+      socket_strerror — Return a string describing a socket error
+      socket_write — Write to a socket
+** 执行运算符
+   `` 等效于 shell_exec()
+** 类与对象
+   构造函数
+   __construct()
+   parent::__construct();
+   析构函数
+   __destruct()
+*** 类的属性
+: __set()和__get()只对私有属性起作用，对于用public定义的属性，它们两个都懒理搭理
+*** 类的常量 const 
+: 调用 $this::PI / 类名::PI (双冒号)  注意写法,要不只是创建新的属性
+*** 静态成员 供所有类的实例共享的字段或方法
+**** 调用
+类的外部，“类名::$成员名”
+类的内部, “self::$成员名”
+**** 修改
+对于用public定义的静态成员，可以在外部更改它的值。private等则不行。
+*** 调用
+（一）this关键字：用于类的内部指代类的本身。来访问属性或方法或常量，如$this->属性名或方法名。$this::常量名。this还可以用在该类的子类中，来指代本身的属性或方法。
+（二）双冒号“::”关键字：用于调用常量、静态成员。
+（三）self关键字:在类的内部与双冒号配合调用静态成员，如 self::$staticVar.，在类的内部，不能用$this来调用静态成员。
+以后统一在调用方法或属性时用 “-> “,调用常量则用双冒号“::”，不会搞晕。
+*** 成员访问属性
+public(默认，可省略，也等同于php6的var声明),private（私有，也不能由子类使用），protected(私有，但可由子类使用) ，abstract(抽象，参下文)，final(阻止在子类中覆盖—也称重载，阻止被继承，用于修饰类名及方法，如final class test{ final function fun(){}} ，但不能用于属性),static(静态)
+**** 抽象类和抽象方法（abstract——注意：没有所谓抽象属性）:
+抽象可以理解成父类为子类定义了一个模板或基类。作用域abstract只在父类中声明，但在子类中实现。注意事项：
+1、抽象类不能被实例化，只能被子类（具体类）继承后实现。
+2、抽象类必须在其子类中实现该抽象类的所有抽象方法。否则会出错。
+3、在抽象方法中，只是声明，但不能具体实现：如abstract function gettow(){ return $this->p; }是错的，只能声明这个方法：abstract function gettow();（连方括号{}都不要出现）,抽象方法和抽象类主要用于复杂的类层次关系中。该层次关系需要确保每一个子类都包含并重载了某些特定的方法。这也可以通过接口实现
+4、属性不能被命名为抽象属性，如abstract $p = 5是错的。
+5、只有声明为抽象的类可以声明抽象方法，但如果方法声明为抽象，就不能具体实现。
+*** 类的管理
+**** instanceof 用于分析一个对象是否是某一个类的实例或子类或是实现了某个特定的接口：但要注意： 类名没有任何引号等定界符，否则会出错。如test不能用'test'
+**** 确定类是否存在：boolean class_exists(string class_name): class_exists(‘test');
+**** 返回类名：string get_class(object)，成功时返回实例的类名，失败则返回FALSE：
+**** 了解类的公用属性：array get_class_vars(‘className') ,返回关键数组：包含所有定义的public属性名及其相应的值。这个函数不能用实例名做变量
+**** 返回类方法：get_class_methods(‘test'); //或： get_class_methods($a);可用实例名做参数，返回包括构造函数在内的所有非私有方法。
+**** print_r(get_declared_classes())了解当前PHP版本中所有的类名。PHP5有149个。
+**** get_object_vars($a)返回实例中所有公用的属性及其值的关联数组。注意它和get_class_vars()的区别：
+/* (1) get_object_vars($a)是用实例名做参数，而get_class_vars(‘test')是用类名做参数。
+ get_object_vars($a)获得的属性值是实例运行后的值，而get_class_vars(‘test')获得的属性值是类中的初始定义。
+ 两者均返回关联数组，且均对未赋值的属性返回NULL的值。如类test中有定义了public $q;则返回Array ( [v] => 5 [q]=>) ,
+**** 返回父类的名称：get_parent_class($b);//或get_parent_class(‘test2′); 返回test
+**** 确定接口是否存在：boolean interface_exists($string interface[,boolean autoload])
+**** 确定对象类型： boolean is_a($obj,'className')，当$obj属于CLASSNAME类时，或属于其子类时，返回TRUE，如果$obj与class类型无关则返回FALSE。如：is_a($a,'test')
+**** 确定是否是某类的子对象：当$b是继承自TEST类时，返回TRUE，否则FALSE。boolean is_subclass_of($b,'test');
+**** 确定类或实例中，是否存在某方法。method_exists($a,'getv') //或用method_exists(‘test','getv')，此函数适用于非public定义的作用域的方法。
+*** 对象克隆：
+*** 在子类中调用父类的属性或方法：
+1、调用父类方法：在子类中调用父类的方法，有3种方法：
+$this->ParentFunction(); 或
+父类名::ParentFunction(); 或
+parent::parentFun();
+
+2、调用父类属性：只能用$this->ParentProperty;
+*** 接口
+接口：interface，可以理解成一组功能的共同规范，最大意义可能就是在多人协作时，为各自的开发规定一个共同的方法名称。
+** 发展规范
+*** PHP 包含文件
+: require 引入或者包含外部php文件
+: include     
+*** 命名空间 namespace XXX\yyy ;调用 1.include/require 2.XXX\yyy\classname as classnamealias
+use XXX\yyy;
+*** Errors
+**** 错误显示
+     ini_set("display_errors", "On");   
+     error_reporting(E_ALL); //-1是关闭
+     更改了Php.ini后要重启IIS,点击 “开始”->“运行”，输入iisreset 回车。
+**** Error 和 Logging 函数
+	 debug_backtrace() 	生成 backtrace。
+	 debug_print_backtrace() 	打印 backtrace。
+	 error_get_last() 	返回最后发生的错误。
+	 error_log() 	向服务器错误记录、文件或远程目标发送错误消息。
+	 error_reporting() 	规定报告哪个错误。
+	 restore_error_handler() 	恢复之前的错误处理程序。
+	 restore_exception_handler() 	恢复之前的异常处理程序。
+	 set_error_handler() 	设置用户自定义的错误处理函数。
+	 set_exception_handler() 	设置用户自定义的异常处理函数。
+	 trigger_error() 	创建用户级别的错误消息。
+	 user_error() 	trigger_error() 的别名。
+	 PHP Filesystem 函数
+
+*** 异常处理
+try{
+throw new Exception("wrong");
+}catch(Exception $e){
+$e->getMessage();
+getCode
+getLine
+}
+*** 引用的解释
+*** 预定义变量
+*** 预定义异常
+*** 预定义接口
+*** 上下文（Context）选项和参数
+*** 支持的协议和封装协议
+* PHP 扩展
+** zip
+   Windows 用户需要在 php.ini 里使 php_zip.dll 可用，以便使用这些函数。
+   Linux 系统 ¶
+   为了使用这些函数，必须在编译 PHP 时用 --enable-zip 配置选项来提供 zip 支持。
+** PECL php扩展仓库
+   下载: pecl install extname
+   这里可以指定版本   extname-0.1
+   或者svn: $ svn checkout http://svn.php.net/repository/pecl/extname/trunk extname
+   然后在php.ini 中激活扩展 ubuntu 中要创建软链接, 包含在文件夹中的, 所以不用修改php.ini文件 
+   php-config  php配置信息
+* THINKPHP 
+** 结构
+   模块/模块配置文件/控制器目录/模型目录/视图目录
+   公共函数文件/公共配置文件/数据库配置文件/路由配置文件/应用行为扩展定义文件
+   public 应用路口文件/
+   框架系统目录
+   概念：入口文件，index.php/admin.php 相当于某个操作系统
+   应用：相当于某个应用程序/有独立配置/打开某个URL 相当于执行某个应用程序
+   模块：分层真多，针对大网站的吧。因为这些概念是定死的
+   控制器：
+   start.php 引导文件（加载系统常量/变量/执行应用）
+   命令行: php file.php [args]
+   技术：隐藏入口文件 apache mod_rewrite.so
+   rewriterule ^(.*)$ index.php/$1
+   实例化内置类库时，加上\   $class = new \stdClass();
+** 控制器
+namespace app\index\controller;
+class Controller{
+}
+渲染 use think\View;
+$view = new View();
+return $view->fetch('index');  //当前目录,可以定义
+或 继承 Controller
+return $this->fetch('index');
+控制器初始化？这技术! 还是针对模块的，大软件的。
+public function _initialize(){}
+前置操作 
+这技术 需在控制器中设置 $beforeActionList属性
+protected $beforeActionList = [
+'first',
+'second' => ['except'=>'hello'],
+'third'  => ['only'=>'hello,data'],
+];
+
+内置页面跳转,功能很弱
+$this->success('成功','URL');
+$this->error('失败','URL');
+
+给自己赋值
+$this->assign();
+空操作:这种设计是为了死链而设计的吧，没设计功能时的跳转。
+_empty
+空控制器
+需定义Error 类
+
+助手函数 xml,json,jsonp,html
+对对象编码
+** composer
+** 路由
+** 请求
+获取请求信息 $request = Request::instance();
+$request->domain() 获取当前域名
+$request->baseFile() 当前URL地址
+url(),baseUrl(),root,pathinfo(),path(),ext()
+module(),controller(),action() 获取模块/控制器/操作
+isAjax(),param() only(['name'])仅包含name except(['name']排除name
+检测变量 has('id','get') has('id','post')  
+或具体的 get() / post()
+server()/session()/cookie()/head()
+还可以对input进行过滤 filter('filter_method') 这是全局的
+单独的 Request::instance()->param('username','','method1,method2')
+变量修饰 input('get.id/d')
+|s|强制转换为字符串|
+|d|整型|
+|b|布尔|
+|a|数组|
+|f|浮点|
+参数绑定方式:1.按参数名2. 按参数顺序
+定义缓存 Route::get('new/:id','News/read',['cache'=>3600]); //设置3600秒的缓存
+** 日志
+** 异常
+** 模型
+** 数据库
+   类拆分为Connection(连接器）/Query（查询器）/Builder（SQL生成器）
+   闭包查询和闭包事务
+   Query对象查询
+   配置文件定义 database.php  
+   动态配置Db::connect([
+   'type' => 'mysql',
+   'dsn' => '',........ ]);
+   或字符串方式 Db::connect('mysql://root:1234@12344/...');
+
+可以定制自己私有的连接 ,此时在Model中定义 connection属性
+原生查询与写入
+Db::query('select * from table'); 
+Db::execute('insert into ...');
+//表前缀不能省
+Db::table('think_user')->where('status',1)->select();
+//表前缀能省
+Db::name('user')->where('status',1)->select();
+
+值和列查询
+//返回某个字段的值
+Db::table('table')->where('id',1)->value('name');
+//返回数组
+Db::table('table')->where('id',1)->column('name');
+//指定索引
+Db::table('table')->where('id',1)->column('name','id');
+
+数据集分批处理 chunk
+Db::table('think_user')->where('score','>',80)->chunk(100,function($users){
+foreach($usersas$user){
+//
+}
+});
+
+添加 insert($data) /getLastInsID();/insertGetId($data)
+添加多条 二维数组  insertAll($data) 
+更新 update,主键可以不用where 直接写在后面
+更新某字段setField
+自增或自减一个字段 setInc/setDec,可以设置延时更新
+更新时可以把更新的字段都串起来
+删除可以是主键，也可以用where 查询
+
+where and 查询,同条件可以合并 where('name&title','like','%xxx')
+whereOr查询where('name|title','like','%xxx')
+混合查询 Db::table('table')->where(function ($query){
+$query->where('id',1)->whereor('id',2);})
+->whereOr(function($query){$query->where('name','like','think')->
+whereOr('name','like','thinkphp');})->select();
+这语法像函数式编程
+select * from `table' where ( `id`= 1 Or `id` = 2) OR (`name` like
+`think` or `name` like 'thinkphp' )
+
+获取表信息 getTableInfo()
+where('字段名','表达式','查询条件');
+whereOr('字段名','表达式','查询条件');
+表达式 含义
+EQ、= 等于(=)
+NEQ、 不等于()
+GT、> 大于(>)
+EGT、>= 大于等于(>=)
+LT、< 小于(<)
+ELT、<= 小于等于(<=)
+LIKE 模糊查询
+[NOT]	BETWEEN (不在)区间查询
+[NOT]	IN (不在)IN	查询  [1,2,5]
+[NOT]	NULL 查询字段是否(不)是NULL
+[NOT]	EXISTS EXISTS查询
+EXP 表达式查询,支持SQL语法
+>	time 时间比较
+<	time 时间比较
+between	time 时间比较
+notbetween	time 时间比较
+exp
+where('id','in','1,3,8');
+可以改成:
+where('id','exp','	IN	(1,3,8)	');
+joinINNER	JOIN:	等同于	JOIN(默认的JOIN类型),如果表中有至少一个匹配,则返回行
+LEFT	JOIN:	即使右表中没有匹配,也从左表返回所有的行
+RIGHT	JOIN:	即使左表中没有匹配,也从右表返回所有的行
+FULL	JOIN:	只要其中一个表中存在匹配,就返回行
+
+having
+strict 严格检测字段是否存在
+view 视图查询
+order
+page 用于查询分页(内部会转换成limit)
+limit
+数组串起来方便
+$map['id']		=	['>',1];
+$map['mail']		=	['like','%thinkphp@qq.com%'];
+
+Db::table('think_user')->alias('a')->join('__DEPT__	b	','b.user_id=	a.id')->select();
+字段中使用函数Db::table('think_user')->field('id,SUM(score)')->select();
+Db::table('think_article')->limit('10,25')->select();
+
+ page方法还可以和limit方法配合使用,例如:
+Db::table('think_article')->limit(25)->page(3)->select();
+它会自己计算
+
+返回单条不重复的distinct(true)
+这里可以用本地缓存方法 Db::table('think_user')->where('id=5')->cache(true)->find();
+$result	=	Db::table('think_user')->cache('key',60)->find();
+外部可以获取了
+$data	=	\think\Cache::get('key');
+
+count 统计数量,参数是要统计的字段名(可选)
+max 获取最大值,参数是要统计的字段名(必须)
+min 获取最小值,参数是要统计的字段名(必须)
+avg 获取平均值,参数是要统计的字段名(必须)
+sum 获取总分,参数是要统计的字段名(必须)
+对时间的比较     
+whereTime('birthday',	'>=',	'1970-10-1')
+关键字 today,yesterday,week,last week, month,last month,year,last year
+2 hours,
+区间查询
+
+构建子查询,就是返回sql语句而不执行
+1.select(false)
+2.fetchSql(true)
+3.buildSql();
+
+** 模板
+** 验证
+* CI 框架
+** 应用程序流程图
+***    index.php 文件作为前端控制器，初始化运行 CodeIgniter 所需的基本资源；
+    : index.php 是唯一入口,因为其他文件开头都有
+    : defined('BASEPATH') OR exit('No direct script access allowed');
+***    Router 检查 HTTP 请求，以确定如何处理该请求；
+***    如果存在缓存文件，将直接输出到浏览器，不用走下面正常的系统流程；
+***    在加载应用程序控制器之前，对 HTTP 请求以及任何用户提交的数据进行安全检查；
+***    控制器加载模型、核心类库、辅助函数以及其他所有处理请求所需的资源；
+***    最后一步，渲染视图并发送至浏览器，如果开启了缓存，视图被会先缓存起来用于 后续的请求。
+** 模型-视图-控制器  //用户请求一个资源  (数据库中存放资源/找到资源并构图/返回资源给用户)
+** 判断请求(生成资源/存储资源)通过浏览器返回给他页面
+** 安装(设备安装一下)
+1:  解压缩安装包；
+2:  将 CodeIgniter 文件夹及里面的文件上传到服务器，通常 index.php 文件将位于网站的根目录；
+3:  使用文本编辑器打开 application/config/config.php 文件设置你网站的根 URL，如果你想使用加密或会话，在这里设置上你的加密密钥；
+4:  如果你打算使用数据库，打开 application/config/database.php 文件设置数据库参数。
+** 请求流程
+*** 1.弄到URL http://example.com/news/latest/10
+*** 2.分析,路由  routes.php //路由的作用是分析成类和方法调用,路由条目中没有,就不分析了
+    $route['default_controller']='pages/view'; 控制器路径
+    $route['(:any)'] = 'pages/view/$1';  通配规则
+*** 3.制造控制器 News
+#+BEGIN_SRC php
+class News extends CI_Controller{
+}    
+#+END_SRC
+*** 4.制造数据模型 News_model
+****    1.创建数据库表
+#+BEGIN_SRC sql
+CREATE TABLE news (
+    id int(11) NOT NULL AUTO_INCREMENT,
+    title varchar(128) NOT NULL,
+    slug varchar(128) NOT NULL,
+    text text NOT NULL,
+    PRIMARY KEY (id),
+    KEY slug (slug)
+);
+#+END_SRC
+****    2.在application/models/目录
+#+BEGIN_SRC php
+class News_model extends CI_Model{
+
+public function __construct()
+{
+$this->load->database();
+}
+
+public function get_news($slug=FALSE)
+{
+if ($slug===FALSE)
+{
+$query=$this->db->get('news');
+return $query->result_array();
+}
+$query=$this->db->get_where('news',array('slug'=>$slug));
+return $query->row_array();
+}
+}
+#+END_SRC
+*** 5.控制器中使用model
+#+BEGIN_SRC php
+class News externs CI_controller{
+public function __construct(){
+parent::__construct();
+$this->load->model('news_model');
+$this->load->helper('url_help');
+}
+public function index()
+{
+$data['news']=$this->news_model->get_news();
+}
+public function view($slug){
+$data['news_item']=$this->news_model->get_news($slug);
+}
+}
+#+END_SRC
+*** 6.控制器中把数据传递给视图
+#+BEGIN_SRC php
+public function index(){
+: $data['news']=$this->news_model->get_news();
+$data['title']="Hello,world";
+
+$this->load->view('templates/header',$data);
+$this->load->view('news/index',$data);
+$this->load->view('templates/footer');   此视图不传数据
+}
+#+END_SRC
+*** 7.视图中调用数据 application/views/news/index.php ;这里就是前台啦
+#+BEGIN_SRC php
+<h2><?php echo $title; ?></h2>
+<?php foreach($news as $new_item):?>
+<h3><?php echo $news_item['title']; ?></h3>
+<div class="main">
+<?php echo $new_item['text']; ?>
+</div>
+<?php endforch; ?>
+#+END_SRC
+*** 8.修改路由
+#+BEGIN_SRC php
+$route['news/(:any)'] = 'news/view/$1';
+$route['news'] = 'news';
+#+END_SRC
+** 创建数据 
+*** 1.表单或jquery
+*** 2.控制器验证并插入数据
+#+BEGIN_SRC php
+class News extends CI_Controller{
+public function create()
+{
+if(INPUT==RIGHT)
+{
+$this->news_model->set_news();
+$this->load->view('news/success');    创建成功返回页面
+}
+}
+}
+#+END_SRC
+*** 3.插入数据的模块
+#+BEGIN_SRC php
+public function set_news()
+{
+$data=array(
+'title'=>$this->input->post('title'),
+'slug'=>$slug,
+'text'=>$this->input->post('text')
+);
+return $this->db->insert('news',$data);
+}
+#+END_SRC
+** 常规主题
+*** CodeIgniter URL
+**** (默认) URI分段方式 : example.com/class/function/ID
+**** 查询字符串格式 : index.php?c=controller&m=method
+*** 配置文件 config/config.php
+**** 后缀 .html
+**** 启用查询字符串格式
+#+BEGIN_SRC php
+$config['enable_query_strings'] = FALSE;
+$config['controller_trigger'] = 'c';
+$config['function_trigger'] = 'm';
+#+END_SRC
+**** 管理应用程序目录 $application_folder = 'application';
+*** 控制器
+**** 默认控制器 当 URI 没有分段参数时加载
+#+BEGIN_SRC php
+$route['default_controller'] = 'blog';
+#+END_SRC
+**** _remap
+: 如果你的控制包含一个 _remap() 方法，那么无论 URI 中包含什么参数时都会调用该方法
+**** 处理输出 
+: 如果你的控制器含有一个 _output() 方法，输出类将会调用该方法来显示数据， 而不是直接显示数据。该方法的第一个参数包含了最终输出的数据。
+#+BEGIN_SRC php
+public function _output($output)
+{
+    echo $output;
+}
+#+END_SRC
+**** 私有方法
+只要简单的将方法声明为 private 或 protected 或 _methodname [名字前加下划线]
+*** 视图
+**** 加载视图$this->load->view('view_name');
+**** 将视图作为数据返回
+: 如果你将该参数设置为 TRUE ， 该方法返回字符串，默认情况下为 FALSE ，视图将显示到浏览器。
+: $string = $this->load->view('myfile', '', TRUE);
+*** 模型  
+模型是专门用来和数据库打交道的 PHP 类
+**** 加载模型 $this->load->model('model_name');
+*** 辅助函数
+**** 加载辅助函数 $this->load->helper('url');
+*** 类库 位于 /system/libraries
+**** 加载类库$this->load->library('class_name');
+*** 网页缓存
+**** 开始缓存$this->output->cache($n);
+**** 删除缓存
+#+BEGIN_SRC php
+// Deletes cache for the currently requested URI
+$this->output->delete_cache();
+// Deletes cache for /foo/bar
+$this->output->delete_cache('/foo/bar');
+#+END_SRC
+*** 以 CLI 方式运行
+: $ php index.php tools message 重新路由了,单一入口
+*** 处理环境
+: ENVIRONMENT 常量
+: define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
+*** URI安全
+: CodeIgniter 严格限制 URI 中允许出现的字符，以此来减少恶意数据传到你的应用程序的可能性。
+* PHP 例子
+  <?php
+  ini_set("display_errors", "On");  
+  error_reporting(E_ALL | E_STRICT);
+  echo __FILE__;
+  echo "</br>";
+  $segs[]=6;
+  $segs[]=7;
+  class upDateNameClass
+  {
+  function UpdateFunc()
+  {
+  echo "hello";
+  }
+  }
+  $upobj=new upDatenameclass();
+  $upobj->updatefunc();
+  
+  $a=31;
+  $b=5;
+  function f(){
+  $tmp1=  $GLOBALS['a'];
+  $tmp2=  $GLOBALS['b'];
+  $a=$tmp1+$tmp2;
+  return $a;
+}
+<?php
+//这两方法用于处理类中未声明的属性访问.如果属性可见性为private or protected,也调用该方法
+class TestclassB{
+    private $privateField;
+    public $publicField;
+    
+    public function __construct(){
+        $this->publicField="this is a public field.\n";
+        $this->privateField="this is a private field.\n";
+    }
+    public function __get($property)
+    {
+        print "__get()is called.\n";
+        $method="get${property}";
+        if(method_exists($this,$method)){
+            return $this->$method();
+        }
+        return "this is underfined field.\n";
+    }
+    public function __set($method, $value)
+    {
+        print "__set is called\n";
+        $m="set${method}";
+        if(method_exists($this,$m))
+        {
+            $this->$m($value);
+        }else
+        {
+            print "this is an underfined field.\n";
+        }
+    }
+    public function getPrivateField(){
+        return $this->privateField;
+    }
+    
+    public function setPrivateField($value){
+        $this->privateField=$value;
+    }
+}
+$testb=new TestclassB();
+print $testb->PrivateField;
+print $testb->undefinedField;
+print $testb->publicField;
+echo "<br/>";
+
+$testb->privateField="this is a private on set";
+$testb->undefinedField="this is a undefinedField on set";
+$testb->publicField="this is a publicField on set";
+print $testb->PrivateField;
+echo "<br/>";
+print $testb->undefinedField;
+echo "<br/>";
+print $testb->publicField;
+die();
+?>
+<?php
+//当打印对象是,该类定义了此方法,就打印该方法的返回值,否则按照缺省返回错误
+class TestClassa{
+    public function __toString(){
+        return "this is testclass::__toString.\n";
+    }
+}
+$testa=new TestClassa();
+print $testa;
+die();
+?>
+<?php
+//析构方法的作用和构造方法_construct相反,在对象被垃圾收集器收集之前自动调用,可以做清理;;垃圾收集不知道什么时候运行,测试shi
+//print 先于 __destruct方法先运行
+class TestClass{
+function __destruct(){
+    print "Testclass destructor is called.\n";
+}
+}
+$testo=new TestClass();
+unset($test);
+print "Application will exit .\n";
+die();
+?>
+
+<?php
+//static 关键字和self和parent 一样,static还可以作为静态方法调用的标识符,甚至是从非静态上下文中调用
+
+
+abstract class Basea{
+    private $ownedGroup;
+    public function __construct(){
+    //这里的static 和上面的例子一样,表示当前调用该方法的实际类//这里static方法的含义与众不同
+        //这里getGroup 用静态方法或普通类方法都能调用,如果是普通类方法,建议用$this
+        $this->ownedGroup=static::getGroup();
+    }
+    public function printGroup()
+    {
+        print "My Group is ".$this->ownedGroup."\n";
+    }
+     public static function getInstance() {
+        return new static();
+    }
+    public static function getGroup() {
+        return "default";
+    }
+}
+
+class A extends Basea {}
+class B extends Basea{
+    public static function getGroup()
+    {
+        return "SubB";
+    }
+}
+A::getInstance()->printGroup();
+B::getInstance()->printGroup();
+
+die();
+?>
+
+<?php
+//类实现接口要使用implements,实现其中的抽象方法.一个类可以实现多个接口,接口的意义在于后面一节继续说的多态,而不是多继承,因为没继承实现呀
+interface People
+{
+    const MAX=30;
+    function setName($name);
+    function getName();
+}
+
+class NormalPeople implements People
+{
+    private $name;
+    function getName()
+    {
+        return $this->name;
+    }
+    function setName($name)
+    {
+        $this->name=$name;
+    }
+}
+$nope=new NormalPeople();
+$nope->setName("xiaoming");
+echo "name is".$nope->getName();
+echo "Max value".People::MAX; //静态常量
+die();
+?>
+
+<?php
+//接口是一种特殊的抽象类，这种抽象类中只包含抽象方法和静态常量。
+interface People
+{
+    const MAX=30;
+    function setName($name);
+    function getName();
+}
+
+die();
+?>
+
+<?php
+//用abstract 修饰的类表示这个方法是一个抽象方法.
+abstract class User
+{
+    protected $sal =0;
+    abstract function getSal();
+    abstract function setSal($sal);
+    
+    public function __toString(){
+        return get_class($this);
+    }
+}
+
+class NormalUser extends User{
+    function getSal(){
+    }
+    function setSal($sal){
+    }
+}
+die();
+
+?>
+
+
+<?php
+//抽象类不能实例化
+abstract class abstractclass
+{
+    public function __toString()
+    {
+        return get_class($this);
+    }
+    
+}
+
+class realclass extends abstractclass{
+
+}
+$ac=new realclass();  
+return $ac->__toString();
+die();
+?>
+
+
+
+<?php
+
+//静态类比动态类快的原因（前提是调用多次）,静态类生成一次,动态类每调用一次就要先生成一次
+
+//这里介绍的static 关键字主要用于延迟静态绑定功能
+abstract class Base{
+    
+    public static function getInstance(){
+    //这里的new static()实例化的是调用该静态方法的当前类.
+        return new static();
+    }
+    
+    abstract public function printSelf();
+
+}
+
+class SubA extends Base{
+    public function printSelf(){
+        print "This is SubA:printSELF.\n";
+    }
+}
+
+class SubB extends Base{
+    public function printSelf(){
+        print "This is SubB:printSELF.\n";
+    }
+}
+
+SubA::getInstance()->printSelf();
+SubB::getInstance()->printSelf();
+
+die();
+?>
+
+
+<?php
+//在类内调用该类静态成员和静态方法的前缀修饰,对于非静态成员变量和函数则使用this
+// this 实例指针  parent 父类指针 self 当前类指针    /?? 类其实也要 在内存生成的 ,实例化的是数据  ;;静态变量能改值 new static()实例静态方法
+
+class StaticTest{
+	static public $arg1="Hello,this is static field!";
+	
+	static public function SayHello()
+	{
+		print self::$arg1;
+	}
+}
+
+	print StaticTest::$arg1;
+	StaticTest::SayHello();
+	StaticTest::$arg1=3;
+	print StaticTest::$arg1;
+	
+	die();
+?>
+
+<?php
+//类的继承(数据和方法)
+
+	
+class baseclass
+{
+	protected $arg1;
+	protected $arg2;
+	
+	function __construct($arg1,$arg2)
+	{
+		$this->arg1=$arg1;
+		$this->arg2=$arg2;
+		print "__construct is called..\n";
+	}
+	
+	function getAttributes()
+	{
+		return "arg1 is".$this->arg1."\targ2 is ".$this->arg2;
+	}
+}
+	
+class  subclass extends baseclass
+{
+	protected $arg3;
+	
+	function __construct($baseArg1,$baseArg2,$subArg)
+	{
+		parent::__construct($baseArg1,$baseArg2);
+		$this->arg3=$subArg;
+	}
+	
+	function getAttributes()
+	{
+		return parent::getAttributes().'$arg3 is'.$this->arg3;
+		
+	}
+}	
+
+$test=new subclass("arg1v","arg2v","arg3v")	;
+print $test->getAttributes();
+	
+	
+die();
+?>
+
+
+<?php
+//类中的构造函数的用法
+ ini_set("display_errors", "On");   
+	error_reporting(E_ALL);
+	
+class test{
+	private $arg1;
+	private $arg2;
+	
+	public function __construct($arg1,$arg2)
+	{
+		$this->arg1=$arg1;
+		$this->arg2=$arg2;
+		print "__construct is called..\n";
+	}
+	
+	public function printAttributes()
+	{
+		print 'arg1 ='.$this->arg1.'arg2='.$this->arg2;
+		
+	}
+}	
+
+$testobj=new test("arg1v","arg2v");
+$testobj->printAttributes();
+die();
+?>
+* 导入excel
+最近因项目需要，需要开发一个模块，把系统中的一些数据导出成Excel，修改后再导回系统。就趁机对这个研究了一番，下面进行一些总结。
+基本上导出的文件分为两种：
+1：类Excel格式，这个其实不是传统意义上的Excel文件，只是因为Excel的兼容能力强，能够正确打开而已。修改这种文件后再保存，通常会提示你是否要转换成Excel文件。
+优点：简单。
+缺点：难以生成格式，如果用来导入需要自己分别编写相应的程序。
+2：Excel格式，与类Excel相对应，这种方法生成的文件更接近于真正的Excel格式。
+
+如果导出中文时出现乱码，可以尝试将字符串转换成gb2312，例如下面就把$yourStr从utf-8转换成了gb2312:
+$yourStr = mb_convert_encoding(”gb2312″, “UTF-8″, $yourStr);
+
+下面详细列举几种方法。
+一、PHP导出Excel
+1：第一推荐无比风骚的PHPExcel，官方网站： http://www.codeplex.com/PHPExcel
+导入导出都成，可以导出office2007格式，同时兼容2003。
+下载下来的包中有文档和例子，大家可以自行研究。
+抄段例子出来：
+PHP代码
+<?php   
+/**  
+*/   
+   
+/** Error reporting */   
+error_reporting(E_ALL);   
+   
+/** Include path **/   
+set_include_path(get_include_path() . PATH_SEPARATOR . ‘../Classes/’);   
+   
+/** PHPExcel */   
+include ‘PHPExcel.php’;   
+   
+/** PHPExcel_Writer_Excel2007 */   
+include ‘PHPExcel/Writer/Excel2007.php’;   
+   
+// Create new PHPExcel object   
+echo date(’H:i:s’) . ” Create new PHPExcel object\n”;   
+$objPHPExcel = new PHPExcel();   
+   
+// Set properties   
+echo date(’H:i:s’) . ” Set properties\n”;   
+$objPHPExcel->getProperties()->setCreator(”Maarten Balliauw”);   
+$objPHPExcel->getProperties()->setLastModifiedBy(”Maarten Balliauw”);   
+$objPHPExcel->getProperties()->setTitle(”Office 2007 XLSX Test Document”);   
+$objPHPExcel->getProperties()->setSubject(”Office 2007 XLSX Test Document”);   
+$objPHPExcel->getProperties()->setDescrīption(”Test document for Office 2007 XLSX, generated using PHP classes.”);   
+$objPHPExcel->getProperties()->setKeywords(”office 2007 openxml php”);   
+$objPHPExcel->getProperties()->setCategory(”Test result file”);   
+   
+// Add some data   
+echo date(’H:i:s’) . ” Add some data\n”;   
+$objPHPExcel->setActiveSheetIndex(0);   
+$objPHPExcel->getActiveSheet()->setCellValue(’A1′, ‘Hello’);   
+$objPHPExcel->getActiveSheet()->setCellValue(’B2′, ‘world!’);   
+$objPHPExcel->getActiveSheet()->setCellValue(’C1′, ‘Hello’);   
+$objPHPExcel->getActiveSheet()->setCellValue(’D2′, ‘world!’);   
+   
+// Rename sheet   
+echo date(’H:i:s’) . ” Rename sheet\n”;   
+$objPHPExcel->getActiveSheet()->setTitle(’Simple’);   
+   
+// Set active sheet index to the first sheet, so Excel opens this as the first sheet   
+$objPHPExcel->setActiveSheetIndex(0);   
+   
+// Save Excel 2007 file   
+echo date(’H:i:s’) . ” Write to Excel2007 format\n”;   
+$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);   
+$objWriter->save(str_replace(’.php’, ‘.xlsx’, __FILE__));   
+   
+// Echo done   
+echo date(’H:i:s’) . ” Done writing file.\r\n”;  
+
+ 
+
+2、使用pear的Spreadsheet_Excel_Writer类
+下载地址： http://pear.php.net/package/Spreadsheet_Excel_Writer
+此类依赖于OLE,下载地址：http://pear.php.net/package/OLE
+需要注意的是导出的Excel文件格式比较老，修改后保存会提示是否转换成更新的格式。
+不过可以设定格式，很强大。
+
+
+PHP代码
+<?php   
+require_once ‘Spreadsheet/Excel/Writer.php’;   
+   
+// Creating a workbook   
+$workbook = new Spreadsheet_Excel_Writer();   
+   
+// sending HTTP headers   
+$workbook->send(’test.xls’);   
+   
+// Creating a worksheet   
+$worksheet =& $workbook->addWorksheet(’My first worksheet’);   
+   
+// The actual data   
+$worksheet->write(0, 0, ‘Name’);   
+$worksheet->write(0, 1, ‘Age’);   
+$worksheet->write(1, 0, ‘John Smith’);   
+$worksheet->write(1, 1, 30);   
+$worksheet->write(2, 0, ‘Johann Schmidt’);   
+$worksheet->write(2, 1, 31);   
+$worksheet->write(3, 0, ‘Juan Herrera’);   
+$worksheet->write(3, 1, 32);   
+   
+// Let’s send the file   
+$workbook->close();   
+?>  
+
+
+3:利用smarty，生成符合Excel规范的XML或HTML文件
+支持格式，非常完美的导出方案。不过导出来的的本质上还是XML文件，如果用来导入就需要另外处理了。
+详细内容请见rardge大侠的帖子：http://bbs.chinaunix.net/viewthread.php?tid=745757
+
+需要注意的是如果导出的表格行数不确定时，最好在模板中把”ss:ExpandedColumnCount=”5″ ss:ExpandedRowCount=”21″”之类的东西删掉。
+
+4、利用pack函数打印出模拟Excel格式的断句符号，这种更接近于Excel标准格式，用office2003修改后保存，还不会弹出提示，推荐用这种方法。
+缺点是无格式。
+
+
+PHP代码
+<?php   
+// Send Header   
+header(”Pragma: public”);   
+header(”Expires: 0″);   
+header(”Cache-Control: must-revalidate, post-check=0, pre-check=0″);   
+header(”Content-Type: application/force-download”);   
+header(”Content-Type: application/octet-stream”);   
+header(”Content-Type: application/download”);;   
+header(”Content-Disposition: attachment;filename=test.xls “);   
+header(”Content-Transfer-Encoding: binary “);   
+// XLS Data Cell   
+   
+xlsBOF();   
+xlsWriteLabel(1,0,”My excel line one”);   
+xlsWriteLabel(2,0,”My excel line two : “);   
+xlsWriteLabel(2,1,”Hello everybody”);   
+   
+xlsEOF();   
+   
+function xlsBOF() {   
+echo pack(”ssssss”, 0×809, 0×8, 0×0, 0×10, 0×0, 0×0);   
+return;   
+}   
+function xlsEOF() {   
+echo pack(”ss”, 0×0A, 0×00);   
+return;   
+}   
+function xlsWriteNumber($Row, $Col, $Value) {   
+echo pack(”sssss”, 0×203, 14, $Row, $Col, 0×0);   
+echo pack(”d”, $Value);   
+return;   
+}   
+function xlsWriteLabel($Row, $Col, $Value ) {   
+$L = strlen($Value);   
+echo pack(”ssssss”, 0×204, 8 + $L, $Row, $Col, 0×0, $L);   
+echo $Value;   
+return;   
+}   
+?>   
+不过笔者在64位linux系统中使用时失败了，断句符号全部变成了乱码。   
+   
+5、使用制表符、换行符的方法   
+制表符”\t”用户分割同一行中的列，换行符”\t\n”可以开启下一行。   
+<?php   
+header(”Content-Type: application/vnd.ms-execl”);   
+header(”Content-Disposition: attachment; filename=myExcel.xls”);   
+header(”Pragma: no-cache”);   
+header(”Expires: 0″);   
+/*first line*/   
+echo “hello”.”\t”;   
+echo “world”.”\t”;   
+echo “\t\n”;   
+   
+/*start of second line*/   
+echo “this is second line”.”\t”;   
+echo “Hi,pretty girl”.”\t”;   
+echo “\t\n”;   
+?>  
+
+
+6、使用com
+如果你的PHP可以开启com模块，就可以用它来导出Excel文件
+
+
+PHP代码
+<?PHP   
+$filename = “c:/spreadhseet/test.xls”;   
+$sheet1 = 1;   
+$sheet2 = “sheet2″;   
+$excel_app = new COM(”Excel.application”) or Die (”Did not connect”);   
+print “Application name: {$excel_app->Application->value}\n” ;   
+print “Loaded version: {$excel_app->Application->version}\n”;   
+$Workbook = $excel_app->Workbooks->Open(”$filename”) or Die(”Did not open $filename $Workbook”);   
+$Worksheet = $Workbook->Worksheets($sheet1);   
+$Worksheet->activate;   
+$excel_cell = $Worksheet->Range(”C4″);   
+$excel_cell->activate;   
+$excel_result = $excel_cell->value;   
+print “$excel_result\n”;   
+$Worksheet = $Workbook->Worksheets($sheet2);   
+$Worksheet->activate;   
+$excel_cell = $Worksheet->Range(”C4″);   
+$excel_cell->activate;   
+$excel_result = $excel_cell->value;   
+print “$excel_result\n”;   
+#To close all instances of excel:   
+$Workbook->Close;   
+unset($Worksheet);   
+unset($Workbook);   
+$excel_app->Workbooks->Close();   
+$excel_app->Quit();   
+unset($excel_app);   
+?>  
+
+一个更好的例子： http://blog.chinaunix.net/u/16928/showart_387171.html
+
+一、PHP导入Excel
+
+1：还是用PHPExcel，官方网站： http://www.codeplex.com/PHPExcel。
+
+2：使用PHP-ExcelReader,下载地址: http://sourceforge.net/projects/phpexcelreader
+举例：
+
+
+PHP代码
+<?php   
+require_once ‘Excel/reader.php’;   
+   
+// ExcelFile($filename, $encoding);   
+$data = new Spreadsheet_Excel_Reader();   
+   
+// Set output Encoding.   
+$data->setOutputEncoding(’utf8′);   
+   
+$data->read(’ jxlrwtest.xls’);   
+   
+error_reporting(E_ALL ^ E_NOTICE);   
+   
+for ($i = 1; $i <= $data->sheets[0]['numRows']; $i++) {   
+for ($j = 1; $j <= $data->sheets[0]['numCols']; $j++) {   
+echo “\”".$data->sheets[0]['cells'][$i][$j].”\”,”;   
+}   
+echo “\n”;   
+}   
+   
+?>  

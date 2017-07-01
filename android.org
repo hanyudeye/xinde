@@ -1,0 +1,499 @@
+* android
+ 没有统一的入口（main()方法),而是根据四类核心组件通过 Intent 来导航.
+核心组件 ： Activity , Service , Brodcase Receiver , ContentProvider
+View类 用来显示
+
+Activity: 通常是一个单独的屏幕。会显示由几个Views 控件组成的用户接口,并对事件作出响应。
+所以每个应用由多个Activity
+方法： startActivity() 可以在不同屏幕间导航
+
+Service: 是一种长生命周期的，没有用户界面的程序。 比如音乐播放器，可以后台播放。
+方法：Context.startService()来启动一个Service
+   Context.bindService() 连接到一个没运行的Service上。
+
+Broadcast  Receiver
+系统广播组件，比如检测手机电量的信号。
+
+ContentProvider
+实现不同组件间数据共享
+
+View 是用户界面基类。
+次序是 底层是Activity ; Activity 上面是Window;Window 上面是Views;
+View 又分 View(基本控件) 和ViewGroup （布局控件） 
+
+Intent 是 不同组件间相互导航的纽带。
+
+(length (visible-frame-list))
+* emacs android 环境搭建
+* Ubuntu 14.04 设置Android开发环境
+** 1.准备Java环境
+   本文只安装sdk，不安装什么IDE，因为我只需要命令行模式开发即可。
+   首先安装openjdk 1.6，然后安装ant，这个不赘述。
+** 2.下载SDK
+   从这里下载SDK for Linux 64bit的版本: http://developer.android.com/sdk/index.html?hl=sk#download
+   wget http://dl.google.com/android/android-sdk_r23.0.2-linux.tgz  
+   下载后，解压到本地目录，比如/opt/目录下， 然后设置环境变量，添加三行到~/.bashrc文件
+   export ANDROID_HOME=/opt/android-sdk-linux  
+   PATH=$PATH:/opt/android-sdk-linux/tools  
+   PATH=$PATH:/opt/android-sdk-linux/platform-tools  
+
+   运行Android SDK Manager
+   运行android命令，将会弹出SDK Manager对话框，从中选择需要的package进行安装
+
+   安装模拟设备
+   android avd  
+   具体参考官方文档：http://developer.android.com/training/basics/firstapp/running-app.html
+***  我创建了一个模拟设备。  最后运行该模拟设备。
+    android avd  
+
+**  创建工程
+***  显示targets
+    $ android list targets  
+    Available Android targets:  
+    ----------  
+    id: 1 or "android-10"  
+    Name: Android 2.3.3  
+    Type: Platform  
+    API level: 10  
+    Revision: 2  
+    Skins: WQVGA400, HVGA, WVGA854, QVGA, WQVGA432, WVGA800 (default)  
+    Tag/ABIs : default/armeabi  
+    ----------  
+    id: 2 or "android-19"  
+    Name: Android 4.4.2  
+    Type: Platform  
+    API level: 19  
+    Revision: 3  
+    Skins: WQVGA400, HVGA, WXGA800-7in, WXGA800, WVGA854, QVGA, WQVGA432, WVGA800 (default), WSVGA, WXGA720  
+    Tag/ABIs : default/armeabi-v7a  
+    ----------  
+    id: 3 or "Google Inc.:Google APIs:10"  
+    Name: Google APIs  
+    Type: Add-On  
+    Vendor: Google Inc.  
+    Revision: 2  
+    Description: Android + Google APIs  
+    Based on Android 2.3.3 (API level 10)  
+    Libraries:  
+    * com.android.future.usb.accessory (usb.jar)  
+      API for USB Accessories  
+    * com.google.android.maps (maps.jar)  
+      API for Google Maps  
+      Skins: WVGA854, WVGA800 (default), WQVGA400, QVGA, WQVGA432, HVGA  
+      Tag/ABIs : default/armeabi  
+      ----------  
+      id: 4 or "Google Inc.:Google APIs x86:19"  
+      Name: Google APIs x86  
+      Type: Add-On  
+      Vendor: Google Inc.  
+      Revision: 4  
+      Description: Android + Google APIs x86  
+      Based on Android 4.4.2 (API level 19)  
+      Libraries:  
+      * com.google.android.media.effects (effects.jar)  
+        Collection of video effects  
+      * com.android.future.usb.accessory (usb.jar)  
+        API for USB Accessories  
+      * com.google.android.maps (maps.jar)  
+        API for Google Maps  
+        Skins: WVGA800 (default), QVGA, WSVGA, WXGA800-7in, WQVGA400, WVGA854, WXGA720, WXGA800, WQVGA432, HVGA  
+        Tag/ABIs : default/x86  
+
+***      创建工程
+    $ android create project --target android-10 --name MyFirstApp \  
+    --path MyFirstApp --activity MainActivity --package com.example.myfirstapp  
+
+    > Created project directory: MyFirstApp  
+    Created directory /home/dean/work/gitlab_cloud/android/example/MyFirstApp/src/com/example/myfirstapp  
+    Added file MyFirstApp/src/com/example/myfirstapp/MainActivity.java  
+    Created directory /home/dean/work/gitlab_cloud/android/example/MyFirstApp/res  
+    Created directory /home/dean/work/gitlab_cloud/android/example/MyFirstApp/bin  
+    Created directory /home/dean/work/gitlab_cloud/android/example/MyFirstApp/libs  
+    Created directory /home/dean/work/gitlab_cloud/android/example/MyFirstApp/res/values  
+    Added file MyFirstApp/res/values/strings.xml  
+    Created directory /home/dean/work/gitlab_cloud/android/example/MyFirstApp/res/layout  
+    Added file MyFirstApp/res/layout/main.xml  
+    Added file MyFirstApp/AndroidManifest.xml  
+    Added file MyFirstApp/build.xml  
+    Added file MyFirstApp/proguard-project.txt  
+
+    dean@dean-Aspire-V7-481G:~/work/gitlab_cloud/android/example$ ls  
+    MyFirstApp  README  
+
+    dean@dean-Aspire-V7-481G:~/work/gitlab_cloud/android/example$ cd MyFirstApp/  
+    dean@dean-Aspire-V7-481G:~/work/gitlab_cloud/android/example/MyFirstApp$ ls  
+    AndroidManifest.xml  ant.properties  bin  build.xml  libs  local.properties  proguard-project.txt  project.properties  res  src  
+
+***      编译
+    运行下面的命令编译
+    ant debug  
+    如果报以下错误：
+    [aapt] /opt/android-sdk-linux/build-tools/19.0.3/aapt: error while loading shared libraries: libz.so.1: cannot open shared object file: No such file or directory  
+    安装库：
+    sudo apt-get install lib32z1  
+***        部署程序到模拟器
+    $ adb install bin/MyFirstApp-debug.apk  
+
+    97 KB/s (4858 bytes in 0.048s)  
+    pkg: /data/local/tmp/MyFirstApp-debug.apk  
+    Success  
+
+
+***        运行程序
+    好了，现在可以在模拟器里面运行程序了。 运行程序MainActivity，显示下面的文字:
+    Hello World, MainActivity
+
+    该文字其实是定义在./res/layout/main.xml 文件中:
+
+    <?xml version="1.0" encoding="utf-8"?>  
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+    android:orientation="vertical"  
+    android:layout_width="fill_parent"  
+    android:layout_height="fill_parent"  
+    >  
+    <TextView    
+    android:layout_width="fill_parent"   
+    android:layout_height="wrap_content"   
+    android:text="Hello World, MainActivity wuming"  
+    />  
+    </LinearLayout>  
+
+
+***        定义应用程序名称
+    如果想要修改Android中的应用程序名，不是在pom.xml中编辑，而是在src/values/strings.xml中定义，比如：
+
+    <?xml version="1.0" encoding="utf-8"?>  
+    <resources>  
+    <string name="app_name">mvn_example1</string>  
+    <string name="edit_message">Enter a message</string>  
+    <string name="button_send">Send</string>  
+    <string name="action_settings">Settings</string>  
+    <string name="title_activity_main">MainActivity</string>  
+    </resources>  
+
+* Ubuntu 14.04 Android 使用Maven一 使用例子工程
+    前文描述的是在SDK下用Ant开发， 本文在此基础上尝试用Maven开发。
+    这里需要用到maven-android-plugin。
+
+    本文主要参考官方文档： https://code.google.com/p/maven-android-plugin/wiki/GettingStarted
+    首先从这里下载例子工程：https://code.google.com/p/maven-android-plugin/wiki/Samples，
+    https://codeload.github.com/jayway/maven-android-plugin-samples/legacy.zip/stable  
+
+
+    保存到本地解压到目录jayway-maven-android-plugin-samples-4d8d535/
+    进入该目录的子目录：helloflashlight
+
+    运行mvn clean compile， 编译报错后会提示要安装一些Android SDK, 用下面的命令：
+    /opt/android-sdk-linux/tools/android update sdk --no-ui --all --force  
+*** 编译
+    之后再运行mvn clean compile, 编译成功。
+
+    现在首先启动虚拟设备
+        android avd  
+
+    然后选中我之前创建的mt680, 启动之。
+    现在退回到jayway-maven-android-plugin-samples-4d8d535 目录， 运行命令
+*** 加载
+        mvn clean install  
+    经过较长的等待，会看到一些测试成功了，一些失败了。可能是我的mt680太老了吧。
+
+        [INFO]   
+        [INFO] Android SDK ApiDemos - Parent ..................... SUCCESS [  0.324 s]  
+        [INFO] Android SDK ApiDemos - Application ................ SUCCESS [ 26.921 s]  
+        [INFO] Android SDK ApiDemos - Instrumentation Test ....... SUCCESS [ 25.250 s]  
+        [INFO] HelloFlashlight ................................... SUCCESS [  1.275 s]  
+        [INFO] MorseFlash - Parent ............................... SUCCESS [  0.004 s]  
+        [INFO] MorseFlash - Library .............................. SUCCESS [ 35.338 s]  
+        [INFO] MorseFlash - App .................................. SUCCESS [  4.753 s]  
+        [INFO] MorseFlash - Instrumentation Test ................. FAILURE [ 13.121 s]  
+        [INFO] Scala Application ................................. SKIPPED  
+        [INFO] Library Projects Parent ........................... SKIPPED  
+        [INFO] Library Projects - AAR 1 .......................... SKIPPED  
+        [INFO] Library Projects - APKLIB 1 ....................... SKIPPED  
+        [INFO] Library Projects - APKLIB 2 ....................... SKIPPED  
+        [INFO] Library Projects - Main App ....................... SKIPPED  
+        [INFO] Library Projects - Instrumentation Tests .......... SKIPPED  
+        [INFO] Library Projects - AAR Consumption ActionBarSherlock  SKIPPED  
+        [INFO] Android NDK - Aggregator .......................... SKIPPED  
+        [INFO] Android NDK - Native Sample ....................... SKIPPED  
+        [INFO] Android NDK - Java With Native Dependency ......... SKIPPED  
+        [INFO] Android NDK - Java With Native Dependency x86 Only  SKIPPED  
+        [INFO] Android NDK - Native Static Library ............... SKIPPED  
+        [INFO] Android NDK - Native Code including Static Library  SKIPPED  
+        [INFO] Android NDK - Java With Native Statically Linked Dependency  SKIPPED  
+        [INFO] Android NDK - Java With Native Library ............ SKIPPED  
+        [INFO] Android NDK - Java Transient Dependency ........... SKIPPED  
+        [INFO] Android NDK - Java Native Mixed Sample ............ SKIPPED  
+        [INFO] Android NDK - Native APKLIB Sample ................ SKIPPED  
+        [INFO] Android NDK - apklib With Native APKLIB Dependency  SKIPPED  
+        [INFO] Android NDK - Java With Native APKLIB Dependency .. SKIPPED  
+        [INFO] Android NDK - Java Native Mixed with APKLIB Dependency Sample  SKIPPED  
+        [INFO] Android Support V4 Demos .......................... SKIPPED  
+        [INFO] Tictactoe - Parent ................................ SKIPPED  
+        [INFO] tictactoe - Library ............................... SKIPPED  
+        [INFO] tictactoe - App ................................... SKIPPED  
+        [INFO] Android Maven Plugin Samples - Aggregator ......... SKIPPED  
+        [INFO] ------------------------------------------------------------------------  
+        [INFO] BUILD FAILURE  
+        [INFO] ------------------------------------------------------------------------  
+        [INFO] Total time: 01:49 min  
+        [INFO] Finished at: 2014-04-29T20:54:10+08:00  
+        [INFO] Final Memory: 31M/352M  
+        [INFO] ------------------------------------------------------------------------  
+        [ERROR] Failed to execute goal com.jayway.maven.plugins.android.generation2:android-maven-plugin:3.8.2:internal-integration-test (default-internal-integration-test) on project morseflash-instrumentation: emulator-5554_MT680_unknown_sdk :   Tests failed on device. -> [Help 1]  
+
+
+    现在进入子项目helloflashlight目录中， 运行mvn install, 结果在targets目录下生成了apk文件，然后运行命令安装到设备中：
+*** 安装
+        adb install target/helloflashlight.apk   
+    或者用下面的命令：
+        mvn android:deploy  
+
+    现在模拟设备上已经看到图标了：
+    运行后可以看到几个不同颜色的按钮， 点击按钮窗口颜色可以切换。
+* Ubuntu 14.04 Android 使用Maven二 创建自己的Maven工程
+    根据https://code.google.com/p/maven-android-plugin/wiki/GettingStarted 介绍，有两种方法可以创建Maven工程。
+
+    第一种方法是用archetype， 但是我使用了之后，发现archetype产生的项目编译时有一个依赖找不到，不管了，先换其他方法。
+
+    第二种方法就是使用android命令行创建项目，然后复制例子代码工程的pom文件并修改，
+
+    Ubuntu 14.04 设置Android开发环境 描述了如何用命令行创建项目
+
+    Ubuntu 14.04 Android 使用Maven一 使用例子工程介绍了例子工程helloflashlight
+
+
+    先创建一个项目mvn_example1
+
+    [plain] view plain copy
+    在CODE上查看代码片派生到我的代码片
+
+        android create project --target android-10 --name mvn_example1 --path mvn_example1 --activity MainActivity --package org.csfreebird  
+        Created project directory: mvn_example1  
+        Created directory /home/dean/work/gitlab_cloud/android/example/mvn_example1/src/org/csfreebird  
+        Added file mvn_example1/src/org/csfreebird/MainActivity.java  
+        Created directory /home/dean/work/gitlab_cloud/android/example/mvn_example1/res  
+        Created directory /home/dean/work/gitlab_cloud/android/example/mvn_example1/bin  
+        Created directory /home/dean/work/gitlab_cloud/android/example/mvn_example1/libs  
+        Created directory /home/dean/work/gitlab_cloud/android/example/mvn_example1/res/values  
+        Added file mvn_example1/res/values/strings.xml  
+        Created directory /home/dean/work/gitlab_cloud/android/example/mvn_example1/res/layout  
+        Added file mvn_example1/res/layout/main.xml  
+        Added file mvn_example1/AndroidManifest.xml  
+        Added file mvn_example1/build.xml  
+        Added file mvn_example1/proguard-project.txt  
+
+
+    现在复制heelloflashlight的pom.xml文件到该项目目录下， 然后修改其中的一些配置：
+
+    [plain] view plain copy
+    在CODE上查看代码片派生到我的代码片
+
+        <groupId>org.freebird</groupId>  
+        <artifactId>example1</artifactId>  
+        <version>1.0.0</version>  
+        <packaging>apk</packaging>  
+          
+        <name>mvn_example1</name>  
+
+    设置platform版本为10，这里使用的是API Level，也可以使用platform level: 2.3.3, 具体可以通过命令android list targets， 不过这里目前还只能设置16, 设置10部署会失败，暂时不明白原因。
+    [html] view plain copy
+    在CODE上查看代码片派生到我的代码片
+
+        <plugins>  
+          <plugin>  
+            <groupId>com.jayway.maven.plugins.android.generation2</groupId>  
+            <artifactId>android-maven-plugin</artifactId>  
+            <configuration>  
+              <sdk>  
+                <!-- platform as api level (api level 16 = platform 4.1)-->  
+                <platform>10</platform>  
+              </sdk>  
+            </configuration>  
+          </plugin>  
+        </plugins>  
+
+
+    删除掉ant相关的文件：
+
+    [plain] view plain copy
+    在CODE上查看代码片派生到我的代码片
+
+        mvn_example1$ rm -r bin build.xml build.properties libs  
+        rm: cannot remove ‘build.properties’: No such file or directory  
+
+
+    启动模拟设备后，运行下面的命令编译和部署：
+
+    [plain] view plain copy
+    在CODE上查看代码片派生到我的代码片
+
+        mvn clean install  
+        mvn android:deploy  
+
+
+    部署成功后，会看到模拟设备上出现程序图标。
+
+    点击运行，成功。
+
+
+
+
+版权声明：本文为博主原创文章，未经博主允许不得转载。
+顶0 踩0
+ 
+ 
+Ubuntu 14.04 Android 使用Maven一 使用例子工程
+Emacs 使用android模式
+您还没有登录,请[登录]或[注册]
+
+  暂无评论
+
+ 
+img
+
+csfreebird
+
+等级：
+
+排名：第29名
+img
+img
+加关注 发私信	
+
+博客专栏
+
+文章分类
+
+阅读排行
+
+评论排行
+
+最新评论
+
+算法专家朋友的博客
+
+清如许的博客
+
+推荐文章
+
+img
+
+关闭
+
+* Emacs 使用android模式
+    首先用package system安装android-mode, 
+    然后编辑~/.emacs.d/init.el文件，添加下面几行：
+        (require 'android-mode)  
+        (setq android-mode-sdk-dir "/opt/android-sdk-linux/")  
+
+    现在重新启动emacs，然后M-x 中运行命令
+        android-start-emulator  
+    此时会提示输入Android Virtual Device，， 用上下键查找后选择，会看到之前我安装的MT680, 回车后，弹出该设备运行界面。
+    的确很方便。
+
+    关闭该设备模拟的程序后，可以再次运行android-start-emulator启动之，退出emacs的时候，emulator也会关闭。
+
+    如果不用emacs emulator也行，用下面的命令行：
+        emulator -avd MT680 -partition-size 128 >/dev/null &  
+    MT680可以通过android list avd命令查找得到：
+        dean@dean-Aspire-V7-481G:~/.emacs.d$ android list avd  
+        Available Android Virtual Devices:  
+            Name: MT680  
+          Device: 4in WVGA (Nexus S) (Generic)  
+            Path: /home/dean/.android/avd/MT680.avd  
+          Target: Android 2.3.3 (API level 10)  
+         Tag/ABI: default/armeabi  
+            Skin: HVGA  
+          Sdcard: 1G  
+
+    启用调试工具ddm
+    M-x android-start-ddm
+
+* Emacs用JDEE编写Android程序
+    前文介绍了如何用Maven构建Android工程，现在进一步介绍如何使用JDEE编写程序。
+    如何安装JDEE可以参考之前的文章：
+
+    Emacs 24.3 配置JDEE
+    首先要安装一个m2jdee的插件，能够根据maven的pom.xml中的配置生成jdee所需的prj.el文件。
+
+    获取该项目：
+        git clone git@gitlab.com:devtool/m2jdee.git  
+    或者
+        git clone https://gitlab.com/devtool/m2jdee.git  
+
+    进入m2jdee目录后，编译安装：
+        mvn install  
+    然后配置~/.m2/settings.xml文件，添加：
+
+        <pluginGroups>  
+          <pluginGroup>org.freebird.maven.plugins</pluginGroup>  
+        </pluginGroups>  
+
+
+    好了，现在进入我的android maven工程目录， 运行下面的命令：
+
+        mvn m2jdee:jdee  
+    一会儿，prj.el文件生成了，内容如下：
+
+        (jde-project-file-version "1.0")  
+        (jde-set-variables  
+          '(jde-sourcepath '("/home/dean/work/gitlab_cloud/android/example/mvn_example1/src/test/java" "/home/dean/work/gitlab_cloud/android/example/mvn_example1/src" ))  
+          '(jde-global-classpath '("/home/dean/.m2/repository/org/apache/httpcomponents/httpcore/4.0.1/httpcore-4.0.1.jar" "/home/dean/.m2/repository/org/apache/httpcomponents/httpclient/4.0.1/httpclient-4.0.1.jar" "/home/dean/.m2/repository/xerces/xmlParserAPIs/2.6.2/xmlParserAPIs-2.6.2.jar" "/home/dean/work/gitlab_cloud/android/example/mvn_example1/target/test-classes" "/home/dean/.m2/repository/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar" "/home/dean/work/gitlab_cloud/android/example/mvn_example1/target/classes" "/home/dean/.m2/repository/org/khronos/opengl-api/gl1.1-android-2.1_r1/opengl-api-gl1.1-android-2.1_r1.jar" "/home/dean/.m2/repository/com/google/android/android/4.1.1.4/android-4.1.1.4.jar" "/home/dean/.m2/repository/org/json/json/20080701/json-20080701.jar" "/home/dean/.m2/repository/xpp3/xpp3/1.1.4c/xpp3-1.1.4c.jar" "/home/dean/.m2/repository/commons-codec/commons-codec/1.3/commons-codec-1.3.jar" )))  
+    好，现在打开mvn_example1/工程的一个java文件， 看一下智能提示是否生效：
+
+    C-c v .
+    能够出现完成菜单。
+    配置成功。
+
+    具体使用细节请参考我之前的文章：
+
+    Emacs开发Java之使用
+    如何调试
+
+    先在~/.emacs.d/init.el中配置一下, 设置jdb为调试器， 调试端口为8700。
+
+        ;; jdee  
+        (add-to-list 'load-path "~/.emacs.d/jdee-2.4.1/lisp")  
+        (load "jde")  
+        (custom-set-variables  
+         '(jde-debugger (quote ("jdb")))  
+         '(jde-db-option-connect-socket (quote (nil "8700"))))  
+          
+        (require 'android-mode)  
+        (setq android-mode-sdk-dir "/opt/android-sdk-linux/")  
+    启动
+    andriod-start-emulator
+    android-start-ddms
+    一定要在DDM的窗口选中要调试的进程
+
+    调试使用的命令
+
+        mvn_example1$ jdb -sourcepath "/home/dean/work/gitlab_cloud/android/example/mvn_example1/src" -attach localhost:8700  
+        设置 未捕捉到 javamvn_example1$ jdb -sourcepath "/home/dean/work/gitlab_cloud/android/example/mvn_example1/src" -attach localhost:8700  
+        设置 未捕捉到 java.lang.Throwable  
+        设置延迟的 未捕捉到 java.lang.Throwable  
+        正在初始化 jdb....lang.Throwable  
+        设置延迟的 未捕捉到 java.lang.Throwable  
+        正在初始化 jdb...  
+    由于jdee的jde-jdb-attach-via-socket使用的命令是：
+
+    jdb -connect com.sun.jdi.SocketAttach:port=8700
+
+    无法连接android 里的 jvm。 
+
+    经过实验，需要加一个参数就可以连接：
+
+    jdb -connect com.sun.jdi.SocketAttach:port=8700,hostname=localhost
+
+    因此修改jdee的配置，在init.el中如下配置：
+
+        ;; jdee  
+        (add-to-list 'load-path "~/.emacs.d/jdee-2.4.1/lisp")  
+        (load "jde")  
+        (custom-set-variables  
+         '(jde-db-option-connect-socket (quote ("localhost" "8700")))  
+         '(jde-debugger (quote ("jdb"))))  
+
+    现在jde-jdb-attach-via-socket命令成功了。
+*  

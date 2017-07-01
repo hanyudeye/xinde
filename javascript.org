@@ -1,0 +1,943 @@
+:参考书　[[file+emacs:html.org][HTML]]
+* javascript
+  nodejs js.js
+  对象
+  内建对象,String;Date;Array
+  对象构造器
+  #+BEGIN_SRC javascript
+    function person(firstname,lastname,age,eyecolor)
+    {
+    this.firstname=firstname;
+    this.lastname=lastname;
+    this.age=age;
+    this.eyecolor=eyecolor;
+    }
+  #+END_SRC
+  JavaScript for...in 语句循环遍历对象的属性。
+  日期 Date() getTime() setFullYear() toUTString getDay()
+  数组 concat() join() sort() Array()
+  RegExp 对象有 3 个方法：test()、exec() 以及 compile()。
+数组    
+var light=Array(3);
+对象    
+var lennon=Object();
+lennon.name="john"
+lennon.year=1999 
+简洁语法
+var lennon={name:"john",year:1999};
+getElementById()
+getElementsByTagName(tagname)
+getElementsByClassName(classname)
+getAttribute    
+setAttribute    
+onmouseover 
+onmouseout
+onclick
+this 关键字
+onclick=showPic(this)
+window.onload=functionname();
+childNodes属性    
+nodeType属性    
+nodeValue属性    
+firstChild和lastChild属性    
+分离JavaScript    
+innerHTML属性    
+appendChild方法    
+createTextNode方法    
+Ajax    
+XMLHttpRequest对象    
+*** jQuery 选择器
+$("#myELement")   选择id值等于myElement的元素，id值不能重复在文档中只能有一个id值是myElement所以得到的是唯一的元素 
+$("div")           选择所有的div标签元素，返回div元素数组 
+$(".myClass")      选择使用myClass类的css的所有元素 
+$("*")             选择文档中的所有的元素，可以运用多种的选择方式进行联合选择：例如$("#myELement,div,.myclass") 
+   
+层叠选择器： 
+$("form input")         选择所有的form元素中的input元素 
+$("#main > *")          选择id值为main的所有的子元素 
+$("label + input")     选择所有的label元素的下一个input元素节点，经测试选择器返回的是label标签后面直接跟一个input标签的所有input标签元素 
+$("#prev ~ div")       同胞选择器，该选择器返回的为id为prev的标签元素的所有的属于同一个父元素的div标签 
+   
+基本过滤选择器： 
+$("tr:first")               选择所有tr元素的第一个 
+$("tr:last")                选择所有tr元素的最后一个 
+$("input:not(:checked) + span")   
+   
+过滤掉：checked的选择器的所有的input元素 
+   
+$("tr:even")               选择所有的tr元素的第0，2，4... ...个元素（注意：因为所选择的多个元素时为数组，所以序号是从0开始） 
+   
+$("tr:odd")                选择所有的tr元素的第1，3，5... ...个元素 
+$("td:eq(2)")             选择所有的td元素中序号为2的那个td元素 
+$("td:gt(4)")             选择td元素中序号大于4的所有td元素 
+$("td:ll(4)")              选择td元素中序号小于4的所有的td元素 
+$(":header") 
+$("div:animated") 
+内容过滤选择器： 
+   
+$("div:contains('John')") 选择所有div中含有John文本的元素 
+$("td:empty")           选择所有的为空（也不包括文本节点）的td元素的数组 
+$("div:has(p)")        选择所有含有p标签的div元素 
+$("td:parent")          选择所有的以td为父节点的元素数组 
+可视化过滤选择器： 
+ 
+$("div:hidden")        选择所有的被hidden的div元素 
+$("div:visible")        选择所有的可视化的div元素 
+属性过滤选择器： 
+  
+$("div[id]")              选择所有含有id属性的div元素 
+$("input[name='newsletter']")    选择所有的name属性等于'newsletter'的input元素 
+ 
+$("input[name!='newsletter']") 选择所有的name属性不等于'newsletter'的input元素 
+ 
+$("input[name^='news']")         选择所有的name属性以'news'开头的input元素 
+$("input[name$='news']")         选择所有的name属性以'news'结尾的input元素 
+$("input[name*='man']")          选择所有的name属性包含'news'的input元素 
+ 
+$("input[id][name$='man']")    可以使用多个属性进行联合选择，该选择器是得到所有的含有id属性并且那么属性以man结尾的元素 
+ 
+*元素过滤选择器： 
+ 
+$("ul li:nth-child(2)"),$("ul li:nth-child(odd)"),$("ul li:nth-child(3n + 1)") 
+ 
+$("div span:first-child")          返回所有的div元素的第一个子节点的数组 
+$("div span:last-child")           返回所有的div元素的最后一个节点的数组 
+$("div button:only-child")       返回所有的div中只有唯一一个子节点的所有子节点的数组 
+ 
+单元素选择器： 
+ 
+$(":input")                  选择所有的表单输入元素，包括input, textarea, select 和 button 
+ 
+$(":text")                     选择所有的text input元素 
+$(":password")           选择所有的password input元素 
+$(":radio")                   选择所有的radio input元素 
+$(":checkbox")            选择所有的checkbox input元素 
+$(":submit")               选择所有的submit input元素 
+$(":image")                 选择所有的image input元素 
+jQuery 的选择器可谓之强大无比，这里简单地总结一下常用的元素查找方法 
+ 
+$("#myELement")    选择id值等于myElement的元素，id值不能重复在文档中只能有一个id值是myElement所以得到的是唯一的元素 
+$("div")           选择所有的div标签元素，返回div元素数组 
+$(".myClass")      选择使用myClass类的css的所有元素 
+$("*")             选择文档中的所有的元素，可以运用多种的选择方式进行联合选择：例如$("#myELement,div,.myclass") 
+ 
+[叠选择器： 
+$("form input")         选择所有的form元素中的input元素 
+$("#main > *")          选择id值为main的所有的子元素 
+$("label + input")     选择所有的label元素的下一个input元素节点，经测试选择器返回的是label标签后面直接跟一个input标签的所有input标签元素 
+$("#prev ~ div")       同胞选择器，该选择器返回的为id为prev的标签元素的所有的属于同一个父元素的div标签 
+ 
+ 本过滤选择器： 
+$("tr:first")               选择所有tr元素的第一个 
+$("tr:last")                选择所有tr元素的最后一个 
+$("input:not(:checked) + span")   
+过滤掉：checked的选择器的所有的input元素 
+ 
+$("tr:even")               选择所有的tr元素的第0，2，4... ...个元素（注意：因为所选择的多个元素时为数组，所以序号是从0开始） 
+ 
+$("tr:odd")                选择所有的tr元素的第1，3，5... ...个元素 
+$("td:eq(2)")             选择所有的td元素中序号为2的那个td元素 
+$("td:gt(4)")             选择td元素中序号大于4的所有td元素 
+$("td:ll(4)")              选择td元素中序号小于4的所有的td元素 
+$(":header") 
+$("div:animated") 
+内容过滤选择器： 
+ 
+$("div:contains('John')") 选择所有div中含有John文本的元素 
+$("td:empty")           选择所有的为空（也不包括文本节点）的td元素的数组 
+$("div:has(p)")        选择所有含有p标签的div元素 
+$("td:parent")          选择所有的以td为父节点的元素数组 
+可视化过滤选择器： 
+ 
+$("div:hidden")        选择所有的被hidden的div元素 
+$("div:visible")        选择所有的可视化的div元素 
+属性过滤选择器： 
+ 
+$("div[id]")              选择所有含有id属性的div元素 
+$("input[name='newsletter']")    选择所有的name属性等于'newsletter'的input元素 
+ 
+$("input[name!='newsletter']") 选择所有的name属性不等于'newsletter'的input元素 
+ 
+$("input[name^='news']")         选择所有的name属性以'news'开头的input元素 
+$("input[name$='news']")         选择所有的name属性以'news'结尾的input元素 
+$("input[name*='man']")          选择所有的name属性包含'news'的input元素 
+ 
+$("input[id][name$='man']")    可以使用多个属性进行联合选择，该选择器是得到所有的含有id属性并且那么属性以man结尾的元素 
+ 
+子元素过滤选择器： 
+ 
+$("ul li:nth-child(2)"),$("ul li:nth-child(odd)"),$("ul li:nth-child(3n + 1)") 
+ 
+$("div span:first-child")          返回所有的div元素的第一个子节点的数组 
+$("div span:last-child")           返回所有的div元素的最后一个节点的数组 
+$("div button:only-child")       返回所有的div中只有唯一一个子节点的所有子节点的数组 
+ 
+表单元素选择器： 
+ 
+$(":input")                  选择所有的表单输入元素，包括input, textarea, select 和 button 
+ 
+$(":text")                     选择所有的text input元素 
+$(":password")           选择所有的password input元素 
+$(":radio")                   选择所有的radio input元素 
+$(":checkbox")            选择所有的checkbox input元素 
+$(":submit")               选择所有的submit input元素 
+$(":image")                 选择所有的image input元素 
+$(":reset")                   选择所有的reset input元素 
+$(":button")                选择所有的button input元素 
+$(":file")                     选择所有的file input元素 
+$(":hidden")               选择所有类型为hidden的input元素或表单的隐藏域 
+ 
+表单元素过滤选择器： 
+ 
+$(":enabled")             选择所有的可操作的表单元素 
+$(":disabled")            选择所有的不可操作的表单元素 
+$(":checked")            选择所有的被checked的表单元素 
+$("select option:selected") 选择所有的select 的子元素中被selected的元素 
+ 
+  
+ 
+选取一个 name 为”S_03_22″的input text框的上一个td的text值
+$(”input[@ name =S_03_22]“).parent().prev().text() 
+ 
+名字以”S_”开始，并且不是以”_R”结尾的
+$(”input[@ name ^='S_']“).not(”[@ name $='_R']“) 
+ 
+一个名为 radio_01的radio所选的值
+$(”input[@ name =radio_01][@checked]“).val(); 
+ 
+$("A B") 查找A元素下面的所有子节点，包括非直接子节点
+$("A>B") 查找A元素下面的直接子节点
+$("A+B") 查找A元素后面的兄弟节点，包括非直接子节点
+$("A~B") 查找A元素后面的兄弟节点，不包括非直接子节点 
+ 
+1. $("A B") 查找A元素下面的所有子节点，包括非直接子节点 
+ 
+例子：找到表单中所有的 input 元素 
+ 
+HTML 代码: 
+ 
+<form>
+<label>Name:</label>
+<input name="name" />
+<fieldset>
+      <label>Newsletter:</label>
+      <input name="newsletter" />
+</fieldset>
+</form>
+<input name="none" /> 
+jQuery 代码: 
+ 
+$("form input") 
+结果: 
+ 
+[ <input name="name" />, <input name="newsletter" /> ] 
+ 
+2. $("A>B") 查找A元素下面的直接子节点 
+例子：匹配表单中所有的子级input元素。 
+ 
+HTML 代码: 
+ 
+<form>
+<label>Name:</label>
+<input name="name" />
+<fieldset>
+      <label>Newsletter:</label>
+      <input name="newsletter" />
+</fieldset>
+</form>
+<input name="none" /> 
+jQuery 代码: 
+ 
+$("form > input") 
+结果: 
+ 
+[ <input name="name" /> ] 
+ 
+3. $("A+B") 查找A元素后面的兄弟节点，包括非直接子节点 
+例子：匹配所有跟在 label 后面的 input 元素 
+ 
+HTML 代码: 
+ 
+<form>
+<label>Name:</label>
+<input name="name" />
+<fieldset>
+      <label>Newsletter:</label>
+      <input name="newsletter" />
+</fieldset>
+</form>
+<input name="none" /> 
+jQuery 代码: 
+ 
+$("label + input") 
+结果: 
+javascript的self和this使用小结
+revert 
+一、self
+这个非常简单。我们知道，打开任何一个网页，浏览器会首先创建一个窗口，这个窗口就是一个window对象，也是js运行所依附的全局环境对象和全局作用域对象。self 指窗口本身，它返回的对象跟window对象是一模一样的。也正因为如此，window对象的常用方法和函数都可以用self代替window。举个例子，常见的写法如“self.close();”，把它放在<a>标记中：“<a href="javascript:self.close();">关闭窗口</a>”，单击“关闭窗口”链接，当前页面关闭。
+二、this关键字
+在讲this之前，看下面的一段代码：
+
+
+<body>
+<script type="text/javascript">
+function thisTest()
+  {
+      this.textValue = 'this的dom测试';
+      this.element= document.createElement('span');
+      this.element.innerHTML = this.textValue;
+      this.element.style.color = "blue";
+      this.element.style.cursor = "pointer";
+      this.element.attachEvent('onclick', this.ToString);
+  }
+   
+  thisTest.prototype.RenderDom = function()
+  {
+      document.body.appendChild(this.element);
+  }     
+
+  thisTest.prototype.ToString = function()
+  {
+      alert("单击我："+this.textValue);
+  };
+  var test= new thisTest();
+  test.RenderDom(); 
+  //test.ToString();
+</script>
+</body>
+
+本来的目的是想在body中添加一个span元素，对于这个span元素，制定了它的字体颜色，悬浮在它上面的鼠标样式和单击触发事件。问题就出现在它的单击事件上（弹出"单击我:undefined"）。也许有人会说你丫傻呀，写这么多sb代码还不就是为了实现下面这个东东吗？
+<span style='cursor:pointer;color:blue;' onclick="alert(this.innerHTML)">this的dom测试</span>
+
+你看多简单直观，而且还不容易出错？！kao，我晕。我正要讲的是您正在使用的this.innerHTML中的this呀。
+1、this到底指什么？
+我们熟悉的c#有this关键字，它的主要作用就是指代当前对象实例（参数传递和索引器都要用到this）。在javascript中，this通常指向的是我们正在执行的函数本身，或者是指向该函数所属的对象（运行时）。
+2、常见使用方式
+（1）、直接在dom元素中使用
+<input id="btnTest" type="button" value="提交" onclick="alert(this.value))" />
+
+分析：对于dom元素的一个onclick（或其他如onblur等）属性，它为所属的html元素所拥有，直接在它触发的函数里写this，this应该指向该html元素。
+（2）、给dom元素注册js函数
+a、不正确的方式
+复制代码
+<script type="text/javascript">
+  function thisTest(){
+  alert(this.value); // 弹出undefined, this在这里指向??
+}
+</script>
+
+<input id="btnTest" type="button" value="提交" onclick="thisTest()" />
+复制代码
+
+ 分析：onclick事件直接调用thisTest函数，程序就会弹出undefined。因为thisTest函数是在window对象中定义的，
+所以thisTest的拥有者（作用域）是window，thisTest的this也是window。而window是没有value属性的，所以就报错了。
+b、正确的方式
+
+<input id="btnTest" type="button" value="提交" />
+
+<script type="text/javascript">
+  function thisTest(){
+  alert(this.value); 
+}
+document.getElementById("btnTest").onclick=thisTest; //给button的onclick事件注册一个函数
+</script>
+
+分析：在前面的示例中，thisTest函数定义在全局作用域（这里就是window对象），所以this指代的是当前的window对象。而通过document.getElementById("btnTest").onclick=thisTest;这样的形式，其实是将btnTest的onclick属性设置为thisTest函数的一个副本，在btnTest的onclick属性的函数作用域内，this归btnTest所有，this也就指向了btnTest。其实如果有多个dom元素要注册该事件，我们可以利用不同的dom元素id，用下面的方式实现：
+document.getElementById("domID").onclick=thisTest; //给button的onclick事件注册一个函数。
+因为多个不同的HTML元素虽然创建了不同的函数副本，但每个副本的拥有者都是相对应的HTML元素，各自的this也都指向它们的拥有者，不会造成混乱。
+为了验证上述说法，我们改进一下代码，让button直接弹出它们对应的触发函数：
+
+<input id="btnTest1" type="button" value="提交1" onclick="thisTest()" />
+<input id="btnTest2" type="button" value="提交2" />
+
+<script type="text/javascript">
+function thisTest(){
+this.value="提交中";
+}
+var btn=document.getElementById("btnTest1");
+alert(btn.onclick); //第一个按钮函数
+
+var btnOther=document.getElementById("btnTest2");
+btnOther.onclick=thisTest;
+alert(btnOther.onclick); //第二个按钮函数
+</script>
+
+其弹出的结果是：
+复制代码
+//第一个按钮
+function onclick(){
+  thisTest()
+}
+ 
+//第二个按钮
+function thisTest(){
+  this.value="提交中";
+}
+复制代码
+
+从上面的结果你一定理解的更透彻了。
+By the way，每新建一个函数的副本，程序就会为这个函数副本分配一定的内存。而实际应用中，大多数函数并不一定会被调用，于是这部分内存就被白白浪费了。所以我们通常都这么写：
+
+<input id="btnTest1" type="button" value="提交1" onclick="thisTest(this)" />
+<input id="btnTest2" type="button" value="提交2" onclick="thisTest(this)" />
+<input id="btnTest3" type="button" value="提交3" onclick="thisTest(this)" />
+<input id="btnTest4" type="button" value="提交4" onclick="thisTest(this)" />
+
+<script type="text/javascript">
+  function thisTest(obj){
+  alert(obj.value); 
+}
+</script>
+
+这是因为我们使用了函数引用的方式，程序就只会给函数的本体分配内存，而引用只分配指针。这样写一个函数，调用的地方给它分配一个（指针）引用，这样效率就高很多。当然，如果你觉得这样注册事件不能兼容多种浏览器，可以写下面的注册事件的通用脚本：
+
+//js事件 添加 EventUtil.addEvent(dom元素,事件名称,事件触发的函数名) 移除EventUtil.removeEvent(dom元素,事件名称,事件触发的函数名)
+var EventUtil = new eventManager();
+
+//js事件通用管理器 dom元素 添加或者移除事件
+function eventManager() {
+    //添加事件
+    //oDomElement:dom元素,如按钮,文本,document等; ****** oEventType:事件名称(如:click,如果是ie浏览器,自动将click转换为onclick);****** oFunc:事件触发的函数名
+    this.addEvent = function(oDomElement, oEventType, oFunc) {
+        //ie
+        if (oDomElement.attachEvent) {
+            oDomElement.attachEvent("on" + oEventType, oFunc);
+        }
+        //ff,opera,safari等
+        else if (oDomElement.addEventListener) {
+            oDomElement.addEventListener(oEventType, oFunc, false);
+        }
+        //其他
+        else {
+            oDomElement["on" + oEventType] = oFunc;
+        }
+    }
+
+    this.removeEvent = function(oDomElement, oEventType, oFunc) {
+        //ie
+        if (oDomElement.detachEvent) {
+            oDomElement.detachEvent("on" + oEventType, oFunc);
+        }
+        //ff,opera,safari等
+        else if (oDomElement.removeEventListener) {
+            oDomElement.removeEventListener(oEventType, oFunc, false);
+        }
+        //其他
+        else {
+            oDomElement["on" + oEventType] = null;
+        }
+    }
+}
+
+ 正像注释写的那样，要注册dom元素事件，用EventUtil.addEvent(dom元素,事件名称,事件触发的函数名)即可， 移除时可以这样写：EventUtil.removeEvent(dom元素,事件名称,事件触发的函数名)。这是题外话，不说了。
+(3)、类定义中使用this关键字
+这个其实再常见不过，看示例：
+
+function thisTest()
+  {
+      var tmpName = 'jeff wong';
+      this.userName= 'jeff wong';
+  }
+
+var test= new thisTest();
+alert(test.userName==test.tmpName);//false
+alert(test.userName); //jeff wong
+alert(test.tmpName); //undefined
+
+ 分析一下结果，其实这里的this和c#里的是类似的。
+（4）、为脚本对象添加原形方法
+理解这里的前提是你必须了解js里的原型概念（说道这里，kao，我还真的需要面壁一下）：js中对象的prototype属性，是用来返回对象类型原型的引用的。所有js内部对象都有只读的prototype属性，可以向其原型中动态添加功能(属性和方法)，
+但该对象不能被赋予不同的原型。但是对于用户定义的对象可以被赋给新的原型。看个简单的示例：
+
+//js的内部对象String,向其原型中动态添加功能(属性和方法)
+//去掉字符串两端的空白字符
+String.prototype.Trim = function() {
+    return this.replace(/(^\s+)|(\s+$)/g, "");
+}
+
+function thisTest()
+  {
+      var tmpName = 'jeff wong';
+      this.userName= '      jeff wong  ';
+  }
+//给用户定义的对象添加原型方法
+thisTest.prototype.ToString = function()
+  {
+      alert(this.userName); //jeff wong(*有空格*)
+      alert(this.userName.Trim()); //jeff wong (*无空格*)
+      //alert(tmpName); //脚本错误,tmpName未定义
+  }
+
+var test= new thisTest();
+test.ToString(); //调用原型的ToString()
+
+function myTest(){
+  this.userName= '  test ';
+}
+var test1=new myTest();
+//test1.ToString(); //这里暂时不支持调用ToString()方法
+
+//用户定义的对象被赋给新的原型
+myTest.prototype = new thisTest();
+test1.ToString(); //调用原型的ToString()
+
+测试结果显示，这里的this指代的是被添加原形（方法或属性）的类的实例，和（3）中的定义基本相似。
+（5）、在函数的内部函数中使用this关键字
+这个你要是理解作用域和闭包，问题就迎刃而解。看最典型的示例：
+
+function thisTest()
+  {
+      this.userName= 'outer userName';
+      function innerThisTest(){
+        var userName="inner userName";
+        alert(userName); //inner userName
+        alert(this.userName); //outer userName
+      }
+     return innerThisTest;
+  }
+
+thisTest()();
+
+分析：thisTest()调用内部的innerThisTest函数，形成一个闭包。innerThisTest执行时，第一次弹出innerUserName，是因为innerThisTest函数作用域内有一个变量叫userName，所以直接弹出当前作用域下变量的指定值；第二次弹出outer  userName是因为innerThisTest作用域内没有userName属性（示例中的this.userName）,所以它向上一级作用域中找userName属性，这次在thisTest中找到（示例中的this.userName= 'outer userName';），所以弹出对应值。
+（6）通过Function的call和apply函数指定特定的this
+这个指定来指定去，this就有可能造成“你中有我，我中有你”的局面，不想把自己弄晕了的话，了解一下就可以了。改变this指定对象对于代码维护也是一件很不好的事情。贴出旧文中的示例代码结束吧：
+
+function myFuncOne() {
+    this.p = "myFuncOne-";
+    this.A = function(arg) {
+        alert(this.p + arg);
+* jQuery 
+** 引入脚本执行<script src="my_jquery_functions.js"></script>
+** jQuery 选择器 $()
+*** 元素选择器 $("p")
+*** #id 选择器 $("#test") 
+*** .class 选择器 $(".class")
+*** 选取所有元素 $("*") 	
+*** document和 this
+    #+BEGIN_SRC javascript -n
+$(document).ready(function(){
+  $("button").click(function(){
+    $(this).hide();
+  });
+});
+    #+END_SRC
+*** 嵌套 $("a[target='_blank']") 	选取所有 target 属性值等于 "_blank" 的 <a> 元素
+** jQuery 效果
+*** jQuery  fade(淡出) 方法：
+****    fadeIn()
+****    fadeOut()
+****    fadeToggle()
+****    fadeTo()
+*** jQuery 滑动方法
+****    slideDown(speed,callback)
+****    slideUp()
+****    slideToggle()
+*** jQuery 动画 - animate() 方法
+**** $(selector).animate({params},speed,callback);
+*** jQuery 停止动画
+    jQuery stop() 方法用于在动画或效果完成前对它们进行停止。
+** jQuery HTML
+*** jQuery - 获取内容和属性 | 配置
+**** 获得内容 - text()、html() 以及 val()
+     #+BEGIN_SRC 
+    text() - 设置或返回所选元素的文本内容
+    html() - 设置或返回所选元素的内容（包括 HTML 标记）
+    val() - 设置或返回表单字段的值
+     #+END_SRC
+**** 获取属性值 - attr()
+*** jQuery - 添加元素
+**** append() - 在被选元素的结尾插入内容
+**** prepend() - 在被选元素的开头插入内容
+**** after() - 在被选元素之后插入内容
+**** before() - 在被选元素之前插入内容
+*** jQuery - 删除元素
+**** remove() - 删除被选元素（及其子元素）
+**** empty() - 从被选元素中删除子元素
+*** jQuery - 获取并设置 CSS 类
+**** jQuery addClass() 方法
+     #+BEGIN_SRC 
+$("button").click(function(){
+  $("h1,h2,p").addClass("blue");
+  $("div").addClass("important");
+});
+     #+END_SRC
+**** jQuery removeClass() 方法
+**** jQuery toggleClass() 方法
+*** jQuery css() 方法
+    : css() 方法设置或返回被选元素的一个或多个样式属性。
+**** 返回 CSS 属性
+     : css("propertyname");
+**** 设置 CSS 属性
+     : css("propertyname","value");
+**** 设置多个 CSS 属性
+     : css({"propertyname":"value","propertyname":"value",...});
+     #+BEGIN_SRC css
+$("p").css({"background-color":"yellow","font-size":"200%"});
+     #+END_SRC
+*** jQuery 尺寸
+    : 通过 jQuery，很容易处理元素和浏览器窗口的尺寸。
+    [元素(width)]padding(innerwidth)]border(outerwidth)]margin(outerwidth(true))]
+****    width() 方法设置或返回元素的宽度（不包括内边距、边框或外边距）。
+****    height()
+****    innerWidth() 方法返回元素的宽度（包括内边距）
+****    innerHeight()
+****    outerWidth()方法返回元素的宽度（包括内边距和边框）
+****    outerHeight()
+*** jQuery 遍历
+**** 向上遍历 DOM 树
+*****    parent()返回被选元素的直接父元素
+*****    parents() 方法返回被选元素的所有祖先元素，它一路向上直到文档的根元素 (<html>)
+*****    parentsUntil() 返回介于两个给定元素之间的所有祖先元素
+      #+BEGIN_SRC 
+$(document).ready(function(){
+  $("span").parentsUntil("div");
+});
+      #+END_SRC
+**** jQuery 遍历 - 后代
+***** children()
+***** find()方法返回被选元素的后代元素，一路向下直到最后一个后代
+      #+BEGIN_SRC 
+$(document).ready(function(){
+  $("div").find("span");
+});
+      #+END_SRC
+**** jQuery 遍历 - 同胞(siblings)
+*****    siblings()返回被选元素的所有同胞元素
+*****    next()返回被选元素的下一个同胞元素
+*****    nextAll()
+*****    nextUntil()返回介于两个给定参数之间的所有跟随的同胞元素
+*****    prev() 方向相反
+*****    prevAll()
+*****    prevUntil()
+**** jQuery 遍历- 过滤
+***** jQuery first() 方法first() 方法返回被选元素的首个元素。
+***** last()
+***** eq()返回被选元素中带有指定索引号的元素。从0开始
+** jQuery Ajax 是与服务器交换数据的技术，它在不重载全部页面的情况下，实现了对部分网页的更新。
+*** jQuery load() 方法
+**** load() 方法从服务器加载数据，并把返回的数据放入被选元素中。
+     : $(selector).load(URL,data,callback);
+     : 必需的 URL 参数规定您希望加载的 URL。
+     : 可选的 data 参数规定与请求一同发送的查询字符串键/值对集合。
+     : 可选的 callback 参数是 load() 方法完成后所执行的函数名称。
+     #+BEGIN_SRC 
+$("#div1").load("demo_test.txt #p1");
+     #+END_SRC
+     对象要符合DOM
+     #+BEGIN_SRC 
+可选的 callback 参数规定当 load() 方法完成后所要允许的回调函数。回调函数可以设置不同的参数：
+    responseTxt - 包含调用成功时的结果内容
+    statusTXT - 包含调用的状态
+    xhr - 包含 XMLHttpRequest 对象
+下面的例子会在 load() 方法完成后显示一个提示框。如果 load() 方法已成功，则显示"外部内容加载成功！"，而如果失败，则显示错误消息：
+实例
+$("button").click(function(){
+  $("#div1").load("demo_test.txt",function(responseTxt,statusTxt,xhr){
+    if(statusTxt=="success")
+      alert("外部内容加载成功!");
+    if(statusTxt=="error")
+      alert("Error: "+xhr.status+": "+xhr.statusText);
+  });
+});
+     #+END_SRC
+*** jQuery - AJAX get() 和 post() 方法
+    : jQuery get() 和 post() 方法用于通过 HTTP GET 或 POST 请求从服务器请求数据。
+**** $.get() 方法通过 HTTP GET 请求从服务器上请求数据。
+     : $.get(URL,callback);
+     必需的 URL 参数规定您希望请求的 URL。
+     可选的 callback 参数是请求成功后所执行的函数名。
+     下面的例子使用 $.get() 方法从服务器上的一个文件中取回数据：
+     #+BEGIN_SRC 
+$("button").click(function(){
+  $.get("demo_test.php",function(data,status){
+    alert("数据: " + data + "\n状态: " + status);
+  });
+});
+     #+END_SRC
+**** $.post() 方法通过 HTTP POST 请求从服务器上请求数据。
+     $.post(URL,data,callback);
+     必需的 URL 参数规定您希望请求的 URL。
+     可选的 data 参数规定连同请求发送的数据。
+     可选的 callback 参数是请求成功后所执行的函数名。
+     下面的例子使用 $.post() 连同请求一起发送数据：
+     #+BEGIN_SRC 
+$("button").click(function(){
+    $.post("/try/ajax/demo_test_post.php",
+    {
+        name:"菜鸟教程",
+        url:"http://www.runoob.com"
+    },
+        function(data,status){
+        alert("数据: \n" + data + "\n状态: " + status);
+    });
+});
+     #+END_SRC
+*** 事件
+**** ready将函数绑定到文档的就绪事件
+**** click /dblclick/focus/mouseover
+**** onchange 事件(text 对象)
+**** onmouseover 和 onmouseout 事件
+*** 文字两端对齐
+    <html>
+    <head>
+    <style type="text/css">
+    h1 {
+    text-align: justify;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    width: 800px;
+    height: 40px;
+    }
+
+    h1:after {
+    display: inline-block;
+    content: '';
+    overflow-x: hidden;
+    overflow-y: hidden;
+    width: 600px;
+    height: 40px;
+    }
+    </style>
+    </head>
+    <body>
+    <h1>实现单行文本的内容两端对齐</h1>
+    </body>
+    </html>  
+
+* MUI
+** 下拉刷新
+为实现下拉刷新功能，大多H5框架都是通过DIV模拟下拉回弹动画，在低端android手机上，DIV动画经常出现卡顿现象（特别是图文列表的情况）；
+ mui通过双webview解决这个DIV的拖动流畅度问题；拖动时，拖动的不是div，而是一个完整的webview（子webview），回弹动画使用原生动画；
+在iOS平台，H5的动画已经比较流畅，故依然使用H5方案。两个平台实现虽有差异，但mui经过封装，可使用一套代码实现下拉刷新。
+
+主页面内容比较简单，只需要创建子页面即可：
+mui.init({
+    subpages:[{
+      url:pullrefresh-subpage-url,//下拉刷新内容页面地址
+      id:pullrefresh-subpage-id,//内容页面标志
+      styles:{
+        top:subpage-top-position,//内容页面顶部位置,需根据实际页面布局计算，若使用标准mui导航，顶部默认为48px；
+        .....//其它参数定义
+      }
+    }]
+  });
+
+iOS平台的下拉刷新，使用的是mui封装的区域滚动组件， 为保证两个平台的DOM结构一致，内容页面需统一按照如下DOM结构构建：
+
+<!--下拉刷新容器-->
+<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+  <div class="mui-scroll">
+    <!--数据列表-->
+    <ul class="mui-table-view mui-table-view-chevron">
+      
+    </ul>
+  </div>
+</div>
+
+其次，通过mui.init方法中pullRefresh参数配置下拉刷新各项参数，如下：
+
+mui.init({
+  pullRefresh : {
+    container:"#refreshContainer",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+    down : {
+      height:50,//可选,默认50.触发下拉刷新拖动距离,
+      auto: true,//可选,默认false.自动下拉刷新一次
+      contentdown : "下拉可以刷新",//可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+      contentover : "释放立即刷新",//可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+      contentrefresh : "正在刷新...",//可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+      callback :pullfresh-function //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+    }
+  }
+});
+
+下拉刷新是mui框架的一个插件，该插件目前有下拉刷新结束、滚动到特定位置两个方法；
+下拉刷新结束
+
+在下拉刷新过程中，当获取新数据后，需要执行endPulldownToRefresh方法， 该方法的作用是关闭“正在刷新”的雪花进度提示，内容区域回滚顶部位置，如下：。
+
+function pullfresh-function() {
+     //业务逻辑代码，比如通过ajax从服务器获取新数据；
+     ......
+     //注意，加载完新数据后，必须执行如下代码，注意：若为ajax请求，则需将如下代码放置在处理完ajax响应数据之后
+     mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+}
+
+滚动到特定位置
+
+下拉刷新组件滚动到特定位置的方法类似区域滚动组件
+
+    scrollTo( xpos , ypos [, duration] )
+        xpos
+        Type: Integer
+        要在窗口文档显示区左上角显示的文档的 x 坐标
+        ypos
+        Type: Integer
+        要在窗口文档显示区左上角显示的文档的 y 坐标
+        duration
+        Type: Integer
+        滚动时间周期，单位是毫秒
+
+示例：在hello mui下拉刷新示例中，实现了双击标题栏，让列表快速回滚到顶部的功能；代码如下：
+
+var contentWebview = null;
+//监听标题栏的双击事件
+document.querySelector('header').addEventListener('doubletap',function () {
+	if(contentWebview==null){
+		contentWebview = plus.webview.currentWebview().children()[0];
+	}
+	//内容区滚动到顶部
+	contentWebview.evalJS("mui('#pullrefresh').pullRefresh().scrollTo(0,0,100)");
+});
+
+更改下拉刷新文字位置
+
+*可以解决修改下拉刷新子页面默认top值后,下拉刷新提示框位置异常问题
+
+根据实际需求在父页面给mui-content设置top属性
+
+.mui-bar-nav ~ .mui-content .mui-pull-top-pocket{
+  top: 180px !important;
+}
+
+扩展阅读
+
+问答社区话题讨论： 下拉刷新
+代码块激活字符:    mpull(DOM结构)
+minitpull(初始化组件)
+mmpull(组件方法)
+
+mui遵循 MIT License
+
+    最新版本 v3.5.0 · 问答社区 · Issues · Releases · 
+
+** 上拉加载
+mui的上拉加载和下拉刷新类似，都属于pullRefresh插件，使用过程如下：
+    1、页面滚动到底，显示“正在加载...”提示（mui框架提供）
+    2、执行加载业务数据逻辑（开发者提供）
+    3、加载完毕，隐藏"正在加载"提示（mui框架提供）
+开发者只需关心业务逻辑，实现加载更多数据即可。
+
+初始化
+初始化方法类似下拉刷新，通过mui.init方法中pullRefresh参数配置上拉加载各项参数，如下：
+
+mui.init({
+  pullRefresh : {
+    container:refreshContainer,//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
+    up : {
+      height:50,//可选.默认50.触发上拉加载拖动距离
+      auto:true,//可选,默认false.自动上拉加载一次
+      contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+      contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+      callback :pullfresh-function //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+    }
+  }
+});
+
+结束上拉加载
+
+加载完新数据后，需要执行endPullupToRefresh()方法，结束转雪花进度条的“正在加载...”过程
+
+    .endPullupToRefresh( nomore )
+        nomore
+        Type: Boolean
+        是否还有更多数据；若还有更多数据，则传入false; 否则传入true，之后滚动条滚动到底时，将不再显示“上拉显示更多”的提示语，而显示“没有更多数据了”的提示语；
+
+示例：
+
+function pullfresh-function() {
+     //业务逻辑代码，比如通过ajax从服务器获取新数据；
+     ......
+     //注意：
+     //1、加载完新数据后，必须执行如下代码，true表示没有更多数据了：
+     //2、若为ajax请求，则需将如下代码放置在处理完ajax响应数据之后
+     this.endPullupToRefresh(true|false);
+}
+
+重置上拉加载
+
+若部分业务中，有重新触发上拉加载的需求（比如当前类别已无更多数据，但切换到另外一个类别后，应支持继续上拉加载），此时调用.refresh(true)方法，可重置上拉加载控件，如下代码：
+
+//pullup-container为在mui.init方法中配置的pullRefresh节点中的container参数；
+//注意：refresh()中需传入true
+mui('#pullup-container').pullRefresh().refresh(true);
+
+禁用上拉刷新
+
+在部分场景下希望禁用上拉加载，比如在列表数据过少时，不想显示“上拉显示更多”、“没有更多数据”的提示语，开发者可以通过调用disablePullupToRefresh()方法实现类似需求，代码如下：
+
+//pullup-container为在mui.init方法中配置的pullRefresh节点中的container参数；
+mui('#pullup-container').pullRefresh().disablePullupToRefresh();
+
+启用上拉刷新
+
+使用disablePullupToRefresh()方法禁用上拉加载后，可通过enablePullupToRefresh()方法再次启用上拉加载，代码如下：
+
+//pullup-container为在mui.init方法中配置的pullRefresh节点中的container参数；
+mui('#pullup-container').pullRefresh().enablePullupToRefresh();
+
+扩展阅读
+
+    1、上拉加载时，怎么隐藏底部的“没有更多数据了”?
+    2、问答社区话题讨论：上拉加载
+
+mui遵循 MIT License
+
+    最新版本 v3.5.0 · 问答社区 · Issues · Releases · 
+
+* bootstrap
+bootstrap 建立了一个响应式的12列格网布局系统，它引入了fixed(固定) and fluid-with(浮动)的两种布局方式. 
+我们从全局样式(global style),格网系统（grid system），流式格网（fluid grid system）,自定义（customing）,
+布局（layouts）,响应式设计（responsive design ）这 六个方面讲解 scaffolding
+\* global style
+bootstrip 要求 html5 的文件类型，so <!DOCTYPE html>
+同时，它通过bootstrap.less 文件来设置 全局排版和链接显示风格，其中去掉了 body的margin,使用
+@baseFontFamily,@baseFontSize,@linkColor 等变量来控制基本排版
+\* 栅格系统（grid system）
+默认的bootstrap格网系统提供了一个宽达940像素的12列的格网。这意味着你页面的默认宽度是940px
+最小的单元要素宽度是940/12px.
+bootstrap 内置了一套响应式、移动设备优先的流式栅格系统。随着屏幕设备或视口（viewport）尺寸的增加，系统会自动分为最多12列
+就是通过一系列的行（row）与列（column）的组合创建页面布局，然后你的内容就可以放入到你创建好的布局当中。
+行（row）必须包含在.container中，以便为其赋予合适的排列(alignment)和内补(padding).
+使用行（row）在水平方向创建一组列(column).
+你的内容应当放置于列（column）内，而且,只有列（column)可以作为行（row）的直接子元素。
+类似Predefined grid classes like .row and .col-xs-4 这些预订义的栅格class可以用来快速创建 栅格布局。
+bootstrap 源码中定义的mixin也可以用来创建语义化的布局。
+通过设置padding 从而创建列(column)之间的间隔（gutter)。然后通过为第一和最后一列设置负值的margin从而抵消掉padding的影响。
+栅格系统中的列是通过指定1到12的值来表示其跨越的范围。例如，三个等宽的列可以使用三个.col-xs-4来创建。
+sm md lg xl 和默认
+offset push pull 设定偏移
+** 栅格选项
+|           | 手机（<768px) | 平板(>768px) | 桌面（>992px) |          |
+| class前缀 | .col-xs-      | .col-sm-     | .col-md-      | .col-lg- |
+| 列数      | 12            |              |               |          |
+\* 流式系统 (fluid grid system)
+\* 自定义(customing)
+\* 布局(layouts)
+\* 响应式设计(responsive design)
+abc璇
+abc璇
+abc璇
+
+璇
+璇
+璇
+璇
+jjjk璇
+璇
+璇
+璇
+璇
+abc璇
+abc璇
+abc璇
+abc璇
+璇
+* bootstrap css
+** 移动设备优先
+适应设备<meta name="viewport" content="width=device-width,initial-scale=1.0">
+禁用缩放 user-scalable=no  maximum-scale=1.0
+
+
+
+
+
