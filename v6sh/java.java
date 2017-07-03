@@ -37,6 +37,11 @@ public class java
     //     // }
 
     // }
+    package test;
+    public class exam{
+        public int chang=23;
+    }
+
     public static void main(String [] args){
         // for(String str: args){
         //         System.out.println("arg="+str);
