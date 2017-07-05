@@ -1,4 +1,3 @@
-dos2unix dosfile
 svn被锁定 扩展功能清理一下
 * 命令 
 ** 系统管理
@@ -102,11 +101,12 @@ SELinux
    quotaoff 关闭Linux内核中指定文件系统的磁盘配额功能
    mkfs 用于在设备上创建Linux文件系统
    mountpoint 用来判断指定的目录是否是加载点
-   umount 用于卸载已经加载的文件系统
    e2fsck 用于检查第二扩展文件系统的完整性
-   dumpe2fs 用于打印“ext2/ext3”文件系统的超级块和快组信息
-   fsck 检查并且试图修复文件系统中的错误
-   mount 用于加载文件系统到指定的加载点
+*** dumpe2fs 用于打印“ext2/ext3”文件系统的超级块和快组信息
+*** fsck 检查并且试图修复文件系统中的错误
+*** umount 用于卸载已经加载的文件系统
+*** mount 用于加载文件系统到指定的加载点
+
    mount  [-t vfstype] [-o options] device dir
    1.-t vfstype 文件系统类型
    　　光盘或光盘镜像：iso9660
@@ -123,7 +123,7 @@ SELinux
    3.device 要挂接(mount)的设备。
    4.dir设备在系统上的挂接点(mount point)。
    sudo mount -t smbfs -o username=user,password='' //10.0.1.1/windowsshare /mnt 浏览windows 共享文件夹
-   mke2fs 创建磁盘分区上的“etc2/etc3”文系统
+*** mke2fs 创建磁盘分区上的“etc2/etc3”文系统
 ** 系统关机和重启
 **** halt 关闭正在运行的Linux操作系统
 **** reboot 重新启动正在运行的Linux操作系统
@@ -940,6 +940,7 @@ SELinux
 **** cd 切换用户当前工作目录
 *** 文件权限属性设置
 **** dos2unix 
+     dos2unix dosfile
 **** umask 用来设置限制新建文件权限的掩码
 **** lsattr 查看文件的第二扩展文件系统属性
 **** chmod 用来变更文件或目录的权限
@@ -950,8 +951,10 @@ SELinux
      -v:显示权限变更的详细资料 
      -R:对目前目录下的所有档案与子目录进行相同的权限变更 即以递回的方式逐个变更) 
      chmod -R user:group filename
+     chmod o-r example
 **** chown 用来变更文件或目录的拥有者或所属群组
 **** chgrp 用来变更文件或目录的所属群组
+     chgrp USER GROUP 
 **** chattr 用来改变文件属性
 **** stat 用于显示文件的状态信息
 **** file 用来探测给定文件的类型。
