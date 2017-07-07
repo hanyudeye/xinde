@@ -24,7 +24,6 @@ View 又分 View(基本控件) 和ViewGroup （布局控件）
 Intent 是 不同组件间相互导航的纽带。
 
 (length (visible-frame-list))
-* emacs android 环境搭建
 * Ubuntu 14.04 设置Android开发环境
 ** 1.准备Java环境
    本文只安装sdk，不安装什么IDE，因为我只需要命令行模式开发即可。
@@ -45,7 +44,6 @@ Intent 是 不同组件间相互导航的纽带。
    具体参考官方文档：http://developer.android.com/training/basics/firstapp/running-app.html
 ***  我创建了一个模拟设备。  最后运行该模拟设备。
     android avd  
-
 **  创建工程
 ***  显示targets
     $ android list targets  
@@ -382,23 +380,21 @@ img
 关闭
 
 * Emacs 使用android模式
-    首先用package system安装android-mode, 
-    然后编辑~/.emacs.d/init.el文件，添加下面几行：
-        (require 'android-mode)  
-        (setq android-mode-sdk-dir "/opt/android-sdk-linux/")  
+  首先用package system安装android-mode, 
+  然后编辑~/.emacs.d/init.el文件，添加下面几行：
+  (require 'android-mode)  
+  (setq android-mode-sdk-dir "/opt/android-sdk-linux/")  
+  现在重新启动emacs，然后M-x 中运行命令
+  android-start-emulator  
+  此时会提示输入Android Virtual Device，， 用上下键查找后选择，会看到之前我安装的MT680, 回车后，弹出该设备运行界面。的确很方便。
 
-    现在重新启动emacs，然后M-x 中运行命令
-        android-start-emulator  
-    此时会提示输入Android Virtual Device，， 用上下键查找后选择，会看到之前我安装的MT680, 回车后，弹出该设备运行界面。
-    的确很方便。
-
-    关闭该设备模拟的程序后，可以再次运行android-start-emulator启动之，退出emacs的时候，emulator也会关闭。
-
-    如果不用emacs emulator也行，用下面的命令行：
-        emulator -avd MT680 -partition-size 128 >/dev/null &  
-    MT680可以通过android list avd命令查找得到：
-        dean@dean-Aspire-V7-481G:~/.emacs.d$ android list avd  
-        Available Android Virtual Devices:  
+  关闭该设备模拟的程序后，可以再次运行android-start-emulator启动之，退出emacs的时候，emulator也会关闭。
+  
+  如果不用emacs emulator也行，用下面的命令行：
+  emulator -avd MT680 -partition-size 128 >/dev/null &  
+  MT680可以通过android list avd命令查找得到：
+  dean@dean-Aspire-V7-481G:~/.emacs.d$ android list avd  
+  Available Android Virtual Devices:  
             Name: MT680  
           Device: 4in WVGA (Nexus S) (Generic)  
             Path: /home/dean/.android/avd/MT680.avd  
@@ -496,4 +492,21 @@ img
          '(jde-debugger (quote ("jdb"))))  
 
     现在jde-jdb-attach-via-socket命令成功了。
-*  
+* android环境
+  ②在“Android Virsual Device Manager”窗口单击“New”按钮
+  ->在弹出来的窗口中"Name"可以随便取；
+  “Target”指模拟器的系统版本；
+  “SD Card”的"size"是指手机存储卡的大小，只要你不在模拟器上装太多的应用，一般给个二三十MB就够了；
+  “Skin”是指屏幕的分辨率大小，其中“Built in”是一般手机常用标准屏幕分辨率大小，而“Resolution”是自定义屏幕分辨率大小，
+  具体做法，可以根据自身情况选择。->一切设置好后点击“Create AVD”，
+  
+  附：Android模拟器型号以及其对应的分辨率大小：
+|------------+------------+-----------+-------+-----------|
+| Standard	 | Width	 	 | Height	  | DAR	 | Pixeis    |
+| HVGA	     |      480	 | 320	     | 3:2   | 153,600   |
+| HVGA	     |      480	 | 	320     | 	3:2 | 	153,600 |
+| QVGA	     |      320	 | 	240	   | 4:3   | 	76,800  |
+| WQVGA400	 |        400 | 		240	 | 	5:3 | 96,000    |
+| WQVGA432   |        432 | 		240   | 	9:5 | 	103,680 |
+| WVGA800    |        800 | 		480   | 	5:3 | 	384,000 |
+| WVGA852    |        854 | 		480   | 	 	 | 409,920   |

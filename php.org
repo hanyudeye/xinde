@@ -1,4 +1,8 @@
 cli: php php.php   <?php echo "a"; ?>
+ini_set(("display_errors", "On"));   
+     error_reporting((E_ALL)); //-1是关闭
+ 
+: php 文件权限对 file_exist()等文件函数影响大
 * PHP
 ** 变量
 四种标量类型：
@@ -794,13 +798,13 @@ use XXX\yyy;
 	 PHP Filesystem 函数
 
 *** 异常处理
-try{
-throw new Exception("wrong");
-}catch(Exception $e){
-$e->getMessage();
-getCode
-getLine
-}
+    try{
+    throw new Exception("wrong");
+    }catch(Exception $e){
+    $e->getMessage();
+    getCode
+    getLine
+    }
 *** 引用的解释
 *** 预定义变量
 *** 预定义异常
@@ -1803,3 +1807,309 @@ echo “\n”;
 }   
    
 ?>  
+* mPDF   (make PDF ??) [[file+emacs:/home/wuming/soft/extend/phpextend/mpdfmanual.pdf][manualpage]]
+ 支持 html标签, 样式的导出(不是全部样式, 如floating只能部分)
+ 使用了很多代码, 有荣誉的人很多
+** install
+在/ttfontdata/ /tmp/ /graph_cache/文件夹中有写权限
+测试: [path_to_mpdf_folder]/mpdf/examples/
+要改变/tmp/文件夹的目录, 看手册 ^_^
+* 变量存在
+  PHP 判断常量,变量和函数是否存在
+if (defined('CONST_NAME')) {
+    //do something 
+}
+
+变量检测则是使用isset，注意变量未声明或声明时赋值为NULL，isset均返回FALSE，如：
+复制代码 代码如下:
+
+if (isset($var_name)) {
+    //do something
+}
+函数检测用function_exists，注意待检测的函数名也需要使用引号，如：
+复制代码 代码如下:
+
+if (function_exists('fun_name')) {
+ fun_name();
+}
+ 
+先不说多了我们看一个实例
+复制代码 代码如下:
+
+<?php 
+/* 判断常量是否存在*/ 
+if (defined('MYCONSTANT')) { 
+echo MYCONSTANT; 
+} 
+//判断变量是否存在 
+if (isset($myvar)) { 
+echo "存在变量$myvar."; 
+} 
+//判断函数是否存在 
+if (function_exists('imap_open')) { 
+echo "存在函数imag_openn"; 
+} else { 
+echo "函数imag_open不存在n"; 
+} 
+?>
+ 
+function_exists判断函数是否存在
+复制代码 代码如下:
+
+<?php
+if (function_exists('test_func')) {
+    echo "函数test_func存在";
+} else {
+    echo "函数test_func不存在";
+}
+?>
+ 
+filter_has_var函数
+filter_has_var() 函数检查是否存在指定输入类型的变量。
+若成功，则返回 true，否则返回 false。
+
+复制代码 代码如下:
+
+<?php
+if(!filter_has_var(INPUT_GET, "name"))
+ {
+ echo("Input type does not exist");
+ }
+else
+ {
+ echo("Input type exists");
+ }
+?>  
+
+输出为. Input type exists
+
+获取文件名(去除后缀) mb_substr($filename,0,mb_strpos($filename,'.'),"utf8");
+* Composer (装载php扩展类库)
+ : composer	require	topthink/think-image
+
+Composer is a tool for dependency management in PHP. It allows you to declare the libraries 
+your project depends on and it will manage (install/update) them for you.
+
+Dependency management#
+
+Composer is not a package manager in the same sense as Yum or Apt are. Yes, it deals with 
+"packages" or libraries, but it manages them on a per-project basis, installing them in a
+ directory (e.g. vendor) inside your project. By default it does not install anything globally. 
+Thus, it is a dependency manager. It does however support a "global" project for convenience via the global command.
+
+This idea is not new and Composer is strongly inspired by node's npm and ruby's bundler.
+
+Suppose:
+You have a project that depends on a number of libraries.
+Some of those libraries depend on other libraries.
+Composer:
+
+Enables you to declare the libraries you depend on.
+Finds out which versions of which packages can and need to be installed, and installs them (meaning it downloads them into your project).
+See the Basic usage chapter for more details on declaring dependencies.
+
+System Requirements#
+To install packages from sources instead of simple zip archives, you will need git, svn, fossil 
+or hg depending on how the package is version-controlled.
+
+Composer is multi-platform and we strive to make it run equally well on Windows, Linux and OSX.
+
+Installation - Linux / Unix / OSX#
+Downloading the Composer Executable#
+Composer offers a convenient installer that you can execute directly from the commandline. 
+Feel free to download this file or review it on GitHub if you wish to know more about the inner workings
+ of the installer. The source is plain PHP.
+
+There are in short, two ways to install Composer. Locally as part of your project, or globally as a system wide executable.
+Locally#
+
+The installer will just check a few PHP settings and then download composer.phar to your working directory.
+ This file is the Composer binary. It is a PHAR (PHP archive), which is an archive format for
+ PHP which can be run on the command line, amongst other things.
+
+Now just run php composer.phar in order to run Composer.
+You can install Composer to a specific directory by using the --install-dir option and additionally (re)name
+ it as well using the --filename option. When running the installer when following the Download page 
+instructions add the following parameters:
+
+php composer-setup.php --install-dir=bin --filename=composer
+Now just run php bin/composer in order to run Composer.
+
+Globally#
+You can place the Composer PHAR anywhere you wish. If you put it in a directory that is part of your PATH,
+ you can access it globally. On unixy systems you can even make it executable and invoke it without 
+directly using the php interpreter.
+
+After running the installer following the Download page instructions you can run this to move composer.phar 
+to a directory that is in your path:
+
+mv composer.phar /usr/local/bin/composer
+Note: If the above fails due to permissions, you may need to run it again with sudo.
+Note: On some versions of OSX the /usr directory does not exist by default. If you receive 
+the error "/usr/local/bin/composer: No such file or directory" then you must create the directory 
+manually before proceeding: mkdir -p /usr/local/bin.
+Note: For information on changing your PATH, please read the Wikipedia article and/or use Google.
+Now just run composer in order to run Composer instead of php composer.phar.
+** use
+For our basic usage introduction, we will be installing monolog/monolog, a logging library. 
+
+Note: for the sake of simplicity, this introduction will assume you have performed a local install of Composer.
+composer.json: Project Setup#
+
+To start using Composer in your project, all you need is a composer.json file.
+ This file describes the dependencies of your project and may contain other metadata as well.
+
+The require Key#
+The first (and often only) thing you specify in composer.json is the require key. You are simply telling Composer which packages your project depends on.
+{
+    "require": {
+        "monolog/monolog": "1.0.*"
+    }
+}
+As you can see, require takes an object that maps package names (e.g. monolog/monolog) to version constraints (e.g. 1.0.*).
+
+Composer uses this information to search for the right set of files in package "repositories" that you 
+register using the repositories key, or in Packagist, the default package respository. In the above example, since no other repository has been registered in the composer.json file, it is assumed that the monolog/monolog package is registered on Packagist. (See more about Packagist below, or read more about repositories here).
+
+Package Names#
+The package name consists of a vendor name and the project's name. Often these will be identical - the vendor name 
+just exists to prevent naming clashes. For example, it would allow two different people to create a library named
+ json. One might be named igorw/json while the other might be seldaek/json.
+
+Read more about publishing packages and package naming here. (Note that you can also specify
+ "platform packages" as dependencies, allowing you to require certain versions of server software. See platform packages below.)
+
+Package Version Constraints#
+In our example, we are requesting the Monolog package with the version constraint 1.0.*.
+ This means any version in the 1.0 development branch, or any version that is greater than or equal
+ to 1.0 and less than 1.1 (>=1.0 <1.1).
+
+Please read versions for more in-depth information on versions, how versions relate to each other, and on version constraints.
+
+How does Composer download the right files? When you specify a dependency in composer.json,
+ Composer first takes the name of the package that you have requested and searches for it 
+in any repositories that you have registered using the repositories key. If you have not
+ registered any extra repositories, or it does not find a package with that name in the repositories 
+you have specified, it falls back to Packagist (more below).
+When Composer finds the right package, either in Packagist or in a repo you have specified, 
+it then uses the versioning features of the package's VCS (i.e., branches and tags) to attempt
+ to find the best match for the version constraint you have specified. Be sure to read about versions 
+and package resolution in the versions article.
+Note: If you are trying to require a package but Composer throws an error regarding package
+ stability, the version you have specified may not meet your default minimum stability requirements. 
+By default only stable releases are taken into consideration when searching for valid package versions in your VCS.
+You might run into this if you are trying to require dev, alpha, beta, or RC versions of a 
+package. Read more about stability flags and the minimum-stability key on the schema page.
+Installing Dependencies#
+
+To install the defined dependencies for your project, just run the install command.
+php composer.phar install
+When you run this command, one of two things may happen:
+
+Installing Without composer.lock#
+If you have never run the command before and there is also no composer.lock file present, Composer simply resolves 
+all dependencies listed in your composer.json file and downloads the latest version of their files into the 
+vendor directory in your project. (The vendor directory is the conventional location for all third-party code in 
+a project). In our example from above, you would end up with the Monolog source files in vendor/monolog/monolog/.
+If Monolog listed any dependencies, those would also be in folders under vendor/.
+
+Tip: If you are using git for your project, you probably want to add vendor in your .gitignore. You really don't 
+want to add all of that third-party code to your versioned repository.
+When Composer has finished installing, it writes all of the packages and the exact versions of them that it downloaded
+ to the composer.lock file, locking the project to those specific versions. You should commit the composer.lock 
+file to your project repo so that all people working on the project are locked to the same versions of dependencies (more below).
+
+Installing With composer.lock#
+This brings us to the second scenario. If there is already a composer.lock file as well as a composer.json 
+file when you run composer install, it means either you ran the install command before, or someone else on the 
+project ran the install command and committed the composer.lock file to the project (which is good).
+
+Either way, running install when a composer.lock file is present resolves and installs all dependencies that you listed in 
+composer.json, but Composer uses the exact versions listed in composer.lock to ensure that the package versions are 
+consistent for everyone working on your project. As a result you will have all dependencies requested by your composer.json 
+file, but they may not all be at the very latest available versions (some of the dependencies listed in the 
+composer.lock file may have released newer versions since the file was created). This is by design, it ensures that 
+your project does not break because of unexpected changes in dependencies.
+
+Commit Your composer.lock File to Version Control#
+
+Committing this file to VC is important because it will cause anyone who sets up the project to use the exact same 
+versions of the dependencies that you are using. Your CI server, production machines, other developers in your team, 
+everything and everyone runs on the same dependencies, which mitigates the potential for bugs affecting only some parts 
+of the deployments. Even if you develop alone, in six months when reinstalling the project you can feel confident the 
+dependencies installed are still working even if your dependencies released many new versions since then. (See 
+note below about using the update command.)
+
+Updating Dependencies to their Latest Versions#
+
+As mentioned above, the composer.lock file prevents you from automatically getting the latest versions of your dependencies.
+ To update to the latest versions, use the update command. This will fetch the latest matching versions (according to 
+your composer.json file) and update the lock file with the new versions. (This is equivalent to deleting the 
+composer.lock file and running install again.)
+
+php composer.phar update
+Note: Composer will display a Warning when executing an install command if composer.lock and composer.json are not synchronized.
+If you only want to install or update one dependency, you can whitelist them:
+
+php composer.phar update monolog/monolog [...]
+Note: For libraries it is not necessary to commit the lock file, see also: Libraries - Lock file.
+Packagist#
+
+Packagist is the main Composer repository. A Composer repository is basically a package source: a place where you can 
+get packages from. Packagist aims to be the central repository that everybody uses. This means that you can automatically require 
+any package that is available there, without further specifying where Composer should look for the package.
+
+If you go to the Packagist website (packagist.org), you can browse and search for packages.
+
+Any open source project using Composer is recommended to publish their packages on Packagist. A library does not need to be 
+on Packagist to be used by Composer, but it enables discovery and adoption by other developers more quickly.
+
+Platform packages#
+Composer has platform packages, which are virtual packages for things that are installed on the system but are not 
+actually installable by Composer. This includes PHP itself, PHP extensions and some system libraries.
+
+php represents the PHP version of the user, allowing you to apply constraints, e.g. >=5.4.0. To require a 
+64bit version of php, you can require the php-64bit package.
+
+hhvm represents the version of the HHVM runtime and allows you to apply a constraint, e.g., '>=2.3.3'.
+
+ext-<name> allows you to require PHP extensions (includes core extensions). Versioning can be quite inconsistent here, so it's often a good idea to just set the constraint to *. An example of an extension package name is ext-gd.
+
+lib-<name> allows constraints to be made on versions of libraries used by PHP. The following are available: curl, iconv, icu, libxml, openssl, pcre, uuid, xsl.
+You can use show --platform to get a list of your locally available platform packages.
+
+Autoloading#
+
+For libraries that specify autoload information, Composer generates a vendor/autoload.php file. You can simply include this file and start using the classes that those libraries provide without any extra work:
+
+require __DIR__ . '/vendor/autoload.php';
+
+$log = new Monolog\Logger('name');
+$log->pushHandler(new Monolog\Handler\StreamHandler('app.log', Monolog\Logger::WARNING));
+$log->addWarning('Foo');
+You can even add your own code to the autoloader by adding an autoload field to composer.json.
+
+{
+    "autoload": {
+        "psr-4": {"Acme\\": "src/"}
+    }
+}
+Composer will register a PSR-4 autoloader for the Acme namespace.
+
+You define a mapping from namespaces to directories. The src directory would be in your project root, on the same level as vendor directory is. An example filename would be src/Foo.php containing an Acme\Foo class.
+
+After adding the autoload field, you have to re-run dump-autoload to re-generate the vendor/autoload.php file.
+
+Including that file will also return the autoloader instance, so you can store the return value of the include call in a variable and add more namespaces. This can be useful for autoloading classes in a test suite, for example.
+
+$loader = require __DIR__ . '/vendor/autoload.php';
+$loader->addPsr4('Acme\\Test\\', __DIR__);
+In addition to PSR-4 autoloading, Composer also supports PSR-0, classmap and files autoloading. See the autoload reference for more information.
+
+See also the docs on optimizing the autoloader.
+
+Note: Composer provides its own autoloader. If you don't want to use that one, you can just include vendor/composer/autoload_*.php files, which return associative arrays allowing you to configure your own autoloader.
+← Intro | Libraries →
+
+Found a typo? Something is wrong in this documentation? Just fork and edit it!
+Composer and all content on this site are released under the MIT license.

@@ -11,7 +11,8 @@
 
   调试
   gdb –annotate=3 test
-  无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。
+  无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。无论上面的那种情况，都出现了一个现象：程序的输出不能显示，
+  只有在程序退出的时候才显示出来。无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。
   gdb-many-windows 切换单窗格/多窗格模式
   gdb-restore-windows 恢复窗格布局	
   : screen menu bar/echo area/mode line
@@ -71,7 +72,9 @@
   doctor
 *** 强大的编辑器功能
     纯键盘操作
-    删除(删除一个词,删除一个段落), 变换(两个字母,两个单词), 光标移动, 联想, 搜索(正则表达式, occur)
+    删除(删除一个词,删除一个段落),
+    变换(两个字母,两个单词), 光标移动, 联想, 搜索(正则表达式, occur)
+    occur(全文搜索, 列表展示)
 *** 代码查看功能
 **** etags
 **** 高亮显示
@@ -853,12 +856,11 @@ doesn't complain about missing header files.
 | ~SPC m r~   | srefactor: refactor thing at point.                                    |
 * java layer
 This layer adds support for the Java language using the [[http://eclim.org][Eclim]] client/server.
-** * Layer Installation
+** Layer Installation
 *** Layer
     To use this configuration layer, add it to your =~/.spacemacs=. You will need to
     add =java= to the existing =dotspacemacs-configuration-layers= list in this
     file.
-
 *** Eclim
     Eclim provides the ability to access Eclipse features such as code completion,
     searching, code validation, and many more.
@@ -1361,3 +1363,225 @@ or lines in a file hosted on Git web services like GitHub, GitLab, Bitbucket...
   override this behavior by setting the variable =git-link-open-in-browser= to
   =nil=.
 
+* org agenda(代办)
+  Two variables control how the agenda buffer is displayed and whether
+  the window configuration is restored when the agenda exits:
+  `org-agenda-window-setup' and `org-agenda-restore-windows-after-quit'.
+
+10.1 Agenda files
+The information to be shown is normally collected from all _agenda
+files_, the files listed in the variable `org-agenda-files'(1).  If a
+directory is part of this list, all files with the extension `.org' in
+this directory will be part of the list.
+
+   Thus, even if you only work with a single Org file, that file should
+be put into the list(2).  You can customize `org-agenda-files', but the
+easiest way to maintain it is through the following commands
+
+`C-c [     (`org-agenda-file-to-front')'
+     Add current file to the list of agenda files.  The file is added to
+     the front of the list.  If it was already in the list, it is moved
+     to the front.  With a prefix argument, file is added/moved to the
+     end.  
+
+`C-c ]     (`org-remove-file')'
+     Remove current file from the list of agenda files.  
+
+`C-'     (`org-cycle-agenda-files')'
+`C-,'
+     Cycle through agenda file list, visiting one file after the other.  
+
+`M-x org-iswitchb RET'
+     Command to use an `iswitchb'-like interface to switch to and
+     between Org buffers.
+
+The Org menu contains the current list of files and can be used to
+visit any of them.
+
+   If you would like to focus the agenda temporarily on a file not in
+this list, or on just one file in the list, or even on only a subtree
+in a file, then this can be done in different ways.  For a single
+agenda command, you may press `<' once or several times in the
+dispatcher (*note Agenda dispatcher::).  To restrict the agenda scope
+for an extended period, use the following commands:
+
+`C-c C-x <     (`org-agenda-set-restriction-lock')'
+     Permanently restrict the agenda to the current subtree.  When with
+     a prefix argument, or with the cursor before the first headline in
+     a file, the agenda scope is set to the entire file.  This
+     restriction remains in effect until removed with `C-c C-x >', or
+     by typing either `<' or `>' in the agenda dispatcher.  If there is
+     a window displaying an agenda view, the new restriction takes
+     effect immediately.  
+
+`C-c C-x >     (`org-agenda-remove-restriction-lock')'
+     Remove the permanent restriction created by `C-c C-x <'.
+
+When working with `speedbar.el', you can use the following commands in
+the Speedbar frame:
+
+`< in the speedbar frame     (`org-speedbar-set-agenda-restriction')'
+     Permanently restrict the agenda to the item--either an Org file or
+     a subtree in such a file--at the cursor in the Speedbar frame.  If
+     there is a window displaying an agenda view, the new restriction
+     takes effect immediately.  
+
+`> in the speedbar frame     (`org-agenda-remove-restriction-lock')'
+     Lift the restriction.
+
+   (1) If the value of that variable is not a list, but a single file
+name, then the list of agenda files will be maintained in that external
+file.
+
+   (2) When using the dispatcher, pressing `<' before selecting a
+command will actually limit the command to the current file, and ignore
+`org-agenda-files' until the next dispatcher command.
+
+10.2 The agenda dispatcher
+==========================
+
+The views are created through a dispatcher, which should be bound to a
+global key--for example `C-c a' (*note Activation::).  In the following
+we will assume that `C-c a' is indeed how the dispatcher is accessed
+and list keyboard access to commands accordingly.  After pressing `C-c
+a', an additional letter is required to execute a command.  The
+dispatcher offers the following default commands:
+
+`a' Create the calendar-like agenda (*note Weekly/daily agenda::).
+
+`t / T' Create a list of all TODO items (*note Global TODO list::).
+
+`m / M' Create a list of headlines matching a TAGS expression (*note
+     Matching tags and properties::).
+
+`L' Create the timeline view for the current buffer (*note Timeline::).
+
+`s' Create a list of entries selected by a boolean expression of
+     keywords and/or regular expressions that must or must not occur in
+     the entry.
+
+`/' Search for a regular expression in all agenda files and
+     additionally in the files listed in
+     `org-agenda-text-search-extra-files'.  This uses the Emacs command
+     `multi-occur'.  A prefix argument can be used to specify the
+     number of context lines for each match, default is 1.
+
+`# / !'
+     Create a list of stuck projects (*note Stuck projects::).
+
+`<' Restrict an agenda command to the current buffer(1).  After
+     pressing `<', you still need to press the character selecting the
+     command.
+
+`< <' If there is an active region, restrict the following agenda
+     command to the region.  Otherwise, restrict it to the current
+     subtree(2).  After pressing `< <', you still need to press the
+     character selecting the command.
+
+`*'
+     Toggle sticky agenda views.  By default, Org maintains only a
+     single agenda buffer and rebuilds it each time you change the
+     view, to make sure everything is always up to date.  If you often
+     switch between agenda views and the build time bothers you, you
+     can turn on sticky agenda buffers or make this the default by
+     customizing the variable `org-agenda-sticky'.  With sticky
+     agendas, the agenda dispatcher will not recreate agenda views from
+     scratch, it will only switch to the selected one, and you need to
+     update the agenda by hand with `r' or `g' when needed.  You can
+     toggle sticky agenda view any time with `org-toggle-sticky-agenda'.
+
+   You can also define custom commands that will be accessible through
+the dispatcher, just like the default commands.  This includes the
+possibility to create extended agenda buffers that contain several
+blocks together, for example the weekly agenda, the global TODO list and
+a number of special tags matches.  *Note Custom agenda views::.
+
+10.3.2 The global TODO list
+---------------------------
+
+The global TODO list contains all unfinished TODO items formatted and
+collected into a single place.
+
+`C-c a t     (`org-todo-list')'
+     Show the global TODO list.  This collects the TODO items from all
+     agenda files (*note Agenda views::) into a single buffer.  By
+     default, this lists items with a state the is not a DONE state.
+     The buffer is in `agenda-mode', so there are commands to examine
+     and manipulate the TODO entries directly from that buffer (*note
+     Agenda commands::).  
+
+`C-c a T     (`org-todo-list')'
+     Like the above, but allows selection of a specific TODO keyword.
+     You can also do this by specifying a prefix argument to `C-c a t'.
+     You are prompted for a keyword, and you may also specify several
+     keywords by separating them with `|' as the boolean OR operator.
+     With a numeric prefix, the Nth keyword in `org-todo-keywords' is
+     selected.  The `r' key in the agenda buffer regenerates it, and
+     you can give a prefix argument to this command to change the
+     selected TODO keyword, for example `3 r'.  If you often need a
+     search for a specific keyword, define a custom command for it
+     (*note Agenda dispatcher::).
+     Matching specific TODO keywords can also be done as part of a tags
+     search (*note Tag searches::).
+
+   Remote editing of TODO items means that you can change the state of a
+TODO entry with a single key press.  The commands available in the TODO
+list are described in *note Agenda commands::.
+
+   Normally the global TODO list simply shows all headlines with TODO
+keywords.  This list can become very long.  There are two ways to keep
+it more compact:
+   - Some people view a TODO item that has been _scheduled_ for
+     execution or have a _deadline_ (*note Timestamps::) as no longer
+     _open_.  Configure the variables
+     `org-agenda-todo-ignore-scheduled',
+     `org-agenda-todo-ignore-deadlines',
+     `org-agenda-todo-ignore-timestamp' and/or
+     `org-agenda-todo-ignore-with-date' to exclude such items from the
+     global TODO list.
+
+   - TODO items may have sublevels to break up the task into subtasks.
+     In such cases it may be enough to list only the highest level TODO
+     headline 
+     the variable `org-agenda-todo-list-sublevels' to get this behavior.
+
+* agenda (事务提醒的东东)
+** 一堆事务东东
+   一行带有特定标签的行 TODO 
+   添加东东　
+添加东东 `C-c [     (`org-agenda-file-to-front')'
+`C-c ]     (`org-remove-file')' Remove current file from the list of agenda files.  
+`C ,    (`org-cycle-agenda-files')' Cycle through agenda file list, visiting one file after the other.  
+ 
+** 东东显示规则 看emacs 手册
+   调度器会以不同的维度显示 
+   * an _agenda_ that is like a calendar and shows information for specific dates,
+   * a _TODO list_ that covers all unfinished action items, 
+   * a _match view_, showings headlines based on the tags, properties, and TODO state associated with them,
+   * a _timeline view_ that shows all events in a single Org file, in time-sorted view,
+   * a _text search view_ that shows all entries from multiple files that contain specified keywords,
+   * a _stuck projects view_ showing projects that currently don't move along, and
+   * _custom views_ that are special searches and combinations of different views.
+
+** 东东的特性, 时间, 提醒, tags与情境
+agenda view就是要把你的数据，按时间来排列分割，然后展示给你看的。在你打开Emacs的任何时候，可以用(C-c a a)来打开agenda view。它的效果如图：
+第一部分是一个按时间分割的列表，它并不是每一天都有的，只有你当天的项目除了日期之外还定义了时间的情况下，它才会出现，
+并以两个时为间隔，将你的项目插入其中。而没有定义具体时间的当天项目，则在之后排队显示。
+第二部分，没有具体时间的项目。第一列是TODO项目所在的org文件名,我这里有home,work,Linux三个文件。第二列，显示这个项目是被分配在今天，
+还是在今天到期。Scheduled就是设置在今天的工作项，而Deadline就是指该项目在今天到期。而”In  2 d.”则表示这一项目在两天后到期。
+之后是描述。如果你的项目有tags的话，它将会在最后一列显示。
+agenda view提供四种视图，分别是日(d)，周（w），月(v m)，年(v y)，括号里是切换这四种视图的快捷键。用哪种视图纯属个人喜好，
+我觉得一方面是看你每天的日程多不多，另一方面可以取决于你在什么样的高度查看你的日程。
+tags与情境
+情境（context）,在时间管理的概念中就是按所处的环境来分割TODO项目。比如说某些事是在网络上做的，某些事是在公司做的，某些事是在家里做的。
+当然你可以把不同的情境分别放在不同的文件里。不过如果情境比文件的粒度要小，比如说你在家里有三个情境，”厕上”"床上”"电脑前”，而这些情境都属于“home”,
+你无须创建三个文件，而可以将它们全部放在home.org中，然后分别打上不同的标签。打标签的命令可以用(C-c C-q)。
+之后如果你要做床上的事，可以敲(C-c a m)，按提示输入标签，就可以显示所有符合条件的项目。
+(C-c a)是打开agenda view的命令，而后面的m a可以看作是参数，用于打开不同的视图。如前所见，(C-c a a)是一种日历式的视图。(C-c a m)
+是一种可以指定Tags显示的视图。当然还有很多，按(C-c a)之后，界面上会有提示。
+要做了以上这些事情，你还需要做一个配置，目的是要让agenda view知道，它应该从哪些个org文件里面取数据。
+在你的.emacs文件中，添加：
+(setq org-agenda-files (list "~/doc/org/linux.org"  
+                     "~/doc/org/work.org"  
+                     "~/doc/org/home.org"))  
+你尽可以在后面添加自己需要的org
