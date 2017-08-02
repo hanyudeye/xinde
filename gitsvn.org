@@ -2,17 +2,21 @@
 ** Git 工作流程
   * 克隆 Git 资源作为工作目录。
   : git clone --depth=1 RESP 只克隆最新的
+//  : git clone --depth=1 RESP 只克隆最新的
   * 在克隆的资源上添加或修改文件。
+  * //in  response comparea local files
+  * // commit file to response
+  * //pull push file to repose to remot response
   * 如果其他人修改了，你可以更新资源。pull/push
   * 在提交前查看修改。
   * 提交修改。
   * 在修改完成后，如果发现错误，可以撤回提交并再次修改并提交,commit/checkout
 ** 配置
-git config [--system,--global]
-/etc/gitconfig | ~/.gitconfig
-user.name = "用户名或者用户ID"
-user.email = "邮箱"
-ssh-keygen -C 'you email address@gmail.com' -t rsa
+   git config [--system,--global]
+   /etc/gitconfig | ~/.gitconfig
+   user.name = "用户名或者用户ID"
+   user.email = "邮箱"
+   ssh-keygen -C 'you email address@gmail.com' -t rsa
 : 会在用户目录 ~/.ssh/ 下建立相应的密钥文件
 : 可以使用 ssh -v git@github.com 命令来测试链接是否畅通
 *** 上传公钥
@@ -49,7 +53,7 @@ git commit -m "msg"
 也可以将git add与git commit用一个指令完成
 git commit -a -m "msg"
 *** 远程同步
-git push
+    git push
 *** 更新本地端的repo
 git pull/git pull git://github.com/tom/test.git
 *** 查看状态
@@ -1682,3 +1686,14 @@ or lines in a file hosted on Git web services like GitHub, GitLab, Bitbucket...
 
 
 
+* git
+** 1.create a new repository on the command line
+echo "# test" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/hanyudeye/test.git
+git push -u origin master
+** 2.push an existing repository from the command line
+git remote add origin https://github.com/hanyudeye/test.git
+git push -u origin master
