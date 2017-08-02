@@ -1697,3 +1697,214 @@ git push -u origin master
 ** 2.push an existing repository from the command line
 git remote add origin https://github.com/hanyudeye/test.git
 git push -u origin master
+* git 
+要 参与任何一个 Git 项目的协作,必须要了解该如何管理远程仓库.远程仓库是指托管在网络上的项目仓库,可能会有好多个,其中有些你只能读,另外有些可以写.同他人协作开发某 个项目时,需要管理这些远程仓库,以便推送或拉取数据,分享各自的工作进展.管理远程仓库的工作,包括添加远程库,移除废弃的远程库,管理各式远程库分 支,定义是否跟踪这些分支,等等.本节我们将详细讨论远程库的管理和使用.
+
+　　查看当前的远程库
+
+　　要查看当前配置有哪些远程仓库,可以用 Git remote 命令,它会列出每个远程库的简短名字.在克隆完某个项目后,至少可以看到一个名为 origin 的远程库,git 默认使用这个名字来标识你所克隆的原始仓库:
+
+　　$ git clone git://github.com/schacon/ticgit.git
+
+　　Initialized empty Git repository in /private/tmp/ticgit/.git/
+
+　　remote: Counting objects: 595, done.
+
+　　remote: Compressing objects: 100% (269/269), done.
+
+　　remote: Total 595 (delta 255), reused 589 (delta 253)
+
+　　Receiving objects: 100% (595/595), 73.31 KiB | 1 KiB/s, done.
+
+　　Resolving deltas: 100% (255/255), done.
+
+　　$ cd ticgit
+
+（1）git remote 不带参数，列出已经存在的远程分支
+
+　　$ git remote
+
+　　origin
+
+（2）git remote -v | --verbose 列出详细信息，在每一个名字后面列出其远程url
+
+此时， -v 选项(译注:此为 –verbose 的简写,取首字母),显示对应的克隆地址:
+
+　　$ git remote -v
+
+　　origin git://github.com/schacon/ticgit.git如果有多个远程仓库,此命令将全部列出.比如在我的 Grit 项目中,可以看到:
+
+　　$ cd grit
+
+　　$ git remote -v
+
+　　bakkdoor git://github.com/bakkdoor/grit.git
+
+　　cho45 git://github.com/cho45/grit.git
+
+　　defunkt git://github.com/defunkt/grit.git
+
+　　koke git://github.com/koke/grit.git
+
+　　origin 这样一来,我就可以非常轻松地从这些用户的仓库中,拉取他们的提交到本地.请注意,上面列出的地址只有 origin 用的是 SSH URL 链接,所以也只有这个仓库我能推送数据上去(我们会在第四章解释原因).
+
+　　添加远程仓库
+
+　　要添加一个新的远程仓库,可以指定一个简单的名字,以便将来引用,运行 git remote add [shortname] [url]:
+
+　　$ git remote
+
+　　origin
+
+　　$ git remote add pb git://github.com/paulboone/ticgit.git
+
+　　$ git remote -v
+
+　　origin git://github.com/schacon/ticgit.git
+
+　　pb git://github.com/paulboone/ticgit.git现在可以用字串 pb 指代对应的仓库地址了.比如说,要抓取所有 Paul 有的,但本地仓库没有的信息,可以运行 git fetch pb:
+
+　　$ git fetch pb
+
+　　remote: Counting objects: 58, done.
+
+　　remote: Compressing objects: 100% (41/41), done.
+
+　　remote: Total 44 (delta 24), reused 1 (delta 0)
+
+　　Unpacking objects: 100% (44/44), done.
+
+　　From git://github.com/paulboone/ticgit
+
+　　* [new branch] master -> pb/master
+
+　　* [new branch] ticgit -> pb/ticgit
+
+现在,Paul 的主干分支(master)已经完全可以在本地访问了,对应的名字是 pb/master,你可以将它合并到自己的某个分支,或者切换到这个分支,看看有些什么有趣的更
+
+
+
+二。通过git remote 建立远程仓库
+
+
+建立远程仓库
+最近一直在学习使用git来管理自己的程序，总是今天东学一点，明天西凑一点，到用的时候，总是有些茫然不知所措。
+
+在博客园里看见一篇老好的文章，教我们做笔记啦，但是做完笔记还是要记得总结哦！
+
+来吧，让我们一起来总结吧，今天先来看看git远程的仓库是怎么建立的。
+
+当然，使用git嘛，第一步肯定是得新建一个git仓库，总得有个操作的空间吧,巧妇难为无米之炊嘛。
+
+1.初始化一个空的git仓库
+
+1 software@debian:~$ mkdir yafeng
+2 software@debian:~$ cd yafeng/
+3 software@debian:~/yafeng$ ls
+4 software@debian:~/yafeng$ git init
+5 Initialized empty Git repository in /home/software/yafeng/.git/
+6 software@debian:~/yafeng$ 
+命令注释：
+
+在上面的命令中，真正去初始化的是第四行的那句---git init
+
+当然，还有很多同学会看见加了参数--bare的命令，这个命令会在我们以后慢慢给大家解释，对于不是作为共享仓库，而是作为一个自己操作的仓库，上面这样就足够了。
+
+好了，现在yafeng目录就是我们的据点---git仓库了哦。
+
+下面我们总要做点什么的吧，入宝山总不能光看着哦：
+
+2.向仓库提交我们写的文件
+
+复制代码
+1 software@debian:~/yafeng$ echo "our first git repository" >> file
+2 software@debian:~/yafeng$ ls
+3 file
+4 software@debian:~/yafeng$ git add file
+5 software@debian:~/yafeng$ git commit -m "the first file to commit" file
+6 [master (root-commit) 0c72641] the first file to commit
+7  1 files changed, 1 insertions(+), 0 deletions(-)
+8  create mode 100644 file
+9 software@debian:~/yafeng$ 
+复制代码
+命令解释：
+我们在仓库中新建了一个文件file，作为我们的示例文件。
+
+第4行：将file文件的信息添加到git仓库的索引库中，并没有真正添加到库。当然上例中的file文件只是我们的示例，它是一个路径，因此，可以是文件，更可以是目录。
+
+第5行：将索引库中的内容向git仓库进行提交。这步之后文件file才算真正提交到拉git仓库中。双引号中的内容是根据每次修改的不同内容，由我们自己去填写的，
+
+很多人会看见
+
+　　git commit -a -m “ ”
+
+这条的命令是在你已经add了一个或多个文件过之后，然后修改了这些文件，就可以使用该命令进行提交。
+
+好了，不管怎么样，终于是将文件提交到库了。可是现在的仓库只是一个本地的仓库，我们的目标是变成远程仓库哦，继续吧。
+
+3.在本地仓库添加一个远程仓库,并将本地的master分支跟踪到远程分支
+
+1 software@debian:~/yafeng$ git remote add origin ssh://software@172.16.0.30/~/yafeng/.git
+2 software@debian:~/yafeng$ git push origin master
+3 software@172.16.0.30's password: 
+4 Everything up-to-date
+5 software@debian:~/yafeng$ 
+命令注释:
+
+第1行:在本地仓库添加一个远程仓库,当然ssh后面的地址是我们本地仓库的地址.
+
+第2行:将本地master分支跟踪到远程分支,在git仓库建立之初就会有一个默认的master分支,当然你如果建立了其他分支,也可以用同样的方法去跟踪.
+
+对于分支的事情,我们会在以后细细的讲述.
+
+做到拉这一步了吗?我告诉你,你已经完成目的了哦,现在的git仓库已经是一个远程仓库了,
+
+不相信吗?我们来测试一次阿:
+
+4.测试
+
+现在本机上看看:
+
+复制代码
+ 1 software@debian:~/yafeng$ git remote show origin
+ 2 software@172.16.0.30's password: 
+ 3 * remote origin
+ 4   Fetch URL: ssh://software@172.16.0.30/~/yafeng/.git
+ 5   Push  URL: ssh://software@172.16.0.30/~/yafeng/.git
+ 6   HEAD branch: master
+ 7   Remote branch:
+ 8     master tracked
+ 9   Local ref configured for 'git push':
+10     master pushes to master (up to date)
+11 software@debian:~/yafeng$ 
+复制代码
+代码注释:
+
+第1行:显示远程信息
+
+很多看见这还是会不以为然的,这又能说明什么呢?好,那就来点实际的:
+
+在另一个机子上,远程clone
+
+复制代码
+ 1 root@yafeng-VirtualBox:~# ls
+ 2 bin  gittest  read_temp
+ 3 root@yafeng-VirtualBox:~# git clone ssh://software@172.16.0.30/~/yafeng/.git
+ 4 Cloning into yafeng...
+ 5 software@172.16.0.30's password: 
+ 6 remote: Counting objects: 9, done.
+ 7 remote: Compressing objects: 100% (3/3), done.
+ 8 remote: Total 9 (delta 0), reused 0 (delta 0)
+ 9 Receiving objects: 100% (9/9), done.
+10 root@yafeng-VirtualBox:~# ls
+11 bin  gittest  read_temp  yafeng
+12 root@yafeng-VirtualBox:~# cd yafeng/
+13 root@yafeng-VirtualBox:~/yafeng# ls
+14 file
+15 root@yafeng-VirtualBox:~/yafeng# 
+复制代码
+代码注释:
+
+第3行:就是远程clone仓库.很明显的对比可以知道多了yafeng目录,而这个yafeng目录里的内容和我们另外一台机子上的内容一样
+
+至此,一个简单的git远程仓库就建好了,简单不,试试吧!!
