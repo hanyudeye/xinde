@@ -2,9 +2,20 @@
 * javascript
   nodejs js.js
   或浏览器 打开
-  对象
-  内建对象,String;Date;Array
-  对象构造器
+
+** 对象
+   Document, Element, Function, Array ,Boolean ,Date , String  , Number
+   Math , Object, RegExp
+#+BEGIN_SRC js
+var adder = new Function('a', 'b', 'return a + b');
+
+// Call the function
+adder(2, 6);
+// > 8
+#+END_SRC
+
+** 对象构造器
+
   #+BEGIN_SRC javascript
     function person(firstname,lastname,age,eyecolor)
     {
@@ -14,303 +25,14 @@
     this.eyecolor=eyecolor;
     }
   #+END_SRC
-  JavaScript for...in 语句循环遍历对象的属性。
+
+  #+BEGIN_SRC 
+  JavaScript for...in 语句循环遍历对象的属性, 数组。
   日期 Date() getTime() setFullYear() toUTString getDay()
   数组 concat() join() sort() Array()
   RegExp 对象有 3 个方法：test()、exec() 以及 compile()。
-数组    
-var light=Array(3);
-对象    
-var lennon=Object();
-lennon.name="john"
-lennon.year=1999 
-简洁语法
-var lennon={name:"john",year:1999};
-getElementById()
-getElementsByTagName(tagname)
-getElementsByClassName(classname)
-getAttribute    
-setAttribute    
-onmouseover 
-onmouseout
-onclick
-this 关键字
-onclick=showPic(this)
-window.onload=functionname();
-childNodes属性    
-nodeType属性    
-nodeValue属性    
-firstChild和lastChild属性    
-分离JavaScript    
-innerHTML属性    
-appendChild方法    
-createTextNode方法    
-Ajax    
-XMLHttpRequest对象    
-*** jQuery 选择器
-$("#myELement")   选择id值等于myElement的元素，id值不能重复在文档中只能有一个id值是myElement所以得到的是唯一的元素 
-$("div")           选择所有的div标签元素，返回div元素数组 
-$(".myClass")      选择使用myClass类的css的所有元素 
-$("*")             选择文档中的所有的元素，可以运用多种的选择方式进行联合选择：例如$("#myELement,div,.myclass") 
-   
-层叠选择器： 
-$("form input")         选择所有的form元素中的input元素 
-$("#main > *")          选择id值为main的所有的子元素 
-$("label + input")     选择所有的label元素的下一个input元素节点，经测试选择器返回的是label标签后面直接跟一个input标签的所有input标签元素 
-$("#prev ~ div")       同胞选择器，该选择器返回的为id为prev的标签元素的所有的属于同一个父元素的div标签 
-   
-基本过滤选择器： 
-$("tr:first")               选择所有tr元素的第一个 
-$("tr:last")                选择所有tr元素的最后一个 
-$("input:not(:checked) + span")   
-   
-过滤掉：checked的选择器的所有的input元素 
-   
-$("tr:even")               选择所有的tr元素的第0，2，4... ...个元素（注意：因为所选择的多个元素时为数组，所以序号是从0开始） 
-   
-$("tr:odd")                选择所有的tr元素的第1，3，5... ...个元素 
-$("td:eq(2)")             选择所有的td元素中序号为2的那个td元素 
-$("td:gt(4)")             选择td元素中序号大于4的所有td元素 
-$("td:ll(4)")              选择td元素中序号小于4的所有的td元素 
-$(":header") 
-$("div:animated") 
-内容过滤选择器： 
-   
-$("div:contains('John')") 选择所有div中含有John文本的元素 
-$("td:empty")           选择所有的为空（也不包括文本节点）的td元素的数组 
-$("div:has(p)")        选择所有含有p标签的div元素 
-$("td:parent")          选择所有的以td为父节点的元素数组 
-可视化过滤选择器： 
- 
-$("div:hidden")        选择所有的被hidden的div元素 
-$("div:visible")        选择所有的可视化的div元素 
-属性过滤选择器： 
-  
-$("div[id]")              选择所有含有id属性的div元素 
-$("input[name='newsletter']")    选择所有的name属性等于'newsletter'的input元素 
- 
-$("input[name!='newsletter']") 选择所有的name属性不等于'newsletter'的input元素 
- 
-$("input[name^='news']")         选择所有的name属性以'news'开头的input元素 
-$("input[name$='news']")         选择所有的name属性以'news'结尾的input元素 
-$("input[name*='man']")          选择所有的name属性包含'news'的input元素 
- 
-$("input[id][name$='man']")    可以使用多个属性进行联合选择，该选择器是得到所有的含有id属性并且那么属性以man结尾的元素 
- 
-*元素过滤选择器： 
- 
-$("ul li:nth-child(2)"),$("ul li:nth-child(odd)"),$("ul li:nth-child(3n + 1)") 
- 
-$("div span:first-child")          返回所有的div元素的第一个子节点的数组 
-$("div span:last-child")           返回所有的div元素的最后一个节点的数组 
-$("div button:only-child")       返回所有的div中只有唯一一个子节点的所有子节点的数组 
- 
-单元素选择器： 
- 
-$(":input")                  选择所有的表单输入元素，包括input, textarea, select 和 button 
- 
-$(":text")                     选择所有的text input元素 
-$(":password")           选择所有的password input元素 
-$(":radio")                   选择所有的radio input元素 
-$(":checkbox")            选择所有的checkbox input元素 
-$(":submit")               选择所有的submit input元素 
-$(":image")                 选择所有的image input元素 
-jQuery 的选择器可谓之强大无比，这里简单地总结一下常用的元素查找方法 
- 
-$("#myELement")    选择id值等于myElement的元素，id值不能重复在文档中只能有一个id值是myElement所以得到的是唯一的元素 
-$("div")           选择所有的div标签元素，返回div元素数组 
-$(".myClass")      选择使用myClass类的css的所有元素 
-$("*")             选择文档中的所有的元素，可以运用多种的选择方式进行联合选择：例如$("#myELement,div,.myclass") 
- 
-[叠选择器： 
-$("form input")         选择所有的form元素中的input元素 
-$("#main > *")          选择id值为main的所有的子元素 
-$("label + input")     选择所有的label元素的下一个input元素节点，经测试选择器返回的是label标签后面直接跟一个input标签的所有input标签元素 
-$("#prev ~ div")       同胞选择器，该选择器返回的为id为prev的标签元素的所有的属于同一个父元素的div标签 
- 
- 本过滤选择器： 
-$("tr:first")               选择所有tr元素的第一个 
-$("tr:last")                选择所有tr元素的最后一个 
-$("input:not(:checked) + span")   
-过滤掉：checked的选择器的所有的input元素 
- 
-$("tr:even")               选择所有的tr元素的第0，2，4... ...个元素（注意：因为所选择的多个元素时为数组，所以序号是从0开始） 
- 
-$("tr:odd")                选择所有的tr元素的第1，3，5... ...个元素 
-$("td:eq(2)")             选择所有的td元素中序号为2的那个td元素 
-$("td:gt(4)")             选择td元素中序号大于4的所有td元素 
-$("td:ll(4)")              选择td元素中序号小于4的所有的td元素 
-$(":header") 
-$("div:animated") 
-内容过滤选择器： 
- 
-$("div:contains('John')") 选择所有div中含有John文本的元素 
-$("td:empty")           选择所有的为空（也不包括文本节点）的td元素的数组 
-$("div:has(p)")        选择所有含有p标签的div元素 
-$("td:parent")          选择所有的以td为父节点的元素数组 
-可视化过滤选择器： 
- 
-$("div:hidden")        选择所有的被hidden的div元素 
-$("div:visible")        选择所有的可视化的div元素 
-属性过滤选择器： 
- 
-$("div[id]")              选择所有含有id属性的div元素 
-$("input[name='newsletter']")    选择所有的name属性等于'newsletter'的input元素 
- 
-$("input[name!='newsletter']") 选择所有的name属性不等于'newsletter'的input元素 
- 
-$("input[name^='news']")         选择所有的name属性以'news'开头的input元素 
-$("input[name$='news']")         选择所有的name属性以'news'结尾的input元素 
-$("input[name*='man']")          选择所有的name属性包含'news'的input元素 
- 
-$("input[id][name$='man']")    可以使用多个属性进行联合选择，该选择器是得到所有的含有id属性并且那么属性以man结尾的元素 
- 
-子元素过滤选择器： 
- 
-$("ul li:nth-child(2)"),$("ul li:nth-child(odd)"),$("ul li:nth-child(3n + 1)") 
- 
-$("div span:first-child")          返回所有的div元素的第一个子节点的数组 
-$("div span:last-child")           返回所有的div元素的最后一个节点的数组 
-$("div button:only-child")       返回所有的div中只有唯一一个子节点的所有子节点的数组 
- 
-表单元素选择器： 
- 
-$(":input")                  选择所有的表单输入元素，包括input, textarea, select 和 button 
- 
-$(":text")                     选择所有的text input元素 
-$(":password")           选择所有的password input元素 
-$(":radio")                   选择所有的radio input元素 
-$(":checkbox")            选择所有的checkbox input元素 
-$(":submit")               选择所有的submit input元素 
-$(":image")                 选择所有的image input元素 
-$(":reset")                   选择所有的reset input元素 
-$(":button")                选择所有的button input元素 
-$(":file")                     选择所有的file input元素 
-$(":hidden")               选择所有类型为hidden的input元素或表单的隐藏域 
- 
-表单元素过滤选择器： 
- 
-$(":enabled")             选择所有的可操作的表单元素 
-$(":disabled")            选择所有的不可操作的表单元素 
-$(":checked")            选择所有的被checked的表单元素 
-$("select option:selected") 选择所有的select 的子元素中被selected的元素 
- 
-  
- 
-选取一个 name 为”S_03_22″的input text框的上一个td的text值
-$(”input[@ name =S_03_22]“).parent().prev().text() 
- 
-名字以”S_”开始，并且不是以”_R”结尾的
-$(”input[@ name ^='S_']“).not(”[@ name $='_R']“) 
- 
-一个名为 radio_01的radio所选的值
-$(”input[@ name =radio_01][@checked]“).val(); 
- 
-$("A B") 查找A元素下面的所有子节点，包括非直接子节点
-$("A>B") 查找A元素下面的直接子节点
-$("A+B") 查找A元素后面的兄弟节点，包括非直接子节点
-$("A~B") 查找A元素后面的兄弟节点，不包括非直接子节点 
- 
-1. $("A B") 查找A元素下面的所有子节点，包括非直接子节点 
- 
-例子：找到表单中所有的 input 元素 
- 
-HTML 代码: 
- 
-<form>
-<label>Name:</label>
-<input name="name" />
-<fieldset>
-      <label>Newsletter:</label>
-      <input name="newsletter" />
-</fieldset>
-</form>
-<input name="none" /> 
-jQuery 代码: 
- 
-$("form input") 
-结果: 
- 
-[ <input name="name" />, <input name="newsletter" /> ] 
- 
-2. $("A>B") 查找A元素下面的直接子节点 
-例子：匹配表单中所有的子级input元素。 
- 
-HTML 代码: 
- 
-<form>
-<label>Name:</label>
-<input name="name" />
-<fieldset>
-      <label>Newsletter:</label>
-      <input name="newsletter" />
-</fieldset>
-</form>
-<input name="none" /> 
-jQuery 代码: 
- 
-$("form > input") 
-结果: 
- 
-[ <input name="name" /> ] 
- 
-3. $("A+B") 查找A元素后面的兄弟节点，包括非直接子节点 
-例子：匹配所有跟在 label 后面的 input 元素 
- 
-HTML 代码: 
- 
-<form>
-<label>Name:</label>
-<input name="name" />
-<fieldset>
-      <label>Newsletter:</label>
-      <input name="newsletter" />
-</fieldset>
-</form>
-<input name="none" /> 
-jQuery 代码: 
- 
-$("label + input") 
-结果: 
-javascript的self和this使用小结
-revert 
-一、self
-这个非常简单。我们知道，打开任何一个网页，浏览器会首先创建一个窗口，这个窗口就是一个window对象，也是js运行所依附的全局环境对象和全局作用域对象。self 指窗口本身，它返回的对象跟window对象是一模一样的。也正因为如此，window对象的常用方法和函数都可以用self代替window。举个例子，常见的写法如“self.close();”，把它放在<a>标记中：“<a href="javascript:self.close();">关闭窗口</a>”，单击“关闭窗口”链接，当前页面关闭。
-二、this关键字
-在讲this之前，看下面的一段代码：
-
-
-<body>
-<script type="text/javascript">
-function thisTest()
-  {
-      this.textValue = 'this的dom测试';
-      this.element= document.createElement('span');
-      this.element.innerHTML = this.textValue;
-      this.element.style.color = "blue";
-      this.element.style.cursor = "pointer";
-      this.element.attachEvent('onclick', this.ToString);
-  }
-   
-  thisTest.prototype.RenderDom = function()
-  {
-      document.body.appendChild(this.element);
-  }     
-
-  thisTest.prototype.ToString = function()
-  {
-      alert("单击我："+this.textValue);
-  };
-  var test= new thisTest();
-  test.RenderDom(); 
-  //test.ToString();
-</script>
-</body>
-
-本来的目的是想在body中添加一个span元素，对于这个span元素，制定了它的字体颜色，悬浮在它上面的鼠标样式和单击触发事件。问题就出现在它的单击事件上（弹出"单击我:undefined"）。也许有人会说你丫傻呀，写这么多sb代码还不就是为了实现下面这个东东吗？
-<span style='cursor:pointer;color:blue;' onclick="alert(this.innerHTML)">this的dom测试</span>
-
-你看多简单直观，而且还不容易出错？！kao，我晕。我正要讲的是您正在使用的this.innerHTML中的this呀。
+  #+END_SRC
+* this 
 1、this到底指什么？
 我们熟悉的c#有this关键字，它的主要作用就是指代当前对象实例（参数传递和索引器都要用到this）。在javascript中，this通常指向的是我们正在执行的函数本身，或者是指向该函数所属的对象（运行时）。
 2、常见使用方式
@@ -364,7 +86,7 @@ alert(btnOther.onclick); //第二个按钮函数
 </script>
 
 其弹出的结果是：
-复制代码
+
 //第一个按钮
 function onclick(){
   thisTest()
@@ -507,16 +229,18 @@ function myFuncOne() {
     this.p = "myFuncOne-";
     this.A = function(arg) {
         alert(this.p + arg);
-* js
-   Boolean
-   这个技巧用的很多，也非常的简单
+   if (Number(x) == x)
+   if (x == null)
+* js技巧
+  Boolean
+  这个技巧用的很多，也非常的简单
  1. !!'foo'
  通过两个取反，可以强制转换为Boolean类型。较为常用。
-
+ 
 Number
 这个也特别简单，String转化为Number
 
- 1. +'45'
+ 1. +'45' + 3
  2. +new Date
 
 会自动转化为number类型的。较为常用。
@@ -594,10 +318,9 @@ parseInt
     高能预警
    
     从这里开始，下面的代码谨慎写到公司代码里！
-   
-parseInt这个函数太普通了，怎么能装逼。答案是~~
+    parseInt这个函数太普通了，怎么能装逼。答案是~~
 
-现在摁下F12，在console里复制粘贴这样的代码：
+    现在摁下F12，在console里复制粘贴这样的代码：
 
  1. ~~3.14159
  2. // => 3
@@ -609,13 +332,11 @@ parseInt这个函数太普通了，怎么能装逼。答案是~~
 原因在于JavaScript中的number都是double类型的，在位操作的时候要转化成int，两次~就还是原数。
 
 Hex
-
 十六进制操作。其实就是一个Array.prototype.toString(16)的用法
 
 看到这个词脑袋里冒出的肯定是CSS的颜色。
 
 做到随机的话可以这样
-
  1. (~~(Math.random()*(1<<24))).toString(16)
 
 底下的原文链接非常建议去读一下，后三个技巧都是在那里学到的。
@@ -629,7 +350,6 @@ Hex
 解释上面的1<<24的操作。
 
 其实是1左移24位。000000000000000000000001左移24位，变成了1000000000000000000000000
-
 不信？
 
 试着在console粘贴下面的代码
@@ -659,64 +379,131 @@ Others
 祝愿大家越玩越牛逼。
 
 * jQuery 
-** 引入脚本执行<script src="my_jquery_functions.js"></script>
-** jQuery 选择器 $()
-*** 元素选择器 $("p")
-*** #id 选择器 $("#test") 
-*** .class 选择器 $(".class")
-*** 选取所有元素 $("*") 	
-*** document和 this
-    #+BEGIN_SRC javascript -n
-$(document).ready(function(){
-  $("button").click(function(){
-    $(this).hide();
-  });
-});
-    #+END_SRC
-*** 嵌套 $("a[target='_blank']") 	选取所有 target 属性值等于 "_blank" 的 <a> 元素
-** jQuery 效果
+** 选择器
+*** 基本选择器:
+   $("#myELement")   选择id值等于myElement的元素，id值不能重复在文档中只能有一个id值是myElement所以得到的是唯一的元素 
+   $("div")           选择所有的div标签元素，返回div元素数组 
+   $(".myClass")      选择使用myClass类的css的所有元素 
+   $("*")             选择文档中的所有的元素，可以运用多种的选择方式进行联合选择：例如$("#myELement,div,.myclass") 
+   
+*** 层叠选择器： 
+ $("form input")         选择所有的form元素中的input元素 
+ $("#main > *")          选择id值为main的所有的子元素 
+ $("label + input")     选择所有的label元素的下一个input元素节点，经测试选择器返回的是label标签后面直接跟一个input标签的所有input标签元素 
+ $("#prev ~ div")       同胞选择器，该选择器返回的为id为prev的标签元素的所有的属于同一个父元素的div标签 
+   
+*** 基本过滤选择器： 
+ $("tr:first")               选择所有tr元素的第一个 
+ $("tr:last")                选择所有tr元素的最后一个 
+ $("input:not(:checked) + span")   
+   
+*** 过滤掉：checked的选择器的所有的input元素 
+   
+ $("tr:even")               选择所有的tr元素的第0，2，4... ...个元素（注意：因为所选择的多个元素时为数组，所以序号是从0开始） 
+   
+ $("tr:odd")                选择所有的tr元素的第1，3，5... ...个元素 
+ $("td:eq(2)")             选择所有的td元素中序号为2的那个td元素 
+ $("td:gt(4)")             选择td元素中序号大于4的所有td元素 
+ $("td:ll(4)")              选择td元素中序号小于4的所有的td元素 
+ $(":header") 
+ $("div:animated") 
+
+*** 内容过滤选择器： 
+   
+ $("div:contains('John')") 选择所有div中含有John文本的元素 
+ $("td:empty")           选择所有的为空（也不包括文本节点）的td元素的数组 
+ $("div:has(p)")        选择所有含有p标签的div元素 
+ $("td:parent")          选择所有的以td为父节点的元素数组 
+
+*** 可视化过滤选择器： 
+ $("div:hidden")        选择所有的被hidden的div元素 
+ $("div:visible")        选择所有的可视化的div元素 
+
+*** 属性过滤选择器： 
+  
+ $("div[id]")              选择所有含有id属性的div元素 
+ $("input[name='newsletter']")    选择所有的name属性等于'newsletter'的input元素 
+ 
+ $("input[name!='newsletter']") 选择所有的name属性不等于'newsletter'的input元素 
+ 
+ $("input[name^='news']")         选择所有的name属性以'news'开头的input元素 
+ $("input[name$='news']")         选择所有的name属性以'news'结尾的input元素 
+ $("input[name*='man']")          选择所有的name属性包含'news'的input元素 
+ 
+ $("input[id][name$='man']")    可以使用多个属性进行联合选择，该选择器是得到所有的含有id属性并且那么属性以man结尾的元素 
+ 
+*** 子元素过滤选择器： 
+ 
+ $("ul li:nth-child(2)"),$("ul li:nth-child(odd)"),$("ul li:nth-child(3n + 1)") 
+ 
+ $("div span:first-child")          返回所有的div元素的第一个子节点的数组 
+ $("div span:last-child")           返回所有的div元素的最后一个节点的数组 
+ $("div button:only-child")       返回所有的div中只有唯一一个子节点的所有子节点的数组 
+ 
+*** 表单元素选择器： 
+ 
+    $(":input")                  选择所有的表单输入元素，包括input, textarea, select 和 button 
+    $(":text")                     选择所有的text input元素 
+    $(":password")           选择所有的password input元素 
+    $(":radio")                   选择所有的radio input元素 
+    $(":checkbox")            选择所有的checkbox input元素 
+    $(":submit")               选择所有的submit input元素 
+    $(":image")                 选择所有的image input元素 
+
+*** 表单元素过滤选择器： 
+ 
+ $(":enabled")             选择所有的可操作的表单元素 
+ $(":disabled")            选择所有的不可操作的表单元素 
+ $(":checked")            选择所有的被checked的表单元素 
+ $("select option:selected") 选择所有的select 的子元素中被selected的元素 
+ 
+  
+ $("A B") 查找A元素下面的所有子节点，包括非直接子节点
+ $("A>B") 查找A元素下面的直接子节点
+ $("A+B") 查找A元素后面的兄弟节点，包括非直接子节点
+ $("A~B") 查找A元素后面的兄弟节点，不包括非直接子节点 
+** 效果
 *** jQuery  fade(淡出) 方法：
-****    fadeIn()
-****    fadeOut()
-****    fadeToggle()
-****    fadeTo()
+**** fadeIn()
+**** fadeOut()
+**** fadeToggle()
+**** fadeTo()
 *** jQuery 滑动方法
-****    slideDown(speed,callback)
-****    slideUp()
-****    slideToggle()
+**** slideDown(speed,callback)
+**** slideUp()
+**** slideToggle()
 *** jQuery 动画 - animate() 方法
 **** $(selector).animate({params},speed,callback);
 *** jQuery 停止动画
-    jQuery stop() 方法用于在动画或效果完成前对它们进行停止。
-** jQuery HTML
-*** jQuery - 获取内容和属性 | 配置
+**** stop() 方法用于在动画或效果完成前对它们进行停止。
+** HTML
+*** 获取内容和属性 | 配置
 **** 获得内容 - text()、html() 以及 val()
      #+BEGIN_SRC 
-    text() - 设置或返回所选元素的文本内容
-    html() - 设置或返回所选元素的内容（包括 HTML 标记）
-    val() - 设置或返回表单字段的值
+     text() - 设置或返回所选元素的文本内容
+     html() - 设置或返回所选元素的内容（包括 HTML 标记）
+     val() - 设置或返回表单字段的值
      #+END_SRC
 **** 获取属性值 - attr()
-*** jQuery - 添加元素
+*** 添加元素
 **** append() - 在被选元素的结尾插入内容
 **** prepend() - 在被选元素的开头插入内容
 **** after() - 在被选元素之后插入内容
 **** before() - 在被选元素之前插入内容
-*** jQuery - 删除元素
+*** 删除元素
 **** remove() - 删除被选元素（及其子元素）
 **** empty() - 从被选元素中删除子元素
-*** jQuery - 获取并设置 CSS 类
-**** jQuery addClass() 方法
-     #+BEGIN_SRC 
-$("button").click(function(){
-  $("h1,h2,p").addClass("blue");
-  $("div").addClass("important");
-});
+*** 获取并设置 CSS 类
+**** addClass() 方法
+     #+BEGIN_SRC js 
+     $("button").click(function(){
+     $("h1,h2,p").addClass("blue");
+     $("div").addClass("important");
+     });
      #+END_SRC
-**** jQuery removeClass() 方法
-**** jQuery toggleClass() 方法
-*** jQuery css() 方法
-    : css() 方法设置或返回被选元素的一个或多个样式属性。
+**** removeClass() 方法
+**** toggleClass() 方法
+*** css() 方法
 **** 返回 CSS 属性
      : css("propertyname");
 **** 设置 CSS 属性
@@ -726,26 +513,26 @@ $("button").click(function(){
      #+BEGIN_SRC css
 $("p").css({"background-color":"yellow","font-size":"200%"});
      #+END_SRC
-*** jQuery 尺寸
+*** 尺寸
     : 通过 jQuery，很容易处理元素和浏览器窗口的尺寸。
     [元素(width)]padding(innerwidth)]border(outerwidth)]margin(outerwidth(true))]
-****    width() 方法设置或返回元素的宽度（不包括内边距、边框或外边距）。
-****    height()
-****    innerWidth() 方法返回元素的宽度（包括内边距）
-****    innerHeight()
-****    outerWidth()方法返回元素的宽度（包括内边距和边框）
-****    outerHeight()
+**** width() 方法设置或返回元素的宽度（不包括内边距、边框或外边距）。
+**** height()
+**** innerWidth() 方法返回元素的宽度（包括内边距）
+**** innerHeight()
+**** outerWidth()方法返回元素的宽度（包括内边距和边框）
+**** outerHeight()
 *** jQuery 遍历
 **** 向上遍历 DOM 树
-*****    parent()返回被选元素的直接父元素
-*****    parents() 方法返回被选元素的所有祖先元素，它一路向上直到文档的根元素 (<html>)
-*****    parentsUntil() 返回介于两个给定元素之间的所有祖先元素
-      #+BEGIN_SRC 
-$(document).ready(function(){
-  $("span").parentsUntil("div");
-});
+***** parent()返回被选元素的直接父元素
+***** parents() 方法返回被选元素的所有祖先元素，它一路向上直到文档的根元素 (<html>)
+***** parentsUntil() 返回介于两个给定元素之间的所有祖先元素
+      #+BEGIN_SRC js
+      $(document).ready(function(){
+      $("span").parentsUntil("div");
+      });
       #+END_SRC
-**** jQuery 遍历 - 后代
+**** 后代
 ***** children()
 ***** find()方法返回被选元素的后代元素，一路向下直到最后一个后代
       #+BEGIN_SRC 
@@ -753,7 +540,7 @@ $(document).ready(function(){
   $("div").find("span");
 });
       #+END_SRC
-**** jQuery 遍历 - 同胞(siblings)
+**** 同胞(siblings)
 *****    siblings()返回被选元素的所有同胞元素
 *****    next()返回被选元素的下一个同胞元素
 *****    nextAll()
@@ -761,12 +548,12 @@ $(document).ready(function(){
 *****    prev() 方向相反
 *****    prevAll()
 *****    prevUntil()
-**** jQuery 遍历- 过滤
+**** 过滤
 ***** jQuery first() 方法first() 方法返回被选元素的首个元素。
 ***** last()
 ***** eq()返回被选元素中带有指定索引号的元素。从0开始
-** jQuery Ajax 是与服务器交换数据的技术，它在不重载全部页面的情况下，实现了对部分网页的更新。
-*** jQuery load() 方法
+** Ajax 
+*** load() 方法
 **** load() 方法从服务器加载数据，并把返回的数据放入被选元素中。
      : $(selector).load(URL,data,callback);
      : 必需的 URL 参数规定您希望加载的 URL。
@@ -792,19 +579,19 @@ $("button").click(function(){
   });
 });
      #+END_SRC
-*** jQuery - AJAX get() 和 post() 方法
+*** AJAX get() 和 post() 方法
     : jQuery get() 和 post() 方法用于通过 HTTP GET 或 POST 请求从服务器请求数据。
 **** $.get() 方法通过 HTTP GET 请求从服务器上请求数据。
      : $.get(URL,callback);
      必需的 URL 参数规定您希望请求的 URL。
      可选的 callback 参数是请求成功后所执行的函数名。
      下面的例子使用 $.get() 方法从服务器上的一个文件中取回数据：
-     #+BEGIN_SRC 
-$("button").click(function(){
-  $.get("demo_test.php",function(data,status){
-    alert("数据: " + data + "\n状态: " + status);
-  });
-});
+     #+BEGIN_SRC js 
+     $("button").click(function(){
+     $.get("demo_test.php",function(data,status){
+     alert("数据: " + data + "\n状态: " + status);
+     });
+     });
      #+END_SRC
 **** $.post() 方法通过 HTTP POST 请求从服务器上请求数据。
      $.post(URL,data,callback);
@@ -812,50 +599,99 @@ $("button").click(function(){
      可选的 data 参数规定连同请求发送的数据。
      可选的 callback 参数是请求成功后所执行的函数名。
      下面的例子使用 $.post() 连同请求一起发送数据：
-     #+BEGIN_SRC 
-$("button").click(function(){
-    $.post("/try/ajax/demo_test_post.php",
-    {
-        name:"菜鸟教程",
-        url:"http://www.runoob.com"
-    },
-        function(data,status){
-        alert("数据: \n" + data + "\n状态: " + status);
+     #+BEGIN_SRC js 
+     $("button").click(function(){
+     $.post("/try/ajax/demo_test_post.php",
+     {
+     name:"菜鸟教程",
+     url:"http://www.runoob.com"
+     },
+     function(data,status){
+     alert("数据: \n" + data + "\n状态: " + status);
+     });
     });
-});
      #+END_SRC
 *** 事件
 **** ready将函数绑定到文档的就绪事件
 **** click /dblclick/focus/mouseover
 **** onchange 事件(text 对象)
 **** onmouseover 和 onmouseout 事件
-*** 文字两端对齐
-    <html>
-    <head>
-    <style type="text/css">
-    h1 {
-    text-align: justify;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    width: 800px;
-    height: 40px;
-    }
-
-    h1:after {
-    display: inline-block;
-    content: '';
-    overflow-x: hidden;
-    overflow-y: hidden;
-    width: 600px;
-    height: 40px;
-    }
-    </style>
-    </head>
-    <body>
-    <h1>实现单行文本的内容两端对齐</h1>
-    </body>
-    </html>  
-
+** 函数     
+*** jQuery.each( array, callback )
+*** .clearQueue()
+    Remove from the queue all items that have not yet been run.
+*** .dequeue()
+    Execute the next function on the queue for the matched elements.
+*** jQuery.boxModel
+    States if the current page, in the user’s browser, is being rendered using the W3C CSS Box Model. This property was removed in jQuery 1.8. Please try to use feature detection instead.
+*** jQuery.browser
+    Contains flags for the useragent, read from navigator.userAgent. This property was removed in jQuery 1.9 and is available only through the jQuery.migrate plugin. Please try to use feature detection instead.
+*** jQuery.contains()
+    Check to see if a DOM element is a descendant of another DOM element.
+*** jQuery.data()
+    Store arbitrary data associated with the specified element and/or return the value that was set.
+*** jQuery.dequeue()
+    Execute the next function on the queue for the matched element.
+*** jQuery.each()
+    A generic iterator function, which can be used to seamlessly iterate over both objects and arrays. Arrays and array-like objects with a length property (such as a function’s arguments object) are iterated by numeric index, from 0 to length-1. Other objects are iterated via their named properties.
+*** jQuery.extend()
+    Merge the contents of two or more objects together into the first object.
+*** jQuery.fn.extend()
+    Merge the contents of an object onto the jQuery prototype to provide new jQuery instance methods.
+*** jQuery.globalEval()
+    Execute some JavaScript code globally.
+*** jQuery.grep()
+    Finds the elements of an array which satisfy a filter function. The original array is not affected.
+*** jQuery.inArray()
+    Search for a specified value within an array and return its index (or -1 if not found).
+*** jQuery.isArray()
+    Determine whether the argument is an array.
+*** jQuery.isEmptyObject()
+    Check to see if an object is empty (contains no enumerable properties).
+*** jQuery.isFunction()
+    Determine if the argument passed is a JavaScript function object.
+*** jQuery.isNumeric()
+    Determines whether its argument represents a JavaScript number.
+*** jQuery.isPlainObject()
+    Check to see if an object is a plain object (created using “{}” or “new Object”).
+*** jQuery.isWindow()
+    Determine whether the argument is a window.
+*** jQuery.isXMLDoc()
+    Check to see if a DOM node is within an XML document (or is an XML document).
+*** jQuery.makeArray()
+    Convert an array-like object into a true JavaScript array.
+*** jQuery.map()
+    Translate all items in an array or object to new array of items.
+*** jQuery.merge()
+    Merge the contents of two arrays together into the first array.
+*** jQuery.noop()
+An empty function.
+*** jQuery.now()
+Return a number representing the current time.
+*** jQuery.parseHTML()
+Parses a string into an array of DOM nodes.
+*** jQuery.parseJSON()
+Takes a well-formed JSON string and returns the resulting JavaScript value.
+*** jQuery.parseXML()
+Parses a string into an XML document.
+*** jQuery.proxy()
+Takes a function and returns a new one that will always have a particular context.
+*** jQuery.queue()
+Show or manipulate the queue of functions to be executed on the matched element.
+*** jQuery.removeData()
+    Remove a previously-stored piece of data.
+*** jQuery.support
+    A collection of properties that represent the presence of different browser features or bugs. Intended for jQuery’s internal use; specific properties may be removed when they are no longer needed internally to improve page startup performance. For your own project’s feature-detection needs, we strongly recommend the use of an external library such as Modernizr instead of dependency on properties in jQuery.support.
+*** jQuery.trim()
+    Remove the whitespace from the beginning and end of a string.
+*** jQuery.type()
+    Determine the internal JavaScript [[Class]] of an object.
+*** jQuery.unique()
+    Sorts an array of DOM elements, in place, with the duplicates removed. Note that this only works on arrays of DOM elements, not strings or numbers.
+*** jQuery.uniqueSort()
+    Sorts an array of DOM elements, in place, with the duplicates removed. Note that this only works on arrays of DOM elements, not strings or numbers.
+*** .queue()
+Show or manipulate the queue of functions to be executed on the matched elements.
 * MUI
 ** 下拉刷新
 为实现下拉刷新功能，大多H5框架都是通过DIV模拟下拉回弹动画，在低端android手机上，DIV动画经常出现卡顿现象（特别是图文列表的情况）；
@@ -1037,27 +873,27 @@ mui遵循 MIT License
     最新版本 v3.5.0 · 问答社区 · Issues · Releases · 
 
 * bootstrap
-bootstrap 建立了一个响应式的12列格网布局系统，它引入了fixed(固定) and fluid-with(浮动)的两种布局方式. 
-我们从全局样式(global style),格网系统（grid system），流式格网（fluid grid system）,自定义（customing）,
-布局（layouts）,响应式设计（responsive design ）这 六个方面讲解 scaffolding
-\* global style
-bootstrip 要求 html5 的文件类型，so <!DOCTYPE html>
-同时，它通过bootstrap.less 文件来设置 全局排版和链接显示风格，其中去掉了 body的margin,使用
-@baseFontFamily,@baseFontSize,@linkColor 等变量来控制基本排版
-\* 栅格系统（grid system）
-默认的bootstrap格网系统提供了一个宽达940像素的12列的格网。这意味着你页面的默认宽度是940px
-最小的单元要素宽度是940/12px.
-bootstrap 内置了一套响应式、移动设备优先的流式栅格系统。随着屏幕设备或视口（viewport）尺寸的增加，系统会自动分为最多12列
-就是通过一系列的行（row）与列（column）的组合创建页面布局，然后你的内容就可以放入到你创建好的布局当中。
-行（row）必须包含在.container中，以便为其赋予合适的排列(alignment)和内补(padding).
-使用行（row）在水平方向创建一组列(column).
-你的内容应当放置于列（column）内，而且,只有列（column)可以作为行（row）的直接子元素。
-类似Predefined grid classes like .row and .col-xs-4 这些预订义的栅格class可以用来快速创建 栅格布局。
-bootstrap 源码中定义的mixin也可以用来创建语义化的布局。
-通过设置padding 从而创建列(column)之间的间隔（gutter)。然后通过为第一和最后一列设置负值的margin从而抵消掉padding的影响。
-栅格系统中的列是通过指定1到12的值来表示其跨越的范围。例如，三个等宽的列可以使用三个.col-xs-4来创建。
-sm md lg xl 和默认
-offset push pull 设定偏移
+  bootstrap 建立了一个响应式的12列格网布局系统，它引入了fixed(固定) and fluid-with(浮动)的两种布局方式. 
+  我们从全局样式(global style),格网系统（grid system），流式格网（fluid grid system）,自定义（customing）,
+  布局（layouts）,响应式设计（responsive design ）这 六个方面讲解 scaffolding
+  \* global style
+  bootstrip 要求 html5 的文件类型，so <!DOCTYPE html>
+  同时，它通过bootstrap.less 文件来设置 全局排版和链接显示风格，其中去掉了 body的margin,使用
+  @baseFontFamily,@baseFontSize,@linkColor 等变量来控制基本排版
+  \* 栅格系统（grid system）
+  默认的bootstrap格网系统提供了一个宽达940像素的12列的格网。这意味着你页面的默认宽度是940px
+  最小的单元要素宽度是940/12px.
+  bootstrap 内置了一套响应式、移动设备优先的流式栅格系统。随着屏幕设备或视口（viewport）尺寸的增加，系统会自动分为最多12列
+  就是通过一系列的行（row）与列（column）的组合创建页面布局，然后你的内容就可以放入到你创建好的布局当中。
+  行（row）必须包含在.container中，以便为其赋予合适的排列(alignment)和内补(padding).
+  使用行（row）在水平方向创建一组列(column).
+  你的内容应当放置于列（column）内，而且,只有列（column)可以作为行（row）的直接子元素。
+  类似Predefined grid classes like .row and .col-xs-4 这些预订义的栅格class可以用来快速创建 栅格布局。
+  bootstrap 源码中定义的mixin也可以用来创建语义化的布局。
+  通过设置padding 从而创建列(column)之间的间隔（gutter)。然后通过为第一和最后一列设置负值的margin从而抵消掉padding的影响。
+  栅格系统中的列是通过指定1到12的值来表示其跨越的范围。例如，三个等宽的列可以使用三个.col-xs-4来创建。
+  sm md lg xl 和默认
+  offset push pull 设定偏移
 ** 栅格选项
 |           | 手机（<768px) | 平板(>768px) | 桌面（>992px) |          |
 | class前缀 | .col-xs-      | .col-sm-     | .col-md-      | .col-lg- |
@@ -1089,119 +925,114 @@ abc璇
 适应设备<meta name="viewport" content="width=device-width,initial-scale=1.0">
 禁用缩放 user-scalable=no  maximum-scale=1.0
 
-
-
-
-
-* nodejs (js解析器)
-** ☰ 索引
-  * NodeJS基础
-  * 什么是NodeJS
-  * 有啥用处
-  * 如何安装
-  * 安装程序
-  * 编译安装
-  * 如何运行
-  * 权限问题
-  * 模块
-  * require
-  * exports
-  * module
-  * 模块初始化
-  * 主模块
-  * 完整示例
-  * 二进制模块
-  * 小结
-  * 代码的组织和部署
-  * 模块路径解析规则
-  * 包（package）
-  * index.js
-  * package.json
-  * 命令行程序
-  * Linux
-  * Windows
-  * 工程目录
-  * NPM
-  * 下载三方包
-  * 安装命令行程序
-  * 发布代码
-  * 版本号
-  * 灵机一点
-  * 小结
-  * 文件操作
-  * 开门红
-  * 小文件拷贝
-  * 大文件拷贝
-  * API走马观花
-  * Buffer（数据块）
-  * Stream（数据流）
-  * File System（文件系统）
-  * Path（路径）
-  * 遍历目录
-  * 递归算法
-  * 遍历算法
-  * 同步遍历
-  * 异步遍历
-  * 文本编码
-  * BOM的移除
-  * GBK转UTF8
-  * 单字节编码
-  * 小结
-  * 网络操作
-  * 开门红
-  * API走马观花
-  * HTTP
-  * HTTPS
-  * URL
-  * Query String
-  * Zlib
-  * Net
-  * 灵机一点
-  * 小结
-  * 进程管理
-  * 开门红
-  * API走马观花
-  * Process
-  * Child Process
-  * Cluster
-  * 应用场景
-  * 如何获取命令行参数
-  * 如何退出程序
-  * 如何控制输入输出
-  * 如何降权
-  * 如何创建子进程
-  * 进程间如何通讯
-  * 如何守护子进程
-  * 小结
-  * 异步编程
-  * 回调
-  * 代码设计模式
-  * 函数返回值
-  * 遍历数组
-  * 异常处理
-  * 域（Domain）
-  * 陷阱
-  * 小结
-  * 大示例
-  * 需求
-  * 第一次迭代
-  * 设计
-  * 实现
-  * 第二次迭代
-  * 设计
-  * 实现
-  * 第三次迭代
-  * 设计
-  * 实现
-  * 第四次迭代
-  * 设计
-  * 实现
-  * 后续迭代
-  * 小结
+* nodejs
+** 索引
+*** NodeJS基础
+*** 什么是NodeJS
+*** 有啥用处
+*** 如何安装
+*** 安装程序
+*** 编译安装
+*** 如何运行
+*** 权限问题
+*** 模块
+*** require
+*** exports
+*** module
+*** 模块初始化
+*** 主模块
+*** 完整示例
+*** 二进制模块
+*** 小结
+*** 代码的组织和部署
+*** 模块路径解析规则
+*** 包（package）
+*** index.js
+*** package.json
+*** 命令行程序
+*** Linux
+*** Windows
+*** 工程目录
+*** NPM
+*** 下载三方包
+*** 安装命令行程序
+*** 发布代码
+*** 版本号
+*** 灵机一点
+*** 小结
+*** 文件操作
+*** 开门红
+*** 小文件拷贝
+*** 大文件拷贝
+*** API走马观花
+*** Buffer（数据块）
+*** Stream（数据流）
+*** File System（文件系统）
+*** Path（路径）
+*** 遍历目录
+*** 递归算法
+*** 遍历算法
+*** 同步遍历
+*** 异步遍历
+*** 文本编码
+*** BOM的移除
+*** GBK转UTF8
+*** 单字节编码
+*** 小结
+*** 网络操作
+*** 开门红
+*** API走马观花
+*** HTTP
+*** HTTPS
+*** URL
+*** Query String
+*** Zlib
+*** Net
+*** 灵机一点
+*** 小结
+*** 进程管理
+*** 开门红
+*** API走马观花
+*** Process
+*** Child Process
+*** Cluster
+*** 应用场景
+*** 如何获取命令行参数
+*** 如何退出程序
+*** 如何控制输入输出
+*** 如何降权
+*** 如何创建子进程
+*** 进程间如何通讯
+*** 如何守护子进程
+*** 小结
+*** 异步编程
+*** 回调
+*** 代码设计模式
+*** 函数返回值
+*** 遍历数组
+*** 异常处理
+*** 域（Domain）
+*** 陷阱
+*** 小结
+*** 大示例
+*** 需求
+*** 第一次迭代
+*** 设计
+*** 实现
+*** 第二次迭代
+*** 设计
+*** 实现
+*** 第三次迭代
+*** 设计
+*** 实现
+*** 第四次迭代
+*** 设计
+*** 实现
+*** 后续迭代
+*** 小结
 
 ** NodeJS基础
-什么是NodeJS
-
+*** 什么是NodeJS
 JS是脚本语言，脚本语言都需要一个解析器才能运行。对于写在HTML页面里的JS，浏览器充当了解析器的角色。而对于需要独立运行的JS，NodeJS就是
 一个解析器。
 
@@ -1209,183 +1040,180 @@ JS是脚本语言，脚本语言都需要一个解析器才能运行。对于写
 在浏览器中的JS的用途是操作DOM，浏览器就提供了document之类的内置对象。而运行在NodeJS中的JS的用途是操作磁盘文件或搭建HTTP服务器，
 NodeJS就相应提供了fs、http等内置对象。
 
-有啥用处
+*** 有啥用处
+    尽管存在一听说可以直接运行JS文件就觉得很酷的同学，但大多数同学在接触新东西时首先关心的是有啥用处，
+    以及能带来啥价值。
+    
+    NodeJS的作者说，他创造NodeJS的目的是为了实现高性能Web服务器，他首先看重的是事件机制和异步IO模型
+    的优越性，而不是JS。但是他需要选择一种编程语言实现他的想法，这种编程语言不能自带IO功能，并且需要能
+    良好支持事件机制。JS没有自带IO功能，天生就用于处理浏览器中的DOM事件，并且拥有一大群程序员，因此就
+    成为了天然的选择。
 
-尽管存在一听说可以直接运行JS文件就觉得很酷的同学，但大多数同学在接触新东西时首先关心的是有啥用处，以及能带来啥价值。
+    如他所愿，NodeJS在服务端活跃起来，出现了大批基于NodeJS的Web服务。而另一方面，NodeJS让前端众如获
+    神器，终于可以让自己的能力覆盖范围跳出浏览器窗口，更大批的前端工具如雨后春笋。
 
-NodeJS的作者说，他创造NodeJS的目的是为了实现高性能Web服务器，他首先看重的是事件机制和异步IO模型的优越性，而不是JS。但是他需要选择一
-种编程语言实现他的想法，这种编程语言不能自带IO功能，并且需要能良好支持事件机制。JS没有自带IO功能，天生就用于处理浏览器中的DOM事件，
-并且拥有一大群程序员，因此就成为了天然的选择。
+    因此，对于前端而言，虽然不是人人都要拿NodeJS写一个服务器程序，但简单可至使用命令交互模式调试JS代码
+    片段，复杂可至编写工具提升工作效率。NodeJS生态圈正欣欣向荣。
 
-如他所愿，NodeJS在服务端活跃起来，出现了大批基于NodeJS的Web服务。而另一方面，NodeJS让前端众如获神器，终于可以让自己的能力覆盖范围跳
-出浏览器窗口，更大批的前端工具如雨后春笋。
+*** 如何安装
+**** 安装程序
+     NodeJS提供了一些安装程序，都可以在nodejs.org这里下载并安装。
+     Windows系统下，选择和系统版本匹配的.msi后缀的安装文件。Mac OS X系统下，选择.pkg后缀的安装文件。
 
-因此，对于前端而言，虽然不是人人都要拿NodeJS写一个服务器程序，但简单可至使用命令交互模式调试JS代码片段，复杂可至编写工具提升工作效率
-。
+**** 编译安装
+     Linux系统下没有现成的安装程序可用，虽然一些发行版可以使用apt-get之类的方式安装，但不一定能安装到最
+     新版。因此Linux系统下一般使用以下方式编译方式安装NodeJS。
 
-NodeJS生态圈正欣欣向荣。
-
-如何安装
-
-安装程序
-
-NodeJS提供了一些安装程序，都可以在nodejs.org这里下载并安装。
-
-Windows系统下，选择和系统版本匹配的.msi后缀的安装文件。Mac OS X系统下，选择.pkg后缀的安装文件。
-
-编译安装
-
-Linux系统下没有现成的安装程序可用，虽然一些发行版可以使用apt-get之类的方式安装，但不一定能安装到最新版。因此Linux系统下一般使用以下
-方式编译方式安装NodeJS。
-
- 1. 确保系统下g++版本在4.6以上，python版本在2.6以上。
-   
- 2. 从nodejs.org下载tar.gz后缀的NodeJS最新版源代码包并解压到某个位置。
-   
- 3. 进入解压到的目录，使用以下命令编译和安装。
-   
+     #+BEGIN_SRC 
+     1. 确保系统下g++版本在4.6以上，python版本在2.6以上。
+     2. 从nodejs.org下载tar.gz后缀的NodeJS最新版源代码包并解压到某个位置。
+     3. 进入解压到的目录，使用以下命令编译和安装。
      $ ./configure
      $ make
      $ sudo make install
-    
-如何运行
+     #+END_SRC
+   
+*** 如何运行
+    打开终端，键入node进入命令交互模式，可以输入一条代码语句后立即执行并显示结果，例如：
 
-打开终端，键入node进入命令交互模式，可以输入一条代码语句后立即执行并显示结果，例如：
-
+#+BEGIN_SRC javascript
 $ node
 > console.log('Hello World!');
 Hello World!
+#+END_SRC
 
 如果要运行一大段代码的话，可以先写一个JS文件再运行。例如有以下hello.js。
-
+#+BEGIN_SRC javascript
 function hello() {
     console.log('Hello World!');
-}
+    }
 hello();
+#+END_SRC
 
 写好后在终端下键入node hello.js运行，结果如下：
-
+#+BEGIN_SRC shell
 $ node hello.js
 Hello World!
+#+END_SRC
 
-权限问题
-在Linux系统下，使用NodeJS监听80或443端口提供HTTP(S)服务时需要root权限，有两种方式可以做到。
-一种方式是使用sudo命令运行NodeJS。例如通过以下命令运行的server.js中有权限使用80和443端口。一般推荐这种方式，可以保证仅为有需要的JS脚
-本提供root权限。
-
+*** 权限问题
+    在Linux系统下，使用NodeJS监听80或443端口提供HTTP(S)服务时需要root权限，有两种方式可以做到。
+    一种方式是使用sudo命令运行NodeJS。例如通过以下命令运行的server.js中有权限使用80和443端口。
+    一般推荐这种方式，可以保证仅为有需要的JS脚本提供root权限。
+#+BEGIN_SRC javascript
 $ sudo node server.js
+#+END_SRC
 
-另一种方式是使用chmod +s命令让NodeJS总是以root权限运行，具体做法如下。因为这种方式让任何JS脚本都有了root权限，不太安全，因此在需要很
-考虑安全的系统下不推荐使用。
+另一种方式是使用chmod +s命令让NodeJS总是以root权限运行，具体做法如下。因为这种方式让任何JS
+脚本都有了root权限，不太安全，因此在需要很 考虑安全的系统下不推荐使用。
+
+#+BEGIN_SRC 
 
 $ sudo chown root /usr/local/bin/node
 $ sudo chmod +s /usr/local/bin/node
+#+END_SRC
 
-模块
+*** 模块
+    编写稍大一点的程序时一般都会将代码模块化。在NodeJS中，一般将代码合理拆分到不同的JS文件中，
+    每一个文件就是一个模块，而文件路径就是模块名。
 
-编写稍大一点的程序时一般都会将代码模块化。在NodeJS中，一般将代码合理拆分到不同的JS文件中，每一个文件就是一个模块，而文件路径就是模块
-名。
+    在编写每个模块时，都有require、exports、module三个预先定义好的变量可供使用。
 
-在编写每个模块时，都有require、exports、module三个预先定义好的变量可供使用。
-
-require
-
-require函数用于在当前模块中加载和使用别的模块，传入一个模块名，返回一个模块导出对象。模块名可使用相对路径（以./开头），或者是绝对路
-径（以/或C:之类的盘符开头）。另外，模块名中的.js扩展名可以省略。以下是一个例子。
-
+**** require
+    require函数用于在当前模块中加载和使用别的模块，传入一个模块名，返回一个模块导出对象。
+    模块名可使用相对路径（以./开头），或者是绝对路径（以/或C:之类的盘符开头）。另外，模块名中
+    的.js扩展名可以省略。以下是一个例子。
+#+BEGIN_SRC js
 var foo1 = require('./foo');
 var foo2 = require('./foo.js');
 var foo3 = require('/home/user/foo');
 var foo4 = require('/home/user/foo.js');
-
 // foo1至foo4中保存的是同一个模块的导出对象。
+#+END_SRC
 
 另外，可以使用以下方式加载和使用一个JSON文件。
 
+#+BEGIN_SRC js
 var data = require('./data.json');
+#+END_SRC
 
-exports
-
-exports对象是当前模块的导出对象，用于导出模块公有方法和属性。别的模块通过require函数使用当前模块时得到的就是当前模块的exports对象。
-以下例子中导出了一个公有方法。
-
+**** exports
+     exports对象是当前模块的导出对象，用于导出模块公有方法和属性。别的模块通过require函数使用当
+     前模块时得到的就是当前模块的exports对象。 以下例子中导出了一个公有方法。
+#+BEGIN_SRC js
 exports.hello = function () {
     console.log('Hello World!');
 };
+#+END_SRC
 
-module
-
-通过module对象可以访问到当前模块的一些相关信息，但最多的用途是替换当前模块的导出对象。例如模块导出对象默认是一个普通对象，如果想改成
-一个函数的话，可以使用以下方式。
-
+**** module
+     通过module对象可以访问到当前模块的一些相关信息，但最多的用途是替换当前模块的导出对象。例如模
+     块导出对象默认是一个普通对象，如果想改成一个函数的话，可以使用以下方式。
+#+BEGIN_SRC js
 module.exports = function () {
     console.log('Hello World!');
 };
+#+END_SRC
 
 以上代码中，模块默认导出对象被替换为一个函数。
 
-模块初始化
-
-一个模块中的JS代码仅在模块第一次被使用时执行一次，并在执行过程中初始化模块的导出对象。之后，缓存起来的导出对象被重复利用。
-
-主模块
-
-通过命令行参数传递给NodeJS以启动程序的模块被称为主模块。主模块负责调度组成整个程序的其它模块完成工作。例如通过以下命令启动程序时，
-main.js就是主模块。
-
+*** 模块初始化
+    一个模块中的JS代码仅在模块第一次被使用时执行一次，并在执行过程中初始化模块的导出对象。之后，缓存起来的导出对象被重复利用。
+**** 主模块
+     通过命令行参数传递给NodeJS以启动程序的模块被称为主模块。主模块负责调度组成整个程序的其它模块完成工作。
+     例如通过以下命令启动程序时，main.js就是主模块。
+#+BEGIN_SRC 
 $ node main.js
+#+END_SRC
 
-完整示例
-
+**** 完整示例
 例如有以下目录。
-
+#+BEGIN_SRC 
 - /home/user/hello/
     - util/
         counter.js
     main.js
-
+#+END_SRC
 其中counter.js内容如下：
-
+#+BEGIN_SRC js 
 var i = 0;
 
 function count() {
     return ++i;
 }
-
 exports.count = count;
+#+END_SRC
 
 该模块内部定义了一个私有变量i，并在exports对象导出了一个公有方法count。
 
 主模块main.js内容如下：
-
+#+BEGIN_SRC js
 var counter1 = require('./util/counter');
-var    counter2 = require('./util/counter');
+var counter2 = require('./util/counter');
 
 console.log(counter1.count());
 console.log(counter2.count());
 console.log(counter2.count());
-
+#+END_SRC
 运行该程序的结果如下：
-
+#+BEGIN_SRC 
 $ node main.js
 1
 2
 3
+#+END_SRC
 
 可以看到，counter.js并没有因为被require了两次而初始化两次。
 
-二进制模块
+**** 二进制模块
+    虽然一般我们使用JS编写模块，但NodeJS也支持使用C/C++编写二进制模块。编译好的二进制模块除了
+    文件扩展名是.node外，和JS模块的使用方式相同。虽然二进制模块能使用操作系统提供的所有功能，拥
+    有无限的潜能，但对于前端同学而言编写过于困难，并且难以跨平台使用，因此不在本教程的覆盖范围内。
 
-虽然一般我们使用JS编写模块，但NodeJS也支持使用C/C++编写二进制模块。编译好的二进制模块除了文件扩展名是.node外，和JS模块的使用方式相同
-。虽然二进制模块能使用操作系统提供的所有功能，拥有无限的潜能，但对于前端同学而言编写过于困难，并且难以跨平台使用，因此不在本教程的覆
-盖范围内。
-
-小结
-
-本章介绍了有关NodeJS的基本概念和使用方法，总结起来有以下知识点：
-
-  * NodeJS是一个JS脚本解析器，任何操作系统下安装NodeJS本质上做的事情都是把NodeJS执行程序复制到一个目录，然后保证这个目录在系统PATH环
-    境变量下，以便终端下可以使用node命令。
+*** 小结
+    本章介绍了有关NodeJS的基本概念和使用方法，总结起来有以下知识点：
+  * NodeJS是一个JS脚本解析器，任何操作系统下安装NodeJS本质上做的事情都是把NodeJS执行程序复制到
+  一个目录，然后保证这个目录在系统PATH环境变量下，以便终端下可以使用node命令。
    
   * 终端下直接输入node命令可进入命令交互模式，很适合用来测试一些JS代码片段，比如正则表达式。
    
@@ -1393,57 +1221,56 @@ $ node main.js
    
   * 除非JS模块不能满足需求，否则不要轻易使用二进制模块，否则你的用户会叫苦连天。
    
-代码的组织和部署
+** 代码的组织和部署
+   有经验的C程序员在编写一个新程序时首先从make文件写起。同样的，使用NodeJS编写程序前，为了有个良好的
+   开端，首先需要准备好代码的目录结构和部署方式，就如同修房子要先搭脚手架。本章将介绍与之相关的各种知识。
 
-有经验的C程序员在编写一个新程序时首先从make文件写起。同样的，使用NodeJS编写程序前，为了有个良好的开端，首先需要准备好代码的目录结构
-和部署方式，就如同修房子要先搭脚手架。本章将介绍与之相关的各种知识。
+*** 模块路径解析规则
+    我们已经知道，require函数支持斜杠（/）或盘符（C:）开头的绝对路径，也支持./开头的相对路径。但这两种
+    路径在模块之间建立了强耦合关系，一旦某个模块文件的存放位置需要变更，使用该模块的其它模块的代码也需要
+    跟着调整，变得牵一发动全身。因此，require函数支持第三种形式的路径，写法类似于foo/bar，并依次按照以
+    下规则解析路径，直到找到模块位置。
 
-模块路径解析规则
-
-我们已经知道，require函数支持斜杠（/）或盘符（C:）开头的绝对路径，也支持./开头的相对路径。但这两种路径在模块之间建立了强耦合关系，一
-旦某个模块文件的存放位置需要变更，使用该模块的其它模块的代码也需要跟着调整，变得牵一发动全身。因此，require函数支持第三种形式的路径
-，写法类似于foo/bar，并依次按照以下规则解析路径，直到找到模块位置。
-
- 1. 内置模块
-   
+**** 1. 内置模块
     如果传递给require函数的是NodeJS内置模块名称，不做路径解析，直接返回内部模块的导出对象，例如require('fs')。
    
- 2. node_modules目录
+**** 2. node_modules目录
+    NodeJS定义了一个特殊的node_modules目录用于存放模块。例如某个模块的绝对路径是/home/user/hello.js，在该模块
+    中使用require('foo/bar')方式加载模块时，则NodeJS依次尝试使用以下路径。
+   #+BEGIN_SRC 
+   /home/user/node_modules/foo/bar
+   /home/node_modules/foo/bar
+   /node_modules/foo/bar
+   #+END_SRC
    
-    NodeJS定义了一个特殊的node_modules目录用于存放模块。例如某个模块的绝对路径是/home/user/hello.js，在该模块中使用require('foo/
-    bar')方式加载模块时，则NodeJS依次尝试使用以下路径。
+**** 3. NODE_PATH环境变量
+    与PATH环境变量类似，NodeJS允许通过NODE_PATH环境变量来指定额外的模块搜索路径。NODE_PATH环境变
+    量中包含一到多个目录路径，路径之间在Linux下使用:分隔，在Windows下使用;分隔。例如定义了以下NODE_PATH环境变量：
    
-     /home/user/node_modules/foo/bar
-     /home/node_modules/foo/bar
-     /node_modules/foo/bar
-    
- 3. NODE_PATH环境变量
-   
-    与PATH环境变量类似，NodeJS允许通过NODE_PATH环境变量来指定额外的模块搜索路径。NODE_PATH环境变量中包含一到多个目录路径，路径之间在
-    Linux下使用:分隔，在Windows下使用;分隔。例如定义了以下NODE_PATH环境变量：
-   
-     NODE_PATH=/home/user/lib:/home/lib
+    NODE_PATH=/home/user/lib:/home/lib
     
     当使用require('foo/bar')的方式加载模块时，则NodeJS依次尝试以下路径。
-   
+   #+BEGIN_SRC 
      /home/user/lib/foo/bar
      /home/lib/foo/bar
+   #+END_SRC
     
-包（package）
+** 包（package）
+   我们已经知道了JS模块的基本单位是单个JS文件，但复杂些的模块往往由多个子模块组成。为了便于管理和使用，
+   我们可以把由多个子模块组成的大模块称做包，并把所有子模块放在同一个目录里。
 
-我们已经知道了JS模块的基本单位是单个JS文件，但复杂些的模块往往由多个子模块组成。为了便于管理和使用，我们可以把由多个子模块组成的大模
-块称做包，并把所有子模块放在同一个目录里。
-
-在组成一个包的所有子模块中，需要有一个入口模块，入口模块的导出对象被作为包的导出对象。例如有以下目录结构。
-
+   在组成一个包的所有子模块中，需要有一个入口模块，入口模块的导出对象被作为包的导出对象。例如有以下目录结构。
+#+BEGIN_SRC 
 - /home/user/lib/
     - cat/
         head.js
         body.js
         main.js
+#+END_SRC
 
 其中cat目录定义了一个包，其中包含了3个子模块。main.js作为入口模块，其内容如下：
 
+#+BEGIN_SRC js
 var head = require('./head');
 var body = require('./body');
 
@@ -1454,7 +1281,7 @@ exports.create = function (name) {
         body: body.create()
     };
 };
-
+#+END_SRC
 在其它模块里使用包的时候，需要加载包的入口模块。接着上例，使用require('/home/user/lib/cat/main')能达到目的，但是入口模块名称出现在路
 径里看上去不是个好主意。因此我们需要做点额外的工作，让包使用起来更像是单个模块。
 
@@ -1491,58 +1318,60 @@ package.json
 
 如此一来，就同样可以使用require('/home/user/lib/cat')的方式加载模块。NodeJS会根据包目录下的package.json找到入口模块所在位置。
 
-命令行程序
+*** 命令行程序
+    使用NodeJS编写的东西，要么是一个包，要么是一个命令行程序，而前者最终也会用于开发后者。
+    因此我们在部署代码时需要一些技巧，让用户觉得自己是在使用一个命令行程序。
 
-使用NodeJS编写的东西，要么是一个包，要么是一个命令行程序，而前者最终也会用于开发后者。因此我们在部署代码时需要一些技巧，让用户觉得自
-己是在使用一个命令行程序。
-
-例如我们用NodeJS写了个程序，可以把命令行参数原样打印出来。该程序很简单，在主模块内实现了所有功能。并且写好后，我们把该程序部署在/
-home/user/bin/node-echo.js这个位置。为了在任何目录下都能运行该程序，我们需要使用以下终端命令。
-
+    例如我们用NodeJS写了个程序，可以把命令行参数原样打印出来。该程序很简单，在主模块内实现了所有功能。并且写好后，
+    我们把该程序部署在/home/user/bin/node-echo.js这个位置。为了在任何目录下都能运行该程序，我们需要使用以下终端命令。
+#+BEGIN_SRC bash
 $ node /home/user/bin/node-echo.js Hello World
 Hello World
+#+END_SRC
 
 这种使用方式看起来不怎么像是一个命令行程序，下边的才是我们期望的方式。
-
+#+BEGIN_SRC shell
 $ node-echo Hello World
+#+END_SRC
 
-Linux
-
+*** Linux
 在Linux系统下，我们可以把JS文件当作shell脚本来运行，从而达到上述目的，具体步骤如下：
 
- 1. 在shell脚本中，可以通过#!注释来指定当前脚本使用的解析器。所以我们首先在node-echo.js文件顶部增加以下一行注释，表明当前脚本使用
-    NodeJS解析。
-   
-     #! /usr/bin/env node
+**** 1. 在shell脚本中，可以通过#!注释来指定当前脚本使用的解析器。所以我们首先在node-echo.js
+     文件顶部增加以下一行注释，表明当前脚本使用NodeJS解析。
+
+#+BEGIN_SRC 
+#! /usr/bin/env node
+#+END_SRC   
     
-    NodeJS会忽略掉位于JS模块首行的#!注释，不必担心这行注释是非法语句。
+NodeJS会忽略掉位于JS模块首行的#!注释，不必担心这行注释是非法语句。
    
- 2. 然后，我们使用以下命令赋予node-echo.js文件执行权限。
-   
+**** 2. 然后，我们使用以下命令赋予node-echo.js文件执行权限。
+   #+BEGIN_SRC bash
      $ chmod +x /home/user/bin/node-echo.js
+   #+END_SRC
     
- 3. 最后，我们在PATH环境变量中指定的某个目录下，例如在/usr/local/bin下边创建一个软链文件，文件名与我们希望使用的终端命令同名，命令如
-    下：
-   
+**** 3. 最后，我们在PATH环境变量中指定的某个目录下，例如在/usr/local/bin下边创建一个软链文件，
+     文件名与我们希望使用的终端命令同名，命令如下：
+#+BEGIN_SRC bash
      $ sudo ln -s /home/user/bin/node-echo.js /usr/local/bin/node-echo
+#+END_SRC   
     
 这样处理后，我们就可以在任何目录下使用node-echo命令了。
 
-Windows
+*** Windows
+    在Windows系统下的做法完全不同，我们得靠.cmd文件来解决问题。假设node-echo.js存放在C:\Users\user\bin目录，并且该目录已经添加到PATH环境
+    变量里了。接下来需要在该目录下新建一个名为node-echo.cmd的文件，文件内容如下：
 
-在Windows系统下的做法完全不同，我们得靠.cmd文件来解决问题。假设node-echo.js存放在C:\Users\user\bin目录，并且该目录已经添加到PATH环境
-变量里了。接下来需要在该目录下新建一个名为node-echo.cmd的文件，文件内容如下：
-
-@node "C:\User\user\bin\node-echo.js" %*
+    @node "C:\User\user\bin\node-echo.js" %*
 
 这样处理后，我们就可以在任何目录下使用node-echo命令了。
 
-工程目录
-
-了解了以上知识后，现在我们可以来完整地规划一个工程目录了。以编写一个命令行程序为例，一般我们会同时提供命令行模式和API模式两种使用方
-式，并且我们会借助三方包来编写代码。除了代码外，一个完整的程序也应该有自己的文档和测试用例。因此，一个标准的工程目录都看起来像下边这
-样。
-
+*** 工程目录
+    了解了以上知识后，现在我们可以来完整地规划一个工程目录了。以编写一个命令行程序为例，一般我们
+    会同时提供命令行模式和API模式两种使用方式，并且我们会借助三方包来编写代码。除了代码外，一个
+    完整的程序也应该有自己的文档和测试用例。因此，一个标准的工程目录都看起来像下边这样。
+#+BEGIN_SRC 
 - /home/user/workspace/node-echo/   # 工程目录
     - bin/                          # 存放命令行相关代码
         node-echo
@@ -1554,9 +1383,10 @@ Windows
     + tests/                        # 存放测试用例
     package.json                    # 元数据文件
     README.md                       # 说明文件
+#+END_SRC
 
 其中部分文件内容如下：
-
+#+BEGIN_SRC js
 /* bin/node-echo */
 var argv = require('argv'),
     echo = require('../lib/echo');
@@ -1573,6 +1403,7 @@ module.exports = function (message) {
     "main": "./lib/echo.js"
 }
 
+#+END_SRC
 以上例子中分类存放了不同类型的文件，并通过node_moudles目录直接使用三方包名加载模块。此外，定义了package.json之后，node-echo目录也可
 被当作一个包来使用。
 
@@ -3600,4 +3431,1111 @@ NodeJS之后，应该已经知道该怎么做了。
    
   * 不要迷信三方包。任何事情做过头了就不好了，三方包也是一样。三方包是一个黑盒，每多使用一个三方包，就为程序增加了一份潜在风险。并且
     三方包很难恰好只提供程序需要的功能，每多使用一个三方包，就让程序更加臃肿一些。因此在决定使用某个三方包之前，最好三思而后行。
+
+* 创建自己的对象
+要创建自己的对象实例，必须首先为其定义一个构造函数。构造函数创建一个新对象，赋予对象属性，并在合适的时候赋予方法。例如，下面的示例为 pasta 对象定义了构造函数。注意 this 关键字的使用，它指向当前对象。
+
+// pasta 是有四个参数的构造器。
+function pasta(grain, width, shape, hasEgg)
+{
+    // 是用什么粮食做的？
+    this.grain = grain;
+
+    // 多宽？（数值）
+    this.width = width;     
+
+    // 横截面形状？（字符串）
+    this.shape = shape;   
+
+// 是否加蛋黄？（boolean）
+    this.hasEgg = hasEgg;  
+}
+定义了对象构造器后，用 new 运算符创建对象实例。
+
+var spaghetti = new pasta("wheat", 0.2, "circle", true);
+var linguine = new pasta("wheat", 0.3, "oval", true);
+可以给对象实例添加属性以改变该实例，但是用相同的构造器生成的其他对象定义中并不包括这些属性，而且除非你特意添加这些属性那么在其他实例中并不显示出来。如果要将对象所有实例的附加属性显示出来，必须将它们添加到构造函数或构造器原型对象（原型在高级文档中讨论）中。
+
+// spaghetti 的附加属性。
+spaghetti.color = "pale straw";
+spaghetti.drycook = 7;
+spaghetti.freshcook = 0.5;
+
+var chowFun = new pasta("rice", 3, "flat", false); 
+// chowFun 对象或其他现有的 pasta 对象
+// 都没有添加到 spaghetti 对象
+// 的三个新属性。
+
+
+// 将属性‘foodgroup’加到 pasta 原型对象
+// 中，这样 pasta 对象的所有实例都可以有该属性，
+// 包括那些已经生成的实例。
+pasta.prototype.foodgroup = "carbohydrates"
+
+// 现在 spaghetti.foodgroup、chowFun.foodgroup，等等
+// 均包含值“carbohydrates”。
+在定义中包含方法
+
+可以在对象的定义中包含方法（函数）。一种方法是在引用别处定义的函数的构造函数中添加一个属性。例如，下面的示例扩充上面定义的 pasta 构造函数以包含 toString 方法，该方法将在显示对象的值时被调用。
+
+// pasta 是有四个参数的构造器。
+// 第一部分与上面相同。
+function pasta(grain, width, shape, hasEgg)
+{
+    // 用什么粮食做的？
+    this.grain = grain;
+
+    // 多宽？（数值）
+    this.width = width;     
+
+    // 横截面形状？（字符串）
+    this.shape = shape;   
+
+    // 是否加蛋黄？（boolean）
+    this.hasEgg = hasEgg;  
+
+    // 这里添加 toString 方法（如下定义）。
+    // 注意在函数的名称后没有加圆括号；
+    // 这不是一个函数调用，而是
+    // 对函数自身的引用。
+    this.toString = pastaToString;
+}
+
+// 实际的用来显示 past 对象内容的函数。 
+function pastaToString()
+{
+    // 返回对象的属性。
+
+    return "Grain: " + this.grain + "\n" +
+        "Width: " + this.width + "\n" +
+        "Shape: " + this.shape + "\n" +
+        "Egg?: " + Boolean(this.hasEgg);
+}
+
+var spaghetti = new pasta("wheat", 0.2, "circle", true);
+// 将调用 toString() 并显示 spaghetti 对象
+// 的属性（需要Internet 浏览器）。
+window.alert(spaghetti);
+* 事件是可以被 JavaScript 侦测到的行为。
+事件
+JavaScript 使我们有能力创建动态页面。事件是可以被 JavaScript 侦测到的行为。
+网页中的每个元素都可以产生某些可以触发 JavaScript 函数的事件。比方说，我们可以在用户点击某按钮时产生一个 onClick 事件来触发某个函数。事件在 HTML 页面中定义。
+事件举例：
+鼠标点击
+页面或图像载入
+鼠标悬浮于页面的某个热点之上
+在表单中选取输入框
+确认表单
+键盘按键
+注意：事件通常与函数配合使用，当事件发生时函数才会执行。
+如果需要更多有关 Javascript 可识别事件的知识，请阅读我们的 JavaScript 事件参考手册。
+onload 和 onUnload
+当用户进入或离开页面时就会触发 onload 和 onUnload 事件。
+onload 事件常用来检测访问者的浏览器类型和版本，然后根据这些信息载入特定版本的网页。
+onload 和 onUnload 事件也常被用来处理用户进入或离开页面时所建立的 cookies。例如，当某用户第一次进入页面时，你可以使用消息框来询问用户的姓名。姓名会保存在 cookie 中。当用户再次进入这个页面时，你可以使用另一个消息框来和这个用户打招呼："Welcome John Doe!"。
+onFocus, onBlur 和 onChange
+onFocus、onBlur 和 onChange 事件通常相互配合用来验证表单。
+下面是一个使用 onChange 事件的例子。用户一旦改变了域的内容，checkEmail() 函数就会被调用。
+<input type="text" size="30" id="email" onchange="checkEmail()">
+onSubmit
+onSubmit 用于在提交表单之前验证所有的表单域。
+下面是一个使用 onSubmit 事件的例子。当用户单击表单中的确认按钮时，checkForm() 函数就会被调用。假若域的值无效，此次提交就会被取消。checkForm() 函数的返回值是 true 或者 false。如果返回值为true，则提交表单，反之取消提交。
+<form method="post" action="xxx.htm" onsubmit="return checkForm()">
+onMouseOver 和 onMouseOut
+onMouseOver 和 onMouseOut 用来创建“动态的”按钮。
+下面是一个使用 onMouseOver 事件的例子。当 onMouseOver 事件被脚本侦测到时，就会弹出一个警告框：
+<a href="http://www.w3school.com.cn"
+onmouseover="alert('An onMouseOver event');return false">
+
+<img src="w3school.gif" width="100" height="30">
+
+</a>
+* JavaScript Try...Catch 语句
+Previous Page
+Next Page
+try...catch 的作用是测试代码中的错误。
+实例
+try...catch 语句
+如何编写 try...catch 语句。
+带有确认框的 try...catch 语句
+另一个编写 try...catch 语句的例子。
+JavaScript - 捕获错误
+当我们在网上冲浪时，总会看到带有 runtime 错误的 Javascript 警告框，同时会询问我们“是否进行 debug？”。像这样的错误信息或许对开发人员有用，对用户则未必。当错误发生时，他们往往会选择离开这个站点。
+本节向你讲解如何捕获和处理 Javascript 的错误消息，这样就可以为受众提供更多的便利。
+有两种在网页中捕获错误的方法：
+使用 try...catch 语句。(在 IE5+、Mozilla 1.0、和 Netscape 6 中可用)
+使用 onerror 事件。这是用于捕获错误的老式方法。(Netscape 3 以后的版本可用)
+Try...Catch 语句
+try...catch 可以测试代码中的错误。try 部分包含需要运行的代码，而 catch 部分包含错误发生时运行的代码。
+语法：
+try
+{
+   //在此运行代码
+}
+catch(err)
+{
+   //在此处理错误
+}
+注意：try...catch 使用小写字母。大写字母会出错。
+实例 1
+下面的例子原本用在用户点击按钮时显示 "Welcome guest!" 这个消息。不过 message() 函数中的 alert() 被误写为 adddlert()。这时错误发生了：
+<html>
+<head>
+<script type="text/javascript">
+function message()
+{
+adddlert("Welcome guest!")
+}
+</script>
+</head>
+
+<body>
+<input type="button" value="View message" onclick="message()" />
+</body>
+
+</html>
+我们可以添加 try...catch 语句，这样当错误发生时可以采取更适当的措施。
+下面的例子用 try...catch 语句重新修改了脚本。由于误写了 alert()，所以错误发生了。不过这一次，catch 部分捕获到了错误，并用一段准备好的代码来处理这个错误。这段代码会显示一个自定义的出错信息来告知用户所发生的事情。
+<html>
+<head>
+<script type="text/javascript">
+var txt=""
+function message()
+{
+try
+  {
+  adddlert("Welcome guest!")
+  }
+catch(err)
+  {
+  txt="此页面存在一个错误。\n\n"
+  txt+="错误描述: " + err.description + "\n\n"
+  txt+="点击OK继续。\n\n"
+  alert(txt)
+  }
+}
+</script>
+</head>
+
+<body>
+<input type="button" value="View message" onclick="message()" />
+</body>
+
+</html>
+实例 2
+下一个例子会显示一个确认框，让用户来选择在发生错误时点击确定按钮来继续浏览网页，还是点击取消按钮来回到首页。如果 confirm 方法的返回值为 false，代码会把用户重定向到其他的页面。如果 confirm 方法的返回值为 true，那么代码什么也不会做。
+<html>
+<head>
+<script type="text/javascript">
+var txt=""
+function message()
+{
+try
+  {
+  adddlert("Welcome guest!")
+  }
+catch(err)
+  {
+  txt="There was an error on this page.\n\n"
+  txt+="Click OK to continue viewing this page,\n"
+  txt+="or Cancel to return to the home page.\n\n"
+  if(!confirm(txt))
+    {
+    document.location.href="http://www.w3school.com.cn/"
+    }
+  }
+}
+</script>
+</head>
+
+<body>
+<input type="button" value="View message" onclick="message()" />
+</body>
+
+</html>
+onerror 事件
+我们马上会讲解 onerror 事件。但首先您需要学习如何使用 throw 语句来创建异常。throw 语句可以与 try...catch 语句一起使用。
+* JavaScript onerror 事件
+Previous Page
+Next Page
+使用 onerror 事件是一种老式的标准的在网页中捕获 Javascript 错误的方法。
+实例
+onerror 事件
+如何使用 onerror 事件捕获网页中的错误。
+onerror 事件
+我们刚讲过如何使用 try...catch 声明来捕获网页中的错误。现在，我们继续讲解如何使用 onerror 事件来达到相同的目的。
+只要页面中出现脚本错误，就会产生 onerror 事件。
+如果需要利用 onerror 事件，就必须创建一个处理错误的函数。你可以把这个函数叫作 onerror 事件处理器 (onerror event handler)。这个事件处理器使用三个参数来调用：msg（错误消息）、url（发生错误的页面的 url）、line（发生错误的代码行）。
+语法：
+onerror=handleErrfunction handleErr(msg,url,l)
+{
+//Handle the error here
+return true or false
+}
+浏览器是否显示标准的错误消息，取决于 onerror 的返回值。如果返回值为 false，则在控制台 (JavaScript console) 中显示错误消息。反之则不会。
+实例：
+下面的例子展示如何使用 onerror 事件来捕获错误：
+<html>
+<head>
+<script type="text/javascript">
+onerror=handleErr
+var txt=""
+
+function handleErr(msg,url,l)
+{
+txt="There was an error on this page.\n\n"
+txt+="Error: " + msg + "\n"
+txt+="URL: " + url + "\n"
+txt+="Line: " + l + "\n\n"
+txt+="Click OK to continue.\n\n"
+alert(txt)
+return true
+}
+
+function message()
+{
+adddlert("Welcome guest!")
+}
+</script>
+</head>
+
+<body>
+<input type="button" value="View message" onclick="message()" />
+</body>
+* json 字符串
+数组转字符串
+var arr = [1,2,3,4,'巴德','merge'];
+var str = arr.join(',');
+console.log(str); // 1,2,3,4,巴德,merge
+字符串转数组
+var str = '1,2,3,4,巴德,merge';
+var arr = str.split(',');
+console.log(arr);     // ["1", "2", "3", "4", "巴德", "merge"]   数组
+console.log(arr[4]);  // 巴德
+字符串转数组，数组转数组格式化，数组格式化转数组
+var str = '1,2,3,4,巴德,merge';
+var arr = str.split(',');
+var strify = JSON.stringify(arr);
+console.log(arr);       // ["1", "2", "3", "4", "巴德", "merge"]   数组
+console.log(arr[4]);    // 巴德
+console.log(strify);    // ["1", "2", "3", "4", "巴德", "merge"]   字符串
+
+var arrParse = JSON.parse(strify);
+console.log(arrParse);  // ["1", "2", "3", "4", "巴德", "merge"]   数组
+
+* Tern: Intelligent JavaScript tooling Demo Docs Code
+Contents
+** The Tern server
+   The bin/tern binary (node.js script, really), is used to start a Tern server. You will usually want to let an editor plugin
+   start it for you,
+   but it can be started manually, which can be useful for debugging.
+
+(Note that the basic structure of the server is also available through a programming interface, and that some project, especially those
+ running client-side in a browser, will want to use that instead of the HTTP server described here.)
+
+When started, the server will look for a .tern-project file in the current directory or one of the directories above that, and use it
+for its configuration. If no project file is found, it’ll fall back to a default configuration. You can change this default configuration by
+putting a .tern-config file, with the same format as .tern-project, in your home directory.
+
+A server write the port it is listening on (which is random) to standard output on startup. It will serve a simple JSON protocol via HTTP on 
+that port. Clients can upload code and ask questions about the code through this protocol.
+
+The following command-line flags are supported:
+
+--port <number>
+Specify a port to listen on, instead of the default behavior of letting the OS pick a random unused port.
+
+--host <host>
+Specify a host to listen on. Defaults to 127.0.0.1. Pass null or any to listen on all available hosts.
+
+--persistent
+By default, the server will shut itself down after five minutes of inactivity. Pass it a this option to disable auto-shutdown.
+
+--ignore-stdin
+    By default, the server will close when its standard input stream is closed. Pass this flag to disable that behavior.
+
+--verbose
+    Will cause the server to spit out information about the requests and responses that it handles, and any errors that are raised. Useful for debugging.
+
+--no-port-file
+The server won’t write a .tern-port file. Can be used if the port files are a problem for you. Will prevent other clients
+ from finding the server (and may thus result in multiple servers for the same project).
+
+** JSON protocol
+** Programming interface
+** JSON type definitions
+** Server plugins
+** Doc comments
+** String completion
+** CommonJS modules
+** node
+** node-style module resolution
+** Module-loading infrastructure
+** ES6 module support
+** webpack resolve support
+** RequireJS
+** Angular.js
+** Third-party plugins
+** Project configuration
+** Utilities
+** Inference engine
+** Context
+** Analysis
+** Types
+** Abstract values
+** Constraints
+** Scopes
+** Utilities
+** Editor plugins
+** Emacs
+** Vim
+** Sublime Text
+** Eclipse
+** Gedit
+** TextMate
+** Related Software
+
+JSON protocol
+Sending queries to a Tern server is done by making POST requests to the server’s port (using / as the requests’s path) with 
+a JSON document in the body of the request.
+
+This document should be an object, with three optional fields, query, files, and timeout.
+The first (query) describes the kind of information you are requesting. It may be omitted if the request is only used to
+ push new code to the server (in which case you’ll get an empty object, {} as response). The files property, if given, contains 
+an array of file specifications, as described below. It may be omitted when the query should operate on the code that the server
+ already has, without adding anything new. When the timeout field is set, it should contain a number, which is interpreted as the
+ maximum amount of milliseconds to work (CPU work, ignoring I/O) on this request before returning with a timeout error.
+
+A query is an object with at least a type property, which determines what kind of query it is. Depending on the type, other properties 
+must or may be present in order to provide further details.
+
+These are the queries that a Tern server understands by default. (Plug-ins may add custom query types.)
+completions
+
+    Asks the server for a set of completions at the given point.
+
+    Accepted fields are:
+
+    file, end (required)
+
+        Specify the location to complete at. See below.
+    types (optional, default false)
+
+        Whether to include the types of the completions in the result data.
+    depths (optional, default false)
+
+        Whether to include the distance (in scopes for variables, in prototypes for properties) between the completions and the origin position in the result data.
+    docs, urls, origins (optional, default false)
+
+        Whether to include documentation strings, urls, and origin files (if found) in the result data.
+    filter (optional, default true)
+
+        When on, only completions that match the current word at the given point will be returned. Turn this off to get all results, so that you can filter on the client side.
+    caseInsensitive (optional, default false)
+
+        Whether to use a case-insensitive compare between the current word and potential completions.
+    guess (optional, default true)
+
+        When completing a property and no completions are found, Tern will use some heuristics to try and return some properties anyway. Set this to false to turn that off.
+    sort (optional, default true)
+
+        Determines whether the result set will be sorted.
+    expandWordForward (optional, default true)
+
+        When disabled, only the text before the given position is considered part of the word. When enabled (the default), the whole variable name that the cursor is on will be included.
+    omitObjectPrototype (optional, default true)
+
+        Whether to ignore the properties of Object.prototype unless they have been spelled out by at least to characters.
+    includeKeywords (optional, default false)
+
+        Whether to include JavaScript keywords when completing something that is not a property.
+    inLiteral (optional, default true)
+
+        If completions should be returned when inside a literal.
+
+    The result returned will be an object with start and end properties, which give the start and end offsets of the word that was completed, an isProperty property that holds a boolean indicating whether the completion is for a property or a variable, and a completions property holding an array of completions. When one of the types, depths, docs, urls, or origins options was passed, the array will hold objects with a name property (the completion text), and, depending on the options, type, depth, doc, url, and origin properties. When none of these options are enabled, the result array will hold plain strings.
+type
+
+    Query the type of something.
+
+    file, end (required), start (optional)
+
+        Specify the expression we want the type of. See below.
+    preferFunction (optional, default false)
+
+        Set to true when you are interested in a function type. This will cause function types to win when something has multiple types.
+    depth (optional, default 0)
+
+        Determines how deep the type string must be expanded. Nested objects will only display property types up to this depth, and be represented by their type name or a representation showing only property names below it.
+
+    The returned object will have the following properties:
+
+    type (string)
+
+        A description of the type of the value. May be "?" when no type was found.
+    guess (bool)
+
+        Whether the given type was guessed, or should be considered reliable.
+    name (string, optional)
+
+        The name associated with the type.
+    exprName (string, optional)
+
+        When the inspected expression was an identifier or a property access, this will hold the name of the variable or property.
+    doc, url, origin (strings, optional)
+
+        If the type had documentation and origin information associated with it, these will also be returned.
+
+definition
+
+    Asks for the definition of something. This will try, for a variable or property, to return the point at which it was defined. If that fails, or the chosen expression is not an identifier or property reference, it will try to return the definition site of the type the expression has. If no type is found, or the type is not an object or function (other types don’t store their definition site), it will fail to return useful information.
+
+    Only takes file, end (required), and start (optional) fields to specify the expression you want the definition of. See below.
+
+    The returned object will have the following properties:
+
+    start, end (offsets, optional)
+
+        The start and end positions of the definition.
+    file (string, optional)
+
+        The file in which the definition was defined.
+    context (string, optional), contextOffset (number, optional)
+
+        A slice of the code in front of the definition, and the offset from the start of the context to the actual definition. Can be used to find a definition’s location in a modified file.
+    doc, url, origin (strings, optional)
+
+        If the definition had documentation or an origin associated with it, it will be returned.
+
+documentation
+
+    Get the documentation string and URL for a given expression, if any.
+
+    Takes file, end (required), and start (optional) fields to specify the expression we are interested in. See below.
+
+    Returns an object with the following properties:
+
+    doc, url, origin (strings, optional)
+
+        The documentation string, url, and the origin of the definition or value, if any.
+
+refs
+
+    Used to find all references to a given variable or property.
+
+    Takes file, end (required), and start (optional) fields to specify the expression we are interested in. See below.
+
+    Returns an object with a name property holding the name of the variable or property, a refs property holding an array of {file, start, end} objects, and, for variables, a type property holding either "global" or "local".
+rename
+
+    Rename a variable in a scope-aware way.
+
+    Takes file, end (required), and start (optional) fields to specify the variable we want to rename (see below), and a newName property that gives the new name of the variable.
+
+    Returns an object whose changes property holds an array of {file, start, end, text} objects, which give the changes that must be performed to apply the rename. The client is responsible for doing the actual modification.
+properties
+
+    Get a list of all known object property names (for any object).
+
+    prefix (string, optional)
+
+        Causes the server to only return properties that start with the given string.
+    sort (optional, default true)
+
+        Whether the result should be sorted.
+
+    The returned object will have a completions property holding an array of strings, which are the property names.
+files
+
+    Get the files that the server currently holds in its set of analyzed files.
+
+    Does not take any parameters. Returns an object with a files property holding an array of strings (the file names).
+
+When specifying a location, which is needed for most of the query types, the required file field may hold either a filename, or a string in the form "#N", where N should be an integer referring to one of the files included in the request (more on that later). The required end field is an offset into this file, either a number or a {line, ch} object. It should point at the end of the expression the request is interested in, or somewhere inside of it if that doesn’t end up pointing inside a sub-expression (in which case the inner expression would be used). An optional start field can be used to disambiguate between expressions—if given, the innermost expression that spans the range between start and end will be used.
+
+Offsets into a file can be either (zero-based) integers, or {line, ch} objects, where both line and ch are zero-based integers. Offsets returned by the server will be integers, unless the lineCharPositions field in the request was set to true, in which case they will be {line, ch} objects.
+
+The format of the doc field in responses will, by default, only contain the first few sentences of the documentation string, and have newlines stripped. To get the full string, with newlines intact, you can add a docFormat field to your query with the value "full".
+
+Requests that take an input expression also accept a variable field which, when given, will cause the server to not look for an expression in the code, but to make up a variable expression with the given name. This does not remove the need to pass in an end, since that will be used to determine the scope in which the variable is interpreted.
+
+The files property of a request must, if present, hold an array of file descriptions. These can be complete files, which have a type property holding "full" and name and text properties holding strings. Complete files will be stored by the server and can be reused in later requests.
+
+Alternatively, you can pass in partial files. This is useful when needing to perform a query on a large file without re-uploading and re-analyzing the whole file. A partial file has a type property holding the string "part", a text property holding some slice of the file (starting at a line boundary), a name property referring to an existing file, and an offset property, either an integer or a {line, ch} object, indicating the approximate position of the fragment in the file.
+
+To remove a file from the server’s model of the project, you can include an object with a name property that identifies the file and a type property of "delete".
+Programming interface
+
+The base server (without HTTP or configuration-file reading) is implemented in lib/tern.js. That package exposes a Server constructor that can be used to create a server. It takes an object holding configuration options as argument. These are recognized (all have a default):
+
+defs (array of strings)
+
+    The definition objects to load into the server’s environment.
+plugins (object)
+
+    Specifies the set of plugins that the server should load. The property names of the object name the plugins, and their values hold options that will be passed to them.
+ecmaVersion (number)
+
+    The ECMAScript version to parse. Should be either 5 or 6. Default is 6.
+getFile (function)
+
+    Provides a way for the server to try and fetch the content of files. Depending on the async option, this is either a function that takes a filename and returns a string (when not async), or a function that takes a filename and a callback, and calls the callback with an optional error as the first argument, and the content string (if no error) as the second.
+async (bool)
+
+    Indicates whether getFile is asynchronous. Default is false.
+fetchTimeout (number)
+
+    Indicates the maximum amount of milliseconds to wait for an asynchronous getFile before giving up on it. Defaults to 1000.
+
+A server object has the following methods:
+
+addFile(name: string, text?: string, parent?: string)
+
+    Register a file with the server. Note that files can also be included in requests. When using this to automatically load a dependency, specify the name of the file (as Tern knows it) as the third argument. That way, the file is counted towards the dependency budget of the root of its dependency graph.
+delFile(name: string)
+
+    Unregister a file.
+request(doc: object, callback: fn(error, response))
+
+    Perform a request. doc is a (parsed) JSON document as described in the protocol documentation. The callback function will be called when the request completes. If an error occurred, it will be passed as a first argument. Otherwise, the resonse (parsed) JSON object will be passed as second argument.
+
+    When the server hasn’t been configured to be asynchronous, the callback will be called before request returns.
+flush(callback: fn())
+
+    Forces all files to be fetched an analyzed, and then calls the callback function.
+on(eventType: string, handler: fn())
+
+    Register an event handler for the named type of event.
+off(eventType: string, handler: fn())
+
+    Unregister an event handler.
+addDefs(defs: object, atFront?: bool)
+
+    Add a set of type definitions to the server. If atFront is true, they will be added before all other existing definitions. Otherwise, they are added at the back.
+deleteDefs(name: string)
+
+    Delete a set of type definitions from the server, by providing the name, taken from defs[!name] property from the definitions. If that property is not available in the current type definitions, it can’t be removed.
+loadPlugin(name: string, options?: object)
+
+    Load a server plugin (or don’t do anything, if the plugin is already loaded).
+
+The server fires the following type of events (mostly useful for plugins):
+
+"reset" ()
+
+    When the server throws away its current analysis data and starts a fresh run.
+"beforeLoad" (file)
+
+    Before analyzing a file. file is an object holding {name, text, scope} properties.
+"afterLoad" (file)
+
+    After analyzing a file.
+"preParse" (text, options)
+
+    Will be run right before a file is parsed, and passed the given text and options. If a handler returns a new text value, the origin text will be overriden. This is useful for instance when a plugin is able to extract JavaScript content from an HTML file.
+"postParse" (ast, text)
+
+    Run right after a file is parsed, and passed the parse tree and the parsed file as arguments.
+"preInfer" (ast, scope)
+
+    Run right before the type inference pass, passing the syntax tree and a scope object.
+"postInfer" (ast, scope)
+
+    Run after the type inference pass.
+"typeAt" (file, end, expr, type)
+
+    Run after Tern attempts to find the type at the position end in the given file. A handler may return either the given type (already calculated by Tern and earlier "typeAt" passes) or an alternate type to be used instead. This is useful when a plugin can provide a more helpful type than Tern (e.g. within comments).
+"completion" (file, query)
+
+    Run at the start of a completion query. May return a valid completion result to replace the default completion algorithm.
+
+JSON type definitions
+
+To be able to specify the types of things without actually analyzing source code, either because there is no JavaScript source code (as for the built-in types) or because the source code is too big, or because Tern is unable to construct the correct types from the source code, Tern defines a JSON data format for specifying types. A few examples of files in this format can be found in the defs/ directory in the distribution.
+
+A type definition data structure is basically a tree of objects, where the top-level object specifies variables in the global scope, and the nested objects specify properties of object types. Properties prefixed with an exclamation point (!) hold special directives, all other properties refer to variable or property names.
+
+Here is an example:
+
+{
+  "!name": "mylibrary",
+  "!define": {
+    "point": {
+      "x": "number",
+      "y": "number"
+    }
+  },
+  "MyConstructor": {
+    "!type": "fn(arg: string)",
+    "staticFunction": "fn() -> bool",
+    "prototype": {
+      "property": "[number]",
+      "clone": "fn() -> +MyConstructor",
+      "getPoint": "fn(i: number) -> point"
+    }
+  },
+  "someOtherGlobal": "string"
+}
+
+This defines a library that sets two globals, MyConstructor holding a constructor function, and someOtherGlobal holding a string. The origin of the types, variables, and properties defined by this document will be "mylibrary", as set by the !name property.
+
+The value of a variable or property can be either a string or an object. Strings can be one of the built-in types ("number", "string", "bool"), a function type ("fn(arg1: type1, arg2: type2) -> rettype", where -> rettype is optional), or an array type ("[type]"). Strings can also name types, either by describing the path to the type in the global scope ("Date.prototype") or by referring to one of the local definitions in the !define property of the document. Finally, a type can be prefixed with a + to indicate an instance of a constructor (+Date).
+
+Objects describe types by enumerating their properties. By default, their type will simply be an instance of Object, but a !type property can be used to make the type a function or array type, as the example does for MyConstructor. Alternatively, a !proto property can be used to give the object a custom prototype, for example "!proto": Element.prototype.
+
+Documentation can be attached to a type using !doc, which should hold a (short) documentation string and !url, which should hold a URL that has the full documentation of the type or function being defined.
+
+Finally, a function can be annotated with effects that it has. These aren’t currently documented, but you can search for !effects in defs/ecmascript.json to see some examples. Similarly, a function type string’s return type may contain the variables !0 (the first argument’s type, !N for the N-1th), !this (the self type of the call), and a special property !ret (the return type of a function).
+Server plugins
+
+Plugins are JavaScript programs that add extra functionality to a server. The distribution currently comes plugins for parsing doc comments, and plugins for node.js and RequireJS, which teach the Tern server about the dependency management mechanisms defined by those systems (as well as, for node.js, including types for the built-in libraries).
+
+A plugin can use several hooks to add custom behavior.
+
+infer.registerFunction(name: string, f: fn(self, args, argnodes))
+
+    This is a function in the inference engine module that allows custom ways to compute function return types or effects. When a function is specified to return !custom:myname or has an effect "custom myname", a call to the function will cause the function registered under "myname" to be called with the argument types and argument AST nodes given to the call. This is used, for example, to make calls to require trigger the necessary machinations to fetch a dependency and return its type.
+tern.registerPlugin(name: string, fn(Server, options))
+
+    This can be used to register an initialization function for the plugin with the given name. A Tern server, when configured to load this plugin, will call this initialization function, passing in the server instance and the options specified for the plugin (if any). This is the place where you register event handlers on the server, add type definitions, load other plugins as dependencies, and/or initialize the plugin’s state.
+
+    See the server’s list of events for ways to wire up plugin behavior.
+tern.defineQueryType(name: string, desc: object)
+
+    Defines a new type of query with the server. The desc object is a property describing the request. It should at least have a run property, which holds a function fn(Server, query) that will be called to handle queries with a type property that matches the given name. It may also have a takesFile property which, if true, will cause the server to try and resolve the file on which the query operates (from its file property) and pass that (a {name, text, scope, ast} object) as a third argument to the run function. You will probably need to use the inference module’s API to do someting useful in this function.
+
+Doc comments plugin
+
+This plugin, which is enabled by default in the bin/tern server, parses comments before function declarations, variable declarations, and object properties. It will look for JSDoc-style type declarations, and try to parse them and add them to the inferred types, and it will treat the first sentence of comment text as the docstring for the defined variable or property.
+
+To turn this plugin off, set doc_comment: null in your plugin option.
+
+The plugin understands the following configuration parameters:
+
+strong
+
+    When enabled, types specified in comments take precedence over inferred types.
+
+**** String completion plugin
+     When enabled, this plugin will gather (short) strings in your code, and completing 
+     when inside a string will try to complete to previously seen strings. Takes a single 
+     option, maxLength, which controls the maximum length of string values to gather, and 
+     defaults to 15.
+
+**** CommonJS module plugin
+     This plugin implements CommonJS-style (require("foo")) modules. It will wrap 
+     files in a file-local scope, and bind require, module, and exports in this scope.
+     Does not implement a module resolution strategy (see for example the node_resolve plugin). 
+     Depends on the modules plugin.
+
+**** Node.js plugin
+     The node.js plugin, called "node", provides variables that are part of the node 
+     environment, such as process and __dirname, and loads the commonjs and node_resolve
+     plugins to allow node-style module loading. It defines types for the built-in modules 
+     that node.js provides ("fs", "http", etc).
+
+**** Node.js resolve plugin
+     This plugin defines the node.js module resolution strategy—things like defaulting to 
+     index.js when requiring a directory and searching node_modules directories. It depends
+     on the modules plugin. Note that this plugin only does something meaningful when the Tern
+     server is running on node.js itself.
+
+**** Modules plugin
+     This is a supporting plugin to act as a dependency for other module-loading and 
+     module-resolving plugins. It understands the following configuration parameters:
+
+dontLoad
+
+    Can be set to true to disable dynamic loading of required modules entirely, or to a regular expression to disable loading of files that match the expression.
+load
+
+    If dontLoad isn’t given, this setting is checked. If it is a regular expression, the plugin will only load files that match the expression.
+modules
+
+    Can be used to assign JSON type definitions to certain modules, so that those are loaded instead of the source code itself. If given, should be an object mapping module names to either JSON objects defining the types in the module, or a string referring to a file name (relative to the project directory) that contains the JSON data.
+
+ES modules plugin
+
+This plugin (es_modules) builds on top of the modules plugin to support ECMAScript 6’s import and export based module inclusion.
+Webpack plugin
+
+This plugin ("webpack") make use of enhance-resolve module from webpack https://webpack.github.io/, so it can understand the resolve field of webpack.config.js for file resolving. commonjs plugin and es_modules plugin plugin are loaded in the meanwhile for correct file resolve, this also means you can still have commonjs and/or es_modules in your .tern-project file, but not necessary.
+
+You can use configPath option for resolve the config file of webpack like:
+
+{
+  "libs": [
+  ],
+  "plugins": {
+    "webpack": {
+      "configPath": "./lib/webpack.prod.js",
+    }
+  }
+}
+
+configPath should be a file path relative to .tern-project, you can omit it if they’re in the same folder.
+RequireJS plugin
+
+This plugin ("requirejs") teaches the server to understand RequireJS-style dependency management. It defines the global functions define and requirejs, and will do its best to resolve dependencies and give them their proper types.
+
+These options are understood:
+
+baseURL
+
+    The base path to prefix to dependency filenames.
+paths
+
+    An object mapping filename prefixes to specific paths. For example {"acorn": "lib/acorn/"}.
+override
+
+    An object that can be used to override some dependency names to refer to predetermined types. The value associated with a name can be a string starting with the character =, in which case the part after the = will be interpreted as a global variable (or dot-separated path) that contains the proper type. If it is a string not starting with =, it is interpreted as the path to the file that contains the code for the module. If it is an object, it is interpreted as JSON type definition.
+
+Angular.js plugin
+
+Adds the angular object to the top-level environment, and tries to wire up some of the bizarre dependency management scheme from this library, so that dependency injections get the right types. Enabled with the name "angular".
+Third-party plugins
+
+It is possible to write third-party plugins or JSON type definitions and distribute them independently, either as packages using npm or as raw JavaScript files.
+
+When a name attribute is specified in the libs section of the project configuration, Tern first searches for a file name.json in its distribution defs directory, then for a file name.json in the user’s project directory, and finally for an installed package named "tern-name" to load as a JSON Type Definition. A JSON Type Definition distributed as an npm package must have a package name matching the pattern "tern-name".
+
+When a name attribute is specified in the plugins section of the project configuration, Tern first searches for a file name.js in its distribution plugin directory, then for a file name.js in the user’s project directory, and finally for an installed package named "tern-name" to load as a plugin. A plugin distributed as an npm package must have a package name matching the pattern "tern-name".
+
+The main module for a third-party plugin that will be installed outside of the Tern distribution should export a single method initialize(ternDir: string) which takes the location of the Tern distribution loading the plugin as an argument. Tern will call this method immediately after loading the plugin to tell the plugin where to find Tern modules. A plugin with this method will work regardless of its install location relative to the Tern distribution, but plugins without it may fail to find Tern modules or even silently load the wrong Tern modules depending on install location.
+
+Plugin packages can specify the Tern version required as a peer dependency.
+Project configuration
+
+A .tern-project file is a JSON file in a format like this:
+
+{
+  "libs": [
+    "browser",
+    "jquery"
+  ],
+  "loadEagerly": [
+    "importantfile.js"
+  ],
+  "plugins": {
+    "requirejs": {
+      "baseURL": "./",
+      "paths": {}
+    }
+  }
+}
+
+The libs property refers to the JSON type descriptions that should be loaded into the environment for this project. See the defs/ directory for examples. The strings given here will be suffixed with .json, and searched for first in the project’s own dir, and then in the defs/ directory of the Tern distribution.
+
+By default, local files are loaded into the Tern server when queries are run on them in the editor. loadEagerly allows you to force some files to always be loaded, it may be an array of filenames or glob patterns (i.e. foo/bar/*.js). The dontLoad option can be used to prevent Tern from loading certain files. It also takes an array of file names or glob patterns.
+
+The plugins field may hold object used to load and configure Tern plugins. The names of the properties refer to files that implement plugins, either in the project dir or under plugin/ in the Tern directory. Their values are configuration objects that will be passed to the plugins. You can leave them at {} when you don’t need to pass any options.
+
+You can specify an ecmaVersion field to configure the version of ECMAScript that Tern parses. The default is 6, and leaving it at that should be safe even for ECMAScript 5 code, but you can set it to 5 as well.
+
+To configure the amount of work Tern is prepared to do to load a single dependency, the dependencyBudget option can be added to a project file. It indicates the maximum size of the files loaded in response to a single dependency (through plugins that load dependencies, such as the node and RequireJS plugins), counted in expressions. The default value is 20 000. Files loaded as dependencies of dependencies count towards the budget of the original dependency.
+Utilities
+
+bin/test
+
+    Runs Tern’s own testsuite. Tests are defined in the test/ directory, as code interspersed with comments that indicate the types and conditions to check for.
+bin/condense
+
+    Utility for condensing source code down to a JSON type definition file. Takes a list of files to condense, optionally interleaved with filenames prefixed with a +, which will be loaded (to provide type information) but not included in the output.
+
+    Pass --plugin name or --plugin name={jsonconfig} to load plugins. Use --def file to load JSON definitions.
+
+Inference engine
+
+The inference engine module (lib/infer.js) implements a system that, given a context and an abstract syntax tree (parsed representation of the code), tries to infer the types of the variables and properties in the code.
+
+The parser is implemented in a separate module, Acorn, which provides a regular JavaScript parser, an error-tolerant parser, and a number of utilities for iterating through and searching in abstract syntax trees. The syntax tree format used by Acorn and Tern is described in the Mozilla parser API document (though support for features that are not in ECMAScript 5, such as let, is omitted).
+
+A high-level description of the way Tern’s type inference algorithm works can be found in a blog post I wrote on the subject.
+
+This module also exposes some utility functions that are useful to implement the services the server exposes.
+Context
+
+A context is an object that holds a global JavaScript scope, as well as some meta-information and state used by the type inference process. Almost all operations in the inference module require a context.
+
+To prevent having to pass the context around through every function, a form of dynamic binding is used—the withContext function executes a function body with a given object used as the current context.
+
+infer.Context(defs: [object])
+
+    A constructor function for contexts. defs should be an array of type definition objects, which will be used to initialize the global scope.
+infer.withContext(context: Context, f: fn())
+
+    Calls f with the current context bound to context. Basically, all code that does something with the inference engine should be wrapped in such a call.
+infer.cx() → Context
+
+    Returns the current context object.
+context.topScope
+
+    The top-level scope of the context.
+
+Analysis
+
+To push code into a context, you first parse it, yielding a syntax tree, and then tell Tern to analyze that.
+
+infer.parse(text: string, options?: {}) → AST
+
+    Parse a piece of code for use by Tern. Will automatically fall back to the error-tolerant parser if the regular parser can’t parse the code.
+infer.analyze(ast: AST, name: string, scope?: Scope)
+
+    Analyze a syntax tree. name will be used to set the origin of types, properties, and variables produced by this code. The optional scope argument can be used to specify a scope in which the code should be analyzed. It will default to the top-level scope.
+
+The same code, or slightly modified variants of the same code, can be analyzed in a context multiple times. The variables and properties that the context knows, as well as the types it assigns to them, will become the union of the variables and types created by the various forms of the code. When incrementally re-analyzing code as it is being edited, this leads to a degradation in the preciseness of the results. To prevent that, it is possible to purge all elements that come from a specific origin from a context.
+
+infer.purgeTypes(origins: [string], start?: number, end?: number)
+
+    Purges the types that have one of the origins given from the context. start and end can be given to only purge types that occurred in the source code between those offsets. This is not entirely precise—the state of the context won’t be back where it was before the file was analyzed—but it prevents most of the noticeable inaccuracies that re-analysis tends to produce.
+infer.markVariablesDefinedBy(scope: Scope, origins: [string], start?: number, end?: number)
+
+    Cleaning up variables is slightly trickier than cleaning up types. This does a first pass over the given scope, and marks variables defined by the given origins. This is indended to be followed by a call to analyze and then a call to purgeMarkedVariables.
+infer.purgeMarkedVariables
+
+    Purges variables that were marked by a call to markVariablesDefinedBy and not re-defined in the meantime.
+
+Types
+
+Tern has a more or less complete implementation of the JavaScript type system.
+
+infer.Obj(proto, name?: string)
+
+    Constructor for the type that represents JavaScript objects. proto may be another object, or true as a short-hand for Object.prototype, or null for prototype-less objects.
+infer.Fn(name: string?, self: AVal, args: [AVal], argNames: [string], retval: AVal)
+
+    Constructor for the type that implements functions. Inherits from Obj. The AVal types are used to track the input and output types of the function.
+infer.Arr(contentType: AVal)
+
+    Constructor that creates an array type with the given content type.
+context.num
+
+    The primitive number type.
+context.str
+
+    The primitive string type.
+context.bool
+
+    The primitive boolean type.
+
+Types expose the following interface (plus some AVal-compatibility methods, see below).
+
+type.name: string
+
+    The name of the type, if any.
+type.origin: string
+
+    The origin file of the type.
+type.originNode: AST
+
+    The syntax node that defined the type. Only present for object and function types, and even for those it may be missing (if the type was created by a type definition file, or synthesized in some other way).
+type.toString(maxDepth: number) → string
+
+    Return a string that describes the type. maxDepth indicates the depth to which inner types should be shown.
+type.getProp(prop: string) → AVal
+
+    Get an AVal that represents the named property of this type.
+type.forAllProps(f: fn(prop: string, val: AVal, local: bool))
+
+    Call the given function for all properties of the object, including properties that are added in the future.
+
+Object types have a few extra methods and properties.
+
+obj.proto
+
+    The prototype of the object, or null.
+obj.props
+
+    An object mapping the object’s known properties to AVals. Don’t manipulate this directly (ever), only use it if you have to iterate over the properties.
+obj.hasProp(prop: string) → AVal?
+
+    Looks up the AVal associated with the given property, or returns null if it doesn’t exist.
+obj.defProp(prop: string, originNode?: AST) → AVal
+
+    Looks up the given property, or defines it if it did not yet exist (in which case it will be associated with the given AST node).
+
+Abstract values
+
+Abstract values are objects used to represent sets of types. Each variable and property has an abstract value associated with it, but they are also used for other purposes, such as tracking the return type of a function, or building up the type for some kinds of expressions.
+
+In a cleanly typed program where each thing has only a single type, abstract values will all have one type associated with them. When, for example, a variable can hold two different types of values, the associated abstract value will hold both these types. In some cases, no type can be assigned to something at all, in which case the abstract value remains empty.
+
+Abstract values expose the following interface:
+
+infer.AVal()
+
+    Constructor. Creates an empty AVal.
+aval.addType(type: Type, weight?: number)
+
+    Add a type to this abstract value. If the type is already in there, this is a no-op. weight can be given to give this type a non-default weight, which is mostly useful when adding a provisionary type that should be overridden later if a real type is found. The default weight is 100, and passing a weight lower than that will make the type assignment “weak”.
+aval.propagate(target: Constraint)
+
+    Sets this AVal to propagate all types it receives to the given constraint. This is the mechanism by which types are propagated through the type graph.
+aval.hasType(type: Type) → bool
+
+    Queries whether the AVal currently holds the given type.
+aval.isEmpty() → bool
+
+    Queries whether the AVal is empty.
+aval.getType(guess?: bool) → Type?
+
+    Asks the abstract value for its current type. May return null when there is no type, or conflicting types are present. When guess is true or not given, an empty AVal will try to use heuristics based on its propagation edges to guess a type.
+aval.getFunctionType() → Type?
+
+    Asks the AVal if it contains a function type. Useful when you aren’t interested in other kinds of types.
+
+Abstract values that are used to represent variables or properties will have, when possible, an originNode property pointing to an AST node.
+
+As a memory-consuming hack, types also expose the interface of abstact values, so that in cases where an AVal is expected, but the precise type is known, the type object can simply be used.
+
+The infer.ANull value is a special AVal-like object that never holds any types, and discards types added to it. It can be used as a placeholder in situations where we either aren’t interested in the types, or there simply are no types.
+Constraints
+
+Constraints are things that can receive values. They use the same addType method to receive them, which causes all AVals to also be useable as constraints. The inference engine defines a number of additional constraints to propagate values in more indirect ways. See the blog post on the inference algorithm for some examples.
+
+infer.constraint(methods: object) → constructor
+
+    This is a constructor-constructor for constraints. It’ll create a constructor with all the given methods copied into its prototype, which will run its construct method on its arguments when instantiated.
+
+Beyond addType, there are a few optional methods that constraints can expose to tell the system something about itself.
+
+constraint.typeHint() → Type?
+
+    May return a type that getType can use to “guess” its type based on the fact that it propagates to this constraint.
+constraint.propHint() → string?
+
+    May return a string when this constraint is indicative of the presence of a specific property in the source AVal.
+
+Scopes
+
+Scopes are derived from the Obj type, and variables are represented the same way as properties.
+
+infer.Scope(parent?: Scope)
+
+    Constructor for scope objects. The top scope won’t have a parent.
+scope.defVar(name: string, originNode: AST) → AVal
+
+    Ensures that this scope or some scope above it has a property by the given name (defining it in the top scope if it is missing), and, if the property doesn’t already have an originNode, assigns the given node to it.
+
+Utilities
+
+These are miscellaneous utilities that come in helpful when doing code analysis.
+
+infer.findExpressionAt(ast: AST, start: number?, end: number, scope?: Scope) → {node, state}
+
+    Searches the given syntax tree for an expression that ends at the given end offset and, if start is given, starts at the given start offset. scope can be given to override the outer scope, which defaults to the context’s top scope. Will return a {node, state} object if successful, where node is AST node, and state is the scope at that point. Returns null if unsuccessful.
+infer.findExpressionAround(ast: AST, start: number?, end: number, scope?: Scope) → {node, state}
+
+    Similar to findExpressionAround, except that it will return the innermost expression node that spans the given range, rather than only exact matches.
+infer.expressionType(expr: {node, state}) → AVal
+
+    Determine an expression for the given node and scope (as returned by the functions above). Will return an AVal or plain Type.
+infer.scopeAt(ast: AST, pos: number, scope?: Scope) → Scope
+
+    Find the scope at a given position in the syntax tree. The scope parameter can be used to override the scope used for code that isn’t wrapped in any function.
+infer.findRefs(ast: AST, scope: Scope, name: string, refScope: Scope, f: fn(AST, Scope))
+
+    Will traverse the given syntax tree, using scope as the starting scope, looking for references to variable name that resolve to scope refScope, and call f with the node of the reference and its local scope for each of them.
+infer.findPropRefs(ast: AST, scope: Scope, objType: Obj, propName: string, f: fn(AST))
+
+    Analogous to findRefs, but used to look for references to a specific property instead. Whereas findRefs is precise, this is dependent on type inference, and thus can not be relied on to be precise.
+
+Whenever the code in lib/infer.js guesses a type through fuzzy heuristics (through getType or expressionType), it sets a flag. The following two function allow access to this flag:
+
+infer.didGuess() → bool
+
+    Test whether the guessing flag is set.
+infer.resetGuessing(val?: bool)
+
+    Reset the guessing flag.
+
+Editor plugins
+
+If your editor of choice is not yet supported, you are encouraged to try and port one of the existing plugins to it. When figuring out how things work, the code powering the demo, in doc/demo/demo.js, might also come in useful.
+
+All these plugins use the node.js-based server, and thus require that (as well as npm) to be installed.
+Emacs
+
+The Emacs mode is part of the main tern repository. It can be installed as follows:
+
+    Make sure you are using Emacs 24 or later. The Tern mode requires lexical scoping.
+
+    Clone this repository somewhere. Do npm install to get the dependencies.
+
+    Make Emacs aware of emacs/tern.el. For example by adding this to your .emacs file:
+
+    (add-to-list 'load-path "/path/to/tern/emacs/")
+    (autoload 'tern-mode "tern.el" nil t)
+
+    Optionally set tern-mode to be automatically enabled for your JavaScript mode of choice. Here’s the snippet for js-mode:
+
+    (add-hook 'js-mode-hook (lambda () (tern-mode t)))
+
+The Emacs mode uses the bin/tern server, and project configuration is done with a .tern-project file.
+
+Buffers in tern-mode add a completion-at-point function that activates Tern’s completion. So, unless you rebound the key, M-tab (or C-M-i) will trigger completion.
+
+When the point is in an argument list, Tern will show argument names and types at the bottom of the screen.
+
+The following additional keys are bound:
+
+M-.
+
+    Jump to the definition of the thing under the cursor.
+M-,
+
+    Brings you back to last place you were when you pressed M-..
+C-c C-r
+
+    Rename the variable under the cursor.
+C-c C-c
+
+    Find the type of the thing under the cursor.
+C-c C-d
+
+    Find docs of the thing under the cursor. Press again to open the associated URL (if any).
+
+Auto-Complete
+
+If you want to use auto-complete.el for completion, append following codes:
+
+(eval-after-load 'tern
+   '(progn
+      (require 'tern-auto-complete)
+      (tern-ac-setup)))
+
+If tern-ac-on-dot is non-nil (default), typing .(dot) invokes auto-complete to select completions. Calling the command tern-ac-complete, one can invoke auto-complete manually.
+Vim
+
+The Vim plugin is maintained in a separate repository. Please see its README for details.
+Sublime Text
+
+There are two implementations of Sublime Text modules for Tern. One written by me, at https://github.com/ternjs/tern_for_sublime. This one uses the node.js-based server. The other is written by Sergey Chikuyonok, and can be found at https://github.com/emmetio/sublime-tern. It uses a Python V8 bridge to run the server.
+
+See the readme files in those repositories for details.
+Eclipse / Java
+
+tern.java is a Tern client written in Java. It includes Eclipse integration.
+gedit
+
+tern_for_gedit integrates Tern with the gedit editor.
+TextMate
+
+JavaScript Tern Completion.tmbundle integrates Tern with TextMate.
+Related Software
+
+This is a place to gather links to software that is built on Tern. Drop me an email if you want to suggest a link.
+jsctags
+
+jsctags is a tool that generates ctags files from JavaScript code by using Tern’s inference engine.
+CodeMirror Tern addon
+
+The CodeMirror browser-based editor has an addon for integrating with Tern.
+tern.ace
+
+tern.ace integrates Tern in the ACE editor.
+tern.orion
+
+tern.orion integrates Tern in the Orion editor.
+
 

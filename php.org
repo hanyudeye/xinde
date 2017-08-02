@@ -1,35 +1,41 @@
 cli: php php.php   <?php echo "a"; ?>
 ini_set(("display_errors", "On"));   
-     error_reporting((E_ALL)); //-1是关闭
- 
+error_reporting((E_ALL)); //-1是关闭
+'createdDate'=>date('Y-m-d H:i:s',time()),
+
 : php 文件权限对 file_exist()等文件函数影响大
 * PHP
+  收集表单数据, 生成动态网页, 发送/接收Cookies
+  用于
+  1.服务端脚本
+  2.命令行脚本
+  3.桌面应用程序 PHP-GTK
 ** 变量
-四种标量类型：
-boolean（布尔型）
-integer（整型）
-float（浮点型，也称作 double)
-string（字符串）
+   四种标量类型：
+   boolean（布尔型）
+   integer（整型）
+   float（浮点型，也称作 double)
+   string（字符串）
 
-两种复合类型：
-array（数组）
-object（对象）class  
+   两种复合类型：
+   array（数组）
+   object（对象）class  
 
-最后是两种特殊类型：
-resource（资源）
-NULL（无类型）
+   最后是两种特殊类型：
+   resource（资源）
+   NULL（无类型）
 
-在下列情况下一个变量被认为是 NULL：
-被赋值为 NULL。
-尚未被赋值。
-被 unset()。
-
-为了确保代码的易读性，本手册还介绍了一些伪类型：
-mixed（混合类型）
-number（数字类型）
-callback（回调类型）
-一些函数如 call_user_func() 或 usort() 可以接受用户自定义的回调函数作为参数。回调函数不止可以是简单函数，还可以是对象的方法，包括静态类方法。
-可以理解为 在某种情况下执行某种方法，而不是直接执行.对于类的参数，则要更详细，要给出类名.
+   在下列情况下一个变量被认为是 NULL：
+   被赋值为 NULL。
+   尚未被赋值。
+   被 unset()。
+   
+   为了确保代码的易读性，本手册还介绍了一些伪类型：
+   mixed（混合类型）
+   number（数字类型）
+   callback（回调类型）
+   一些函数如 call_user_func() 或 usort() 可以接受用户自定义的回调函数作为参数。回调函数不止可以是简单函数，还可以是对象的方法，包括静态类方法。
+   可以理解为 在某种情况下执行某种方法，而不是直接执行.对于类的参数，则要更详细，要给出类名.
 1. call_user_func(array('MyClass', 'myCallbackMethod')); 
 2. call_user_func('MyClass::myCallbackMethod');
 3. call_user_func(array('B', 'parent::who')); // A   对于继承的类,要引用A的方法时
@@ -872,6 +878,25 @@ _empty
 ** composer
 ** 路由
 ** 请求
+session
+{$Think.session.user_id}	//	输出$_SESSION['user_id']变量
+Session::set('name','thinkphp');
+Session::get('name');
+//	判断(当前作用域)是否赋值
+Session::has('name');
+//	判断think作用域下面是否赋值
+Session::has('name','think');
+清空
+//	清除session(当前作用域)
+Session::clear();
+//	清除think作用域
+Session::clear('think');
+
+{if	condition="($name	==	1)	OR	($name	>	100)	"}	value1
+{elseif	condition="$name	eq	2"/}value2
+{else	/}	value3
+{/if}
+
 获取请求信息 $request = Request::instance();
 $request->domain() 获取当前域名
 $request->baseFile() 当前URL地址
@@ -904,18 +929,19 @@ server()/session()/cookie()/head()
    'dsn' => '',........ ]);
    或字符串方式 Db::connect('mysql://root:1234@12344/...');
 
-可以定制自己私有的连接 ,此时在Model中定义 connection属性
-原生查询与写入
-Db::query('select * from table'); 
-Db::execute('insert into ...');
-//表前缀不能省
-Db::table('think_user')->where('status',1)->select();
-//表前缀能省
-Db::name('user')->where('status',1)->select();
+				->where('name','like','%thinkphp')
+        可以定制自己私有的连接 ,此时在Model中定义 connection属性
+        原生查询与写入
+        Db::query('select * from table'); 
+        Db::execute('insert into ...');
+        //表前缀不能省
+        Db::table('think_user')->where('status',1)->select();
+        //表前缀能省
+        Db::name('user')->where('status',1)->select();
 
-值和列查询
-//返回某个字段的值
-Db::table('table')->where('id',1)->value('name');
+        值和列查询
+        //返回某个字段的值
+        Db::table('table')->where('id',1)->value('name');
 //返回数组
 Db::table('table')->where('id',1)->column('name');
 //指定索引
@@ -923,7 +949,7 @@ Db::table('table')->where('id',1)->column('name','id');
 
 数据集分批处理 chunk
 Db::table('think_user')->where('score','>',80)->chunk(100,function($users){
-foreach($usersas$user){
+foreach($users as $user){
 //
 }
 });
@@ -1017,6 +1043,10 @@ whereTime('birthday',	'>=',	'1970-10-1')
 
 ** 模板
 ** 验证
+   acount:"{$Think.session.account}",
+   Session::set('name','thinkphp');
+   Session::get('name');
+
 * CI 框架
 ** 应用程序流程图
 ***    index.php 文件作为前端控制器，初始化运行 CodeIgniter 所需的基本资源；
@@ -1816,12 +1846,11 @@ echo “\n”;
 要改变/tmp/文件夹的目录, 看手册 ^_^
 * 变量存在
   PHP 判断常量,变量和函数是否存在
-if (defined('CONST_NAME')) {
-    //do something 
-}
+  if (defined('CONST_NAME')) {
+  //do something 
+  }
 
 变量检测则是使用isset，注意变量未声明或声明时赋值为NULL，isset均返回FALSE，如：
-复制代码 代码如下:
 
 if (isset($var_name)) {
     //do something
@@ -1884,6 +1913,10 @@ else
 输出为. Input type exists
 
 获取文件名(去除后缀) mb_substr($filename,0,mb_strpos($filename,'.'),"utf8");
+$path_parts ['dirname'] = rtrim(substr($filepath, 0, strrpos($filepath, '/')),"/")."/";   
+$path_parts ['basename'] = ltrim(substr($filepath, strrpos($filepath, '/')),"/");   
+$path_parts ['extension'] = substr(strrchr($filepath, '.'), 1);   
+ 
 * Composer (装载php扩展类库)
  : composer	require	topthink/think-image
 

@@ -1,37 +1,94 @@
 svn被锁定 扩展功能清理一下
-* 命令 
-** 系统管理
- openssl 强大的安全套接字层密码库
- lastb 列出登入系统失败的用户相关信息
- sudo 以其他身份来执行命令
- sudo -i 切换为root用户
- lastlog 显示系统中所有用户最近一次登录信息
- chroot 把根目录换成指定的目的目录
- logsave 将命令的输出信息保存到指定的日志文件
- last 列出目前与过去登入系统的用户相关信息
- 进程和作业管理
- ipcrm 删除消息队列、信号集、或者共享内存标识
+* 系统管理
+*** openssl 强大的安全套接字层密码库
+    sudo 以其他身份来执行命令
+    sudo -i 切换为root用户
+    chroot 把根目录换成指定的目的目录
+*** 进程和作业管理
+    ipcrm 删除消息队列、信号集、或者共享内存标识
  systemctl 系统服务管理器指令
  w 显示目前登入系统的用户信息
  watch 周期性的方式执行给定的指令
- pidof 查找指定名称的进程的进程号ID号　
  skill 向选定的进程发送信号冻结进程
  pgrep 设置用户的认证信息，包括用户密码、密码过期时间等
  renice 修改正在运行的进程的调度优先级
- nohup 将程序以忽略挂起信号的方式运行起来
- ipcs 分析消息队列共享内存和信号量
- pmap 报告进程的内存映射关系
- nice 改变程序执行的优先权等级
  service 控制系统服务的实用工具
- pstree 以树状图的方式展现进程之间的派生关系
- telint 切换当前正在运行系统的运行等级
- killall 使用进程的名称来杀死一组进程
  runlevel 打印当前Linux系统的运行等级
- batch 在系统不繁忙的时候执行定时任务
  ps 报告当前系统的进程状态
  init init进程是所有Linux进程的父进程
- crontab 提交和管理用户的需要周期性执行的任务
- pkill 可以按照进程名杀死进程
+**** crontab 提交和管理用户的需要周期性执行的任务
+在ubuntu下安装crontab后，系统默认的是不开启crontab的日志记录，如何开始crontab的日志：
+
+修改rsyslog文件，将/etc/rsyslog.d/50-default.conf 文件中的#cron.*前的#删掉；
+重启rsyslog服务service rsyslog restart；
+重启cron服务service cron restart；
+
+?
+001
+more /var/log/cron.log；
+就可以查看运行时的日志文件，如果在日志文件中出现：No MTA installed, discarding output
+
+那么就是说，crontab执行脚本时是不会直接错误的信息输出，而是会以邮件的形式发送到你的邮箱里，这时候就需要邮件服务器了，如果你没有安装邮件服务器，它就会报这个错。如果是测试，可以用下面的办法来解决：
+
+在每条定时脚本后面加入：
+
+?
+001
+>/dev/null 2>&1
+就可以解决No MTA installed, discarding output的问题
+
+cron是一个Linux下的后台进程，用来定期的执行一些任务。因为我用的是Ubuntu，所以这篇文章中的所有命令也只能保证在Ubuntu下有效，但其他系统应该也差不多。
+想要让cron执行你指定的任务，首先就要编辑crontab文件。crontab是一个文本文件，用来存放你要运行的命令。你可以以下命令
+crontab -e  
+来打开你的用户所属的crontab文件。第一次用这个命令，会让你选择文本编辑器，我选的是vim。选定的编辑器也可以使用
+select-editor  
+命令来更改。这点命令行中已经有足够的提示，就不多说了。
+打开后的crontab文件类似这种样子：
+
+# m h  dom mon dow   command  
+*/2 * * * * date >> ~/time.log  
+
+第二行是我为了测试写的一个定期任务，它的意思是，每隔两分钟就执行 date >> ~/time.log 命令（记录当前时间到time.log文件）。你可以把它加入你的crontab中，然后保存退出。
+保存了crontab之后，我们还需要重启cron来应用这个计划任务。使用以下命令：
+sudo service cron restart  
+下面稍微解释下crontab中每行的含义。crontab中的每一行代表一个定期执行的任务，分为6个部分。前5个部
+分表示何时执行命令，最后一个部分表示执行的命令。每个部分以空格分隔，除了最后一个部分（命令）可以在内部
+使用空格之外，其他部分都不能使用空格。前5个部分分别代表：分钟，小时，天，月，星期，每个部分的取值范围如下：
+
+分钟          0 - 59
+小时          0 - 23
+天              1 - 31
+月              1 - 12
+星期          0 - 6       0表示星期天
+
+除了这些固定值外，还可以配合星号（*），逗号（,），和斜线（/）来表示一些其他的含义：
+星号          表示任意值，比如在小时部分填写 * 代表任意小时（每小时）
+逗号          可以允许在一个部分中填写多个值，比如在分钟部分填写 1,3 表示一分钟或三分钟
+斜线          一般配合 * 使用，代表每隔多长时间，比如在小时部分填写 */2 代表每隔两分钟。所以 */1 和 * 没有区别
+                  */2 可以看成是能被2整除的任意值。
+以下是一些例子（省略了命令部分）：
+\* * * * *                  # 每隔一分钟执行一次任务  
+0 * * * *                  # 每小时的0点执行一次任务，比如6:00，10:00  
+6,10 * 2 * *            # 每个月2号，每小时的6分和10分执行一次任务  
+*/3,*/5 * * * *          # 每隔3分钟或5分钟执行一次任务，比如10:03，10:05，10:06  
+ 
+
+以上就是在cron中加入计划任务的基本知识。因为cron中的任务基本就是执行命令行，所以当然也会有权限问题。以上例子中的任务就是以你当前登录用户
+的权限执行的，如果你需要以root用户执行某个任务，可以在crontab前加上sudo。
+sudo crontab -e  
+顺带一提，crontab文件对每个用户都是不同的，所以刚才设置的定期看时间的任务，在这里是看不到的。因为我们没有为root用户增加这样的计划任务。
+再顺带一提，不喜欢命令行的童鞋可以去 Ubuntu软件中心 下一个 计划任务 程序。在软件中心中搜索 schedule 就可以搜到。它是一个GUI的程序，
+做的还蛮傻瓜化的。不过好像没办法设置成使用root用户运行任务。而且，对于要ssl到服务器上进行操作的童鞋来说，命令行还是最好（唯一）的工具。
+因为我目前就用到这些知识，所以对cron也没有更多了解。想了解Ubuntu下的cron的童鞋，可以去看看Ubuntu官方的这篇 CronHowTo ，个人觉得讲的还是蛮详细的。
+
+1, 2, 4 * * * *  gedit
+分<>时<>日< >月<>星期< >要运行的命令
+crontab [ -u user ] file
+crontab [ -u user ] [ -i ] { -e | -l | -r } |
+-e 编辑crontab文件
+-l　列出crontab文件内容
+-r 删除crontab文件
+**** pkill 可以按照进程名杀死进程
  atrm 删除待执行任务队列中的指定任务
  atq 列出当前用户的at任务列表
  at 在指定时间执行一个任务
@@ -64,25 +121,295 @@ scriptreplay time.log output.session 回放
  usermod 用于修改用户的基本信息
  groupadd 用于创建一个新的工作组
  userdel 用于删除给定的用户以及与用户相关的文件
- useradd 创建的新的系统用户
-X-Windows
- xclip 管理 X 粘贴板
- xset 设置X-Window系统中的用户爱好的实用工具
- xlsfonts 列出X Server使用的字体
- xhost 制哪些X客户端能够在X服务器上显示
- xlsatoms 列出X服务器内部所有定义的原子成分
- xauth 显示和编辑被用于连接X服务器的认证信息
- xlsclients 列出显示器中的客户端应用程序
- xinit 是Linux下X-Window系统的初始化程序
- startx 用来启动X Window
-SELinux
- restorecon 恢复文件的安全上下文
- semanage 默认目录的安全上下文查询与修改
- setsebool 修改SElinux策略内各项规则的布尔值
- getsebool 查询SElinux策略内各项规则的布尔值
- sesearch 查询SELinux策略的规则详情
- seinfo 查询SELinux的策略提供多少相关规则
- chcon 修改对象（文件）的安全上下文
+*** useradd 创建一个新用户或更新默认新用户信息
+    用法：useradd [选项] 登录
+    useradd -D
+    useradd -D [选项]
+       useradd 可以使用的选项有：
+       -b, --base-dir BASE_DIR
+           如果没有使用 -d HOME_DIR，则使用默认的基目录。BASE_DIR 加上账户名就是主目录。如果没有使用 -m 选项，BASE_DIR
+           必须已经存在。
+           如果选项没有指定，useradd 将使用 /etc/default/useradd 中的 HOME 变量，或者默认的 /home。
+
+       -c, --comment COMMENT
+           任何字符串。通常是关于登录的简短描述，当前用于用户全名。
+
+       -d, --home-dir HOME_DIR
+           将创建新用户，并使用 HOME_DIR 作为用户登陆目录的值。默认值是将 LOGIN 名附加到 BASE_DIR
+           后面，并使用这作为登陆目录。目录不一定必须已经存在 HOME_DIR，但是会在需要时创建。
+
+       -D, --defaults
+           看下边，“更改默认值”子节。
+
+       -e, --expiredate EXPIRE_DATE
+           用户账户将被禁用的日期。日期以 YYYY-MM-DD 格式指定。
+           如果没有指定，useradd 将使用 /etc/default/useradd 中 EXPIRE 变量指定的默认过期日期，或者一个空字符串(不过期)。
+
+       -f, --inactive INACTIVE
+           密码过期后，账户被彻底禁用之前的天数。0 表示立即禁用，-1 表示禁用这个功能。
+           如果未指定，useradd 将使用 /etc/default/useradd 中的 INACTIVE 指定的默认禁用周期，或者默认为 -1。
+
+       -g, --gid GROUP
+           用户初始登陆组的组名或号码。组名必须已经存在。组号码必须指代已经存在的组。
+           如果没有指定， useradd 的行为将依赖于 /etc/login.defs 文件中的 USERGROUPS_ENAB 参数。如果此参数设置为了 yes
+           (或者在命令行上指定了 -U/--user-group)，将会为用户创建一个组，组名和登录名相同。如果选项设置为了 no
+           (或者在命令行上指定了 -N/--no-user-group)，useradd 会把新用户的主组设置为 /etc/default/useradd 中 GROUP
+           变量指定的值，再或者默认是 100。
+
+       -G, --groups GROUP1[,GROUP2,...[,GROUPN]]]
+           用户还属于的附加组列表。每个组都用逗号隔开，没有中间的空格。这里的组受到了 -g
+           选项给定的组同样的限制。默认上，用户只属于初始组。
+
+       -h, --help
+           现实帮助信息并退出。
+
+       -k, --skel SKEL_DIR
+           骨架目录，包含使用 useradd 创建用户时，要复制到用户主目录中的文件和目录。
+           这个选项只有在指定 -m (或 --create-home) 选项时才有效。
+           如果此项没有设置，骨架目录使用 /etc/default/useradd 中的 SKEL 的变量或默认为 /etc/skel。
+           如果可以，也复制 ACL 和扩展属性。
+
+       -K, --key KEY=VALUE
+           默认覆盖 /etc/login.defs (UID_MIN, UID_MAX, UMASK, PASS_MAX_DAYS 及其它)。 例如：-K PASS_MAX_DAYS=-1
+           可以用于创建一个密码不会过期的系统账户，即使系统账户没有密码。可以指定多个 -K 选项，如：-K UID_MIN=100 -K UID_MAX=499
+
+       -l, --no-log-init
+           不要将用户添加到最近登录和登录失败数据库。
+           默认上，最近登录和登录失败中用户的条目会被重置，以避免重新使用先前删除的用户的条目。
+           For the compatibility with previous Debian's useradd, the -O option is also supported.
+
+       -m, --create-home
+           如果不存在，则创建用户主目录。骨架目录中的文件和目录(可以使用 -k 选项指定)，将会复制到主目录。
+           默认上，如果没有指定此选项并且 CREATE_HOME 没有启用，不会创建主目录。
+
+       -M
+           不创建用户主目录，即使系统在 /etc/login.defs 中的设置 (CREATE_HOME) 为 yes。
+
+       -N, --no-user-group
+           不要创建同名组，而是将用户添加到 -g 选项指定的组，或根据 /etc/default/useradd 中的 GROUP 变量。
+           如果没有指定 -g, -N 和 -U 选项，默认行为由 /etc/login.defs 中的 USERGROUPS_ENAB 变量指定。
+
+       -o, --non-unique
+           允许使用重复的 UID 创建用户账户。
+           此选项只有和 -u 选项组合使用才有效。
+
+       -p, --password PASSWORD
+           加密了的密码，就像 crypt(3) 的返回值。默认为禁用密码。
+           注意：不推荐使用这个选项，因为密码(或加密过的密码)会被用户通过列出这个过程而看到。
+           您应该确保密码符合系统的密码政策。
+
+       -r, --system
+           创建一个系统账户。
+           System users will be created with no aging information in /etc/shadow, and their numeric identifiers are chosen in the
+           SYS_UID_MIN-SYS_UID_MAX range, defined in /etc/login.defs, instead of UID_MIN-UID_MAX (and their GID counterparts for
+           the creation of groups).
+
+           注意：useradd 不会为这种用户创建主目录，无论 /etc/login.defs (CREATE_HOME)
+           中是的默认设置是怎样。如果想为要创建的系统账户创建主目录，需要指定 -m 选项。
+
+       -R, --root CHROOT_DIR
+           Apply changes in the CHROOT_DIR directory and use the configuration files from the CHROOT_DIR directory.
+
+       -s, --shell SHELL
+           用户的登录 shell 名。默认为留空，让系统根据 /etc/default/useradd 中的 SHELL 变量选择默认的登录 shell，默认为空字符串。
+
+       -u, --uid UID
+           用户 ID 的数字值。此值必须为唯一的，除非使用了 -o 选项。此值必须非负，默认使用大于等于 UID_MIN，且大于任何其他用户 ID
+           最小值。
+           请参考 -r 选项和 UID_MAX 的描述。
+
+       -U, --user-group
+           创建一个和用户同名的组，并将用户添加到组中。
+           如果没有指定 -g, -N 和 -U 选项，默认行为由 /etc/login.defs 中的 USERGROUPS_ENAB 变量指定。
+
+       -Z, --selinux-user SEUSER
+           用户登陆的 SELinux 用户。默认为留空，这会造成系统选择默认的 SELinux 用户。
+
+   更改默认值
+       只带 -D 选项使用时，useradd 将显示当前的默认值。-D 和其它选项配合使用时，useradd
+       将为指定的选项更新默认值。有效的“更改默认值”选项有：
+
+       -b, --base-dir BASE_DIR
+           新用户主目录的路径前缀。如果创建新账户时，没有使用 -d 选项，用户的名称将会缀在 BASE_DIR 的后边形成新用户的主目录名。
+           这个选择在 /etc/default/useradd 中设置 HOME 选项。
+
+       -e, --expiredate EXPIRE_DATE
+           禁用此用户账户的日期。
+           此选项在 /etc/default/useradd 中设置 EXPIRE 变量。
+
+       -f, --inactive INACTIVE
+           密码过期到账户被禁用之前的天数。
+
+           这个选项在 /etc/default/useradd 中设置 INACTIVE 变量。
+
+       -g, --gid GROUP
+           新用户初始组的组名或 ID (使用了 -N/--no-user-group 或者 /etc/login.defs 中的变量 USERGROUPS_ENAB 设置为 no
+           时)。给出的组必须存在，并且数字组 ID 必须有一个已经存在的项。
+
+           这个选项在 /etc/default/useradd 中设置 GROUP 变量。
+
+       -s, --shell SHELL
+           新用户的登录 shell 名。
+           这个选项在 /etc/default/useradd 设置 SHELL 变量。
+
+注意：
+       系统管理员负责将默认的用户文件放在 /etc/skel/ 目录中(或者命令行上、/etc/default/useradd 中指定的任何其它目录)。
+
+CAVEATS
+       您可能不能想 NIS 组或 LDAP 组添加用户。这只能在相应服务器上进行。
+       相似地，如果用户名已经存在于外部用户数据库中，比如 NIS 或 LDAP，useradd 将拒绝创建用户账户的请求。
+
+       It is usually recommended to only use usernames that begin with a lower case letter or an underscore, followed by lower
+       case letters, digits, underscores, or dashes. They can end with a dollar sign. In regular expression terms:
+       [a-z_][a-z0-9_-]*[$]?
+
+       On Debian, the only constraints are that usernames must neither start with a dash ('-') nor plus ('+') nor tilde ('~') nor
+       contain a colon (':'), a comma (','), or a whitespace (space: ' ', end of line: '\n', tabulation: '\t', etc.). Note that
+       using a slash ('/') may break the default algorithm for the definition of the user's home directory.
+
+       用户名不能超过 32 个字符长。
+
+配置文件
+       在 /etc/login.defs 中有如下配置变量，可以用来更改此工具的行为：
+       CREATE_HOME (boolean)
+           指示是否应该为新用户默认创建主目录。
+
+           此设置并不应用到系统用户，并且可以使用命令行覆盖。
+
+       GID_MAX (number), GID_MIN (number)
+           useradd，groupadd 或 newusers 创建的常规组的组 ID 的范围。
+
+           GID_MIN 和 GID_MAX 的默认值分别是 1000 和 60000。
+
+       MAIL_DIR (string)
+           邮箱目录。修改或删除用户账户时需要处理邮箱，如果没有指定，将使用编译时指定的默认值。
+
+       MAIL_FILE (string)
+           定义用户邮箱文件的位置(相对于主目录)。
+
+       MAIL_DIR and MAIL_FILE 变量由 useradd，usermod 和 userdel 用于创建、移动或删除用户邮箱。
+
+       MAX_MEMBERS_PER_GROUP (number)
+           每个组条目的最大成员数。达到最大值时，在 /etc/group 开始一个新条目(行)(使用同样的名称，同样的密码，同样的 GID)。
+           默认值是 0，意味着组中的成员数没有限制。
+           此功能(分割组)允许限制组文件中的行长度。这对于确保 NIS 组的行比长于 1024 字符。
+           如果要强制这个限制，可以使用 25。
+
+           注意：分割组可能不受所有工具的支持(甚至在 Shadow 工具集中)。您不应该使用这个变量，除非真的需要。
+
+       PASS_MAX_DAYS (number)
+           一个密码可以使用的最大天数。如果密码比这旧，将会强迫更改密码。如果不指定，就假定为 -1，这会禁用这个限制。
+
+       PASS_MIN_DAYS (number)
+           两次更改密码时间的最小间隔。将会拒绝任何早于此的更改密码的尝试。如果不指定，假定为 -1，将会禁用这个限制。
+
+       PASS_WARN_AGE (number)
+           密码过期之前给出警告的天数。0 表示只有只在过期的当天警告，负值表示不警告。如果没有指定，不会给警告。
+
+       SUB_GID_MIN (number), SUB_GID_MAX (number), SUB_GID_COUNT (number)
+           If /etc/subuid exists, the commands useradd and newusers (unless the user already have subordinate group IDs) allocate
+           SUB_GID_COUNT unused group IDs from the range SUB_GID_MIN to SUB_GID_MAX for each new user.
+
+           The default values for SUB_GID_MIN, SUB_GID_MAX, SUB_GID_COUNT are respectively 100000, 600100000 and 10000.
+
+       SUB_UID_MIN (number), SUB_UID_MAX (number), SUB_UID_COUNT (number)
+           If /etc/subuid exists, the commands useradd and newusers (unless the user already have subordinate user IDs) allocate
+           SUB_UID_COUNT unused user IDs from the range SUB_UID_MIN to SUB_UID_MAX for each new user.
+
+           The default values for SUB_UID_MIN, SUB_UID_MAX, SUB_UID_COUNT are respectively 100000, 600100000 and 10000.
+
+       SYS_GID_MAX (number), SYS_GID_MIN (number)
+           useradd、groupadd 或 newusers 创建的系统组的组 ID 的范围。
+
+           SYS_GID_MIN 和 SYS_GID_MAX 的默认值分别是 101 和 GID_MIN-1。
+
+       SYS_UID_MAX (number), SYS_UID_MIN (number)
+           useradd 或 newusers 创建的系统用户的用户 ID 的范围。
+
+           SYS_UID_MIN 和 SYS_UID_MAX 的默认值分别是 101 和 UID_MIN-1。
+
+       UID_MAX (number), UID_MIN (number)
+           useradd 或 newusers 创建的普通用户的用户 ID 的范围。
+
+           UID_MIN 和 UID_MAX 的默认值分别是 1000 和 60000。
+
+       UMASK (number)
+           文件模式创建掩码初始化为此值。如果没有指定，掩码初始化为 022。
+           useradd 和 newusers 使用此掩码设置它们创建的用户主目录的模式。
+           也被 pam_umask 用作默认 umask 值。
+
+       USERGROUPS_ENAB (boolean)
+           如果设置为 yes，如果组中没有成员了，userdel 将移除此用户组，useradd 创建用户时，也会创建一个同名的默认组。
+
+文件
+       /etc/passwd
+           用户账户信息。
+
+       /etc/shadow
+           安全用户账户信息。
+
+       /etc/group
+           组账户信息。
+
+       /etc/gshadow
+           安全组账户信息。
+
+       /etc/default/useradd
+           账户创建的默认值。
+
+       /etc/skel/
+           包含默认文件的目录。
+
+       /etc/subgid
+           Per user subordinate group IDs.
+
+       /etc/subuid
+           Per user subordinate user IDs.
+
+       /etc/login.defs
+           Shadow 密码套件配置。
+
+** X-Windows
+*** xclip
+1 xclip
+xclip命令建立了终端和剪切板之间通道，可以用命令的方式将终端输出或文件的内容保存到剪切板中，也可以将剪切板的内容输出到终端或文件
+不加选项时只在保存在X PRIMARY（应该是终端剪切板），加上选项 -selection c后保存在 X CLIPBOARD（应该是外部程序剪切板）。
+安装 sudo apt-get xclip
+
+2 终端输出保存到剪切板中
+ls -al | xclip
+此时ls -al的输出内容已经保存在剪切板中了，此时xclip -o可以看到剪切板的内容。
+但此时还不可以粘贴到终端以外的程序中，此时需要用到： xclip -selection c
+ls -al | xclip -selection c
+
+3 文件内容复制到剪切板中
+xclip /etc/apt/sources.list
+xclip -selection c /etc/apt/sources.list
+
+4 剪切板内容输出到终端
+xclip -o
+xclip -selection c -o
+
+5 剪切板内容输出到文件
+
+xclip -o > ~/test.txt
+xclip -selection c -o > ~/test.txt
+***  xset 设置X-Window系统中的用户爱好的实用工具
+   xlsfonts 列出X Server使用的字体
+   xhost 制哪些X客户端能够在X服务器上显示
+   xlsatoms 列出X服务器内部所有定义的原子成分
+   xauth 显示和编辑被用于连接X服务器的认证信息
+   xlsclients 列出显示器中的客户端应用程序
+   xinit 是Linux下X-Window系统的初始化程序
+   startx 用来启动X Window
+   SELinux
+   restorecon 恢复文件的安全上下文
+   semanage 默认目录的安全上下文查询与修改
+   setsebool 修改SElinux策略内各项规则的布尔值
+   getsebool 查询SElinux策略内各项规则的布尔值
+   sesearch 查询SELinux策略的规则详情
+   seinfo 查询SELinux的策略提供多少相关规则
+   chcon 修改对象（文件）的安全上下文
 ** 文件系统管理
    repquota 报表的格式输出磁盘空间限制的状态
    e2label 设置第二扩展文件系统的卷标
@@ -125,7 +452,6 @@ SELinux
    sudo mount -t smbfs -o username=user,password='' //10.0.1.1/windowsshare /mnt 浏览windows 共享文件夹
 *** mke2fs 创建磁盘分区上的“etc2/etc3”文系统
 ** 系统关机和重启
-**** halt 关闭正在运行的Linux操作系统
 **** reboot 重新启动正在运行的Linux操作系统
 **** shutdown 用来执行系统关机的命令
      shutdown [-cfFhknr (参数名称)] [-t 秒数] [时间][警告信息] 
@@ -263,8 +589,9 @@ SELinux
     vdfuse VirtualBox软件挂载VDI分区文件工具
     ngrep 方便的数据包匹配和显示工具
     tempfile shell中给临时文件命名
-    xargs 给其他命令传递参数的一个过滤器
-    awk 文本和数据进行处理的编程语言
+**** xargs 给其他命令传递参数的一个过滤器
+     find  . -type f -print | xargs grep "xx"
+**** awk 文本和数据进行处理的编程语言
     yes 重复打印指定字符串
     date 显示或设置系统时间与日期
     eog 显示图片
@@ -539,759 +866,6 @@ SELinux
 **** eject 用来退出抽取式设备
 **** lprm 删除打印队列中的打印任务
 **** lpr 将文件发送给指定打印机进行打印
-** 文件目录管理
-*** 文件查找和比较
-    strings 在对象文件或二进制文件中查找可打印的字符串
-    diff 比较给定的两个文件的不同
-    cmp 比较两个文件是否有差异
-    diff3 比较3个文件不同的地方
-    locate/slocate 查找文件或目录
-    -n 至多显示n 个输出
-    -r 使用正则做寻找条件
-    -d 指定资料库的路径
-    which 查找并显示给定命令的绝对路径
-**** find 在指定目录下查找文件
-     find pathname -options [-print -exec -ok ...]
-     : -exec： find命令对匹配的文件执行该参数所给出的shell命令。相应命令的形式为'command' {  } \;，注意{   }和\；之间的空格。
-     : -ok：和-exec的作用相同，只不过以一种更为安全的模式来执行该参数所给出的shell命令，在执行每一个命令之前，都会给出提示，让用户来确定是否执行。
-
-     : -name   按照文件名查找文件。
-     : -perm   按照文件权限来查找文件。
-     : -prune  使用这一选项可以使find命令不在当前指定的目录中查找，如果同时使用-depth选项，那么-prune将被find命令忽略。
-     : -user   按照文件属主来查找文件。
-     : -group  按照文件所属的组来查找文件。
-     : -mtime -n +n  按照文件的更改时间来查找文件， - n表示文件更改时间距
-     : 现在n天以内，+ n表示文件更改时间距现在n天以前。find命令还有-atime和-ctime 选项，但它们都和-m time选项。
-     : -nogroup  查找无有效所属组的文件，即该文件所属的组在/etc/groups中不存在。
-     : -nouser   查找无有效属主的文件，即该文件的属主在/etc/passwd中不存在。
-     : -newer file1 ! file2  查找更改时间比文件file1新但比文件file2旧的文件。
-     : -iname 忽略大小写
-     : -type  查找某一类型的文件，诸如：
-     + b - 块设备文件。
-     + d - 目录。
-     + c - 字符设备文件。
-     + p - 管道文件。
-     + l - 符号链接文件。
-     + f - 普通文件。
-     + -size n：[c] 查找文件长度为n块的文件，带有c时表示文件长度以字节计。
-     + -depth：在查找文件时，首先查找当前目录中的文件，然后再在其子目录中查找。
-     + -fstype：查找位于某一类型文件系统中的文件，这些文件系统类型通常可以在配置文件/etc/fstab中找到，该配置文件中包含了本系统中有关文件系统的信息。
-     + -mount：在查找文件时不跨越文件系统mount点。
-     + -follow：如果find命令遇到符号链接文件，就跟踪至链接所指向的文件。
-     + -cpio：对匹配的文件使用cpio命令，将这些文件备份到磁带设备中。
-
-     另外,下面三个的区别:
-     : -amin n   查找系统中最后N分钟访问的文件  -n n天以内;+n n天之前
-     : -atime n  查找系统中最后n*24小时访问的文件
-     : -cmin n   查找系统中最后N分钟被改变文件状态的文件
-     : -ctime n  查找系统中最后n*24小时被改变文件状态的文件
-     : -mmin n   查找系统中最后N分钟被改变文件数据的文件
-     : -mtime n  查找系统中最后n*24小时被改变文件数据的文件
-     : find  ./    -mtime    -1    -type f    -ok   ls -l    {} \;  
-     : find .    -perm -007    -exec ls -l {} \;  
-     : ! 否定参数
-     whereis 查找二进制程序、代码等相关文件路径
-**** hexdump 显示文件十六进制格式
-     -c 每单元以字节为单位，显示出对应的ASCII码
-     -C 每单元以字节为单位，同时显示十六机制和ASCII码
-**** od 输出文件的八进制、十六进制等格式编码的字节
-**** cut 连接文件并打印到标准输出设备上
-     cut -cnum1-num2 filename  显示每行从开头算起 num1 到num2 的文字
-**** tail 在屏幕上显示指定文件的末尾若干行
-**** head 在屏幕上显示指定文件的开头若干行
-     -c  xx xx字节
-     -n 行
-**** less 分屏上下翻页浏览文件内容
-**** more 显示文件内容，每次显示一屏
-     more +20 filename 从第20行开始显示
-*** 文件处理
-**** iconv 转换文件的编码方式
-**** nl 在Linux系统中计算文件内容行号
-**** basename 打印目录或者文件的基本名称
-**** unlink 系统调用函数unlink去删除指定的文件
-**** pathchk 检查文件中不可移植的部分
-**** touch 创建新的空文件
-**** rename 用字符串替换的方式批量改变文件名
-**** dd 复制文件并对原文件的内容进行转换和格式化处理
-     : `if=FILE'     Read from FILE instead of standard input.
-     : `of=FILE'     Write to FILE instead of standard output.  Unless `conv=notrunc' is given, `dd' truncates FILE to zero bytes (or the size specified with `seek=').
-     : ibs=BYTES 指定每次输入多少字节,默认512
-     : obs=BYTES 输出
-     : skip=N   跳过 ibs指定字节的N块东西,如果iflag=skip_bytes,则跳过N 字节,就跟ibs指定多少无关了
-     : seek=N 跳过obs指定字节的N块东西,如果oflag=seek_bytes,则跳过N 字节,就跟obs指定多少无关了
-     : count=N 复制 N 块 ibs指定的东西,如果iflag=skip_bytes,则...
-     : `conv=CONVERSION[,CONVERSION]...'转换
-     ascii / ebcdic/ibm/block/lcase/notrunc/fsync
-     : iflag=FLAG[,FLAG]...
-     append/cio/direct/sync/binary/text/skip_bytes/seek_bytes
-  
-**** dirname 去除文件名中的非目录部分
-**** updatedb 创建或更新locate命令所必需的数据库文件
-     一般只会对系统目录创建索引
-**** ln 用来为文件创件连接
-     ln [OPTION]... [-T] TARGET LINK_NAME   (1st form)
-     默认 ln -s Exist_target new_name
-     ln [OPTION]... TARGET                  (2nd form)
-     ln [OPTION]... TARGET... DIRECTORY  
-**** cat 连接文件并打印到标准输出设备上
-     cat - file1 file2   把标准输入 文件1 文件2 连接
-     -n --number 输出行号
-     -b --number-nonblank 行不编号
-*** 文件编辑
-**** nano 字符终端文本编辑器
-**** sed 功能强大的流式文本编辑器
-     sed [options] 'command' file(s)
-     sed [options] -f scriptfile file(s)
-     -e<script>或--expression=<script>：以选项中的指定的script来处理输入的文本文件；
-     -f<script文件>或--file=<script文件>：以选项中指定的script文件来处理输入的文本文件；
-***** sed命令
-      a\ 在当前行下面插入文本。
-      i\ 在当前行上面插入文本。
-      c\ 把选定的行改为新的文本。
-      d 删除，删除选择的行。
-      D 删除模板块的第一行。
-      s 替换指定字符 sed 's/aa/bb/' file 注意/ 符,用来分界
-      h 拷贝模板块的内容到内存中的缓冲区。
-      H 追加模板块的内容到内存中的缓冲区。
-      g 获得内存缓冲区的内容，并替代当前模板块中的文本。
-      G 获得内存缓冲区的内容，并追加到当前模板块文本的后面。
-      l 列表不能打印字符的清单。
-      n 读取下一个输入行，用下一个命令处理新的行而不是用第一个命令。
-      N 追加下一个输入行到模板块后面并在二者间嵌入一个新行，改变当前行号码。
-      p 打印模板块的行。(显示两遍)
-      P(大写) 打印模板块的第一行。
-      q 退出Sed。
-      b lable 分支到脚本中带有标记的地方，如果分支不存在则分支到脚本的末尾。
-      r file 从file中读行。
-      t label if分支，从最后一行开始，条件一旦满足或者T，t命令，将导致分支到带有标号的命令处，或者到脚本的末尾。
-      T label 错误分支，从最后一行开始，一旦发生错误或者T，t命令，将导致分支到带有标号的命令处，或者到脚本的末尾。
-      w file 写并追加模板块到file末尾。  
-      W file 写并追加模板块的第一行到file末尾。  
-      ! 表示后面的命令对所有没有被选定的行发生作用。  
-      = 打印当前行号码。  
-      # 把注释扩展到下一个换行符以前。  
-
-      sed替换标记
-      g 表示行内全面替换。  
-      p 表示打印行。  
-      w 表示把行写入一个文件。  
-      x 表示互换模板块中的文本和缓冲区中的文本。  
-      y 表示把一个字符翻译为另外的字符（但是不用于正则表达式）
-      \1 子串匹配标记
-      & 已匹配字符串标记
-
-      sed元字符集
-      ^ 匹配行开始，如：/^sed/匹配所有以sed开头的行。
-      $ 匹配行结束，如：/sed$/匹配所有以sed结尾的行。
-      . 匹配一个非换行符的任意字符，如：/s.d/匹配s后接一个任意字符，最后是d。
-      [* 匹配0个或多个字符，如：/*sed/匹配所有模板是一个或多个空格后紧跟sed的行。
-      [] 匹配一个指定范围内的字符，如/[ss]ed/匹配sed和Sed。  
-      [^] 匹配一个不在指定范围内的字符，如：/[^A-RT-Z]ed/匹配不包含A-R和T-Z的一个字母开头，紧跟ed的行。
-      \(..\) 匹配子串，保存匹配的字符，如s/\(love\)able/\1rs，loveable被替换成lovers。
-      & 保存搜索字符用来替换其他字符，如s/love/**&**/，love这成**love**。
-      \< 匹配单词的开始，如:/\<love/匹配包含以love开头的单词的行。
-      \> 匹配单词的结束，如/love\>/匹配包含以love结尾的单词的行。
-      x\{m\} 重复字符x，m次，如：/0\{5\}/匹配包含5个0的行。
-      x\{m,\} 重复字符x，至少m次，如：/0\{5,\}/匹配至少有5个0的行。
-      x\{m,n\} 重复字符x，至少m次，不多于n次，如：/0\{5,10\}/匹配5~10个0的行。 
-
-***** sed用法实例
-      替换操作：s命令
-
-      替换文本中的字符串：
-      sed 's/book/books/' file
-
-      -n选项和p命令一起使用表示只打印那些发生替换的行：
-      sed -n 's/test/TEST/p' file
-
-      直接编辑文件选项-i，会匹配file文件中每一行的第一个book替换
-      为books：
-      sed -i 's/book/books/g' file
-
-      全面替换标记g
-      使用后缀 /g 标记会替换每一行中的所有匹配：
-
-      sed 's/book/books/g' file
-      当需要从第N处匹配开始替换时，可以使用 /Ng：
-
-      echo sksksksksksk | sed 's/sk/SK/2g'
-      skSKSKSKSKSK
-
-      定界符
-      以上命令中字符 / 在sed中作为定界符使用，也可以使用任意的定
-      界符：
-      sed 's:test:TEXT:g'
-      sed 's|test|TEXT|g'
-
-      定界符出现在样式内部时，需要进行转义：
-      sed 's/\/bin/\/usr\/local\/bin/g'
-
-      删除操作：d命令
-      删除空白行：
-      sed '/^$/d' file
-
-      删除文件的第2行：
-      sed '2d' file
-
-      删除文件的第2行到末尾所有行：
-      sed '2,$d' file
-
-      删除文件最后一行：
-
-      sed '$d' file
-
-      删除文件中所有开头是test的行：
-
-      sed '/^test/'d file
-
-      已匹配字符串标记&
-
-      正则表达式 \w\+ 匹配每一个单词，使用 [&] 替换它，& 对应于之
-      前所匹配到的单词：
-
-      echo this is a test line | sed 's/\w\+/[&]/g'
-      [this] [is] [a] [test] [line]
-
-      所有以192.168.0.1开头的行都会被替换成它自已加localhost：
-
-      sed 's/^192.168.0.1/&localhost/' file
-      192.168.0.1localhost
-
-      子串匹配标记\1
-
-      匹配给定样式的其中一部分：
-
-      echo this is digit 7 in a number | sed 's/digit \([0-9]\)/\1/'
-      this is 7 in a number
-
-      命令中 digit 7，被替换成了 7。样式匹配到的子串是 7，\(..\)
-      用于匹配子串，对于匹配到的第一个子串就标记为 \1，依此类推匹
-      配到的第二个结果就是 \2，例如：
-
-      echo aaa BBB | sed 's/\([a-z]\+\) \([A-Z]\+\)/\2 \1/'
-      BBB aaa
-
-      love被标记为1，所有loveable会被替换成lovers，并打印出来：
-
-      sed -n 's/\(love\)able/\1rs/p' file
-
-      组合多个表达式
-
-      sed '表达式' | sed '表达式'
-
-      等价于：
-
-      sed '表达式; 表达式'
-
-      引用
-
-      sed表达式可以使用单引号来引用，但是如果表达式内部包含变量字
-      符串，就需要使用双引号。
-
-      test=hello
-      echo hello WORLD | sed "s/$test/HELLO"
-      HELLO WORLD
-
-      选定行的范围：,（逗号）
-
-      所有在模板test和check所确定的范围内的行都被打印：
-
-      sed -n '/test/,/check/p' file
-
-      打印从第5行开始到第一个包含以test开始的行之间的所有行：
-
-      sed -n '5,/^test/p' file
-
-      对于模板test和west之间的行，每行的末尾用字符串aaa bbb替换：
-
-      sed '/test/,/west/s/$/aaa bbb/' file
-
-      多点编辑：e命令
-
-      -e选项允许在同一行里执行多条命令：
-
-      sed -e '1,5d' -e 's/test/check/' file
-
-      上面sed表达式的第一条命令删除1至5行，第二条命令用check替换
-      test。命令的执行顺序对结果有影响。如果两个命令都是替换命令
-      ，那么第一个替换命令将影响第二个替换命令的结果。
-
-      和 -e 等价的命令是 --expression：
-
-      sed --expression='s/test/check/' --expression='/love/d' file
-
-      从文件读入：r命令
-
-      file里的内容被读进来，显示在与test匹配的行后面，如果匹配多
-      行，则file的内容将显示在所有匹配行的下面：
-
-      sed '/test/r file' filename
-
-      写入文件：w命令  
-
-      在example中所有包含test的行都被写入file里：
-
-      sed -n '/test/w file' example
-
-      追加（行下）：a\命令
-
-      将 this is a test line 追加到以test 开头的行后面：
-
-      sed '/^test/a\this is a test line' file
-
-      在 test.conf 文件第2行之后插入 this is a test line：
-
-      sed -i '2a\this is a test line' test.conf
-
-      插入（行上）：i\命令
-
-      将 this is a test line 追加到以test开头的行前面：
-
-      sed '/^test/i\this is a test line' file
-
-      在test.conf文件第5行之前插入this is a test line：
-
-      sed -i '5i\this is a test line' test.conf
-
-      下一个：n命令
-
-      如果test被匹配，则移动到匹配行的下一行，替换这一行的aa，变
-      为bb，并打印该行，然后继续：
-
-      sed '/test/{ n; s/aa/bb/; }' file
-
-      变形：y命令
-
-      把1~10行内所有abcde转变为大写，注意，正则表达式元字符不能使
-      用这个命令：
-
-      sed '1,10y/abcde/ABCDE/' file
-
-      退出：q命令
-
-      打印完第10行后，退出sed
-
-      sed '10q' file
-
-      保持和获取：h命令和G命令
-
-      在sed处理文件的时候，每一行都被保存在一个叫模式空间的临时缓
-      冲区中，除非行被删除或者输出被取消，否则所有被处理的行都将
-      打印在屏幕上。接着模式空间被清空，并存入新的一行等待处理。
-
-      sed -e '/test/h' -e '$G' file
-
-      在这个例子里，匹配test的行被找到后，将存入模式空间，h命令将
-      其复制并存入一个称为保持缓存区的特殊缓冲区内。第二条语句的
-      意思是，当到达最后一行后，G命令取出保持缓冲区的行，然后把它
-      放回模式空间中，且追加到现在已经存在于模式空间中的行的末尾
-      。在这个例子中就是追加到最后一行。简单来说，任何包含test的
-      行都被复制并追加到该文件的末尾。
-
-      保持和互换：h命令和x命令
-
-      互换模式空间和保持缓冲区的内容。也就是把包含test与check的行
-      互换：
-
-      sed -e '/test/h' -e '/check/x' file
-
-      脚本scriptfile
-
-      sed脚本是一个sed的命令清单，启动Sed时以-f选项引导脚本文件名
-      。Sed对于脚本中输入的命令非常挑剔，在命令的末尾不能有任何空
-      白或文本，如果在一行中有多个命令，要用分号分隔。以#开头的行
-      为注释行，且不能跨行。
-
-      sed [options] -f scriptfile file(s)
-
-      打印奇数行或偶数行
-
-      方法1：
-
-      sed -n 'p;n' test.txt  #奇数行
-      sed -n 'n;p' test.txt  #偶数行
-
-      方法2：
-
-      sed -n '1~2p' test.txt  #奇数行
-      sed -n '2~2p' test.txt  #偶数行
-
-      打印匹配字符串的下一行
-
-      grep -A 1 SCC URFILE
-      sed -n '/SCC/{n;p}' URFILE
-      awk '/SCC/{getline; print}' URFILE
-**** pico 功能强大全屏幕的文本编辑器
-**** jed 主要用于编辑代码的编辑器
-**** joe 强大的纯文本编辑器
-**** ed 单行纯文本编辑器
-**** ex 启动vim编辑器的ex编辑模式
-**** vi 功能强大的纯文本编辑器
-*** 目录基本操作
-**** rmdir -p 子目录若空,一并删除
-**** mkdir 
-**** rm -i 删除前询问 -r 递归 -f 强制
-**** pwd 绝对路径方式显示用户当前工作目录
-**** ls -r 反序输出 -t 时间排序 -R 输出目录下文件
-**** mv 
-**** cp -a 尽可能将档案状态权限等资料都照原状予以复制。 
-     -r     若source中含有目录名则将目录下之档案亦皆依序拷贝至目的地。 
-     -f     若目的地已经有相同档名的档案存在则在复制前先予以删除再行复制。 
-**** cd 切换用户当前工作目录
-*** 文件权限属性设置
-**** dos2unix 
-     dos2unix dosfile
-**** umask 用来设置限制新建文件权限的掩码
-**** lsattr 查看文件的第二扩展文件系统属性
-**** chmod 用来变更文件或目录的权限
-     chmod [-cfvR] [--help] [--version] mode file... 
-     :[ugoa...][[+-=][rwxX]...][,...], u 
-     -c:若该档案权限确实已经更改才显示其更改动作 
-     -f:若该档案权限无法被更改也不要显示错误讯息 
-     -v:显示权限变更的详细资料 
-     -R:对目前目录下的所有档案与子目录进行相同的权限变更 即以递回的方式逐个变更) 
-     chmod -R user:group filename
-     chmod o-r example
-**** chown 用来变更文件或目录的拥有者或所属群组
-**** chgrp 用来变更文件或目录的所属群组
-     chgrp USER GROUP 
-**** chattr 用来改变文件属性
-**** stat 用于显示文件的状态信息
-**** file 用来探测给定文件的类型。
-**** split 分割任意大小的文件
-     -b,--bytes=SIZE b k m 
-     -l,--lines=NUMBER 每一输出文件的行数
-     split filename backname
-**** grep 强大的文本搜索工具
-     -C 5 foo file  显示file文件中匹配foo字串那行以及上下5行
-     -B 5 foo file  显示foo及前5行
-     -A 5 foo file  显示foo及后5行
-     －c：只输出匹配行的计数。
-     －I：不区分大 小写(只适用于单字符)。
-     －h：查询多文件时不显示文件名。
-     －l：查询多文件时只输出包含匹配字符的文件名。
-     －n：显示匹配行及 行号。
-     －s：不显示不存在或无匹配文本的错误信息。
-     －v：显示不包含匹配文本的所有行。
-     pattern正则表达式主要参数：
-     \： 忽略正则表达式中特殊字符的原有含义。
-     ^：匹配正则表达式的开始行。
-     $: 匹配正则表达式的结束行。
-     \<：从匹配正则表达 式的行开始。
-     \>：到匹配正则表达式的行结束。
-     [ ]：单个字符，如[A]即A符合要求 。
-     [ - ]：范围，如[A-Z]，即A、B、C一直到Z都符合要求 。
-     .：所有的单个字符。
-     $ grep ‘test’ d*
-     显示所有以d开头的文件中包含 test的行。
-     $ grep ‘test’ aa bb cc
-     显示在aa，bb，cc文件中匹配test的行。
-     $ grep ‘[a-z]\{5\}’ aa
-     显示所有包含每个字符串至少有5个连续小写字符的字符串的行。
-     $ grep ‘w\(es\)t.*\1′ aa
-     如果west被匹配，则es就被存储到内存中，并标记为1，然后搜索任意个字符(.*)，这些字符后面紧跟着 另外一个es(\1)，找到就显示该行。如果用egrep或grep -E，就不用”\”号进行转义，直接写成’w(es)t.*\1′就可以了。
-
-     grep命令使用复杂实例
-     假设您正在’/usr/src/Linux/Doc’目录下搜索带字符 串’magic’的文件：
-     $ grep magic /usr/src/Linux/Doc/*
-     sysrq.txt:* How do I enable the magic SysRQ key?
-     sysrq.txt:* How do I use the magic SysRQ key?
-     其中文件’sysrp.txt’包含该字符串，讨论的是 SysRQ 的功能。
-     默认情况下，’grep’只搜索当前目录。如果 此目录下有许多子目录，’grep’会以如下形式列出：
-     grep: sound: Is a directory
-     这可能会使’grep’ 的输出难于阅读。这里有两种解决的办法：
-     明确要求搜索子目录：grep -r
-     或忽略子目录：grep -d skip
-     如果有很多 输出时，您可以通过管道将其转到’less’上阅读：
-     $ grep magic /usr/src/Linux/Documentation/* | less
-     这样，您就可以更方便地阅读。
-
-     下面还有一些有意思的命令行参数：
-     grep -i pattern files ：不区分大小写地搜索。默认情况区分大小写，
-     grep -l pattern files ：只列出匹配的文件名，
-     grep -L pattern files ：列出不匹配的文件名，
-     grep -w pattern files ：只匹配整个单词，而不是字符串的一部分(如匹配’magic’，而不是’magical’)，
-     grep -C number pattern files ：匹配的上下文分别显示[number]行，
-     grep pattern1 | pattern2 files ：显示匹配 pattern1 或 pattern2 的行，
-     grep pattern1 files | grep pattern2 ：显示既匹配 pattern1 又匹配 pattern2 的行。
-     grep -n pattern files  即可显示行号信息
-     grep -c pattern files  即可查找总行数
-**** comm 两个文件之间的比较
-**** printf 格式化并输出结果
-**** expand 将文件的制表符转换为空白字符
-**** spell 对文件进行拼写检查
-**** pr 将文本文件转换成适合打印的格式
-**** look 显示文件中以指定字符串开头的任意行
-**** tac 将文件已行为单位的反序输出
-**** wc 统计文件的字节数、字数、行数
-**** fmt 读取文件后优化处理并输出
-**** rev 将文件内容以字符为单位反序输出
-**** diffstat 显示diff命令输出信息的柱状图
-**** ispell 检查文件中出现的拼写错误
-
-**** uniq 报告或忽略文件中的重复行
-**** tee 把数据重定向到给定文件和屏幕上
-
-**** paste 将多个文件按列队列合并
-**** sort 将文件进行排序并输出
-**** unexpand 将文件的空白字符转换为制表符
-**** csplit 将一个大文件分割成小的碎片文件
-**** fold 控制文件内容输出时所占用的屏幕宽度
-**** join 两个文件中指定栏位内容相同的行连接起来
-**** col 过滤控制字符
-**** tr 将字符进行替换压缩和删除
-     tr [option] source-char-list replace-char-list
-     -d 删除不在集合的内容
-     -s 压缩重复字符
-     -c 使用补集,一般 -d 删除不在补集的内容
-**** colrm 删除文件中的指定列
-*** 文件压缩与解压
-**** lha 压缩或解压缩lzh格式文件
-**** bzcmp 比较两个压缩包中的文件
-**** bzcat 解压缩指定的.bz2文件
-**** unarj 解压缩由arj命令创建的压缩包
-**** zcat 显示压缩包中文件的内容
-**** znew 将.Z压缩包重新转化为gzip命令压缩的.gz压缩包
-**** zipsplit 将较大的zip压缩包分割成各个较小的压缩包
-**** arj 用于创建和管理.arj压缩包
-**** gzexe 用来压缩可执行文件
-**** bzgrep 使用正则表达式搜索.bz2压缩包中文件
-**** compress 使用Lempress-Ziv编码压缩数据文件
-**** zfore 强制为gzip格式的压缩文件添加.gz后缀
-**** bzless 增强.bz2压缩包查看器
-**** bzmore 查看bzip2压缩过的文本文件的内容
-**** zipinfo 用来列出压缩文件信息
-**** unzip 用于解压缩由zip命令压缩的压缩包
-     unzip -O cp936
-     unzip [-Z] [-cflptTuvz[abjnoqsCDKLMUVWX$/:^]] file[.zip] [file(s) ...]  [-x xfile(s) ...] [-d exdir]
-
-     To extract all members of letters.zip into the current directory only:
-     unzip -j letters
-
-     To test letters.zip, printing only a summary message indicating whether the archive is OK or not:
-     unzip -tq letters
-
-     To test all zipfiles in the current directory, printing only the summaries:
-     unzip -tq \*.zip
-
-     (The backslash before the asterisk is only required if the shell expands wildcards, as in Unix; double  quotes  could  have
-     been  used instead, as in the source examples below.)  To extract to standard output all members of letters.zip whose names
-     end in .tex, auto-converting to the local end-of-line convention and piping the output into more(1):
-     unzip -ca letters \*.tex | more
-
-     To extract the binary file paper1.dvi to standard output and pipe it to a printing program:
-     unzip -p articles paper1.dvi | dvips
-
-     To extract all FORTRAN and C source files--*.f, *.c, *.h, and Makefile--into the /tmp directory:
-     unzip source.zip "*.[fch]" Makefile -d /tmp
-
-     (the double quotes are necessary only in Unix and only if globbing is turned on).  To extract  all  FORTRAN  and  C  source
-     files, regardless of case (e.g., both *.c and *.C, and any makefile, Makefile, MAKEFILE or similar):
-     unzip -C source.zip "*.[fch]" makefile -d /tmp
-
-     To extract any such files but convert any uppercase MS-DOS or VMS names to lowercase and convert the line-endings of all of
-     the files to the local standard (without respect to any files that might be marked ``binary''):
-     unzip -aaCL source.zip "*.[fch]" makefile -d /tmp
-
-     To extract only newer versions of the files already in the current directory, without querying (NOTE:  be careful of unzip‐
-     ping  in  one  timezone  a zipfile created in another--ZIP archives other than those created by Zip 2.1 or later contain no
-     timezone information, and a ``newer'' file from an eastern timezone may, in fact, be older):
-     unzip -fo sources
-
-     To extract newer versions of the files already in the current directory and to create any files  not  already  there  (same
-     caveat as previous example):
-     unzip -uo sources
-
-     To display a diagnostic screen showing which unzip and zipinfo options are stored in environment variables, whether decryp‐
-     tion support was compiled in, the compiler with which unzip was compiled, etc.:
-     unzip -v
-
-     In the last five examples, assume that UNZIP or UNZIP_OPTS is set to -q.  To do a singly quiet listing:
-     unzip -l file.zip
-
-     To do a doubly quiet listing:
-     unzip -ql file.zip
-
-     (Note that the ``.zip'' is generally not necessary.)  To do a standard listing:
-     unzip --ql file.zip
-     or
-     unzip -l-q file.zip
-     or
-     unzip -l--q file.zip
-     (Extra minuses in options don't hurt.)
-**** bzip2recover 恢复被破坏的.bz2压缩包中的文件
-**** tar Linux下的归档使用工具，用来打包和备份。
-**** bunzip2 创一个bz2文件压缩包
-**** gunzip 用来解压缩文件
-**** bzdiff 直接比较两个.bz2压缩包中文件的不同
-**** zip 可以用来解压缩文件
-**** bzip2 将文件压缩成bz2格式
-**** gzip 用来压缩文件
-**** uncompress 用来解压.Z文件
-*** 文件备份和恢复
-**** cpio 用来建立、还原备份档的工具程序
-**** restore 所进行的操作和dump指令相反
-**** dump 用于备份ext2或者ext3文件系统
-*** 文件传输
-**** ftp 用来设置文件系统相关功能
-**** tftp 在本机和tftp服务器之间使用TFTP协议传输文件
-**** scp 加密的方式在本地主机和远程主机之间复制文件
-**** ncftp 是增强的的FTP工具
-**** rcp 使在两台Linux主机之间的文件复制操作更简单
-
-** 硬件 | 监测 | 内核 | Shell
-*** Shell内建命令
-    trap 指定在接收到信号后将要采取的动作
-    let 简单的计算器
-    seq 以指定增量从首数开始打印数字到尾数 sequential sequence
-    tput 通过terminfo数据库对终端会话进行初始化和操作
-    apropos 在 whatis 数据库中查找字符串
-    set 显示或设置shell特性及shell变量
-    command 调用并执行指定的命令
-    dris 显示和清空目录堆栈中的内容
-    fc 修改历史命令并执行
-    bind 显示或设置键盘按键与其相关的功能
-    readonly 定义只读shell变量或函数
-    read 从键盘读取变量值
-    bg 用于将作业放到后台运行
-    ulimit 控制shell程序的资源
-    enable 启动或关闭shell内建命令
-    declare 声明或显示shell变量
-    wait 等待进程执行完后返回
-    builtin 执行shell内部命令
-    shopt 显示和设置shell操作选项
-    exit 退出当前的shell
-    jobs 显示Linux中的任务列表及任务状态
-    history 用于显示历史命令
-    logout 退出当前登录的Shell
-    export 设置或显示系统环境变量
-    exec 调用并执行指定的命令
-    env 显示系统中已存在的环境变量
-    unset 删除指定的shell变量或函数
-    kill 删除执行中的程序或工作
-    unalias 删除由alias设置的别名
-    type 显示指定命令的类型
-    fg 将后台作业放到前台终端运行
-    alias 用来设置指令的别名
-**** echo 输出指定的字符串或者变量
-     -e 识别转义
-     -n 不输出新行
-     [*] 输出目录
-*** 性能监测与优化
-    inotifywait 异步文件系统监控机制
-    nethogs 终端下的网络流量监控工具
-    ifstat 统计网络接口流量状态
-    dstat 通用的系统资源统计工具
-    ltrace 用来跟踪进程调用库函数的情况
-    iotop 用来监视磁盘I/O使用状况的工具
-    strace 跟踪系统调用和信号
-    fuser 使用文件或文件结构识别进程
-    lsof 显示Linux系统当前已打开的所有文件列表
-    tload 显示系统负载状况
-    time 统计给定命令所花费的总时间
-    vmstat 显示虚拟内存状态
-    sar 系统运行状态统计工具
-    mpstat 显示各个可用CPU的状态
-    iostat 监视系统输入输出设备和CPU的使用情况
-    free 显示内存的使用情况
-    uptime 查看Linux系统负载信息
-    top 显示或管理执行中的程序
-*** 硬件管理
-    losetup 设定与控制循环（loop）设备
-    dmidecode 在Linux系统下获取有关硬件方面的信息
-    hwclock 显示与设定硬件时钟
-    cdrecord Linux系统下光盘刻录功能命令
-    setpci 查询和配置PCI设备的使用工具
-    lspci 显示当前主机的所有PCI总线信息
-    lsusb 显示本机的USB设备列表信息
-    arch 显示当前主机的硬件架构类型
-    volname 显示指定的ISO-9660格式的设备的卷名称
-    systool 显示基于总线、类和拓扑显示系统中设备的信息
-*** 内核与模块管理
-    lsb_release 显示发行版本信息
-    sysctl 时动态地修改内核的运行参数
-    slabtop 实时显示内核slab内存缓存信息
-    kernelversion 打印当前内核的主版本号
-    get_module 获取Linux内核模块的详细信息
-    kexec 从当前正在运行的内核引导到一个新内核
-    dmesg 显示Linux系统启动信息
-    uname 显示Linux系统信息
-    depmod 分析可载入模块的相依性
-    bmodinfo 显示给定模块的详细信息
-    modprobe 自动处理可载入模块
-    触摸板和小红点
-    关闭:sudo modprobe -r psmouse
-    开启:sudo modprobe  psmouse
-    只关闭触摸板: synclient touchpadoff=1
-    开启:synclient touchpadoff=0
-    rmmod 从运行的内核中移除指定的内核模块
-    insmod 将给定的模块加载到内核中
-    lsmod 显示已载入系统的模块
-*** 磁盘管理
-**** blkid 查看块设备的文件系统类型、LABEL、UUID等信息
-**** du 显示每个文件和目录的磁盘使用空间
-     -Bk -Bm (多少K,兆)
-     lsblk 列出块设备信息
-     vgremove 用于用户删除LVM卷组
-     lvresize 调整逻辑卷空间大小
-     lvremove 删除指定LVM逻辑卷
-     lvreduce 收缩逻辑卷空间
-     pvs 输出物理卷信息报表
-     pvchange 修改物理卷属性
-     pvck 检测物理卷的LVM元数据的一致性
-     pvremove 删除一个存在的物理卷
-     lvextend 扩展逻辑卷空间
-     pvdisplay 显示物理卷的属性
-     lvdisplay 显示逻辑卷属性
-     pvscan 扫描系统中所有硬盘的物理卷列表
-     lvscan 扫描逻辑卷
-     lvcreate 用于创建LVM的逻辑卷
-     pvcreate 将物理硬盘分区初始化为物理卷
-     vgconvert 转换卷组元数据格式
-     blockdev 从命令行调用区块设备控制程序
-     mkswap 建立和设置SWAP交换分区
-     vgchange 修改卷组属性
-     mknod 创建字符设备文件和块设备文件
-     mkisofs 建立ISO 9660映像文件
-     mkinitrd 建立要载入ramdisk的映像文件
-     vgreduce 从卷组中删除物理卷
-     hdparm 显示与设定硬盘的参数
-     vgextend 向卷组中添加物理卷
-     partprobe 不重启的情况下重读分区
-     vgscan 扫描并显示系统中的卷组
-     vgcreate 用于创建LVM卷组
-     fdisk 查看磁盘使用情况和磁盘分区
-     -l 查看磁盘
-     badblocks 查找磁盘中损坏的区块
-     vgdisplay 显示LVM卷组的信息
-     mkbootdisk 可建立目前系统的启动盘
-     grub 多重引导程序grub的命令行shell工具
-     查看分区信息 cat (hd0,6)/etc/fstab
-     指定/boot所在分区 root (hd[0=n],y)
-     指定Linux内核 kernel /boot/vmlinux-XX ro root=/dev/hdaX
-     指定initrd文件 initrd /boot/initrdXX.img
-     引导系统 boot
-     menu.lst
-     default=0   #默认启动哪个系统,从0开始,title 开头的是第0个系统
-     timeout=5
-     title Ubuntu
-     root (hd0,6)
-     splashimage=(hd0,6)/boot/grub/splash.xpm.gz #grub的背景画面,注释加 '#' /nosplash 没背景
-     hiddenmenu # 隐藏grub菜单
-     kernel XX
-     initrd XX
-     ---------
-     title WinXP #第 1 个系统
-     convertquota 把老的配额文件转换为新的格式
-     lilo 安装核心载入开机管理程序
-**** df 显示磁盘的相关信息
-     -ia i节点使用情况
-     parted 磁盘分区和分区大小调整工具
-     软件不能运行，如果缺少库
-     #example
-     ldd firefox
-     可以
-     sudo ln -s /usr/lib/libpng.so.15 /usr/lib/libpng.so.14
 * arch linux
 ** install
 *** pre-installation
@@ -1381,7 +955,7 @@ SELinux
     # umount -R /mnt
     # reboot
 *** Post-installation
-* 正则 
+* 正则   
   foo ——————字符串“foo”  
   ^foo ——————以“foo”开头的字符串  
   foo$ ——————以“foo”结尾的字符串  
@@ -1870,7 +1444,7 @@ SELinux
   读一下err.txt就可以知道是哪个库出问题了.相信我,这是不需要任何编程知识的,外加google就可以了.
   13. 系统启动失败
   可以用linux 启动光盘启动，然后chroot,其作用是以指定目录作为操作系统根目录，然后就可以用工具升级或降级kernel了。
-* Vi/Vim查找替换使用方法
+* Vi/Vim查找替换使用方法    
   vi/vim 中可以使用 ：s 命令来替换字符串。该命令有很多种不同细节使用方法，
   可以实现复杂的功能，记录几种在此，方便以后查询。 
   　　：s/abc/sky/ 替换当前行第一个 vivian 为 sky 
@@ -1910,7 +1484,7 @@ SELinux
   　　：g/str1/s//str2/g 功能同上 
   　　从上述替换命令可以看到：g 放在命令末尾，表示对搜索字符串的每次出现进行替换；不加 g，表示只对搜索 
   　　字符串的首次出现进行替换；g 放在命令开头，表示对正文中所有包含搜索字符串的行进行替换操作
-* samba
+* samba    
   #1.全局部分参数设置：
   [global]
   #与主机名相关的设置
@@ -2153,7 +1727,7 @@ SELinux
   通用方法
   拔网线(断网) -> 插网线(重新连接网络)
   如不行请清空浏览器缓存（老D建议不要使用国产浏览器，请使用谷歌Chrome浏览器）
-* sed
+* sed   
   二.定址
   定址用于决定对哪些行进行编辑。地址的形式可以是数字、正则表达式、或二者的结合。如果没有指定地址，sed将处理输入文件的所有行。
   地址是一个数字，则表示行号；是“$"符号，则表示最后一行。例如： 
@@ -2319,7 +1893,6 @@ SELinux
   sed '8,80{n;n;n;d}' filename
   n表示读取文本流中的下一行到模式空间(N为追加)，sed还是只处理一行。上面的命令理解：从第8行起（包含），一次读取9/10/11行，然后读取11行后，执行d命令，就是删除处理空间中的第11行，之后从12行开始，读取13/14/15, 删除15行，以此类推，直到第80行。
 * eclipse
-说起Java的IDE，朗朗上口的无非是Eclipse了，假若能熟练Eclipse，对于我们编写java程序会起到事半功倍的效果，大大提高我们工作效率。因此本篇博文，笔者只是针对刚刚入门java的新手，以便他们能尽快掌握Eclipse的使用。
 1. 常用快捷键
 这是使用工具的第一步，熟练使用快捷键对于我们编写程序会起到相当大帮助，所以这里笔者列出的快捷键建议大家必须都掌握。
 Ctrl + 鼠标左键（类、方法、属性的变量名词）：定位跟踪某变量声明或定义的位置
@@ -2346,18 +1919,22 @@ Alt + Shift + X, J：如果有main方法入口，则以Run方式执行代码
  
  
 2. 插件推荐
-Eclipse默认情况下是一个纯净版的，所以功能简单，而开源IDE最为强大的莫过于各种插件，通过使用插件可以帮助我们减少大量编写代码的工作量，也帮助我们降低了编写代码的难度，所以懂得安装必要插件，也是熟练使用IDE的鉴证。
+Eclipse默认情况下是一个纯净版的，所以功能简单，而开源IDE最为强大的莫过于各种插件，通过使用插件可以帮助我们减少大量编写代码的工作量，
+也帮助我们降低了编写代码的难度，所以懂得安装必要插件，也是熟练使用IDE的鉴证。
 ① hibernate Tools
-Hibernate Tools是一套全新而且完整的面向Hibernate3的工具集合，它包含了Eclipse插件和Ant编译流程，是JBoss Tools的核心组件。使用该插件能大大减少我们使用Hibernate的工作量，支持自动生成全部Hibernate的xml文件、javabean、HTML表单文件等。
+Hibernate Tools是一套全新而且完整的面向Hibernate3的工具集合，它包含了Eclipse插件和Ant编译流程，是JBoss Tools的核心组件。使用该插件能大大减少我们
+使用Hibernate的工作量，支持自动生成全部Hibernate的xml文件、javabean、HTML表单文件等。
 安装地址：http://download.jboss.org/jbosstools/updates/development/indigo/
 ② spring IDE
-Spring IDE是Spring官方网站推荐的Eclipse插件，可提供在开发Spring时对Bean定义文件进行提示、验证并以可视化的方式查看各个Bean之间的依赖关系等，对基于spring框架的项目开发提供了有力的支持。
+Spring IDE是Spring官方网站推荐的Eclipse插件，可提供在开发Spring时对Bean定义文件进行提示、验证并以可视化的方式查看各个Bean之间
+的依赖关系等，对基于spring框架的项目开发提供了有力的支持。
 安装地址：http://dist.springsource.com/release/TOOLS/update/e3.6/
 ③ Subclipse
 Subclipse是基于Eclipse的SVN插件，支持所有版本的Eclipse，团队开发必备插件。
 安装地址：http://subclipse.tigris.org/update_1.8.x
 ④ Findbugs
-FindBugs是一个能静态分析源代码中可能会出现Bug的Eclipse插件工具。它检查类或者 JAR 文件，将字节码与一组缺陷模式进行对比以发现可能的问题。利用这个工具，就可以在不实际运行程序的情况对软件进行分析。它可以帮助改进代码的质量。
+FindBugs是一个能静态分析源代码中可能会出现Bug的Eclipse插件工具。它检查类或者 JAR 文件，将字节码与一组缺陷模式进行对比以发现可能的问题。
+利用这个工具，就可以在不实际运行程序的情况对软件进行分析。它可以帮助改进代码的质量。
 安装地址：http://findbugs.cs.umd.edu/eclipse/
 ⑤ Sysdeo Tomcat Launcher Plugin
 Sysdeo Tomcat Launcher Plugin是Tomcat的Eclipse插件，帮助我们自动部署tomcat服务器。该插件不是必要插件，可以不装。
@@ -2365,23 +1942,35 @@ Sysdeo Tomcat Launcher Plugin是Tomcat的Eclipse插件，帮助我们自动部�
  
 插件安装方法
 插件大概有三种安装方法：
-第一种：知道在线安装地址。Eclipse→Help→Install New Software...→地址栏（Work with）中输入安装地址→勾选要安装的插件→Next→同意安装协议→Finish→等待安装完毕→按要求重启Eclipse
-第二种：手动从官网下载好插件并手动与Eclipse集成。这种方法一般的思路是：先关闭Eclipse，然后将下载好的插件解压后，复制到Eclipse安装目录下的plugins文件夹和features文件夹下，如果必要的话再创建一个link文件，再重新打开Eclipse。
+第一种：知道在线安装地址。Eclipse→Help→Install New Software...→地址栏（Work with）中输入安装地址→
+勾选要安装的插件→Next→同意安装协议→Finish→等待安装完毕→按要求重启Eclipse
+第二种：手动从官网下载好插件并手动与Eclipse集成。这种方法一般的思路是：先关闭Eclipse，然后将下载好的插件解压后，复制到Eclipse安装目
+录下的plugins文件夹和features文件夹下，如果必要的话再创建一个link文件，再重新打开Eclipse。
 第三种：在线搜索安装。Eclipse→Help→Eclipse Marketplace...→在搜索栏输入要查找的插件→点击Install按钮→等待安装完毕→按要求重启Eclipse
 这里笔者推荐第一种，如果不知道安装地址，那么就用第三种，第二种方法有时操作错误的话就会出现问题，风险较大，所以不推荐。
  
- 
 3. tomcat
 ① 配置
-Window→Preferences→Server→Runtime Environment→Add→Apache→选择tomcat版本→Next→更改显示名称（Name）→Browse...浏览选择事先解压好的tomcat文件夹→选择jre→Finish→OK→打开Servers窗体→右击选择New→Server→选择tomcat版本→选择刚配置好的tomcat→Next→选择项目→Finish
+Window→Preferences→Server→Runtime Environment→Add→Apache→选择tomcat版本→Next→更改显示名称（Name）
+→Browse...浏览选择事先解压好的tomcat文件夹→选择jre→Finish→OK→打开Servers窗体→右击选择New→Server→选择tomcat版本→
+选择刚配置好的tomcat→Next→选择项目→Finish
 ② 使用心得
-当我们修改某处代码后，启动tomcat发现页面没有变化时，要先关掉tomcat，右击Servers窗口中tomcat服务器图标，选择Clean...来清理下编译后的源码，再启动tomcat来重新编译下源码。
-而且如果部署多个，或tomcat异常时，右击Servers窗口中tomcat服务器图标，选择Properties，检查General选项右侧Location是否正确，如果不正确则点击Switch Location。
+当我们修改某处代码后，启动tomcat发现页面没有变化时，要先关掉tomcat，右击Servers窗口中tomcat服务器图标，选择Clean...
+来清理下编译后的源码，再启动tomcat来重新编译下源码。
+而且如果部署多个，或tomcat异常时，右击Servers窗口中tomcat服务器图标，选择Properties，检查General选项右侧Location是否正确，
+如果不正确则点击Switch Location。
 虽然一个tomcat支持同时启动多个项目，但项目多启动时会很慢，所以如果不是工程项目需要的话，建议tomcat只部署启动一个项目，将暂时无用的项目移除。
-当web项目启动加载时间过长导致tomcat启动失败的话，可适当延长tomcat启动超时的时间（默认45秒），双击Servers窗口中tomcat服务器打开tomcat属性窗口，点击右上方Timeouts选项，修改Start(in seconds)的时间。
-eclipse默认情况下是调用tomcat接口模拟启动tomcat，而不是真正启动tomcat，所以大家经常会遇到一件怪事：启动tomcat后，虽然能正常进web项目首页，却仅不了tomcat小猫首页（即http://localhost:8080/），并且web项目部署编译后生成的文件也不在tomcat文件目录下的work目录下。解决办法：如果tomcat服务器下已经部署了项目，就先要将其全部移除，即右击Servers窗口中tomcat服务器图标，选择Add and Remove...，单击Remove All按钮，单击Finish按钮。之后先Clean清理下，再双击tomcat服务器图标打开属性窗口，选择左侧中间Server Locations选项，选择下方第二个单选按钮（Use Tomcat installation），并将Deploy path文本框中的“wtpwebapps”（默认值）改为webapps，也就是tomcat中发布项目所在的文件夹名字，最好再将项目重新部署到tomcat上，启动tomcat后，就可以看到熟悉的小猫页面了，同时在tomcat文件目录下的work文件夹下也能看见熟悉的编译后的页面文件了。
-如果代码出现引入javax.servlet.http.*报错，说明是缺少tomcat的jar包，引入即可。方法：在左侧资源管理器右击项目，选择Build Path下的Configure Build Path...，右侧点击Add Library...按钮，选择Server Runtime，点击Next后选择tomcat，Finish。
- 
+当web项目启动加载时间过长导致tomcat启动失败的话，可适当延长tomcat启动超时的时间（默认45秒），双击Servers窗口中tomcat
+服务器打开tomcat属性窗口，点击右上方Timeouts选项，修改Start(in seconds)的时间。
+eclipse默认情况下是调用tomcat接口模拟启动tomcat，而不是真正启动tomcat，所以大家经常会遇到一件怪事：启动tomcat后，虽然能正常进web项目首页，
+却仅不了tomcat小猫首页（即http://localhost:8080/），并且web项目部署编译后生成的文件也不在tomcat文件目录下的work目录下。
+解决办法：如果tomcat服务器下已经部署了项目，就先要将其全部移除，即右击Servers窗口中tomcat服务器图标，选择Add and Remove...，
+单击Remove All按钮，单击Finish按钮。之后先Clean清理下，再双击tomcat服务器图标打开属性窗口，选择左侧中间Server Locations选项，
+选择下方第二个单选按钮（Use Tomcat installation），并将Deploy path文本框中的“wtpwebapps”（默认值）改为webapps，也就是tomcat中发布
+项目所在的文件夹名字，最好再将项目重新部署到tomcat上，启动tomcat后，就可以看到熟悉的小猫页面了，同时在tomcat文件目录下的work文件夹下也能
+看见熟悉的编译后的页面文件了。
+如果代码出现引入javax.servlet.http.*报错，说明是缺少tomcat的jar包，引入即可。方法：在左侧资源管理器右击项目，选择Build Path下的
+Configure Build Path...，右侧点击Add Library...按钮，选择Server Runtime，点击Next后选择tomcat，Finish。
  
 4. eclipse常见配置
 ● 字体大小
@@ -2432,8 +2021,7 @@ java.lang.RuntimeException: error:  out: An error has occurred.  See the log fil
 	at foxtrot.workers.SingleWorkerThread.run(SingleWorkerThread.java:182)
 	at java.lang.Thread.run(Thread.java:748)
 * debian os
-软件包管理
-apt-get apt-cache apt-cdrom
+  apt-get apt-cache apt-cdrom
     apt-cache showsrc <package> 查看软件信息
     apt-get source <package> 获取源码
     install /remove /update (更新列表)/upgrade(升级可用)/help
@@ -5159,13 +4747,6 @@ apt-get apt-cache apt-cdrom
   # apt-get install debian-policy developers-reference \
   maint-guide dh-make debhelper
   # apt-get install packaging-manual # if Potato
-  有关打包的参考资源:
-  ·   Ubuntu 软件包管理系统, 第 2.2 节 (basics)
-  ·   Debian New Maintainers' Guide (tutorial)
-  ·   dh-make(1)
-  ·   Debian Developer's Reference (best practice)
-  ·   Debian Policy Manual (authoritative)
-  ·   Packaging Manual (Potato)
   13.10.1 单个二进制文件打包
   Joey Hess 的快速和粗糙的打包法:生成一个单独的二进制包
   # mkdir -p mypkg/usr/bin mypkg/DEBIAN
@@ -5257,30 +4838,7 @@ apt-get apt-cache apt-cdrom
   14.4.2 在 Vim 中使用 GnuPG
   将 examples subdirectory 下的 _vimrc 文件的内容加入到 ~/.vimrc 就可以运行 GnuPG
   了。
-  第 15 章 - Ubuntu 技术支持
-  下列资源提供了与 Ubuntu 相关的帮助、建议和支持。在邮件列表里大呼救命之前,务必先
-  好好使用这些资源自助。:)
-  注意,系统中存在大量的文档,可使用 WWW 浏览器访问,或通过 dwww 或 dhelp 命令在相
-  关的目录中找到它们。
-  15.1 参考资料
-  下列资源适用于 Ubuntu 和通用 Linux。如果它们的内容出现相互冲突,应该相信首要的
-  (primary)来源而不是如本文档这样的次要来源(secondary)。
-  · 安装手册(首要的)
-  o   在安装和升级前阅读。
-  o   网站: http://www.debian.org/releases/stable/installmanual
-  o   网站: http://www.debian.org/releases/testing/installmanual(写作
-  中,有时不可用)
-  o   软件包: Not available in install-doc: Bug#155374
-  o   文件: Debian CD under /doc/
-  · 发布笔记(首要的)
-  o   安装和升级前必读文档,即使你已是经验丰富。
-  o   网站: http://www.debian.org/releases/stable/releasenotes
-  o   网站: http://www.debian.org/releases/testing/releasenotes(写作中,
-· Debian 策略手册 (首要的)
-  o   Debian 的基本技术架构
-  o   网站: http://www.debian.org/doc/debian-policy/
-  o   软件包: debian-policy
-  o   文件: /usr/share/doc/debian-policy/
+ o   文件: /usr/share/doc/debian-policy/
   · Debian 开发者参考手册 (首要的)
   o   开发者需了解的基础知识
   o   我们中的一部分人也需要读一遍
@@ -5302,122 +4860,10 @@ apt-get apt-cache apt-cdrom
   o   info package-name
   · 具体每个软件包的文档 (首要的)
   o   /usr/share/doc/package-name 下可找到它们
-  · LDP: Linux 文档计划 (次要的)
-  o   通用 Linux HOWTOs 和 mini-HOWTOs
-  o   网站: http://www.tldp.org/
-  o   软件包: doc-linux-text
-  o   文件: /usr/share/doc/HOWTO/
-  · Linux 公报 (次要的) -- 每月一期新的内容
-  o   Linux 公报
-  o   网站: http://www.linuxgazette.com/
-  o   软件包: lg-all or lg-latest-two
-  o   文件: /usr/share/doc/lg/
-  · DDP: Debian 文档计划 (次要的)
-  o   Debian 特有的手册
-  o   网站: http://www.debian.org/doc/
-  · Debian 开发者之角 (次要的)
-  o   Debian 开发者的重要信息
-  o   一般使用者可以用来增长见识
-  o   网站: http://www.debian.org/devel/
   · 源代码(绝对是首要的)
   o   没人会对此表示反对:-)
   o   按照 源代码, 第 2.1.15 节 的方法下载源代码
-  · Internet Assigned Numbers Authority (首要的)
-  o   网站: http://www.iana.org/
-  o   软件包: doc-iana
-  o   文件: /usr/share/doc/doc-iana/
-  · Internet requests for comments (IETF 标准) (首要的)
-  o   网站: http://www.ietf.org/rfc.html
-  o   软件包: doc-rfc
-  o   文件: /usr/share/doc/RFC/
-  下列是 Unix 通用的参考资源。注意各种 Unix 系统之间存在着稍许不同。设备名称和初始
-  化方式需要格外注意。
-  · The UNIX Programming Environment
-  o   阅读本书了解 UNIX 如何运行。
-  o   作者: B. W. Kernighan and R. Pike,
-  o   由 Princeton Hall Software Series 发行
-  · The C Programming Language(第二版)
-  o   阅读本书学习 ANSI C。
-  o   作者:B. W. Kernighan and D. M. Ritchie
-  o   由 Princeton Hall Software Series 发行
-  · UNIX Power Tools
-  o   阅读本书学习 Unix 使用技巧。
-  o   作者: Jerry Peek, Tim O'Reilly and Mike Loukides
-  o   由 O'Reilly and Associates 发行
-  · Essential System Administration(第二版)
-  o   阅读本书学习如何对各种风格的 Unix 进行系统管理。
-  o   作者: Aeleen Frisch
-  o   由 O'Reilly and Associates 发行
-  · Linux: Rute User's Tutorial and Exposition
-  o   一本很好的管理 GNU/Linux 系统的精装版在线书籍
-  o   作者:Paul Sheer
-  o   由 Prentice Hall 出版
-  o   软件包:rutebook (from non-free)
-  o   文件:/usr/share/doc/rutebook/
-  · Bell Labs: Computing Sciences Research
-  o   有关 Unix 历史的翔实文献
-  o   主要文献:http://cm.bell-labs.com/cm/cs/
-  o   技术报告精选: http://cm.bell-labs.com/cm/cs/cstr.html
-  o   一些论文: http://cm.bell-labs.com/cm/cs/papers.html
-  203
-  Linux公社 www.linuxidc.com
-  · Linux 在线通用技术支持资料
-  o   Debian Planet
-  o   debianHELP
-  o   Linux.com
-  o   The Linux Home Page at Linux Online
-  o   Red Hat (commercial Linux vender) (RPM, Sys-V init)
-  o   SuSE, Inc. (commercial Linux vender) (RPM, Sys-V init)
-  o   Slackware (TGZ, BSD-style init)
-  · Unix 在线通用向导及资料
-  o   The UNIX System by The Open Group
-  o   A UNIX Introductory Course from Ohio State University
-  o   UNIXhelp from The University of Edinburgh
-  o   Unix / Programming Information
-  o   comp.unix.questions FAQ
-  o   comp.unix.user-friendly FAQ
-  o   FreeBSD Documentation
-  o   The FreeBSD Handbook
-  o   UNIX GUIDE
-  o   The Unix Heritage Society
-  · 自由软件项目主页
-  o   GNU 计划
-  o   Linux 文档计划
-  o   Linux 内核归档
-  o   XFree86 项目,公司
-  o   GNOME
-  o   K 桌面环境
-  o   Red Hat 公司的 GNU 软件
-  o   Mozilla
-  o   FreeBSD
-  o   OpenBSD
-  o   NetBSD
-  15.2 查词意
-  Debian 中使用了大量术语和缩写,下面的命令将会解决大部分问题(要求安装 dict 软件
-  包和其它相关软件包)
-  $ dict put-a-weird-word-here
-  15.3 查找流行的 Debian 软件包
-  Debian 中有许多软件包,有时很难决定该装哪一个。参阅 Debian 软件包流行度调查结果
-  可了解别人都在用什么软件。亦可安装 popularity-contest 软件包参加投票。
-  15.4 Debian bug 跟踪系统
-  204
-  Linux公社 www.linuxidc.com
-  Debian 发行版有一个 bug 跟踪系统 (BTS),它将来自用户和开发人员的错误报告的详细内
-  容进行归档,每个错误都有一个编号,错误报告将一直存在于数据库中,直到获得错误已更
-  正的标记。
-  在发送错误报告之前请先检查一下别人是否以提交了相同的错误报告。BTS 的网站 或 其它
-  地方均可找到当前未更正错误列表。参阅 检测程序错误寻求帮助, 第 6.3.1 节。
-  许多严重错误的报告标记为 FTBFS。意思是“Fails To Build From Source”。
-  http://www.debian.org/Bugs/Reporting 中描述了 bug 报告方法。
-  15.5 邮件列表
-  阅读最新的“debian-devel-announce”(英文、只读、低流量)与 Debian 保持同步。
-  邮件列表“debian-user”(英文、开放、高流量)和“debian-user-language”(需向其它
-  语言的用户)中有 Debian 用户最兴趣的内容。
-  想了解这些邮件列表的详细信息以及如何订阅,参阅 http://lists.debian.org/。发问前
-  请先搜索答案并注意遵守列表有关礼仪和规则。
-  如果你不希望在回复至邮件列表时收到复本的话,你应该用 Mail-Followup-To: 作为邮件
-  的标头,这是很有效的。这是邮件列表中非官方的习惯,在
-  http://cr.yp.to/proto/replyto.html 有些说明。
+* IRC
   15.6 Internet Relay Chat (IRC)
   IRC (Internet Relay Chat) 可让你与世界各地的人进行实时聊天。在 freenode 上可找到
   与 Debian 相关的 IRC 频道。 连接它们需要一个 IRC 客户端,最流行的客户端有 XChat、
@@ -5435,41 +4881,6 @@ apt-get apt-cache apt-cdrom
   要注意的是,你所输入的任何信息,只要不是以 / 打头,就会被当作是聊天信息而发送至
   频道上。
   注意:类似 XChat 的客户端它们用于连接服务器/频道的图形用户界面会稍有不同。
-  15.7 搜索引擎
-  许多搜索引擎提供有关 Debian 的文档:
-  ·   Debian WWW 搜索站点.
-  ·   Google: 将“site:debian.org”包含于搜索字段。
-  ·   Google Groups: 新闻组搜索引擎。将“group:linux.debian.*”包含于搜索字段。
-  ·   AltaVista
-  例如,搜索字符串“cgi-perl”会得到更多有关该软件包的详细说明而非其 control 文件
-  中的简要描述。参阅 检测程序错误寻求帮助, 第 6.3.1 节 获得相关建议。
-  15.8 网站
-  下列是我收集的一些特别专题讨论的零散网页地址。
-  ·   IBM developerWorks: Linux
-  ·   Adrian Bunk's packages to run kernel 2.4.x on potato
-  ·   Linux on Laptops
-  ·   Xterm FAQ
-  ·   EXT3 File System mini-HOWTO
-  ·   Large File Support in Linux
-  ·   Window Managers for X
-  ·   Linux USB Project
-  ·   SuSE pages for CJK
-  ·   LNX-BBC (Business-card-sized boot CD project)
-  ·   Linux info by Karsten Self (partitioning, backup, browsers...)
-  ·   Backup info HOWTO by Alvin Oga
-  ·   Security info HOWTO by Alvin Oga
-  ·   Various UNOFFICIAL sources for APT
-  ·   Laptop Ethernet Configuration
-  附录 A - 附录
-  A.1 作者
-  Debian 参考手册由 Osamu Aoki osamu#at#debian.org 发起,最初是一部个人的系统安装
-  备忘录,而最终称之为“Quick Reference ...”。许多内容来自于“debian-user”邮件列
-  表中的存档,同时也参考了《Debian Installation Manual》和《Debian Release Notes》。
-  由 Debian Documentation Project(DDP) 的积极参与者、也是目前《The Debian FAQ》
-  的主要维护者的 Josip Rodin 提议,将本文档更名为“Debian 参考手册”并 将《 The Debian
-  FAQ》中一些类似参考形式的章节内容合并过来。后来摘录出一部分内容形成了《Debian 快
-  速参考手册》。
-  因为我不是个专家,所以不敢说对 Debian 或 Linux 了如指掌。文中有关系统安全的考虑
 * config
 ** /etc/inittab
 Example 20.1 Fedora Core 1 default /etc/inittab file
@@ -5520,3 +4931,1482 @@ pr:12345:powerokwait:/sbin/shutdown -c "Power Restored; Shutdown Cancelled"
 # Run xdm in runlevel 5
 x:5:respawn:/etc/X11/prefdm -nodaemon
  
+* 小技巧
+zip中文乱码 unzip -O cp936  或 7z 或
+#+BEGIN_SRC python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import sys
+import zipfile
+
+#print "Processing File " + sys.argv[1]
+
+file=zipfile.ZipFile(sys.argv[1],"r");
+for name in file.namelist():
+    utf8name=name.decode('gbk')
+#    print "Extracting " + utf8name
+    pathname = os.path.dirname(utf8name)
+    if not os.path.exists(pathname) and pathname!= "":
+        os.makedirs(pathname)
+    data = file.read(name)
+    if not os.path.exists(utf8name):
+        fo = open(utf8name, "w")
+        fo.write(data)
+        fo.close
+file.close()
+#+END_SRC
+purge
+清理内核 /boot文件夹
+查看当前使用的内核 uname -a
+删除掉除当前在使用的内核 sudo apt-get purge linux-image-xxx 
+* apache
+以lampp环境为例子，其他环境只是配置文件的路径不同。
+
+先要在   lampp/etc/httpd.conf （ 这个是Apache 总的配置文件)中，将虚拟路径的注释去掉。
+
+#Include etc/extra/httpd-vhosts.conf
+
+使httpd-vhosts.conf文件起作用，或者直接在httpd.conf中写配置也可以，但不建议这么做。
+
+相关的配置有：Listen  NameVirtualHost  <VirtualHost>
+
+1.  Listen  要监听的端口，多个端口，要写多个Listen；否则Apache启动的时候，不会启动相应的套接字。
+
+   比如  
+
+           Listen 80
+
+           Listen 8080
+
+2.NameVirtualHost 如果没有这个，<VirtualHost>标签就没什么作用。
+
+ （感谢okiwill的指正，这里特指基于域名访问的情况，若是基于IP访问的，以第一个指定IP的VirtualHost为准，每个IP可以单独指定）
+
+  一个NameVirtualHost 可以对用多个<VirtualHost>,每个<VirtualHost>必须有自己的NameVirtualHost（我猜的）
+
+   NameVirutalHost *:80
+
+   制定这个主机的IP和端口，如果服务器上有多个IP，就可以制定某个IP的某个端口是哪个 主机。
+
+    （新版的Apache已经去除了NameVirtualHost 这个配置，因为确实没什么用,参数在VirtualHost中都已经指明了)
+
+3  最关键的VirtualHost
+
+   重要：Apache 在接受到请求时，首先会默认第一个VirtualHost，然后再找匹配的，如果没有匹配的，就是第一个VirtualHost起作用。
+
+   因此在httpd.conf中，将<Dicrectory />（这个是所有目录的默认配置)
+
+   和 <Direcotry /opt/lampp/htdocs>的权限，都是deny from all.作为默认。
+
+   所以，我的第一个VirtualHost是
+
+  <VirtualHost *:80>
+
+   ServerName *
+
+   DocumentRoot </opt/lampp/htdocs/guest>
+
+   <Directory /opt/lampp/htdocs/guest>
+
+     Order deny,allow
+
+     Allow from all
+
+   </Direcotry>
+
+  <VirtualHost/>
+
+后面的，依次添加就可以
+
+  <VirtualHost *:80>
+
+   ServerName www.myweb1.com
+
+   DocumentRoot </opt/lampp/htdocs/myweb1>
+
+   <Directory /opt/lampp/htdocs/myweb1>
+
+     Order deny,allow
+
+     Allow from all
+
+   </Direcotry>
+
+  <VirtualHost/>
+成功，只青睐行动和事实，而非口舌之快者。
+* 命令行下emacs共享剪切板
+linux下的剪切板操作命令
+找到了两种：xclip和xsel这两个命令linux不自带，需要安装。两种命令的具体使用方法不
+做介绍，总之nicek在网上找到了一个适用于linux下的配置
+
+;; http://hugoheden.wordpress.com/2009/03/08/copypaste-with-emacs-in-terminal/
+;; I prefer using the "clipboard" selection (the one the
+;; typically is used by c-c/c-v) before the primary selection
+;; (that uses mouse-select/middle-button-click)
+(setq x-select-enable-clipboard t)
+
+;; If emacs is run in a terminal, the clipboard- functions have no
+;; effect. Instead, we use of xsel, see
+;; http://www.vergenet.net/~conrad/software/xsel/ -- "a command-line
+;; program for getting and setting the contents of the X selection"
+(unless window-system
+ (when (getenv "DISPLAY")
+  ;; Callback for when user cuts
+  (defun xsel-cut-function (text &optional push)
+    ;; Insert text to temp-buffer, and "send" content to xsel stdin
+    (with-temp-buffer
+      (insert text)
+      ;; I prefer using the "clipboard" selection (the one the
+      ;; typically is used by c-c/c-v) before the primary selection
+      ;; (that uses mouse-select/middle-button-click)
+      (call-process-region (point-min) (point-max) "xsel" nil 0 nil "--clipboard" "--input")))
+  ;; Call back for when user pastes
+  (defun xsel-paste-function()
+    ;; Find out what is current selection by xsel. If it is different
+    ;; from the top of the kill-ring (car kill-ring), then return
+    ;; it. Else, nil is returned, so whatever is in the top of the
+    ;; kill-ring will be used.
+    (let ((xsel-output (shell-command-to-string "xsel --clipboard --output")))
+      (unless (string= (car kill-ring) xsel-output)
+	xsel-output )))
+  ;; Attach callbacks to hooks
+  (setq interprogram-cut-function 'xsel-cut-function)
+  (setq interprogram-paste-function 'xsel-paste-function)
+  ;; Idea from
+  ;; http://shreevatsa.wordpress.com/2006/10/22/emacs-copypaste-and-x/
+  ;; http://www.mail-archive.com/help-gnu-emacs@gnu.org/msg03577.html
+ ))
+
+* linux下导入、导出mysql数据库命令
+
+一、导出数据库用mysqldump命令（注意mysql的安装路径，即此命令的路径）：
+1、导出数据和表结构：
+mysqldump -u用户名 -p密码 数据库名 > 数据库名.sql
+#/usr/local/mysql/bin/   mysqldump -uroot -p abc > abc.sql
+敲回车后会提示输入密码
+
+2、只导出表结构
+mysqldump -u用户名 -p密码 -d 数据库名 > 数据库名.sql
+#/usr/local/mysql/bin/   mysqldump -uroot -p -d abc > abc.sql
+
+注：/usr/local/mysql/bin/  --->  mysql的data目录
+
+
+二、导入数据库
+1、首先建空数据库
+mysql>create database abc;
+
+2、导入数据库
+方法一：
+（1）选择数据库
+mysql>use abc;
+（2）设置数据库编码
+mysql>set names utf8;
+（3）导入数据（注意sql文件的路径）
+mysql>source /home/abc/abc.sql;
+方法二：
+mysql -u用户名 -p密码 数据库名 < 数据库名.sql
+#mysql -uabc_f -p abc < abc.sql
+
+建议使用第二种方法导入。
+
+注意：有命令行模式，有sql命令
+
+* 25个必须记住的SSH命令，你用过了吗？
+  OpenSSH是SSH连接工具的免费版本。telnet，rlogin和ftp用户可能还没意识到他们在互联网上传输的密码是未加密的，但SSH是加密的，OpenSSH加密所有通信
+（包括密码），有效消除了窃听，连接劫持和其它攻击。此外，OpenSSH提供了安全隧道功能和多种身份验证方法，支持SSH协议的所有版本。
+SSH是一个非常伟大的工具，如果你要在互联网上远程连接到服务器，那么SSH无疑是最佳的候选。下面是通过网络投票选出的25个最佳SSH命令，你必须牢记于心。
+（注：有些内容较长的命令，在本文中会显示为截断的状态。如果你需要阅读完整的命令，可以把整行复制到您的记事本当中阅读。）
+
+1、复制SSH密钥到目标主机，开启无密码SSH登录
+ssh-copy-id user@host
+如果还没有密钥，请使用ssh-keygen命令生成。
+2、从某主机的80端口开启到本地主机2001端口的隧道
+
+ssh -N -L2001:localhost:80 somemachine
+
+现在你可以直接在浏览器中输入http://localhost:2001访问这个网站。
+
+3、将你的麦克风输出到远程计算机的扬声器
+
+dd if=/dev/dsp | ssh -c arcfour -C username@host dd of=/dev/dsp
+
+这样来自你麦克风端口的声音将在SSH目标计算机的扬声器端口输出，但遗憾的是，声音质量很差，你会听到很多嘶嘶声。
+
+4、比较远程和本地文件
+
+ssh user@host cat /path/to/remotefile | diff /path/to/localfile –
+
+在比较本地文件和远程文件是否有差异时这个命令很管用。
+
+5、通过SSH挂载目录/文件系统
+
+sshfs name@server:/path/to/folder /path/to/mount/point
+
+从http://fuse.sourceforge.net/sshfs.html下载sshfs，它允许你跨网络安全挂载一个目录。
+
+6、通过中间主机建立SSH连接
+
+ssh -t reachable_host ssh unreachable_host
+
+Unreachable_host表示从本地网络无法直接访问的主机，但可以从reachable_host所在网络访问，这个命令通过到reachable_host的“隐藏”连接，创建起到unreachable_host的连接。
+
+7、将你的SSH公钥复制到远程主机，开启无密码登录 – 简单的方法
+
+ssh-copy-id username@hostname
+
+8、直接连接到只能通过主机B连接的主机A
+
+ssh -t hostA ssh hostB
+
+当然，你要能访问主机A才行。
+
+9、创建到目标主机的持久化连接
+
+ssh -MNf <user>@<host>
+
+在后台创建到目标主机的持久化连接，将这个命令和你~/.ssh/config中的配置结合使用：
+
+Host host
+ControlPath ~/.ssh/master-%r@%h:%p
+ControlMaster no
+
+所有到目标主机的SSH连接都将使用持久化SSH套接字，如果你使用SSH定期同步文件（使用rsync/sftp/cvs/svn），这个命令将非常有用，因为每次打开一个SSH连接时不会创建新的套接字。
+
+10、通过SSH连接屏幕
+
+ssh -t remote_host screen –r
+
+直接连接到远程屏幕会话（节省了无用的父bash进程）。
+
+11、端口检测（敲门）
+
+knock <host> 3000 4000 5000 && ssh -p <port> user@host && knock <host> 5000 4000 3000
+
+在一个端口上敲一下打开某个服务的端口（如SSH），再敲一下关闭该端口，需要先安装knockd，下面是一个配置文件示例。
+
+[options]
+logfile = /var/log/knockd.log
+[openSSH]
+sequence = 3000,4000,5000
+seq_timeout = 5
+command = /sbin/iptables -A INPUT -i eth0 -s %IP% -p tcp –dport 22 -j ACCEPT
+tcpflags = syn
+[closeSSH]
+sequence = 5000,4000,3000
+seq_timeout = 5
+command = /sbin/iptables -D INPUT -i eth0 -s %IP% -p tcp –dport 22 -j ACCEPT
+tcpflags = syn
+
+12、删除文本文件中的一行内容，有用的修复
+
+ssh-keygen -R <the_offending_host>
+
+在这种情况下，最好使用专业的工具。
+
+13、通过SSH运行复杂的远程shell命令
+
+ssh host -l user $(<cmd.txt)
+
+更具移植性的版本：
+
+ssh host -l user “`cat cmd.txt`”
+
+14、通过SSH将MySQL数据库复制到新服务器
+
+mysqldump –add-drop-table –extended-insert –force –log-error=error.log -uUSER -pPASS OLD_DB_NAME | ssh -C user@newhost “mysql -uUSER -pPASS NEW_DB_NAME”
+
+通过压缩的SSH隧道Dump一个MySQL数据库，将其作为输入传递给mysql命令，我认为这是迁移数据库到新服务器最快最好的方法。
+
+15、删除文本文件中的一行，修复“SSH主机密钥更改”的警告
+
+sed -i 8d ~/.ssh/known_hosts
+
+16、从一台没有SSH-COPY-ID命令的主机将你的SSH公钥复制到服务器
+
+cat ~/.ssh/id_rsa.pub | ssh user@machine “mkdir ~/.ssh; cat >> ~/.ssh/authorized_keys”
+
+如果你使用Mac OS X或其它没有ssh-copy-id命令的*nix变种，这个命令可以将你的公钥复制到远程主机，因此你照样可以实现无密码SSH登录。
+
+17、实时SSH网络吞吐量测试
+
+yes | pv | ssh $host “cat > /dev/null”
+
+通过SSH连接到主机，显示实时的传输速度，将所有传输数据指向/dev/null，需要先安装pv。
+
+如果是Debian：
+
+apt-get install pv
+
+如果是Fedora：
+
+yum install pv
+
+（可能需要启用额外的软件仓库）。
+
+18、如果建立一个可以重新连接的远程GNU screen
+
+ssh -t user@some.domain.com /usr/bin/screen –xRR
+
+人们总是喜欢在一个文本终端中打开许多shell，如果会话突然中断，或你按下了“Ctrl-a d”，远程主机上的shell不会受到丝毫影响，你可以重新连接，其它有用的screen命令有“Ctrl-a c”（打开新的shell）和“Ctrl-a a”（在shell之间来回切换），请访问http://aperiodic.net/screen/quick_reference阅读更多关于screen命令的快速参考。
+
+19、继续SCP大文件
+
+rsync –partial –progress –rsh=ssh $file_source $user@$host:$destination_file
+
+它可以恢复失败的rsync命令，当你通过VPN传输大文件，如备份的数据库时这个命令非常有用，需要在两边的主机上安装rsync。
+
+rsync –partial –progress –rsh=ssh $file_source $user@$host:$destination_file local -> remote
+
+或
+
+rsync –partial –progress –rsh=ssh $user@$host:$remote_file $destination_file remote -> local
+
+20、通过SSH W/ WIRESHARK分析流量
+
+ssh root@server.com ‘tshark -f “port !22″ -w -' | wireshark -k -i –
+
+使用tshark捕捉远程主机上的网络通信，通过SSH连接发送原始pcap数据，并在wireshark中显示，按下Ctrl+C将停止捕捉，但也会关闭wireshark窗口，可以传递一个“-c #”参数给tshark，让它只捕捉“#”指定的数据包类型，或通过命名管道重定向数据，而不是直接通过SSH传输给wireshark，我建议你过滤数据包，以节约带宽，tshark可以使用tcpdump替代：
+
+ssh root@example.com tcpdump -w – ‘port !22′ | wireshark -k -i –
+
+21、保持SSH会话永久打开
+
+autossh -M50000 -t server.example.com ‘screen -raAd mysession’
+
+打开一个SSH会话后，让其保持永久打开，对于使用笔记本电脑的用户，如果需要在Wi-Fi热点之间切换，可以保证切换后不会丢失连接。
+
+22、更稳定，更快，更强的SSH客户端
+
+ssh -4 -C -c blowfish-cbc
+
+强制使用IPv4，压缩数据流，使用Blowfish加密。
+
+23、使用cstream控制带宽
+
+tar -cj /backup | cstream -t 777k | ssh host ‘tar -xj -C /backup’
+
+使用bzip压缩文件夹，然后以777k bit/s速率向远程主机传输。Cstream还有更多的功能，请访问http://www.cons.org/cracauer/cstream.html#usage了解详情，例如：
+
+echo w00t, i’m 733+ | cstream -b1 -t2
+
+24、一步将SSH公钥传输到另一台机器
+
+ssh-keygen; ssh-copy-id user@host; ssh user@host
+
+这个命令组合允许你无密码SSH登录，注意，如果在本地机器的~/.ssh目录下已经有一个SSH密钥对，ssh-keygen命令生成的新密钥可能会覆盖它们，ssh-copy-id将密钥复制到远程主机，并追加到远程账号的~/.ssh/authorized_keys文件中，使用SSH连接时，如果你没有使用密钥口令，调用ssh user@host后不久就会显示远程shell。
+
+25、将标准输入（stdin）复制到你的X11缓冲区
+
+ssh user@host cat /path/to/some/file | xclip
+
+你是否使用scp将文件复制到工作用电脑上，以便复制其内容到电子邮件中？xclip可以帮到你，它可以将标准输入复制到X11缓冲区，你需要做的就是点击鼠标中键粘贴缓冲区中的内容。
+
+如果你还有其它SSH命令技巧，欢迎在本文评论中帖出。
+
+原文：http://blog.urfix.com/25-ssh-commands-tricks/
+
+【编辑推荐】
+
+    OpenSSH:大公司请不要再做“白吃”了
+    网管员日记：我所遇到最牛的sshd远程连接
+    20个OpenSSH服务器最佳安全实践
+
+【责任编辑：杨赛 TEL：（010）68476606】
+
+原文：25个必须记住的SSH命令，你用过了吗？ 返回操作系统首页
+
+分享到：
+9
+收藏|打印|复制
+
+    给力
+    (85票)
+    动心
+    (65票)
+    废话
+    (64票)
+    专业
+    (65票)
+    标题党
+    (59票)
+    路过
+    (69票)
+
+关于SSH命令的更多文章
+
+    5个容易被忽略的Unix命令
+    牢记25个最佳的SSH命令
+    SSH传输scp免密码登陆的方法
+    Linux下SSH命令使用方法详解
+    SSH技巧与安全资料汇总
+
+系统频道热点推荐：桌面系统之战，这个秋天有点“冷”
+系统频道热点推荐：桌面系统之战，这个秋天有点“冷”
+
+秋风呼呼的，一阵阵地吹着，树叶纷纷沉落，漫天飞舞着，连同飞扬[详细]
+
+栏目热门
+更多>>
+
+    用于软件包管理的21个Linux YUM命令
+    为Linux系统管理员支招：给 Linux 系统“减
+    浅谈Linux内存管理机制
+    11 很有用但鲜有人知的 Linux 命令
+    一个成功的Git分支模型
+
+同期最新
+更多>>
+
+    Zenity教程：Linux如何自动管理脚本？
+    系统管理员都应该知道的系统常识
+    Linux初学者应该养成的七个使用习惯
+    如何监控Linux文件系统事件：inotify使用指
+    Linux下清理大批量文件最佳实践
+
+操作系统
+频道导航
+
+    生产环境
+    Linux |Windows |Unix |运维教程 |Linux运维趋势
+    OS前沿
+    浏览器 |开源技术 |Windows 7 |Server 08 |移动OS
+
+热点推荐
+
+    Android开发应用详解
+    那些性感的让人尖叫的程序员
+    HTML5 下一代Web开发标准详解
+    高性能WEB开发应用指南
+    Ubuntu开源技术交流频道
+
+热门标签： windows频道移动开发云计算objective-ctp-link路由器设置图解html5
+
+    头条
+    36款顶级的开源音频/视频应用程序
+
+    修复Windows系统还原功能的12个小窍门
+    九个经受严苛评测的安全Windows免费软件下载站
+
+文章排行
+本月
+本周
+24小时
+
+    十五个常用Linux命令行总汇
+    推荐 | 基于Linux命令行的五个文件下载
+    从Linux终端管理进程：10个你必须知道
+    Git Rebase教程： 用Git Rebase让时光
+    Linux终于足够好，可以取代Windows了吗
+    df、du、fdisk：Linux磁盘管理三板斧的
+    CentOS下配置iptables防火墙
+    如何在Linux上运行Windows应用程序？
+    如何升级到Windows 10并完美解决开机闪
+    Linux删除目录的命令 
+
+热点职位
+更多>>
+
+智能监控研发工程师
+    全职/不限/不限
+    10k-20k
+    北京晓通宏志
+
+中科信软招聘ansible兼职讲师
+    兼职/3-5年/本科
+    20k-30k
+    中科信软
+
+高级运维工程师
+    全职/3-5年/本科
+    10k-20k
+    广州乐林汇
+
+运维工程师
+    全职/3-5年/本科
+    15k-30k
+    金汇金融
+
+运维工程师
+    全职/1-3年/大专
+    6k-10k
+    动视云科技
+
+热点专题
+更多>>
+
+    系统频道9月第1周热点推荐：开源技术那些事儿
+    系统频道9月第1周热点
+    开源技术的不断发展为IT人员的工作提供了便利，在开源
+    Apache基金会：十个命运不同的开源技术项目
+    Apache基金会：十个命
+    本专题总结了Apache软件基金会（简称ASF）中的十个命
+    系统频道8月第5周热点推荐：Velocity 2013 专访实录
+    系统频道8月第5周热点
+    2013年8月21日，Velocity China 2013 Web 性能与运维
+
+热点标签
+IIS服务 Windows 8 浏览器战报 Ubuntu 11.04 运维秘诀 活动目录 Linux管理员 Fedora 15 Linux运维趋势 开源社区 系统招聘
+
+    点击这里查看样刊
+
+全站热点
+
+    《Linux运维趋势》2013年9月号
+    《开发月刊》2013年10月刊发布
+
+    Bootstrap用户手册：设计响应式网站
+    黑客攻防技术宝典：iOS实战篇
+    NoSQL精粹
+    微信公众平台搭建与开发揭秘
+    系统频道8月第3周热点推荐：Windows
+
+读书
+网管员成长手记——网络组建、配置与应用
+本书主要以“网管员的成长经历”为线索展开，虚拟出一个“新手”网管员的工作和学习环境，将网管员的成长分为4个阶段，以“网管
+
+    网管员必读——网络组建
+    Visual Studio Team Systems软件工程实践
+    Fedora Core 5 Linux系统安装与管理
+    Fedora Core 5 Linux架站与网管
+
+博文推荐
+更多>>
+
+    不重新发明轮子
+    Android Service学习之本地服务
+    51CTO技术沙龙Windows运维的那些事
+    【WP7进阶】——XNA游戏平面矩形碰撞
+
+最新热帖
+更多>>
+
+    通用WAP网站生成系统(PowerDiamond)
+    八类大学毕业生求职时不受欢迎
+    IT人为什么难以拿到高薪？【转帖】
+    想去外企上班
+
+* 如何在Ubuntu下用SVN commit
+[日期：2010-05-25] 	来源：Linux社区  作者：fei2008sky 	[字体：大 中 小]
+
+一个简单的命令： sudo apt-get install subversion
+
+假设你的项目工作路径（你刚开始建立的项目工作路径，没有进行过任何svn操作）为：/home/zzm/myproject
+
+#建立一个名为 myproject 的 repository
+svnadmin create /home/zzm/svn-repo/myproject
+
+#把 /home/zzm/myproject 下的内容导入到svn的版本库中，并建立一个本项目的版本库，版本号是 1。
+svn import -m "这是大爷的项目的第一个版本，刚刚导入的" /home/zzm/myproject file:///home/zzm/svn-repo/myproject
+
+现在我想跟你说一个概念，就是svn中的working copy，实际上我们在上面一共建立了两个文件夹，一个是你的项目文件夹：/home/zzm/myproject，另一个是你的项目的版本库文件夹：/home/zzm/svn-repo/myproject，这两个文件夹都不是所谓的working copy，真正的working copy是负责直接和版本库进行同步和记录操作的，在working copy文件夹内，有一个隐藏的.svn文件夹。通常我都不是在working copy文件夹里面直接操作，www.linuxidc.com而是另一个地方编辑文件等，然后把在另一个地方改动的东西直接拷贝到working copy里面，然后执行commit命令进行版本的维护。要建立你的working copy只有使用checkout命令：
+
+#建立一个名为 my_working_copy 的 working copy
+svn checkout file:///home/zzm/svn-repo/myproject my_working_copy
+(根据你文件多少会有很多的输出，最后会告诉你当前你checkout的版本)
+
+#实际上你可以使用checkout命令获得项目的任意一个版本的全部内容，执行命令：
+svn checkout file:///home/zzm/svn-repo/myproject my_working_copy_version_number -r version_number
+(version_number即是你所要获得的项目版本的版本号，比如1，2或者3等)
+
+#如果你改变了你的working copy里面的内容，需要保存这次改变，即向版本库中添加一个版本，使用commit命令：
+svn commit -m "大爷我添加了几张图片，更新了项目的企划"
+(确保你终端当中的当前路径是你的working copy的路径，才能正确的执行本次命令)
+
+#经过几次commit之后，你可能有很多的版本在版本库里面，通过输入下面的命令可以查看各个版本的情况：
+svn log path
+(path是你想要查询的working copy的路径，如果你在这个路径下面输入的命令，可以省略path)
+
+----------------------------------
+千万注意的内容：
+你在你的working copy目录中作文件操作时，比如删除或移动文件，不能直接用终端当中的命令 rm, mv 来进行，这样 svn 不能追踪到文件的变化，当你使用commit命令提交的时候，你不会得到任何的结果，想要让svn追踪你的变化你必须使用 svn del 或是 svn move 来完成删除或移动的操作，比如：
+
+# 我拷贝了一个文件到working copy中，需要让svn知道我拷贝了一个文件：
+svn add filename
+
+# 其他的：
+svn move filename /home/zzm/my_working_copy/new_folder/aa
+svn rename filename1 filename2
+svn del filename
+
+差不多了，上面的东西已经足够个人用户使用了，楼主还有什么问题的话可以回帖询问。
+希望上面的内容对你有所帮助！
+linux
+
+* Emacs停止响应了怎么办
+Emacs停止响应,通常是因为陷入循环中了,这时你需要按下 C-g 来挑出死循环. 若 C-g 不起作用则很可能是因为你用同步的方式调用了外部程序,而该外部程序由于某些原因一直卡着没有退出. 这种情况下,你只需要杀掉这个外部进程就可以了. 在MS Windows中你可以通过任务管理器来杀掉进程. 如果我不知道要杀掉哪个外部进程怎么办? 那你恐怕只能杀掉Emacs本身了. 但是杀掉Emacs进程会不会丢失那些还未来得及保存的工作呢? 也不尽然,我们稍候再来讨论这个问题.
+
+在MS Windows上, Emacs可能会调用某些依赖外部工具(像grep,find,ftp,diff,latex之类的额)的命令,而这些外部工具若没有安装或者配置好的情况下,Emacs也可能会停止响应.
+练习
+
+下面是一段练习用的代码,执行这段代码Emacs就会停止响应了.
+
+(while t
+  (print "haha"))
+
+你可以通过按下 C-g 退出循环.
+
+下面这段代码只适用于MS Windows环境. 执行这段代码Emacs又会卡住了.
+
+(call-process "notepad")
+
+若你没有看到记事本的窗口出现的话,那么打开任务管理器找到并杀掉notepad.exe吧.
+调试
+
+若你想要调试并找到引起Emacs停止响应的原因的话,调用命令 toggle-debug-on-quit .
+
+若你想调试那些会引起Emacs停止响应且 C-g 不起作用的命令的话, 执行 M-x debug-on-entry 然后输入要调试的命令(例如call-process)即可.
+Emacs崩溃了怎么办
+
+如果Emacs经常崩溃,那肯定要么Emacs版本太旧了,要么电脑太旧了.
+
+假设你正在用Emacs写你的博士论文,你已经写了几个小时了却忘了保存文件了. 这时候Emacs突然崩溃,你要怎么才能恢复那些尚未保存的工作呢? 你只需要重新启动Emacs,然后运行 M-x recover-session 就会看到一个特殊的dired buffer. 这个buffer上有一行指示“Move to the session you want to recover, then type C-c C-c to select it.”. 然后你通过 n 或 p 移动到最近时间的那个item上再按下 C-c C-c 就行了. Emacs会访问对应的论文文件,然后从自动保存的数据中释放出那些尚未保存的修改,并将这些修改应用到访问论文文件的那个buffer中. 然后你就可以继续完成你的论文了. 但是在开始之前最好还是保存一下文件比较好.
+
+谁会用Emacs而不是文字处理器来写博士论文呢? 有些org-mode和AUCTeX的使用者会这么做. 这个视频 展示了如何用Emacs来生成一篇带代码片段的PDF文件. 这在你写论文时十分方便.
+练习
+
+用Emacs作一些修改,然后等待一段时间. 待Emacs自动保存后,在任务管理器中找到并杀掉Emacs进程,然后试试你能否恢复未保存的工作.
+* 这是我用Emacs的插件keyfreq测试六个月后得到的部份数据 (我的Leader键定义为逗号):
+  Times 	Percentage 	Command 	Key
+  4967 	12.00% 	evilmi-jump-items 	%
+  2892 	6.99% 	compile 	, o o
+  2178 	5.26% 	find-file-in-project-by-selected 	, k k
+  1953 	4.72% 	copy-to-x-clipboard 	, a a
+  1566 	3.78% 	paste-from-x-clipboard 	, z z
+1227 	2.96% 	er/expand-region 	, x x
+897 	2.17% 	evil-repeat 	.
+866 	2.09% 	ido-find-file 	, x f, C-x C-f
+819 	1.98% 	toggle-full-window 	, f f
+815 	1.97% 	etags-select-find-tag-at-point 	C-], , h t
+721 	1.74% 	back-to-previous-buffer 	, b b
+682 	1.65% 	split-window-vertically 	, x 2
+539 	1.30% 	find-function 	, h f, C-h C-f
+494 	1.19% 	counsel-recentf-goto 	, r r
+397 	0.96% 	counsel-git-grep 	, g g
+376 	0.91% 	delete-other-windows 	, x 1, C-x 1
+372 	0.90% 	evilnc-comment-or-uncomment-lines 	, c i
+351 	0.85% 	eval-expression 	, e e, M-:
+326 	0.79% 	evilmi-select-items 	, s i
+320 	0.77% 	paredit-doublequote 	 
+307 	0.74% 	evil-filepath-outer-text-object 	 
+300 	0.72% 	steve-ido-choose-from-recentf 	 
+295 	0.71% 	split-window-horizontally 	, x 3
+283 	0.68% 	git-add-current-file 	, x v a
+279 	0.67% 	winner-undo 	, x u, , s u, C-x 4 u
+278 	0.67% 	describe-function 	, h d, C-h f
+278 	0.67% 	evil-goto-mark-line 	'
+269 	0.65% 	ido-kill-buffer 	, x k, C-x k
+254 	0.61% 	evil-goto-definition 	g d
+253 	0.61% 	pop-tag-mark 	M-*
+251 	0.61% 	git-messenger:popup-message 	, x v b, C-x v p
+246 	0.59% 	my-goto-next-hunk 	, n n
+237 	0.57% 	evilnc-comment-operator 	, ,
+235 	0.57% 	flyspell-goto-next-error 	, f e, C-,
+214 	0.52% 	evil-exit-emacs-state 	 
+212 	0.51% 	browse-kill-ring-forward 	 
+210 	0.51% 	flyspell-buffer 	, f b
+
+第三, 由于Lisp的强大Leader键的使用在Emacs中有无限可能如果你使用general.el代替evil-leader,你可以以同时定义多个Leader键.可以在切换文件的时候切换Leader键等等.
+* 进程属性
+* 文件(文件能处理很多的事情） 目录/属性
+   缺省权限  umask 默认　
+   改变权限　chmod
+** 文件查找和比较
+    strings 在对象文件或二进制文件中查找可打印的字符串
+    diff 比较给定的两个文件的不同
+    cmp 比较两个文件是否有差异
+    diff3 比较3个文件不同的地方
+    locate/slocate 查找文件或目录
+    -n 至多显示n 个输出
+    -r 使用正则做寻找条件
+    -d 指定资料库的路径
+    which 查找并显示给定命令的绝对路径
+**** find 在指定目录下查找文件
+     find pathname -options [-print -exec -ok ...]
+     : -exec： find命令对匹配的文件执行该参数所给出的shell命令。相应命令的形式为'command' {  } \;，注意{   }和\；之间的空格。
+     : -ok：和-exec的作用相同，只不过以一种更为安全的模式来执行该参数所给出的shell命令，在执行每一个命令之前，都会给出提示，让用户来确定是否执行。
+     : -name   按照文件名查找文件。
+     : -perm   按照文件权限来查找文件。
+     : -prune  使用这一选项可以使find命令不在当前指定的目录中查找，如果同时使用-depth选项，那么-prune将被find命令忽略。
+     : -user   按照文件属主来查找文件。
+     : -group  按照文件所属的组来查找文件。
+     : -mtime -n +n  按照文件的更改时间来查找文件， - n表示文件更改时间距
+     : 现在n天以内，+ n表示文件更改时间距现在n天以前。find命令还有-atime和-ctime 选项，但它们都和-m time选项。
+     : -nogroup  查找无有效所属组的文件，即该文件所属的组在/etc/groups中不存在。
+     : -nouser   查找无有效属主的文件，即该文件的属主在/etc/passwd中不存在。
+     : -newer file1 ! file2  查找更改时间比文件file1新但比文件file2旧的文件。
+     : -iname 忽略大小写
+     : -type  查找某一类型的文件，诸如：
+     + b - 块设备文件。
+     + d - 目录。
+     + c - 字符设备文件。
+     + p - 管道文件。
+     + l - 符号链接文件。
+     + f - 普通文件。
+     + -size n：[c] 查找文件长度为n块的文件，带有c时表示文件长度以字节计。
+     + -depth：在查找文件时，首先查找当前目录中的文件，然后再在其子目录中查找。
+     + -fstype：查找位于某一类型文件系统中的文件，这些文件系统类型通常可以在配置文件/etc/fstab中找到，该配置文件中包含了本系统中有关文件系统的信息。
+     + -mount：在查找文件时不跨越文件系统mount点。
+     + -follow：如果find命令遇到符号链接文件，就跟踪至链接所指向的文件。
+     + -cpio：对匹配的文件使用cpio命令，将这些文件备份到磁带设备中。
+
+     另外,下面三个的区别:
+     : -amin n   查找系统中最后N分钟访问的文件  -n n天以内;+n n天之前
+     : -atime n  查找系统中最后n*24小时访问的文件
+     : -cmin n   查找系统中最后N分钟被改变文件状态的文件
+     : -ctime n  查找系统中最后n*24小时被改变文件状态的文件
+     : -mmin n   查找系统中最后N分钟被改变文件数据的文件
+     : -mtime n  查找系统中最后n*24小时被改变文件数据的文件
+     : find  ./    -mtime    -1    -type f    -ok   ls -l    {} \;  
+     : find .    -perm -007    -exec ls -l {} \;  
+     : ! 否定参数
+     whereis 查找二进制程序、代码等相关文件路径
+**** hexdump 显示文件十六进制格式
+     -c 每单元以字节为单位，显示出对应的ASCII码
+     -C 每单元以字节为单位，同时显示十六机制和ASCII码
+**** od 输出文件的八进制、十六进制等格式编码的字节
+**** cut 连接文件并打印到标准输出设备上
+     cut -cnum1-num2 filename  显示每行从开头算起 num1 到num2 的文字
+**** tail 在屏幕上显示指定文件的末尾若干行
+**** head 在屏幕上显示指定文件的开头若干行
+     -c  xx xx字节
+     -n 行
+**** less 分屏上下翻页浏览文件内容
+**** more 显示文件内容，每次显示一屏
+     more +20 filename 从第20行开始显示
+*** 文件处理
+**** iconv 转换文件的编码方式
+**** nl 在Linux系统中计算文件内容行号
+**** basename 打印目录或者文件的基本名称
+**** unlink 系统调用函数unlink去删除指定的文件
+**** pathchk 检查文件中不可移植的部分
+**** touch 创建新的空文件
+**** rename 用字符串替换的方式批量改变文件名
+**** dd 复制文件并对原文件的内容进行转换和格式化处理
+     : `if=FILE'     Read from FILE instead of standard input.
+     : `of=FILE'     Write to FILE instead of standard output.  Unless `conv=notrunc' is given, `dd' truncates FILE to zero bytes (or the size specified with `seek=').
+     : ibs=BYTES 指定每次输入多少字节,默认512
+     : obs=BYTES 输出
+     : skip=N   跳过 ibs指定字节的N块东西,如果iflag=skip_bytes,则跳过N 字节,就跟ibs指定多少无关了
+     : seek=N 跳过obs指定字节的N块东西,如果oflag=seek_bytes,则跳过N 字节,就跟obs指定多少无关了
+     : count=N 复制 N 块 ibs指定的东西,如果iflag=skip_bytes,则...
+     : `conv=CONVERSION[,CONVERSION]...'转换
+     ascii / ebcdic/ibm/block/lcase/notrunc/fsync
+     : iflag=FLAG[,FLAG]...
+     append/cio/direct/sync/binary/text/skip_bytes/seek_bytes
+  
+**** dirname 去除文件名中的非目录部分
+**** updatedb 创建或更新locate命令所必需的数据库文件
+     一般只会对系统目录创建索引
+**** ln 用来为文件创件连接
+     ln [OPTION]... [-T] TARGET LINK_NAME   (1st form)
+     默认 ln -s Exist_target new_name
+     ln [OPTION]... TARGET                  (2nd form)
+     ln [OPTION]... TARGET... DIRECTORY  
+**** cat 连接文件并打印到标准输出设备上
+     cat - file1 file2   把标准输入 文件1 文件2 连接
+     -n --number 输出行号
+     -b --number-nonblank 行不编号
+*** 文件编辑
+**** nano 字符终端文本编辑器
+**** sed 功能强大的流式文本编辑器
+     sed [options] 'command' file(s)
+     sed [options] -f scriptfile file(s)
+     -e<script>或--expression=<script>：以选项中的指定的script来处理输入的文本文件；
+     -f<script文件>或--file=<script文件>：以选项中指定的script文件来处理输入的文本文件；
+***** sed命令
+      a\ 在当前行下面插入文本。
+      i\ 在当前行上面插入文本。
+      c\ 把选定的行改为新的文本。
+      d 删除，删除选择的行。
+      D 删除模板块的第一行。
+      s 替换指定字符 sed 's/aa/bb/' file 注意/ 符,用来分界
+      h 拷贝模板块的内容到内存中的缓冲区。
+      H 追加模板块的内容到内存中的缓冲区。
+      g 获得内存缓冲区的内容，并替代当前模板块中的文本。
+      G 获得内存缓冲区的内容，并追加到当前模板块文本的后面。
+      l 列表不能打印字符的清单。
+      n 读取下一个输入行，用下一个命令处理新的行而不是用第一个命令。
+      N 追加下一个输入行到模板块后面并在二者间嵌入一个新行，改变当前行号码。
+      p 打印模板块的行。(显示两遍)
+      P(大写) 打印模板块的第一行。
+      q 退出Sed。
+      b lable 分支到脚本中带有标记的地方，如果分支不存在则分支到脚本的末尾。
+      r file 从file中读行。
+      t label if分支，从最后一行开始，条件一旦满足或者T，t命令，将导致分支到带有标号的命令处，或者到脚本的末尾。
+      T label 错误分支，从最后一行开始，一旦发生错误或者T，t命令，将导致分支到带有标号的命令处，或者到脚本的末尾。
+      w file 写并追加模板块到file末尾。  
+      W file 写并追加模板块的第一行到file末尾。  
+      ! 表示后面的命令对所有没有被选定的行发生作用。  
+      = 打印当前行号码。  
+      # 把注释扩展到下一个换行符以前。  
+
+      sed替换标记
+      g 表示行内全面替换。  
+      p 表示打印行。  
+      w 表示把行写入一个文件。  
+      x 表示互换模板块中的文本和缓冲区中的文本。  
+      y 表示把一个字符翻译为另外的字符（但是不用于正则表达式）
+      \1 子串匹配标记
+      & 已匹配字符串标记
+
+      sed元字符集
+      ^ 匹配行开始，如：/^sed/匹配所有以sed开头的行。
+      $ 匹配行结束，如：/sed$/匹配所有以sed结尾的行。
+      . 匹配一个非换行符的任意字符，如：/s.d/匹配s后接一个任意字符，最后是d。
+      [* 匹配0个或多个字符，如：/*sed/匹配所有模板是一个或多个空格后紧跟sed的行。
+      [] 匹配一个指定范围内的字符，如/[ss]ed/匹配sed和Sed。  
+      [^] 匹配一个不在指定范围内的字符，如：/[^A-RT-Z]ed/匹配不包含A-R和T-Z的一个字母开头，紧跟ed的行。
+      \(..\) 匹配子串，保存匹配的字符，如s/\(love\)able/\1rs，loveable被替换成lovers。
+      & 保存搜索字符用来替换其他字符，如s/love/**&**/，love这成**love**。
+      \< 匹配单词的开始，如:/\<love/匹配包含以love开头的单词的行。
+      \> 匹配单词的结束，如/love\>/匹配包含以love结尾的单词的行。
+      x\{m\} 重复字符x，m次，如：/0\{5\}/匹配包含5个0的行。
+      x\{m,\} 重复字符x，至少m次，如：/0\{5,\}/匹配至少有5个0的行。
+      x\{m,n\} 重复字符x，至少m次，不多于n次，如：/0\{5,10\}/匹配5~10个0的行。 
+
+***** sed用法实例
+      替换操作：s命令
+
+      替换文本中的字符串：
+      sed 's/book/books/' file
+
+      -n选项和p命令一起使用表示只打印那些发生替换的行：
+      sed -n 's/test/TEST/p' file
+
+      直接编辑文件选项-i，会匹配file文件中每一行的第一个book替换
+      为books：
+      sed -i 's/book/books/g' file
+
+      全面替换标记g
+      使用后缀 /g 标记会替换每一行中的所有匹配：
+
+      sed 's/book/books/g' file
+      当需要从第N处匹配开始替换时，可以使用 /Ng：
+
+      echo sksksksksksk | sed 's/sk/SK/2g'
+      skSKSKSKSKSK
+
+      定界符
+      以上命令中字符 / 在sed中作为定界符使用，也可以使用任意的定
+      界符：
+      sed 's:test:TEXT:g'
+      sed 's|test|TEXT|g'
+
+      定界符出现在样式内部时，需要进行转义：
+      sed 's/\/bin/\/usr\/local\/bin/g'
+
+      删除操作：d命令
+      删除空白行：
+      sed '/^$/d' file
+
+      删除文件的第2行：
+      sed '2d' file
+
+      删除文件的第2行到末尾所有行：
+      sed '2,$d' file
+
+      删除文件最后一行：
+
+      sed '$d' file
+
+      删除文件中所有开头是test的行：
+
+      sed '/^test/'d file
+
+      已匹配字符串标记&
+
+      正则表达式 \w\+ 匹配每一个单词，使用 [&] 替换它，& 对应于之
+      前所匹配到的单词：
+
+      echo this is a test line | sed 's/\w\+/[&]/g'
+      [this] [is] [a] [test] [line]
+
+      所有以192.168.0.1开头的行都会被替换成它自已加localhost：
+
+      sed 's/^192.168.0.1/&localhost/' file
+      192.168.0.1localhost
+
+      子串匹配标记\1
+
+      匹配给定样式的其中一部分：
+
+      echo this is digit 7 in a number | sed 's/digit \([0-9]\)/\1/'
+      this is 7 in a number
+
+      命令中 digit 7，被替换成了 7。样式匹配到的子串是 7，\(..\)
+      用于匹配子串，对于匹配到的第一个子串就标记为 \1，依此类推匹
+      配到的第二个结果就是 \2，例如：
+
+      echo aaa BBB | sed 's/\([a-z]\+\) \([A-Z]\+\)/\2 \1/'
+      BBB aaa
+
+      love被标记为1，所有loveable会被替换成lovers，并打印出来：
+
+      sed -n 's/\(love\)able/\1rs/p' file
+
+      组合多个表达式
+
+      sed '表达式' | sed '表达式'
+
+      等价于：
+
+      sed '表达式; 表达式'
+
+      引用
+
+      sed表达式可以使用单引号来引用，但是如果表达式内部包含变量字
+      符串，就需要使用双引号。
+
+      test=hello
+      echo hello WORLD | sed "s/$test/HELLO"
+      HELLO WORLD
+
+      选定行的范围：,（逗号）
+
+      所有在模板test和check所确定的范围内的行都被打印：
+
+      sed -n '/test/,/check/p' file
+
+      打印从第5行开始到第一个包含以test开始的行之间的所有行：
+
+      sed -n '5,/^test/p' file
+
+      对于模板test和west之间的行，每行的末尾用字符串aaa bbb替换：
+
+      sed '/test/,/west/s/$/aaa bbb/' file
+
+      多点编辑：e命令
+
+      -e选项允许在同一行里执行多条命令：
+
+      sed -e '1,5d' -e 's/test/check/' file
+
+      上面sed表达式的第一条命令删除1至5行，第二条命令用check替换
+      test。命令的执行顺序对结果有影响。如果两个命令都是替换命令
+      ，那么第一个替换命令将影响第二个替换命令的结果。
+
+      和 -e 等价的命令是 --expression：
+
+      sed --expression='s/test/check/' --expression='/love/d' file
+
+      从文件读入：r命令
+
+      file里的内容被读进来，显示在与test匹配的行后面，如果匹配多
+      行，则file的内容将显示在所有匹配行的下面：
+
+      sed '/test/r file' filename
+
+      写入文件：w命令  
+
+      在example中所有包含test的行都被写入file里：
+
+      sed -n '/test/w file' example
+
+      追加（行下）：a\命令
+
+      将 this is a test line 追加到以test 开头的行后面：
+
+      sed '/^test/a\this is a test line' file
+
+      在 test.conf 文件第2行之后插入 this is a test line：
+
+      sed -i '2a\this is a test line' test.conf
+
+      插入（行上）：i\命令
+
+      将 this is a test line 追加到以test开头的行前面：
+
+      sed '/^test/i\this is a test line' file
+
+      在test.conf文件第5行之前插入this is a test line：
+
+      sed -i '5i\this is a test line' test.conf
+
+      下一个：n命令
+
+      如果test被匹配，则移动到匹配行的下一行，替换这一行的aa，变
+      为bb，并打印该行，然后继续：
+
+      sed '/test/{ n; s/aa/bb/; }' file
+
+      变形：y命令
+
+      把1~10行内所有abcde转变为大写，注意，正则表达式元字符不能使
+      用这个命令：
+
+      sed '1,10y/abcde/ABCDE/' file
+
+      退出：q命令
+
+      打印完第10行后，退出sed
+
+      sed '10q' file
+
+      保持和获取：h命令和G命令
+
+      在sed处理文件的时候，每一行都被保存在一个叫模式空间的临时缓
+      冲区中，除非行被删除或者输出被取消，否则所有被处理的行都将
+      打印在屏幕上。接着模式空间被清空，并存入新的一行等待处理。
+
+      sed -e '/test/h' -e '$G' file
+
+      在这个例子里，匹配test的行被找到后，将存入模式空间，h命令将
+      其复制并存入一个称为保持缓存区的特殊缓冲区内。第二条语句的
+      意思是，当到达最后一行后，G命令取出保持缓冲区的行，然后把它
+      放回模式空间中，且追加到现在已经存在于模式空间中的行的末尾
+      。在这个例子中就是追加到最后一行。简单来说，任何包含test的
+      行都被复制并追加到该文件的末尾。
+
+      保持和互换：h命令和x命令
+
+      互换模式空间和保持缓冲区的内容。也就是把包含test与check的行
+      互换：
+
+      sed -e '/test/h' -e '/check/x' file
+
+      脚本scriptfile
+
+      sed脚本是一个sed的命令清单，启动Sed时以-f选项引导脚本文件名
+      。Sed对于脚本中输入的命令非常挑剔，在命令的末尾不能有任何空
+      白或文本，如果在一行中有多个命令，要用分号分隔。以#开头的行
+      为注释行，且不能跨行。
+
+      sed [options] -f scriptfile file(s)
+
+      打印奇数行或偶数行
+
+      方法1：
+
+      sed -n 'p;n' test.txt  #奇数行
+      sed -n 'n;p' test.txt  #偶数行
+
+      方法2：
+
+      sed -n '1~2p' test.txt  #奇数行
+      sed -n '2~2p' test.txt  #偶数行
+
+      打印匹配字符串的下一行
+
+      grep -A 1 SCC URFILE
+      sed -n '/SCC/{n;p}' URFILE
+      awk '/SCC/{getline; print}' URFILE
+**** pico 功能强大全屏幕的文本编辑器
+**** jed 主要用于编辑代码的编辑器
+**** joe 强大的纯文本编辑器
+**** ed 单行纯文本编辑器
+**** ex 启动vim编辑器的ex编辑模式
+**** vi 功能强大的纯文本编辑器
+*** 目录基本操作
+**** rmdir -p 子目录若空,一并删除
+**** mkdir 
+**** rm -i 删除前询问 -r 递归 -f 强制
+**** pwd 绝对路径方式显示用户当前工作目录
+**** ls -r 反序输出 -t 时间排序 -R 输出目录下文件
+**** mv 
+**** cp -a 尽可能将档案状态权限等资料都照原状予以复制。 
+     -r     若source中含有目录名则将目录下之档案亦皆依序拷贝至目的地。 
+     -f     若目的地已经有相同档名的档案存在则在复制前先予以删除再行复制。 
+**** cd 切换用户当前工作目录
+*** 文件权限属性设置
+**** dos2unix 
+     dos2unix dosfile
+**** umask 用来设置限制新建文件权限的掩码
+**** lsattr 查看文件的第二扩展文件系统属性
+**** chmod 用来变更文件或目录的权限
+     chmod [-cfvR] [--help] [--version] mode file... 
+     :[ugoa...][[+-=][rwxX]...][,...], u 
+     -c:若该档案权限确实已经更改才显示其更改动作 
+     -f:若该档案权限无法被更改也不要显示错误讯息 
+     -v:显示权限变更的详细资料 
+     -R:对目前目录下的所有档案与子目录进行相同的权限变更 即以递回的方式逐个变更) 
+     chmod -R user:group filename
+     chmod o-r example
+**** chown 用来变更文件或目录的拥有者或所属群组
+**** chgrp 用来变更文件或目录的所属群组
+     chgrp USER GROUP 
+**** chattr 用来改变文件属性
+**** stat 用于显示文件的状态信息
+**** file 用来探测给定文件的类型。
+**** split 分割任意大小的文件
+     -b,--bytes=SIZE b k m 
+     -l,--lines=NUMBER 每一输出文件的行数
+     split filename backname
+**** grep 强大的文本搜索工具
+     -C 5 foo file  显示file文件中匹配foo字串那行以及上下5行
+     -B 5 foo file  显示foo及前5行
+     -A 5 foo file  显示foo及后5行
+     －c：只输出匹配行的计数。
+     －I：不区分大 小写(只适用于单字符)。
+     －h：查询多文件时不显示文件名。
+     －l：查询多文件时只输出包含匹配字符的文件名。
+     －n：显示匹配行及 行号。
+     －s：不显示不存在或无匹配文本的错误信息。
+     －v：显示不包含匹配文本的所有行。
+     pattern正则表达式主要参数：
+     \： 忽略正则表达式中特殊字符的原有含义。
+     ^：匹配正则表达式的开始行。
+     $: 匹配正则表达式的结束行。
+     \<：从匹配正则表达 式的行开始。
+     \>：到匹配正则表达式的行结束。
+     [ ]：单个字符，如[A]即A符合要求 。
+     [ - ]：范围，如[A-Z]，即A、B、C一直到Z都符合要求 。
+     .：所有的单个字符。
+     $ grep ‘test’ d*
+     显示所有以d开头的文件中包含 test的行。
+     $ grep ‘test’ aa bb cc
+     显示在aa，bb，cc文件中匹配test的行。
+     $ grep ‘[a-z]\{5\}’ aa
+     显示所有包含每个字符串至少有5个连续小写字符的字符串的行。
+     $ grep ‘w\(es\)t.*\1′ aa
+     如果west被匹配，则es就被存储到内存中，并标记为1，然后搜索任意个字符(.*)，这些字符后面紧跟着 另外一个es(\1)，找到就显示该行。如果用egrep或grep -E，就不用”\”号进行转义，直接写成’w(es)t.*\1′就可以了。
+
+     grep命令使用复杂实例
+     假设您正在’/usr/src/Linux/Doc’目录下搜索带字符 串’magic’的文件：
+     $ grep magic /usr/src/Linux/Doc/*
+     sysrq.txt:* How do I enable the magic SysRQ key?
+     sysrq.txt:* How do I use the magic SysRQ key?
+     其中文件’sysrp.txt’包含该字符串，讨论的是 SysRQ 的功能。
+     默认情况下，’grep’只搜索当前目录。如果 此目录下有许多子目录，’grep’会以如下形式列出：
+     grep: sound: Is a directory
+     这可能会使’grep’ 的输出难于阅读。这里有两种解决的办法：
+     明确要求搜索子目录：grep -r
+     或忽略子目录：grep -d skip
+     如果有很多 输出时，您可以通过管道将其转到’less’上阅读：
+     $ grep magic /usr/src/Linux/Documentation/* | less
+     这样，您就可以更方便地阅读。
+
+     下面还有一些有意思的命令行参数：
+     grep -i pattern files ：不区分大小写地搜索。默认情况区分大小写，
+     grep -l pattern files ：只列出匹配的文件名，
+     grep -L pattern files ：列出不匹配的文件名，
+     grep -w pattern files ：只匹配整个单词，而不是字符串的一部分(如匹配’magic’，而不是’magical’)，
+     grep -C number pattern files ：匹配的上下文分别显示[number]行，
+     grep pattern1 | pattern2 files ：显示匹配 pattern1 或 pattern2 的行，
+     grep pattern1 files | grep pattern2 ：显示既匹配 pattern1 又匹配 pattern2 的行。
+     grep -n pattern files  即可显示行号信息
+     grep -c pattern files  即可查找总行数
+**** comm 两个文件之间的比较
+**** printf 格式化并输出结果
+**** expand 将文件的制表符转换为空白字符
+**** spell 对文件进行拼写检查
+**** pr 将文本文件转换成适合打印的格式
+**** look 显示文件中以指定字符串开头的任意行
+**** tac 将文件已行为单位的反序输出
+**** wc 统计文件的字节数、字数、行数
+**** fmt 读取文件后优化处理并输出
+**** rev 将文件内容以字符为单位反序输出
+**** diffstat 显示diff命令输出信息的柱状图
+**** ispell 检查文件中出现的拼写错误
+
+**** uniq 报告或忽略文件中的重复行
+**** tee 把数据重定向到给定文件和屏幕上
+
+**** paste 将多个文件按列队列合并
+**** sort 将文件进行排序并输出
+**** unexpand 将文件的空白字符转换为制表符
+**** csplit 将一个大文件分割成小的碎片文件
+**** fold 控制文件内容输出时所占用的屏幕宽度
+**** join 两个文件中指定栏位内容相同的行连接起来
+**** col 过滤控制字符
+**** tr 将字符进行替换压缩和删除
+     tr [option] source-char-list replace-char-list
+     -d 删除不在集合的内容
+     -s 压缩重复字符
+     -c 使用补集,一般 -d 删除不在补集的内容
+**** colrm 删除文件中的指定列
+*** 文件压缩与解压
+**** lha 压缩或解压缩lzh格式文件
+**** bzcmp 比较两个压缩包中的文件
+**** bzcat 解压缩指定的.bz2文件
+**** unarj 解压缩由arj命令创建的压缩包
+**** zcat 显示压缩包中文件的内容
+**** znew 将.Z压缩包重新转化为gzip命令压缩的.gz压缩包
+**** zipsplit 将较大的zip压缩包分割成各个较小的压缩包
+**** arj 用于创建和管理.arj压缩包
+**** gzexe 用来压缩可执行文件
+**** bzgrep 使用正则表达式搜索.bz2压缩包中文件
+**** compress 使用Lempress-Ziv编码压缩数据文件
+**** zfore 强制为gzip格式的压缩文件添加.gz后缀
+**** bzless 增强.bz2压缩包查看器
+**** bzmore 查看bzip2压缩过的文本文件的内容
+**** zipinfo 用来列出压缩文件信息
+**** unzip 用于解压缩由zip命令压缩的压缩包
+     unzip -O cp936
+     unzip [-Z] [-cflptTuvz[abjnoqsCDKLMUVWX$/:^]] file[.zip] [file(s) ...]  [-x xfile(s) ...] [-d exdir]
+
+     To extract all members of letters.zip into the current directory only:
+     unzip -j letters
+
+     To test letters.zip, printing only a summary message indicating whether the archive is OK or not:
+     unzip -tq letters
+
+     To test all zipfiles in the current directory, printing only the summaries:
+     unzip -tq \*.zip
+
+     (The backslash before the asterisk is only required if the shell expands wildcards, as in Unix; double  quotes  could  have
+     been  used instead, as in the source examples below.)  To extract to standard output all members of letters.zip whose names
+     end in .tex, auto-converting to the local end-of-line convention and piping the output into more(1):
+     unzip -ca letters \*.tex | more
+
+     To extract the binary file paper1.dvi to standard output and pipe it to a printing program:
+     unzip -p articles paper1.dvi | dvips
+
+     To extract all FORTRAN and C source files--*.f, *.c, *.h, and Makefile--into the /tmp directory:
+     unzip source.zip "*.[fch]" Makefile -d /tmp
+
+     (the double quotes are necessary only in Unix and only if globbing is turned on).  To extract  all  FORTRAN  and  C  source
+     files, regardless of case (e.g., both *.c and *.C, and any makefile, Makefile, MAKEFILE or similar):
+     unzip -C source.zip "*.[fch]" makefile -d /tmp
+
+     To extract any such files but convert any uppercase MS-DOS or VMS names to lowercase and convert the line-endings of all of
+     the files to the local standard (without respect to any files that might be marked ``binary''):
+     unzip -aaCL source.zip "*.[fch]" makefile -d /tmp
+
+     To extract only newer versions of the files already in the current directory, without querying (NOTE:  be careful of unzip‐
+     ping  in  one  timezone  a zipfile created in another--ZIP archives other than those created by Zip 2.1 or later contain no
+     timezone information, and a ``newer'' file from an eastern timezone may, in fact, be older):
+     unzip -fo sources
+
+     To extract newer versions of the files already in the current directory and to create any files  not  already  there  (same
+     caveat as previous example):
+     unzip -uo sources
+
+     To display a diagnostic screen showing which unzip and zipinfo options are stored in environment variables, whether decryp‐
+     tion support was compiled in, the compiler with which unzip was compiled, etc.:
+     unzip -v
+
+     In the last five examples, assume that UNZIP or UNZIP_OPTS is set to -q.  To do a singly quiet listing:
+     unzip -l file.zip
+
+     To do a doubly quiet listing:
+     unzip -ql file.zip
+
+     (Note that the ``.zip'' is generally not necessary.)  To do a standard listing:
+     unzip --ql file.zip
+     or
+     unzip -l-q file.zip
+     or
+     unzip -l--q file.zip
+     (Extra minuses in options don't hurt.)
+**** bzip2recover 恢复被破坏的.bz2压缩包中的文件
+**** tar Linux下的归档使用工具，用来打包和备份。
+     -A, --catenate, --concatenate
+           append tar files to an archive
+
+     -c, --create
+           create a new archive
+
+     -d, --diff, --compare
+           find differences between archive and file system
+
+     --delete
+           delete from the archive (not on mag tapes!)
+
+     -r, --append
+           append files to the end of an archive
+
+     -t, --list
+           list the contents of an archive
+
+     --test-label
+           test the archive volume label and exit
+
+     -u, --update
+           only append files newer than copy in archive
+
+     -x, --extract, --get
+           extract files from an archive
+
+     -z, --gzip, --gunzip --ungzip
+
+**** 7z
+       a      Add
+       d      Delete
+       e      Extract
+       l      List
+       t      Test
+       u      Update
+       x      eXtract with full paths
+
+**** bunzip2 创一个bz2文件压缩包
+**** gunzip 用来解压缩文件
+**** bzdiff 直接比较两个.bz2压缩包中文件的不同
+**** zip 可以用来解压缩文件
+     如果foo.zip 中有 foo/a foo/b, 而 本地目录下也有  foo/a foo/b,则会被替换    zip -r foo.zip foo
+     从命令行读取文件列表 find . -name "*.[ch]" -print | zip source -@
+     压缩当前目录, - 表示标准输出 tar cf - . | zip | dd of=/dev/nrst0 obs=16k
+     显示压缩包文件列表unzip -l 
+     zip中文乱码 unzip -O cp936  或 7z 或
+**** bzip2 将文件压缩成bz2格式
+**** gzip 用来压缩文件
+**** uncompress 用来解压.Z文件
+*** 文件备份和恢复
+**** cpio 用来建立、还原备份档的工具程序
+**** restore 所进行的操作和dump指令相反
+**** dump 用于备份ext2或者ext3文件系统
+*** 文件传输
+**** ftp 用来设置文件系统相关功能
+**** tftp 在本机和tftp服务器之间使用TFTP协议传输文件
+**** scp 加密的方式在本地主机和远程主机之间复制文件
+**** ncftp 是增强的的FTP工具
+**** rcp 使在两台Linux主机之间的文件复制操作更简单
+
+* Shell扩展抽象层
+    trap 指定在接收到信号后将要采取的动作
+    let 简单的计算器
+    seq 以指定增量从首数开始打印数字到尾数 sequential sequence
+    tput 通过terminfo数据库对终端会话进行初始化和操作
+    apropos 在 whatis 数据库中查找字符串
+    set 显示或设置shell特性及shell变量
+    command 调用并执行指定的命令
+    dris 显示和清空目录堆栈中的内容
+    fc 修改历史命令并执行
+    bind 显示或设置键盘按键与其相关的功能
+    readonly 定义只读shell变量或函数
+    read 从键盘读取变量值
+    bg 用于将作业放到后台运行
+    ulimit 控制shell程序的资源
+    enable 启动或关闭shell内建命令
+    declare 声明或显示shell变量
+    wait 等待进程执行完后返回
+    builtin 执行shell内部命令
+    shopt 显示和设置shell操作选项
+    exit 退出当前的shell
+    jobs 显示Linux中的任务列表及任务状态
+    history 用于显示历史命令
+    logout 退出当前登录的Shell
+    export 设置或显示系统环境变量
+    exec 调用并执行指定的命令
+    env 显示系统中已存在的环境变量
+    unset 删除指定的shell变量或函数
+    kill 删除执行中的程序或工作
+    unalias 删除由alias设置的别名
+    type 显示指定命令的类型
+    fg 将后台作业放到前台终端运行
+    alias 用来设置指令的别名
+**** echo 输出指定的字符串或者变量
+     -e 识别转义
+     -n 不输出新行
+     [*] 输出目录
+* 硬件 | 监测 | 内核 
+*** 性能监测与优化
+    inotifywait 异步文件系统监控机制
+    nethogs 终端下的网络流量监控工具
+    ifstat 统计网络接口流量状态
+    dstat 通用的系统资源统计工具
+    ltrace 用来跟踪进程调用库函数的情况
+    iotop 用来监视磁盘I/O使用状况的工具
+    strace 跟踪系统调用和信号
+    fuser 使用文件或文件结构识别进程
+    lsof 显示Linux系统当前已打开的所有文件列表
+    tload 显示系统负载状况
+    time 统计给定命令所花费的总时间
+    vmstat 显示虚拟内存状态
+    sar 系统运行状态统计工具
+    mpstat 显示各个可用CPU的状态
+    iostat 监视系统输入输出设备和CPU的使用情况
+    free 显示内存的使用情况
+    uptime 查看Linux系统负载信息
+    top 显示或管理执行中的程序
+*** 硬件管理
+    losetup 设定与控制循环（loop）设备
+    dmidecode 在Linux系统下获取有关硬件方面的信息
+    hwclock 显示与设定硬件时钟
+    cdrecord Linux系统下光盘刻录功能命令
+    setpci 查询和配置PCI设备的使用工具
+    lspci 显示当前主机的所有PCI总线信息
+    lsusb 显示本机的USB设备列表信息
+    arch 显示当前主机的硬件架构类型
+    volname 显示指定的ISO-9660格式的设备的卷名称
+    systool 显示基于总线、类和拓扑显示系统中设备的信息
+*** 内核与模块管理
+    lsb_release 显示发行版本信息
+    sysctl 时动态地修改内核的运行参数
+    slabtop 实时显示内核slab内存缓存信息
+    kernelversion 打印当前内核的主版本号
+    get_module 获取Linux内核模块的详细信息
+    kexec 从当前正在运行的内核引导到一个新内核
+    dmesg 显示Linux系统启动信息
+    uname 显示Linux系统信息
+    depmod 分析可载入模块的相依性
+    bmodinfo 显示给定模块的详细信息
+    modprobe 自动处理可载入模块
+    触摸板和小红点
+    关闭:sudo modprobe -r psmouse
+    开启:sudo modprobe  psmouse
+    只关闭触摸板: synclient touchpadoff=1
+    开启:synclient touchpadoff=0
+    rmmod 从运行的内核中移除指定的内核模块
+    insmod 将给定的模块加载到内核中
+    lsmod 显示已载入系统的模块
+*** 磁盘管理
+**** blkid 查看块设备的文件系统类型、LABEL、UUID等信息
+**** du 显示每个文件和目录的磁盘使用空间
+     -Bk -Bm (多少K,兆)
+     lsblk 列出块设备信息
+     vgremove 用于用户删除LVM卷组
+     lvresize 调整逻辑卷空间大小
+     lvremove 删除指定LVM逻辑卷
+     lvreduce 收缩逻辑卷空间
+     pvs 输出物理卷信息报表
+     pvchange 修改物理卷属性
+     pvck 检测物理卷的LVM元数据的一致性
+     pvremove 删除一个存在的物理卷
+     lvextend 扩展逻辑卷空间
+     pvdisplay 显示物理卷的属性
+     lvdisplay 显示逻辑卷属性
+     pvscan 扫描系统中所有硬盘的物理卷列表
+     lvscan 扫描逻辑卷
+     lvcreate 用于创建LVM的逻辑卷
+     pvcreate 将物理硬盘分区初始化为物理卷
+     vgconvert 转换卷组元数据格式
+     blockdev 从命令行调用区块设备控制程序
+     mkswap 建立和设置SWAP交换分区
+     vgchange 修改卷组属性
+     mknod 创建字符设备文件和块设备文件
+     mkisofs 建立ISO 9660映像文件
+     mkinitrd 建立要载入ramdisk的映像文件
+     vgreduce 从卷组中删除物理卷
+     hdparm 显示与设定硬盘的参数
+     vgextend 向卷组中添加物理卷
+     partprobe 不重启的情况下重读分区
+     vgscan 扫描并显示系统中的卷组
+     vgcreate 用于创建LVM卷组
+     fdisk 查看磁盘使用情况和磁盘分区
+     -l 查看磁盘
+     badblocks 查找磁盘中损坏的区块
+     vgdisplay 显示LVM卷组的信息
+     mkbootdisk 可建立目前系统的启动盘
+     grub 多重引导程序grub的命令行shell工具
+     查看分区信息 cat (hd0,6)/etc/fstab
+     指定/boot所在分区 root (hd[0=n],y)
+     指定Linux内核 kernel /boot/vmlinux-XX ro root=/dev/hdaX
+     指定initrd文件 initrd /boot/initrdXX.img
+     引导系统 boot
+     menu.lst
+     default=0   #默认启动哪个系统,从0开始,title 开头的是第0个系统
+     timeout=5
+     title Ubuntu
+     root (hd0,6)
+     splashimage=(hd0,6)/boot/grub/splash.xpm.gz #grub的背景画面,注释加 '#' /nosplash 没背景
+     hiddenmenu # 隐藏grub菜单
+     kernel XX
+     initrd XX
+     ---------
+     title WinXP #第 1 个系统
+     convertquota 把老的配额文件转换为新的格式
+     lilo 安装核心载入开机管理程序
+**** df 显示磁盘的相关信息
+     -ia i节点使用情况
+     parted 磁盘分区和分区大小调整工具
+     软件不能运行，如果缺少库
+     #example
+     ldd firefox
+     可以
+     sudo ln -s /usr/lib/libpng.so.15 /usr/lib/libpng.so.14
+* 监察员　监察User 
+/etc/passwd
+$HOME.profile
+* 

@@ -1,3 +1,46 @@
+   NASM 分别使用 dd、dw 和 db 指令声明 32 位、16 位和 8 位数字，而 GAS 分别使用 .long、.int 和 .byte。
+   GAS 还有其他指令，比如 .ascii、.asciz 和 .string。
+   在 GAS 中，像声明其他标签一样声明变量（使用冒号），但是在 NASM 中，只需在内存分配指令（dd、dw 等等）前面输入变量名，后面加上变量的值。
+   NASM 使用方括号间接引用一个内存位置指向的地址值：[var1]。
+   GAS 使用$引用同样的值：$var1)。 
+* 基本操作
+#+BEGIN_SRC asm
+#cupid.s Sample program to extract the processor vendor ID
+  .section .data
+output:
+  .ascii "The processor vendor id is 'xxxxxxxxxxxx'\n"
+  .section .text
+  .globl _start
+_start:
+  movl $0,  %eax
+  cpuid
+  movl $output ,  %edi
+  movl %ebx,  28(%edi)
+ movl %edx, 32(%edi)
+  movl %ecx, 36(%edi)
+  movl $4, %eax #系统调用4, write
+  movl $1, %ebx
+  movl $output, %ecx
+  movl $42,  %edx
+  int $0x80
+  movl $1,  %eax #系统调用1, exit
+  movl $0, %ebx
+  int $0x80
+#+END_SRC
+
+as -gstabs -o cupid.o cupid.s
+ld -o cpuid cpuid.o
+发行版本去掉调试选项
+
+调用c函数库
+1.静态链接 , 如果同时运行程序的多个实例, 会造成内存浪费
+标准
+2.动态链接 只是引用函数, 而不把代码拷贝到目标程序.
+标准c动态库 位于 libc.so.x 文件中
+-lc 指的就是libc
+还要有动态库加载程序 -dynamic-linker /lib/ld-linux.so.2
+
+或者更简单的, 把_start 改为main , 然后用gcc编译
 * AT&A 汇编
   1.Register Reference
 引用寄存器要在寄存器号前加百分号%,如“movl %eax, %ebx”。
@@ -1738,2842 +1781,376 @@ loop up;"
 用,它们不在修饰列表中。这是因为已经声明 "asm" 将在输入操作数列表中使用它们。这里最低限度是,如果在 "asm" 内部使用寄存器(无
 论是明确还是隐含地),既不出现在输入操作数列表中,也不出现在输出操作数列表中,必须将它列为修饰寄存器。
 
-* asm
-** nasm
--f [TYPE] 编译成 elf32 elf64 coff aout 等格式
--o o 输出obj文件 -l 输出列表文件
--h 帮助 -hf 针对格式的帮助
-*** 寻址
-mov ax,[var] 取地址  
-mov ax,var 取值
-** gas 
-NASM 分别使用 dd、dw 和 db 指令声明 32 位、16 位和 8 位数字，而 GAS 分别使用 .long、.int 和 .byte。
-GAS 还有其他指令，比如 .ascii、.asciz 和 .string。
-在 GAS 中，像声明其他标签一样声明变量（使用冒号），但是在 NASM 中，只需在内存分配指令（dd、dw 等等）前面输入变量名，后面加上变量的值。
-NASM 使用方括号间接引用一个内存位置指向的地址值：[var1]。
-GAS 使用$引用同样的值：$var1)。 
-* Linux Assembly
- The choice of a GNU generation
-Linux Assembly
-Some brighteyed and crazy, some frightened and lost.
-Roger Waters
-   document versie: 1.0, 02-03-2002
-   auteur: H.P. Berends
-   layout: pdfLATEX, Initworks - www.initworks.com
-   copyright c 2002 H.P. Berends
-Voorwoord
-Dit dictaat is geschreven voor studenten met enige programmeerervaring, maar
-met weinig tot geen ervaring met assembly. Aan de hand van voorbeelden worden
-de beginselen van de taal gedemonstreerd; er wordt dieper ingegaan op de wer-
-king van methodes achter de assembly taal.
-In het bijzonder wil ik Remko de Vrijer <devrijer@initworks.com> en Marco Haze-
-broek <m.hazebroek@hro.nl> bedanken voor hun medewerking bij het maken van
-dit dictaat. Beiden hebben het complete manuscript verschillende malen doorge-
-nomen. Hun reviews en visie zijn als uitgangspunt gebruikt bij het schrijven van dit
-document.
-Ook wil ik de volgende mensen bedanken voor hun bijdrage aan dit dictaat.
-A.J. Schrijver <arjan@cimdroom.nl>, J. van Iersel <jurrian@cimdroom.nl>, R.A.T.M.B.M.
-van Valkenburg <robrecht@qualitysnooker.com>, B. Mels <bart.mels@cmg.nl>, M.J.
-Bethlehem <mjb@radon.nl>, A. Veenstra <veenstra@chello.nl>, R. Huizer <ronald@grafix.nl>,
-M. Nuyten <pnuyten@concepts.nl>.
-Inhoudsopgave
-Voorwoord                                                                        2
-1 Inleiding                                                                      7
-   1.1 Opbouw dictaat . . . . . . . . . . . . . . . . . . . . . . . . . . . .    7
-2 Ontstaan van assembly                                                          9
-   2.1 De eerste computers . . . . . . . . . . . . . . . . . . . . . . . . .     9
-   2.2 Nu . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .   11
-3 Assembly                                                                      12
-   3.1 Assembly programmeren . . . . . . . . .      . . . . . . . . . . . . . . 12
-   3.2 Hello world . . . . . . . . . . . . . . . .  . . . . . . . . . . . . . . 13
-   3.3 Assembly sourcecode . . . . . . . . . .      . . . . . . . . . . . . . . 14
-   3.4 Kernel, system calls en interrupts in Linux  . . . . . . . . . . . . . . 16
-        3.4.1 System calls in assembly . . . . .    . . . . . . . . . . . . . . 17
-   3.5 Binary executables voor Linux . . . . . .    . . . . . . . . . . . . . . 19
-   3.6 Sections . . . . . . . . . . . . . . . . .   . . . . . . . . . . . . . . 19
-   3.7 Vragen en opdrachten . . . . . . . . . .     . . . . . . . . . . . . . . 23
-4 Architectuur                                                                  26
-   4.1 Historie . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
-   4.2 Het Hart . . . . . . . . . . . . .   . . . . . . . . . . . . . . . . . . 26
-   4.3 Processor onderdelen . . . . . .     . . . . . . . . . . . . . . . . . . 27
-   4.4 Kenmerken . . . . . . . . . . . .    . . . . . . . . . . . . . . . . . . 29
-   4.5 Geheugen . . . . . . . . . . . .     . . . . . . . . . . . . . . . . . . 30
-   4.6 CISC/RISC . . . . . . . . . . . .    . . . . . . . . . . . . . . . . . . 30
-   4.7 Endian . . . . . . . . . . . . . .   . . . . . . . . . . . . . . . . . . 31
-        4.7.1 Little-endian . . . . . . . . . . . . . . . . . . . . . . . . . . 32
-   4.8 De modi van de 80x86 . . . . . .     . . . . . . . . . . . . . . . . . . 35
-   4.9 Voordelen van de protected mode      . . . . . . . . . . . . . . . . . . 36
-   4.10 De 80x86 CPU familie . . . . . .    . . . . . . . . . . . . . . . . . . 38
-   4.11 Vragen en opdrachten . . . . . .    . . . . . . . . . . . . . . . . . . 41
-INHOUDSOPGAVE                                                                     5
-5 Registers                                                                      43
-   5.1 Geheugencellen . . . . . . . . . .      . . . . . . . . . . . . . . . . . 43
-   5.2 Intel registers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 44
-   5.3 Segment registers . . . . . . . . .     . . . . . . . . . . . . . . . . . 47
-   5.4 Instructie pointer . . . . . . . . . .  . . . . . . . . . . . . . . . . . 47
-   5.5 Flags register . . . . . . . . . . . .  . . . . . . . . . . . . . . . . . 47
-        5.5.1 Carry flag . . . . . . . . . .   . . . . . . . . . . . . . . . . . 47
-   5.6 Sections en segment registers . . .     . . . . . . . . . . . . . . . . . 49
-        5.6.1 Taken . . . . . . . . . . . .    . . . . . . . . . . . . . . . . . 50
-   5.7 Jumps . . . . . . . . . . . . . . .     . . . . . . . . . . . . . . . . . 51
-   5.8 Signed en unsigned integers . . . .     . . . . . . . . . . . . . . . . . 52
-        5.8.1 Unsigned integers . . . . .      . . . . . . . . . . . . . . . . . 52
-        5.8.2 Signed integers . . . . . . .    . . . . . . . . . . . . . . . . . 53
-        5.8.3 Two’s complement omzetten        . . . . . . . . . . . . . . . . . 54
-   5.9 Rekenen . . . . . . . . . . . . . .     . . . . . . . . . . . . . . . . . 54
-        5.9.1 Increment en decrement . .       . . . . . . . . . . . . . . . . . 55
-        5.9.2 Vermenigvuldigen en delen .      . . . . . . . . . . . . . . . . . 55
-   5.10 Logische operatoren en maskers . .     . . . . . . . . . . . . . . . . . 57
-        5.10.1 AND . . . . . . . . . . . . .   . . . . . . . . . . . . . . . . . 57
-        5.10.2 OR . . . . . . . . . . . . .    . . . . . . . . . . . . . . . . . 58
-        5.10.3 XOR, exclusive OR . . . . .     . . . . . . . . . . . . . . . . . 59
-        5.10.4 NOT . . . . . . . . . . . . .   . . . . . . . . . . . . . . . . . 60
-        5.10.5 TEST . . . . . . . . . . . .    . . . . . . . . . . . . . . . . . 61
-   5.11 Vragen en opdrachten . . . . . . .     . . . . . . . . . . . . . . . . . 63
-6 Taal niveaus                                                                   66
-   6.1 Assembly language . . . . . . . . .       . . . . . . . . . . . . . . . . 66
-   6.2 Low-level languages . . . . . . . . .     . . . . . . . . . . . . . . . . 66
-   6.3 High Level Languages . . . . . . . .      . . . . . . . . . . . . . . . . 67
-   6.4 Samenwerking tussen C en assembly         . . . . . . . . . . . . . . . . 68
-   6.5 Low-level power! . . . . . . . . . . .    . . . . . . . . . . . . . . . . 70
-   6.6 NASM . . . . . . . . . . . . . . . .      . . . . . . . . . . . . . . . . 72
-        6.6.1 NASM macro’s . . . . . . . .       . . . . . . . . . . . . . . . . 72
-   6.7 Vragen en opdrachten . . . . . . . .      . . . . . . . . . . . . . . . . 74
-7 Programma structuur                                                            75
-   7.1 Instructie executie . . . .   . . . . . . . . . . . . . . . . . . . . . . 76
-   7.2 Structuur door vergelijking   . . . . . . . . . . . . . . . . . . . . . . 77
-   7.3 Jumps & flags . . . . . .     . . . . . . . . . . . . . . . . . . . . . . 78
-        7.3.1 Het if-statement . .   . . . . . . . . . . . . . . . . . . . . . . 79
-   7.4 Jumps & loops . . . . . .     . . . . . . . . . . . . . . . . . . . . . . 81
-INHOUDSOPGAVE                                                                    6
-        7.4.1 Het while-statement .  . . . . . . . . . . . . . . . . . . . . .  81
-        7.4.2 Het for-statement . .  . . . . . . . . . . . . . . . . . . . . .  83
-   7.5 Stack . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  84
-        7.5.1 POP en PUSH . . .      . . . . . . . . . . . . . . . . . . . . .  84
-        7.5.2 PUSHA/POPA . . .       . . . . . . . . . . . . . . . . . . . . .  87
-        7.5.3 PUSHF en POPF . .      . . . . . . . . . . . . . . . . . . . . .  87
-   7.6 Vragen en opdrachten . . .    . . . . . . . . . . . . . . . . . . . . .  89
-A NASM installeren                                                              90
-   A.1 Downloaden van de source . . . . . . . . . . . . . . . . . . . . .       90
-   A.2 ./configure && make && make install . . . . . . . . . . . . . . . . .    90
-   A.3 De NASM documentatie . . . . . . . . . . . . . . . . . . . . . . .       91
-B ALD installeren                                                               92
-   B.1 Downloaden van de source . . . . . . . . . . . . . . . . . . . . .       92
-   B.2 Configureren, compileren en installeren . . . . . . . . . . . . . . .    93
-C Linux Kernel Modules in assembly                                              94
-D Ascii Tabel                                                                   96
-   Bibliografie                                                                100
-   Index                                                                       102
-Hoofdstuk 1
-Inleiding
-Door een betere kennis van de werking van computers, kan er productiever ge-
-programmeerd worden in hogere programmeertalen zoals C en C++. Het leren
-programmeren in assembly is een goede manier om dit te bereiken.
-De doelstelling van dit dictaat is een introductie geven in assembly en de lezer as-
-sembly te leren en het te laten schrijven. Assembly is een low-level taal en geeft
-een goed beeld van de taken van het operating system.
-Als platform is gekozen voor het GNU/Linux operating system; dit is een opensour-
-ce UNIX systeem met goede debug mogelijkheden en beschikbare kernel source-
-code. Zo kan Linux goed worden gebruikt bij de demonstratie van de werking van
-software.
-Dit dictaat zal ook veel ingaan op de Intel processor architectuur omdat kennis van
-de werking van de processor van groot belang is bij het programmeren in assem-
-bly.
-Dit document is bedoeld als een inleiding in assembly, het is namelijk niet mogelijk
-om alle aspecten van assembly te behandelen. Na het lezen van dit dictaat heeft
-men een completer beeld van wat assembly is en kan men technische documenten
-over processorarchitectuur in combinatie met assembly beter aan.
-1.1      Opbouw dictaat
-Hoofdstuk 2 ’Ontstaan van assembly’ beschrijft de historie van de computer en
-het ontstaan van assembly.
-In hoofdstuk 3 ’Assembly’ wordt de basis van het assembly programmeren behan-
-deld. Hierbij wordt een inleiding gegeven in het programmeren met system calls in
-assembly.
-1 Opbouw dictaat                                                               8
-Hoofdstuk 4 ’Architectuur’ beschrijft de architectuur van een computer. Kennis
-hiervan is nodig, omdat assembly programma’s direct omgaan met hardware.
-Hoofdstuk 5 ’Registers’ gaat in op registers binnen de processor. Kennis hiervan
-is belangrijk omdat instructies en registers nauw verbonden zijn. Zonder gebruik
-te maken van registers is het onmogelijk om in assembly te programmeren.
-Hoofdstuk 6 ’Taal niveaus’ licht hogere programmeertalen en assembly toe. Het
-beschrijft hoe er geprogrammeerd kan worden in verschillende talen en gaat in op
-de samenwerking.
-Hoofdstuk 7 ’Programma structuur’ beschrijft hoe assembly programma’s struc-
-tuur krijgen.
-In het dictaat wordt gebruik gemaakt van NASM en ALD, voor uitleg over de instal-
-latie hiervan zie bijlage A en B.
-Hoofdstuk 2
-Ontstaan van assembly
-Het is 1935. Duitsland wordt geregeerd door de bende van Hitler, de wereld staat
-aan de vooravond van een ramp, als Konrad Zuse zijn ouders uit de woonkamer
-zet. Zuse, een jonge, wat wereldvreemde ingenieur met achterovergekamd zwart
-haar, die als statisticus werkzaam is bij de Henschel-Flugzeug-Werke, heeft de
-ruimte nodig voor ’de constructie van het eerste mechanische brein’. In die kamer
-in de Berlijnse wijk Kreuzberg wil Zuse een machine bouwen die in staat is om
-gecompliceerde statistische berekeningen uit te voeren. Dan is hij daar op zijn
-werk tenminste van verlost. ”Ik ben te lui om te rekenen”, had Zuse vaak bekend.
-Bovendien, vindt hij, moet zijn apparaat kunnen schaken en het liefst ook tekenen.
-1
-2.1        De eerste computers
-Zuse 2 was de bedenker van de eerste binaire computer. Het apparaat was een
-wangedrocht van tandraderen, uitsteeksels en zwengels. Hij ontwierp zijn machi-
-nes vóór de oorlog; pas in 1946 bouwden Mauchly en Eckert, in opdracht van het
-Amerikaanse ministerie van Defensie, de ENIAC. De ENIAC was de eerste elek-
-trische computer, een groot monster van 19.000 radiobuizen.
-Tot die tijd waren de Amerikanen niet op het idee gekomen om te werken met bi-
-naire getallenstelsels, ze werkten met decimalen. Zuse was zijn tijd ver vooruit. Hij
-is er nooit rijk van geworden en zijn uitvinding heeft relatief weinig invloed gehad
-op de geschiedenis van de computer. Toch komt hem alle eer toe.
-De onderdelen van computers en de gebruikte technieken komen niet alleen uit
-    1
-      bron: Rotterdams Dagblad, Zaterdag 21 juli 2001
-    2
-      Voor meer informatie over de uitvindingen van Zuse en de machines die hij heeft gebouwd zie
-http://irb.cs.tu-berlin.de/~zuse/hc.html.
-2 De eerste computers                                                                      10
-          Figuur 2.1: De ENIAC; computers van vroeger vulden hele ruimtes
-deze tijd. Al vanaf de 17e eeuw zijn mensen bezig om rekenen te automatiseren.
-Pas in de 20e eeuw lukte het om een bruikbare logische computer te maken. De
-eerste computers voedden zich met ponskaarten. Dit zijn kaarten met gaten er-
-in. De gaten in de kaarten werden omgezet naar enen en nullen; op deze manier
-konden elektrische machines lezen.
-In 1935 liet John von Neumann zien dat de voorlopers van de computer instructies
-en data als één kon behandelen. Instructies en data konden op deze manier bin-
-nen de computer gebruikt worden, zo waren er geen ponskaarten meer nodig. De
-Von Neumann Architectuur is een standaard geworden voor alle moderne compu-
-tersystemen. Von Neumann, die in die tijd net als Zuse in Berlijn woonde, heeft
-zijn tijdgenoot nooit ontmoet.
-Von Neumann’s systemen gingen om met machinetaalinstructies en dat was geen
-gemakkelijke taal om in te programmeren. Alle programma’s bestonden uit bijna
-onleesbare codes. In de jaren ’50 werd de ’assembly language’ ontwikkeld. Deze
-’assembler talen’ gebruikten woordcodes om mee te programmeren, in plaats van
-getallen. Elke woordcode 3 kwam overeen met één machinetaalinstructie. Machi-
-netaal en assemblytalen worden, omdat ze relatief diep op de technische details
-   3
-     Deze woordcodes zijn mnemonics (zie hoofdstuk 3). Voor een programmeur is het woord ’mov’
-eenvoudiger te onthouden dan de code ’B8’.
-2 Nu                                                                        11
-ingaan low-level languages genoemd.
-2.2     Nu
-In deze tijd wordt er veelal in hogere programmeertalen geprogrammeerd. Toch is
-assembly onontbeerlijk, ook voor hogere programmeertaalprogrammeurs. Omdat
-het programmeren in assembly inzicht geeft in de manier waarop computers wer-
-ken krijgt een programmeur zicht op de mogelijkheden en de technische details
-achter software. Het is in assembly mogelijk om optimaal doelmatige software te
-schrijven.
-In de volgende hoofdstukken wordt geprobeerd een zo goed mogelijk beeld te
-schetsen over assembly. Ondanks dat veel aspecten onbehandeld blijven, wordt
-er veel aandacht besteed aan de uitvoer en realisatie van hardware aangestuurd
-door software. Dit kan een goede ondergrond zijn om verdere aspecten van as-
-sembly te leren.
-Hoofdstuk 3
-Assembly
-In dit hoofdstuk wordt de werking van assembly programma’s uitgelegd. Het pro-
-grammeren in assembly gebeurt in dit dictaat via het operating system, die vervol-
-gens de hardware aanstuurt. Aan de hand van een ’hello world’ voorbeeld leert
-men hoe system calls in Linux gebruikt kunnen worden.
-Er wordt een beschrijving gegeven van de opbouw van assembly sourcecode, ook
-wordt er aandacht besteed aan de opbouw van assembly sourecode en de repre-
-sentatie van executables in het geheugen.
-3.1      Assembly programmeren
-Het schrijven van programma’s in assembly kan op verschillende manieren. Er
-kan gebruik worden gemaakt van allerlei service’s, bijvoorbeeld van libraries en
-system calls. Libraries zijn programmabibliotheken. Ze bestaan vaak uit voor-
-geprogrammeerde software routines die gebruikt kunnen worden voor generieke
-taken. System calls zijn aanspreekpunten om rechtstreeks services van de kernel
-te vragen.
-In dit hoofdstuk wordt er geprogrammeerd aan de hand van system calls. Dit omdat
-system calls de werking van het Linux operating system laten zien, in tegenstelling
-tot libraries, die als een schil om system calls heen zitten.
-Door assembly te programmeren wordt er achter de schermen van Linux gekeken.
-De Linux kernel is geschreven in C. De architectuur afhankelijke delen zijn in as-
-sembly geschreven.
-De meeste softwaretools die gebruikt worden in deze handleiding staan standaard
-op een GNU/Linux systeem. De gebruikte tools die niet standaard geïnstalleerd
-zijn worden beschreven in de bijlages.
-3 Hello world                                                                         13
-                         Figuur 3.1: Protected operating system
-3.2        Hello world
-Door gebruik te maken van de Netwide Assembler (nasm) en GNU linker (ld) kun-
-nen we assembly programma’s maken.
-Als de assembly sourcecode gecompileerd is met NASM moet het worden gelinkt
-door een linker. De linker maakt van de objectcode een ELF binary die op het
-systeem gedraaid kan worden.
-s e c t i o n . data
-        h e l l o db " H e l l o w o r l d " , 0x0a
-        l e n equ $ − h e l l o          ; lengte hello (12)
-section . text
-global _start                    ; entry point , label
-_start :
-; ssize_t write ( i n t          fd , c o n s t v o i d ∗ buf , s i z e _ t count ) ;
-       mov eax , 4               ; system c a l l n r . van w r i t e
-       mov ebx , 1               ; 1e arg : f d van s t d o u t
-       mov ecx , h e l l o       ; 2e arg : p o i n t e r naar h e l l o
-       mov edx , l e n           ; 3e arg : l e n g t e h e l l o
-        i n t 0x80               ; c a l l kernel
-3 Assembly sourcecode                                                                        14
- ; v o i d _ e x i t ( i n t status ) ;
-       mov eax , 1              ; system c a l l n r . van e x i t
-       mov ebx , 0              ; 1e arg : status
-        i n t 0x80              ; c a l l kernel
-Objectcode is het resultaat van het compileren, een gecompileerde file bevat ma-
-chinetaal in plaats van assembly instructies. Om er vervolgens een executable van
-te maken moet het gelinkt worden. Dit wordt gedaan met een linker (ld). Meestal
-heeft een file met objectcode de .o extensie.
-NASM is niet de algemeen gebruikte assembler voor UNIX systemen, dat is ’as’.
-Maar de syntax van as is niet gelijk aan de Intel syntax. Voor het installeren van
-NASM zie bijlage A.
-Sla de gegeven assembly sourcecode op in het bestand ’hello.asm’. Er moet hier-
-bij gebruik worden gemaakt van een teksteditor.
-Door de volgende commando’s te geven wordt het bestand gecompileerd en gel-
-inkt.
-nasm -f elf hello.asm
-ld hello.o -o hello
-Het commando ’nasm -f elf hello.asm’ compileert het programma in objectcode en
-plaats de objectcode in ’hello.o’. De optie ’-f elf’ betekent dat de output ELF ob-
-jectcode is.
-Het linken gebeurt met ’ld hello.o -o hello’. De optie ’-o’ (output) geeft aan waar de
-gelinkte code (de executable) heen wordt geschreven.
-Er bestaat nu een executable met de naam ’hello’. Dit bestand kan worden uitge-
-voerd door ’./hello’. Er verschijnt ’Hello world’ op het scherm.
-3.3        Assembly sourcecode
-Universele assembly sourcecode bestaat uit vier velden.
-De vier velden zijn: het label veld, het mnemonic 1 veld, het operand veld en het
-commentaar veld.
-    1. Het label veld kan worden gebruikt om het doel van een jump instructie aan
-   1
-     Mnemonic is een Grieks woord en wordt uitgesproken als ’neh-MAHN-ik’. Mnemonics zijn
-afkortingen van woorden die voor instructies staan, ze zijn meer menslogisch dan numerieke waar-
-den.
-3 Assembly sourcecode                                                             15
-      te geven. Een jump kan worden gezien als een goto instructie.
-      Bijvoorbeeld: ’_start:’ Labels eindigen op ’:’.
-   2. Het mnemonic veld bevat de mnenonic die gekoppeld is aan een processor-
-      instructie. Voorbeelden van mnemonic’s zijn, add, sub, mov. Een mnemonic
-      vervangt de moeilijk te onthouden processorinstructie of opcode.
-      Bijvoorbeeld: ’int’ of ’mov’
-   3. Het operand veld bevat de operands waarop de instructies worden uitge-
-      voerd. Heeft een mnemonic meer operands dan worden ze gescheiden door
-      komma’s.
-      Bijvoorbeeld: ’eax, [source]’
-      Er zijn drie verschillende operands:
-          • Registers
-             Registers kunnen waarden bevatten. Meestal heeft het gebruik van
-             registers de voorkeur boven het gebruik van geheugen omdat registers
-             in de processor zelf liggen, waardoor ze sneller te adresseren zijn.
-             Bijvoorbeeld: ’mov eax, edx’ of ’inc ebx’
-          • Immediates
-             Dit zijn getallen zoals 99 of 0xc4fe.
-             Bijvoorbeeld: ’mov eax, 0xb4dc0d3’
-          • Geheugen
-             Geheugen is in assembly gelabeld met een naam.
-             Bijvoorbeeld: ’test eax, input’
-             Wordt dit operand tussen vierkante haakjes gezet ([]) dan betekent dit
-             dat het om de inhoud van het geheugen gaat, niet het adres (de poin-
-             ter) zelf.
-             Bijvoorbeeld ’mov esi, [demo]’
-             Hier wordt de inhoud van het geheugen dat ’demo’ heet in het ESI-
-             register gezet.
-   4. Het laatste veld, het commentaar veld, wordt gescheiden door een ’;’, en is
-      niet verplicht. Alles dat na de ’;’ staat wordt gezien als commentaar. Vooral
-      bij low-level languages zoals assembly is commentaar zeer belangrijk. Goed
-      commentaar kan sourcecode verduidelijken.
-Een regel assembly sourcecode kan er bijvoorbeeld zo uitzien:
-routine: mov eax, [memlocation]
-Er wordt er een ’mov’-instructie uitgevoerd die inhoud van memlocation (rechts)
-3 Kernel, system calls en interrupts in Linux                                       16
-naar eax (links) kopiëerd. In dit dictaat wordt er gebruik gemaakt van de Intel
-syntax die het source operand rechts neemt en het destination operand links.
-Het statement ’routine:’ geeft het label aan. Het gebruik van labels is niet verplicht.
-3.4      Kernel, system calls en interrupts in Linux
-Software bestaat vaak uit de volgende onderdelen: het vragen om input, het ma-
-ken van berekeningen, het geven van output, en het sluiten. Om dit te realiseren,
-maakt het meestal gebruik van de services van het operating system. Assembly
-kan dus niet alleen processor afhankelijk zijn maar ook nog eens operating system
-afhankelijk.
-                         Figuur 3.2: System call en libraries
-Alle operating systemen leveren een bepaalde service aan de software; meestal
-gebeurt dit via en vanuit de kernel. UNIX en varianten, waaronder Linux, hebben
-een aantal entry points direct naar de kernel toe. Dit worden system calls ge-
-noemd.
-System calls (figuur 3.2) kunnen vanuit C worden aangesproken met behulp van
-libraries, maar een applicatie kan ook direct gebruik maken van system calls.
-Meestal worden system calls via de C library (libc) wrapper aangesproken.
-     Het gebruik van libc in assembly is niet verplicht, het is een keuze van de
-programmeur.
-Libc wrappers zijn gemaakt om software af te schermen voor syntax verandering
-van system calls. Maar omdat de UNIX kernel, en dus ook Linux, in hoge mate
-3 Kernel, system calls en interrupts in Linux                                                17
-POSIX 2 compliant is (sterker nog, system calls hebben dezelfde syntax als kernel
-system calls en vice versa), heeft het vaak weinig nut om gebruik te maken van
-system call wrappers, zoals printf(), scanf() enz. Daarom is het vaak makkelijker
-om direct gebruik te maken van kernel calls, omdat dit de snelste manier is om
-gebruik te maken van de kernel services. Het gebruik van kernel calls heeft ook
-weer nadelen, omdat het per gebruikte kernel en dus operating system verschilt.
-3.4.1     System calls in assembly
-De werking van het assembly programma dat ’hello world’ demonstreert is niet ge-
-heel duidelijk. Het lijkt in de verste verte niet op andere programmeertalen. Toch
-heeft het er alles mee te maken.
-In het voorbeeld wordt er ’Hello world’ op het scherm geschreven aan de hand van
-system calls. System calls zijn diensten van het operating system die een bepaal-
-de taak uitvoeren.
-System calls worden besproken in section 2 van de man page. De manpage van
-write is op te vragen door ’man 2 write’.
-Daar staat de C definitie van de write system call.
-ssize_t write(int fd, const void *buf, size_t count);
-In assembly ziet het er anders uit, de Linux kernel gaat als volgt om met system
-calls op assembly niveau.
-     • ssize_write() Het EAX-register bevat het system call nummer uit het be-
-       stand /usr/include/asm/unistd.h.
-     • int fd Het EBX-register bevat het eerste argument, in dit geval de file descrip-
-       tor voor stdout die 1 is. stdout is meestal gekoppeld aan het beeldscherm,
-       waardoor berichten die naar stdout worden geschreven automatisch op het
-       scherm verschijnen.
-     • const void* buf Het ECX-register bevat een pointer (geheugenadres) naar
-       de string die afgedrukt dient te worden.
-     • size_t count Het EDX-register bevat het aantal tekens dat de af te drukken
-       string lang is.
-   2
-     POSIX (Portable Operating System Interface) is een set standaarden voor UNIX operating sys-
-tems. Er was behoefte aan standaarden binnen de verschillende UNIX stromingen.
-Voor meer informatie zie de website van Open Group, www.opengroup.org, en de System V imple-
-mentatie op http://stage.caldera.com/developer/devspecs/.
-3 Kernel, system calls en interrupts in Linux                                                     18
-Door het programma strace te gebruiken kunnen we zien welke system calls een
-programma gebruikt.
-strace hello
-Het resultaat ziet er zo uit.
-execve ( " . / h e l l o " , [ " h e l l o " ] , [ / ∗ 39 v a r s ∗ / ] ) = 0
- w r i t e ( 1 , " H e l l o w o r l d \ n " , 12 H e l l o w o r l d
-                              )                  = 12
- _exit (0)                                                            = ?
-Er staan nu codes op het scherm die erg op C programmatuur lijken. Om precies
-te zijn staan er 3 system calls op het scherm. De eerste is execve, de tweede is
-write en de derde is exit (_exit is gelijk aan exit).
-De eerste is de system call die het programma laat runnen vanuit de shell, execve
-draait ’./hello’. Dit staat niet in de sourcecode omdat de shell input van de user
-neemt en execve uitvoert om het programma te starten. De andere system calls in
-het voorbeeld staan wel in de assembly sourcecode. Write en exit worden beiden
-gebruikt in het programma.
-Met de opdracht ’int 0x80’ wordt de kernel 3 aangeroepen. De kernel kijkt in het
-EAX register en voert aan de hand van de waarde in het EAX register een system
-call uit. Bij een interrupt (’int’-instructie) wordt de CPU aangeroepen en voert deze
-een bepaalde handeling uit, het programma heeft dan tijdelijk geen toegang tot de
-CPU.
-De system calls van Linux zijn gedefiniëerd in ’/usr/include/asm/unistd.h’. Zo komt
-de system call write overeen met met 4, en exit met 1.
-Als we hetzelfde programma in C hadden geschreven had het er zo uitgezien.
-# i n c l u d e < u n i s t d . h>
- i n t main ( v o i d ) {
-                w r i t e (1 , " Hello world \ n " , 1 2 ) ;
-                exit ( 0 ) ;
-}
-    3
-      De kernel is het operating system zonder applicaties (programma’s). Het is de interface tussen
-hardware en de applicaties. Zo zorgt het ervoor dat er meerdere processen tegelijk kunnen draaien
-en dat deze niet elkaars geheugen kunnen overschrijven. (Walter de Jong bedankt voor je definitie.)
-3 Binary executables voor Linux                                                      19
-Sla de C sourcecode op in het bestand ’hello2.c’ en compileer en link het met ’
-gcc hello2.c -o hello2’. Vergelijk de uitkomst van ’hello2’ en ’hello’ door beide uit te
-voeren.
-Er is geen verschil in uitkomst. Betrek nu ’strace’, en ondervindt het verschil in de
-binaries. Al snel blijkt dat er bij de assembly versie van ’Hello world’ twee system
-calls gebruikt worden in tegenstelling tot de C versie, waar er veel meer worden
-gebruikt.
-Er zijn nog veel meer verschillen tussen de binaries, zoals de snelheid en grootte
-van de executable. De volgende commando’s laten die verschillen zien.
-ls -al hello{’ ’,2}
-time hello
-time hello2
-Voor meer informatie over time raadpleeg de manpage.
-3.5      Binary executables voor Linux
-Moderne 32-bit Unices 4 , zoals Linux, draaien in protected mode en maken gebruik
-van het ‘Executable and Linkable Format’ (ELF) voor executable binaries. System
-calls in Linux worden gemaakt via ’int 0x80’. Het function nummer van de system
-call wordt uitgelezen uit EAX en de argumenten staan in de registers, niet op de
-stack. Er zijn maximaal zes argumenten mogelijk, EBX, ECX, EDX, ESI, EDI en
-EBP.
-3.6      Sections
-Assembly sourcecode bestaat uit één of meer delen, zogenaamde sections (figuur
-3.3). Deze sections komen overeen met segmenten in het geheugen. Er zijn
-verschillende sections elk met een verschillend doel.
-     • .data section
-        Deze section wordt gebruikt om constanten te declareren, zoals file names
-        en buffer groottes. Het gaat hier om geïnitialiseerde data.
-        Het data segment verandert niet tijdens het draaien van het programma.
-   4
-     meervoud van UNIX
-3 Sections                                                                    20
-              Figuur 3.3: Een executable binary geladen in het geheugen
-     In dit deel staan de db, dd, dw statements, het zijn directives en ze reser-
-     veren data in het geheugen. De ’d’ uit deze opdrachten staat voor define.
-     Een directive wordt alleen gebruikt door de assembler, na het vertalen van
-     assembly naar machine code bestaan ze dan ook niet meer (alleen geheu-
-     genadressen worden gebruikt in de executable).
-     De opdracht equ (equate) maakt het mogelijk om symbolische namen te ge-
-     ven aan getallen. Deze worden door de assembler vervangen door getallen.
-     Ook is het mogelijk om via een equate de lengte van reserveerd geheugen
-     te bepalen. Met ’formatlen equ $ - format’ neemt de symbolische naam ’for-
-     matlen’ de lengte van de string ’format’ aan.
-     Bijvoorbeeld:
-      s t r i n g db " D i t i s een s t r i n g " , 0
-      f o r m a t db " x=%d \ n " , 0
-      f o r m a t l e n equ $ − f o r m a t
-      e r r o r db " E r r o r " , 0xa
-3 Sections                                                                         21
-      year equ 365
-      Bij strings wordt er geëindigd met een ’0’, omdat er anders niet bekend is
-      waar de string eindigt. Zo is de code gelijk aan de strings of character arrays
-      in C.
-   • .bss section
-      In dit gedeelte worden de variabelen gedeclareerd. Het gaat hier om ongeï-
-      nitialiseerde data in het geheugen.
-      De geheugenvelden hebben nog geen waarde; er wordt alleen nog maar
-      geheugen gereserveerd. Pas als het programma draait zullen er bruikbare
-      gegevens in komen te staan. Het .bss section verandert niets aan de exe-
-      cutable als file. Omdat het .bss section nog geen data bevat en het wel om
-      moet gaan met data is het write-enabled.
-       i n p u t resb 1
-       p i resq 1
-   • .text section
-      Dit is het gedeelte waar de assembly code wordt geschreven. Op deze plek
-      staan de instructies (weergeven als mnemonics).
-      Er is een label gedeclareerd dat begint met een ’_’ (underscore). Dit bete-
-      kent dat hier een entry is, zodat andere software het kan starten.
-      De code in het code section van een programma hoeft niet lineair uitgevoerd
-      te worden; er bestaan namelijk calls en jumps die de volgorde van executie
-      veranderen. Het code section of .text section is als segment in het geheu-
-      gen read-only. Tenzij er een wijziging is gemaakt in de program header (ELF
-      header).
-       c a l l re
-      mov [ i n p u t ] , eax
-De opdrachten die in het het .data en .bss section staan zijn geen instructies. Ze
-kunnen gezien worden als pseudo-instructies. Omdat bijvoorbeeld het reserveren
-van bytes en het labelen ervan op machine niveau niet bestaat. Het label wordt in
-de executable vervangen door een geheugenadres.
-3 Sections                                                                                                                                                 22
-Zie hier een tabel met de datatypes en de grootte ervan. Deze worden gebruikt bij
-de resx en dx statements.
-                            Intel datatype                  C declaratie                 Suffix            Grootte (Bytes)
-                            Byte                            char                              b                        1
-                            Word                            short                            w                         2
-                            Double Word                     int                               d                        4
-                            Quad Word                       double                            q                        8
-                            Double Word                     char *                            d                        4
-   Ter illustratie: Een pointer (dus ook een character pointer) is een double word (4Bytes, 32-bit). Dit omdat geheugenadressen 32-bits geadresseerd worden.
-Om een indruk te krijgen van het .data en het .bss segment die in het geheugen
-liggen, kan men ’hello.asm’ compileren en linken. Door het vervolgens in ALD te
-laden, kan men delen van het data segment bekijken. ALD staat voor Assembly
-Language Debugger, het is een assembly debugger voor de x86 die instructies in
-Intel syntax weergeeft. Zie ook bijlage B.
-ald hello
-Typ nu twee maal ’next’ in tot dat de opdracht ’mov ecx, 0x80490a4’ verschijnt. 5
-Bij deze opdracht wordt de pointer naar (of het adres van) de ’hello’ string in het
-data segment naar het ECX-register geschreven. Dit betekent dat op 0x80490a4
-"Hello world", 0xa staat.
-Typ nu ’examine 0x80490a4’ voor een dump van 20 bytes na 0x80490a4.
-...
-ald> examine 0x80490a4
-Dumping 20 bytes of memory starting at 0x080490A4 in hex
-080490A4: 48 65 6C 6C 6F 20 77 6F 72 6C 64 0A 00 00 00 00 Hello world.....
-080490B4: 00 00 00 00 ....
-    5
-      De waarde 0x80490a4 kan van systeem tot systeem verschillen.
-3 Vragen en opdrachten                                                           23
-3.7     Vragen en opdrachten
-   1.   (a) Leg uit wat een system call is. Geef ook het verband aan met het
-            operating system.
-        (b) Wat is het verschil tussen een system call en een library functie?
-        (c) Wat is een nadeel van system calls, vergeleken met andere routines?
-        (d) Wat is een voordeel van system calls, ten opzichte van library calls?
-   2.   (a) Assembly sourcecode bestaat uit sections, die overeen komen met de-
-            len in het geheugen. Waarom zijn sommige delen read-only?
-        (b) Wat zou er gebeuren als die delen write enabled zijn? Geef een aantal
-            voorbeelden en geef aan wat er zou gebeuren met het programma en
-            het operating system.
-   3. Is het mogelijk om assembly en C in één programma te laten samenwerken.
-      Waarom wel of waarom niet?
-   4. Assembly programmatuur is meestal kleiner en sneller dan software ge-
-      schreven in hogere programmeertalen.
-        (a) Waarom is dit?
-        (b) Waarom wordt er dan niet massaal in assembly geschreven?
-   5. De sourcecode van het assembly programma ’hello.asm’ zet ’Hello world’ op
-      het scherm. Verander de source zo dat het meerdere regels op het scherm
-      zet door twee keer gebruik te maken van de system call write (let op: er moet
-      twee keer een string worden gereserveerd).
-   6.   (a) Waarom bestaat assembly code uit velden?
-        (b) Geef de namen van de verschillende velden.
-        (c) Bekijk de source code van ’hello.asm’. Uit welk veld komt ’mov’?
-   7. Is het verplicht op alle regels van assembly sourcecode 4 velden te hebben?
-      Licht je antwoord toe.
-   8.   (a) Vraag de manpage op van de system call ’chmod’. Er zijn namelijk
-            verschillende manpages van ’chmod’ omdat het ook een shell utility is.
-        (b) Zoek het nummer van de system call die bij ’chmod’ hoort.
-            (hint: Gebruik hierbij de includes op het Linux systeem /usr/include/as-
-            m/unistd.h)
-3 Vragen en opdrachten                                                                  24
-   9. Schrijf een assembly programma dat input leest via de system call ’read’. Na
-      het inlezen moet het programma via ’write’ de de input van ’read’ afdrukken.
-      Maak gebruik van een variabele ’input’ die als volgt wordt gedeclareerd in
-      assembly.
-       s e c t i o n . bss
-               i n p u t resd 1
-      input kan bij de system call ’read’ worden gezien als ’void *buf’ (het 2e argu-
-      ment) en wordt in het ECX-register gezet. Zie ook de man page van ’read’.
-  10. Het onderstaande programma, ’filexs.asm’ drukt ’file.txt’ af. Verander het
-      programma zo, zodat het ’/etc/inittab’ afdrukt.
-      De inhoud van ’filexs.asm’.
-       s e c t i o n . bss
-               b u f resd 1
-               count resd 1
-       s e c t i o n . data
-               pathname db " f i l e . t x t " , 0
-       section . text
-       global _start
-       _start :
-       ; i n t open ( c o n s t char ∗ pathname , i n t f l a g s ) ;
-              mov eax , 5
-              mov ebx , pathname
-              mov ecx , 0 ; O_RDONLY u i t / u s r / i n c l u d e / asm / f c n t l . h
-               i n t 0x80
-       ; eax kan e r r o r status b e v a t t e n . D i t wordt
-       ; h i e r genegeerd .
-       ; open r e t u r n e d een f d i n eax
-              mov ebx , eax
-       ; s s i z e _ t read ( i n t fd , v o i d ∗ buf , s i z e _ t count ) ;
-3 Vragen en opdrachten                                                                    25
-      ; met read bepalen we h e t a a n t a l u i t t e l e z e n b y t e s
-           mov eax , 3                    ; read s y s c a l l
-                                          ; ebx bevat de f d d i e open r e t u r n d e
-           mov ecx , b u f                ; adres b u f i n ecx
-           mov edx , count                ; count i n edx
-            i n t 0x80                    ; l e e s ’ count ’ a a n t a l b y t e s
-      ; read r e t u r n e d h e t a a n t a l gelezen b y t e s i n eax
-      ; w r i t e g e b r u i k t d i t a a n t a l a l s parameter
-           mov edx , eax
-      ; s s i z e _ t w r i t e ( i n t fd , c o n s t v o i d ∗ buf , s i z e _ t count ) ;
-           mov eax , 4                    ; write syscall
-           mov ebx , 1                    ; f d van s t d o u t
-                                          ; ecx bevat h e t adres van b u f
-                                          ; edx bevat count
-            i n t 0x80
-      ; v o i d _ e x i t ( i n t status ) ;
-           mov eax , 1
-           mov ebx , 0
-            i n t 0x80
-     De inhoud van ’file.txt’.
-     Q: What ’ s a redneck f o r t u n e c o o k i e ?
-     A : A p i e c e o f cornbread w i t h a food stamp baked i n s i d e .
-Hoofdstuk 4
-Architectuur
-In dit hoofdstuk wordt de processor van een computer onder de loep genomen. Er
-wordt aandacht besteed aan de werking van de processor en aan de verschillende
-onderdelen in de processor. De grote verschillen tussen de processoren die er op
-de markt zijn en de kenmerken hiervan worden beschreven. De Intel processor
-wordt als uitgangspunt genomen.
-4.1      Historie
-Tijdens de late jaren ’60 werden geïntegreerde elektronische circuits geïntrodu-
-ceerd. Honderden transistors, dioden, en resistoren pasten in één aparte chip.
-Het gevolg was een enorme snelheidswinst, een hogere capaciteit, meer betrouw-
-baarheid en het was velen malen goedkoper dan de traditionele hardware. Er was
-een nieuw fenomeen: de microprocessor.
-4.2      Het Hart
-Het hart van de computer is de CPU. Het staat voor Central Processing Unit,
-meestal is dit een andere term voor processor of microprocessor. De CPU be-
-heerst alle interne en externe hardware en voert logische en rekenkundige op-
-drachten uit. Het is de meest verantwoordelijke chip in het systeem en bevat een
-logisch circuit dat de instructies uitvoert van de software. De instructies staan in
-een instructieset die vastligt in het ROM geheugen van de processor, dat niet her-
-schrijfbaar is.
-De instructieset bepaalt de machinetaal van de CPU. Is een instructieset te uitge-
-breid, dan heeft dat gevolgen voor de performance van het systeem. Processors
-4 Processor onderdelen                                                            27
-met verschillende instructiesets kunnen niet dezelfde software aan. Een gecompi-
-leerd programma voor een Apple computer zal niet draaien op een Intel systeem.
-     Figuur 4.1: De CPU staat tussen het geheugen en de randapparatuur in.
-De CPU is de belangrijkste chip in een computer; toch is het mogelijk om er één
-of meer in een systeem te hebben. Deze techniek heet SMP (Symmetric Multi-
-Processing). Het zorgt er voor dat verschillende processoren het operating system
-en het geheugen delen. SMP systemen presteren beter dan MMP (Mono Multi-
-Processing) systemen. Het voordeel kan worden behaald door een balans van
-workload (uit te voeren werk) tussen verschillende processoren.
-4.3     Processor onderdelen
-Een CPU bestaat uit verschillende onderdelen. Zeer vereenvoudigd zijn er de
-volgende onderdelen, elk met een eigen taak (zie figuur 4.2).
-   1. Control Unit
-      De Control Unit regelt de activiteiten van interne en externe apparaten. Het
-      interpreteert de instructies, het bepaalt welke data er nodig zijn en de plaats
-      ervan. Ook houdt het zich bezig met het wegschrijven van resultaten. Het
-      stuurt signalen, die de hardware devices aanzetten tot het uitvoeren van de
-      instructies.
-   2. ALU
-      De ALU (Arithmetic and Logic Unit) is het deel van de CPU waar de reken-
-      kundige bewerkingen plaatsvinden. Het bestaat uit circuits die rekenkundige
-4 Processor onderdelen                                                          28
-                    Figuur 4.2: Schematische weergave van CPU
-      operaties kunnen uitvoeren zoals optellen, aftrekken, vermenigvuldigen en
-      delen op data die verkregen zijn uit het geheugen en de registers. Ook heeft
-      het de mogelijkheid data te vergelijken en met bits te schuiven.
-   3. Registers
-      Als de ALU taken uitvoert, heeft het tijdelijke opslagruimte nodig voor da-
-      ta. Dit gebeurt in de registers. Registers zijn speciale geheugencellen in
-      de processor. Ze worden gebruikt om geheugen te adresseren, data te ma-
-      nipuleren en te verwerken. Sommige registers hebben een gereserveerd
-      doel, terwijl andere general-purpose registers zijn. Omdat de data in de re-
-      gisters telkens worden gebruikt, bestaan ze uit zeer snel geheugen dat data
-      direct bewerkt en de uitkomst weer kan opslaan na een bewerking. Mocht
-      de data in een register niet nodig zijn voor de volgende instructie dan wor-
-      den ze naar het RAM geschreven en houden de registers zich bezig met de
-      volgende instructie. Dit als een programmeur efficiënte assembly code heeft
-      geschreven.
-   4. Clock Unit
-      De activiteiten van een processor bestaan uit verschillende instructies voor-
-      gesteld in duizenden individuele stappen. De stappen moeten in de juiste
-      volgorde van vaste intervallen verlopen. Het deel van de processor dat zich
-      met die intervallen bezig houdt, is de Clock Unit, ook wel Timer genoemd. El-
-      ke operatie in de processor vindt plaats op de puls van de Clock Unit. Geen
-      enkele operatie, hoe simpel ook, kan worden gedaan in een tijd die korter
-      is dan die tussen de intervallen. Maar sommige operaties kosten meer dan
-      een puls. Geeft de Clock Unit kortere pulsen dan werkt de processor snel-
-      ler. De kloksnelheid wordt aangeduid in MegaHertz (MHz), en tegenwoordig
-      ook GigaHertz (GHz). Een processor van n MHz heeft een Clock Unit die n
-4 Kenmerken                                                                                  29
-        miljoen pulsen per seconde produceert.
-        Processor informatie opvragen in een Linux systeem kan door het volgende
-        commando 1 .
-        cat /proc/cpuinfo
-                                    Figuur 4.3: De CPU chip
-4.4       Kenmerken
-De kenmerken van een processor zijn:
-    1. Het aantal uitgevoerde instructies per seconde
-    2. Het aantal bits van de woordlengte
-De woordlengte is het aantal bits dat een CPU kan verwerken per clockcycle.
-Er zijn twee marktleidende fabrikanten van processoren: Intel en Motorola. Andere
-processoren zijn meestal compatible met deze. Bijvoorbeeld AMD en Cyrix, deze
-processoren gebruiken dezelfde machinetaal en instructieset als de Intel, terwijl
-hun inwendige structuur verschilt.
-   1
-     Zie voor extra informatie over de implementatie van de processor in het operating system de
-includes van de kernel: ’/usr/include/asm-i386/processor.h’
-4 Geheugen                                                                       30
-4.5      Geheugen
-Computergeheugen bestaat uit logische circuits, dit wordt statisch geheugen of
-SRAM genoemd. Geheugen circuits bestaan uit cellen; ze representeren nullen
-en enen. Een verzameling van cellen noemt men een chip.
-In DRAM (Dynamic RAM) liggen de geheugencellen heel erg dicht tegen elkaar
-aan. Ze verliezen hun inhoud snel, daarom dient DRAM regelmatig ververst te
-worden.
-Bij phsysical memory, het echte (tastbare) geheugen is de omvang makkelijk te
-berekenen. Dit gaat op dezelfde manier als bij rechthoeken: 2 x l x b, waar l staat
-voor de lengte, oftewel het aantal words, en b staat voor de breedte, oftewel de
-woordgrootte.
-De volgende commando’s geven informatie over het geheugen.
-cat /proc/meminfo
-free
-4.6      CISC/RISC
-Bij het ontwerp van processoren bedacht men een techniek die CISC (Complex
-Instruction Set Computer of Computing) heette. Een CISC processor is een pro-
-cessor met een zeer rijke instructieset. Dit zou een betere samenwerking met
-hogere programmeertalen hebben.
-Dit voordeel is te weerleggen omdat hogere programmeertalen nogal verschillen
-en compilers die gebruik moeten maken van de instructieset ook. Zo wordt het
-onnodig ingewikkeld.
-De Intel 80x86 serie maakt gebruik van deze CISC technologie.
-Omdat er steeds meer in hogere programmeertalen werd geprogrammeerd en om-
-dat geheugen steeds sneller werd, verdwenen de belangrijkste redenen van CISC.
-Maar nog steeds hielden ontwikkelaars zich bezig met het versnellen van pro-
-cessoren. Een van de technieken die werd geïntroduceerd was RISC (Reduced
-Instruction Set Computer). Een RISC processor bevatte een gereduceerd aantal
-simpele instructies.
-Een lange reeks simpele instructies presteert uiteindelijk dan net zoveel of zelfs
-beter op een RISC processor dan een enkele complexe instructie op een CISC
-processor die hetzelfde doet. Het belangrijkste doel voor de ontwikkelaars was
-niet het ontwikkelen van de instructieset, maar de snelheid van de chip. Bij RISC
-4 Endian                                                                                         31
-architecturen zijn de frequent gebruikte instructies snel. Eén van de designtech-
-nieken was om meerdere instructies tegelijk uit te voeren (pipelining).
-Dit heeft tot gevolg dat in het meest ideale geval de RISC processor één instructie
-per kloktik kan uitvoeren. Het aantal megahertz kan zo gelijk zijn aan het aantal
-instructies per seconde; dit wordt ook wel MIPS (Million Instructions Per Second)
-genoemd. Dit lukt niet altijd, maar toch is er een effectieve capaciteit van zo’n 60%
-tot 70% mogelijk, afhankelijk van de te verwerken taak. CISC zou zulke snelheden
-niet kunnen halen; toch zijn de instructies krachtiger dan die van de RISC. RISC
-is taakonafhankelijk, in tegenstelling tot CISC. Een RISC processor kan daardoor
-2 tot 4 maal sneller zijn. De PowerPC van Apple en de huidige generatie van Ma-
-cintosh systemen zijn gebaseerd op RISC.
-De processor afhankelijke delen van de Linux kernel zijn voor een groot deel in
-assembly geschreven. Het biedt meerdere assembly sourcecodes aan voor de
-verschillende architecturen die het ondersteunt.
-Geef het volgende commando in.
-ls -l /usr/src/linux/include/ | grep asm
-Dit geeft aan dat de kernel source symbolisch gelinkt is met de assembly source-
-code voor de i386. Verder geeft het een lijst van alle processor architecturen aan
-die ondersteund worden, zoals de de Sun Sparc, Dec Aplha en andere types. 2
-4.7        Endian
-"It is allowed on all Hands, that the primitive Way of breaking Eggs before we eat
-them, was upon the larger End: But his present Majesty’s Grand-father, while he
-was a Boy, going to eat an Egg, and breaking it according to the ancient Practice,
-happened to cut one of his Fingers. Whereupon the Emperor his Father, published
-an Edict, commanding all his Subjects, upon great Penalties, to break the smal-
-ler End of their Eggs. The People so highly resented this Law, that our Histories
-tell us, there have been six Rebellions raised on that Account;... It is computed
-that eleven Thousand Persons have, at several Times, suffered Death, rather than
-submit to break their Eggs at the smaller End. Many hundred large Volumes ha-
-ve been published upon this Controversy: But the Books of the Big-Endians have
-been long forbidden..."
-Jonathan Swift’s Gulliver’s Travels
-    2
-      Voor meer informatie over de Linux kernel en verschillende processor architecturen zie: http:
-//www.kernel.org
-4 Endian                                                                                             32
-De termen big-endian en little-endian zijn geleend uit Gulliver’s Travels.
-In een computer staan ze voor de volgorde waarin bytes worden opgeslagen in het
-geheugen (byte ordering).
-Bij big-endian staat het ’big-end’, de meest significante byte vooraan en wordt het
-bewaard op het laagste geheugenadres.
-Little-endian is de volgorde waarbij de minst significante byte vooraan in het ge-
-heugen wordt bewaard.
-Bijvoorbeeld, in een big-endian computer, worden de bytes voor het hexadecimale
-getal B9 62 bewaard als volgt. B9 wordt bijvoorbeeld op adres 1000 bewaard en
-62 op 1001. Bij een little endian systeem gaat het net andersom. 62 zou worden
-bewaard op 1000, B9 op 1001.
-Nog een voorbeeld:
-       • Bij little-endian wordt 0x65 66 67 68 opgeslagen als 0x68 0x67 0x66 0x65.
-       • Bij big-endian wordt 0x65 66 67 68 opgeslagen als 0x65 0x66 0x67 0x68.
-De meeste RISC processoren zijn big-endian. Voor Nederlanders, die graag van
-links naar rechts lezen, is dit ideaal. Maar de Intel processoren en de software die
-ervoor wordt geschreven is little-endian.
-Little endian betekent dat het ’minst significante byte’ (LSB) wordt bewaard op het
-laagste geheugenadres (vooraan). 3
-Door de opdracht ’file <bestand>’ te geven kan men zien wat voor executable het
-is en of het geschikt is voor het gebruikte operating system en architectuur.
-Bijvoorbeeld:
-file /bin/bash
-Kort de voordelen van little-endian en big-endian:
-       • Little-endian: makelijk implementeerbaar in hardware
-       • Big-endian: begrijpelijker
-4.7.1        Little-endian
-Over de Intel wordt gezegd dat het een little-endian architectuur is. Dit kan worden
-getest door naar de opcodes (de uit te voeren instructies in hexadecimale waar-
-     3
-       Bekijk de files in de directory ’/usr/include/linux/byteorder/’ voor meer informatie over big- en
-little-endian.
-4 Endian                                                                     33
-den) te kijken.
-De volgende sourcecode, ’endian.asm’, demonstreert de werking van little-endian,
-door gebruikt te maken van een debugger.
-section . text
-global _start
-_start :
-            mov      eax ,      1
-            mov      eax ,      0x8001
-            mov      eax ,      0x00008001
-            mov      eax ,      0x8001abcd
-; exit
-            mov      ebx ,      0
-            mov      eax ,      1
-            int      0x80
-Figuur 4.4: De representatie van een word in het geheugen van een little-endian
-systeem.
-Compileer en link de sourcecode. Open het in de Assembly Language Debugger
-(ALD).
-4 Endian                                                                     34
-ald endian
-Een snapshot van de uitkomst.
-...
-ald> next
-eax = 0x00000001 ebx = 0x00000000 ecx = 0x00000000 edx = 0x00000000
-esp = 0xBFFFF970 ebp = 0x00000000 esi = 0x00000000 edi = 0x00000000
-ds = 0x0000002B es = 0x0000002B fs = 0x00000000 gs = 0x00000000
-ss = 0x0000002B cs = 0x00000023 eip = 0x08048085 eflags = 0x00200346
-08048085 B801800000 mov eax, 0x8001
-ald> next
-eax = 0x00008001 ebx = 0x00000000 ecx = 0x00000000 edx = 0x00000000
-esp = 0xBFFFF970 ebp = 0x00000000 esi = 0x00000000 edi = 0x00000000
-ds = 0x0000002B es = 0x0000002B fs = 0x00000000 gs = 0x00000000
-ss = 0x0000002B cs = 0x00000023 eip = 0x0804808A eflags = 0x00200346
-0804808A B801800000 mov eax, 0x8001
-ald> next
-eax = 0x00008001 ebx = 0x00000000 ecx = 0x00000000 edx = 0x00000000
-esp = 0xBFFFF970 ebp = 0x00000000 esi = 0x00000000 edi = 0x00000000
-ds = 0x0000002B es = 0x0000002B fs = 0x00000000 gs = 0x00000000
-ss = 0x0000002B cs = 0x00000023 eip = 0x0804808F eflags = 0x00200346
-0804808F B8CDAB0180 mov eax, 0x8001abcd
-ald> next
-eax = 0x8001ABCD ebx = 0x00000000 ecx = 0x00000000 edx = 0x00000000
-esp = 0xBFFFF970 ebp = 0x00000000 esi = 0x00000000 edi = 0x00000000
-ds = 0x0000002B es = 0x0000002B fs = 0x00000000 gs = 0x00000000
-ss = 0x0000002B cs = 0x00000023 eip = 0x08048094 eflags = 0x00200346
-De debugger laat door het commando ’next’ de uitwerking zien van de instructies
-op de registers.
-Bekijk de dikgedrukte regel. In het geheugen wordt op het adres 0804808F een
-instructie gelezen; het programma is namelijk geladen in het geheugen.
-De opdracht ’mov eax, 0x8001’ wordt vertaald in B801800000 in machinecode.
-Het getal 0x8001 wordt opgedeeld in delen van 2 delen van elk 1 byte, 01 en 80.
-B8 staat voor de opcode (instructie) van ’mov eax’.
-4 De modi van de 80x86                                                           35
-De opdracht ’mov eax, 0x8001abcd’ wordt vertaald naar B8CDAB0180. Het laat-
-ste gedeelte de ’abcd’ staat nu vooraan in een andere volgorde.
-Ook kan de lengte van de instructies verschillen. Op een Intel systeem kan dat
-liggen tussen de 1 en 15 bytes. Instructies die vaak voorkomen zijn meestal klein
-en zijn daarom sneller te verwerken.
-4.8     De modi van de 80x86
-De Intel 80386 heeft mogelijkheden om de tekortkomingen van de oudere 8086 te-
-gemoet te komen. De 8086 heeft bijna geen mogelijkheden op het gebied van het
-ondersteunen van geheugen protectie, virtual memory, multitasking en de manier
-om geheugen te adresseren boven de 640 KB.
-Toch is de 80386 geheel backwards compatible met de 8086. De 80386, 80486
-en verder worden hier als elkaars gelijken gezien. Het gaat erom dat de 80386 ge-
-baseerd is op al zijn voorgangers en dat de meeste technieken gelijk zijn gebleven
-bij nieuwere types in de 80386+ serie.
-De 8086 werkt met de real mode. Toen de ontwerpers bij Intel de 80286 ontwier-
-pen wilden ze extra mogelijkheden toevoegen aan de 8086. Maar ze wilden ook
-8086 compatibiliteit. Om aan beide eisen te voldoen verzonnen ze twee modi: Real
-Mode en Protected Mode. Real mode, de standaard op dat moment, maakte van
-de chip een 8086 met kleine veranderingen. Veranderingen waren er in overvloed
-als er gekeken wordt naar de protected mode. Bijna alle software die ontworpen
-is voor de 8086 zal niet werken in de protected mode zonder aanpassingen. DOS
-was in de tijd één van deze software.
-De 80386 heeft meer capaciteiten dan de 8086 en de 286. De standaard mode,
-zoals die bij de voorgangers was de real mode. De 286 en 386 kunnen beide ope-
-reren in de protected mode. Toch is de interne structuur is totaal verschillend. De
-386 heeft namelijk 32-bits registers en twee nieuwe 16-bit registers. De 386 sup-
-port nog een derde mode, Virtual 8086 mode (V86). In de V86 mode handelt de
-386 als in de protected mode maar behandelt het processen als in de real mode.
-V86 kan worden gezien als een emulator. 4
-4 Voordelen van de protected mode                                                          36
-                  Figuur 4.5: Tijdelijke opslag en permanente opslag
-4.9      Voordelen van de protected mode
-    1. Adressering
-       De 386 kan 4 GB aan geheugen adresseren, dit is het meest significante ver-
-       schil tussen de protected mode en de real mode. Protected mode software
-       kan zonder probleem 4 GB (232 bytes) aan geheugen voor data, code en
-       stack reserveren. Door gebruik te maken van omslachtige technieken kan
-       de real mode ook adresseren boven de 1 MB gebruiken om data te plaat-
-       sen. Deze technieken, het lineair adresseren van de code en stack ruimte,
-       is in het algemeen onhandig. Bovenal, het volledige 4 GB adresseren komt
-       weinig voor bij computers van het PC kaliber.
-    2. Virtual memory
-       De Memory Management Unit (MMU) van de 386 kan virtual memory im-
-       plementeren, dat er voor kan zorgen dat processen denken dat er 4 GB aan
-       geheugen is, terwijl er in werkelijk veel minder aanwezig is. In plaats daar-
-       van gebruikt het delen van de harddisk om data op te slaan.
-       Computers hebben een bepaald aantal MB’s aan RAM beschikbaar voor de
-   4
-     Een emulator is hardware of software dat zich voordoet als iets anders, zodat de software
-die gebruik maakt van de emulator op dezelfde manier werkt als in de verwachte omgeving. Deze
-techniek wordt veel gebruikt bij hardware die backwards compatible moet zijn.
-4 Voordelen van de protected mode                                                                   37
-       CPU. Helaas is dat niet altijd voldoende om alle processen tegelijk te laten
-       draaien. Als het operating system een groot aantal processen draait in het
-       fysieke geheugen is het bijna niet mogelijk om alle data van de processen
-       op te slaan. Kan het operating system geen virtual memory gebruiken dan
-       zal het aangeven dat er niet genoeg RAM beschikbaar is en adviseren om
-       bepaalde processen te beëindigen.
-       Virtual memory gaat hier anders mee om. Er wordt gekeken welke delen
-       van het geheugen het minst recent zijn gebruikt en kopiëert die vervolgens
-       naar de harddisk. Meestal gebeurt dit in de vorm van een swap file of swap-
-       partitie.
-   3. Adres vertaling
-       De MMU kan ook adressen vertalen voordat ze gebruikt worden. Software
-       processen werken met logische adressen. De 386 converteert lineair de
-       logische adressen naar 32-bit (zonder segment adres). De MMU converteert
-       dan weer lineaire adressen naar fysieke adressen. fysieke adressen liggen
-       op de RAM chips.
-   4. Segmentatie
-       In real mode zijn alle segmenten 64 KB lang en zitten op vaste locaties.
-       In protected mode kunnen segmenten verschillen in lengte van 1 byte to
-       4 GB. De segmenten kunnen onderverdeeld worden in 4 K pages. Pages
-       vervangen de segmenten.
-   5. Process protection
-       Verschillende processen kunnen beveiligd worden tegen elkaar. Het ene
-       proces heeft geen toegang tot de data van het andere proces. Het operating
-       systeem heeft ongelimiteerd toegang tot alle processen. Maar processen
-       hebben dit zeker niet, ze kunnen geen data van andere processen dwars
-       zitten of sturen. Dit maakt de loop van een proces onafhankelijk van andere
-       processen. 5
-   6. 32-bit registers
-       Registers op de 386 zijn 32-bits lang. Behalve de opgedeelde registers,
-       zoals AX (16 bit) in het EAX (32 bit) register. Ook zijn er meer segment
-       registers bijgekomen.
-   7. Adresserings methodes
-       In de real mode konden constante waarden alleen worden gebruikt in het BX,
-       BP en SI, DI register. In de protected mode kunnen alle registers gebruikt
-       worden.
-  5
-    Tenzij de kernel dit expliciet toelaat, bijvoorbeeld bij ptrace. Voor meer info ’man 2 ptrace’.
-4 De 80x86 CPU familie                                                           38
-   8. Multitasking
-      Ook een zeer belangrijk voordeel van de 386 is dat het multitasking support.
-      De 386 heeft veel snelle technieken om de huidige processor stand (alle data
-      in de registers) tijdelijk op te slaan en verder te gaan met een ander proces.
-      Later kan de stand van de processor weer worden opgepakt en kan er verder
-      worden gegaan, net alsof er geen onderbreking heeft plaatsgevonden.
-   9. Debuggen van hardware
-      De 386 heeft speciale hardware voor het debuggen van data breakpoints.
-      Wat wil zeggen dat op hardware niveau de data in bepaalde registers in de
-      gaten kan worden gehouden.
-4.10      De 80x86 CPU familie
-                          Figuur 4.6: De Intel 386 processor
-   1. 8088, 8086 Deze zijn als er zeer oppervlakkig wordt gekeken gelijk, intern
-      verschillen ze wel degelijk. Beiden werden ze gebruikt in de eerste PC’s. Ze
-      bevatten ze de volgende 16-bit registers: AX, BX, CX, DX, SI, DI, BP, SP,
-4 De 80x86 CPU familie                                                           39
-      CS, DS, SS, ES, IP, FLAGS. Deze processoren ondersteunen real mode. In
-      deze mode kan een proces al het geheugen adresseren, inclusief dat van
-      andere processen. Dit is zeer gevaarlijk en maakt debugging extra moeilijk.
-      Het geheugen wordt verdeeld in segmenten van 64 KB.
-   2. 80286 Deze CPU werd het eerst gebruikt in de AT-PC. Het voegt een paar
-      extra instructies toe aan de 8086. Het heeft namelijk de mogelijkheid om in
-      16-bit protected mode te werken. Het kan nu 16 megabytes aan geheugen
-      adresseren en het beschermt processen van elkaar. Helaas zijn de segmen-
-      ten verdeeld in delen van 64 KB.
-   3. 80386 Deze CPU volgde de 80286 op en nam veel eigenschappen over in-
-      clusief de registers en voegde daar de volgende 32-bits registers aan toe:
-      EAX, EBX, ECX, EDX, ESI, EDI, EBP, ESP, EIP en twee nieuwe 16-bit seg-
-      ment registers FS en GS. Ook maakt deze CPU gebruik van een nieuwe
-      32-bit protected mode. In deze mode kan het tot 4 GB aan geheugen adres-
-      seren. Processen worden verdeeld in segmenten, die nu pages heten en
-      kunnen een lengte hebben van 1 byte tot 4 GB.
-   4. 80486/Pentium/Pentium Pro Deze CPU’s voegen weinig nieuwe instructies
-      toe, ze zorgen er voor dat de instructies sneller worden uitgevoerd.
-   5. Pentium MMX Deze processor voegt MMX (MultiMedia, eXentions) toe aan
-      de instructieset van de Pentium. De instructies zorgen er voor dat veel ge-
-      bruikte grafische operaties sneller worden uitgevoerd.
-   6. Pentium II/Pentium III/Pentium 4 Dit is de Pentium Pro met MMX. De Penti-
-      um III/4 is eigenlijk alleen qua verwerkingssnelheid verschillend van de Pen-
-      tium II.
-   7. Itanium/IA-64 De Itanium is een 64-bits processor architectuur die geba-
-      seerd is op EPIC (Explicitly Parallel Instruction Computing), het parallel uit-
-      voeren van operaties binnen de processor. De Itanium, die in 2005 uitkomt
-4 De 80x86 CPU familie                                                       40
-      zal de eerste 64-bits processor zijn die Intel heeft ontworpen. Ook is de
-      processor van het RISC type.
-4 Vragen en opdrachten                                                           41
-4.11      Vragen en opdrachten
-   1.   (a) Wat is de taak van de processor (CPU)?
-        (b) Waarom is de processor in een computer de belangrijkste chip?
-   2.   (a) Wat is een instructieset?
-        (b) Kan je een instructieset herschrijven?
-   3.   (a) Leg het begrip endian uit.
-        (b) Kan er worden gesteld dat little-endian systemen sneller zijn dan big-
-             endian systemen? Licht toe.
-        (c) Als de Intel processoren little-endian systemen zijn, kunnen klonen van
-             die processor dan big-endian zijn?
-             Intel is CISC, kan een AMD processor RISC zijn?
-   4. De waarde van het EFLAGS register kan veranderen door bepaalde instruc-
-      ties. Is het nuttig om de verandering van het gehele register in de gaten te
-      houden? Licht toe.
-   5. Stel er moet met getallen worden gerekend die groter zijn dan 32-bit en
-      daarom niet in de registers van de 386 passen, toch moeten de waarden
-      worden opgeslagen. Noem enkele methodes om hiermee om te gaan.
-   6. Is het mogelijk om software die voor een Macintosh is gecompileerd te draai-
-      en op een Intel computer?
-      Geef aan waarom dit (niet) kan.
-   7. Het produceren van hardware wordt steeds goedkoper, toch gebruiken de
-      huidige processoren dezelfde technieken als oudere processoren. Waarom
-      wordt er niet direct overgestapt op een totaal andere architectuur?
-   8. Bekijk het volgende programma.
-      s e c t i o n . bss
-                    var       resd        1
-      section . text
-      global _start
-       _start :
-4 Vragen en opdrachten                                                     42
-          mov ecx , 0x41424344
-          mov [ v a r ] , ecx ; inhoud ecx i n v a r
-          mov ecx , v a r       ; adres van v a r i n ecx
-          mov eax , 4           ; sys c a l l w r i t e
-          mov ebx , 1           ; 1e arg : f d van s t d o u t
-                                ; ecx bevat adres v a r
-          mov edx , 4           ; lengte
-          i n t 0x80            ;  c a l l kernel
-          mov ebx , 0           ; 1e arg : e x i t code
-          mov eax , 1           ; sys c a l l e x i t
-          i n t 0x80            ; c a l l kernel
-     Compileer en link het bovenstaande voorbeeld, ’endian2.asm’. Run het pro-
-     gramma en verklaar de output.
-     Waarom is de volgorde van het resultaat totaal anders dan verwacht?
-     (0x41 of 65 betekent een A)
-Hoofdstuk 5
-Registers
-In dit hoofdstuk worden de verschillende typen registers behandeld en waarvoor
-ze dienen. Er wordt een inleiding gegeven in de werking van jumps, die het mo-
-gelijk maken om ’sprongen’ binnen het code segment te maken, dit beïnvloedt de
-uitvoering van programma’s.
-In assembly zijn er twee representaties van gehele getallen, beide worden be-
-handeld. Verder wordt er aandacht besteed aan rekenkundige bewerkingen en
-logische operatoren.
-5.1      Geheugencellen
-Registers zijn geheugencellen in een processor. Ze kunnen waarden aannemen
-of bevatten pointers naar data in het geheugen, deze data kunnen bijvoorbeeld
-instructies zijn voor de processor. Registers zijn meestal een veelvoud van een
-byte breed, bijvoorbeeld 16, 32, 64-bit. Zo ook bij de Intel 386 die registers van 32-
-bit heeft. Programmatuur krijgt een bepaalde werking door instructies die worden
-uitgevoerd door de processor. De instructies in assembly stellen mnemonic’s voor
-en hun operands zijn registers, geheugenadressen of immediates.
-Bijvoorbeeld:
-push eax                  ; eax i s een r e g i s t e r operand
-mov ebx , 1               ; h e t g e t a l 1 i s een immediate operand
-x o r [ memloc ] , edx ; memloc i s een memory operand
-Door instructies uit te voeren veranderen de waarden in de registers. Deze ver-
-anderingen kunnen worden getest, zo kan programmatuur een bepaalde volgorde
-van uitvoering krijgen.
-5 Intel registers                                                              44
-5.2      Intel registers
-Ondanks dat de 8088 8-bit registers had, waren er wel 16-bit mogelijkheden. De
-processor was zodanig ontworpen dat het om kon gaan met een 16-bit adresse-
-ringssysteem. Dit deed het door gebruik te maken van twee registers H en L. Beide
-registers waren 8-bit en vormden samen 16-bit. De 16-bit 8086 voegde een extra
-X aan de namen van de processor registers toe. De registers AX, BX, CX, en DX
-zijn paren van AH en AL, van BH en BL, van CH en CL, van DH en DL. De andere
-16-bit registers, SP, BP, SI en DI, hebben geen X in hun namen en vormen daarom
-ook geen paren.
-               Figuur 5.1: General-purpose registers van de Intel 386
-De databus van de 8086 was 16-bit en het kon 65.536 (216 ) locaties adresseren in
-een segment. De adresbus was 20-bit, dit was een truukje om meerdere segmen-
-ten te kunnen gebruiken op hetzelfde moment. Daarom was het geheugen niet
-helemaal gelimiteerd aan 64K, alleen is er geen manier om alle 220 bytes tegelijk
-te adresseren.
-Veel van de tekortkomingen aan de 8086 processor zijn verbeterd bij de 386. De
-acht 32-bit registers die beginnen met een E (extended) zijn uitbreidingen op de
-corresponderende 16-bit registers van de 8086. De databus en de adresbus van
-de 386 zijn beiden 32-bit dat betekent dat het 4.294.967.296 (232 , 4GB) aan ge-
-heugenlokaties kan adresseren.
-De Linux kernel biedt als operating systeem de mogelijkheid om 64GB aan geheu-
-5 Intel registers                                                              45
-gen te adresseren, het maakt gebruik van 3-level paging dat deels wordt aangebo-
-den door de IA32 (= Intel Architecture, voor 32-processoren dus de 386 en later).
-Eén van de redenen waardoor de Intel x86 lijn van processoren een groot succes
-werd, naast het feit dat een grote software fabrikant uit Redmond zijn software
-ervoor schrijft, is dat de processoren backwards compatible zijn. Software die
-draaide op voorgangers van de processoren, draait ook op nieuwere types.
-De 32-bits registers van de 386 kunnen maximaal 232 verschillende waarden aan-
-nemen (van 0x0000 0000 tot 0xFFFF FFFF). De 16-bit registers kunnen 216 ver-
-schillende waarden aannemen (van 0x0000 tot 0xFFFF).
-De 386 heeft 16 registers voor algemeen gebruik en voor het schrijven van soft-
-ware. Die zijn onder te verdelen in:
-                      Figuur 5.2: De registers van de Intel 386
-   1. General-purpose registers. Deze acht registers worden gebruikt voor het
-       opslaan van data en pointers. Ze dienen als operands voor instructies.
-   2. Segment registers. Deze registers bevatten de zes segment selectors.
-5 Intel registers                                                                46
-    3. Status en control registers. Deze registers veranderen van waarde bij be-
-        paalde voorwaarden.
-De 32-bit general-purpose data registers zijn EAX, EBX, ECX, EDX, ESI, EDI, EBP
-en ESP. Ze worden ondermeer gebruikt voor logische en rekenkundige bewerkin-
-gen, voor het berekenen van geheugen adressen en het opslaan van geheugen
-pointers. Omdat de 32-bit registers niet groot genoeg zijn om grote brokken data te
-bevatten worden er pointers (verwijzingen naar geheugen adressen) gebruikt naar
-data in het geheugen.
-Ondanks dat alle general-purpose registers gebruikt kunnen worden, moet er toch
-erg voorzichtig worden omgegaan met het ESP-register. Het ESP-register bevat
-de stackpointer; het wijst naar het begin van de stack. Sommige instructies maken
-altijd gebruik van bepaalde registers. Zo maken string instructies gebruik van ECX,
-ESI en EDI.
-Een kort overzicht van de general-purpose registers en het gebruik ervan:
-    1. EAX Accumulator voor operands en het opslaan van data.
-    2. EBX Pointer naar het DS segment (Base register)
-    3. ECX Counter voor string en lus (loop) operaties
-    4. EDX I/O (data) pointer
-    5. ESI Pointer naar de data in het segment waar DS naartoe wijst, de bron van
-        string operaties (source index).
-    6. EDI Pointer naar data (of resultaat) in een segment waar ES naartoe wijst;
-        wordt ook gebruikt als resultaat pointer voor string operaties (destination
-        index).
-    7. ESP Stack pointer (in het SS segment)
-    8. EBP Pointer naar de data op de stack (in het SS segment) (Base pointer)
-                                 8-bit   16-bit 32-bit
-                                 AH      AX     EAX
-                                 AL      BX     EBX
-                                 BH      CX     ECX
-                                 BL      DX     EDX
-                                 CH      BP     EBP
-                                 CL      SP     ESP
-                                 DH      SI     ESI
-                                 DL      DI     EDI
-5 Segment registers                                                                47
-5.3      Segment registers
-De segment registers (CS, DS, SS, ES, FS en GS) bevatten 16-bit segment selec-
-tors. Een segment selector is een speciale pointer, die wijst naar een segment in
-het geheugen. In de protected mode wordt het geheugen verdeeld in segmenten.
-Om een bepaald geheugensegment te kunnen aanspreken moet het bijbehorende
-segment selector opgeslagen zijn in het register. Deze details zijn bij het program-
-meren niet van belang omdat de assembler 1 zelf met segmenten omgaat.
-5.4      Instructie pointer
-De instructie pointer, EIP bevat een offset in het huidige code segment. Met behulp
-van de selector uit CS (code segment) en de offset kan er naar een instructie
-worden gewezen. EIP is een register dat telkens wijst naar de volgende uit te
-voeren instructie. Wijzigingen aan het EIP register hebben dus direct invloed op
-de volgorde van uitvoering van het programma. Op sommige systemen wordt de
-instructie pointer aangeduid met program counter (PC).
-5.5      Flags register
-Het 32-bit EFLAGS register bevat een groep van status flags, een control flag,
-en system flags. Sommige van de flags kunnen direct worden gewijzigd, andere
-worden alleen door special-purpose instructies gewijzigd. Niet alle bits op het
-EFLAGS register worden gebruikt. Door het aan- of uitzetten van flags kan er
-gemakkelijk met voorwaarden worden omgegaan. Dit is het belangrijkste doel van
-het flags register. Het kan daarom ook niet als volledig 32-bits register worden
-gebruikt.
-5.5.1     Carry flag
-In assembly kan men voorwaarden testen aan de hand van het flags register. Toch
-heeft het flag register nog andere taken. Zoals het bijhouden van een eventuele
-carry. De mnenonic ’add’ en ’adc’ worden gebruikt bij het optellen van getallen in
-de registers.
-De mnenonic ’add’ doet het volgende.
-operand1 = operand1 + operand2
-   1
-     Een assembler kan worden gezien als een assembly compiler, in dit geval NASM.
-5 Flags register                                                             48
-                         Figuur 5.3: Het EFLAGS register
-De mnenonic ’adc’ werkt op een iets andere wijze. Het neemt namelijk de car-
-ry flag van een eventuele vorige opdracht mee.
-operand1 = operand1 + carry flag + operand2
-Stel er moet een 64 bits getal opgeteld worden. Dat bestaat uit EDX:EAX (het
-eerste deel staat in EDX, het tweede in EAX) en EBX:ECX.
-De volgende regels assembly tellen EDX:EAX op bij EBX:ECX en schrijft het terug
-in EDX:EAX.
-(EDX:EAX = EDX:EAX + EBX:ECX)
-add eax , ecx
-adc edx , ebx
-Bij aftrekken werkt het principe hetzelfde, alleen wordt er gebruik gemaakt van
-’sub’ en ’sbb’ voor de carry. De volgende code trekt EBX:ECX af van EDX:EAX.
-5 Sections en segment registers                                            49
-De carry wordt dan gebruikt als ’borrow’ flag door sub en sbb.
-sub eax , ecx
-sbb edx , ebx
-Beschouw het volgende assembly programma, ’carry.asm’. Het demonstreert de
-werking van de CLear Carry (CLC) instructie.
-section . text
-global _start
- _start :
-     mov        eax ,     0xffffffff
-     mov        ebx ,     1
-     add        eax ,     ebx         ; eax = eax + ebx , CF==1
-     adc        eax ,     2           ; eax = eax + 2 + CF
-     clc
-     mov        eax ,     0xffffffff
-     mov        ebx ,     1
-     add        eax ,     ebx         ; eax = eax + ebx , CF==1
-     add        eax ,     2           ; eax = eax + 2
- ; exit
-     mov        ebx ,     0
-     mov        eax ,     1
-      int       0x80
-Om de werking van het programma te begrijpen dient het gecompileerd en gelinkt
-te worden en vervolgens in ALD te worden geladen.
-5.6     Sections en segment registers
-Assembly code bestaat uit één of meer onderdelen, die segmenten worden ge-
-noemd. De segmenten kunnen benaderd worden via de segment registers (CS,
-DS, SS, ES, FS en GS).
-5 Sections en segment registers                                                    50
-Hoe de segmentregisters precies worden gebruikt ligt aan het type memory mana-
-gement model dat het operating system gebruikt. In het geval dat er geen gebruik
-wordt gemaakt van flat of unsegmented memory model beginnen de adressen bij
-0 en kan er lineair door worden gerekend. Een modern operating system zoals
-Linux maakt gebruik van een segmented memory model. Elk segment register
-bevat een andere segment selector dat verwijst naar een ander lineair geheuge-
-nadres. Omdat er zes segment registers zijn kunnen er zes segmenten worden
-geadresseerd.
-5.6.1     Taken
-Elk van de segment registers hoort bij code, data of stack. Bijvoorbeeld het CS-
-register, dat de segment selector voor het code segment bevat. In het codeseg-
-ment staan de instructies van het programma. De processor haalt telkens een
-instructie uit het code segment. Dit doet de processor door het logische geheuge-
-nadres te vinden met behulp van de waarde in CS en EIP (het instructieregister).
-Het EIP-register bevat het lineaire adres van de uit te voeren instructie in het code
-segment van CS. Het is niet mogelijk het CS-register te wijzigen via de assem-
-bler; dit zou de loop van de software beïnvloeden. (Het operating system laat dit
-niet toe, anders zouden processen in elkaars geheugen adresseren en vervolgens
-toegang krijgen.) Het wordt intern door de processor gewijzigd (bijvoorbeeld door
-interrupt handling en taak verwisselingen).
-De registers DS, ES, FS en GS wijzen naar de vier data segmenten. Er zijn vier
-data segment registers door deze te gebruiken kan er op een veilige manier met
-datastructuren worden omgegaan. Dit is een tegemoetkoming van de processor
-naar protected mode.
-Zo kan software bijvoorbeeld tegelijk datastructuren van de huidige module ge-
-bruiken in het eerste segment. Data uit een ander segment, dat door een hogere
-programmeertaal gekoppeld is aan het assembly programma, kan gebruikt wor-
-den in het tweede segment. Een dynamische datastructuur kan als derde, en als
-vierde segment gebruikt worden.
-Het SS register bevat de segment selector voor het stack segment, waar de stack
-wordt opgeslagen. Alle stack operaties maken gebruik van het SS register om
-data te vinden in het stack segment. Het SS register mag, in tegenstelling tot
-CS, wel worden gewijzigd in assembly. Dit maakt het mogelijk meerdere stacks te
-gebruiken en daartussen te switchen. (Deze techniek wordt zeer weinig gebruikt.)
-5 Jumps                                                                                   51
-5.7         Jumps
-Jumps zijn assembly instructies die de loop van het programma veranderen. Jumps
-veranderen de instructie pointer (EIP) die naar code in het code segment wijst. Er
-zijn verschillende typen jumps, meestal vindt er voor een jump een test plaats.
-Labels zijn punten in de code section (.text). In de vorige voorbeelden is al gebruik
-gemaakt van labels, namelijk ’_start’, dat het begin van het programma aangaf.
-Een jump beïnvloedt het EIP door het te laten wijzen naar een punt ergens in het
-code segment. Met zogeheten far jumps kan overigens ook naar een ander adres
-in een ander code segment worden gesprongen.
-Labels labelen punten; ze zijn dus niets meer dan een vervanging van labels in
-geheugenadressen binnen het code segment.
-Het is de taak van de assembler (NASM) om de adressen van een label waarheen
-gejumpt wordt te berekenen. Labels worden vervangen door geheugenadressen
-in het code segment. Door executables in ALD te laden is dit goed te zien.
-Het onderstaande voorbeeld springt meerdere malen naar het ’print_eax’-label.
-Eerst wordt de ascii waarde van het hexadecimale getal 0x30 2 in het eax register
-geladen waarnaar het wordt vergeleken met 0x3a. Verschilt het, dan wordt er een
-jump gemaakt naar print_eax. Zo niet dan loopt het programma door en wordt exit
-uitgevoerd.
- s e c t i o n . bss
-               b u f f e r resd 1                       ; herschrijfbare buffer
- section . text
- global _start
- _start :
-mov            eax , 0x30                               ; eax=0x30 , a s c i i waarde 0
- print_eax :
-               mov [ b u f f e r ] , eax                ; waarde van eax i n b u f f e r
-               mov     eax , 4                          ;   write syscall
-               mov     ebx , 1                          ;   fd , s t d o u t
-               mov     ecx , buffer                     ;   adres van b u f f e r i n ecx
-               mov     edx , 1                          ;   lengte
-    2
-      0x30 komt overeen met getal 0, zie ascii tabel in bijlage D
-5 Signed en unsigned integers                                                            52
-            i n t 0x80                         ; k e r n e l c a l l , maak i n t e r r u p t
-           mov eax , [ b u f f e r ]           ; inhoud v . b u f f e r i n eax
-            i n c eax                          ; i n c r e m e n t eax
-           cmp eax , 0x3a                      ; v e r g e l i j k eax , met 0x3a
-            jnz print_eax                      ; a l s eax !=0 x3a jmp p r i n t _ e a x
- exit :
-            x o r ebx , ebx
-           mov eax , 1
-            i n t 0x80
-De werking van de ’cmp’-instructie komt in hoofdstuk 7 ’Programma structuur’ aan
-de orde. Het wordt gebruikt om te vergelijken en heeft dezelfde werking als sub,
-alleen brengt ’cmp’ geen wijzigingen aan in de operands maar in het ELFAGS
-register.
-5.8      Signed en unsigned integers
-In het vorige voorbeeld werd er gebruik gemaakt van een jump. De jump werd
-gemaakt aan de hand van een getal in het EAX-register, dat overeen kwam met
-een waarde uit de ascii-tabel.
-In assembly wordt vaak gebruik gemaakt van jumps aan de hand van voorwaarden
-met getallen, maar wat als die getallen een negatieve waarde bevatten? Dit kan
-vervelende gevolgen met zich meebrengen en daarom worden er twee soorten
-integers (gehele getallen) gebruikt: signed integers en unsigned integers.
-                    Signed integers        Unsigned integers
-                    zowel pos. als neg.    altijd positief
-                    two’s complement       normale representatie
-5.8.1     Unsigned integers
-Unsigned integers zijn integers die altijd positief of 0 zijn. Ze worden gebruikt in de
-normale representatie. Dat wil zeggen dat het decimale getal 171 in hexadecimaal
-0xab voorstelt, en binair 1010 1011.
-Een 16-bits register zoals het AX-register bevat dus getallen van 0 tot 65535. Het
-heeft een bereik van 216 of 65536.
-5 Signed en unsigned integers                                                       53
-In C code worden unsigned integers gedeclareerd met ’unsigned int . . . ’. Deze
-mogen, net als in assembly, alleen positieve waarden bevatten.
-5.8.2       Signed integers
-Om gebruik te maken van negatieve getallen moeten we kunnen aangeven dat
-getallen positief of negatief zijn. Er worden hier 3 coderingsmethoden uitgelegd;
-de laatste, two’s complement, wordt in de huidige computers gebruikt, maar kan
-gemakkelijker begrepen worden als de twee voorgangers ook duidelijk zijn.
-Bij sign magnitude wordt het eerste bit, het sign bit, gebruikt om aan te geven of
-een getal positief of negatief is.
-Een 0 representeert een positief getal, een 1 een negatief getal. Op deze manier
-kunnen er met 8 bits (1 Byte) getallen tussen de -127 en +127 gevormd worden.
-                                       -127    1111 1111
-                                      +127     0111 1111
-en
-                                        -88   1101 1000
-                                       +88    0101 1000
-Er is bij deze methode een nadeel omdat 0 op twee manieren gevormd kan wor-
-den. Ook is het hardwarematig complex te implementeren.
-Een andere methode is one’s complement.
-Bij deze methode wordt er ook gebruik gemaakt van een sign bit. Alle bits worden
-bij een negatief getal geïnverteerd. 3
-                                        -88   1010 0111
-                                       +88    0101 1000
-Het blijkt dat computers, gezien als elektronische rekenapparaten erg efficiënt kun-
-nen omgaan met one’s complement.
-Toch is er nog steeds een probleem met de 0, er zijn nog steeds twee manieren
-om 0 te vormen, namelijk 1111 1111 en 0000 0000.
-Deze problemen kunnen worden opgelost door gebruik te maken van two’s com-
-plement.
-Bij negatieve getallen werkt dit als volgt: inverteer alle tekens en tel er vervolgens
-1 bij op.
-   3
-     Inverteren kan worden gezien als het gebruik van de NOT operator.
-5 Rekenen                                                                                     54
-                            Het grootste getal   +127    0111 1111
-                            Het kleinste getal   -128    1000 0000
-                                        -88   1010 1111
-                                       +88    0101 0001
-Het voordeel van deze coderingsmethode is dat er maar één manier is om 0 te vor-
-men. Ook is er een nadeel omdat het het bereik van -127 tot +128 asymmetrisch
-is, maar computers hebben hier geen moeite mee. Dit is dan ook de reden dat het
-in de huidige computers wordt gebruikt.
-In programma’s waar gebruik wordt gemaakt van integers 4 moet worden uitge-
-gaan van signed integers die dus zowel positief als negatief kunnen zijn en die
-gebruik maken van two’s complement.
-5.8.3      Two’s complement omzetten
-Er zijn gevallen dat men een normale representatie van integers als unsigned inte-
-gers om wil zetten naar signed integers die gebruik maken van two’s complement.
-Dit kan worden gedaan met de instructie ’neg’. Neg zet de inhoud van de meege-
-geven operand om naar een two’s complement getal. Het inverteert alle bits en telt
-er daarna één bij op.
-In assembly zou ’neg’ zo gebruik kunnen worden.
-neg ax                                  ; ax wordt omgezet naar t c .
-neg [ i n p u t f i e l d ]             ; de inhoud wordt omgezet naar t c .
-neg edx                                 ; edx wordt omgezet naar t c .
-5.9       Rekenen
-Computers zijn niets meer of minder dan complexe tel- en rekenmachines. Reke-
-nen is nog steeds de hoofdtaak. De rekenkundige instructies hebben direct invloed
-op de waarden in de registers.
-   4
-     In C worden hoeven signed integers niet worden aangeven, in tegenstelling tot unsigned inte-
-gers.
-5 Rekenen                                                                           55
-5.9.1       Increment en decrement
-Increment en decrement zijn beide rekenkundige instructies, die men gebruikt bij
-tellers en loops. 5
-     • De increment instructie, ’inc’, telt één op bij de huidige waarde van het re-
-       gister dat als operand is meegegeven.
-       Bijvoorbeeld:
-       mov ah , 12                ; ah=12
-        i n c ah                  ; ah=13                 e i g e n l i j k ah=ah+1
-        i n c ah                  ; ah=ah+1 o f ah++
-       mov ebx , 99998
-        i n c ebx                 ; ebx++      −> ebx=99999
-     • De tegenhanger van increment is decrement, ’dec’, deze heeft een tegen-
-       overgestelde werking en trekt één af van de huidige waarde in het register.
-       mov d l , 88               ; d l =88
-       dec d l                    ; d l −−      d l =87
-5.9.2       Vermenigvuldigen en delen
-Voor het rekenen met gehele getallen (integers) moet er in assembly rekening wor-
-den gehouden met de twee verschillende representaties van integers. Daarom zijn
-er bepaalde rekenkundige instructies in tweevoud.
-Vermenigvuldigingen worden gemaakt met de ’mul’-instructie. De ’mul’-instructie
-voert unsigned integer vermenigvuldigingen uit. Het wordt gebruikt als ’mul ope-
-rand’, waarbij operand een geheugenadres of register kan zijn. Er zijn meerdere
-mogelijkheden omdat de operands van grootte kunnen verschillen.
-     • mul r/m8, AL Hier wordt de meegeven operand van 8 bits vermenigvuldigd
-       met AL (8 bit). Het resultaat wordt in AX (16 bit) opgeslagen.
-   5
-     Meer over loops in het hoofdstuk 7 Programma structuur.
-5 Rekenen                                                                              56
-     • mul r/m16, AX De operand van 16 bit wordt vermenigvuldigd met AX (16
-          bit). Het resultaat wordt opgeslagen in DX:AX.
-     • mul r/m32, EAX Hierbij wordt de operand van 32 bit vermenigvuldigd met
-          EAX (32 bit). Het resultaat wordt in EDX:EAX opgeslagen.
-Compileer en link het onderstaande assembly voorbeeld.
-Laadt het programma in ALD en bekijk het resultaat. Ga na wat er gebeurt bij de
-vermenigvuldigingen en welke registers erbij betrokken zijn.
- s e c t i o n . data
-                getal1    db  0x8a
-                getal2    db  0x6b
-                getal3    dw  0x4141
-                getal4    dw  0x4545
-                getal5    dd  0x8a8a8a8a
-                getal6    dd  0x9c9c9c9c
- section . text
- global _start
- _start :
-                nop
-                mov a l , [ g e t a l 1 ]
-                mul b y t e [ g e t a l 2 ]      ; AX= g e t a l 2 ∗ g e t a l 1
-                mov ax , [ g e t a l 3 ]
-                mul word [ g e t a l 4 ]         ; DX: AX= g e t a l 4 ∗ g e t a l 3
-                mov eax , [ g e t a l 5 ]
-                mul dword [ g e t a l 6 ]        ; EDX: EAX= g e t a l 6 ∗ g e t a l 5
- exit :
-                mov eax , 1
-                x o r ebx , ebx
-                i n t 0x80
-Het voorbeeld demonstreert hoe de vermenigvuldiging van unsigned integers gaat
-in assembly. Het vermenigvuldigen van signed integers gaat op een andere wijze.
-Hiervoor wordt de ’imul’-instructie gebruikt (NASM doc. A.76).
-5 Logische operatoren en maskers                                                  57
-Het delen in assembly gebeurt op bijna dezelfde wijze als vermenigvuldigen. Voor
-meer informatie over delen en de manier waarop dit gebeurt zie de documentatie
-bij NASM section A.25 over de ’div’-instructie voor unsigned integers en de ’idiv’-
-instructie voor signed integers.
-5.10       Logische operatoren en maskers
-Bij het vorige voorbeeld, dat een jump demonstreerde, staat op regel 26 ’xor ebx,
-ebx’, terwijl in de andere voorbeelden ’mov ebx, 0’ stond. In dit geval is de uitwer-
-king van de instructies gelijk, namelijk het laden van ebx met het getal ’0’.
-Assembly kent de volgende logische operatoren: XOR, OR, AND en NOT. Ze wor-
-den meestal gebruikt bij het toepassen van maskers.
-5.10.1      AND
-Het resultaat van de AND operator bij twee bits is alleen een 1 als beide 1 zijn.
-Hieronder staat de waarheidstabel van de AND operator.
-                                  A    B   A AND B
-                                  0    0       0
-                                  0    1       0
-                                  1    0       0
-                                  1    1       1
-    • Met AND maskers kan er getest worden op bepaalde bits. Zo kan de AND
-       operator worden gebruikt bij het isoleren van bits.
-                                      1111 0001
-                                      1000 0000 AND
-                                      1000 0000
-       Dit kan als volgt in assembly worden gebruikt:
-       mov          al ,      0xf1        ; a l i s een 8 b i t s r e g i s t e r
-       and          al ,      0x80        ; a l i s nu 0x80
-       Het resultaat is dat het AL-register de waarde 0x80 bevat. Om dit beter te
-       testen kan men er een assembly programma van maken en het laden in een
-       debugger.
-5 Logische operatoren en maskers                                               58
-    • Bij dit voorbeeld wordt hetzelfde AND masker gebruikt en het geeft aan dat
-      het MSB bit een 0 is.
-                                     0111 0001
-                                     1000 0000 AND
-                                     0000 0000
-      In assembly had dit er er zo uit kunnen zien.
-      mov         bl ,      0x71        ; b l bevat 0x71
-       and        bl ,      0x80        ; pas een masker van 0x80 t o e
-      Na het draaien van het voorbeeld bevat het BL-register de waarde 0000
-      0000.
-5.10.2     OR
-De logische OR operator wordt vaak gebruikt om individuele bits te veranderen
-zonder een bewerking uit te voeren over de andere bits.
-De logische OR heeft altijd als uitkomst een 1 als één van de te testen bits 1 is.
-Zijn beide een 0 dan is de uitkomst een 0, anders geeft de OR altijd een 1.
-Zie hier de waarheidstabel van de logische OR.
-                                  A   B   A OR B
-                                  0   0      0
-                                  0   1      1
-                                  1   0      1
-                                  1   1      1
-    • Het volgende voorbeeld demonstreert het gebruik van de OR operator, die
-      gezien kan worden als het tegengestelde van de AND operator.
-                                      0010 1011
-                                      1001 0010 OR
-                                      1011 1011
-      Als we dit naar assembly omzetten wordt het gelijkwaardig met.
-5 Logische operatoren en maskers                                              59
-      mov          cl ,       0x2b         ; c l =0x2b
-       or          cl ,       0x92         ; c l i s h i e r n a 0xbb
-      Door een logische OR van 0x92 op het CL-register toe te passen dat 0x2b
-      bevat, verandert de waarde in 0xbb.
-5.10.3     XOR, exclusive OR
-De logische XOR operator is gelijk aan de OR, maar is er één verschil. Een XOR
-van 2 bits is alleen 0 als beide bits gelijk zijn, anders is het resultaat 1.
-Zie hier de waarheidstabel van de exclusive OR.
-                                  A    B    A XOR B
-                                  0    0         0
-                                  0    1         1
-                                  1    0         1
-                                  1    1         0
-    • In het volgende voorbeeld wordt een demonstratie gegeven van het gebruik
-      van de XOR.
-                                       0010 1010
-                                       1001 1111 XOR
-                                       1011 0101
-      In assembly zou dit er zo uitzien.
-      mov          dl ,       0x2a         ; d l =0x2a
-       xor         dl ,       0x9f         ; x o r r e n van d l met 0 x 9 f
-      Na het draaien van het stukje assembly code bevat het DL-register de waar-
-      de 0xb5. Dit omdat 0x2a xor 0x9f gelijk is aan 0xb5.
-    • De XOR kan ook gebruikt worden om bits om te draaien, 0 naar 1 en 1 naar
-      0.
-                                       1010 1010
-                                       1111 1111 XOR
-                                       0101 0101
-5 Logische operatoren en maskers                                                60
-   • In de sourcecode die een jump demonstreert, wordt gebruik gemaakt van
-     een de XOR in plaats van de ’mov’-instructie om een register de waarde 0
-     te geven. Een XOR masker van twee dezelfde waarden heeft als gevolg 0
-     (zie de waarheidstabel).
-     Dit is een veel voorkomend iets in assembly, het volgende voorbeeld demon-
-     streert dit. Het is een logisch gevolg als je bedenkt dat de XOR altijd een 0
-     geeft als beide bits gelijk zijn.
-                                       1110 0101
-                                       1110 0101 XOR
-                                       0000 0000
-     Omgezet in assembly ziet het er zo uit.
-     mov a l , 0xe5          ; a l =0xe5
-      x o r a l , 0xe5       ; x o r r e n van a l met 0xe5
-     Of direct via de registers met.
-      xor al , a l        ; a l =0
-     Het AL-register is na de instructie ’xor al, al’ altijd 0.
-5.10.4     NOT
-De NOT operator verschilt van de andere operators. Het maakt gebruik van één
-operand en wordt daarom ook wel een unary operator genoemd.
-De NOT van een bit is de tegenovergestelde waarde van de huidige bit.
-De waarheidstabel.
-                                      A    NOT A
-                                      0      1
-                                      1      0
-   • Een voorbeeld van het gebruik van de NOT operator.
-                                       1000 1000 NOT
-                                       0111 0111
-5 Logische operatoren en maskers                                                   61
-         In assembly code ziet het er zo uit.
-         mov          cl ,         0x88        ; c l =0x88
-          not         cl                       ; c l i s nu 0x77
-         Het CL-register bevat na de instructie ’not cl’ de waarde 0x77 in plaats van
-         0x88.
-De ’not’-instructie wordt ook gebruikt bij het omzetten van getallen naar one’s com-
-plement.
-5.10.5         TEST
-De instructie ’test’ wordt op dezelfde manier gebruikt als de AND operator en heeft
-dezelfde waarheidstabel, maar het wijzigt de registers die als operands worden
-gegeven niet. Het verandert alleen het EFLAGS register.
-De ’test’-instructie heeft meerdere toepassingen, hier een korte demonstratie er-
-van. In dit voorbeeld wordt test gebruikt om te zien of het eerste bit in het CL-
-register gelijk is aan 1. Is het gelijk aan 0 dan wordt het ZF (zero flag) op 1 gezet.
-Omdat 0xf0 AND 0x80 een 1 oplevert en ZF daarom 0 is, wordt er niet gejumpt
-naar ’end’. De ’jz’ 6 jump wordt alleen gemaakt als JZ (Zero Flag op het EFLAGS
-register) een 1 is.
-s e c t i o n . data
-        f o o db " t e s t −t e s t " , 0xa
-        l e n equ $ − f o o
-section . text
-global _start
-_start :
-        mov c l , 0 x f 0         ; 11110000
-        t e s t c l , 0x80        ; 10000000
-; 1111 0000
-; 1000 0000 AND
-; −−−−−−−−−
-   6
-     In hoofdstuk 6 wordt er meer informatie gegeven over jumps.
-5 Logische operatoren en maskers  62
-; 1000 0000
-;
-; D i t i s o n g e l i j k aan 0
-; Zero Flag ( ZF ) = 0
-; j z jumpt a l s ZF een 1 i s .
-; ZF = 0 dus geen jump
-      j z end
-; druk f o o a f
-      mov eax , 4
-      mov ebx , 1
-      mov ecx , f o o
-      mov edx , l e n
-      i n t 0x80
-end :
-      mov eax , 1
-      x o r ebx , ebx
-      i n t 0x80
-5 Vragen en opdrachten                                                          63
-5.11      Vragen en opdrachten
-   1.   (a) Is het mogelijk om registers in een processor direct te wijzigen?
-        (b) Leg uit wat extended registers zijn.
-        (c) Hoeveel bits zitten er in een byte, een word en een double word?
-   2.   (a) Waar dient het CS-register voor?
-        (b) Wat is de instructie pointer en waar wijst het naartoe?
-        (c) Kan het EIP-register door bijvoorbeeld de ’mov’-instructie worden ge-
-             wijzigd? Waarom wel/niet?
-        (d) Op welke manier werkt de instructie pointer?
-   3.   (a) Waarom bestaat assembly sourcecode uit meerdere segmenten/secti-
-             ons?
-             Maak een link naar het geheugenmodel.
-        (b) Wat is het nut van segment registers?
-        (c) Kan een assembly programmeur de waarden in bijvoorbeeld FS of CS
-             wijzigen? Laat de assembler, in dit geval NASM, dit toe?
-             Probeer dit uit.
-   4. Waarom kan linux 64GB aan geheugen adresseren, terwijl dit niet mogelijk
-      is als er naar de breedte van de registers wordt gekeken?
-   5. Leg uit waarom het handig is om registers in twee delen te splitsen, een
-      ’low’, L deel en een ’high’, H deel?
-   6. Stel dat de waarde van AX wordt veranderd. Heeft dit gevolgen voor EAX en
-      voor AH?
-   7.   (a) Om een bepaalde structuur te krijgen binnen een programma moeten
-             er voorwaarden worden getest. Hoe wordt dit gedaan in assembly?
-        (b) Beschrijf de werking van de carry flag op het EFLAGS register.
-        (c) Wat doet de ’clc’-instructie? Wat voor nut heeft het? Geef een source-
-             code waarin een demonstratie staat met de werking ervan.
-        (d) ALD laat de hexadecimale waarde zien van het EFLAGS register. Waar-
-             om is dit?
-   8. Software die geschreven is voor de 8086 draait ook op de 386. Leg uit
-      waarom dit mogelijk is.
-5 Vragen en opdrachten                                                             64
-    9. De registers in een processor zijn direct verantwoordelijk voor wat er in de
-        computer gebeurt. Leg uit waarom het wijzigen direct invloed heeft op de
-        handelingen van de computer.
-  10.     (a) Wat is de functie van de general-purpose registers?
-          (b) Mogen de general-purpose registers voor andere taken worden ge-
-              bruikt dan waarvoor ze zijn bedoeld?
-  11.     (a) Hoeveel bit is het AX-register?
-          (b) Hoeveel bit is het AL-register; en het EAX-register?
-          (c) Is het BX-register in de 8086 even lang als het BX-register in de 386?
-  12. Wat is het nut en de uitwerking van de nop instructie? Gebruik hierbij de
-        NASM manual.
-  13. De volgende sourcecode is ongeldig. Er wordt de volgende foutmelding ge-
-        genereerd: ’invalid combination of opcode and operands’.
-        section . text
-        global _start
-        _start :
-              mov bx , 0x555
-              mov eax , bx
-        end :
-              mov eax , 1
-              x o r ebx , ebx
-               i n t 0x80
-          (a) Geef de reden van de ongeldigheid.
-          (b) Vervang regel 6, ’mov eax, bx’ door ’movzx eax, bx’.
-          (c) Compileer en debug het programma.
-          (d) Geef een toelichting over de mnemonic ’movzx’ 7 .
-   7
-     Voor meer informatie over over ’movzx’ zie de NASM handleiding.
-5 Vragen en opdrachten                                                          65
-  14.   (a) Geef van alle vier de verschillende operatoren een voorbeeld en be-
-            schrijf het nut er van.
-        (b) Wat is gevolg van ’xor edx, edx’? Welke waarde bevat het EDX-register
-            na deze instructie.
-  15. Vul de ontbrekende waarden in.
-             1010 1101
-        (a)  1110 0101 AND
-             ...
-             1111 1101
-        (b)  1010 0111 OR
-             ...
-             1010 1101
-        (c)  1010 0000 XOR
-             ...
-             1100 1101 NOT
-        (d)
-             ...
-  16.   (a) Waarom zijn er twee type integers? Geef ook aan welke coderingsme-
-            thode beide gebruiken.
-        (b) Leg uit hoe signed integers in moderne computers worden gebruikt.
-            Licht kort het sign bit toe.
-        (c) Zet het two’s complement getal 1100 1101 om naar een decimaal getal.
-        (d) De ’neg’-instructie zet getallen unsigned integers om naar signed inte-
-            gers in two’s complement. Bestudeer de werking van ’neg’ en schrijf
-            zelf een programma dat een normale gerepresenteerde waarde van
-            een register of geheugenadres omzet naar two’s complement. (hint:
-            Gebruik ALD om het programma te testen en lees de bondige docu-
-            mentatie over ’neg’ in de NASM handleiding.)
-  17. Het delen van getallen gaat op bijna dezelfde wijze als het vermenigvuldigen
-      in assembly. Schrijf een programma dat deelt aan de hand van 8, 16 en
-      32-bit getallen. Deze getallen zijn unsigned integers en er moet gebruik
-      gemaakt worden van de ’div’-instructie. Voor meer informatie zie de NASM
-      handleiding over ’div’.
-Hoofdstuk 6
-Taal niveaus
-Dit hoofdstuk beschrijft de verhouding van assembly ten opzichte van High Level
-languages. Er wordt beschreven hoe assembly is ontstaan en waarom men nu
-vooral in hogere programmeertalen programmeert. HLL en assembly zijn te com-
-bineren en hier wordt dan ook een kort voorbeeld van gegeven.
-Ook wordt er aandacht besteed aan assemblers, in dit geval NASM en de moge-
-lijkheden ervan, zoals het schrijven van macro’s.
-6.1      Assembly language
-Een processor ’verstaat’ strikt gezien alleen maar machinetaal. Deze taal is niet
-bruikbaar om in te programmeren. Er zou dan met geheugenadressen en instruc-
-ties als numerieke waarden gewerkt moeten worden. Om toch op low-level gebied
-te kunnen programmeren is er een assembly language. Assembly zorgt ervoor dat
-er direct met de processor gecommuniceerd kan worden, maar wel via een taal die
-voor mensen leesbaar is. Elke instructie kan naar mnemonics worden omgezet.
-Iedere assembly mnemonic komt overeen met een instructie. Dit is de reden dat
-assembly machinegericht is. Er zijn veel verschillende processor architecturen met
-elk een eigen assembly taal.
-6.2      Low-level languages
-In de jaren ’50 werd de assembly language ontwikkeld, omdat het niet meer mo-
-gelijk was om in machinetaal te programmeren; de software werd te complex en
-bevatte te veel regels code. Alle codes werden geprogrammeerd in numerieke
-waarden. Assembly loste dit op door het gebruik van mnemonic’s; dit zijn woorden
-die overeenkomen met machinetaalinstructies.
-6 High Level Languages                                                          67
-Mnemonic’s zijn veel gemakkelijker te onthouden dan numerieke waarden. Zo is
-er de mnemonic voor optellen, ’add’ en voor aftrekken ’sub’. Als bijvoorbeeld de
-waarde in het register EAX en de waarde in EBX opgeteld moeten worden en weer
-opgeslagen worden in EAX, dan zou dit in machinecode er bijvoorbeeld als volgt
-uit zien: 03 03. In assembly kan het zo worden geschreven: ’add eax, ebx’.
-Assembly languages maken gebruik van assemblers. Dit is software die assem-
-bly sourcecode omzet naar machinetaal. Een processor heeft een unieke set aan
-machinetaalinstructies, dit is de reden dat het ook een eigen assembly language
-heeft. Dit heeft tot gevolg dat assemblyprogrammatuur alleen geschreven kan wor-
-den voor een bepaald type processor.
-Assembly komt programmeurs tegemoet door mnemonic’s te gebruiken voor in-
-structies in plaats van numerieke representaties. Maar nog steeds bestaat een
-zeer simpele handeling uit vele instructies. Dit zorgt ervoor dat het programmeren
-in assembly veel tijd kost. Ondanks dat sommige programmeurs gebruik maken
-van vele bibliotheken met voorgeprogrammeerde routines, neemt dit niet het ba-
-sisprincipe van assembly weg. Er moet nog steeds veel tijd aan de werking van de
-routines worden besteed.
-6.3      High Level Languages
-Op een hoger niveau staan de hogere programmeertalen, HLL (High Level Lan-
-guages), die probleem gericht werken. Deze talen zijn niet machine afhankelijk.
-De operaties uit de hogere programmeertalen zijn gericht op problemen die vaak
-voorkomen. Denk hierbij aan tellers en andere routines voor voorwaarden en pro-
-gramma flow. De problemen worden opgelost zonder specifieke machinetaal in-
-structies te gebruiken.
-Als er code is geschreven in een hogere programmeertaal is het de taak van een
-6 Samenwerking tussen C en assembly                                              68
-compiler om die om te zetten naar machinecode. Er wordt op deze manier een
-uitvoerbaar binaire file gevormd met machinetaal. De compiler voor de hogere
-programmeertaal leest de sourcecode en vertaalt het naar assembly die precies
-doet wat er in de hogere programmeertaal was beschreven. De assembly code
-bestaat nu uit veel meer regels code dan de oorspronkelijk HLL sourcecode.
-High Level Languages zijn ontwikkeld in de jaren rond 1955. De eerste taal was
-FORTRAN, gevolgd door Algol, Cobol en Lisp. Bekende moderne high-level lan-
-guages zijn Pascal, C, C++. Deze high-level languages maken gebruik van compi-
-lers. Dit is software die de sourcecode van HLL omzet in machinetaal afhankelijke
-objectcode. Scripting en Virtual Machine worden hier buiten beschouwing gelaten,
-omdat ze indirect naar machinecode worden omgezet.
-Strikt gezien is C geen HLL omdat het in C ook mogelijk is om low-level taken uit te
-voeren. Zo ondersteunt C indirect het gebruik van registers, low-level geheugen-
-manipulatie, goto-statements en het schuiven van bits en dergelijke. In dit dictaat
-wordt C gebruikt als HLL om bijvoorbeeld while- en for-statements te demonstreren
-in assembly.
-6.4         Samenwerking tussen C en assembly
-Het is mogelijk om programmatuur te schrijven die deels is geschreven in een HLL
-zoals C of C++ en in assembly. Omdat C het gebruik van functies aanbiedt kunnen
-we sommige functies (routines) in assembly schrijven. De functies geschreven in
-assembly kunnen sneller en efficiënter zijn dan die in een HLL geschreven zijn.
-In de Linux kernel gebeurt hetzelfde, de machineafhankelijke taken worden uitge-
-voerd door assembly functies die vanuit de C code worden aangeroepen. Omdat
-een groot deel van de kernel op deze manier in C is geschreven is het in zeer
-hoge mate te porten naar andere architecturen. (Alleen de machine afhankelijke
-assembly functies hoeven herschreven te worden.)
-Het volgende (zeer korte) voorbeeld demonstreert een functie geschreven in as-
-sembly die samenwerkt met C. Omdat er mnemonics worden gebruikt die nadere
-uitleg nodig hebben van begrippen die pas in de volgende hoofdstukken worden
-uitgelegd is het voorbeeld beperkt.
-De inhoud van de de file ’asm_code.asm’.
- section . text
- g l o b a l asmcode
-6 Samenwerking tussen C en assembly                                              69
-asmcode :
-               enter           0 ,0
-               mov             eax ,        0x12
-               leave
-               ret
-De sourcecode van ’c_code.c’
-# i n c l u d e < s t d i o . h>
- /∗
-               p r o t o t y p e n van de asm f u n c t i e
-               omdat anders de c o m p i l e r de
-               f u n c t i e n i e t kent .
- ∗/
- e x t e r n i n t asmcode ( v o i d ) ;
- i n t main ( v o i d ) {
- i n t g e t a l =0;
-               g e t a l =asmcode ( ) ;
-               p r i n t f ( "%d \ n " , g e t a l ) ;
-               return 0;
- }
-Compileer de assembly functie met NASM met ’nasm -f elf asm_code.asm’. Dit
-zorgt ervoor dat er objectcode in asm_code.o komt te staan. Deze objectcode kan
-door de C compiler (GCC) worden gelinkt met een C programma.
-Dit gebeurt door ’gcc asm_code.o c_code.c -o c_asm’ te geven.
-GCC kan zowel objectcode (asm_code.o) als C code (c_code.c) omzetten naar
-een executable. Het resultaat, een executable, wordt door de optie ’-o’ naar de file
-’c_asm’ geschreven.
-Deze kan uitgevoerd worden en het resultaat is 18, omdat 0x12 in decimaal 18 is.
-Alle commando’s nog eens in het kort:
-nasm -f elf asm_code.asm
-gcc asm_code.o c_code.c -o c_asm
-6 Low-level power!                                                              70
-./c_asm
-Dit voorbeeld demonstreert dat het mogelijk is om vanuit de ene taal functies aan
-te roepen uit de andere taal.
-De assembly code wordt in dit voorbeeld aangeroepen vanuit de de ’main’ functie
-van het C programma. Het resultaat van het assembly programma, de return waar-
-de, wordt in het EAX-register gezet en wordt in de C code in de variabele ’getal’
-gezet. Vervolgens wordt deze naar het scherm geschreven.
-In printf staat %d om het getal af te drukken; dit zorgt ervoor dat de decimale
-waarde van het getal wordt gebruikt. (Er wordt geen gebruikt gemaakt van de ascii
-waarden.)
-6.5      Low-level power!
-Assembly geeft de programmeur directe controle over de computer. Dit is de voor-
-naamste reden dat mensen geïnteresseerd zijn in assembly.
-Voor de mensen die computers alleen maar gebruiken om software op te draai-
-en is software zeer abstract. Programmeurs willen het gedrag van een computer
-kunnen beïnvloeden en omdat assembly platform afhankelijk is, is dit geen gemak-
-kelijke taak.
-De 386 is historisch gezien van redelijk groot belang. De huidige generatie pro-
-cessoren van Intel zijn allemaal gericht op die 32-bits processor. De assembly
-language van de 386 is een standaard geworden op assembly gebied. Dit omdat
-de Intel 386 vastgeroest zit aan assembly programmeren. Omdat de 386 gebruik
-maakt van protected mode kunnen er krachtigere applicaties worden geschreven
-die ook nog eens 32-bit zijn.
-Assembly kent geen variabelen of andere HLL principes. Toch biedt het de beste
-middenweg tussen een machinetaal en een HLL. Door het gebruik van macro’s en
-subroutines kan 1 regel veranderen in duizenden bytes aan machinetaal.
-Er zijn legio voordelen die pleiten voor assembly. Maar het meest voor de hand
-liggend is het toegang hebben tot het lage niveau van de computer, en de totale
-controle over de CPU. Software die is geschreven in HLL is meestal trager dan
-assembly software, omdat een compiler standaard methoden gebruikt voor lezen
-en schrijven, het gebruik van variabelen en het aanroepen van routines uit eerder
-gecompileerde software. Een goed voorbeeld hiervan is het gebruik van de stack.
-Functies in HLL maken veelal gebruik van het stack principe. Code geschreven in
-een HLL, kan er wiskundig correct en efficiënt uitzien, maar kan op een totaal on-
-handige wijze omgaan met een stack. Dit kan software onnodig langzaam maken.
-6 Low-level power!                                                              71
-Assembly biedt de mogelijkheid om absoluut optimaal doelmatige software te schrij-
-ven. Het is bij assembly namelijk mogelijk om software te maken die minder in-
-structies gebruikt dan HLL, daarom zijn assembly programma’s meestal kleiner en
-sneller.
-De nadelen van assembly zijn: een verhoogde kans op fouten in de software
-(bugs), het is processor afhankelijk, er zijn geen library-routines voor veel voor-
-komende taken, zoals het afdrukken van tekenreeksen of het lezen van gegevens.
-De bugs in software zijn een gevolg van onzorgvuldigheid; dit staat los van het
-gebruik van de programmeertaal. Het is zeker mogelijk om bugvrije software te
-schrijven in assembly. Toch is het zo dat een bug in assembly sourcecode meer
-invloed heeft dan bij HLL. Om dit te voorkomen is het belangrijk assembly code
-goed te ontwerpen en te debuggen.
-Assembly wordt direct omgezet naar machinetaal en het is daarom vanzelfspre-
-kend dat het afhangelijk is van de gebruikte processor. Dit maakt het porten van
-software een zware tot onmogelijke taak.
-Ook biedt assembly geen mogelijkheden zoals voorgeschreven functies voor be-
-rekeningen en strings. Dit kan vervelend lijken, maar in werkelijkheid heeft het
-echter grote voordelen. Dit heeft tot gevolg dat assembly code transparanter en
-doelmatiger kan worden geschreven.
-6 NASM                                                                             72
-6.6      NASM
-Assembly sourcecode wordt door een assembler omgezet naar machinecode. NA-
-SM is een assembler en staat voor Netwide Assembler. Het is een assembler voor
-de Intel 80x86 en die zo is ontworpen dat het gemakkelijk te porten is naar meerde-
-re operating systems. Ook ondersteunt het verschillende soorten formaten, zoals
-bin, aout, coff, elf, as86, obj (DOS), PE (win32), rdf (het eigen formaat van NA-
-SM). NASM maakt gebruik van de Intel syntax, net als TASM en MASM. TASM
-en MASM zijn beiden geen opensource en draaien niet op Unices, tenzij in een
-DOS-emulator. 1
-De andere assembly syntax is de AT&T syntax, die de statements net andersom
-interpreteert als Intel syntax. De gebruikte syntax is niet belangrijk voor het leren
-van de principes van assembly; het is alleen van belang bij het programmeren.
-GAS is een AT&T syntax assembler van GNU. Het is eigenlijk een back-end van
-GCC en is daarom niet echt geschikt als assembler. Toch maakt GNU gebruik van
-de AT&T syntax. Dit kan nogal vervelend zijn bij het gebruik van andere GNU tools,
-zoals het debugging programma GDB, waarbij alles in AT&T stijl staat. Er bestaan
-software tools die de ene syntax omzetten de andere. Meestal werken deze tools
-niet optimaal en is kennis van beide vereist.
-6.6.1     NASM macro’s
-Met NASM is het mogelijk om gebruik te maken van macro’s. Macro’s maken
-het mogelijk om bijvoorbeeld files te includen en mechanismen te programmeren
-voor taken die vaak voorkomen. Macro’s kunnen worden gezien als preprocessor
-opdrachten.
-In het onderstaande voorbeeld bevat ’syscall.mac’ alle assembly instructies die
-een write en een exit system call mogelijk maken.
-Het bestand ’macro.asm’ maakt gebruik van de macro’s door de file ’syscall.mac’
-te includen en de code ervan te gebruiken.
-De inhoud van het bestand ’syscall.mac’.
-%macro w r i t e 3
- ; gebruik : write        f d message msglength
-            mov eax ,    4
-            mov ebx ,    %1
-            mov ecx ,    %2
-   1
-     http://www.dosemu.org
-6 NASM                                                                      73
-                mov edx , %3
-                 i n t 0x80
-%endmacro
-%macro e x i t 1
-; g e b r u i k : e x i t status
-                mov ebx , %1           ; e r r o r status , 0 i s success
-                mov eax , 1
-                 i n t 0x80
-%endmacro
-Zie hieronder de inhoud van ’macro.asm’. Dit bestand kan net als andere assem-
-blyprogramma’s worden gecompileerd en gelinkt worden. Macro’s worden door
-NASM geïnterpreteerd, ze hebben geen uitwerking op de executable die door com-
-pileren en linken wordt gemaakt.
-%i n c l u d e " s y s c a l l . mac "
-s e c t i o n . data
-msg db " W r i t e s y s c a l l u s i n g macro ’ s " , 0xa
-l e n equ $ − msg
-section . text
-global _start
-_start :
-        w r i t e 1 , msg , l e n
-        exit 0
-Voor meer informatie over NASM macro’s zie chapter 4 van de manual.
-6 Vragen en opdrachten                                                         74
-6.7     Vragen en opdrachten
-   1. Machinecode bevat de instructies voor de processor. Bevat de door de as-
-      sembler gegenereerde machinecode nog afhankelijke delen? Delen die nog
-      niet berekend en ingevuld konden worden zonder het programma te draai-
-      en? Licht je antwoord toe.
-   2. Wat is het verschil tussen machinetaal en assembly?
-   3. Wat is het verband tussen machinetaal en assembly?
-   4. Waarom kan in assembly geprogrammeerde software moeilijk worden ge-
-      port?
-   5. Geef twee redenen waarom er in HLL wordt geprogrammeerd door de mees-
-      te programmeurs.
-   6. Geef een voorbeeld van een programmeerproject dat het best in assembly
-      kan worden uitgevoerd en een voorbeeld van een project dat beter in een
-      HLL kan worden uitgevoerd. Onderstreep hierbij de voordelen en nadelen
-      van assembly. Zou men hierbij ook een combinatie tussen HLL en assembly
-      kunnen kiezen?
-   7. Leg uit waarom het mogelijk is om vanuit een assembly programma een C
-      functie aan te roepen of vise versa. Gebruik hierbij de term objectcode.
-   8. Tekenreeksen zijn in C character arrays. Waarom bevatten ze een 0 aan
-      het einde van de character array (string)? Maak de terugkoppeling naar
-      assembly niveau.
-Hoofdstuk 7
-Programma structuur
-In de vorige hoofdstukken is er een korte uitleg gegeven over de manier waarop de
-processor omgaat met instructies en de manier waarop deze worden uitgelezen uit
-het code (.text) segment. Ook is er aandacht besteed aan jumps om de volgorde
-van executie te beïnvloeden. In dit hoofdstuk wordt hier dieper op ingegaan.
-In HLL (High Level Language) zijn er statements zoals bijvoorbeeld if, else en
-while. Deze worden toegepast om op een gemakkelijke manier om te gaan met
-voorwaarden en programma structuur. In assembly ligt dit anders; er wordt gebruik
-gemaakt van jumps en het testen van bepaalde bits op het EFLAGS register. Dit
-gebeurt aan de hand van vergelijkingen door de ’cmp’-instructie.
-Een HLL zoals C maakt gebruik van functies die gezien kunnen worden als jumps,
-maar die na het uitvoeren van de code binnen de functie weer de oude program-
-magegevens kan bevatten. Dit gebeurt met gebruik van een speciaal deel binnen
-het geheugen, de stack. In dit hoofdstuk wordt hiervan een korte beschrijving
-gegeven.
-7 Instructie executie                                                                             76
-7.1        Instructie executie
-Computers kunnen met de uitvinding van Von Neumann instructies intern opslaan.
-De instructies worden bewaard in het geheugen (RAM) en uitgevoerd door de pro-
-cessor. Op deze manier kan men programma’s zien als een lijst van instructies,
-die door de processor worden uitgevoerd. Het uitvoeren en uitlezen van instructies
-                        Figuur 7.1: Een simpel uitgevoerde computer
-                                                                                 1
-wordt ’fetch-execute cycle’ genoemd en bestaat uit drie stappen.
-     1. De processor haalt een instructie op uit het geheugen.
-     2. De processor voert de instructie uit.
-     3. Ga naar 1
-Bijna alle computers zijn gebaseerd op deze methode met uitzondering van DNA
-computers en quantum computers die alleen nog maar in onderzoekscentra wor-
-den gebruikt.
-    1
-      De werkelijke cyclus is de ’Von Neumann-cyclus’, die uit vijf stappen bestaat, maar omdat niet
-alle details direct van belang zijn bij het schrijven en begrijpen van assembly worden ze hier buiten
-beschouwing gelaten.
-7 Structuur door vergelijking                                                                  77
-7.2       Structuur door vergelijking
-Assembly kent geen geavanceerde methoden om de volgorde van executie te ver-
-anderen zoals bijvoorbeeld C met if- en for-statements.
-In assembly wordt er gebruik gemaakt van een elementaire manier om met struc-
-tuur om te gaan. Deze manier kan worden gezien als het goto 2 statement.
-Om structuur aan te brengen in programma’s moeten er data vergeleken worden
-en moet aan de hand hiervan een beslissing worden gemaakt. Het vergelijken in
-assembly gebeurt aan de hand van de ’cmp’-instructie. Als resultaat, het verschil
-tussen de twee operands van ’cmp’, zet het bepaalde flaggen op het EFLAGS re-
-gister aan of uit.
-Het gebruik van de ’cmp’-instructie is als volgt:
-cmp links, rechts
-Links en rechts zijn operands en kunnen worden vervangen door een getal en/of
-een register. 3
-Het verschil van links - rechts wordt berekend en de flaggen worden gezet.
-                              links = rechts    ZF = 1      CF = 0
-                              links > rechts    ZF = 0      CF = 0
-                              links < rechts    ZF = 0      CF = 1
-Omdat er twee manieren zijn om getallen (integers) te gebruiken ligt het bij het
-gebruik van signed integers (die positief en negatief kunnen zijn) anders. Hierbij
-wordt gebruik gemaakt van drie flags:
-     • Zero flag (ZF)
-     • Overflow flag (OF)
-     • Sign flag (SF)
-De overflow flag wordt gezet als het resultaat overflowt of underflowt. De sign flag
-wordt gezet als het resultaat van de operatie negatief is.
-                            links = rechts     ZF = 1      n.v.t.
-                            links > rechts     ZF = 0      SF = OF
-                            links < rechts     ZF = 0      SF = OF
-   2
-     Het goto statement kan sourcecode onleesbaar maken en resulteren in grote onduidelijkhe-
-den. Toch is het onwaar om te zeggen dat het gebruik van goto geen gestructureerde code kan
-opleveren. Sterker nog, een C compiler zet statements zoals if en else ook om in assembly code!
-   3
-     Het gebruik van twee getallen is onmogelijk en tegelijkertijd zinloos omdat het niet aangeeft
-waar het resultaat geplaats wordt.
-7 Jumps & flags                                                               78
-De ’cmp’-instructie brengt wijzigingen aan op het EFLAGS register. Maar er zijn
-meerdere instructies die het EFLAGS register aanpassen, enige aandacht hierbij
-is dus gepast.
-7.3          Jumps & flags
-Er zijn twee verschillende soorten jumps te onderscheiden.
-      • Onvoorwaardelijke jump (zonder condities)
-      • Voorwaardelijke jumps (met condities)
-De onvoorwaardelijke jump gebeurt met de ’jmp’-instructie. Er vindt geen test of
-andere manier om voorwaarden te testen plaats.
-De voorwaardelijke jumps jumpen pas na een bepaalde conditie.
-Hieronder een lijst van voorwaardelijke (conditionele) jumps.
-                          Voorwaardelijke jump       jumps als . . .
-                          JZ                         ZF=1
-                          JN                         ZF=0
-                          JS                         SF=1
-                          JNS                        SF=0
-                          JO                         OF=1
-                          JNO                        OF=0
-                          JP                         PF=1
-                          JNP                        PF=0
-                          JC                         CF=1
-                          JNC                        CF=0
-Het is belangrijk om te begrijpen dat de code na de jump niet wordt uitgevoerd,
-tenzij hier naartoe wordt gejumpt.
-Het volgende voorbeeld demonstreert het gebruik van een onvoorwaardelijke of
-onconditionele jump. De tweede string wordt door het gebruik van de jump niet op
-het scherm gezet.
- s e c t i o n . data
- s t r i n g 1 db " D i t wordt a f g e d r u k t " , 0x0a
-len1           equ $     −    string1
-7 Jumps & flags                                                                79
-s t r i n g 2 db " D i t wordt NIET a f g e d r u k t " , 0x0a
-len2            equ $     −      string2
-section . text
-global _start
-         _start :
-         mov    eax , 4           ; system   c a l l n r . van w r i t e
-         mov    ebx , 1           ; 1e arg :   f i l e descriptor ( stdout )
-         mov    ecx ,  string1    ; 2e arg :  p o i n t e r naar l e n 1
-         mov    edx ,  len1       ; 3e arg :  l e n g t e van s t r i n g 1
-          int   0x80
-; de assembler v e r v a n g t end door een geheugenadres
-         jmp end
-; deze s t r i n g wordt n o o i t a f g e d r u k t
-         mov eax , 4
-         mov ebx , 1
-         mov ecx , s t r i n g 2
-         mov edx , l e n 2
-          i n t 0x80
-end :
-         mov eax , 1
-         x o r ebx , ebx
-          i n t 0x80
-7.3.1         Het if-statement
-Met het gebruik van voorwaardelijke jumps kunnen we C statements zoals if en
-else of for nabootsen.
-De sourcecode ’jnz.asm’ heeft de volgende werking: het vergelijkt het EAX-register
-met 0, bevat EAX een 0 dan voert het ’if’ uit anders ’else’.
-s e c t i o n . data
-i f db " I F " , 0x0a
-l e n equ $          −     if
-7 Jumps & flags                                                                               80
- section . text
- global _start
- _start :
-        x o r eax , eax
-        cmp eax , 0
-        j n z else
- ; het i f deel
-        mov eax , 4                ;   system c a l l n r . van w r i t e
-        mov ebx , 1                ;  1e argument : f i l e d e s c r i p t o r ( s t d o u t )
-        mov ecx , i f              ;  2e argument : p o i n t e r naar l e n
-        mov edx , l e n            ;  3e argument : l e n g t e van i f
-         i n t 0x80
-        mov eax , 3
-        jmp end                    ; jmp naar end , else n i e t u i t v o e r e n
- ; h e t else d e e l
-else :
-        mov eax , 2
-end :
-        mov eax , 1
-        x o r ebx , ebx
-         i n t 0x80
-In assembly gebeurt er dit: de inhoud van EAX wordt vergeleken met 0, zijn ze
-gelijk dan wordt ZF=1 en CF=0. Dus de jump, ’jnz else’, vindt niet plaats, omdat
-jnz alleen jumpt als ZF=0 is.
-Met ’nasm -f elf jnz.asm’ wordt het gecompileerd en met ’ld jnz.o -o jzn’ wordt het
-gelinkt. Als resultaat wordt er ’IF’ op het scherm gezet.
-Het assemblyvoorbeeld kan worden gezien als de volgende pseudo C-code.
- i f ( eax ==0) {
-               w r i t e (3 , " IF \ n " ) ;
-7 Jumps & loops                                                                                 81
-              eax =3;
- }
-else {
-              eax =2;
- }
-      • Verander op regel 8 ’xor eax, eax’ in ’mov eax, 2’ en compileer en link het
-         opnieuw. Verklaar de uitkomst, maak hierbij gebruik van ALD.
-7.4       Jumps & loops
-Eerder dit hoofdstuk was er gesteld dat er verschillende jumps waren. De reden
-hiervan is dat het mogelijk is om getallen als signed en unsigned integers te ge-
-bruiken. Beiden hebben een andere representatie en hebben voor jumps daarom
-andere opcodes.
-De in de vorige paragraaf gegeven lijst van jumps is niet makkelijk bruikbaar en bij
-geavanceerde structuren is het niet toereikend. Daarom biedt de 80x86 nog een
-set van jump instructies voor signed en unsigned integers.
-         Signed integers        jumps als . . .     Unsigned integers       jumps als . . .
-         JE, JZ                 links = rechts      JE, JZ                  links = rechts
-         JNE, JNZ               links = rechts      JNE, JNZ                links = rechts
-         JL, JNGE               links < rechts      JB, JNAE                links < recht
-         JLE, JNG               links ≤ rechts      JBE, JNA                links ≤ rechts
-         JG, JNLE               links > rechts      JA, JNBE                links > rechts
-         JGE, JNL               links ≥ rechts      JAE, JNA                links ≥ rechts
-De ’jump equal’ (JE) en ’jump not equal’ (JNE) zijn voor signed en unsigned inte-
-gers hetzelfde. Sterker nog, ze zijn alleen maar een andere naam voor JZ en JNZ.
-Elke jump heeft meerdere mnemonics voor dezelfde instructie. Dit kan vervelend
-lijken, maar is in de praktijk gemakkelijk. Zo is ’jump less equal’ (JLE) hetzelfde als
-’jump not greater’ (JNG).
-7.4.1      Het while-statement
-De volgende sourcecode is een while-statement in assembly. Er wordt gebruik
-gemaakt van een JA 4 jump naar end.
-    4
-      JA wordt gebruikt bij unsigned integers, zie de tabel van jumps voor signed en unsigned inte-
-gers.
-7 Jumps & loops                                                                       82
-Sla de source op in het bestand ’while.asm’ en compileer en link het. Nu het een
-executable is kan het geladen worden in ALD om de werking te laten zien.
- s e c t i o n . bss
- b u f f e r resd 1
- section . text
- global _start
- _start :
-         x o r eax , eax                    ; eax=0
-         i n c eax                          ; eax=1
-while :
-         cmp eax , 10
-         j a end
-         mov [ b u f f e r ] , eax          ; eax opslaan i n b u f f e r
-         ;   De code d i e h i e r zou staan wordt 10x h e r h a a l d .
-         ;    eax wordt opgeslagen i n b u f f e r zodat e r b i j v o o r b e e l d
-         ;   een system c a l l kan worden gemaakt met g e b r u i k van
-         ;    eax . Het opslaan van eax en h e t h e t aanmaken en
-         ;    g e b r u i k e n van b u f f e r i s n i e t n o o d z a k e l i j k .
-         mov eax , [ b u f f e r ]          ; eax t e r u g h a l e n
-         i n c eax
-         jmp while
-end :
-         mov eax , 1
-         x o r ebx , ebx
-          i n t 0x80
-Het lijkt misschien vreemd dat er een JA jump wordt gebruik die jumpt als links >
-rechts terwijl als het vertaald wordt naar pseudo C-code men een < zou gebruiken.
-Dit komt omdat er normaal de ’while’ in wordt gegaan nadat de voorwaarde geldig
-is. In dit voorbeeld wordt de ’while’ juist verlaten.
-Wees ervan bewust dat er duizenden manieren zijn om lussen of loops te maken!
-7 Jumps & loops                                                                 83
-Hieronder staat de pseudo C-code van ’while.asm’, die dezelfde uitwerking heeft
-maar niet op dezelfde manier werkt.
-unsigned i n t eax =1;
-while ( eax <10) {
-             / ∗ de code d i e 10x h e r h a a l d wordt ∗ /
-            eax ++;
-}
-7.4.2     Het for-statement
-De Intel processor heeft instructies geïmplementeerd voor het maken van loops.
-Deze loop-instructies kunnen onder andere worden gebruikt bij het maken van for-
-statements. De loop-instructies hebben standaard één operand, dit is het label dat
-herhaald dient te worden (waarheen gejumpt wordt). Het EFLAGS register wordt
-bij de loop-instructies niet gewijzigd.
-     • loop Verlaagt ECX met 1, als ECX = 0 wordt er naar het label gejumpt.
-     • loope, loopz Verlaagt ECX met 1, als ECX = 0 en ZF = 1 wordt er naar het
-       label gejumpt.
-     • loopne, loopnz Verlaagt ECX met 1, als ECX = 0 en ZF = 0 wordt er naar
-       het label gejumpt.
-Voor meer informatie over de verschillen tussen de loop-instructies zie Section
-A.99 van de NASM handleiding.
-Het onderstaande assembly ’snippet’ demonstreert een for-loop.
-            mov ecx , 10
-enter_loop :
-             ; de code d i e 10x wordt h e r h a a l d
-loop enter_loop
-In pseudo C-code zou het er zo uit kunnen zien.
-7 Stack                                                                       84
- f o r ( ecx =10; ecx >0; ecx −−) {
-              / ∗ code d i e 10x wordt h e r h a a l d ∗ /
-}
-7.5        Stack
-De stack is een abstract datatype dat veel wordt gebruikt in de informatica. De
-stack heeft de eigenschap dat het element wat er als laatste wordt opgezet er als
-eerste weer wordt afgehaald. Dit wordt ook wel LIFO, Last In First Out genoemd.
-Om met elementen op de stack om te gaan zijn er twee instructie; PUSH en POP.
-PUSH plaats een element op de stack en POP haalt er een element af.
-Met de program stack, als er over assembly wordt gesproken, bedoelen we een
-aaneenschakeling van geheugenadressen die data bevatten.
-Op deze stack worden vooral variabelen, return adressen van functies en parame-
-ters van functies bewaard. Dit zijn vooral dingen waar hogere programmeertalen
-van afhankelijk zijn, toch wordt de stack direct gebruikt bij het programmeren in
-assembly. Meestal gebeurt dit als er tijdelijk data opgeslagen moet worden en er
-geen registers meer voor handen zijn omdat deze gebruikt (moeten) worden.
-7.5.1      POP en PUSH
-POP en PUSH zijn de meest voorkomende instructies met betrekking tot de stack.
-Beiden hebben als operand een register dat 16-bit (word) of 32-bit (dword) moet
-zijn. Dit betekent dat bytes pushen op de stack niet mogelijk is, ook wordt het
-afgeraden om words te pushen om de verwarring te voorkomen.
-Het onderstaande voorbeeld pusht/popt de inhoud van het EAX-register op de
-7 Stack                                                                                        85
-stack. Daarna plaats het de inhoud van EBX in EAX en popt het de ’oude’ waarde
-van EAX in EBX die van de stack afkomt.
-De werking van het programma is hetzelfde als de xchg-instructie, namelijk het
-omwisselen van de inhoud van twee registers. Om de werking van de sourcecode
-beter te begrijpen kan het in ALD geladen worden.
- section . text
- global _start
- _start :
- ; w i s s e l e n met g e b r u i k vd s t a c k
-       mov eax , 0 x f f e e d d
-       mov ebx , 0xaabbcc
-       push eax                           ; push inhoud eax op de s t a c k
-       mov eax , ebx                      ; inhoud ebx naar eax
-       pop ebx                            ; oude inhoud eax i n ebx v i a s t a c k
- ; w i s s e l e n met xchg
-       mov ecx , 0x1
-       mov edx , 0x2
-       xchg ecx , edx
-end :
-       mov eax , 1
-       x o r ebx , ebx
-        i n t 0x80
-De werking van PUSH en POP zijn afhankelijk van het ESP-register 5 (de stack-
-pointer). ESP bevat een offset in het stacksegment (SS). 6
-PUSH plaats een dword in het geheugen door 4 van de inhoud van ESP af te
-trekken en het op dat geheugenadres te plaatsen. Er wordt 4 van de pointer afge-
-trokken omdat ESP een geheugenadres bevat in bytes en er een dword (4 Bytes)
-wordt gepushed. 7
-   5
-     Het ESP-register en het EBP-register worden ook gebruikt bij het maken van stackframes,
-details hierover staan niet in het dictaat. In hoofdstuk 6 Taalniveaus werden hiervoor de enter en
-de leave instructies gebruikt.
-   6
-     Vaak is het data segment hetzelfde segment als het stack segment. Dit is te zien door de
-inhoud van DS en SS te bekijken in ALD .
-   7
-     Eerder is gesteld dat men voorzichtig moet omgaan met het handmatig veranderen van het
-ESP-register. De reden daarvan is dat na het handmatig veranderen van de stack deze niet meer
-functioneert zoals men zou verwachten zonder aanpassingen.
-7 Stack                                                                     86
-Het volgende voorbeeld ’pushpop.asm’ demonstreert de werking van het ESP-
-register. Om het beter te begrijpen kan men het voorbeeld inladen in ALD. Wees
-ervan bewust dat de inhoud van het ESP-register van systeem tot systeem kan
-verschillen.
-section . text
-global _start
-_start :
-      mov eax , 0xa       ;  eax=0xa                         esp=0xBFFFF910
-      push eax            ;  p l a a t s 0xa op 0xBFFFF90C esp=0xBFFFF90C
-      push dword 0xb      ;  p l a a t s 0xb op 0xBFFFF908 esp=0xBFFFF908
-      push dword 0xc      ;  p l a a t s 0xc op 0xBFFFF904 esp=0xBFFFF904
-      pop eax          ; eax=0xc                      esp=0xBFFFF908
-      pop ebx          ; ebx=0xb                      esp=0xBFFFF90C
-      pop ecx          ; ecx=0xa                      esp=0xBFFFF910
-end :
-      mov eax , 1
-      x o r ebx , ebx
-      i n t 0x80
-Als ’pushpop’ in ALD geladen is, kan men de stack na de instructie ’push 0xb’
-bekijken door de inhoud van het geheugen te bekijken (waar push de waarden
-neerzet), oftewel de inhoud van het ESP-register. Let wel op dat alles in het
-geheugen via de little-endian manier is opgeslagen.
-Hier een kort snapshot van de uitkomst in ALD.
-...
-...
-08048086 680B000000 push 0xb
-ald> next
-eax = 0x0000000A ebx = 0x00000000 ecx = 0x00000000 edx = 0x00000000
-esp = 0xBFFFF908 ebp = 0x00000000 esi = 0x00000000 edi = 0x00000000
-ds = 0x0000002B es = 0x0000002B fs = 0x00000000 gs = 0x00000000
-ss = 0x0000002B cs = 0x00000023 eip = 0x0804808B eflags = 0x00200346
-0804808B 680C000000 push 0xc
-7 Stack                                                                          87
-ald> examine 0xBFFFF908
-Dumping 20 bytes of memory starting at 0xBFFFF908 in hex
-BFFFF908: 0B 00 00 00 0A 00 00 00 01 00 00 00 1A FA FF BF ................
-BFFFF918: 00 00 00 00 ....
-ald>
-...
-...
-7.5.2     PUSHA/POPA
-Het komt vaak voor dat men tijdelijk de data in de registers wil opslaan om bijvoor-
-beeld een routine in te gaan waar de registers veranderen. Het is dan gemakkelijk
-als de registers weer in de oude staat terug gezet kunnen worden.
-Met de instructies pusha en popa pusht men de inhoud van de registers op de
-stack. Er zijn twee typen te onderscheiden; word registers en double word regis-
-ters.
-    • Pushaw en popaw worden gebruikt bij word (16-bit) registers. Ze pus-
-      hen/poppen AX, CX, DX, BX, SP, BP, SI en DI op/van de stack (niet in deze
-      volgorde).
-    • Pushad en popad worden gebruikt bij double word (32-bit) registers. Deze
-      pushen/poppen EAX, ECX, EDX, EBX, ESP, EBP, ESI en EDI op/van de
-      stack (niet in deze volgorde).
-Bijvoorbeeld:
-             ...
-            pusha
-             ; code d i e general −purpose r e g i s t e r s w i j z i g t .
-            popa
-             ...
-7.5.3     PUSHF en POPF
-PUSHF en POPF werken hetzelfde als PUSHA en POPA alleen pushen of poppen
-ze niet alle general-purpose registers maar het EFLAGS register. Op deze manier
-7 Stack                                                                      88
-kan men altijd de inhoud van het EFLAGS register behouden en het later weer
-gebruiken. Het is ook mogelijk om het EFLAGS register te poppen, te wijzigen en
-daarna weer te pushen.
-7 Vragen en opdrachten                                                              89
-7.6    Vragen en opdrachten
-   1.  (a) Wat is het verschil tussen conditionele en onconditionele jumps?
-       (b) Wordt een onvoorwaardelijke jump altijd uitgevoerd?
-   2. Noem twee een toepassingen waarbij jumps gebruikt kunnen worden.
-   3. De code na een jump wordt die nog uitgevoerd? Leg uit wanneer wel en
-      wanneer niet.
-   4.  (a) Welke registers zijn betrokken bij het maken van een jump?
-       (b) Wat is de invloed van een jump op het instructieregister (EIP)?
-   5.  (a) Schrijf een for-loop achtige constructie die 100 keer een bepaalde
-            string op het scherm schrijft. Probeer hierbij zo min mogelijk instructies
-            te gebruiken.
-       (b) Test of het loop programma van de vorige opdracht inderdaad het
-            EFLAGS register ongewijzigd laat. Doe dit door het programma in ALD
-            te laden.
-   6. Verander in de sourcecode van ’jnz.asm’ de jump naar een andere jump,
-      maar doe het zo dat de werking exact hetzelfde blijft.
-   7. Schrijf een assembly programma met een lus die van 1 tot 10 telt. Deze
-      getallen worden opgeteld in een general-purpose register naar keuze. Toon
-      de werking ervan aan in ALD.
-   8. Leg de wijze waarop het datatype stack werkt uit.
-   9. Waar dient de stack als deel van het geheugen voor?
-Bijlage A
-NASM installeren
-NASM (Netwide Assembler) is een opensource assembler voor Intel 80x86 proces-
-soren. Omdat het opensource is kunnen we een tarball downloaden met daarin de
-source, die we vervolgens gaan compileren en installeren.
-A.1      Downloaden van de source
-Download de sourcecode van laatste versie van NASM via http van:
-http://www.kernel.org/pub/software/devel/nasm/source/
-De tarball met de de sourcecode heeft een naam die als volgt is opgebouwd nasm-
-X.XX.tar.bz2, X.XX staat voor de versie.
-Sla de tarball op in de directory ”/tmp”.
-Nu het bestand ”/tmp/nasm-X.XX.tar.bz2” bestaat, kan het uit worden gepakt door
-”tar xvyf nasm-X.XX.tar.bz2” in te tikken.
-Door de tarball uit te pakken verschijnt er een directory ”nasm-X.XX/”.
-A.2      ./configure && make && make install
-Verander de de huidige directory in ”/tmp/nasm-X.XX/”.
-Om de sourcecode juist in te stellen voor het gebruikte systeem moet er een
-configuratie worden ingesteld. Doe dit door het volgende script te runnen.
-./configure
-Aan de hand van de instelling gevonden door ”./configure” wordt de Makefile
-ingesteld. De Makefile dient als hulpmiddel bij het compileren. Compileer de
-sourcecode door:
-A De NASM documentatie                                                              91
-make
-Als er geen fouten zijn gevonden, is de sourcecode succesvol gecompileerd. Het
-kan nu worden geïnstalleerd met (dit commando vereist root rechten):
-su
-make install
-Nu de source gecompileerd en geïnstalleerd is kan het programma NASM worden
-gestart door:
-nasm -h
-Er verschijnt nu een korte uitleg van de opties die mee kunnen worden gegeven
-aan NASM. Voor een meer gedetailleerde uitleg over NASM kan er worden
-gekeken naar de man page van NASM.
-A.3      De NASM documentatie
-NASM beschikt over een zeer uitgebreide documentatie die handig is bij het pro-
-grammeren. Zo geeft het uitleg over alle mnemonic’s die gebruikt kunnen worden
-en macro’s ed. Ga naar de directory ”/tmp/nasm-X.XX/doc/” en tik daar:
-make install
-De Makefile is zo ingesteld dat het de documentatie in verschillende formaten ge-
-nereert. Dit is handig, er is nu documentatie in html, plain-text of in Postscript. De
-documentatie in html vorm staat in ”/tmp/nasm-X.XX/doc/html/”.
-Bijlage B
-ALD installeren
-Compile the program and run it. Make sure you include the symbol table for the
-debugger or not... depending upon how macho you feel today.
-Mudge, l0pht advisories
-ALD (Assembly Language Debugger) is een debugging tool voor debuggen van
-x86 executables op assembly niveau.
-B.1     Downloaden van de source
-Download de sourcecode van laatste versie van ALD via http van:
-http://ellipse.mcs.drexel.edu/source/
-Sla de gedownloade tarball op in de directory ”/tmp/”.
-Ga naar de ”/tmp” directory door ”cd /tmp” in te geven. Het bestand ”ald-
-X.X.XX.tar.gz” in de /tmp directory kan het uit worden gepakt door ”tar xvzf ald-
-X.XX.tar.gz”
-Er verschijnt nu een directory met de naam ”ald-X.X.XX/”.
-B Configureren, compileren en installeren                                        93
-B.2      Configureren, compileren en installeren
-Verander de de huidige directory in ”/tmp/ald-X.X.XX/” door ”cd ald-X.X.XX/”
-Configureer de software met:
-./configure
-De configuratie is opgeslagen in de Makefile, er kan nu gecompileerd worden met
-het commando:
-make
-Als de sourcecode succesvol is gecompileerd kan het nu worden geïnstalleerd.
-Het installeren (het kopiëren van de binairies naar ”/usr/local/bin/”) vereist root-
-rechten op het systeem. Daarom moet er van gebruiker worden gewisseld (aan-
-nemende dat er niet als root werd gewerkt).
-su
-make install
-ALD is nu geïnstalleerd en kan worden gestart door ”ald”.
-Bijlage C
-Linux Kernel Modules in assembly
-Het schrijven van kernel modules in assembly is wel degelijk mogelijk,
-ondanks dat het een tijdrovend karwei kan zijn.
-Zie voor meer informatie over het schrijven van kernel modules De Vrijer 2001 - C
-Coding in the Linux Kernel Environment.
-Het onderstaande voorbeeld demonstreert het gebruik van kernel modules in
-assembly.
-Het kan gecompileerd worden door de volgende opdrachten. Verander eerst het
-versienummer op regel 5 naar de huidige kernel versie. 1
-nasm -f elf module.asm -o module.tmp
-ld -r -o module.o module.tmp
-Het kan worden ingeladen en uit het geheugen worden geladen met de onder-
-staande opdrachten. Hiervoor zijn root rechten op het systeem nodig.
-insmod module.o
-rmmod module
- s e c t i o n . data
- i n i t db " Real programmers code i n assembly " , 0xa , 0
-c l e a n db " Said t h e k e r n e l " , 0xa , 0
- k e r n e l _ v e r s i o n db " 2 . 4 . 3 " , 0
- global init_module
- g l o b a l cleanup_module
-     1
-       Het commando ’uname -r’ toont de draaiende kernel versie.
-                                                              95
-global kernel_version
-extern p r i n t k
-section . text
-init_module :
-     push dword i n i t   ; z e t ’ i n i t ’ op de s t a c k
-     call printk          ; roep p r i n t k aan ,
-                          ; m. o . w . druk ’ i n i t ’ a f
-     pop eax              ; r e t u r n waarde p r i n t k
-     x o r eax , eax      ; r e t u r n moet 0 z i j n
-                          ; anders kan de module
-                          ; n i e t worden geladen .
-     ret                  ; einde i n i t _ m o d u l e ( )
-cleanup_module :
-     push dword c l e a n ; z e t ’ clean ’ op de s t a c k
-     call printk          ; roep p r i n t k aan
-     pop eax              ; r e t u r n waarde p r i n t k
-     ret                  ; einde cleanup_module ( )
-                          ; en einde lkm
-Bijlage D
-Ascii Tabel
-Decimaal Octaal Hexadecimaal Binair   Waarde
-000      000    000          00000000 NUL
-001      001    001          00000001 SOH
-002      002    002          00000010 STX
-003      003    003          00000011 ETX
-004      004    004          00000100 EOT
-005      005    005          00000101 ENQ
-006      006    006          00000110 ACK
-007      007    007          00000111 BEL
-008      010    008          00001000 BS
-009      011    009          00001001 HT
-010      012    00A          00001010 LF
-011      013    00B          00001011 VT
-012      014    00C          00001100 FF
-013      015    00D          00001101 CR
-014      016    00E          00001110 SO
-015      017    00F          00001111 SI
-016      020    010          00010000 DLE
-017      021    011          00010001 DC1
-018      022    012          00010010 DC2
-019      023    013          00010011 DC3
-020      024    014          00010100 DC4
-021      025    015          00010101 NAK
-022      026    016          00010110 SYN
-023      027    017          00010111 ETB
-024      030    018          00011000 CAN
-025      031    019          00011001 EM
-                                             97
-Decimaal Octaal Hexadecimaal Binair   Waarde
-026      032    01A          00011010 SUB
-027      033    01B          00011011 ESC
-028      034    01C          00011100 FS
-029      035    01D          00011101 GS
-030      036    01E          00011110 RS
-031      037    01F          00011111 US
-032      040    020          00100000 SP
-033      041    021          00100001 !
-034      042    022          00100010 "
-035      043    023          00100011 #
-036      044    024          00100100 $
-037      045    025          00100101 %
-038      046    026          00100110 &
-039      047    027          00100111 ’
-040      050    028          00101000 (
-041      051    029          00101001 )
-042      052    02A          00101010 *
-043      053    02B          00101011 +
-044      054    02C          00101100 ,
-045      055    02D          00101101 -
-046      056    02E          00101110 .
-047      057    02F          00101111 /
-048      060    030          00110000 0
-049      061    031          00110001 1
-050      062    032          00110010 2
-051      063    033          00110011 3
-052      064    034          00110100 4
-053      065    035          00110101 5
-054      066    036          00110110 6
-055      067    037          00110111 7
-056      070    038          00111000 8
-057      071    039          00111001 9
-058      072    03A          00111010 :
-059      073    03B          00111011 ;
-060      074    03C          00111100 <
-061      075    03D          00111101 =
-062      076    03E          00111110 >
-063      077    03F          00111111 ?
-064      100    040          01000000 @
-065      101    041          01000001 A
-                                             98
-Decimaal Octaal Hexadecimaal Binair   Waarde
-066      102    042          01000010 B
-067      103    043          01000011 C
-068      104    044          01000100 D
-069      105    045          01000101 E
-070      106    046          01000110 F
-071      107    047          01000111 G
-072      110    048          01001000 H
-073      111    049          01001001 I
-074      112    04A          01001010 J
-075      113    04B          01001011 K
-076      114    04C          01001100 L
-077      115    04D          01001101 M
-078      116    04E          01001110 N
-079      117    04F          01001111 O
-080      120    050          01010000 P
-081      121    051          01010001 Q
-082      122    052          01010010 R
-083      123    053          01010011 S
-084      124    054          01010100 T
-085      125    055          01010101 U
-086      126    056          01010110 V
-087      127    057          01010111 W
-088      130    058          01011000 X
-089      131    059          01011001 Y
-090      132    05A          01011010 Z
-091      133    05B          01011011 [
-092      134    05C          01011100 \
-093      135    05D          01011101 ]
-094      136    05E          01011110 ˆ
-095      137    05F          01011111 _
-096      140    060          01100000 ‘
-097      141    061          01100001 a
-098      142    062          01100010 b
-099      143    063          01100011 c
-100      144    064          01100100 d
-101      145    065          01100101 e
-102      146    066          01100110 f
-103      147    067          01100111 g
-104      150    068          01101000 h
-105      151    069          01101001 i
-                                             99
-Decimaal Octaal Hexadecimaal Binair   Waarde
-106      152    06A          01101010 j
-107      153    06B          01101011 k
-108      154    06C          01101100 l
-109      155    06D          01101101 m
-110      156    06E          01101110 n
-111      157    06F          01101111 o
-112      160    070          01110000 p
-113      161    071          01110001 q
-114      162    072          01110010 r
-115      163    073          01110011 s
-116      164    074          01110100 t
-117      165    075          01110101 u
-118      166    076          01110110 v
-119      167    077          01110111 w
-120      170    078          01111000 x
-121      171    079          01111001 y
-122      172    07A          01111010 z
-123      173    07B          01111011 {
-124      174    07C          01111100 |
-125      175    07D          01111101 }
-126      176    07E          01111110  ̃
-127      177    07F          01111111 DEL
-Bibliografie
- [1] ing. R. de Vrijer.
-     C coding in the linux kernel environment.
-     Initworks B.V.
- [2] ir. F.J. Dijkstra.
-     Computers: organisatie - architectuur - communicatie.
-     EPN, 1998.
- [3] Assembly Programming Journal.
-     http://asmjournal.freeservers.com.
- [4] Linux Newsgroups.
-     alt.os.linux, comp.os.linux.
- [5] Linux Documentation Project.
-     http://www.linuxdoc.org.
- [6] Microprocessor Resources.
-     http://x86.org/.
- [7] Roelf Sluman.
-     Toolbox voor machinetaalprogrammeurs.
-     Kluwer PC Boeken, 1989.
- [8] Richard M. Stallman and Roland H. Pesch.
-     Debugging with gdb - the gnu source-level debugger.
- [9] W. Richard Stevens.
-     Advanced programming in the unix environment.
-     Addison Wesley, 1993.
-[10] Tom Swam.
-     Werken met turbo assembler.
-     Acedemic Service, 1991.
-[11] Andrew S. Tanenbaum and Albert S. Woodhull.
-     Operaring systems: design and implementation - second edition.
-     Prentice-Hall, 1997.
-BIBLIOGRAFIE                                           101
-[12] Tools Interface Standards (TIS).
-     Executable and linkable format.
-     Portable Format Specification.
-[13] Little Endian vs. Big Endian.
-     http://www.noveltheory.com/techpapers/endian.asp.
-[14] The x86 Assembly Language FAQ.
-     http://www2.dgsys.com/ raymoon/x86faqs.html.
-[15] The x86 Assembly Language Newsgroup.
-     comp.lang.asm.x86.
-[16] Technical x86 processor information.
-     http://www.sandpile.org/.
-                                     linux.org
-Index
-[], 15                                   Assembly, 7
-_exit, 18                                assembly language, 10, 67
-_start, 52                               Assembly Language Debugger, 34
-32-bit registers, 38
-80486/Pentium/Pentium Pro, 40            Big-endian, 33
-8088, 8086, 39                           big-endian, 33
-80x86, 31                                bits, 59
-                                         byte ordering, 33
-8086, 36
-80286, 40                                C, 69
-80386, 36, 40                            C of C++, 69
-80486, 36                                c_code.asm, 70
-                                         Central Processing Unit, 27
-example, 13, 18, 19, 21, 22, 25, 26, 34, CISC, 31
-         42, 44, 49, 50, 52, 55–62, 65, CLC, 50
-         69, 70, 73, 74, 79–81, 83, 84, Clock Unit, 29
-         86–88, 95                       clockcycle, 30
-                                         cmp, 53, 76, 78, 79
-adc, 48, 49                              coderingsmethoden, 54
-add, 48                                  commando’s, 14
-Adres vertaling, 38                      commentaar veld, 14, 15
-adresbus, 45                             conditionele, 79
-Adressering, 37                          const void* buf, 18
-Adresserings methodes, 38                control flag, 48
-ALD, 8                                   Control Unit, 28
-ALU, 28                                  CPU, 27
-AMD, 30                                  Cyrix, 30
-AND operator, 58
-Apple, 28                                data segment, 86
-Architectuur, 8                          databus, 45
-as, 14                                   db, 20
-asm_code.asm, 69                         dd, 20
-assembler, 14                            Debuggen van hardware, 39
-assembler talen, 10                      debugger, 34
-INDEX                                                            103
-dec, 56                            general-purpose registers, 29
-decrement, 56                      GHz, 30
-define, 20                         GigaHertz, 30
-directives, 20                     goto, 14, 78
-div, 58, 66
-DNA computers, 77                  hello world, 17
-DOS, 36                            High Level Language, 76
-DRAM, 31                           HLL, 76
-DS, 86
-                                   IA32, 46
-dw, 20
-                                   idiv, 58
-EAX, 47                            if, 76, 80
-EBP, 47                            Immediates, 15
-EBX, 47                            imul, 57
-ECX, 47                            inc, 56
-EDI, 47                            Increment, 56
-EDX, 47                            instructie, 67
-EFLAGS, 48, 78, 79                 instructie pointer, 48, 52
-EFLAGS register, 76                instructies, 27
-EIP, 48, 52                        instructieset, 27
-ELF, 13, 19                        int, 19
-else, 76, 80                       int fd, 18
-emulator, 36                       integers, 82
-ENIAC, 9                           Intel, 28
-enter, 86                          interrupt, 19
-equ, 21                            Itanium/IA-64, 40
-equate, 21
-                                   JA, 82
-ESI, 47
-                                   JE, 82
-ESP, 47, 86
-                                   JLE, 82
-ESP-register, 86
-                                   jmp, 79
-Executable and Linkable Format, 19
-                                   JNE, 82
-execve, 18
-                                   JNG, 82
-exit, 18, 19
-                                   JNZ, 82
-far jumps, 52                      jnz.asm, 80
-fetch-execute cycle, 77            jump, 82
-filexs.asm, 25                     jump instructies, 82
-flat, 51                           Jumps, 52
-functies, 69                       JZ, 82
-                                   jz, 62
-Geheugen, 15
-geheugenvelden, 21                 kernel, 18
-INDEX                                                            104
-kloksnelheid, 29            offset, 48
-                            onconditionele, 79
-label, 14                   one’s complement, 54
-ld, 13                      Ontstaan van assembly, 7
-leave, 86                   onvoorwaardelijke, 79
-LIFO, 85                    Onvoorwaardelijke jump, 79
-linker, 13                  opcodes, 82
-Linux, 51                   operand veld, 14
-Linux kernel, 69            operating system, 38, 51
-Little-endian, 33           OR operator, 59
-little-endian, 33           overflowt, 78
-loop, 84
-loop-instructies, 84        PC, 48
-loope, loopz, 84            Pentium II/Pentium III/Pentium 4, 40
-loopne, loopnz, 84          Pentium MMX, 40
-                            phsysical memory, 31
-machinetaal, 27             pipelining, 32
-Macintosh, 32               POP, 85
-MegaHertz, 29               popa, 88
-memory management model, 51 popad, 88
-memory model, 51            popaw, 88
-MHz, 29                     POPF, 89
-microprocessor, 27          PowerPC, 32
-MIPS, 32                    Process protection, 38
-MMP, 28                     processor, 27
-MMU, 37, 38                 program counter, 48
-mnemonic, 14, 67            program stack, 85
-mnemonics, 82               Programma structuur, 8
-Motorola, 30                Protected Mode, 36
-mov, 10, 15, 58             protected mode, 36, 71
-mul, 56                     pseudo C-code, 81
-mul r/m16, AX, 57           pseudo-instructies, 22
-mul r/m32, EAX, 57          ptrace, 38
-mul r/m8, AL, 56            PUSH, 85, 86
-Multitasking, 39            pusha, 88
-                            Pushad, 88
-NASM, 8
-                            Pushaw, 88
-nasm, 13
-                            PUSHF, 89
-neg, 55
-                            pushpop.asm, 87
-Netwide Assembler, 13
-NOT operator, 61            quantum computers, 77
-INDEX                                                        105
-RAM, 29, 38                     Unices, 19
-real mode, 36                   unsegmented, 51
-Registers, 8, 15, 29            unsigned, 82
-RISC, 31                        Unsigned integers, 53
-ROM geheugen, 27                unsigned integers, 53
-routines, 69
-                                V86 mode, 36
-sbb, 49                         Virtual 8086 mode, 36
-sections, 20                    Virtual memory, 37
-segment selector, 51            virtual memory, 38
-Segmentatie, 38                 void *buf, 25
-segmenten, 20, 38               Von Neumann, 77
-sign bit, 54                    Von Neumann Architectuur, 10
-sign flag, 78                   Von Neumann’s, 10
-sign magnitude, 54              Voorwaardelijke jumps, 79
-signed, 82
-signed integers, 53, 55         while, 76
-size_t count, 18                while.asm, 83
-SMP, 28                         Write, 18
-special-purpose instructies, 48 write, 17–19
-SRAM, 31
-                                xor, 58
-SS, 86
-                                XOR operator, 60
-ssize_write(), 18
-                                XOR, OR, AND en NOT, 58
-stack, 85
-stack segment, 86               Zuse, 9
-stackpointer, 86
-stacksegment, 86
-status flags, 48
-strace, 18, 19
-structuur, 78
-sub, 49, 53
-swap-partitie, 38
-system flags, 48
-Taal niveaus, 8
-test, 62
-time, 19
-two’s complement, 54
-uname -r’, 95
-unary operator, 61
-underflowt, 78
+* Linux系统调用列表
+本文列出了大部分常见的Linux系统调用，并附有简要中文说明。
+以下是Linux系统调用的一个列表，包含了大部分常用系统调用和由系统调用派生出的的函数
+。这可能是你在互联网上所能看到的唯一一篇中文注释的Linux
+系统调用列表，即使是简单的字母序英文列表，能做到这么完全也是很罕见的。
+按照惯例，这个列表以man pages第2节，即系统调用节为蓝本。按照笔者的理解，对其作了大致的分类，
+同时也作了一些小小的修改，删去了几个仅供内核 使用，不允许用户调用的系统调用，对个别本人稍
+觉不妥的地方作了一些小的修改，并对所有列出的系统调用附上简要注释。
+
+其中有一些函数的作用完全相同，只是参数不同。（可能很多熟悉C++朋友马上就能联想起函数重载，
+但是别忘了Linux核心是用C语言写的，所以只能取成不同的函数名）。还有一些函数已经过时，被
+新的更好的函数所代替了（gcc在链接这些函数时会发出警告），但因为兼容的原因还保留着，这些
+函数我会在前面标上“*”号以示区别。
+
+一、进程控制：
+fork	创建一个新进程
+clone	按指定条件创建子进程
+execve	运行可执行文件
+exit	中止进程
+_exit	立即中止当前进程
+getdtablesize	进程所能打开的最大文件数
+getpgid	获取指定进程组标识号
+setpgid	设置指定进程组标志号
+getpgrp	获取当前进程组标识号
+setpgrp	设置当前进程组标志号
+getpid	获取进程标识号
+getppid	获取父进程标识号
+getpriority	获取调度优先级
+setpriority	设置调度优先级
+modify_ldt	读写进程的本地描述表
+nanosleep	使进程睡眠指定的时间
+nice	改变分时进程的优先级
+pause	挂起进程，等待信号
+personality	设置进程运行域
+prctl	对进程进行特定操作
+ptrace	进程跟踪
+sched_get_priority_max	取得静态优先级的上限
+sched_get_priority_min	取得静态优先级的下限
+sched_getparam	取得进程的调度参数
+sched_getscheduler	取得指定进程的调度策略
+sched_rr_get_interval	取得按RR算法调度的实时进程的时间片长度
+sched_setparam	设置进程的调度参数
+sched_setscheduler	设置指定进程的调度策略和参数
+sched_yield	进程主动让出处理器,并将自己等候调度队列队尾
+vfork	创建一个子进程，以供执行新程序，常与execve等同时使用
+wait	等待子进程终止
+wait3	参见wait
+waitpid	等待指定子进程终止
+wait4	参见waitpid
+capget	获取进程权限
+capset	设置进程权限
+getsid	获取会晤标识号
+setsid	设置会晤标识号
+
+二、文件系统控制
+1、文件读写操作
+fcntl	文件控制
+open	打开文件
+creat	创建新文件
+close	关闭文件描述字
+read	读文件
+write	写文件
+readv	从文件读入数据到缓冲数组中
+writev	将缓冲数组里的数据写入文件
+pread	对文件随机读
+pwrite	对文件随机写
+lseek	移动文件指针
+_llseek	在64位地址空间里移动文件指针
+dup	复制已打开的文件描述字
+dup2	按指定条件复制文件描述字
+flock	文件加/解锁
+poll	I/O多路转换
+truncate	截断文件
+ftruncate	参见truncate
+umask	设置文件权限掩码
+fsync	把文件在内存中的部分写回磁盘
+
+
+2、文件系统操作
+access	确定文件的可存取性
+chdir	改变当前工作目录
+fchdir	参见chdir
+chmod	改变文件方式
+fchmod	参见chmod
+chown	改变文件的属主或用户组
+fchown	参见chown
+lchown	参见chown
+chroot	改变根目录
+stat	取文件状态信息
+lstat	参见stat
+fstat	参见stat
+statfs	取文件系统信息
+fstatfs	参见statfs
+readdir	读取目录项
+getdents	读取目录项
+mkdir	创建目录
+mknod	创建索引节点
+rmdir	删除目录
+rename	文件改名
+link	创建链接
+symlink	创建符号链接
+unlink	删除链接
+readlink	读符号链接的值
+mount	安装文件系统
+umount	卸下文件系统
+ustat	取文件系统信息
+utime	改变文件的访问修改时间
+utimes	参见utime
+quotactl	控制磁盘配额
+
+三、系统控制
+ioctl	I/O总控制函数
+_sysctl	读/写系统参数
+acct	启用或禁止进程记账
+getrlimit	获取系统资源上限
+setrlimit	设置系统资源上限
+getrusage	获取系统资源使用情况
+uselib	选择要使用的二进制函数库
+ioperm	设置端口I/O权限
+iopl	改变进程I/O权限级别
+outb	低级端口操作
+reboot	重新启动
+swapon	打开交换文件和设备
+swapoff	关闭交换文件和设备
+bdflush	控制bdflush守护进程
+sysfs	取核心支持的文件系统类型
+sysinfo	取得系统信息
+adjtimex	调整系统时钟
+alarm	设置进程的闹钟
+getitimer	获取计时器值
+setitimer	设置计时器值
+gettimeofday	取时间和时区
+settimeofday	设置时间和时区
+stime	设置系统日期和时间
+time	取得系统时间
+times	取进程运行时间
+uname	获取当前UNIX系统的名称、版本和主机等信息
+vhangup	挂起当前终端
+nfsservctl	对NFS守护进程进行控制
+vm86	进入模拟8086模式
+create_module	创建可装载的模块项
+delete_module	删除可装载的模块项
+init_module	初始化模块
+query_module	查询模块信息
+*get_kernel_syms	取得核心符号,已被query_module代替
+
+四、内存管理
+brk	改变数据段空间的分配
+sbrk	参见brk
+mlock	内存页面加锁
+munlock	内存页面解锁
+mlockall	调用进程所有内存页面加锁
+munlockall	调用进程所有内存页面解锁
+mmap	映射虚拟内存页
+munmap	去除内存页映射
+mremap	重新映射虚拟内存地址
+msync	将映射内存中的数据写回磁盘
+mprotect	设置内存映像保护
+getpagesize	获取页面大小
+sync	将内存缓冲区数据写回硬盘
+cacheflush	将指定缓冲区中的内容写回磁盘
+
+五、网络管理
+getdomainname	取域名
+setdomainname	设置域名
+gethostid	获取主机标识号
+sethostid	设置主机标识号
+gethostname	获取本主机名称
+sethostname	设置主机名称
+
+六、socket控制
+socketcall	socket系统调用
+socket	建立socket
+bind	绑定socket到端口
+connect	连接远程主机
+accept	响应socket连接请求
+send	通过socket发送信息
+sendto	发送UDP信息
+sendmsg	参见send
+recv	通过socket接收信息
+recvfrom	接收UDP信息
+recvmsg	参见recv
+listen	监听socket端口
+select	对多路同步I/O进行轮询
+shutdown	关闭socket上的连接
+getsockname	取得本地socket名字
+getpeername	获取通信对方的socket名字
+getsockopt	取端口设置
+setsockopt	设置端口参数
+sendfile	在文件或端口间传输数据
+socketpair	创建一对已联接的无名socket
+
+七、用户管理
+getuid	获取用户标识号
+setuid	设置用户标志号
+getgid	获取组标识号
+setgid	设置组标志号
+getegid	获取有效组标识号
+setegid	设置有效组标识号
+geteuid	获取有效用户标识号
+seteuid	设置有效用户标识号
+setregid	分别设置真实和有效的的组标识号
+setreuid	分别设置真实和有效的用户标识号
+getresgid	分别获取真实的,有效的和保存过的组标识号
+setresgid	分别设置真实的,有效的和保存过的组标识号
+getresuid	分别获取真实的,有效的和保存过的用户标识号
+setresuid	分别设置真实的,有效的和保存过的用户标识号
+setfsgid	设置文件系统检查时使用的组标识号
+setfsuid	设置文件系统检查时使用的用户标识号
+getgroups	获取后补组标志清单
+setgroups	设置后补组标志清单
+
+八、进程间通信
+ipc	进程间通信总控制调用
+
+
+1、信号
+sigaction	设置对指定信号的处理方法
+sigprocmask	根据参数对信号集中的信号执行阻塞/解除阻塞等操作
+sigpending	为指定的被阻塞信号设置队列
+sigsuspend	挂起进程等待特定信号
+signal	参见signal
+kill	向进程或进程组发信号
+*sigblock	向被阻塞信号掩码中添加信号,已被sigprocmask代替
+*siggetmask	取得现有阻塞信号掩码,已被sigprocmask代替
+*sigsetmask	用给定信号掩码替换现有阻塞信号掩码,已被sigprocmask代替
+*sigmask	将给定的信号转化为掩码,已被sigprocmask代替
+*sigpause	作用同sigsuspend,已被sigsuspend代替
+sigvec	为兼容BSD而设的信号处理函数,作用类似sigaction
+ssetmask	ANSI C的信号处理函数,作用类似sigaction
+
+
+2、消息
+msgctl	消息控制操作
+msgget	获取消息队列
+msgsnd	发消息
+msgrcv	取消息
+
+
+3、管道
+pipe	创建管道
+
+
+4、信号量
+semctl	信号量控制
+semget	获取一组信号量
+semop	信号量操作
+
+
+5、共享内存
+shmctl	控制共享内存
+shmget	获取共享内存
+shmat	连接共享内存
+shmdt	拆卸共享内存
+
+参考资料
+    Linux man pages
+    Advanced Programming in the UNIX Environment, W. Richard Stevens, 1993
+* GAS
+C声明 GAS后缀 大小(字节)
+char b 1
+short w 2
+(unsigned) int / long / char* l 4
+float s 4
+double l 8
+long double t 10/12
+注意：GAS使用后缀“l”同时表示4字节整数和8字节双精度浮点数，这不会产生歧义因为浮点数使用的是完全不同的指令和寄存器。
+操作数格式：
+格式 操作数值 名称 样例（GAS = C语言）
+$Imm Imm 立即数寻址 $1 = 1
+Ea R[Ea] 寄存器寻址 %eax = eax
+Imm M[Imm] 绝对寻址 0x104 = *0x104
+（Ea） M[R[Ea]] 间接寻址 （%eax）= *eax 
+Imm(Ea) M[Imm+R[Ea]] (基址+偏移量)寻址 4(%eax) = *(4+eax)
+（Ea,Eb） M[R[Ea]+R[Eb]] 变址 (%eax,%ebx) = *(eax+ebx)
+Imm（Ea,Eb） M[Imm+R[Ea]+R[Eb]] 寻址 9(%eax,%ebx)= *(9+eax+ebx)
+(,Ea,s) M[R[Ea]*s] 伸缩化变址寻址 (,%eax,4)= *(eax*4)
+Imm(,Ea,s) M[Imm+R[Ea]*s] 伸缩化变址寻址 0xfc(,%eax,4)= *(0xfc+eax*4)
+(Ea,Eb,s) M(R[Ea]+R[Eb]*s) 伸缩化变址寻址 (%eax,%ebx,4) = *(eax+ebx*4)
+Imm(Ea,Eb,s) M(Imm+R[Ea]+R[Eb]*s) 伸缩化变址寻址 8(%eax,%ebx,4) = *(8+eax+ebx*4)
+注：M[xx]表示在存储器中xx地址的值，R[xx]表示寄存器xx的值，这种表示方法将寄存器、内存都看出一个大数组的形式。
+
+数据传送指令：
+指令 效果 描述 
+movl S,D D <-- S 传双字
+movw S,D D <-- S 传字
+movb S,D D <-- S 传字节
+movsbl S,D D <-- 符号扩展S 符号位填充(字节->双字)
+movzbl S,D D <-- 零扩展S 零填充(字节->双字)
+pushl S R[%esp] <-- R[%esp] – 4; M[R[%esp]] <-- S 压栈
+popl D D <-- M[R[%esp]]； R[%esp] <-- R[%esp] + 4; 出栈
+
+注：均假设栈往低地址扩展。
+
+算数和逻辑操作地址：
+指令 效果 描述 
+leal S,D D = &S movl地版，S地址入D，D仅能是寄存器
+incl D D++ 加1
+decl D D-- 减1
+negl D D = -D 取负
+notl D D = ~D 取反
+addl S,D D = D + S 加
+subl S,D D = D – S 减
+imull S,D D = D*S 乘
+xorl S,D D = D ^ S 异或
+orl S,D D = D | S 或
+andl S,D D = D & S 与
+sall k,D D = D << k 左移
+shll k,D D = D << k 左移(同sall)
+sarl k,D D = D >> k 算数右移
+shrl k,D D = D >> k 逻辑右移
+特殊算术操作： 
+指令 效果 描述 
+imull S R[%edx]:R[%eax] = S * R[%eax] 无符号64位乘
+mull S R[%edx]:R[%eax] = S * R[%eax] 有符号64位乘
+cltd S R[%edx]:R[%eax] = 符号位扩展R[%eax] 转换为4字节
+idivl S R[%edx] = R[%edx]:R[%eax] % S; R[%eax] = R[%edx]:R[%eax] / S; 有符号除法，保存余数和商 
+divl S R[%edx] = R[%edx]:R[%eax] % S; R[%eax] = R[%edx]:R[%eax] / S; 无符号除法，保存余数和商
+注：64位数通常存储为，高32位放在edx，低32位放在eax。
+
+条件码： 条件码寄存器描述了最近的算数或逻辑操作的属性。
+CF：进位标志，最高位产生了进位，可用于检查无符号数溢出。
+OF：溢出标志，二进制补码溢出——正溢出或负溢出。
+ZF：零标志，结果为0。
+SF：符号标志，操作结果为负。
+比较指令：
+
+指令 基于 描述 
+cmpb S2,S1 S1 – S2 比较字节，差关系
+testb S2,S1 S1 & S2 测试字节，与关系
+cmpw S2,S1 S1 – S2 比较字，差关系
+testw S2,S1 S1 & S2 测试字，与关系
+cmpl S2,S1 S1 – S2 比较双字，差关系
+testl S2,S1 S1 & S2 测试双字，与关系
+
+访问条件码指令： 
+指令 同义名 效果 设置条件
+sete D setz D = ZF 相等/零
+setne D setnz D = ~ZF 不等/非零
+sets D D = SF 负数
+setns D D = ~SF 非负数 
+setg D setnle D = ~(SF ^OF) & ZF 大于（有符号>）
+setge D setnl D = ~(SF ^OF) 小于等于(有符号>=)
+setl D setnge D = SF ^ OF 小于(有符号<)
+setle D setng D = (SF ^ OF) | ZF 小于等于(有符号<=)
+seta D setnbe D = ~CF & ~ZF 超过(无符号>)
+setae D setnb D = ~CF 超过或等于(无符号>=)
+setb D setnae D = CF 低于(无符号<) 
+setbe D setna D = CF | ZF 低于或等于(无符号<=)
+
+跳转指令：
+
+指令 同义名 跳转条件 描述
+jmp   Label 1 直接跳转
+jmp   *Operand 1 间接跳转
+je     Label jz ZF 等于/零 
+jne    Label jnz ~ZF 不等/非零
+js     Label SF 负数
+jnz    Label ~SF 非负数
+jg     Label jnle ~(SF^OF) & ~ZF 大于(有符号>)
+jge    Label jnl ~(SF ^ OF) 大于等于(有符号>=)
+jl     Label jnge SF ^ OF 小于（有符号<） 
+jle     Label jng (SF ^ OF) | ZF 小于等于(有符号<=)
+ja     Label jnbe ~CF & ~ZF 超过(无符号>)
+jae    Label jnb ~CF 超过或等于(无符号>=)
+jb     Label jnae CF 低于(无符号<)
+jbe    Label jna CF | ZF 低于或等于(无符号<=)
+
+转移控制指令：（函数调用）：
+
+指令 描述
+call    Label 过程调用，返回地址入栈，跳转到调用过程起始处，返回地址是call后面那条指令的地址
+call    *Operand leave 为返回准备好栈，为ret准备好栈，主要是弹出函数内的栈使用及%ebp
