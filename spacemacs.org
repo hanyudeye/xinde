@@ -1,0 +1,513 @@
+* spacemacs? 互动性强，扩展好，交际好，适应能力强，就够了，帮助足够，哈哈
+  risk of RSI  减轻腰肌劳损 还治病
+  增强扩展  更新 手动更新？ 在项目中用git pull origin 
+  更新包扩展？ 可以用命令 configuration-layer/update-packages 或点击主页面　update package
+* 扩展 以层或包的形式  
+** .spacemacs 配置的扩展  SPACEMACSDIR 
+   重新配置后, 就要重新初始化 spacemacs , 命令 SPC f e R
+   test test-dotfile
+   编辑样式 dotspacemacs-editing-style变量 或者 M-m t E/ SPC t E h 会取消hybrid模式，就是vim模式
+   前导键 空格 就是 Spacemacs 的命名来源
+   C-u 是vim的上翻页，SPC-u 是emacs的 数字参数
+** 配置dotspacemacs/layers   
+   官方层 ~/.emacs.d/layers
+   私人层~/.emacs.d/private
+   自定义 在.myconfig 文件夹(setq-default dotspacemacs-configuration-layer-path '("~/.myconfig/"))
+** 设置层变量 :variables
+#+BEGIN_SRC emacs-lisp
+(defun dotspacemacs/layers ()
+  ;; List of configuration layers to load.
+  (setq-default dotspacemacs-configuration-layers
+    '(auto-completion
+      (git :variables
+           git-magit-status-fullscreen t
+           git-variable-example nil)
+      smex)))
+#+END_SRC
+** 取消层的某些服务
+#+BEGIN_SRC emacs-lisp
+(defun dotspacemacs/layers ()
+  ;; List of configuration layers to load.
+  (setq-default dotspacemacs-configuration-layers
+    '(org git
+      (auto-completion :disabled-for org git))))
+#+END_SRC
+** 允许某些层服务
+#+BEGIN_SRC emacs-lisp
+  (defun dotspacemacs/layers ()
+    ;; List of configuration layers to load.
+    (setq-default dotspacemacs-configuration-layers
+      '(java python c-c++
+        (auto-completion :enabled-for))))
+#+END_SRC
+** 忽略的包/允许包
+#+BEGIN_SRC emacs-lisp
+(defun dotspacemacs/layers ()
+  ;; List of configuration layers to load.
+  (setq-default dotspacemacs-configuration-layers
+    '(auto-completion
+      (spacemacs-ui-visual :packages (not neotree fancy-battery))))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(defun dotspacemacs/layers ()
+  ;; List of configuration layers to load.
+  (setq-default dotspacemacs-configuration-layers
+    '(auto-completion
+      (spacemacs-ui-visual :packages neotree fancy-battery)))
+#+END_SRC
+** 配置变量，默认配置变量添加在 .spacemacs 末尾 或者 custom-file 会写在 配置文件里
+** 不想用某个包 (setq-default dotspacemacs-excluded-packages '(rainbow-delimiters))
+* 什么是spacemacs 层配置？
+  结构
+#+BEGIN_SRC 
+[LAYER_NAME]
+| __ [local] 本地包
+| | __ [包1]
+| | ...
+| | __ [包n]
+|  -  layers.el
+| __ packages.el
+| __ funcs.el
+| __ config.el
+| __ keybindings.el
+[] =目录
+#+END_SRC
+
+** 什么是layers.el? 声明附加图层的位置
+** 什么是packages.el 包的列表及其配置函数（init，post-init等）
+** 什么是funcs.el 在图层中定义所有的函数
+** 什么是config.el 图层配置
+** 什么是keybindings.el 
+** 什么是初始化package?
+   需要在package.el 中第一函数
+#+BEGIN_SRC 
+(defun <layer> / init-xxx()... body)
+#+END_SRC
+** 什么是排除包？
+#+BEGIN_SRC emacs-lisp
+（setq <layer> -excluded-packages'（package1 package2 ...）
+#+END_SRC
+** 什么是添加包？
+#+BEGIN_SRC emacs-lisp
+   (defun dotspacemacs / layers()
+  “配置图层声明...”
+  （setq默认
+   ;; ...
+   dotspacemacs-additional-packages'（llvm-mode dts-mode）
+   ;; ...
+   ))
+#+END_SRC
+* 键绑定
+** 全局绑定 会被模式绑定覆盖
+(global-set-key (kbd "C-]") 'forward-char)
+//被下面的覆盖了
+(define-key evil-insert-state-map (kbd "C-]") 'forward-char)
+//用前导键
+#+BEGIN_SRC emacs-lisp
+(spacemacs/set-leader-keys "C-]" 'forward-char)
+(spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "C-]" 'forward-char)
+#+END_SRC
+* 什么是spacemacs?
+   主模式相关快捷键 SPC m
+   模式和状态
+   层
+   Spacemacs 具有层的概念。层类似于 vim 中的插件。它们提供可以在 Spacemacs 中使用的 新功能。
+   键位绑定约定
+     SPC b . 	   缓冲区微状态。
+     窗口
+     SPC w v 或 :vsplit 	    在右侧打开一个垂直分割。
+     SPC w s 或 :split 	    在下部打开一个水平分割。
+     SPC w h/j/k/l 	    在窗口间导航。
+     SPC w H/J/K/L 	    移动当前窗口。
+     SPC w . 	    窗口微状态。
+
+     文件
+     Spacemacs 中所有文件命令都有 SPC f 前缀。
+     SPC f f 	    打开一个缓冲区搜索当前目录中的文件。
+     SPC f r 	    打开一个缓冲区在最近打开的文件中搜索。
+     SPC f s 或 :w 	    保存当前文件。
+     :x 	    保存当前文件并退出。
+     :e <file> 	    打开<file>
+
+     帮助系统
+     Emacs 具有一个可扩展的帮助系统。所有的快捷键都有SPC h d 前缀，以允许便捷地访问帮助系统。
+     最重要的快捷键是 SPC h d f, SPC h d k, 和 SPC h d v。同样还有 SPC <f1> 允许用户搜索文档。
+     SPC h d f 	    对一个功能提示并显示其文档。
+     SPC h d k 	    对一个快捷键提示并显示其绑定的内容。
+     SPC h d v 	    对一个变量提示并显示其文档和当前值。
+     SPC <f1> 	    搜索一个命令，功能，变量或接口，并显示其文档
+     不论何时，你遇到怪异的行为或想知道是什么东西做的，这些功能是你应该首先查阅的。
+
+     探索
+     SPC f e h 	    列出所有层并允许你浏览层上的文件。
+     SPC ? 	    列出所有快捷键。
+
+     .spacemacs  文件
+     SPC f e d 	                打开你的 .spacemacs
+     SPC f e D 	                使用diff 通过默认模版手动更新你的 .spacemacs 
+
+     Emacs Lisp
+     变量
+     设置变量是定制 Spacemacs 行为最常见的方式。语法很简单：
+     (setq variable value) ; Syntax
+     ;; Setting variables example
+     (setq variable1 t; True
+     variable2 nil ; False
+     variable3 '("A" "list" "of" "things"))
+
+     快捷键
+     定义快捷键是几乎每个人都想做的事情，最好的方式就是使用内置的 define-key 函数。
+     (define-key map new-keybinding function) ; Syntax
+     ;; Map H to go to the previous buffer in normal mode
+     (define-key evil-normal-state-map (kbd "H") 'spacemacs/previous-useful-buffer)
+     ;; Mapping keybinding to another keybinding
+     (define-key evil-normal-state-map (kbd "H") (kbd "^")) ; H goes to beginning of the line
+
+     map 是你想要绑定键位到的 keymap。大多数情况下你会使用
+     evil-<state-name>-state-map。其对应不同的 evil-mode 状态。例如，使用 evil-insert-state-map 映射用于插入模式的快捷键。
+
+     使用 evil-leader/set-key 函数来映射 <Leader> 快捷键。
+     (evil-leader/set-key key function) ; Syntax
+     ;; Map killing a buffer to <Leader> b c
+     (evil-leader/set-key "bc" 'kill-this-buffer)
+     ;; Map opening a link to <Leader> o l only in org-mode
+     (evil-leader/set-key-for-mode 'org-mode
+     "ol" 'org-open-at-point)
+  
+     函数
+     你可能偶尔想要定义一个函数做更复杂的定制，语法很简单：
+     (defun func-name (arg1 arg2)
+     "docstring"
+     ;; Body
+     )
+     ;; Calling a function
+     (func-name arg1 arg1)
+     这里有个现实可用的示例函数：
+
+     ;; This snippet allows you to run clang-format before saving
+     ;; given the current file as the correct filetype.
+     ;; This relies on the c-c++ layer being enabled.
+     (defun clang-format-for-filetype ()
+     "Run clang-format if the current file has a file extensions
+     in the filetypes list."
+     (let ((filetypes '("c" "cpp")))
+     (when (member (file-name-extension (buffer-file-name)) filetypes)
+     (clang-format-buffer))))
+     ;; See http://www.gnu.org/software/emacs/manual/html_node/emacs/Hooks.html for
+     ;; what this line means
+     (add-hook 'before-save-hook 'clang-format-for-filetype)
+
+     激活一个层
+     正如上文术语那段所说，层提供一个简单的方式来添加特性。可在 .spacemacs 文件中激活
+     一个层。
+     在文件中找到 dotspacemacs-configuration-layers 变量，默认情况下，它看起来应该是这样的：
+     (defun dotspacemacs/layers ()
+     (setq-default
+     ;; ...
+     dotspacemacs-configuration-layers '(;; auto-completion
+     ;; better-defaults
+     emacs-lisp
+     ;; (git :variables
+     ;;      git-gutter-use-fringe t)
+     ;; markdown
+     ;; org
+     ;; syntax-checking
+     )))
+
+     你可以通过删除分号来取消注释这些建议的层，开箱即用。要添加一个层，就把它的名字添
+     加到列表中并重启
+     Emacs 或按 SPC f e R。使用 SPC f e h 来显示所有的层和他们的文档。
+
+     创建一个层
+     为了将配置分组或当配置与你的 .spacemacs 文件之间不匹配时，你可以创建一个配置层
+     。Spacemacs 提供了一个内建命令用于生成层的样板文件：SPC
+     :configuration-layer/create-layer。
+     这条命令将会生成一个如下的文件夹：
+
+     [layer-name]
+     |__ [local]*
+     | |__ [example-mode-1]
+     | |     ...
+     | |__ [example-mode-n]
+     |__ config.el*
+     |__ funcs.el*
+     |__ keybindings.el*
+     |__ packages.el
+
+     [] = 文件夹
+     \ * = 不是命令生成的文件
+
+     Packages.el 文件包含你可以在 <layer-name>-packages 变量中安装的包的列表。
+     所有 MELPA 仓库中的包都可以添加到这个列表中。还可以使用 :excludedt 特性将包包含
+     在列表中。
+     每个包都需要一个函数来初始化。这个函数必须以这种模式命名：
+     <layer-name>/init-<package-name>。
+     这个函数包含了包的配置。同时还有一个 pre/post-init 函数来在包加载之前或之后运行代码。它看起来想这个样子：
+
+     (setq layer-name-packages '(example-package
+     ;;这个层通过设置:excluded 属性
+     ;;为真(t)来卸载example-package-2
+     (example-package-2 :excluded t)))
+     (defun layer-name/post-init-package ()
+     ;;在这里添加另一个层的包的配置
+     )
+     (defun layer-name/init-example-package ()
+     ;;在这里配置example-package
+     )
+
+     **注意**：只有一个层可以具有一个对于包的 init 函数。如果你想覆盖另一个层对一个包
+     的配置，请使用 use-package hooks 中的 <layer-name>/pre-init 函数。
+     如果 MELPA 中没有你想要的包，你必须是由一个本地包或一个包源。关于此的更多信息可以从层的剖析处获得。
+
+     确保你添加了你的层到你的 .spacemacs 文件中，并重启 spacemacs 以激活。
+     关于层的加载过程和层的工作原理的详细描述可以参考LAYERS.org。
+
+     安装一个单独的包
+     有时创建一个层会有点大材小用了，也许你仅仅想要一个包而不想维持整个层。Spacemacs
+     在 .spacemacs 文件中的 dotspacemacs/layers 函数里提供了一个叫做
+     dotspacemacs-additional-packages 的变量，只要在列表中添加一个包名，它就会在你重
+     启的时候被安装。
+     下一段来说明如何加载这个包。
+     加载包
+     有没有想过 Spacemacs 如何可以在仅仅几秒钟之内加载超过 100 个包呢？
+     如此低的加载时间必须需要某种难以理解的黑魔法吧。还好这不是真的，多亏有了
+     use-package。
+     它是一个可以轻松实现对包进行延迟加载和配置的包。以下是它的基础用法：
+
+     ;; Basic form of use-package declaration. The :defer t tells use-package to
+     ;; try to lazy load the package.
+     (use-package package-name
+     :defer t)
+     ;; The :init section is run before the package loads The :config section is
+     ;; run after the package loads
+     (use-package package-name
+     :defer t
+     :init
+     (progn
+     ;; Change some variables
+     (setq variable1 t variable2 nil)
+     ;; Define a function
+     (defun foo ()
+     (message "%s" "Hello, World!")))
+     :config
+     (progn
+     ;; Calling a function that is defined when the package loads
+     (function-defined-when-package-loads)))
+
+     这只是 use-package 的一个非常基本的概述。它还有许多其他的方式来控制包的加载，就不在这里介绍了。
+     卸载一个包
+
+     Spacemacs 在 .spacemacs 文件中的 dotspacemacs/init 函数里提供了一个叫做
+     dotspacemacs-excluded-packages 的变量。只要在列表中添加一个包名，它就会在你重启的时候被卸载。
+     常见调整
+     本段是为了想要做更多调整的人所写的。除非另有说明，所有这些设置都去你的
+     .spacemacs 文件中的
+     dotspacemacs/user-config 函数里完成。
+
+     变更 escape 键
+     Spacemacs 使用 [[https://github.com/syl20bnr/evil-escape][evil-escape]] 来允许从许多拥有一个快捷键的 major-modes 中跳出。
+     你可以在你的 dotspacemacs/user-config 函数中像这样定制变量：
+     (defun dotspacemacs/user-config ()
+     ;; ...
+     ;; Set escape keybinding to "jk"
+     (setq-default evil-escape-key-sequence "jk"))
+     更多的文档可以在 evil-escape README 中找到。
+
+     变更配色方案
+     .spacemacs 文件的 dotspacemacs/init 函数中有一个 dotspacemacs-themes 变量
+     。这是一个可以用 SPC T n 键循环的主题的列表。列表中的第一个主题是在启动时加载的主题。
+     以下为示例：
+
+     (defun dotspacemacs/init
+     ;; Darktooth theme is the default theme
+     ;; Each theme is automatically installed.
+     ;; Note that we drop the -theme from the package name.
+     ;; Ex. darktooth-theme -> darktooth
+     (setq-default dotspacemacs-themes '(darktooth
+     soothe
+     gotham)))
+
+     可以使用 SPC T h 键列出和选择所有已安装的主题。
+     非高亮搜索
+     Spacemacs 模仿了默认的 vim 行为，会高亮显示搜索结果，尽管你不在它们之间进行导航。
+     你可以使用 SPC s c 或 :nohlsearch 来关闭搜索结果高亮。
+     若再也不需要自动高亮结果，你可以卸载 evil-search-highlight-persist 包。
+
+     会话
+     当你打开 Spacemacs 时，它不会自动恢复窗口和缓冲区。如果你常使用 vim 会话，
+     你可能要在你的 .spacemacs 文件中的 dotspacemacs/user-config 里添加
+     (desktop-save-mode t)，然后你就可以使用 SPC : desktop-read 加载已被保存的会话。
+     桌面文件的位置可以使用 desktop-dirname 变量设置。要自动加载一个会话，就在你的
+     .spacemacs 文件中添加 (desktop-read)。
+
+     使用 visual lines 导航
+     Spacemacs 使用 vim 默认 actual lines 导航，即使它们被包装了。如果你想要让 j 和 k
+     的行为如 g j 和 g k 一般，将一下代码添加到你的 .spacemacs 文件：
+     (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
+     (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+
+* 什么是spacemacs 默认对于不使用的包　会被删除？　不包含在层中的会删除，查看
+  dotspacemacs-install-packages 变量
+* 什么是Dotfile? spacemacs 配置文件
+** 什么是测试点文件？ 检查点文件的语法， dotspacemacs/test-dotfile
+** 什么是点文件执行顺序？
+1.spacespacemacs / layers
+2.spacespacemacs / init 
+3.dotspacemacs / user-init
+4.spacespacemacs / user-config
+5.dotspacemacs / emacs-custom-settings
+* 主题
+boolean 注释背景 spacemacs-theme-comment-bg
+(setq-default dotspacemacs-themes '(spacemacs-light leuven zenburn))
+* 字体
+ dotspacemacs-default-font 
+#+BEGIN_SRC emacs-lisp
+(setq-default dotspacemacs-default-font '("Source Code Pro"
+                                          :size 13
+                                          :weight normal
+                                          :width normal
+                                          :powerline-scale 1.1))
+#+END_SRC
+* 模式行
+  行号
+#+BEGIN_SRC emacs-lisp
+  (setq-default dotspacemacs-lines-numbers '(:relative nil
+                                             :disabled-for-modes dired-mode
+                                                                 doc-view-mode
+                                                                 markdown-mode
+                                                                 org-mode
+                                                                 pdf-view-mode
+                                                                 text-mode
+                                             :size-limit-kb 1000))
+#+END_SRC
+* Frame title
+Default frame title displays name of current process and hostname of system. You
+can include more information (like name of current file, name of current project
+etc) by setting =dotspacemacs-frame-title-format= variable.
+
+Following format short codes are avialable:
+
+| Code | Description                                                                  |
+|------+------------------------------------------------------------------------------|
+| =%a= | the `abbreviated-file-name', or `buffer-name'                                |
+| =%t= | `projectile-project-name'                                                    |
+| =%I= | `invocation-name'                                                            |
+| =%S= | `system-name'                                                                |
+| =%U= | contents of $USER                                                            |
+| =%b= | buffer name                                                                  |
+| =%f= | visited file name                                                            |
+| =%F= | frame name                                                                   |
+| =%s= | process status                                                               |
+| =%p= | percent of buffer above top of window, or Top, Bot or All                    |
+| =%P= | percent of buffer above bottom of window, perhaps plus Top, or Bottom or All |
+| =%m= | mode name                                                                    |
+| =%n= | Narrow if appropriate                                                        |
+| =%z= | mnemonics of buffer, terminal, and keyboard coding systems                   |
+| =%Z= | like %z, but including the end-of-line format"                               |
+
+*** Iconified (tabified) title
+If you are using tiling window manager with tab support you may want to display
+different title for inactive tabs with =dotspacemacs-icon-title-format=
+variable. Short codes are same as for frame title.
+
+If this variable is set to =nil= (default) its value will be same as
+=dotspacemacs-frame-title-format=.
+
+* 布局
+** 工程布局 布局名和工程名同名
+* 工作空间 这环境弄的有点特殊
+* EScaping 在vim 中很重要
+  (setq-default evil-escape-key-sequence "jj"))
+* 键绑定帮助  
+| Key Binding | Description                                               |
+|-------------+-----------------------------------------------------------|
+| ~SPC h d b~ | describe bindings                                         |
+| ~SPC h d c~ | describe current character under point                    |
+| ~SPC h d d~ | describe current expression under point                   |
+| ~SPC h d f~ | describe a function                                       |
+| ~SPC h d F~ | describe a face                                           |
+| ~SPC h d k~ | describe a key                                            |
+| ~SPC h d K~ | describe a keymap                                         |
+| ~SPC h d l~ | copy last pressed keys that you can paste in gitter chat  |
+| ~SPC h d m~ | describe current modes                                    |
+| ~SPC h d p~ | describe a package (Emacs built-in function)              |
+| ~SPC h d P~ | describe a package (Spacemacs layer information)          |
+| ~SPC h d s~ | copy system information that you can paste in gitter chat |
+| ~SPC h d t~ | describe a theme                                          |
+| ~SPC h d v~ | describe a variable                                       |
+
+Other help key bindings:
+
+| Key Binding | Description                                           |
+|-------------+-------------------------------------------------------|
+| ~SPC h SPC~ | discover Spacemacs documentation, layers and packages |
+| ~SPC h i~   | search in info pages with the symbol at point         |
+| ~SPC h k~   | show top-level bindings with =which-key=              |
+| ~SPC h m~   | search available man pages                            |
+| ~SPC h n~   | browse emacs news                                     |
+
+Navigation key bindings in =help-mode=:
+
+* 文件操作
+| Key Binding | Description                                                                                            |
+|-------------+--------------------------------------------------------------------------------------------------------|
+| ~SPC f b~   | go to file bookmarks                                                                                   |
+| ~SPC f c~   | copy current file to a different location                                                              |
+| ~SPC f C d~ | convert file from unix to dos encoding                                                                 |
+| ~SPC f C u~ | convert file from dos to unix encoding                                                                 |
+| ~SPC f D~   | delete a file and the associated buffer (ask for confirmation)                                         |
+| ~SPC f E~   | open a file with elevated privileges (sudo edit)                                                       |
+| ~SPC f f~   | open file                                                                                              |
+| ~SPC f F~   | try to open the file under point                                                                       |
+| ~SPC f h~   | open binary file with =hexl= (a hex editor)                                                            |
+| ~SPC f j~   | jump to the current buffer file in dired                                                               |
+| ~SPC f J~   | open a junk file, in mode determined by the file extension provided (defaulting to =fundamental mode=) |
+| ~SPC f l~   | open file literally in =fundamental mode=                                                              |
+| ~SPC f L~   | Locate a file (using =locate=)                                                                         |
+| ~SPC f o~   | open a file using the default external program                                                         |
+| ~SPC f R~   | rename the current file                                                                                |
+| ~SPC f s~   | save a file                                                                                            |
+| ~SPC f S~   | save all files                                                                                         |
+| ~SPC f r~   | open a recent file                                                                                     |
+| ~SPC f t~   | toggle file tree side bar using [[https://github.com/jaypei/emacs-neotree][NeoTree]]                                                                |
+| ~SPC f v d~ | add a directory variable                                                                               |
+| ~SPC f v f~ | add a local variable to the current file                                                               |
+| ~SPC f v p~ | add a local variable to the first line of the current file                                             |
+| ~SPC f y~   | show and copy current file absolute path in the minibuffer                                             |
+* ace-link模式
+在 help-mode 和 info-mode 中可以 用 o 快速跳转
+* 自动保存
+* 通过语义列出符号 SPC s j  
+* 寄存器
+  | Key Binding | Description                        |
+  |-------------+------------------------------------|
+  | ~SPC r e~   | show evil yank and named registers |
+  | ~SPC r m~   | show marks register                |
+  | ~SPC r r~   | show helm register                 |
+  | ~SPC r y~   | show kill ring                     |
+
+* 错误 通过flycheck 给出
+  | Key Binding | Description                                                           |
+  |-------------+-----------------------------------------------------------------------|
+  | ~SPC t s~   | toggle flycheck                                                       |
+  | ~SPC e c~   | clear all errors                                                      |
+  | ~SPC e h~   | describe a flycheck checker                                           |
+  | ~SPC e l~   | toggle the display of the =flycheck= list of errors/warnings          |
+  | ~SPC e n~   | go to the next error                                                  |
+  | ~SPC e p~   | go to the previous error                                              |
+  | ~SPC e v~   | verify flycheck setup (useful to debug 3rd party tools configuration) |
+  | ~SPC e .~   | error transient state                                                 |
+
+
+* html 
+ web-mode  编辑  css 和 html
+ 编辑 Sass/Scss 和 Less
+** 编译 Less
+ C-c C-c         less-css-compile
+ C-M-q           prog-indent-sexp
+
+ emmet-mode 自动生成 html css
+evil-matchit 在 Tags 中导航 用 %
+slim 和 pug 模板 用 slim-mode 和 pug-mode 编辑
+急着看，用impatient-mode
