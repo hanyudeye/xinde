@@ -24,53 +24,51 @@
     git init <directory>
     git clone git://git.kernel.org/pub/scm/git/git.git <directory>
     git remote add origin git@github.com:hanyudeye/os.git
-    git push origin master
-    git push -u origin master
 *** git tag
 *** git branch
 *** git checkout
 *** 将修改存入暂存区
-git add <modified files>/git add .
+    git add <modified files>/git add .
 *** 暂存区删除文件
-git rm --cached <file>
+    git rm --cached <file>
 *** 删除工作区和暂存区文件
 git rm <file>
 *** 取消已缓存的内容
-git reset HEAD
+    git reset HEAD
 *** 暂存区全部或指定的文件替换工作区的文件。这个操作很危险
-git checkout .
-git checkout -- <file>
+    git checkout .
+    git checkout -- <file>
 *** 重命名
-git mv 命令做得所有事情就是 git rm --cached 命令的操作，重命
-名磁盘上的文件，然后再执行 git add 把新文件添加到缓存区。
+    git mv 命令做得所有事情就是 git rm --cached 命令的操作，重命
+    名磁盘上的文件，然后再执行 git add 把新文件添加到缓存区。
 *** 用 HEAD 指向的 master 分支中的全部或者部分文件替换
 git checkout HEAD .
 git checkout HEAD <file>
 *** 提交到版本库中
-git commit -m "msg"
-也可以将git add与git commit用一个指令完成
-git commit -a -m "msg"
+    git commit -m "msg"
+    也可以将git add与git commit用一个指令完成
+    git commit -a -m "msg"
 *** 远程同步
     git push
 *** 更新本地端的repo
-git pull/git pull git://github.com/tom/test.git
+    git pull/git pull git://github.com/tom/test.git
 *** 查看状态
-git status
-git status -s 简短信息
-git remote -v 列出服务器地址
-git diff   尚未缓存的改动：
-git diff --cached   查看已缓存的改动：
-git diff HEAD  查看已缓存的与未缓存的所有改动：
-git diff --stat   显示摘要而非整个diff
- A: 你本地新增的文件（服务器上没有）.
-C: 文件的一个新拷贝.
-D: 你本地删除的文件（服务器上还在）.
-M: 文件的内容或者mode被修改了.
-R: 文件名被修改了。
-T: 文件的类型被修改了。
-U: 文件没有被合并(你需要完成合并才能进行提交)。
-X: 未知状态(很可能是遇到git的bug了，你可以向git提交bug report)。
-在man git diff-files中可以查到这些标志的说明
+    git status
+    git status -s 简短信息
+    git remote -v 列出服务器地址
+    git diff   尚未缓存的改动：
+    git diff --cached   查看已缓存的改动：
+    git diff HEAD  查看已缓存的与未缓存的所有改动：
+    git diff --stat   显示摘要而非整个diff
+    A: 你本地新增的文件（服务器上没有）.
+    C: 文件的一个新拷贝.
+    D: 你本地删除的文件（服务器上还在）.
+    M: 文件的内容或者mode被修改了.
+    R: 文件名被修改了。
+    T: 文件的类型被修改了。
+    U: 文件没有被合并(你需要完成合并才能进行提交)。
+    X: 未知状态(很可能是遇到git的bug了，你可以向git提交bug report)。
+    在man git diff-files中可以查到这些标志的说明
 ** Git 分支管理
 *** 创建分支命令：
 git branch (branchname)
@@ -148,76 +146,21 @@ git push origin master 将代码提交到不同仓库中，可以指定分支
 然后执行git pull origin master 先将github上的代码pull下来
 然后在git push origin master
 
-* magit
- - [[#install][Install]]
-   - [[#layer][Layer]]
-   - [[#magit-status-fullscreen][Magit status fullscreen]]
-   - [[#magit-auto-complete][Magit auto-complete]]
-   - [[#magit-svn-plugin][Magit SVN plugin]]
-   - [[#global-git-commit-mode][Global git commit mode]]
-   - [[#git][Git]]
-   - [[#git-flow][Git-Flow]]
-   - [[#org-integration][Org integration]]
- - [[#working-with-git][Working with Git]]
-   - [[#magit][Magit]]
-   - [[#staging-lines][Staging lines]]
-   - [[#commit-message-editing-buffer][Commit message editing buffer]]
-   - [[#interactive-rebase-buffer][Interactive rebase buffer]]
-   - [[#quick-guide-for-recurring-use-cases-in-magit][Quick guide for recurring use cases in Magit]]
-   - [[#git-flow-1][Git-Flow]]
-   - [[#git-time-machine][Git time machine]]
-   - [[#git-links-to-web-services][Git links to web services]]
-
-* Description
-This layers adds extensive support for [[http://git-scm.com/][git]].
-
-** Features:
-- git repository management the indispensable [[http://magit.vc/][magit]] package
-- [[https://github.com/jtatarik/magit-gitflow][git-flow]] add-on for magit.
-- quick in buffer history browsing with [[https://github.com/pidu/git-timemachine][git-timemachine]].
-- quick in buffer last commit message per line with [[https://github.com/syohex/emacs-git-messenger][git-messenger]]
-- colorize buffer line by age of commit with [[https://github.com/syohex/emacs-smeargle][smeargle]]
-- gitignore generator with [[https://github.com/jupl/helm-gitignore][helm-gitignore]]
-- org integration with magit via [[https://github.com/magit/orgit][orgit]]
-
-New to Magit? Checkout the [[https://magit.vc/about/][official intro]].
-
-* Install
-** Layer
-To use this configuration layer, add it to your =~/.spacemacs=. You will need to
-add =git= to the existing =dotspacemacs-configuration-layers= list in this
-file.
-
-** Magit status fullscreen
-To display the =magit status= buffer in fullscreen set the variable
-=git-magit-status-fullscreen= to =t= in your =dotspacemacs/user-init= function.
-
+* git mode
+** 单屏显示版本文件状态
 #+BEGIN_SRC emacs-lisp
   (defun dotspacemacs/user-init ()
     (setq-default git-magit-status-fullscreen t))
 #+END_SRC
-
 ** Magit auto-complete
-Magit auto-complete feature is enabled. For this feature to work best you
-have to setup your Git repository directory in your =dotspacemacs/user-config=
-function, this is the folder where you keep all your git-controlled projects
-(the path should end up with a ~/~ to respect Emacs conventions):
-
 #+BEGIN_SRC emacs-lisp
   (setq magit-repository-directories '("~/repos/"))
 #+END_SRC
-
-For more information, see [[http://magit.vc/manual/magit.html#Status-buffer][Magit-User-Manual#Status-buffer]]
-
 ** Magit SVN plugin
-For convenience the magit SVN plugin can be activated directly in the Git
-layer by setting the variable =git-enable-magit-svn-plugin= to =t=.
-
 #+BEGIN_SRC emacs-lisp
   (defun dotspacemacs/user-init ()
     (setq-default git-enable-magit-svn-plugin t))
 #+END_SRC
-
 ** Global git commit mode
 Spacemacs can be used as the =$EDITOR= (or =$GIT_EDITOR=) for editing git
 commits messages. To enable this you have to add the following line to your
@@ -226,10 +169,6 @@ commits messages. To enable this you have to add the following line to your
 #+begin_src emacs-lisp
 (global-git-commit-mode t)
 #+end_src
-
-** Git
-Of course if your OS does not ship with git (!) you'll have to install it
-on your machine. You can download it from the [[http://git-scm.com/downloads][download page]].
 
 ** Git-Flow
 Git-flow is a standardized branching pattern for git repositories with the aim
@@ -240,9 +179,7 @@ Support requires installation of the git-flow extensions. Please reference their
 [[https://github.com/petervanderdoes/gitflow/wiki][installation page]] for assistance.
 
 ** Org integration
-
-See the commentary section of the package [[https://github.com/magit/orgit/blob/master/orgit.el#L28][here]].
-
+   See the commentary section of the package [[https://github.com/magit/orgit/blob/master/orgit.el#L28][here]].
 * Working with Git
 Git commands (start with ~g~):
 
