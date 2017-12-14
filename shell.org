@@ -1,42 +1,144 @@
-﻿* shell program 
-  let "var <<= 2"就是左移 2 位(就是乘 4)  
-** 目录  
-       3.  特殊字符  
-        4.  变量和参数的介绍  
-           4.1.  变量替换  
-                4.2.  变量赋值  
-                4.3. Bash 变量是不分类型的  
-                4.4.  特殊的变量类型  
-        5.  引用(翻译的可能有问题,特指引号)  
-                5.1.  引用变量  
-                5.2.  转义(\)  
-        6.  退出和退出状态  
-        7. Tests  
-                7.1. Test 结构  
-                7.2.  文件测试操作  
-                7.3.  其他比较操作  
-                7.4.  嵌套的 if/then 条件 test  
-                7.5.  检查你的 test 知识  
-        8.  操作符和相关的主题  
-                8.1.  操作符  
-                8.2.  数字常量  
-        第三部分.  超越基本  
-        9.  变量重游  
-                9.1.  内部变量  
-                9.2.  操作字符串  
-                9.3.  参数替换  
-                9.4.  指定类型的变量:declare 或者 typeset  
-                9.5.  变量的间接引用  
-                9.6. $RANDOM:  产生随机整数  
-                9.7.  双圆括号结构  
-        10.  循环和分支  
-                10.1.  循环  
+﻿* 变量 
+  #+BEGIN_SRC shell
+  your_name="qinjx"
+  for file in `ls /etc`
+  #+END_SRC
+** 只读 
+   #+BEGIN_SRC shell
+     readonly myUrl
+   #+END_SRC
+** 删除
+   #+BEGIN_SRC shell
+  unset variable_name 
+   #+END_SRC
+* 变量类型
+** 局部变量
+** 环境变量
+** shell 变量
+** 字符串
+长度 echo ${#string}
+子字符串 ${string:1:4}
+#+BEGIN_SRC shell
+查找子字符串
+查找字符 "i 或 s" 的位置：
+string="wscxy is a great company"
+echo `expr index "$string" is`  # 输出 8
+
+#+END_SRC
+** 数组
+array_name=(value0 value1 value2 value3)
+${数组名[下标]}
+length=${#array_name[*]}
+* 传递参数 $1 $2 $n
+  $0 是文件名
+  #+BEGIN_SRC shell
+      $#	传递到脚本的参数个数
+      $*	以一个单字符串显示所有向脚本传递的参数。
+      如"$*"用「"」括起来的情况、以"$1 $2 … $n"的形式输出所有参数。
+    $$	脚本运行的当前进程ID号
+    $!	后台运行的最后一个进程的ID号
+    $@	与$*相同，但是使用时加引号，并在引号中返回每个参数。
+    如"$@"用「"」括起来的情况、以"$1" "$2" … "$n" 的形式输出所有参数。
+    $-	显示Shell使用的当前选项，与set命令功能相同。
+    $?	显示最后命令的退出状态。0表示没有错误，其他任何值表明有错误。
+  #+END_SRC
+* 基本运算符, 不支持，但可以用其他命令实现 如 awk 和 expr$(())，expr 最常用
+  #+BEGIN_SRC shell
+        val=`expr 2 + 2`
+        [ $a -eq $b ] 
+        [ $a -lt 20 -a $b -gt 100 ] 返回 false
+        [[ $a -lt 100 || $b -gt 100 ]] 返回 true
+        #注意 + 号之间空格
+  #+END_SRC
+* 字符串运算符
+#+BEGIN_SRC shell
+=	检测两个字符串是否相等，相等返回 true。	[ $a = $b ] 返回 false。
+!=	检测两个字符串是否相等，不相等返回 true。	[ $a != $b ] 返回 true。
+-z	检测字符串长度是否为0，为0返回 true。	[ -z $a ] 返回 false。
+-n	检测字符串长度是否为0，不为0返回 true。	[ -n $a ] 返回 true。
+str	检测字符串是否为空，不为空返回 true。	[ $a ] 返回 true。
+#+END_SRC
+* 流程控制
+  break continue
+#+BEGIN_SRC shell
+    if condition
+    then
+        command1 
+        command2
+        ...
+        commandN
+    else
+        command
+    fi
+
+    for var in item1 item2 ... itemN
+    do
+        command1
+        command2
+        ...
+        commandN
+    done
+    while condition
+    do
+        command
+    done
+  until condition
+  do
+      command
+  done
+  case 值 in
+   模式1)
+       command1
+       command2
+       ...
+       commandN
+       ;;
+   模式2）
+       command1
+       command2
+       ...
+       commandN
+       ;;
+          esac
+#+END_SRC
+* 函数
+  #+BEGIN_SRC shell
+      [ function ] funname [()]
+
+      {
+
+        action;
+
+        [return int;]
+
+    }
+  调用
+函数名 参数1 参数2 ...
+  #+END_SRC
+* 重定向
+  #+BEGIN_SRC shell
+      command > file	将输出重定向到 file。
+    command < file	将输入重定向到 file。
+    command >> file	将输出以追加的方式重定向到 file。
+    n > file	将文件描述符为 n 的文件重定向到 file。
+    n >> file	将文件描述符为 n 的文件以追加的方式重定向到 file。
+    n >& m	将输出文件 m 和 n 合并。
+    n <& m	将输入文件 m 和 n 合并。
+    << tag	将开始标记 tag 和结束标记 tag 之间的内容作为输入。
+  #+END_SRC
+* 包含文件
+#+BEGIN_SRC shell
+. filename   # 注意点号(.)和文件名中间有一空格
+或
+source filename
+#+END_SRC
+* shell program 
                 10.2.  嵌套循环  
                 10.3.  循环控制  
                 10.4.  测试与分支(case 和 select 结构)  
-        11.  内部命令与内建  
+          2. 内部命令与内建  
                 11.1.  作业控制命令  
-        12.  外部过滤器,程序和命令  
+          3. 外部过滤器,程序和命令  
                 12.1.  基本命令  
                 12.2.  复杂命令  
                 12.3.  时间/ 日期  命令  
@@ -46,64 +148,64 @@
                 12.7.  终端控制命令  
                 12.8.  数学计算命令  
                 12.9.  混杂命令  
-        13.  系统与管理命令  
+          4. 系统与管理命令  
                 13.1.  分析一个系统脚本  
-        14.  命令替换  
-        15.  算术扩展  
-        16. I/O  重定向  
-                16.1.  使用 exec  
-                16.2.  代码块的重定向  
-                16.3.  应用  
-        17. Here Documents  
-                17.1. Here Strings  
-        18.  休息时间  
-        Part 4.  高级  
-        19.  正则表达式  
+          5. 命令替换  
+          6. 算术扩展  
+          7. I/O  重定向  
+                 16.1.  使用 exec  
+                 16.2.  代码块的重定向  
+                 16.3.  应用  
+          8. Here Documents  
+                 17.1. Here Strings  
+          9. 休息时间  
+          Part 4.  高级  
+          1. 正则表达式  
                 19.1.  一个简要的正则表达式介绍  
                 19.2.  通配  
-        20.  子 shell(Subshells)  
-        21.  受限 shell(Restricted Shells)  
-        22.  进程替换  
-        23.  函数  
+          2. 子 shell(Subshells)  
+          3. 受限 shell(Restricted Shells)  
+          4. 进程替换  
+          5. 函数  
                 23.1.  复杂函数和函数复杂性  
                 23.2.  局部变量  
                 23.3.  不使用局部变量的递归  
-        24.  别名(Aliases)  
-        25.  列表结构  
-        26.  数组  
-        27. /dev  和  /proc  
-                27.1. /dev  
-                27.2. /proc  
-        28.  关于 Zeros 和 Nulls  
-        29.  调试  
-        30.  选项  
-        31. Gotchas  
-        32.  脚本编程风格  
-                32.1.  非官方的 Shell 脚本风格  
-        33.  杂项  
-                33.1.  交互式和非交互式的 shells 和脚本  
-                33.2. Shell  包装  
-                33.3.  测试和比较:  另一种方法  
-                33.4.  递归  
-                33.5.  彩色脚本  
-                33.6.  优化  
-                33.7.  各种小技巧  
-                33.8.  安全话题  
-                  33.8.1.   被感染的脚本  
-                  33.8.2.  隐藏 Shell 脚本源码  
-                33.9.  移植话题  
-                33.10.  在 Windows 下进行 Shell 编程  
+          6. 别名(Aliases)  
+          7. 列表结构  
+          8. 数组  
+          9. /dev  和  /proc  
+                 27.1. /dev  
+                 27.2. /proc  
+          10. 关于 Zeros 和 Nulls  
+          11. 调试  
+          12. 选项  
+          13. Gotchas  
+          14. 脚本编程风格  
+                 32.1.  非官方的 Shell 脚本风格  
+          15. 杂项  
+                 33.1.  交互式和非交互式的 shells 和脚本  
+                 33.2. Shell  包装  
+                 33.3.  测试和比较:  另一种方法  
+                 33.4.  递归  
+                 33.5.  彩色脚本  
+                 33.6.  优化  
+                 33.7.  各种小技巧  
+                 33.8.  安全话题  
+                   33.8.1.   被感染的脚本  
+                   33.8.2.  隐藏 Shell 脚本源码  
+                 33.9.  移植话题  
+                 33.10.  在 Windows 下进行 Shell 编程  
  
-        例子清单:  
-        2-1.  清除:清除/var/log 下的 log 文件  
-        2-2.  清除:一个改良的清除脚本  
-        2-3. cleanup:一个增强的和广义的删除 logfile 的脚本  
-        3-1.  代码块和 I/O 重定向  
-        3-2.  将一个代码块的结果保存到文件  
-        3-3.  在后台运行一个循环  
-        3-4.  备份最后一天所有修改的文件.  
-        4-1.  变量赋值和替换  
-        4-2.  一般的变量赋值  
+          例子清单:  
+          2-1.  清除:清除/var/log 下的 log 文件  
+          2-2.  清除:一个改良的清除脚本  
+          2-3. cleanup:一个增强的和广义的删除 logfile 的脚本  
+          3-1.  代码块和 I/O 重定向  
+          3-2.  将一个代码块的结果保存到文件  
+          3-3.  在后台运行一个循环  
+          3-4.  备份最后一天所有修改的文件.  
+          4-1.  变量赋值和替换  
+          4-2.  一般的变量赋值  
        4-3.  变量赋值,一般的和比较特殊的  
        4-4.  整型还是 string?  
 4-5.  位置参数  

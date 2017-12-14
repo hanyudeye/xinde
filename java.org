@@ -1,32 +1,10 @@
-* java
-: 编码风格是驼峰式, 而不是下划线
-** javac options
-   $ javac -verbose FetchURL.java 列出调用过程, 更多细节
-   文档目录 /usr/lib/jvm/default-java
-** java Options
-  java CLASSNAME
-  CLASSPATH 设置全局路径, 跟 PATH 常量差不多(编译和运行时都可用)
+* 什么是java语言
+** 什么是java Options?
+   java CLASSNAME
+   CLASSPATH 设置全局路径, 跟 PATH 常量差不多(编译和运行时都可用)
   指定搜索路径, 默认在当前目录 java -cp C:\workspace;C:\classes HelloWorld
   JVM 会依 CLASSPATH 路径顺序,搜索是否有对应的类文档,先找到先载入。
   java -cp C:\workspace;C:\lib\abc.jar;C:\lib\xyz.jar SomeApp
-#+BEGIN_SRC 
-  Just as the Java compiler, the runtime program, java, takes a number of com-
-  mand-line options. Here are the most commonly used ones:
-  -classpath     or -cp
-           Sets the runtime classpath. Overrides any value in the CLASSPATH
-           environment variable.
-           -Dproperty=value
-           Allows a system property to be set on the command line.
-           -jar
-           Specifies that the first nonoption command-line argument is not a Java
-           class name, but the name of a JAR file. The JAR file must have a
-           Main-Class: specification in its MANIFEST . The
-           main() method of the class named by the JAR’s MANIFEST Main-Class:
-           specification will be called as if that class had been named on the command
-           line, rather than the JAR file. This is commonly used in shell scripts and
-           batch files that accompany Java applications distributed in single
-           .jar files.
-#+END_SRC
 ** javadoc
       The javadoc command has the following general form:
       javadoc [options...] [package names...] [source filenames...]
@@ -35,7 +13,6 @@
       -public -protected -package -private
       -sourcepath      and -classpath -verbose     and -quiet
       -doclet starting_class
-
 
       /* This is a C-style comment, but it
       is _not_ a Javadoc comment. */
@@ -46,13 +23,7 @@
 
 #+END_SRC
 : 注释中可以嵌入Html tag
-@see 放入链接
-@version 放入版本号
-@author 作者
-@param 方法参数
-@return 返回
-@throws
-/*
+*
   * @param delay - elapsed time, in milliseconds
   * @throws TakesTooLongException
   * @returns total time, in milliseconds
@@ -604,513 +575,110 @@ public class hw
    Date类是以 UTC 为时间纪元 为状态设定的.
 Date类对日期的处理有局限, 如不能表示中国的农历等日期
 so, 类库实现者 将保存时间 与 给时间点命名分开. 一个 Date 类, 一个 GregorianCalendar 类
-* Java
-  Java 世界中对 异常, 并发, Internet 敏感  
-  名字空间:设计成反写域名 com.xx
-  引用其他的类:import
-  静态方法, 静态数据
-  对象之间 = 相当与引用的赋值, 而不是对象的拷贝
-  float f=1e-43f;  默认是double型, 要用f转换一下
-  无符号右移 >>>
-  没有sizeof(), 因为所有数据类型在不同类型机器上都是相同的
-  compound assignment
-  构造器的重载可以用this([param])
-
-* Jdee manual
-** Completing Method and Field Names
-The JDEE provides commands that can complete an incomplete field or
-method name.  All the methods determine the set of possible completions
-for an incomplete field or method name at point.  They differ in how
-they present the completions to you for selection.  The commands
-include:
-
-‘jdee-complete-in-line’
-     This command uses the first completion that it finds to complete
-     the method or field name at point.  If multiple completions exist,
-     it allows you to cycle through the completions, each completion
-     replacing the previous in the source buffer.
-
-‘jdee-complete-menu’
-     This command displays a menu of possible completions for the
-     incomplete method or field name at point.  It enters the completion
-     that you select in the source buffer.
-
-‘jdee-complete-minibuf’
-     This command uses the minibuffer to display possible completions
-     for the incomplete method or field name at point.  The command
-     enters the completion that you select in the source buffer.  See
-     Using Minibuffer-Based Completion for more information.
-
-‘jdee-complete’
-     This is the JDEE’s user-definable "standard" completion command.
-     It delegates completion to one of the JDEE’s other completion
-     commands (jdee-complete-menu by default) or to a custom completion
-     function that you specify  The ‘jdee-complete’ command is bound by
-     default to the key combination ‘C-c C-v C-.’.  If you prefer
-     another binding, use the customization variable ‘jdee-key-bindings’
-     to change the binding.
-
-   The JDEE’s field and method completion commands use the Beanshell to
-run Java code that in turn uses Java’s reflection (class introspection)
-capability to determine the fields and methods defined for the class of
-object at point.  The commands start the Beanshell if it is not running.
-This can cause a noticeable delay in completion the first time it is
-used in a session.  The response can also be slow for classes containing
-many methods and fields.
-
-   Completion works only for compiled classes that reside in the
-classpath defined by ‘jdee-global-classpath’, if set, otherwise by the
-‘CLASSPATH’ environment variable when the Beanshell starts.  Thus, if
-the JDEE is unable to complete a method or field, make sure that the
-class that defines the field or method is compiled and exists on the
-classpath defined by ‘jdee-global-classpath’, if set, otherwise by the
-‘CLASSPATH’ environment variable.
-
-   The JDEE completion commands work for all of the following cases:
-
-   • objects referenced by variables declared in the current buffer
-
-   • static fields and methods
-
-   • fields and methods of objects defined by the current class and its
-     parent
-
-* eclim Key bindings
-** Java-mode
-*** Project management
-
-| Key Binding | Description                    |
-|-------------+--------------------------------|
-| ~SPC m p b~ | Build project                  |
-| ~SPC m p c~ | Create project                 |
-| ~SPC m p d~ | Delete project                 |
-| ~SPC m p g~ | Open file in current project   |
-| ~SPC m p i~ | Import project                 |
-| ~SPC m p j~ | Information about project      |
-| ~SPC m p k~ | Close project                  |
-| ~SPC m p o~ | Open project                   |
-| ~SPC m p p~ | Open project management buffer |
-| ~SPC m p u~ | Update project                 |
-
-*** Eclimd
-
-| Key Binding | Description  |
-|-------------+--------------|
-| ~SPC m d s~ | Start daemon |
-| ~SPC m d k~ | Stop daemon  |
-
-*** Maven
-
-| Key Binding | Description                    |
-|-------------+--------------------------------|
-| ~SPC m m i~ | Run maven clean install        |
-| ~SPC m m I~ | Run maven install              |
-| ~SPC m m p~ | Run one already goal from list |
-| ~SPC m m r~ | Run maven goals                |
-| ~SPC m m R~ | Run one maven goal             |
-| ~SPC m m t~ | Run maven test                 |
-
-*** Goto
-
-| Key Binding | Description                                 |
-|-------------+---------------------------------------------|
-| ~M-​,​~       | jump back from go to declaration/definition |
-| ~SPC m g g~ | go to declaration                           |
-| ~SPC m g t~ | go to type definition                       |
-
-*** Refactoring
-
-| Key Binding | Description      |
-|-------------+------------------|
-| ~SPC m r i~ | optimize imports |
-| ~SPC m r f~ | Format file      |
-| ~SPC m r r~ | Rename symbol    |
-
-*** Documentation, Find
-
-| Key Binding | Description                            |
-|-------------+----------------------------------------|
-| ~SPC m f f~ | general find in project                |
-| ~SPC m h h~ | show documentation for symbol at point |
-| ~SPC m h u~ | show usages for symbol at point        |
-
-*** Problems
-
-| Key Binding | Description                                |
-|-------------+--------------------------------------------|
-| ~SPC m e a~ | set all problems for next/prev action      |
-| ~SPC m e b~ | open buffer with problems                  |
-| ~SPC m e c~ | show options with problem corrections      |
-| ~SPC m e e~ | set only errors for next/prev action       |
-| ~SPC m e f~ | set only current file for next/prev action |
-| ~SPC m e n~ | go to next problem                         |
-| ~SPC m e o~ | open buffer with problems                  |
-| ~SPC m e p~ | go to previous problem                     |
-| ~SPC m e w~ | set warnings for next/prev action          |
-
-*** Tests
-
-| Key Binding | Description                                                   |
-|-------------+---------------------------------------------------------------|
-| ~SPC m t t~ | run JUnit tests for current method or current file or project |
-
-** Problems buffer
-
-| Key Binding | Description                         |
-|-------------+-------------------------------------|
-| ~RET~       | go to problem place                 |
-| ~a~         | show all problems                   |
-| ~e~         | show only errors                    |
-| ~f~         | show problems only for current file |
-| ~g~         | refresh problems                    |
-| ~q~         | quit                                |
-| ~w~         | show only warnings                  |
-
-** Projects buffer
-| Key Binding | Description                                |
-|-------------+--------------------------------------------|
-| ~RET~       | go to current project                      |
-| ~c~         | go to problem place                        |
-| ~D~         | delete project                             |
-| ~g~         | refresh buffer                             |
-| ~i~         | info about current project                 |
-| ~I~         | import existing project into the workspace |
-| ~m~         | mark current project                       |
-| ~M~         | mark all projects                          |
-| ~N~         | create new project                         |
-| ~o~         | open project                               |
-| ~p~         | update project                             |
-| ~q~         | quit                                       |
-| ~R~         | rename current project                     |
-| ~u~         | unmark current project                     |
-| ~U~         | unmark all projects                        |
-* ant
-  :LOGBOOK:
-  CLOCK: [2017-07-13 四 08:54]--[2017-07-13 四 09:19] =>  0:25
-  :END:
-  ant - a Java based make tool.
-
-SYNOPSIS
-       ant [OPTIONS] [TARGET [TARGET2 [TARGET3] ...]]
-条件
-#+BEGIN_SRC xml
-<condition>
-<equals arg1="1.5" arg2="${ant.java.version}">
-<!--在指定的classpath路径下是否存在资源 TestTest.class-->
-<available resource="TestTest.class">
-<classpath refid="all.test.classes" />        
-</available>
-<!--not 逻辑非  -->
-＜not>
-<istrue value="true"/>                    
-</not>
-<!-- istrue isfalse:断言 真 假-->
-<istrue value="true"/>     
-</condition>
-#+END_SRC
-DESCRIPTION
-Like  make ant is a tool by which projects can be build. But unlike it, ant is based on Java which means it will run on every platform for which a Java Vir‐
-       tual Machine is available. This makes it a great tool for building Java software.
-
-       By default it takes information from build.xml which describes the targets.
-
-       -help, -h
-              print help on the command line options
-
-       -projecthelp, -p
-              print project help information
-
-       -version
-              print the version information
-
-       -diagnostics
-              print information that might be helpful to diagnose or report problems
-
-       -quiet, -q
-              be extra quiet
-
-       -silent, -S
-              print nothing but task outputs and build failures
-
-       -verbose, -v
-              be extra verbose
-
-       -debug, -d
-              print debugging information
-
-       -emacs, -e
-              produce logging information without adornments
-
-       -lib <path>
-              specifies a path to search for jars and classes
-
-       -logfile <file>
-              use the given file to output log to
-
-       -logger <classname>
-              use the given class to perform logging
-
-       -listener <classname>
-              add an instance of the given class as a project listener
-
-       -noinput
-              do not allow interactive input
-
-       -buildfile, -file, -f <file>
-              use the given buildfile instead of the default build.xml file. This is the ant equivalent of Makefile
-
-       -D<property>=<value>
-              use value for the given property
-
-       -keep-going, -k
-              execute all targets that do not depend on failed target(s)
-
-       -propertyfile <name>
-              load all properties from file with -D properties taking precedence
-
-       -inputhandler <class>
-              the class which will handle input requests
-
-       -find, -s <file>
-              search for buildfile towards the root of the filesystem and use it
-
-       -nice <number>
-              A niceness value for the main thread: 1 (lowest) to 10 (highest); 5 is the default
-
-       -nouserlib
-              Run ant without using the jar files from ${user.home}/.ant/lib
-
-       -noclasspath
-              Run ant without using CLASSPATH
-
-       -autoproxy
-              Java 5 or later : use the OS proxy settings
-
-       -main <class>
-              Override Ant's normal entry point
-
-
-** ant build.xml
-#+BEGIN_SRC xml
-<?xml version="1.0" encoding="UTF-8" ?>
-<project name="example" default="init" basedir=".">
-
-  <property name="lib.dir" value="lib" />
-  <property name="cls.dir" value="class" />
-  <property name="src.dir" value="src" />
-
-  <target name="init">
-    <mkdir dir="${cls.dir}" />
-    <mkdir dir="${lib.dir}" />
-  </target> 
-
-  <target name="debug" depends="init">
-    <javac srcdir="${src.dir}" destdir="${cls.dir}">
-      <classpath>
-        <fileset dir="${lib.dir}">
-          <include name="**/*.jar" />
-        </fileset>
-      </classpath>
-    </javac>
-  </target>
-
-  <target name="clean">
-    <delete dir="${cls.dir}" />
-  </target>
-
-  <target name="jar" depends="debug">
-    <jar destfile="${cls.dir}/example.jar">
-    <fileset dir="${cls.dir}"/>
-    </jar>
-  </target>
-
-</project>
-#+END_SRC
-* eclim
- 1. Getting Started
- 2. Creating your first project
- 3. Adding project source directories
- 4. Writing code in your new project
-  Android Users
-  Maven Users
-
-  Once you've installed eclim, the next step is to create your first project after which you can then start writing code and
-  familiarizing yourself with eclim's features.
-
-  First make sure eclimd is running (see the eclimd docs if you are unsure how to start eclimd).
-  Creating your first project
-
-Once you've got eclimd running, open an instance of vim and create your project like so:
-
-Note
-: Android Users: the android section below contains additional info regarding the creation of android projects.
-: Maven Users: you may refer to the maven section below for an alternate way to create a java project.
-** 创建各类工程
-:ProjectCreate /path/to/my_project -n java
-#+BEGIN_SRC 
-This example creates a project with a java nature (-n java), but the same method can be used to create a project for other 
-languages by simply changing the nature accordingly:
-
-:ProjectCreate /path/to/my_java_project -n android
-:ProjectCreate /path/to/my_c_project -n c
-:ProjectCreate /path/to/my_cpp_project -n c++
-:ProjectCreate /path/to/my_groovy_project -n groovy
-:ProjectCreate /path/to/my_java_project -n java
-:ProjectCreate /path/to/my_php_project -n php
-:ProjectCreate /path/to/my_python_project -n python
-:ProjectCreate /path/to/my_ruby_project -n ruby
-:ProjectCreate /path/to/my_scala_project -n scala
-
-The path supplied to the :ProjectCreate command will be the path to the root of your project. This path may or may not exist.
-If it does not exist it will be created for you. After you've created your project, there will be a .project file added to
- your project's root along with another file where references to your project's source directories and any third party libraries 
-your project uses reside. The name of this file will vary depending on your project's nature, but in all cases eclim will provide 
-you with commands to manage this file:
-
-java, android - .classpath file
-php, ruby - .buildpath file
-c, c++ - .cproject, managed via the :CProjectConfigs command
-python - .pydevproject file
-Once you've created your project you can use the :ProjectList command to list the available projects and you should see
- your newly created one in the list.
-
-
-#+END_SRC
-** 打开工程
-my_project - open   - /path/to/my_project
-#+BEGIN_SRC 
-The :ProjectList result is in the form of projectName - (open|closed) - /project/root/path. When you create projects,
- the last path element will be used for the project name. If that element contains any spaces, these will be converted to underscores.
-
-#+END_SRC
-
-** 添加工程源目录
-Adding project source directories
-Before you can start writing code, you will first need to create and register your project's source directories. If you created 
-your project from an existing code base, then this step may have been perform automatically for you, but you should validate
- the settings to be sure.
-
-We will use a java project in this example but the steps for other languages are very similar. Please see the 
-relevant docs for your language for more details:
-
-java and android
-php and ruby
-c and c++
-python
-For the purpose of this example we will assume that you will store your source files at:
-
-** example 如果是java添加类路径
-    /path/to/my_project/src/java
-    So, given that location, you will need to open the file /path/to/my_project/.classpath in Vim.
-    vim /path/to/my_project/.classpath
-    To add the source directory simply execute the following
-** 配置makefile
-:NewSrcEntry src/java
-This will add the necessary entry to the end of your .classpath file.
- The contents of this file should now look something like this:
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-<classpathentry kind="output" path="bin"/>
-<classpathentry kind="src" path="src/java"/>
-</classpath>
-Now that your source directory is setup, you can proceed to edit java files in that directory and make
-use of the java functionality provided by eclim.
-
-** Writing code in your new project
-Now that you have a project created, you can start writing code and utilize the features that eclim provides.
-
-Note
-
-Below we'll walk through a trivial java example, but some of the steps apply to all the languages that eclim supports, 
-although the command names may differ a bit. For additional docs on working with the language of your choice, please 
-see the relevant section of the docs:
-
-c/c++
-java
-php
-python
-ruby
-etc.
-Lets get started writing our first java application using eclim.
-
-First, navigate to your new project's source directory (src/java in this example) and create any necessary package directories:
-** example
-$ cd /path/to/my_project/src/java
-$ mkdir -p org/test/
-Then start editing your first java source file:
-
-$ vim org/test/TestMain.java
-package org.test;
-
-public class TestMain
-{
-public static final void main(String[] args)
-{
-
-}
-}
-You can start to use some of the core features now. For example, lets add the following code to the main method 
-so we can test eclim's source code validation:
-
-System.
-Then save the file and note that an error marker is placed in the left margin of your file and when the cursor is on that line an 
-error message is printed at the bottom of your vim window. You can also run :lopen to view all the errors in the file at once.
-** 自动完成不成功
-Now lets try out code completion. Place your cursor on the '.' of 'System.' and start insert mode in vim using 'a', then follow the example below:
-
-System.<ctrl-x><ctrl-u>             // starts the completion mode
-System.<ctrl-n>                     // cycle through the completion suggestions
-System.out                          // assuming you chose the 'out' suggestion
-System.out.p<ctrl-x><ctrl-u>        // now start completion again
-System.out.p<ctrl-n>                // hit <ctrl-n> until you get 'println'
-System.out.println(
-System.out.println("Hello World");  // finish up the example code.
-After saving the file you should have no more validation errors, so now we can run the code like so:
-
-** 生成项目
-:Java
-After running the :Java command in vim you should now see your output in a new split window.
-
-This only scratches the surface on the number of java features that eclim provides, 
-but hopefully this example was enough to get you started.
-
-** Android Users
-Creating an android project is the same as creating a regular java project, but you use the android nature instead:
-
-:ProjectCreate /path/to/my_project -n android
-This will result in a series of prompts for you to input your project's information:
-
-Note: at any point in this process you can use Ctrl+C to cancel the project creation.
-
-First you will be asked to choose the target android platform. If you have only one platform installed on your system,
- this prompt will be skipped and that platform will be used when creating the project. If you have no platforms installed 
-then you will receive an error directing you to install a platform using the Android SDK Manager. If you install a new platform 
-you will need to either restart eclipse/eclimd or run the eclim supplied :AndroidReload command.
-Next you will be asked to supply a package name (Ex: com.mycompany.myapp).
-Then you will need to supply a name for your application.
-The next prompt will ask you if you are creating a library project or not. Most likely you are not, so type 'n' here to proceed.
-Lastly, if you are not creating a library project, you will be asked whether or not you want to have a new android activity created 
-for you and if so, you will be asked for the name of that activity.
-Once you've finished supplying the necessary information, your android project will be created. An android project is simply a 
-specialized java project, so you can now leverage all the eclim provided java functionality while developing your app.
-
-** Maven Users
-Creating your first project with maven can be accomplished using the same method as any other java project, or you can utilize some 
-of maven's built in features to get your project started.
-
-Run maven's generate archetype to create the project directory and samples:
-
-$ mvn archetype:generate
-Once you've created the initial project directory, cd into that directory and run the following command to generate the necessary eclipse files:
-
-$ cd <project_dir>
-$ mvn eclipse:eclipse
-Now you can start an instance of vim at the project's root directory and run the following commands to:
-
-set the necessary eclipse classpath variable to point to your maven repository.
-import your new project into eclipse.
-$ vim
-:MvnRepo
-:ProjectImport /path/to/new/project
-Source / Back to top
+* 什么是java名字空间? 设计成反写域名 com.xx
+* 什么是java引用其他的类? import
+* 什么是静态导入？ import static 可以不加类名调用对象的静态属性或方法
+* 什么是静态方法, 静态数据?
+* 什么是构造器的重载? 可以用this([param])
+* 什么是超类 ? super.method, 超类的构造器 super(param..)
+* 什么是 main的固定写法？ public static void main(String[] args)
+* 什么是不同公共文件类 必须写在不同文件？ java 这么规定的
+* 什么是给一个合适的警告或错误提示？ 这在编译器中特别有用
+* 什么是文档注释？ /** 开始 */ 结束
+  javadoc 文件名
+@see 放入链接
+@version 放入版本号
+@author 作者
+@param 方法参数
+@return 返回
+@throws
+* 什么是java 中没有unsigned类型? 说明都是有符号的
+* 什么是浮点的正无穷？　Double.POSITIVE_INFINITY
+  Double.NEGATIVE_INFINITY
+  Double.NaN 不能单纯比较
+  Double.isNaN()
+* 什么是boolean? 名字都变了
+* 什么是常量定义？　 final 
+* 什么是导入数学库？ import static java.lang.Math.*;
+* 什么是数学的舍入成整数？ Math.round
+* 什么是数学的向下舍入？ Math.floor 返回的是 浮点表示的整数
+* 什么是数字进制转换？
+System.out.println(Integer.toBinaryString(a));
+转换成八进制把Binary换成Octal
+转换成十六进制把Binary换成Hex
+* 什么是枚举不能为本地变量？ 不同的函数分为不同的地域，所以不能在函数内定义，而是在大局内，类内定义
+  enum Diannao{LIANXIANG,DELL,HUIPU};
+* 什么是java 中的String结构？ 是一个个 unicode 代码点，所以操作时注意, 代码点是char
+* 什么是子串？ substring
+* 什么是串相等？ "str".equals(obj)
+* 什么是 java.lang 库？
+java.lang.string
+java.util
+* 什么是java 默认导入的库？
+  java.awt:提交用户界面元件。
+  java.io:提供与设备无关的输入，输出流支持、
+  java.lang:提供支持Java的基础类、
+  Java.net:提供支持联网的类。
+  java.util:提供实用方法和数据结构的。
+  默认导入的包
+  Java.lang.*
+  javax.servlet.*
+  javax.servlet.jsp.*
+  javax.servlet.http；
+* 什么是输入输出对象？ 这对象专门 细致地输入整数，整行 什么的
+** 什么是 Scanner? 键盘输入对象  java.util 中
+   这种函数性抽象的东西，需要参数指定输入到哪里 new Scanner(System.in) 键盘缓冲
+   对于字符串类型的数字，可以用 Integer.parseInt 或Double.parseDouble转换 
+   输入容易数据错误
+* 什么是退出虚拟机执行？ exit(int status)  状态表示退出码，限定的数字，难道是继承
+* 什么是Date? 日期啊，时间也是日期一部分 这个类过时了, 用GregorianCalendar 格里高利
+  int  year=c.get(Calendar.YEAR);//获取年份  
+int  month=c.get(Calendar.MONTH);//获取月份  
+int  day=c.get(Calendar.DATE);//获取日期  
+int  minute=c.get(Calendar.MINUTE);//分  
+int  hour=c.get(Calendar.HOUR);//小时  
+int  second=c.get(Calendar.SECOND);//秒 
+* 什么是数组？ 一堆东西
+排序 Array.sort  只能是数字 组, 返回为空，输出的是参数所指向的数组对象
+* 什么是命令行参数？ 用空格隔开的都是一个参数字串
+* 什么是类，对象，实例化？ 更好模块化，调试，扩展
+* 什么是javac 编译？ 相对的会在 当前目录一起编译 引用的文件，或者在classpath中找
+* 什么是构造器？ 同类名相同 ，默认构造器，没参数的类名
+* 把类放在包中？ package com.aa.bb; 注意匹配目录(这个在引用的时候有用），编译原包时不管什么目录
+* 什么是设置类路径？ 因为类可能被放在不同目录中方便调用, 为了把类集中起来， 要配置 CLASSPATH环境变量或 设定 -classpath选项, 用: 分隔
+* 什么是继承? extends 原有的字段如果相同，就不用重写了，除非不同
+  使用父类的东西 super
+  构造函数直接可用 super, 同this 调用自己的其他构造器，两个用法
+* 什么是阻止继承？ final
+* 什么是抽象类？ 
+* 什么是泛型数组？ ArrayList<Classname> shuzu = new ArrayList<Classname>(); 数组要指定长度，而带指针的数组（链表）不需要指定长度.
+  方法：
+  ensureCapacity(100) 如果估算出长度
+  add 添加
+  size 尺寸
+  trimToSize 内存整理
+  get
+  set(i, obj)
+  remove
+* 什么是异常？ 
+  #+BEGIN_SRC java
+             try {
+                String name = "//penfold/Session";
+                // Obtain reference to the remote object
+                Session sess = (Session) Naming.lookup(name);
+                System.out.println("Pointless RMI Client. 47 + 13 = " +
+                                          sess.add(47,13) + ", right?");
+             } catch (Exception e) {
+                e.printStackTrace();
+             }
+
+  #+END_SRC
+* 什么是反射？ 用class, 返回方法，字段
+  getDeclaringClass
+  getExceptionTypes
+  getModifiers
+  getName
+* iterator 迭代 ，相比数组操作简单点  ArrayList
+  Iterator.next()
+* 什么是
+* 什么是

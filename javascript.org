@@ -1,697 +1,3 @@
-:参考书　[[file+emacs:html.org][HTML]]
-* javascript
-  nodejs js.js
-  或浏览器 打开
-
-** 对象
-   Document, Element, Function, Array ,Boolean ,Date , String  , Number
-   Math , Object, RegExp
-#+BEGIN_SRC js
-var adder = new Function('a', 'b', 'return a + b');
-
-// Call the function
-adder(2, 6);
-// > 8
-#+END_SRC
-
-** 对象构造器
-
-  #+BEGIN_SRC javascript
-    function person(firstname,lastname,age,eyecolor)
-    {
-    this.firstname=firstname;
-    this.lastname=lastname;
-    this.age=age;
-    this.eyecolor=eyecolor;
-    }
-  #+END_SRC
-
-  #+BEGIN_SRC 
-  JavaScript for...in 语句循环遍历对象的属性, 数组。
-  日期 Date() getTime() setFullYear() toUTString getDay()
-  数组 concat() join() sort() Array()
-  RegExp 对象有 3 个方法：test()、exec() 以及 compile()。
-  #+END_SRC
-* this 
-1、this到底指什么？
-我们熟悉的c#有this关键字，它的主要作用就是指代当前对象实例（参数传递和索引器都要用到this）。在javascript中，this通常指向的是我们正在执行的函数本身，或者是指向该函数所属的对象（运行时）。
-2、常见使用方式
-（1）、直接在dom元素中使用
-<input id="btnTest" type="button" value="提交" onclick="alert(this.value))" />
-
-分析：对于dom元素的一个onclick（或其他如onblur等）属性，它为所属的html元素所拥有，直接在它触发的函数里写this，this应该指向该html元素。
-（2）、给dom元素注册js函数
-a、不正确的方式
-复制代码
-<script type="text/javascript">
-  function thisTest(){
-  alert(this.value); // 弹出undefined, this在这里指向??
-}
-</script>
-
-<input id="btnTest" type="button" value="提交" onclick="thisTest()" />
-复制代码
-
- 分析：onclick事件直接调用thisTest函数，程序就会弹出undefined。因为thisTest函数是在window对象中定义的，
-所以thisTest的拥有者（作用域）是window，thisTest的this也是window。而window是没有value属性的，所以就报错了。
-b、正确的方式
-
-<input id="btnTest" type="button" value="提交" />
-
-<script type="text/javascript">
-  function thisTest(){
-  alert(this.value); 
-}
-document.getElementById("btnTest").onclick=thisTest; //给button的onclick事件注册一个函数
-</script>
-
-分析：在前面的示例中，thisTest函数定义在全局作用域（这里就是window对象），所以this指代的是当前的window对象。而通过document.getElementById("btnTest").onclick=thisTest;这样的形式，其实是将btnTest的onclick属性设置为thisTest函数的一个副本，在btnTest的onclick属性的函数作用域内，this归btnTest所有，this也就指向了btnTest。其实如果有多个dom元素要注册该事件，我们可以利用不同的dom元素id，用下面的方式实现：
-document.getElementById("domID").onclick=thisTest; //给button的onclick事件注册一个函数。
-因为多个不同的HTML元素虽然创建了不同的函数副本，但每个副本的拥有者都是相对应的HTML元素，各自的this也都指向它们的拥有者，不会造成混乱。
-为了验证上述说法，我们改进一下代码，让button直接弹出它们对应的触发函数：
-
-<input id="btnTest1" type="button" value="提交1" onclick="thisTest()" />
-<input id="btnTest2" type="button" value="提交2" />
-
-<script type="text/javascript">
-function thisTest(){
-this.value="提交中";
-}
-var btn=document.getElementById("btnTest1");
-alert(btn.onclick); //第一个按钮函数
-
-var btnOther=document.getElementById("btnTest2");
-btnOther.onclick=thisTest;
-alert(btnOther.onclick); //第二个按钮函数
-</script>
-
-其弹出的结果是：
-
-//第一个按钮
-function onclick(){
-  thisTest()
-}
- 
-//第二个按钮
-function thisTest(){
-  this.value="提交中";
-}
-复制代码
-
-从上面的结果你一定理解的更透彻了。
-By the way，每新建一个函数的副本，程序就会为这个函数副本分配一定的内存。而实际应用中，大多数函数并不一定会被调用，于是这部分内存就被白白浪费了。所以我们通常都这么写：
-
-<input id="btnTest1" type="button" value="提交1" onclick="thisTest(this)" />
-<input id="btnTest2" type="button" value="提交2" onclick="thisTest(this)" />
-<input id="btnTest3" type="button" value="提交3" onclick="thisTest(this)" />
-<input id="btnTest4" type="button" value="提交4" onclick="thisTest(this)" />
-
-<script type="text/javascript">
-  function thisTest(obj){
-  alert(obj.value); 
-}
-</script>
-
-这是因为我们使用了函数引用的方式，程序就只会给函数的本体分配内存，而引用只分配指针。这样写一个函数，调用的地方给它分配一个（指针）引用，这样效率就高很多。当然，如果你觉得这样注册事件不能兼容多种浏览器，可以写下面的注册事件的通用脚本：
-
-//js事件 添加 EventUtil.addEvent(dom元素,事件名称,事件触发的函数名) 移除EventUtil.removeEvent(dom元素,事件名称,事件触发的函数名)
-var EventUtil = new eventManager();
-
-//js事件通用管理器 dom元素 添加或者移除事件
-function eventManager() {
-    //添加事件
-    //oDomElement:dom元素,如按钮,文本,document等; ****** oEventType:事件名称(如:click,如果是ie浏览器,自动将click转换为onclick);****** oFunc:事件触发的函数名
-    this.addEvent = function(oDomElement, oEventType, oFunc) {
-        //ie
-        if (oDomElement.attachEvent) {
-            oDomElement.attachEvent("on" + oEventType, oFunc);
-        }
-        //ff,opera,safari等
-        else if (oDomElement.addEventListener) {
-            oDomElement.addEventListener(oEventType, oFunc, false);
-        }
-        //其他
-        else {
-            oDomElement["on" + oEventType] = oFunc;
-        }
-    }
-
-    this.removeEvent = function(oDomElement, oEventType, oFunc) {
-        //ie
-        if (oDomElement.detachEvent) {
-            oDomElement.detachEvent("on" + oEventType, oFunc);
-        }
-        //ff,opera,safari等
-        else if (oDomElement.removeEventListener) {
-            oDomElement.removeEventListener(oEventType, oFunc, false);
-        }
-        //其他
-        else {
-            oDomElement["on" + oEventType] = null;
-        }
-    }
-}
-
- 正像注释写的那样，要注册dom元素事件，用EventUtil.addEvent(dom元素,事件名称,事件触发的函数名)即可， 移除时可以这样写：EventUtil.removeEvent(dom元素,事件名称,事件触发的函数名)。这是题外话，不说了。
-(3)、类定义中使用this关键字
-这个其实再常见不过，看示例：
-
-function thisTest()
-  {
-      var tmpName = 'jeff wong';
-      this.userName= 'jeff wong';
-  }
-
-var test= new thisTest();
-alert(test.userName==test.tmpName);//false
-alert(test.userName); //jeff wong
-alert(test.tmpName); //undefined
-
- 分析一下结果，其实这里的this和c#里的是类似的。
-（4）、为脚本对象添加原形方法
-理解这里的前提是你必须了解js里的原型概念（说道这里，kao，我还真的需要面壁一下）：js中对象的prototype属性，是用来返回对象类型原型的引用的。所有js内部对象都有只读的prototype属性，可以向其原型中动态添加功能(属性和方法)，
-但该对象不能被赋予不同的原型。但是对于用户定义的对象可以被赋给新的原型。看个简单的示例：
-
-//js的内部对象String,向其原型中动态添加功能(属性和方法)
-//去掉字符串两端的空白字符
-String.prototype.Trim = function() {
-    return this.replace(/(^\s+)|(\s+$)/g, "");
-}
-
-function thisTest()
-  {
-      var tmpName = 'jeff wong';
-      this.userName= '      jeff wong  ';
-  }
-//给用户定义的对象添加原型方法
-thisTest.prototype.ToString = function()
-  {
-      alert(this.userName); //jeff wong(*有空格*)
-      alert(this.userName.Trim()); //jeff wong (*无空格*)
-      //alert(tmpName); //脚本错误,tmpName未定义
-  }
-
-var test= new thisTest();
-test.ToString(); //调用原型的ToString()
-
-function myTest(){
-  this.userName= '  test ';
-}
-var test1=new myTest();
-//test1.ToString(); //这里暂时不支持调用ToString()方法
-
-//用户定义的对象被赋给新的原型
-myTest.prototype = new thisTest();
-test1.ToString(); //调用原型的ToString()
-
-测试结果显示，这里的this指代的是被添加原形（方法或属性）的类的实例，和（3）中的定义基本相似。
-（5）、在函数的内部函数中使用this关键字
-这个你要是理解作用域和闭包，问题就迎刃而解。看最典型的示例：
-
-function thisTest()
-  {
-      this.userName= 'outer userName';
-      function innerThisTest(){
-        var userName="inner userName";
-        alert(userName); //inner userName
-        alert(this.userName); //outer userName
-      }
-     return innerThisTest;
-  }
-
-thisTest()();
-
-分析：thisTest()调用内部的innerThisTest函数，形成一个闭包。innerThisTest执行时，第一次弹出innerUserName，是因为innerThisTest函数作用域内有一个变量叫userName，所以直接弹出当前作用域下变量的指定值；第二次弹出outer  userName是因为innerThisTest作用域内没有userName属性（示例中的this.userName）,所以它向上一级作用域中找userName属性，这次在thisTest中找到（示例中的this.userName= 'outer userName';），所以弹出对应值。
-（6）通过Function的call和apply函数指定特定的this
-这个指定来指定去，this就有可能造成“你中有我，我中有你”的局面，不想把自己弄晕了的话，了解一下就可以了。改变this指定对象对于代码维护也是一件很不好的事情。贴出旧文中的示例代码结束吧：
-
-function myFuncOne() {
-    this.p = "myFuncOne-";
-    this.A = function(arg) {
-        alert(this.p + arg);
-   if (Number(x) == x)
-   if (x == null)
-* js技巧
-  Boolean
-  这个技巧用的很多，也非常的简单
- 1. !!'foo'
- 通过两个取反，可以强制转换为Boolean类型。较为常用。
- 
-Number
-这个也特别简单，String转化为Number
-
- 1. +'45' + 3
- 2. +new Date
-
-会自动转化为number类型的。较为常用。
-
-IIFE
-
-这个其实非常有实用价值，不算是装逼。只是其他语言里没有这么玩的，给不太了解js的同学看那可牛逼大了。
-
- 1. (function(arg) {
- 2.     // do something
- 3. })(arg)
-
-实用价值在于可以防止全局污染。不过现在随着ES2015的普及已经没什么必要用这个了，我相信五年之后，这种写法就会逐渐没落。
-
-自己干五年，在实习生面前装逼用也是蛮不错的嘛~
-
-Closure
-
-闭包嘛，js 特别好玩的一个地方。上面的立即执行函数就是对闭包的一种运用。
-
-不了解的回去翻翻书，知乎上也有很多讨论，可以去看看。
-
-闭包用起来对初学者来说简直就是大牛的标志(其实并不是)。
-
- 1. var counter = function() {
- 2.     var count = 0
- 3.     return function() {
- 4.         return count++
- 5.     }
- 6. }
-
-上面用到了闭包，看起来还挺装逼的吧。不过好像没什么实用价值。
-
-那么这样呢？
-
- 1. var isType = function(type) {
- 2.     return function(obj) {
- 3.         return toString.call(obj) == '[Object ' + type + ']';
- 4.     }
- 5. }
-
-通过高阶函数很轻松的实现判定类别。(别忘了有判定Array的Array.isArray())
-
-当然，很明显，这只是基础，并不能更装逼一点。来看下一节
-
-Event
-
-事件响应前端肯定都写烂了，一般来说如何写一个计数器呢？
-
- 1. var times = 0
- 2. var foo = document.querySelector('.foo')
- 3. foo.addEventListener('click', function() {
- 4.     times++
- 5.     console.log(times)
- 6. }, false)
-
-好像是没什么问题哦，但是！变量times为什么放在外面，就用了一次放在外面，命名冲突了怎么办，或者万一在外面修改了怎么办。
-
-这个时候这样一个事件监听代码就比较牛逼了
-
- 1. foo.addEventListener('click', (function() {
- 2.     var times = 0
- 3.     return function() {
- 4.         times++
- 5.         console.log(times)
- 6.     }
- 7. })(), false)
-
-怎么样，是不是立刻感觉不一样了。瞬间逼格高了起来！
-
-通过创建一个闭包，把times封装到里面，然后返回函数。这个用法不太常见。
-
-parseInt
-
-    高能预警
-   
-    从这里开始，下面的代码谨慎写到公司代码里！
-    parseInt这个函数太普通了，怎么能装逼。答案是~~
-
-    现在摁下F12，在console里复制粘贴这样的代码：
-
- 1. ~~3.14159
- 2. // => 3
- 3. ~~5.678
- 4. // => 5
-
-这个技巧十分装逼，原理是~是一个叫做按位非的操作，会返回数值的反码。是二进制操作。
-
-原因在于JavaScript中的number都是double类型的，在位操作的时候要转化成int，两次~就还是原数。
-
-Hex
-十六进制操作。其实就是一个Array.prototype.toString(16)的用法
-
-看到这个词脑袋里冒出的肯定是CSS的颜色。
-
-做到随机的话可以这样
- 1. (~~(Math.random()*(1<<24))).toString(16)
-
-底下的原文链接非常建议去读一下，后三个技巧都是在那里学到的。
-
-«
-
-左移操作。这个操作特别叼。一般得玩 C 玩得多的，这个操作会懂一些。一般半路出家的前端码农可能不太了解(说的是我 ☹)。
-
-这个也是二进制操作。将数值二进制左移
-
-解释上面的1<<24的操作。
-
-其实是1左移24位。000000000000000000000001左移24位，变成了1000000000000000000000000
-不信？
-
-试着在console粘贴下面的代码
-
- 1. parseInt('1000000000000000000000000', 2) === (1 << 24)
-
-其实还有一种更容易理解的方法来解释
-
- 1. Math.pow(2,24) === (1 << 24)
-
-因为是二进制操作，所以速度是很快的。
-
-BTW
-
- 1. [].forEach.call($$("*"),function(a){
- 2.     a.style.outline="1px solid #"+(~~(Math.random()*(1<<24))).toString(16)
- 3. })
-
-翻译成正常语言就是这样的
-
- 1. Array.prototype.forEach.call(document.querySelectorAll('*'), dom => dom.style.outline = `1px solid #${parseInt(Math.random() * Math.pow(2,24)).toString(16)}`)
-
-Others
-
-其他的，像是一些await, Decorators什么的。用上TypeScript基本就懂的东西我就不介绍了。
-
-祝愿大家越玩越牛逼。
-
-* jQuery 
-** 选择器
-*** 基本选择器:
-   $("#myELement")   选择id值等于myElement的元素，id值不能重复在文档中只能有一个id值是myElement所以得到的是唯一的元素 
-   $("div")           选择所有的div标签元素，返回div元素数组 
-   $(".myClass")      选择使用myClass类的css的所有元素 
-   $("*")             选择文档中的所有的元素，可以运用多种的选择方式进行联合选择：例如$("#myELement,div,.myclass") 
-   
-*** 层叠选择器： 
- $("form input")         选择所有的form元素中的input元素 
- $("#main > *")          选择id值为main的所有的子元素 
- $("label + input")     选择所有的label元素的下一个input元素节点，经测试选择器返回的是label标签后面直接跟一个input标签的所有input标签元素 
- $("#prev ~ div")       同胞选择器，该选择器返回的为id为prev的标签元素的所有的属于同一个父元素的div标签 
-   
-*** 基本过滤选择器： 
- $("tr:first")               选择所有tr元素的第一个 
- $("tr:last")                选择所有tr元素的最后一个 
- $("input:not(:checked) + span")   
-   
-*** 过滤掉：checked的选择器的所有的input元素 
-   
- $("tr:even")               选择所有的tr元素的第0，2，4... ...个元素（注意：因为所选择的多个元素时为数组，所以序号是从0开始） 
-   
- $("tr:odd")                选择所有的tr元素的第1，3，5... ...个元素 
- $("td:eq(2)")             选择所有的td元素中序号为2的那个td元素 
- $("td:gt(4)")             选择td元素中序号大于4的所有td元素 
- $("td:ll(4)")              选择td元素中序号小于4的所有的td元素 
- $(":header") 
- $("div:animated") 
-
-*** 内容过滤选择器： 
-   
- $("div:contains('John')") 选择所有div中含有John文本的元素 
- $("td:empty")           选择所有的为空（也不包括文本节点）的td元素的数组 
- $("div:has(p)")        选择所有含有p标签的div元素 
- $("td:parent")          选择所有的以td为父节点的元素数组 
-
-*** 可视化过滤选择器： 
- $("div:hidden")        选择所有的被hidden的div元素 
- $("div:visible")        选择所有的可视化的div元素 
-
-*** 属性过滤选择器： 
-  
- $("div[id]")              选择所有含有id属性的div元素 
- $("input[name='newsletter']")    选择所有的name属性等于'newsletter'的input元素 
- 
- $("input[name!='newsletter']") 选择所有的name属性不等于'newsletter'的input元素 
- 
- $("input[name^='news']")         选择所有的name属性以'news'开头的input元素 
- $("input[name$='news']")         选择所有的name属性以'news'结尾的input元素 
- $("input[name*='man']")          选择所有的name属性包含'news'的input元素 
- 
- $("input[id][name$='man']")    可以使用多个属性进行联合选择，该选择器是得到所有的含有id属性并且那么属性以man结尾的元素 
- 
-*** 子元素过滤选择器： 
- 
- $("ul li:nth-child(2)"),$("ul li:nth-child(odd)"),$("ul li:nth-child(3n + 1)") 
- 
- $("div span:first-child")          返回所有的div元素的第一个子节点的数组 
- $("div span:last-child")           返回所有的div元素的最后一个节点的数组 
- $("div button:only-child")       返回所有的div中只有唯一一个子节点的所有子节点的数组 
- 
-*** 表单元素选择器： 
- 
-    $(":input")                  选择所有的表单输入元素，包括input, textarea, select 和 button 
-    $(":text")                     选择所有的text input元素 
-    $(":password")           选择所有的password input元素 
-    $(":radio")                   选择所有的radio input元素 
-    $(":checkbox")            选择所有的checkbox input元素 
-    $(":submit")               选择所有的submit input元素 
-    $(":image")                 选择所有的image input元素 
-
-*** 表单元素过滤选择器： 
- 
- $(":enabled")             选择所有的可操作的表单元素 
- $(":disabled")            选择所有的不可操作的表单元素 
- $(":checked")            选择所有的被checked的表单元素 
- $("select option:selected") 选择所有的select 的子元素中被selected的元素 
- 
-  
- $("A B") 查找A元素下面的所有子节点，包括非直接子节点
- $("A>B") 查找A元素下面的直接子节点
- $("A+B") 查找A元素后面的兄弟节点，包括非直接子节点
- $("A~B") 查找A元素后面的兄弟节点，不包括非直接子节点 
-** 效果
-*** jQuery  fade(淡出) 方法：
-**** fadeIn()
-**** fadeOut()
-**** fadeToggle()
-**** fadeTo()
-*** jQuery 滑动方法
-**** slideDown(speed,callback)
-**** slideUp()
-**** slideToggle()
-*** jQuery 动画 - animate() 方法
-**** $(selector).animate({params},speed,callback);
-*** jQuery 停止动画
-**** stop() 方法用于在动画或效果完成前对它们进行停止。
-** HTML
-*** 获取内容和属性 | 配置
-**** 获得内容 - text()、html() 以及 val()
-     #+BEGIN_SRC 
-     text() - 设置或返回所选元素的文本内容
-     html() - 设置或返回所选元素的内容（包括 HTML 标记）
-     val() - 设置或返回表单字段的值
-     #+END_SRC
-**** 获取属性值 - attr()
-*** 添加元素
-**** append() - 在被选元素的结尾插入内容
-**** prepend() - 在被选元素的开头插入内容
-**** after() - 在被选元素之后插入内容
-**** before() - 在被选元素之前插入内容
-*** 删除元素
-**** remove() - 删除被选元素（及其子元素）
-**** empty() - 从被选元素中删除子元素
-*** 获取并设置 CSS 类
-**** addClass() 方法
-     #+BEGIN_SRC js 
-     $("button").click(function(){
-     $("h1,h2,p").addClass("blue");
-     $("div").addClass("important");
-     });
-     #+END_SRC
-**** removeClass() 方法
-**** toggleClass() 方法
-*** css() 方法
-**** 返回 CSS 属性
-     : css("propertyname");
-**** 设置 CSS 属性
-     : css("propertyname","value");
-**** 设置多个 CSS 属性
-     : css({"propertyname":"value","propertyname":"value",...});
-     #+BEGIN_SRC css
-$("p").css({"background-color":"yellow","font-size":"200%"});
-     #+END_SRC
-*** 尺寸
-    : 通过 jQuery，很容易处理元素和浏览器窗口的尺寸。
-    [元素(width)]padding(innerwidth)]border(outerwidth)]margin(outerwidth(true))]
-**** width() 方法设置或返回元素的宽度（不包括内边距、边框或外边距）。
-**** height()
-**** innerWidth() 方法返回元素的宽度（包括内边距）
-**** innerHeight()
-**** outerWidth()方法返回元素的宽度（包括内边距和边框）
-**** outerHeight()
-*** jQuery 遍历
-**** 向上遍历 DOM 树
-***** parent()返回被选元素的直接父元素
-***** parents() 方法返回被选元素的所有祖先元素，它一路向上直到文档的根元素 (<html>)
-***** parentsUntil() 返回介于两个给定元素之间的所有祖先元素
-      #+BEGIN_SRC js
-      $(document).ready(function(){
-      $("span").parentsUntil("div");
-      });
-      #+END_SRC
-**** 后代
-***** children()
-***** find()方法返回被选元素的后代元素，一路向下直到最后一个后代
-      #+BEGIN_SRC 
-$(document).ready(function(){
-  $("div").find("span");
-});
-      #+END_SRC
-**** 同胞(siblings)
-*****    siblings()返回被选元素的所有同胞元素
-*****    next()返回被选元素的下一个同胞元素
-*****    nextAll()
-*****    nextUntil()返回介于两个给定参数之间的所有跟随的同胞元素
-*****    prev() 方向相反
-*****    prevAll()
-*****    prevUntil()
-**** 过滤
-***** jQuery first() 方法first() 方法返回被选元素的首个元素。
-***** last()
-***** eq()返回被选元素中带有指定索引号的元素。从0开始
-** Ajax 
-*** load() 方法
-**** load() 方法从服务器加载数据，并把返回的数据放入被选元素中。
-     : $(selector).load(URL,data,callback);
-     : 必需的 URL 参数规定您希望加载的 URL。
-     : 可选的 data 参数规定与请求一同发送的查询字符串键/值对集合。
-     : 可选的 callback 参数是 load() 方法完成后所执行的函数名称。
-     #+BEGIN_SRC 
-$("#div1").load("demo_test.txt #p1");
-     #+END_SRC
-     对象要符合DOM
-     #+BEGIN_SRC 
-可选的 callback 参数规定当 load() 方法完成后所要允许的回调函数。回调函数可以设置不同的参数：
-    responseTxt - 包含调用成功时的结果内容
-    statusTXT - 包含调用的状态
-    xhr - 包含 XMLHttpRequest 对象
-下面的例子会在 load() 方法完成后显示一个提示框。如果 load() 方法已成功，则显示"外部内容加载成功！"，而如果失败，则显示错误消息：
-实例
-$("button").click(function(){
-  $("#div1").load("demo_test.txt",function(responseTxt,statusTxt,xhr){
-    if(statusTxt=="success")
-      alert("外部内容加载成功!");
-    if(statusTxt=="error")
-      alert("Error: "+xhr.status+": "+xhr.statusText);
-  });
-});
-     #+END_SRC
-*** AJAX get() 和 post() 方法
-    : jQuery get() 和 post() 方法用于通过 HTTP GET 或 POST 请求从服务器请求数据。
-**** $.get() 方法通过 HTTP GET 请求从服务器上请求数据。
-     : $.get(URL,callback);
-     必需的 URL 参数规定您希望请求的 URL。
-     可选的 callback 参数是请求成功后所执行的函数名。
-     下面的例子使用 $.get() 方法从服务器上的一个文件中取回数据：
-     #+BEGIN_SRC js 
-     $("button").click(function(){
-     $.get("demo_test.php",function(data,status){
-     alert("数据: " + data + "\n状态: " + status);
-     });
-     });
-     #+END_SRC
-**** $.post() 方法通过 HTTP POST 请求从服务器上请求数据。
-     $.post(URL,data,callback);
-     必需的 URL 参数规定您希望请求的 URL。
-     可选的 data 参数规定连同请求发送的数据。
-     可选的 callback 参数是请求成功后所执行的函数名。
-     下面的例子使用 $.post() 连同请求一起发送数据：
-     #+BEGIN_SRC js 
-     $("button").click(function(){
-     $.post("/try/ajax/demo_test_post.php",
-     {
-     name:"菜鸟教程",
-     url:"http://www.runoob.com"
-     },
-     function(data,status){
-     alert("数据: \n" + data + "\n状态: " + status);
-     });
-    });
-     #+END_SRC
-*** 事件
-**** ready将函数绑定到文档的就绪事件
-**** click /dblclick/focus/mouseover
-**** onchange 事件(text 对象)
-**** onmouseover 和 onmouseout 事件
-** 函数     
-*** jQuery.each( array, callback )
-*** .clearQueue()
-    Remove from the queue all items that have not yet been run.
-*** .dequeue()
-    Execute the next function on the queue for the matched elements.
-*** jQuery.boxModel
-    States if the current page, in the user’s browser, is being rendered using the W3C CSS Box Model. This property was removed in jQuery 1.8. Please try to use feature detection instead.
-*** jQuery.browser
-    Contains flags for the useragent, read from navigator.userAgent. This property was removed in jQuery 1.9 and is available only through the jQuery.migrate plugin. Please try to use feature detection instead.
-*** jQuery.contains()
-    Check to see if a DOM element is a descendant of another DOM element.
-*** jQuery.data()
-    Store arbitrary data associated with the specified element and/or return the value that was set.
-*** jQuery.dequeue()
-    Execute the next function on the queue for the matched element.
-*** jQuery.each()
-    A generic iterator function, which can be used to seamlessly iterate over both objects and arrays. Arrays and array-like objects with a length property (such as a function’s arguments object) are iterated by numeric index, from 0 to length-1. Other objects are iterated via their named properties.
-*** jQuery.extend()
-    Merge the contents of two or more objects together into the first object.
-*** jQuery.fn.extend()
-    Merge the contents of an object onto the jQuery prototype to provide new jQuery instance methods.
-*** jQuery.globalEval()
-    Execute some JavaScript code globally.
-*** jQuery.grep()
-    Finds the elements of an array which satisfy a filter function. The original array is not affected.
-*** jQuery.inArray()
-    Search for a specified value within an array and return its index (or -1 if not found).
-*** jQuery.isArray()
-    Determine whether the argument is an array.
-*** jQuery.isEmptyObject()
-    Check to see if an object is empty (contains no enumerable properties).
-*** jQuery.isFunction()
-    Determine if the argument passed is a JavaScript function object.
-*** jQuery.isNumeric()
-    Determines whether its argument represents a JavaScript number.
-*** jQuery.isPlainObject()
-    Check to see if an object is a plain object (created using “{}” or “new Object”).
-*** jQuery.isWindow()
-    Determine whether the argument is a window.
-*** jQuery.isXMLDoc()
-    Check to see if a DOM node is within an XML document (or is an XML document).
-*** jQuery.makeArray()
-    Convert an array-like object into a true JavaScript array.
-*** jQuery.map()
-    Translate all items in an array or object to new array of items.
-*** jQuery.merge()
-    Merge the contents of two arrays together into the first array.
-*** jQuery.noop()
-An empty function.
-*** jQuery.now()
-Return a number representing the current time.
-*** jQuery.parseHTML()
-Parses a string into an array of DOM nodes.
-*** jQuery.parseJSON()
-Takes a well-formed JSON string and returns the resulting JavaScript value.
-*** jQuery.parseXML()
-Parses a string into an XML document.
-*** jQuery.proxy()
-Takes a function and returns a new one that will always have a particular context.
-*** jQuery.queue()
-Show or manipulate the queue of functions to be executed on the matched element.
-*** jQuery.removeData()
-    Remove a previously-stored piece of data.
-*** jQuery.support
-    A collection of properties that represent the presence of different browser features or bugs. Intended for jQuery’s internal use; specific properties may be removed when they are no longer needed internally to improve page startup performance. For your own project’s feature-detection needs, we strongly recommend the use of an external library such as Modernizr instead of dependency on properties in jQuery.support.
-*** jQuery.trim()
-    Remove the whitespace from the beginning and end of a string.
-*** jQuery.type()
-    Determine the internal JavaScript [[Class]] of an object.
-*** jQuery.unique()
-    Sorts an array of DOM elements, in place, with the duplicates removed. Note that this only works on arrays of DOM elements, not strings or numbers.
-*** jQuery.uniqueSort()
-    Sorts an array of DOM elements, in place, with the duplicates removed. Note that this only works on arrays of DOM elements, not strings or numbers.
-*** .queue()
-Show or manipulate the queue of functions to be executed on the matched elements.
 * MUI
 ** 下拉刷新
 为实现下拉刷新功能，大多H5框架都是通过DIV模拟下拉回弹动画，在低端android手机上，DIV动画经常出现卡顿现象（特别是图文列表的情况）；
@@ -871,2713 +177,58 @@ mui('#pullup-container').pullRefresh().enablePullupToRefresh();
 mui遵循 MIT License
 
     最新版本 v3.5.0 · 问答社区 · Issues · Releases · 
+* javascript
+  nodejs js.js 或浏览器 打开
+** 输出
+1.window.alert()
+2.document.write()
+3.innerHTML
+4.console.log
+** 对象
+   Document, Element, Function, Array ,Boolean ,Date , String  , Number
+   Math , Object, RegExp
+** 对象构造器
+   #+BEGIN_SRC javascript
+     function person(firstname,lastname,age,eyecolor)
+     {
+         this.firstname=firstname;
+         this.lastname=lastname;
+         this.age=age;
+         this.eyecolor=eyecolor;
+     }
+   #+END_SRC
 
-* bootstrap
-  bootstrap 建立了一个响应式的12列格网布局系统，它引入了fixed(固定) and fluid-with(浮动)的两种布局方式. 
-  我们从全局样式(global style),格网系统（grid system），流式格网（fluid grid system）,自定义（customing）,
-  布局（layouts）,响应式设计（responsive design ）这 六个方面讲解 scaffolding
-  \* global style
-  bootstrip 要求 html5 的文件类型，so <!DOCTYPE html>
-  同时，它通过bootstrap.less 文件来设置 全局排版和链接显示风格，其中去掉了 body的margin,使用
-  @baseFontFamily,@baseFontSize,@linkColor 等变量来控制基本排版
-  \* 栅格系统（grid system）
-  默认的bootstrap格网系统提供了一个宽达940像素的12列的格网。这意味着你页面的默认宽度是940px
-  最小的单元要素宽度是940/12px.
-  bootstrap 内置了一套响应式、移动设备优先的流式栅格系统。随着屏幕设备或视口（viewport）尺寸的增加，系统会自动分为最多12列
-  就是通过一系列的行（row）与列（column）的组合创建页面布局，然后你的内容就可以放入到你创建好的布局当中。
-  行（row）必须包含在.container中，以便为其赋予合适的排列(alignment)和内补(padding).
-  使用行（row）在水平方向创建一组列(column).
-  你的内容应当放置于列（column）内，而且,只有列（column)可以作为行（row）的直接子元素。
-  类似Predefined grid classes like .row and .col-xs-4 这些预订义的栅格class可以用来快速创建 栅格布局。
-  bootstrap 源码中定义的mixin也可以用来创建语义化的布局。
-  通过设置padding 从而创建列(column)之间的间隔（gutter)。然后通过为第一和最后一列设置负值的margin从而抵消掉padding的影响。
-  栅格系统中的列是通过指定1到12的值来表示其跨越的范围。例如，三个等宽的列可以使用三个.col-xs-4来创建。
-  sm md lg xl 和默认
-  offset push pull 设定偏移
-** 栅格选项
-|           | 手机（<768px) | 平板(>768px) | 桌面（>992px) |          |
-| class前缀 | .col-xs-      | .col-sm-     | .col-md-      | .col-lg- |
-| 列数      | 12            |              |               |          |
-\* 流式系统 (fluid grid system)
-\* 自定义(customing)
-\* 布局(layouts)
-\* 响应式设计(responsive design)
-abc璇
-abc璇
-abc璇
-
-璇
-璇
-璇
-璇
-jjjk璇
-璇
-璇
-璇
-璇
-abc璇
-abc璇
-abc璇
-abc璇
-璇
-* bootstrap css
-** 移动设备优先
-适应设备<meta name="viewport" content="width=device-width,initial-scale=1.0">
-禁用缩放 user-scalable=no  maximum-scale=1.0
-
-* nodejs
-** 索引
-*** NodeJS基础
-*** 什么是NodeJS
-*** 有啥用处
-*** 如何安装
-*** 安装程序
-*** 编译安装
-*** 如何运行
-*** 权限问题
-*** 模块
-*** require
-*** exports
-*** module
-*** 模块初始化
-*** 主模块
-*** 完整示例
-*** 二进制模块
-*** 小结
-*** 代码的组织和部署
-*** 模块路径解析规则
-*** 包（package）
-*** index.js
-*** package.json
-*** 命令行程序
-*** Linux
-*** Windows
-*** 工程目录
-*** NPM
-*** 下载三方包
-*** 安装命令行程序
-*** 发布代码
-*** 版本号
-*** 灵机一点
-*** 小结
-*** 文件操作
-*** 开门红
-*** 小文件拷贝
-*** 大文件拷贝
-*** API走马观花
-*** Buffer（数据块）
-*** Stream（数据流）
-*** File System（文件系统）
-*** Path（路径）
-*** 遍历目录
-*** 递归算法
-*** 遍历算法
-*** 同步遍历
-*** 异步遍历
-*** 文本编码
-*** BOM的移除
-*** GBK转UTF8
-*** 单字节编码
-*** 小结
-*** 网络操作
-*** 开门红
-*** API走马观花
-*** HTTP
-*** HTTPS
-*** URL
-*** Query String
-*** Zlib
-*** Net
-*** 灵机一点
-*** 小结
-*** 进程管理
-*** 开门红
-*** API走马观花
-*** Process
-*** Child Process
-*** Cluster
-*** 应用场景
-*** 如何获取命令行参数
-*** 如何退出程序
-*** 如何控制输入输出
-*** 如何降权
-*** 如何创建子进程
-*** 进程间如何通讯
-*** 如何守护子进程
-*** 小结
-*** 异步编程
-*** 回调
-*** 代码设计模式
-*** 函数返回值
-*** 遍历数组
-*** 异常处理
-*** 域（Domain）
-*** 陷阱
-*** 小结
-*** 大示例
-*** 需求
-*** 第一次迭代
-*** 设计
-*** 实现
-*** 第二次迭代
-*** 设计
-*** 实现
-*** 第三次迭代
-*** 设计
-*** 实现
-*** 第四次迭代
-*** 设计
-*** 实现
-*** 后续迭代
-*** 小结
-
-** NodeJS基础
-*** 什么是NodeJS
-JS是脚本语言，脚本语言都需要一个解析器才能运行。对于写在HTML页面里的JS，浏览器充当了解析器的角色。而对于需要独立运行的JS，NodeJS就是
-一个解析器。
-
-每一种解析器都是一个运行环境，不但允许JS定义各种数据结构，进行各种计算，还允许JS使用运行环境提供的内置对象和方法做一些事情。例如运行
-在浏览器中的JS的用途是操作DOM，浏览器就提供了document之类的内置对象。而运行在NodeJS中的JS的用途是操作磁盘文件或搭建HTTP服务器，
-NodeJS就相应提供了fs、http等内置对象。
-
-*** 有啥用处
-    尽管存在一听说可以直接运行JS文件就觉得很酷的同学，但大多数同学在接触新东西时首先关心的是有啥用处，
-    以及能带来啥价值。
-    
-    NodeJS的作者说，他创造NodeJS的目的是为了实现高性能Web服务器，他首先看重的是事件机制和异步IO模型
-    的优越性，而不是JS。但是他需要选择一种编程语言实现他的想法，这种编程语言不能自带IO功能，并且需要能
-    良好支持事件机制。JS没有自带IO功能，天生就用于处理浏览器中的DOM事件，并且拥有一大群程序员，因此就
-    成为了天然的选择。
-
-    如他所愿，NodeJS在服务端活跃起来，出现了大批基于NodeJS的Web服务。而另一方面，NodeJS让前端众如获
-    神器，终于可以让自己的能力覆盖范围跳出浏览器窗口，更大批的前端工具如雨后春笋。
-
-    因此，对于前端而言，虽然不是人人都要拿NodeJS写一个服务器程序，但简单可至使用命令交互模式调试JS代码
-    片段，复杂可至编写工具提升工作效率。NodeJS生态圈正欣欣向荣。
-
-*** 如何安装
-**** 安装程序
-     NodeJS提供了一些安装程序，都可以在nodejs.org这里下载并安装。
-     Windows系统下，选择和系统版本匹配的.msi后缀的安装文件。Mac OS X系统下，选择.pkg后缀的安装文件。
-
-**** 编译安装
-     Linux系统下没有现成的安装程序可用，虽然一些发行版可以使用apt-get之类的方式安装，但不一定能安装到最
-     新版。因此Linux系统下一般使用以下方式编译方式安装NodeJS。
-
-     #+BEGIN_SRC 
-     1. 确保系统下g++版本在4.6以上，python版本在2.6以上。
-     2. 从nodejs.org下载tar.gz后缀的NodeJS最新版源代码包并解压到某个位置。
-     3. 进入解压到的目录，使用以下命令编译和安装。
-     $ ./configure
-     $ make
-     $ sudo make install
-     #+END_SRC
-   
-*** 如何运行
-    打开终端，键入node进入命令交互模式，可以输入一条代码语句后立即执行并显示结果，例如：
-
-#+BEGIN_SRC javascript
-$ node
-> console.log('Hello World!');
-Hello World!
-#+END_SRC
-
-如果要运行一大段代码的话，可以先写一个JS文件再运行。例如有以下hello.js。
-#+BEGIN_SRC javascript
-function hello() {
-    console.log('Hello World!');
-    }
-hello();
-#+END_SRC
-
-写好后在终端下键入node hello.js运行，结果如下：
-#+BEGIN_SRC shell
-$ node hello.js
-Hello World!
-#+END_SRC
-
-*** 权限问题
-    在Linux系统下，使用NodeJS监听80或443端口提供HTTP(S)服务时需要root权限，有两种方式可以做到。
-    一种方式是使用sudo命令运行NodeJS。例如通过以下命令运行的server.js中有权限使用80和443端口。
-    一般推荐这种方式，可以保证仅为有需要的JS脚本提供root权限。
-#+BEGIN_SRC javascript
-$ sudo node server.js
-#+END_SRC
-
-另一种方式是使用chmod +s命令让NodeJS总是以root权限运行，具体做法如下。因为这种方式让任何JS
-脚本都有了root权限，不太安全，因此在需要很 考虑安全的系统下不推荐使用。
-
-#+BEGIN_SRC 
-
-$ sudo chown root /usr/local/bin/node
-$ sudo chmod +s /usr/local/bin/node
-#+END_SRC
-
-*** 模块
-    编写稍大一点的程序时一般都会将代码模块化。在NodeJS中，一般将代码合理拆分到不同的JS文件中，
-    每一个文件就是一个模块，而文件路径就是模块名。
-
-    在编写每个模块时，都有require、exports、module三个预先定义好的变量可供使用。
-
-**** require
-    require函数用于在当前模块中加载和使用别的模块，传入一个模块名，返回一个模块导出对象。
-    模块名可使用相对路径（以./开头），或者是绝对路径（以/或C:之类的盘符开头）。另外，模块名中
-    的.js扩展名可以省略。以下是一个例子。
-#+BEGIN_SRC js
-var foo1 = require('./foo');
-var foo2 = require('./foo.js');
-var foo3 = require('/home/user/foo');
-var foo4 = require('/home/user/foo.js');
-// foo1至foo4中保存的是同一个模块的导出对象。
-#+END_SRC
-
-另外，可以使用以下方式加载和使用一个JSON文件。
-
-#+BEGIN_SRC js
-var data = require('./data.json');
-#+END_SRC
-
-**** exports
-     exports对象是当前模块的导出对象，用于导出模块公有方法和属性。别的模块通过require函数使用当
-     前模块时得到的就是当前模块的exports对象。 以下例子中导出了一个公有方法。
-#+BEGIN_SRC js
-exports.hello = function () {
-    console.log('Hello World!');
-};
-#+END_SRC
-
-**** module
-     通过module对象可以访问到当前模块的一些相关信息，但最多的用途是替换当前模块的导出对象。例如模
-     块导出对象默认是一个普通对象，如果想改成一个函数的话，可以使用以下方式。
-#+BEGIN_SRC js
-module.exports = function () {
-    console.log('Hello World!');
-};
-#+END_SRC
-
-以上代码中，模块默认导出对象被替换为一个函数。
-
-*** 模块初始化
-    一个模块中的JS代码仅在模块第一次被使用时执行一次，并在执行过程中初始化模块的导出对象。之后，缓存起来的导出对象被重复利用。
-**** 主模块
-     通过命令行参数传递给NodeJS以启动程序的模块被称为主模块。主模块负责调度组成整个程序的其它模块完成工作。
-     例如通过以下命令启动程序时，main.js就是主模块。
-#+BEGIN_SRC 
-$ node main.js
-#+END_SRC
-
-**** 完整示例
-例如有以下目录。
-#+BEGIN_SRC 
-- /home/user/hello/
-    - util/
-        counter.js
-    main.js
-#+END_SRC
-其中counter.js内容如下：
-#+BEGIN_SRC js 
-var i = 0;
-
-function count() {
-    return ++i;
-}
-exports.count = count;
-#+END_SRC
-
-该模块内部定义了一个私有变量i，并在exports对象导出了一个公有方法count。
-
-主模块main.js内容如下：
-#+BEGIN_SRC js
-var counter1 = require('./util/counter');
-var counter2 = require('./util/counter');
-
-console.log(counter1.count());
-console.log(counter2.count());
-console.log(counter2.count());
-#+END_SRC
-运行该程序的结果如下：
-#+BEGIN_SRC 
-$ node main.js
-1
-2
-3
-#+END_SRC
-
-可以看到，counter.js并没有因为被require了两次而初始化两次。
-
-**** 二进制模块
-    虽然一般我们使用JS编写模块，但NodeJS也支持使用C/C++编写二进制模块。编译好的二进制模块除了
-    文件扩展名是.node外，和JS模块的使用方式相同。虽然二进制模块能使用操作系统提供的所有功能，拥
-    有无限的潜能，但对于前端同学而言编写过于困难，并且难以跨平台使用，因此不在本教程的覆盖范围内。
-
-*** 小结
-    本章介绍了有关NodeJS的基本概念和使用方法，总结起来有以下知识点：
-  * NodeJS是一个JS脚本解析器，任何操作系统下安装NodeJS本质上做的事情都是把NodeJS执行程序复制到
-  一个目录，然后保证这个目录在系统PATH环境变量下，以便终端下可以使用node命令。
-   
-  * 终端下直接输入node命令可进入命令交互模式，很适合用来测试一些JS代码片段，比如正则表达式。
-   
-  * NodeJS使用CMD模块系统，主模块作为程序入口点，所有模块在执行过程中只初始化一次。
-   
-  * 除非JS模块不能满足需求，否则不要轻易使用二进制模块，否则你的用户会叫苦连天。
-   
-** 代码的组织和部署
-   有经验的C程序员在编写一个新程序时首先从make文件写起。同样的，使用NodeJS编写程序前，为了有个良好的
-   开端，首先需要准备好代码的目录结构和部署方式，就如同修房子要先搭脚手架。本章将介绍与之相关的各种知识。
-
-*** 模块路径解析规则
-    我们已经知道，require函数支持斜杠（/）或盘符（C:）开头的绝对路径，也支持./开头的相对路径。但这两种
-    路径在模块之间建立了强耦合关系，一旦某个模块文件的存放位置需要变更，使用该模块的其它模块的代码也需要
-    跟着调整，变得牵一发动全身。因此，require函数支持第三种形式的路径，写法类似于foo/bar，并依次按照以
-    下规则解析路径，直到找到模块位置。
-
-**** 1. 内置模块
-    如果传递给require函数的是NodeJS内置模块名称，不做路径解析，直接返回内部模块的导出对象，例如require('fs')。
-   
-**** 2. node_modules目录
-    NodeJS定义了一个特殊的node_modules目录用于存放模块。例如某个模块的绝对路径是/home/user/hello.js，在该模块
-    中使用require('foo/bar')方式加载模块时，则NodeJS依次尝试使用以下路径。
    #+BEGIN_SRC 
-   /home/user/node_modules/foo/bar
-   /home/node_modules/foo/bar
-   /node_modules/foo/bar
+  JavaScript for...in 语句循环遍历对象的属性, 数组。
+  日期 Date() getTime() setFullYear() toUTString getDay()
+  数组 concat() join() sort() Array()
+  RegExp 对象有 3 个方法：test()、exec() 以及 compile()。
+  #+END_SRC
+** 事件, 对象对于外部反应的属性
+   document.getElementById("btnTest").onclick=thisTest; //给button的onclick事件注册一个函数
+*** 事件类型
+ #+BEGIN_SRC 
+   页面或图像载入
+  鼠标悬浮于页面的某个热点之上
+  在表单中选取输入框
+  确认表单
+  键盘按键
+  onload 和 onUnload 当用户进入或离开页面时就会触发 onload 和 onUnload 事件。
+  onFocus, onBlur 和 onChange onFocus、onBlur 和 onChange 事件通常相互配合用来验证表单。
+  onSubmit onSubmit 用于在提交表单之前验证所有的表单域。
+  onMouseOver 和 onMouseOut onMouseOver 和 onMouseOut 用来创建“动态的”按钮。
+ #+END_SRC 
+** Try...Catch 语句
+   #+BEGIN_SRC js
+     try
+     {
+         //在此运行代码
+     }
+     catch(err)
+     {
+         //在此处理错误
+     }
    #+END_SRC
-   
-**** 3. NODE_PATH环境变量
-    与PATH环境变量类似，NodeJS允许通过NODE_PATH环境变量来指定额外的模块搜索路径。NODE_PATH环境变
-    量中包含一到多个目录路径，路径之间在Linux下使用:分隔，在Windows下使用;分隔。例如定义了以下NODE_PATH环境变量：
-   
-    NODE_PATH=/home/user/lib:/home/lib
-    
-    当使用require('foo/bar')的方式加载模块时，则NodeJS依次尝试以下路径。
-   #+BEGIN_SRC 
-     /home/user/lib/foo/bar
-     /home/lib/foo/bar
-   #+END_SRC
-    
-** 包（package）
-   我们已经知道了JS模块的基本单位是单个JS文件，但复杂些的模块往往由多个子模块组成。为了便于管理和使用，
-   我们可以把由多个子模块组成的大模块称做包，并把所有子模块放在同一个目录里。
-
-   在组成一个包的所有子模块中，需要有一个入口模块，入口模块的导出对象被作为包的导出对象。例如有以下目录结构。
-#+BEGIN_SRC 
-- /home/user/lib/
-    - cat/
-        head.js
-        body.js
-        main.js
-#+END_SRC
-
-其中cat目录定义了一个包，其中包含了3个子模块。main.js作为入口模块，其内容如下：
-
-#+BEGIN_SRC js
-var head = require('./head');
-var body = require('./body');
-
-exports.create = function (name) {
-    return {
-        name: name,
-        head: head.create(),
-        body: body.create()
-    };
-};
-#+END_SRC
-在其它模块里使用包的时候，需要加载包的入口模块。接着上例，使用require('/home/user/lib/cat/main')能达到目的，但是入口模块名称出现在路
-径里看上去不是个好主意。因此我们需要做点额外的工作，让包使用起来更像是单个模块。
-
-index.js
-
-当模块的文件名是index.js，加载模块时可以使用模块所在目录的路径代替模块文件路径，因此接着上例，以下两条语句等价。
-
-var cat = require('/home/user/lib/cat');
-var cat = require('/home/user/lib/cat/index');
-
-这样处理后，就只需要把包目录路径传递给require函数，感觉上整个目录被当作单个模块使用，更有整体感。
-
-package.json
-
-如果想自定义入口模块的文件名和存放位置，就需要在包目录下包含一个package.json文件，并在其中指定入口模块的路径。上例中的cat模块可以重
-构如下。
-
-- /home/user/lib/
-    - cat/
-        + doc/
-        - lib/
-            head.js
-            body.js
-            main.js
-        + tests/
-        package.json
-
-其中package.json内容如下。
-
-{
-    "name": "cat",
-    "main": "./lib/main.js"
-}
-
-如此一来，就同样可以使用require('/home/user/lib/cat')的方式加载模块。NodeJS会根据包目录下的package.json找到入口模块所在位置。
-
-*** 命令行程序
-    使用NodeJS编写的东西，要么是一个包，要么是一个命令行程序，而前者最终也会用于开发后者。
-    因此我们在部署代码时需要一些技巧，让用户觉得自己是在使用一个命令行程序。
-
-    例如我们用NodeJS写了个程序，可以把命令行参数原样打印出来。该程序很简单，在主模块内实现了所有功能。并且写好后，
-    我们把该程序部署在/home/user/bin/node-echo.js这个位置。为了在任何目录下都能运行该程序，我们需要使用以下终端命令。
-#+BEGIN_SRC bash
-$ node /home/user/bin/node-echo.js Hello World
-Hello World
-#+END_SRC
-
-这种使用方式看起来不怎么像是一个命令行程序，下边的才是我们期望的方式。
-#+BEGIN_SRC shell
-$ node-echo Hello World
-#+END_SRC
-
-*** Linux
-在Linux系统下，我们可以把JS文件当作shell脚本来运行，从而达到上述目的，具体步骤如下：
-
-**** 1. 在shell脚本中，可以通过#!注释来指定当前脚本使用的解析器。所以我们首先在node-echo.js
-     文件顶部增加以下一行注释，表明当前脚本使用NodeJS解析。
-
-#+BEGIN_SRC 
-#! /usr/bin/env node
-#+END_SRC   
-    
-NodeJS会忽略掉位于JS模块首行的#!注释，不必担心这行注释是非法语句。
-   
-**** 2. 然后，我们使用以下命令赋予node-echo.js文件执行权限。
-   #+BEGIN_SRC bash
-     $ chmod +x /home/user/bin/node-echo.js
-   #+END_SRC
-    
-**** 3. 最后，我们在PATH环境变量中指定的某个目录下，例如在/usr/local/bin下边创建一个软链文件，
-     文件名与我们希望使用的终端命令同名，命令如下：
-#+BEGIN_SRC bash
-     $ sudo ln -s /home/user/bin/node-echo.js /usr/local/bin/node-echo
-#+END_SRC   
-    
-这样处理后，我们就可以在任何目录下使用node-echo命令了。
-
-*** Windows
-    在Windows系统下的做法完全不同，我们得靠.cmd文件来解决问题。假设node-echo.js存放在C:\Users\user\bin目录，并且该目录已经添加到PATH环境
-    变量里了。接下来需要在该目录下新建一个名为node-echo.cmd的文件，文件内容如下：
-
-    @node "C:\User\user\bin\node-echo.js" %*
-
-这样处理后，我们就可以在任何目录下使用node-echo命令了。
-
-*** 工程目录
-    了解了以上知识后，现在我们可以来完整地规划一个工程目录了。以编写一个命令行程序为例，一般我们
-    会同时提供命令行模式和API模式两种使用方式，并且我们会借助三方包来编写代码。除了代码外，一个
-    完整的程序也应该有自己的文档和测试用例。因此，一个标准的工程目录都看起来像下边这样。
-#+BEGIN_SRC 
-- /home/user/workspace/node-echo/   # 工程目录
-    - bin/                          # 存放命令行相关代码
-        node-echo
-    + doc/                          # 存放文档
-    - lib/                          # 存放API相关代码
-        echo.js
-    - node_modules/                 # 存放三方包
-        + argv/
-    + tests/                        # 存放测试用例
-    package.json                    # 元数据文件
-    README.md                       # 说明文件
-#+END_SRC
-
-其中部分文件内容如下：
-#+BEGIN_SRC js
-/* bin/node-echo */
-var argv = require('argv'),
-    echo = require('../lib/echo');
-console.log(echo(argv.join(' ')));
-
-/* lib/echo.js */
-module.exports = function (message) {
-    return message;
-};
-
-/* package.json */
-{
-    "name": "node-echo",
-    "main": "./lib/echo.js"
-}
-
-#+END_SRC
-以上例子中分类存放了不同类型的文件，并通过node_moudles目录直接使用三方包名加载模块。此外，定义了package.json之后，node-echo目录也可
-被当作一个包来使用。
-
-NPM
-
-NPM是随同NodeJS一起安装的包管理工具，能解决NodeJS代码部署上的很多问题，常见的使用场景有以下几种：
-
-  * 允许用户从NPM服务器下载别人编写的三方包到本地使用。
-   
-  * 允许用户从NPM服务器下载并安装别人编写的命令行程序到本地使用。
-   
-  * 允许用户将自己编写的包或命令行程序上传到NPM服务器供别人使用。
-   
-可以看到，NPM建立了一个NodeJS生态圈，NodeJS开发者和用户可以在里边互通有无。以下分别介绍这三种场景下怎样使用NPM。
-
-下载三方包
-
-需要使用三方包时，首先得知道有哪些包可用。虽然npmjs.org提供了个搜索框可以根据包名来搜索，但如果连想使用的三方包的名字都不确定的话，
-就请百度一下吧。知道了包名后，比如上边例子中的argv，就可以在工程目录下打开终端，使用以下命令来下载三方包。
-
-$ npm install argv
-...
-argv@0.0.2 node_modules\argv
-
-下载好之后，argv包就放在了工程目录下的node_modules目录中，因此在代码中只需要通过require('argv')的方式就好，无需指定三方包路径。
-
-以上命令默认下载最新版三方包，如果想要下载指定版本的话，可以在包名后边加上@<version>，例如通过以下命令可下载0.0.1版的argv。
-
-$ npm install argv@0.0.1
-...
-argv@0.0.1 node_modules\argv
-
-如果使用到的三方包比较多，在终端下一个包一条命令地安装未免太人肉了。因此NPM对package.json的字段做了扩展，允许在其中申明三方包依赖。
-因此，上边例子中的package.json可以改写如下：
-
-{
-    "name": "node-echo",
-    "main": "./lib/echo.js",
-    "dependencies": {
-        "argv": "0.0.2"
-    }
-}
-
-这样处理后，在工程目录下就可以使用npm install命令批量安装三方包了。更重要的是，当以后node-echo也上传到了NPM服务器，别人下载这个包时
-，NPM会根据包中申明的三方包依赖自动下载进一步依赖的三方包。例如，使用npm install node-echo命令时，NPM会自动创建以下目录结构。
-
-- project/
-    - node_modules/
-        - node-echo/
-            - node_modules/
-                + argv/
-            ...
-    ...
-
-如此一来，用户只需关心自己直接使用的三方包，不需要自己去解决所有包的依赖关系。
-
-安装命令行程序
-
-从NPM服务上下载安装一个命令行程序的方法与三方包类似。例如上例中的node-echo提供了命令行使用方式，只要node-echo自己配置好了相关的
-package.json字段，对于用户而言，只需要使用以下命令安装程序。
-
-$ npm install node-echo -g
-
-参数中的-g表示全局安装，因此node-echo会默认安装到以下位置，并且NPM会自动创建好Linux系统下需要的软链文件或Windows系统下需要的.cmd文件
-。
-
-- /usr/local/               # Linux系统下
-    - lib/node_modules/
-        + node-echo/
-        ...
-    - bin/
-        node-echo
-        ...
-    ...
-
-- %APPDATA%\npm\            # Windows系统下
-    - node_modules\
-        + node-echo\
-        ...
-    node-echo.cmd
-    ...
-
-发布代码
-
-第一次使用NPM发布代码前需要注册一个账号。终端下运行npm adduser，之后按照提示做即可。账号搞定后，接着我们需要编辑package.json文件，加
-入NPM必需的字段。接着上边node-echo的例子，package.json里必要的字段如下。
-
-{
-    "name": "node-echo",           # 包名，在NPM服务器上须要保持唯一
-    "version": "1.0.0",            # 当前版本号
-    "dependencies": {              # 三方包依赖，需要指定包名和版本号
-        "argv": "0.0.2"
-      },
-    "main": "./lib/echo.js",       # 入口模块位置
-    "bin" : {
-        "node-echo": "./bin/node-echo"      # 命令行程序名和主模块位置
-    }
-}
-
-之后，我们就可以在package.json所在目录下运行npm publish发布代码了。
-
-版本号
-
-使用NPM下载和发布代码时都会接触到版本号。NPM使用语义版本号来管理代码，这里简单介绍一下。
-
-语义版本号分为X.Y.Z三位，分别代表主版本号、次版本号和补丁版本号。当代码变更时，版本号按以下原则更新。
-
-+ 如果只是修复bug，需要更新Z位。
-
-+ 如果是新增了功能，但是向下兼容，需要更新Y位。
-
-+ 如果有大变动，向下不兼容，需要更新X位。
-
-版本号有了这个保证后，在申明三方包依赖时，除了可依赖于一个固定版本号外，还可依赖于某个范围的版本号。例如"argv": "0.0.x"表示依赖于
-0.0.x系列的最新版argv。NPM支持的所有版本号范围指定方式可以查看官方文档。
-
-灵机一点
-
-除了本章介绍的部分外，NPM还提供了很多功能，package.json里也有很多其它有用的字段。除了可以在npmjs.org/doc/查看官方文档外，这里再介绍
-一些NPM常用命令。
-
-  * NPM提供了很多命令，例如install和publish，使用npm help可查看所有命令。
-   
-  * 使用npm help <command>可查看某条命令的详细帮助，例如npm help install。
-   
-  * 在package.json所在目录下使用npm install . -g可先在本地安装当前命令行程序，可用于发布前的本地测试。
-   
-  * 使用npm update <package>可以把当前目录下node_modules子目录里边的对应模块更新至最新版本。
-   
-  * 使用npm update <package> -g可以把全局安装的对应命令行程序更新至最新版。
-   
-  * 使用npm cache clear可以清空NPM本地缓存，用于对付使用相同版本号发布新版本代码的人。
-   
-  * 使用npm unpublish <package>@<version>可以撤销发布自己发布过的某个版本代码。
-   
-小结
-
-本章介绍了使用NodeJS编写代码前需要做的准备工作，总结起来有以下几点：
-
-  * 编写代码前先规划好目录结构，才能做到有条不紊。
-   
-  * 稍大些的程序可以将代码拆分为多个模块管理，更大些的程序可以使用包来组织模块。
-   
-  * 合理使用node_modules和NODE_PATH来解耦包的使用方式和物理路径。
-   
-  * 使用NPM加入NodeJS生态圈互通有无。
-   
-  * 想到了心仪的包名时请提前在NPM上抢注。
-   
-文件操作
-
-让前端觉得如获神器的不是NodeJS能做网络编程，而是NodeJS能够操作文件。小至文件查找，大至代码编译，几乎没有一个前端工具不操作文件。换个
-角度讲，几乎也只需要一些数据处理逻辑，再加上一些文件操作，就能够编写出大多数前端工具。本章将介绍与之相关的NodeJS内置模块。
-
-开门红
-
-NodeJS提供了基本的文件操作API，但是像文件拷贝这种高级功能就没有提供，因此我们先拿文件拷贝程序练手。与copy命令类似，我们的程序需要能
-接受源文件路径与目标文件路径两个参数。
-
-小文件拷贝
-
-我们使用NodeJS内置的fs模块简单实现这个程序如下。
-
-var fs = require('fs');
-
-function copy(src, dst) {
-    fs.writeFileSync(dst, fs.readFileSync(src));
-}
-
-function main(argv) {
-    copy(argv[0], argv[1]);
-}
-
-main(process.argv.slice(2));
-
-以上程序使用fs.readFileSync从源路径读取文件内容，并使用fs.writeFileSync将文件内容写入目标路径。
-
-    豆知识： process是一个全局变量，可通过process.argv获得命令行参数。由于argv[0]固定等于NodeJS执行程序的绝对路径，argv[1]固定等于主
-    模块的绝对路径，因此第一个命令行参数从argv[2]这个位置开始。
-   
-大文件拷贝
-
-上边的程序拷贝一些小文件没啥问题，但这种一次性把所有文件内容都读取到内存中后再一次性写入磁盘的方式不适合拷贝大文件，内存会爆仓。对于
-大文件，我们只能读一点写一点，直到完成拷贝。因此上边的程序需要改造如下。
-
-var fs = require('fs');
-
-function copy(src, dst) {
-    fs.createReadStream(src).pipe(fs.createWriteStream(dst));
-}
-
-function main(argv) {
-    copy(argv[0], argv[1]);
-}
-
-main(process.argv.slice(2));
-
-以上程序使用fs.createReadStream创建了一个源文件的只读数据流，并使用fs.createWriteStream创建了一个目标文件的只写数据流，并且用pipe方
-法把两个数据流连接了起来。连接起来后发生的事情，说得抽象点的话，水顺着水管从一个桶流到了另一个桶。
-
-API走马观花
-
-我们先大致看看NodeJS提供了哪些和文件操作有关的API。这里并不逐一介绍每个API的使用方法，官方文档已经做得很好了。
-
-Buffer（数据块）
-
-    官方文档： http://nodejs.org/api/buffer.html
-   
-JS语言自身只有字符串数据类型，没有二进制数据类型，因此NodeJS提供了一个与String对等的全局构造函数Buffer来提供对二进制数据的操作。除了
-可以读取文件得到Buffer的实例外，还能够直接构造，例如：
-
-var bin = new Buffer([ 0x68, 0x65, 0x6c, 0x6c, 0x6f ]);
-
-Buffer与字符串类似，除了可以用.length属性得到字节长度外，还可以用[index]方式读取指定位置的字节，例如：
-
-bin[0]; // => 0x68;
-
-Buffer与字符串能够互相转化，例如可以使用指定编码将二进制数据转化为字符串：
-
-var str = bin.toString('utf-8'); // => "hello"
-
-或者反过来，将字符串转换为指定编码下的二进制数据：
-
-var bin = new Buffer('hello', 'utf-8'); // => <Buffer 68 65 6c 6c 6f>
-
-Buffer与字符串有一个重要区别。字符串是只读的，并且对字符串的任何修改得到的都是一个新字符串，原字符串保持不变。至于Buffer，更像是可以
-做指针操作的C语言数组。例如，可以用[index]方式直接修改某个位置的字节。
-
-bin[0] = 0x48;
-
-而.slice方法也不是返回一个新的Buffer，而更像是返回了指向原Buffer中间的某个位置的指针，如下所示。
-
-[ 0x68, 0x65, 0x6c, 0x6c, 0x6f ]
-    ^           ^
-    |           |
-   bin     bin.slice(2)
-
-因此对.slice方法返回的Buffer的修改会作用于原Buffer，例如：
-
-var bin = new Buffer([ 0x68, 0x65, 0x6c, 0x6c, 0x6f ]);
-var sub = bin.slice(2);
-
-sub[0] = 0x65;
-console.log(bin); // => <Buffer 68 65 65 6c 6f>
-
-也因此，如果想要拷贝一份Buffer，得首先创建一个新的Buffer，并通过.copy方法把原Buffer中的数据复制过去。这个类似于申请一块新的内存，并
-把已有内存中的数据复制过去。以下是一个例子。
-
-var bin = new Buffer([ 0x68, 0x65, 0x6c, 0x6c, 0x6f ]);
-var dup = new Buffer(bin.length);
-
-bin.copy(dup);
-dup[0] = 0x48;
-console.log(bin); // => <Buffer 68 65 6c 6c 6f>
-console.log(dup); // => <Buffer 48 65 65 6c 6f>
-
-总之，Buffer将JS的数据处理能力从字符串扩展到了任意二进制数据。
-
-Stream（数据流）
-
-    官方文档： http://nodejs.org/api/stream.html
-   
-当内存中无法一次装下需要处理的数据时，或者一边读取一边处理更加高效时，我们就需要用到数据流。NodeJS中通过各种Stream来提供对数据流的操
-作。
-
-以上边的大文件拷贝程序为例，我们可以为数据来源创建一个只读数据流，示例如下：
-
-var rs = fs.createReadStream(pathname);
-
-rs.on('data', function (chunk) {
-    doSomething(chunk);
-});
-
-rs.on('end', function () {
-    cleanUp();
-});
-
-    豆知识： Stream基于事件机制工作，所有Stream的实例都继承于NodeJS提供的EventEmitter。
-   
-上边的代码中data事件会源源不断地被触发，不管doSomething函数是否处理得过来。代码可以继续做如下改造，以解决这个问题。
-
-var rs = fs.createReadStream(src);
-
-rs.on('data', function (chunk) {
-    rs.pause();
-    doSomething(chunk, function () {
-        rs.resume();
-    });
-});
-
-rs.on('end', function () {
-    cleanUp();
-});
-
-以上代码给doSomething函数加上了回调，因此我们可以在处理数据前暂停数据读取，并在处理数据后继续读取数据。
-
-此外，我们也可以为数据目标创建一个只写数据流，示例如下：
-
-var rs = fs.createReadStream(src);
-var ws = fs.createWriteStream(dst);
-
-rs.on('data', function (chunk) {
-    ws.write(chunk);
-});
-
-rs.on('end', function () {
-    ws.end();
-});
-
-我们把doSomething换成了往只写数据流里写入数据后，以上代码看起来就像是一个文件拷贝程序了。但是以上代码存在上边提到的问题，如果写入速
-度跟不上读取速度的话，只写数据流内部的缓存会爆仓。我们可以根据.write方法的返回值来判断传入的数据是写入目标了，还是临时放在了缓存了，
-并根据drain事件来判断什么时候只写数据流已经将缓存中的数据写入目标，可以传入下一个待写数据了。因此代码可以改造如下：
-
-var rs = fs.createReadStream(src);
-var ws = fs.createWriteStream(dst);
-
-rs.on('data', function (chunk) {
-    if (ws.write(chunk) === false) {
-        rs.pause();
-    }
-});
-
-rs.on('end', function () {
-    ws.end();
-});
-
-ws.on('drain', function () {
-    rs.resume();
-});
-
-以上代码实现了数据从只读数据流到只写数据流的搬运，并包括了防爆仓控制。因为这种使用场景很多，例如上边的大文件拷贝程序，NodeJS直接提供
-了.pipe方法来做这件事情，其内部实现方式与上边的代码类似。
-
-File System（文件系统）
-
-    官方文档： http://nodejs.org/api/fs.html
-   
-NodeJS通过fs内置模块提供对文件的操作。fs模块提供的API基本上可以分为以下三类：
-
-  * 文件属性读写。
-   
-    其中常用的有fs.stat、fs.chmod、fs.chown等等。
-   
-  * 文件内容读写。
-   
-    其中常用的有fs.readFile、fs.readdir、fs.writeFile、fs.mkdir等等。
-   
-  * 底层文件操作。
-   
-    其中常用的有fs.open、fs.read、fs.write、fs.close等等。
-   
-NodeJS最精华的异步IO模型在fs模块里有着充分的体现，例如上边提到的这些API都通过回调函数传递结果。以fs.readFile为例：
-
-fs.readFile(pathname, function (err, data) {
-    if (err) {
-        // Deal with error.
-    } else {
-        // Deal with data.
-    }
-});
-
-如上边代码所示，基本上所有fs模块API的回调参数都有两个。第一个参数在有错误发生时等于异常对象，第二个参数始终用于返回API方法执行结果。
-
-此外，fs模块的所有异步API都有对应的同步版本，用于无法使用异步操作时，或者同步操作更方便时的情况。同步API除了方法名的末尾多了一个Sync
-之外，异常对象与执行结果的传递方式也有相应变化。同样以fs.readFileSync为例：
-
-try {
-    var data = fs.readFileSync(pathname);
-    // Deal with data.
-} catch (err) {
-    // Deal with error.
-}
-
-fs模块提供的API很多，这里不一一介绍，需要时请自行查阅官方文档。
-
-Path（路径）
-
-    官方文档： http://nodejs.org/api/path.html
-   
-操作文件时难免不与文件路径打交道。NodeJS提供了path内置模块来简化路径相关操作，并提升代码可读性。以下分别介绍几个常用的API。
-
-  * path.normalize
-   
-    将传入的路径转换为标准路径，具体讲的话，除了解析路径中的.与..外，还能去掉多余的斜杠。如果有程序需要使用路径作为某些数据的索引，
-    但又允许用户随意输入路径时，就需要使用该方法保证路径的唯一性。以下是一个例子：
-   
-      var cache = {};
-    
-      function store(key, value) {
-          cache[path.normalize(key)] = value;
-      }
-    
-      store('foo/bar', 1);
-      store('foo//baz//../bar', 2);
-      console.log(cache);  // => { "foo/bar": 2 }
-    
-        坑出没注意：标准化之后的路径里的斜杠在Windows系统下是\，而在Linux系统下是/。如果想保证任何系统下都使用/作为路径分隔符的话，
-        需要用.replace(/\\/g, '/')再替换一下标准路径。
-       
-  * path.join
-   
-    将传入的多个路径拼接为标准路径。该方法可避免手工拼接路径字符串的繁琐，并且能在不同系统下正确使用相应的路径分隔符。以下是一个例子
-    ：
-   
-      path.join('foo/', 'baz/', '../bar'); // => "foo/bar"
-    
-  * path.extname
-   
-    当我们需要根据不同文件扩展名做不同操作时，该方法就显得很好用。以下是一个例子：
-   
-      path.extname('foo/bar.js'); // => ".js"
-    
-path模块提供的其余方法也不多，稍微看一下官方文档就能全部掌握。
-
-遍历目录
-
-遍历目录是操作文件时的一个常见需求。比如写一个程序，需要找到并处理指定目录下的所有JS文件时，就需要遍历整个目录。
-
-递归算法
-
-遍历目录时一般使用递归算法，否则就难以编写出简洁的代码。递归算法与数学归纳法类似，通过不断缩小问题的规模来解决问题。以下示例说明了这
-种方法。
-
-function factorial(n) {
-    if (n === 1) {
-        return 1;
-    } else {
-        return n * factorial(n - 1);
-    }
-}
-
-上边的函数用于计算N的阶乘（N!）。可以看到，当N大于1时，问题简化为计算N乘以N-1的阶乘。当N等于1时，问题达到最小规模，不需要再简化，因
-此直接返回1。
-
-    陷阱：使用递归算法编写的代码虽然简洁，但由于每递归一次就产生一次函数调用，在需要优先考虑性能时，需要把递归算法转换为循环算法，以
-    减少函数调用次数。
-   
-遍历算法
-
-目录是一个树状结构，在遍历时一般使用深度优先+先序遍历算法。深度优先，意味着到达一个节点后，首先接着遍历子节点而不是邻居节点。先序遍
-历，意味着首次到达了某节点就算遍历完成，而不是最后一次返回某节点才算数。因此使用这种遍历方式时，下边这棵树的遍历顺序是A > B > D > E
-> C > F。
-
-          A
-         / \
-        B   C
-       / \   \
-      D   E   F
-
-同步遍历
-
-了解了必要的算法后，我们可以简单地实现以下目录遍历函数。
-
-function travel(dir, callback) {
-    fs.readdirSync(dir).forEach(function (file) {
-        var pathname = path.join(dir, file);
-
-        if (fs.statSync(pathname).isDirectory()) {
-            travel(pathname, callback);
-        } else {
-            callback(pathname);
-        }
-    });
-}
-
-可以看到，该函数以某个目录作为遍历的起点。遇到一个子目录时，就先接着遍历子目录。遇到一个文件时，就把文件的绝对路径传给回调函数。回调
-函数拿到文件路径后，就可以做各种判断和处理。因此假设有以下目录：
-
-- /home/user/
-    - foo/
-        x.js
-    - bar/
-        y.js
-    z.css
-
-使用以下代码遍历该目录时，得到的输入如下。
-
-travel('/home/user', function (pathname) {
-    console.log(pathname);
-});
-
-------------------------
-/home/user/foo/x.js
-/home/user/bar/y.js
-/home/user/z.css
-
-异步遍历
-
-如果读取目录或读取文件状态时使用的是异步API，目录遍历函数实现起来会有些复杂，但原理完全相同。travel函数的异步版本如下。
-
-function travel(dir, callback, finish) {
-    fs.readdir(dir, function (err, files) {
-        (function next(i) {
-            if (i < files.length) {
-                var pathname = path.join(dir, files[i]);
-
-                fs.stat(pathname, function (err, stats) {
-                    if (stats.isDirectory()) {
-                        travel(pathname, callback, function () {
-                            next(i + 1);
-                        });
-                    } else {
-                        callback(pathname, function () {
-                            next(i + 1);
-                        });
-                    }
-                });
-            } else {
-                finish && finish();
-            }
-        }(0));
-    });
-}
-
-这里不详细介绍异步遍历函数的编写技巧，在后续章节中会详细介绍这个。总之我们可以看到异步编程还是蛮复杂的。
-
-文本编码
-
-使用NodeJS编写前端工具时，操作得最多的是文本文件，因此也就涉及到了文件编码的处理问题。我们常用的文本编码有UTF8和GBK两种，并且UTF8文
-件还可能带有BOM。在读取不同编码的文本文件时，需要将文件内容转换为JS使用的UTF8编码字符串后才能正常处理。
-
-BOM的移除
-
-BOM用于标记一个文本文件使用Unicode编码，其本身是一个Unicode字符（"\uFEFF"），位于文本文件头部。在不同的Unicode编码下，BOM字符对应的
-二进制字节如下：
-
-    Bytes      Encoding
-----------------------------
-    FE FF       UTF16BE
-    FF FE       UTF16LE
-    EF BB BF    UTF8
-
-因此，我们可以根据文本文件头几个字节等于啥来判断文件是否包含BOM，以及使用哪种Unicode编码。但是，BOM字符虽然起到了标记文件编码的作用
-，其本身却不属于文件内容的一部分，如果读取文本文件时不去掉BOM，在某些使用场景下就会有问题。例如我们把几个JS文件合并成一个文件后，如
-果文件中间含有BOM字符，就会导致浏览器JS语法错误。因此，使用NodeJS读取文本文件时，一般需要去掉BOM。例如，以下代码实现了识别和去除UTF8
-BOM的功能。
-
-function readText(pathname) {
-    var bin = fs.readFileSync(pathname);
-
-    if (bin[0] === 0xEF && bin[1] === 0xBB && bin[2] === 0xBF) {
-        bin = bin.slice(3);
-    }
-
-    return bin.toString('utf-8');
-}
-
-GBK转UTF8
-
-NodeJS支持在读取文本文件时，或者在Buffer转换为字符串时指定文本编码，但遗憾的是，GBK编码不在NodeJS自身支持范围内。因此，一般我们借助
-iconv-lite这个三方包来转换编码。使用NPM下载该包后，我们可以按下边方式编写一个读取GBK文本文件的函数。
-
-var iconv = require('iconv-lite');
-
-function readGBKText(pathname) {
-    var bin = fs.readFileSync(pathname);
-
-    return iconv.decode(bin, 'gbk');
-}
-
-单字节编码
-
-有时候，我们无法预知需要读取的文件采用哪种编码，因此也就无法指定正确的编码。比如我们要处理的某些CSS文件中，有的用GBK编码，有的用UTF8
-编码。虽然可以一定程度可以根据文件的字节内容猜测出文本编码，但这里要介绍的是有些局限，但是要简单得多的一种技术。
-
-首先我们知道，如果一个文本文件只包含英文字符，比如Hello World，那无论用GBK编码或是UTF8编码读取这个文件都是没问题的。这是因为在这些编
-码下，ASCII0~128范围内字符都使用相同的单字节编码。
-
-反过来讲，即使一个文本文件中有中文等字符，如果我们需要处理的字符仅在ASCII0~128范围内，比如除了注释和字符串以外的JS代码，我们就可以统
-一使用单字节编码来读取文件，不用关心文件的实际编码是GBK还是UTF8。以下示例说明了这种方法。
-
-1. GBK编码源文件内容：
-    var foo = '中文';
-2. 对应字节：
-    76 61 72 20 66 6F 6F 20 3D 20 27 D6 D0 CE C4 27 3B
-3. 使用单字节编码读取后得到的内容：
-    var foo = '{乱码}{乱码}{乱码}{乱码}';
-4. 替换内容：
-    var bar = '{乱码}{乱码}{乱码}{乱码}';
-5. 使用单字节编码保存后对应字节：
-    76 61 72 20 62 61 72 20 3D 20 27 D6 D0 CE C4 27 3B
-6. 使用GBK编码读取后得到内容：
-    var bar = '中文';
-
-这里的诀窍在于，不管大于0xEF的单个字节在单字节编码下被解析成什么乱码字符，使用同样的单字节编码保存这些乱码字符时，背后对应的字节保持
-不变。
-
-NodeJS中自带了一种binary编码可以用来实现这个方法，因此在下例中，我们使用这种编码来演示上例对应的代码该怎么写。
-
-function replace(pathname) {
-    var str = fs.readFileSync(pathname, 'binary');
-    str = str.replace('foo', 'bar');
-    fs.writeFileSync(pathname, str, 'binary');
-}
-
-小结
-
-本章介绍了使用NodeJS操作文件时需要的API以及一些技巧，总结起来有以下几点：
-
-  * 学好文件操作，编写各种程序都不怕。
-   
-  * 如果不是很在意性能，fs模块的同步API能让生活更加美好。
-   
-  * 需要对文件读写做到字节级别的精细控制时，请使用fs模块的文件底层操作API。
-   
-  * 不要使用拼接字符串的方式来处理路径，使用path模块。
-   
-  * 掌握好目录遍历和文件编码处理技巧，很实用。
-   
-网络操作
-
-不了解网络编程的程序员不是好前端，而NodeJS恰好提供了一扇了解网络编程的窗口。通过NodeJS，除了可以编写一些服务端程序来协助前端开发和测
-试外，还能够学习一些HTTP协议与Socket协议的相关知识，这些知识在优化前端性能和排查前端故障时说不定能派上用场。本章将介绍与之相关的
-NodeJS内置模块。
-
-开门红
-
-NodeJS本来的用途是编写高性能Web服务器。我们首先在这里重复一下官方文档里的例子，使用NodeJS内置的http模块简单实现一个HTTP服务器。
-
-var http = require('http');
-
-http.createServer(function (request, response) {
-    response.writeHead(200, { 'Content-Type': 'text-plain' });
-    response.end('Hello World\n');
-}).listen(8124);
-
-以上程序创建了一个HTTP服务器并监听8124端口，打开浏览器访问该端口http://127.0.0.1:8124/就能够看到效果。
-
-    豆知识：在Linux系统下，监听1024以下端口需要root权限。因此，如果想监听80或443端口的话，需要使用sudo命令启动程序。
-   
-API走马观花
-
-我们先大致看看NodeJS提供了哪些和网络操作有关的API。这里并不逐一介绍每个API的使用方法，官方文档已经做得很好了。
-
-HTTP
-
-    官方文档： http://nodejs.org/api/http.html
-   
-'http'模块提供两种使用方式：
-
-  * 作为服务端使用时，创建一个HTTP服务器，监听HTTP客户端请求并返回响应。
-   
-  * 作为客户端使用时，发起一个HTTP客户端请求，获取服务端响应。
-   
-首先我们来看看服务端模式下如何工作。如开门红中的例子所示，首先需要使用.createServer方法创建一个服务器，然后调用.listen方法监听端口。
-之后，每当来了一个客户端请求，创建服务器时传入的回调函数就被调用一次。可以看出，这是一种事件机制。
-
-HTTP请求本质上是一个数据流，由请求头（headers）和请求体（body）组成。例如以下是一个完整的HTTP请求数据内容。
-
-POST / HTTP/1.1
-User-Agent: curl/7.26.0
-Host: localhost
-Accept: */*
-Content-Length: 11
-Content-Type: application/x-www-form-urlencoded
-
-Hello World
-
-可以看到，空行之上是请求头，之下是请求体。HTTP请求在发送给服务器时，可以认为是按照从头到尾的顺序一个字节一个字节地以数据流方式发送的
-。而http模块创建的HTTP服务器在接收到完整的请求头后，就会调用回调函数。在回调函数中，除了可以使用request对象访问请求头数据外，还能把
-request对象当作一个只读数据流来访问请求体数据。以下是一个例子。
-
-http.createServer(function (request, response) {
-    var body = [];
-
-    console.log(request.method);
-    console.log(request.headers);
-
-    request.on('data', function (chunk) {
-        body.push(chunk);
-    });
-
-    request.on('end', function () {
-        body = Buffer.concat(body);
-        console.log(body.toString());
-    });
-}).listen(80);
-
-------------------------------------
-POST
-{ 'user-agent': 'curl/7.26.0',
-  host: 'localhost',
-  accept: '*/*',
-  'content-length': '11',
-  'content-type': 'application/x-www-form-urlencoded' }
-Hello World
-
-HTTP响应本质上也是一个数据流，同样由响应头（headers）和响应体（body）组成。例如以下是一个完整的HTTP请求数据内容。
-
-HTTP/1.1 200 OK
-Content-Type: text/plain
-Content-Length: 11
-Date: Tue, 05 Nov 2013 05:31:38 GMT
-Connection: keep-alive
-
-Hello World
-
-在回调函数中，除了可以使用response对象来写入响应头数据外，还能把response对象当作一个只写数据流来写入响应体数据。例如在以下例子中，服
-务端原样将客户端请求的请求体数据返回给客户端。
-
-http.createServer(function (request, response) {
-    response.writeHead(200, { 'Content-Type': 'text/plain' });
-
-    request.on('data', function (chunk) {
-        response.write(chunk);
-    });
-
-    request.on('end', function () {
-        response.end();
-    });
-}).listen(80);
-
-接下来我们看看客户端模式下如何工作。为了发起一个客户端HTTP请求，我们需要指定目标服务器的位置并发送请求头和请求体，以下示例演示了具体
-做法。
-
-var options = {
-        hostname: 'www.example.com';,
-        port: 80,
-        path: '/upload',
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    };
-
-var request = http.request(options, function (response) {});
-
-request.write('Hello World');
-request.end();
-
-可以看到，.request方法创建了一个客户端，并指定请求目标和请求头数据。之后，就可以把request对象当作一个只写数据流来写入请求体数据和结
-束请求。另外，由于HTTP请求中GET请求是最常见的一种，并且不需要请求体，因此http模块也提供了以下便捷API。
-
-http.get('http://www.example.com/';, function (response) {});
-
-当客户端发送请求并接收到完整的服务端响应头时，就会调用回调函数。在回调函数中，除了可以使用response对象访问响应头数据外，还能把
-response对象当作一个只读数据流来访问响应体数据。以下是一个例子。
-
-http.get('http://www.example.com/';, function (response) {
-    var body = [];
-
-    console.log(response.statusCode);
-    console.log(response.headers);
-
-    response.on('data', function (chunk) {
-        body.push(chunk);
-    });
-
-    response.on('end', function () {
-        body = Buffer.concat(body);
-        console.log(body.toString());
-    });
-});
-
-------------------------------------
-200
-{ 'content-type': 'text/html',
-  server: 'Apache',
-  'content-length': '801',
-  date: 'Tue, 05 Nov 2013 06:08:41 GMT',
-  connection: 'keep-alive' }
-<!DOCTYPE html>
-...
-
-HTTPS
-
-    官方文档： http://nodejs.org/api/https.html
-   
-https模块与http模块极为类似，区别在于https模块需要额外处理SSL证书。
-
-在服务端模式下，创建一个HTTPS服务器的示例如下。
-
-var options = {
-        key: fs.readFileSync('./ssl/default.key'),
-        cert: fs.readFileSync('./ssl/default.cer')
-    };
-
-var server = https.createServer(options, function (request, response) {
-        // ...
-    });
-
-可以看到，与创建HTTP服务器相比，多了一个options对象，通过key和cert字段指定了HTTPS服务器使用的私钥和公钥。
-
-另外，NodeJS支持SNI技术，可以根据HTTPS客户端请求使用的域名动态使用不同的证书，因此同一个HTTPS服务器可以使用多个域名提供服务。接着上
-例，可以使用以下方法为HTTPS服务器添加多组证书。
-
-server.addContext('foo.com', {
-    key: fs.readFileSync('./ssl/foo.com.key'),
-    cert: fs.readFileSync('./ssl/foo.com.cer')
-});
-
-server.addContext('bar.com', {
-    key: fs.readFileSync('./ssl/bar.com.key'),
-    cert: fs.readFileSync('./ssl/bar.com.cer')
-});
-
-在客户端模式下，发起一个HTTPS客户端请求与http模块几乎相同，示例如下。
-
-var options = {
-        hostname: 'www.example.com';,
-        port: 443,
-        path: '/',
-        method: 'GET'
-    };
-
-var request = https.request(options, function (response) {});
-
-request.end();
-
-但如果目标服务器使用的SSL证书是自制的，不是从颁发机构购买的，默认情况下https模块会拒绝连接，提示说有证书安全问题。在options里加入
-rejectUnauthorized: false字段可以禁用对证书有效性的检查，从而允许https模块请求开发环境下使用自制证书的HTTPS服务器。
-
-URL
-
-    官方文档： http://nodejs.org/api/url.html
-   
-处理HTTP请求时url模块使用率超高，因为该模块允许解析URL、生成URL，以及拼接URL。首先我们来看看一个完整的URL的各组成部分。
-
-                           href
- -----------------------------------------------------------------
-                            host              path
-                      --------------- ----------------------------
- http: // user:pass @ host.com : 8080 /p/a/t/h ?query=string #hash
- -----    ---------   --------   ---- -------- ------------- -----
-protocol     auth     hostname   port pathname     search     hash
-                                                ------------
-                                                   query
-
-我们可以使用.parse方法来将一个URL字符串转换为URL对象，示例如下。
-
-url.parse('http://user:pass@host.com:8080/p/a/t/h?query=string#hash';);
-/* =>
-{ protocol: 'http:';,
-  auth: 'user:pass',
-  host: 'host.com:8080',
-  port: '8080',
-  hostname: 'host.com',
-  hash: '#hash',
-  search: '?query=string',
-  query: 'query=string',
-  pathname: '/p/a/t/h',
-  path: '/p/a/t/h?query=string',
-  href: 'http://user:pass@host.com:8080/p/a/t/h?query=string#hash'; }
-*/
-
-传给.parse方法的不一定要是一个完整的URL，例如在HTTP服务器回调函数中，request.url不包含协议头和域名，但同样可以用.parse方法解析。
-
-http.createServer(function (request, response) {
-    var tmp = request.url; // => "/foo/bar?a=b"
-    url.parse(tmp);
-    /* =>
-    { protocol: null,
-      slashes: null,
-      auth: null,
-      host: null,
-      port: null,
-      hostname: null,
-      hash: null,
-      search: '?a=b',
-      query: 'a=b',
-      pathname: '/foo/bar',
-      path: '/foo/bar?a=b',
-      href: '/foo/bar?a=b' }
-    */
-}).listen(80);
-
-.parse方法还支持第二个和第三个布尔类型可选参数。第二个参数等于true时，该方法返回的URL对象中，query字段不再是一个字符串，而是一个经过
-querystring模块转换后的参数对象。第三个参数等于true时，该方法可以正确解析不带协议头的URL，例如//www.example.com/foo/bar。
-
-反过来，format方法允许将一个URL对象转换为URL字符串，示例如下。
-
-url.format({
-    protocol: 'http:';,
-    host: 'www.example.com';,
-    pathname: '/p/a/t/h',
-    search: 'query=string'
-});
-/* =>
-'http://www.example.com/p/a/t/h?query=string';
-*/
-
-另外，.resolve方法可以用于拼接URL，示例如下。
-
-url.resolve('http://www.example.com/foo/bar';, '../baz');
-/* =>
-http://www.example.com/baz
-*/
-
-Query String
-
-    官方文档： http://nodejs.org/api/querystring.html
-   
-querystring模块用于实现URL参数字符串与参数对象的互相转换，示例如下。
-
-querystring.parse('foo=bar&baz=qux&baz=quux&corge');
-/* =>
-{ foo: 'bar', baz: ['qux', 'quux'], corge: '' }
-*/
-
-querystring.stringify({ foo: 'bar', baz: ['qux', 'quux'], corge: '' });
-/* =>
-'foo=bar&baz=qux&baz=quux&corge='
-*/
-
-Zlib
-
-    官方文档： http://nodejs.org/api/zlib.html
-   
-zlib模块提供了数据压缩和解压的功能。当我们处理HTTP请求和响应时，可能需要用到这个模块。
-
-首先我们看一个使用zlib模块压缩HTTP响应体数据的例子。这个例子中，判断了客户端是否支持gzip，并在支持的情况下使用zlib模块返回gzip之后的
-响应体数据。
-
-http.createServer(function (request, response) {
-    var i = 1024,
-        data = '';
-
-    while (i--) {
-        data += '.';
-    }
-
-    if ((request.headers['accept-encoding'] || '').indexOf('gzip') !== -1) {
-        zlib.gzip(data, function (err, data) {
-            response.writeHead(200, {
-                'Content-Type': 'text/plain',
-                'Content-Encoding': 'gzip'
-            });
-            response.end(data);
-        });
-    } else {
-        response.writeHead(200, {
-            'Content-Type': 'text/plain'
-        });
-        response.end(data);
-    }
-}).listen(80);
-
-接着我们看一个使用zlib模块解压HTTP响应体数据的例子。这个例子中，判断了服务端响应是否使用gzip压缩，并在压缩的情况下使用zlib模块解压响
-应体数据。
-
-var options = {
-        hostname: 'www.example.com';,
-        port: 80,
-        path: '/',
-        method: 'GET',
-        headers: {
-            'Accept-Encoding': 'gzip, deflate'
-        }
-    };
-
-http.request(options, function (response) {
-    var body = [];
-
-    response.on('data', function (chunk) {
-        body.push(chunk);
-    });
-
-    response.on('end', function () {
-        body = Buffer.concat(body);
-
-        if (response.headers['content-encoding'] === 'gzip') {
-            zlib.gunzip(body, function (err, data) {
-                console.log(data.toString());
-            });
-        } else {
-            console.log(data.toString());
-        }
-    });
-}).end();
-
-Net
-
-    官方文档： http://nodejs.org/api/net.html
-   
-net模块可用于创建Socket服务器或Socket客户端。由于Socket在前端领域的使用范围还不是很广，这里先不涉及到WebSocket的介绍，仅仅简单演示一
-下如何从Socket层面来实现HTTP请求和响应。
-
-首先我们来看一个使用Socket搭建一个很不严谨的HTTP服务器的例子。这个HTTP服务器不管收到啥请求，都固定返回相同的响应。
-
-net.createServer(function (conn) {
-    conn.on('data', function (data) {
-        conn.write([
-            'HTTP/1.1 200 OK',
-            'Content-Type: text/plain',
-            'Content-Length: 11',
-            '',
-            'Hello World'
-        ].join('\n'));
-    });
-}).listen(80);
-
-接着我们来看一个使用Socket发起HTTP客户端请求的例子。这个例子中，Socket客户端在建立连接后发送了一个HTTP GET请求，并通过data事件监听函
-数来获取服务器响应。
-
-var options = {
-        port: 80,
-        host: 'www.example.com';
-    };
-
-var client = net.connect(options, function () {
-        client.write([
-            'GET / HTTP/1.1',
-            'User-Agent: curl/7.26.0',
-            'Host: www.baidu.com';,
-            'Accept: */*',
-            '',
-            ''
-        ].join('\n'));
-    });
-
-client.on('data', function (data) {
-    console.log(data.toString());
-    client.end();
-});
-
-灵机一点
-
-使用NodeJS操作网络，特别是操作HTTP请求和响应时会遇到一些惊喜，这里对一些常见问题做解答。
-
-  * 问：为什么通过headers对象访问到的HTTP请求头或响应头字段不是驼峰的？
-   
-    答：从规范上讲，HTTP请求头和响应头字段都应该是驼峰的。但现实是残酷的，不是每个HTTP服务端或客户端程序都严格遵循规范，所以NodeJS在
-    处理从别的客户端或服务端收到的头字段时，都统一地转换为了小写字母格式，以便开发者能使用统一的方式来访问头字段，例如headers
-    ['content-length']。
-   
-  * 问：为什么http模块创建的HTTP服务器返回的响应是chunked传输方式的？
-   
-    答：因为默认情况下，使用.writeHead方法写入响应头后，允许使用.write方法写入任意长度的响应体数据，并使用.end方法结束一个响应。由于
-    响应体数据长度不确定，因此NodeJS自动在响应头里添加了Transfer-Encoding: chunked字段，并采用chunked传输方式。但是当响应体数据长度
-    确定时，可使用.writeHead方法在响应头里加上Content-Length字段，这样做之后NodeJS就不会自动添加Transfer-Encoding字段和使用chunked传
-    输方式。
-   
-  * 问：为什么使用http模块发起HTTP客户端请求时，有时候会发生socket hang up错误？
-   
-    答：发起客户端HTTP请求前需要先创建一个客户端。http模块提供了一个全局客户端http.globalAgent，可以让我们使用.request或.get方法时不
-    用手动创建客户端。但是全局客户端默认只允许5个并发Socket连接，当某一个时刻HTTP客户端请求创建过多，超过这个数字时，就会发生socket
-    hang up错误。解决方法也很简单，通过http.globalAgent.maxSockets属性把这个数字改大些即可。另外，https模块遇到这个问题时也一样通过
-    https.globalAgent.maxSockets属性来处理。
-   
-小结
-
-本章介绍了使用NodeJS操作网络时需要的API以及一些坑回避技巧，总结起来有以下几点：
-
-  * http和https模块支持服务端模式和客户端模式两种使用方式。
-   
-  * request和response对象除了用于读写头数据外，都可以当作数据流来操作。
-   
-  * url.parse方法加上request.url属性是处理HTTP请求时的固定搭配。
-   
-  * 使用zlib模块可以减少使用HTTP协议时的数据传输量。
-   
-  * 通过net模块的Socket服务器与客户端可对HTTP协议做底层操作。
-   
-  * 小心踩坑。
-   
-进程管理
-
-NodeJS可以感知和控制自身进程的运行环境和状态，也可以创建子进程并与其协同工作，这使得NodeJS可以把多个程序组合在一起共同完成某项工作，
-并在其中充当胶水和调度器的作用。本章除了介绍与之相关的NodeJS内置模块外，还会重点介绍典型的使用场景。
-
-开门红
-
-我们已经知道了NodeJS自带的fs模块比较基础，把一个目录里的所有文件和子目录都拷贝到另一个目录里需要写不少代码。另外我们也知道，终端下的
-cp命令比较好用，一条cp -r source/* target命令就能搞定目录拷贝。那我们首先看看如何使用NodeJS调用终端命令来简化目录拷贝，示例代码如下
-：
-
-var child_process = require('child_process');
-var util = require('util');
-
-function copy(source, target, callback) {
-    child_process.exec(
-        util.format('cp -r %s/* %s', source, target), callback);
-}
-
-copy('a', 'b', function (err) {
-    // ...
-});
-
-从以上代码中可以看到，子进程是异步运行的，通过回调函数返回执行结果。
-
-API走马观花
-
-我们先大致看看NodeJS提供了哪些和进程管理有关的API。这里并不逐一介绍每个API的使用方法，官方文档已经做得很好了。
-
-Process
-
-    官方文档： http://nodejs.org/api/process.html
-   
-任何一个进程都有启动进程时使用的命令行参数，有标准输入标准输出，有运行权限，有运行环境和运行状态。在NodeJS中，可以通过process对象感
-知和控制NodeJS自身进程的方方面面。另外需要注意的是，process不是内置模块，而是一个全局对象，因此在任何地方都可以直接使用。
-
-Child Process
-
-    官方文档： http://nodejs.org/api/child_process.html
-   
-使用child_process模块可以创建和控制子进程。该模块提供的API中最核心的是.spawn，其余API都是针对特定使用场景对它的进一步封装，算是一种
-语法糖。
-
-Cluster
-
-    官方文档： http://nodejs.org/api/cluster.html
-   
-cluster模块是对child_process模块的进一步封装，专用于解决单进程NodeJS Web服务器无法充分利用多核CPU的问题。使用该模块可以简化多进程服
-务器程序的开发，让每个核上运行一个工作进程，并统一通过主进程监听端口和分发请求。
-
-应用场景
-
-和进程管理相关的API单独介绍起来比较枯燥，因此这里从一些典型的应用场景出发，分别介绍一些重要API的使用方法。
-
-如何获取命令行参数
-
-在NodeJS中可以通过process.argv获取命令行参数。但是比较意外的是，node执行程序路径和主模块文件路径固定占据了argv[0]和argv[1]两个位置，
-而第一个命令行参数从argv[2]开始。为了让argv使用起来更加自然，可以按照以下方式处理。
-
-function main(argv) {
-    // ...
-}
-
-main(process.argv.slice(2));
-
-如何退出程序
-
-通常一个程序做完所有事情后就正常退出了，这时程序的退出状态码为0。或者一个程序运行时发生了异常后就挂了，这时程序的退出状态码不等于0。
-如果我们在代码中捕获了某个异常，但是觉得程序不应该继续运行下去，需要立即退出，并且需要把退出状态码设置为指定数字，比如1，就可以按照
-以下方式：
-
-try {
-    // ...
-} catch (err) {
-    // ...
-    process.exit(1);
-}
-
-如何控制输入输出
-
-NodeJS程序的标准输入流（stdin）、一个标准输出流（stdout）、一个标准错误流（stderr）分别对应process.stdin、process.stdout和
-process.stderr，第一个是只读数据流，后边两个是只写数据流，对它们的操作按照对数据流的操作方式即可。例如，console.log可以按照以下方式
-实现。
-
-function log() {
-    process.stdout.write(
-        util.format.apply(util, arguments) + '\n');
-}
-
-如何降权
-
-在Linux系统下，我们知道需要使用root权限才能监听1024以下端口。但是一旦完成端口监听后，继续让程序运行在root权限下存在安全隐患，因此最
-好能把权限降下来。以下是这样一个例子。
-
-http.createServer(callback).listen(80, function () {
-    var env = process.env,
-        uid = parseInt(env['SUDO_UID'] || process.getuid(), 10),
-        gid = parseInt(env['SUDO_GID'] || process.getgid(), 10);
-
-    process.setgid(gid);
-    process.setuid(uid);
-});
-
-上例中有几点需要注意：
-
- 1. 如果是通过sudo获取root权限的，运行程序的用户的UID和GID保存在环境变量SUDO_UID和SUDO_GID里边。如果是通过chmod +s方式获取root权限的
-    ，运行程序的用户的UID和GID可直接通过process.getuid和process.getgid方法获取。
-   
- 2. process.setuid和process.setgid方法只接受number类型的参数。
-   
- 3. 降权时必须先降GID再降UID，否则顺序反过来的话就没权限更改程序的GID了。
-   
-如何创建子进程
-
-以下是一个创建NodeJS子进程的例子。
-
-var child = child_process.spawn('node', [ 'xxx.js' ]);
-
-child.stdout.on('data', function (data) {
-    console.log('stdout: ' + data);
-});
-
-child.stderr.on('data', function (data) {
-    console.log('stderr: ' + data);
-});
-
-child.on('close', function (code) {
-    console.log('child process exited with code ' + code);
-});
-
-上例中使用了.spawn(exec, args, options)方法，该方法支持三个参数。第一个参数是执行文件路径，可以是执行文件的相对或绝对路径，也可以是
-根据PATH环境变量能找到的执行文件名。第二个参数中，数组中的每个成员都按顺序对应一个命令行参数。第三个参数可选，用于配置子进程的执行环
-境与行为。
-
-另外，上例中虽然通过子进程对象的.stdout和.stderr访问子进程的输出，但通过options.stdio字段的不同配置，可以将子进程的输入输出重定向到
-任何数据流上，或者让子进程共享父进程的标准输入输出流，或者直接忽略子进程的输入输出。
-
-进程间如何通讯
-
-在Linux系统下，进程之间可以通过信号互相通信。以下是一个例子。
-
-/* parent.js */
-var child = child_process.spawn('node', [ 'child.js' ]);
-
-child.kill('SIGTERM');
-
-/* child.js */
-process.on('SIGTERM', function () {
-    cleanUp();
-    process.exit(0);
-});
-
-在上例中，父进程通过.kill方法向子进程发送SIGTERM信号，子进程监听process对象的SIGTERM事件响应信号。不要被.kill方法的名称迷惑了，该方
-法本质上是用来给进程发送信号的，进程收到信号后具体要做啥，完全取决于信号的种类和进程自身的代码。
-
-另外，如果父子进程都是NodeJS进程，就可以通过IPC（进程间通讯）双向传递数据。以下是一个例子。
-
-/* parent.js */
-var child = child_process.spawn('node', [ 'child.js' ], {
-        stdio: [ 0, 1, 2, 'ipc' ]
-    });
-
-child.on('message', function (msg) {
-    console.log(msg);
-});
-
-child.send({ hello: 'hello' });
-
-/* child.js */
-process.on('message', function (msg) {
-    msg.hello = msg.hello.toUpperCase();
-    process.send(msg);
-});
-
-可以看到，父进程在创建子进程时，在options.stdio字段中通过ipc开启了一条IPC通道，之后就可以监听子进程对象的message事件接收来自子进程的
-消息，并通过.send方法给子进程发送消息。在子进程这边，可以在process对象上监听message事件接收来自父进程的消息，并通过.send方法向父进程
-发送消息。数据在传递过程中，会先在发送端使用JSON.stringify方法序列化，再在接收端使用JSON.parse方法反序列化。
-
-如何守护子进程
-
-守护进程一般用于监控工作进程的运行状态，在工作进程不正常退出时重启工作进程，保障工作进程不间断运行。以下是一种实现方式。
-
-/* daemon.js */
-function spawn(mainModule) {
-    var worker = child_process.spawn('node', [ mainModule ]);
-
-    worker.on('exit', function (code) {
-        if (code !== 0) {
-            spawn(mainModule);
-        }
-    });
-}
-
-spawn('worker.js');
-
-可以看到，工作进程非正常退出时，守护进程立即重启工作进程。
-
-小结
-
-本章介绍了使用NodeJS管理进程时需要的API以及主要的应用场景，总结起来有以下几点：
-
-  * 使用process对象管理自身。
-   
-  * 使用child_process模块创建和管理子进程。
-   
-异步编程
-
-NodeJS最大的卖点——事件机制和异步IO，对开发者并不是透明的。开发者需要按异步方式编写代码才用得上这个卖点，而这一点也遭到了一些NodeJS反
-对者的抨击。但不管怎样，异步编程确实是NodeJS最大的特点，没有掌握异步编程就不能说是真正学会了NodeJS。本章将介绍与异步编程相关的各种知
-识。
-
-回调
-
-在代码中，异步编程的直接体现就是回调。异步编程依托于回调来实现，但不能说使用了回调后程序就异步化了。我们首先可以看看以下代码。
-
-function heavyCompute(n, callback) {
-    var count = 0,
-        i, j;
-
-    for (i = n; i > 0; --i) {
-        for (j = n; j > 0; --j) {
-            count += 1;
-        }
-    }
-
-    callback(count);
-}
-
-heavyCompute(10000, function (count) {
-    console.log(count);
-});
-
-console.log('hello');
-
--- Console ------------------------------
-100000000
-hello
-
-可以看到，以上代码中的回调函数仍然先于后续代码执行。JS本身是单线程运行的，不可能在一段代码还未结束运行时去运行别的代码，因此也就不存
-在异步执行的概念。
-
-但是，如果某个函数做的事情是创建一个别的线程或进程，并与JS主线程并行地做一些事情，并在事情做完后通知JS主线程，那情况又不一样了。我们
-接着看看以下代码。
-
-setTimeout(function () {
-    console.log('world');
-}, 1000);
-
-console.log('hello');
-
--- Console ------------------------------
-hello
-world
-
-这次可以看到，回调函数后于后续代码执行了。如同上边所说，JS本身是单线程的，无法异步执行，因此我们可以认为setTimeout这类JS规范之外的由
-运行环境提供的特殊函数做的事情是创建一个平行线程后立即返回，让JS主进程可以接着执行后续代码，并在收到平行进程的通知后再执行回调函数。
-除了setTimeout、setInterval这些常见的，这类函数还包括NodeJS提供的诸如fs.readFile之类的异步API。
-
-另外，我们仍然回到JS是单线程运行的这个事实上，这决定了JS在执行完一段代码之前无法执行包括回调函数在内的别的代码。也就是说，即使平行线
-程完成工作了，通知JS主线程执行回调函数了，回调函数也要等到JS主线程空闲时才能开始执行。以下就是这么一个例子。
-
-function heavyCompute(n) {
-    var count = 0,
-        i, j;
-
-    for (i = n; i > 0; --i) {
-        for (j = n; j > 0; --j) {
-            count += 1;
-        }
-    }
-}
-
-var t = new Date();
-
-setTimeout(function () {
-    console.log(new Date() - t);
-}, 1000);
-
-heavyCompute(50000);
-
--- Console ------------------------------
-8520
-
-可以看到，本来应该在1秒后被调用的回调函数因为JS主线程忙于运行其它代码，实际执行时间被大幅延迟。
-
-代码设计模式
-
-异步编程有很多特有的代码设计模式，为了实现同样的功能，使用同步方式和异步方式编写的代码会有很大差异。以下分别介绍一些常见的模式。
-
-函数返回值
-
-使用一个函数的输出作为另一个函数的输入是很常见的需求，在同步方式下一般按以下方式编写代码：
-
-var output = fn1(fn2('input'));
-// Do something.
-
-而在异步方式下，由于函数执行结果不是通过返回值，而是通过回调函数传递，因此一般按以下方式编写代码：
-
-fn2('input', function (output2) {
-    fn1(output2, function (output1) {
-        // Do something.
-    });
-});
-
-可以看到，这种方式就是一个回调函数套一个回调函多，套得太多了很容易写出>形状的代码。
-
-遍历数组
-
-在遍历数组时，使用某个函数依次对数据成员做一些处理也是常见的需求。如果函数是同步执行的，一般就会写出以下代码：
-
-var len = arr.length,
-    i = 0;
-
-for (; i < len; ++i) {
-    arr[i] = sync(arr[i]);
-}
-
-// All array items have processed.
-
-如果函数是异步执行的，以上代码就无法保证循环结束后所有数组成员都处理完毕了。如果数组成员必须一个接一个串行处理，则一般按照以下方式编
-写异步代码：
-
-(function next(i, len, callback) {
-    if (i < len) {
-        async(arr[i], function (value) {
-            arr[i] = value;
-            next(i + 1, len, callback);
-        });
-    } else {
-        callback();
-    }
-}(0, arr.length, function () {
-    // All array items have processed.
-}));
-
-可以看到，以上代码在异步函数执行一次并返回执行结果后才传入下一个数组成员并开始下一轮执行，直到所有数组成员处理完毕后，通过回调的方式
-触发后续代码的执行。
-
-如果数组成员可以并行处理，但后续代码仍然需要所有数组成员处理完毕后才能执行的话，则异步代码会调整成以下形式：
-
-(function (i, len, count, callback) {
-    for (; i < len; ++i) {
-        (function (i) {
-            async(arr[i], function (value) {
-                arr[i] = value;
-                if (++count === len) {
-                    callback();
-                }
-            });
-        }(i));
-    }
-}(0, arr.length, 0, function () {
-    // All array items have processed.
-}));
-
-可以看到，与异步串行遍历的版本相比，以上代码并行处理所有数组成员，并通过计数器变量来判断什么时候所有数组成员都处理完毕了。
-
-异常处理
-
-JS自身提供的异常捕获和处理机制——try..catch..，只能用于同步执行的代码。以下是一个例子。
-
-function sync(fn) {
-    return fn();
-}
-
-try {
-    sync(null);
-    // Do something.
-} catch (err) {
-    console.log('Error: %s', err.message);
-}
-
--- Console ------------------------------
-Error: object is not a function
-
-可以看到，异常会沿着代码执行路径一直冒泡，直到遇到第一个try语句时被捕获住。但由于异步函数会打断代码执行路径，异步函数执行过程中以及
-执行之后产生的异常冒泡到执行路径被打断的位置时，如果一直没有遇到try语句，就作为一个全局异常抛出。以下是一个例子。
-
-function async(fn, callback) {
-    // Code execution path breaks here.
-    setTimeout(function ()　{
-        callback(fn());
-    }, 0);
-}
-
-try {
-    async(null, function (data) {
-        // Do something.
-    });
-} catch (err) {
-    console.log('Error: %s', err.message);
-}
-
--- Console ------------------------------
-/home/user/test.js:4
-        callback(fn());
-                 ^
-TypeError: object is not a function
-    at null._onTimeout (/home/user/test.js:4:13)
-    at Timer.listOnTimeout [as ontimeout] (timers.js:110:15)
-
-因为代码执行路径被打断了，我们就需要在异常冒泡到断点之前用try语句把异常捕获住，并通过回调函数传递被捕获的异常。于是我们可以像下边这
-样改造上边的例子。
-
-function async(fn, callback) {
-    // Code execution path breaks here.
-    setTimeout(function ()　{
-        try {
-            callback(null, fn());
-        } catch (err) {
-            callback(err);
-        }
-    }, 0);
-}
-
-async(null, function (err, data) {
-    if (err) {
-        console.log('Error: %s', err.message);
-    } else {
-        // Do something.
-    }
-});
-
--- Console ------------------------------
-Error: object is not a function
-
-可以看到，异常再次被捕获住了。在NodeJS中，几乎所有异步API都按照以上方式设计，回调函数中第一个参数都是err。因此我们在编写自己的异步函
-数时，也可以按照这种方式来处理异常，与NodeJS的设计风格保持一致。
-
-有了异常处理方式后，我们接着可以想一想一般我们是怎么写代码的。基本上，我们的代码都是做一些事情，然后调用一个函数，然后再做一些事情，
-然后再调用一个函数，如此循环。如果我们写的是同步代码，只需要在代码入口点写一个try语句就能捕获所有冒泡上来的异常，示例如下。
-
-function main() {
-    // Do something.
-    syncA();
-    // Do something.
-    syncB();
-    // Do something.
-    syncC();
-}
-
-try {
-    main();
-} catch (err) {
-    // Deal with exception.
-}
-
-但是，如果我们写的是异步代码，就只有呵呵了。由于每次异步函数调用都会打断代码执行路径，只能通过回调函数来传递异常，于是我们就需要在每
-个回调函数里判断是否有异常发生，于是只用三次异步函数调用，就会产生下边这种代码。
-
-function main(callback) {
-    // Do something.
-    asyncA(function (err, data) {
-        if (err) {
-            callback(err);
-        } else {
-            // Do something
-            asyncB(function (err, data) {
-                if (err) {
-                    callback(err);
-                } else {
-                    // Do something
-                    asyncC(function (err, data) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            // Do something
-                            callback(null);
-                        }
-                    });
-                }
-            });
-        }
-    });
-}
-
-main(function (err) {
-    if (err) {
-        // Deal with exception.
-    }
-});
-
-可以看到，回调函数已经让代码变得复杂了，而异步方式下对异常的处理更加剧了代码的复杂度。如果NodeJS的最大卖点最后变成这个样子，那就没人
-愿意用NodeJS了，因此接下来会介绍NodeJS提供的一些解决方案。
-
-域（Domain）
-
-    官方文档： http://nodejs.org/api/domain.html
-   
-NodeJS提供了domain模块，可以简化异步代码的异常处理。在介绍该模块之前，我们需要首先理解“域”的概念。简单的讲，一个域就是一个JS运行环境
-，在一个运行环境中，如果一个异常没有被捕获，将作为一个全局异常被抛出。NodeJS通过process对象提供了捕获全局异常的方法，示例代码如下
-
-process.on('uncaughtException', function (err) {
-    console.log('Error: %s', err.message);
-});
-
-setTimeout(function (fn) {
-    fn();
-});
-
--- Console ------------------------------
-Error: undefined is not a function
-
-虽然全局异常有个地方可以捕获了，但是对于大多数异常，我们希望尽早捕获，并根据结果决定代码的执行路径。我们用以下HTTP服务器代码作为例子
-：
-
-function async(request, callback) {
-    // Do something.
-    asyncA(request, function (err, data) {
-        if (err) {
-            callback(err);
-        } else {
-            // Do something
-            asyncB(request, function (err, data) {
-                if (err) {
-                    callback(err);
-                } else {
-                    // Do something
-                    asyncC(request, function (err, data) {
-                        if (err) {
-                            callback(err);
-                        } else {
-                            // Do something
-                            callback(null, data);
-                        }
-                    });
-                }
-            });
-        }
-    });
-}
-
-http.createServer(function (request, response) {
-    async(request, function (err, data) {
-        if (err) {
-            response.writeHead(500);
-            response.end();
-        } else {
-            response.writeHead(200);
-            response.end(data);
-        }
-    });
-});
-
-以上代码将请求对象交给异步函数处理后，再根据处理结果返回响应。这里采用了使用回调函数传递异常的方案，因此async函数内部如果再多几个异
-步函数调用的话，代码就变成上边这副鬼样子了。为了让代码好看点，我们可以在每处理一个请求时，使用domain模块创建一个子域（JS子运行环境）
-。在子域内运行的代码可以随意抛出异常，而这些异常可以通过子域对象的error事件统一捕获。于是以上代码可以做如下改造：
-
-function async(request, callback) {
-    // Do something.
-    asyncA(request, function (data) {
-        // Do something
-        asyncB(request, function (data) {
-            // Do something
-            asyncC(request, function (data) {
-                // Do something
-                callback(data);
-            });
-        });
-    });
-}
-
-http.createServer(function (request, response) {
-    var d = domain.create();
-
-    d.on('error', function () {
-        response.writeHead(500);
-        response.end();
-    });
-
-    d.run(function () {
-        async(request, function (data) {
-            response.writeHead(200);
-            response.end(data);
-        });
-    });
-});
-
-可以看到，我们使用.create方法创建了一个子域对象，并通过.run方法进入需要在子域中运行的代码的入口点。而位于子域中的异步函数回调函数由
-于不再需要捕获异常，代码一下子瘦身很多。
-
-陷阱
-
-无论是通过process对象的uncaughtException事件捕获到全局异常，还是通过子域对象的error事件捕获到了子域异常，在NodeJS官方文档里都强烈建
-议处理完异常后立即重启程序，而不是让程序继续运行。按照官方文档的说法，发生异常后的程序处于一个不确定的运行状态，如果不立即退出的话，
-程序可能会发生严重内存泄漏，也可能表现得很奇怪。
-
-但这里需要澄清一些事实。JS本身的throw..try..catch异常处理机制并不会导致内存泄漏，也不会让程序的执行结果出乎意料，但NodeJS并不是存粹
-的JS。NodeJS里大量的API内部是用C/C++实现的，因此NodeJS程序的运行过程中，代码执行路径穿梭于JS引擎内部和外部，而JS的异常抛出机制可能会
-打断正常的代码执行流程，导致C/C++部分的代码表现异常，进而导致内存泄漏等问题。
-
-因此，使用uncaughtException或domain捕获异常，代码执行路径里涉及到了C/C++部分的代码时，如果不能确定是否会导致内存泄漏等问题，最好在处
-理完异常后重启程序比较妥当。而使用try语句捕获异常时一般捕获到的都是JS本身的异常，不用担心上诉问题。
-
-小结
-
-本章介绍了JS异步编程相关的知识，总结起来有以下几点：
-
-  * 不掌握异步编程就不算学会NodeJS。
-   
-  * 异步编程依托于回调来实现，而使用回调不一定就是异步编程。
-   
-  * 异步编程下的函数间数据传递、数组遍历和异常处理与同步编程有很大差别。
-   
-  * 使用domain模块简化异步代码的异常处理，并小心陷阱。
-   
-大示例
-
-学习讲究的是学以致用和融会贯通。至此我们已经分别介绍了NodeJS的很多知识点，本章作为最后一章，将完整地介绍一个使用NodeJS开发Web服务器
-的示例。
-
-需求
-
-我们要开发的是一个简单的静态文件合并服务器，该服务器需要支持类似以下格式的JS或CSS文件合并请求。
-
-http://assets.example.com/foo/??bar.js,baz.js
-
-在以上URL中，??是一个分隔符，之前是需要合并的多个文件的URL的公共部分，之后是使用,分隔的差异部分。因此服务器处理这个URL时，返回的是以
-下两个文件按顺序合并后的内容。
-
-/foo/bar.js
-/foo/baz.js
-
-另外，服务器也需要能支持类似以下格式的普通的JS或CSS文件请求。
-
-http://assets.example.com/foo/bar.js
-
-以上就是整个需求。
-
-第一次迭代
-
-快速迭代是一种不错的开发方式，因此我们在第一次迭代时先实现服务器的基本功能。
-
-设计
-
-简单分析了需求之后，我们大致会得到以下的设计方案。
-
-           +---------+   +-----------+   +----------+
-request -->|  parse  |-->|  combine  |-->|  output  |--> response
-           +---------+   +-----------+   +----------+
-
-也就是说，服务器会首先分析URL，得到请求的文件的路径和类型（MIME）。然后，服务器会读取请求的文件，并按顺序合并文件内容。最后，服务器
-返回响应，完成对一次请求的处理。
-
-另外，服务器在读取文件时需要有个根目录，并且服务器监听的HTTP端口最好也不要写死在代码里，因此服务器需要是可配置的。
-
-实现
-
-根据以上设计，我们写出了第一版代码如下。
-
-var fs = require('fs'),
-    path = require('path'),
-    http = require('http');
-
-var MIME = {
-    '.css': 'text/css',
-    '.js': 'application/javascript'
-};
-
-function combineFiles(pathnames, callback) {
-    var output = [];
-
-    (function next(i, len) {
-        if (i < len) {
-            fs.readFile(pathnames[i], function (err, data) {
-                if (err) {
-                    callback(err);
-                } else {
-                    output.push(data);
-                    next(i + 1, len);
-                }
-            });
-        } else {
-            callback(null, Buffer.concat(output));
-        }
-    }(0, pathnames.length));
-}
-
-function main(argv) {
-    var config = JSON.parse(fs.readFileSync(argv[0], 'utf-8')),
-        root = config.root || '.',
-        port = config.port || 80;
-
-    http.createServer(function (request, response) {
-        var urlInfo = parseURL(root, request.url);
-
-        combineFiles(urlInfo.pathnames, function (err, data) {
-            if (err) {
-                response.writeHead(404);
-                response.end(err.message);
-            } else {
-                response.writeHead(200, {
-                    'Content-Type': urlInfo.mime
-                });
-                response.end(data);
-            }
-        });
-    }).listen(port);
-}
-
-function parseURL(root, url) {
-    var base, pathnames, parts;
-
-    if (url.indexOf('??') === -1) {
-        url = url.replace('/', '/??');
-    }
-
-    parts = url.split('??');
-    base = parts[0];
-    pathnames = parts[1].split(',').map(function (value) {
-        return path.join(root, base, value);
-    });
-
-    return {
-        mime: MIME[path.extname(pathnames[0])] || 'text/plain',
-        pathnames: pathnames
-    };
-}
-
-main(process.argv.slice(2));
-
-以上代码完整实现了服务器所需的功能，并且有以下几点值得注意：
-
- 1. 使用命令行参数传递JSON配置文件路径，入口函数负责读取配置并创建服务器。
-   
- 2. 入口函数完整描述了程序的运行逻辑，其中解析URL和合并文件的具体实现封装在其它两个函数里。
-   
- 3. 解析URL时先将普通URL转换为了文件合并URL，使得两种URL的处理方式可以一致。
-   
- 4. 合并文件时使用异步API读取文件，避免服务器因等待磁盘IO而发生阻塞。
-   
-我们可以把以上代码保存为server.js，之后就可以通过node server.js config.json命令启动程序，于是我们的第一版静态文件合并服务器就顺利完
-工了。
-
-另外，以上代码存在一个不那么明显的逻辑缺陷。例如，使用以下URL请求服务器时会有惊喜。
-
-    http://assets.example.com/foo/bar.js,foo/baz.js
-
-经过分析之后我们会发现问题出在/被自动替换/??这个行为上，而这个问题我们可以到第二次迭代时再解决。
-
-第二次迭代
-
-在第一次迭代之后，我们已经有了一个可工作的版本，满足了功能需求。接下来我们需要从性能的角度出发，看看代码还有哪些改进余地。
-
-设计
-
-把map方法换成for循环或许会更快一些，但第一版代码最大的性能问题存在于从读取文件到输出响应的过程当中。我们以处理/??a.js,b.js,c.js这个
-请求为例，看看整个处理过程中耗时在哪儿。
-
- 发送请求       等待服务端响应         接收响应
----------+----------------------+------------->
-         --                                        解析请求
-           ------                                  读取a.js
-                 ------                            读取b.js
-                       ------                      读取c.js
-                             --                    合并数据
-                               --                  输出响应
-
-可以看到，第一版代码依次把请求的文件读取到内存中之后，再合并数据和输出响应。这会导致以下两个问题：
-
- 1. 当请求的文件比较多比较大时，串行读取文件会比较耗时，从而拉长了服务端响应等待时间。
-   
- 2. 由于每次响应输出的数据都需要先完整地缓存在内存里，当服务器请求并发数较大时，会有较大的内存开销。
-   
-对于第一个问题，很容易想到把读取文件的方式从串行改为并行。但是别这样做，因为对于机械磁盘而言，因为只有一个磁头，尝试并行读取文件只会
-造成磁头频繁抖动，反而降低IO效率。而对于固态硬盘，虽然的确存在多个并行IO通道，但是对于服务器并行处理的多个请求而言，硬盘已经在做并行
-IO了，对单个请求采用并行IO无异于拆东墙补西墙。因此，正确的做法不是改用并行IO，而是一边读取文件一边输出响应，把响应输出时机提前至读取
-第一个文件的时刻。这样调整后，整个请求处理过程变成下边这样。
-
-发送请求 等待服务端响应 接收响应
----------+----+------------------------------->
-         --                                        解析请求
-           --                                      检查文件是否存在
-             --                                    输出响应头
-               ------                              读取和输出a.js
-                     ------                        读取和输出b.js
-                           ------                  读取和输出c.js
-
-按上述方式解决第一个问题后，因为服务器不需要完整地缓存每个请求的输出数据了，第二个问题也迎刃而解。
-
-实现
-
-根据以上设计，第二版代码按以下方式调整了部分函数。
-
-function main(argv) {
-    var config = JSON.parse(fs.readFileSync(argv[0], 'utf-8')),
-        root = config.root || '.',
-        port = config.port || 80;
-
-    http.createServer(function (request, response) {
-        var urlInfo = parseURL(root, request.url);
-
-        validateFiles(urlInfo.pathnames, function (err, pathnames) {
-            if (err) {
-                response.writeHead(404);
-                response.end(err.message);
-            } else {
-                response.writeHead(200, {
-                    'Content-Type': urlInfo.mime
-                });
-                outputFiles(pathnames, response);
-            }
-        });
-    }).listen(port);
-}
-
-function outputFiles(pathnames, writer) {
-    (function next(i, len) {
-        if (i < len) {
-            var reader = fs.createReadStream(pathnames[i]);
-
-            reader.pipe(writer, { end: false });
-            reader.on('end', function() {
-                next(i + 1, len);
-            });
-        } else {
-            writer.end();
-        }
-    }(0, pathnames.length));
-}
-
-function validateFiles(pathnames, callback) {
-    (function next(i, len) {
-        if (i < len) {
-            fs.stat(pathnames[i], function (err, stats) {
-                if (err) {
-                    callback(err);
-                } else if (!stats.isFile()) {
-                    callback(new Error());
-                } else {
-                    next(i + 1, len);
-                }
-            });
-        } else {
-            callback(null, pathnames);
-        }
-    }(0, pathnames.length));
-}
-
-可以看到，第二版代码在检查了请求的所有文件是否有效之后，立即就输出了响应头，并接着一边按顺序读取文件一边输出响应内容。并且，在读取文
-件时，第二版代码直接使用了只读数据流来简化代码。
-
-第三次迭代
-
-第二次迭代之后，服务器本身的功能和性能已经得到了初步满足。接下来我们需要从稳定性的角度重新审视一下代码，看看还需要做些什么。
-
-设计
-
-从工程角度上讲，没有绝对可靠的系统。即使第二次迭代的代码经过反复检查后能确保没有bug，也很难说是否会因为NodeJS本身，或者是操作系统本
-身，甚至是硬件本身导致我们的服务器程序在某一天挂掉。因此一般生产环境下的服务器程序都配有一个守护进程，在服务挂掉的时候立即重启服务。
-一般守护进程的代码会远比服务进程的代码简单，从概率上可以保证守护进程更难挂掉。如果再做得严谨一些，甚至守护进程自身可以在自己挂掉时重
-启自己，从而实现双保险。
-
-因此在本次迭代时，我们先利用NodeJS的进程管理机制，将守护进程作为父进程，将服务器程序作为子进程，并让父进程监控子进程的运行状态，在其
-异常退出时重启子进程。
-
-实现
-
-根据以上设计，我们编写了守护进程需要的代码。
-
-var cp = require('child_process');
-
-var worker;
-
-function spawn(server, config) {
-    worker = cp.spawn('node', [ server, config ]);
-    worker.on('exit', function (code) {
-        if (code !== 0) {
-            spawn(server, config);
-        }
-    });
-}
-
-function main(argv) {
-    spawn('server.js', argv[0]);
-    process.on('SIGTERM', function () {
-        worker.kill();
-        process.exit(0);
-    });
-}
-
-main(process.argv.slice(2));
-
-此外，服务器代码本身的入口函数也要做以下调整。
-
-function main(argv) {
-    var config = JSON.parse(fs.readFileSync(argv[0], 'utf-8')),
-        root = config.root || '.',
-        port = config.port || 80,
-        server;
-
-    server = http.createServer(function (request, response) {
-        ...
-    }).listen(port);
-
-    process.on('SIGTERM', function () {
-        server.close(function () {
-            process.exit(0);
-        });
-    });
-}
-
-我们可以把守护进程的代码保存为daemon.js，之后我们可以通过node daemon.js config.json启动服务，而守护进程会进一步启动和监控服务器进程
-。此外，为了能够正常终止服务，我们让守护进程在接收到SIGTERM信号时终止服务器进程。而在服务器进程这一端，同样在收到SIGTERM信号时先停掉
-HTTP服务再正常退出。至此，我们的服务器程序就靠谱很多了。
-
-第四次迭代
-
-在我们解决了服务器本身的功能、性能和可靠性的问题后，接着我们需要考虑一下代码部署的问题，以及服务器控制的问题。
-
-设计
-
-一般而言，程序在服务器上有一个固定的部署目录，每次程序有更新后，都重新发布到部署目录里。而一旦完成部署后，一般也可以通过固定的服务控
-制脚本启动和停止服务。因此我们的服务器程序部署目录可以做如下设计。
-
-- deploy/
-    - bin/
-        startws.sh
-        killws.sh
-    + conf/
-        config.json
-    + lib/
-        daemon.js
-        server.js
-
-在以上目录结构中，我们分类存放了服务控制脚本、配置文件和服务器代码。
-
-实现
-
-按以上目录结构分别存放对应的文件之后，接下来我们看看控制脚本怎么写。首先是start.sh。
-
-#!/bin/sh
-if [ ! -f "pid" ]
-then
-    node ../lib/daemon.js ../conf/config.json &
-    echo $! > pid
-fi
-
-然后是killws.sh。
-
-#!/bin/sh
-if [ -f "pid" ]
-then
-    kill $(tr -d '\r\n' < pid)
-    rm pid
-fi
-
-于是这样我们就有了一个简单的代码部署目录和服务控制脚本，我们的服务器程序就可以上线工作了。
-
-后续迭代
-
-我们的服务器程序正式上线工作后，我们接下来或许会发现还有很多可以改进的点。比如服务器程序在合并JS文件时可以自动在JS文件之间插入一个;
-来避免一些语法问题，比如服务器程序需要提供日志来统计访问量，比如服务器程序需要能充分利用多核CPU，等等。而此时的你，在学习了这么久
-NodeJS之后，应该已经知道该怎么做了。
-
-小结
-
-本章将之前零散介绍的知识点串了起来，完整地演示了一个使用NodeJS开发程序的例子，至此我们的课程就全部结束了。以下是对新诞生的NodeJSer的
-一些建议。
-
-  * 要熟悉官方API文档。并不是说要熟悉到能记住每个API的名称和用法，而是要熟悉NodeJS提供了哪些功能，一旦需要时知道查询API文档的哪块地
-    方。
-   
-  * 要先设计再实现。在开发一个程序前首先要有一个全局的设计，不一定要很周全，但要足够能写出一些代码。
-   
-  * 要实现后再设计。在写了一些代码，有了一些具体的东西后，一定会发现一些之前忽略掉的细节。这时再反过来改进之前的设计，为第二轮迭代做
-    准备。
-   
-  * 要充分利用三方包。NodeJS有一个庞大的生态圈，在写代码之前先看看有没有现成的三方包能节省不少时间。
-   
-  * 不要迷信三方包。任何事情做过头了就不好了，三方包也是一样。三方包是一个黑盒，每多使用一个三方包，就为程序增加了一份潜在风险。并且
-    三方包很难恰好只提供程序需要的功能，每多使用一个三方包，就让程序更加臃肿一些。因此在决定使用某个三方包之前，最好三思而后行。
-
-* 创建自己的对象
-要创建自己的对象实例，必须首先为其定义一个构造函数。构造函数创建一个新对象，赋予对象属性，并在合适的时候赋予方法。例如，下面的示例为 pasta 对象定义了构造函数。注意 this 关键字的使用，它指向当前对象。
-
-// pasta 是有四个参数的构造器。
-function pasta(grain, width, shape, hasEgg)
-{
-    // 是用什么粮食做的？
-    this.grain = grain;
-
-    // 多宽？（数值）
-    this.width = width;     
-
-    // 横截面形状？（字符串）
-    this.shape = shape;   
-
-// 是否加蛋黄？（boolean）
-    this.hasEgg = hasEgg;  
-}
-定义了对象构造器后，用 new 运算符创建对象实例。
-
-var spaghetti = new pasta("wheat", 0.2, "circle", true);
-var linguine = new pasta("wheat", 0.3, "oval", true);
-可以给对象实例添加属性以改变该实例，但是用相同的构造器生成的其他对象定义中并不包括这些属性，而且除非你特意添加这些属性那么在其他实例中并不显示出来。如果要将对象所有实例的附加属性显示出来，必须将它们添加到构造函数或构造器原型对象（原型在高级文档中讨论）中。
-
-// spaghetti 的附加属性。
-spaghetti.color = "pale straw";
-spaghetti.drycook = 7;
-spaghetti.freshcook = 0.5;
-
-var chowFun = new pasta("rice", 3, "flat", false); 
-// chowFun 对象或其他现有的 pasta 对象
-// 都没有添加到 spaghetti 对象
-// 的三个新属性。
-
-
-// 将属性‘foodgroup’加到 pasta 原型对象
-// 中，这样 pasta 对象的所有实例都可以有该属性，
-// 包括那些已经生成的实例。
-pasta.prototype.foodgroup = "carbohydrates"
-
-// 现在 spaghetti.foodgroup、chowFun.foodgroup，等等
-// 均包含值“carbohydrates”。
-在定义中包含方法
-
-可以在对象的定义中包含方法（函数）。一种方法是在引用别处定义的函数的构造函数中添加一个属性。例如，下面的示例扩充上面定义的 pasta 构造函数以包含 toString 方法，该方法将在显示对象的值时被调用。
-
-// pasta 是有四个参数的构造器。
-// 第一部分与上面相同。
-function pasta(grain, width, shape, hasEgg)
-{
-    // 用什么粮食做的？
-    this.grain = grain;
-
-    // 多宽？（数值）
-    this.width = width;     
-
-    // 横截面形状？（字符串）
-    this.shape = shape;   
-
-    // 是否加蛋黄？（boolean）
-    this.hasEgg = hasEgg;  
-
-    // 这里添加 toString 方法（如下定义）。
-    // 注意在函数的名称后没有加圆括号；
-    // 这不是一个函数调用，而是
-    // 对函数自身的引用。
-    this.toString = pastaToString;
-}
-
-// 实际的用来显示 past 对象内容的函数。 
-function pastaToString()
-{
-    // 返回对象的属性。
-
-    return "Grain: " + this.grain + "\n" +
-        "Width: " + this.width + "\n" +
-        "Shape: " + this.shape + "\n" +
-        "Egg?: " + Boolean(this.hasEgg);
-}
-
-var spaghetti = new pasta("wheat", 0.2, "circle", true);
-// 将调用 toString() 并显示 spaghetti 对象
-// 的属性（需要Internet 浏览器）。
-window.alert(spaghetti);
-* 事件是可以被 JavaScript 侦测到的行为。
-事件
-JavaScript 使我们有能力创建动态页面。事件是可以被 JavaScript 侦测到的行为。
-网页中的每个元素都可以产生某些可以触发 JavaScript 函数的事件。比方说，我们可以在用户点击某按钮时产生一个 onClick 事件来触发某个函数。事件在 HTML 页面中定义。
-事件举例：
-鼠标点击
-页面或图像载入
-鼠标悬浮于页面的某个热点之上
-在表单中选取输入框
-确认表单
-键盘按键
-注意：事件通常与函数配合使用，当事件发生时函数才会执行。
-如果需要更多有关 Javascript 可识别事件的知识，请阅读我们的 JavaScript 事件参考手册。
-onload 和 onUnload
-当用户进入或离开页面时就会触发 onload 和 onUnload 事件。
-onload 事件常用来检测访问者的浏览器类型和版本，然后根据这些信息载入特定版本的网页。
-onload 和 onUnload 事件也常被用来处理用户进入或离开页面时所建立的 cookies。例如，当某用户第一次进入页面时，你可以使用消息框来询问用户的姓名。姓名会保存在 cookie 中。当用户再次进入这个页面时，你可以使用另一个消息框来和这个用户打招呼："Welcome John Doe!"。
-onFocus, onBlur 和 onChange
-onFocus、onBlur 和 onChange 事件通常相互配合用来验证表单。
-下面是一个使用 onChange 事件的例子。用户一旦改变了域的内容，checkEmail() 函数就会被调用。
-<input type="text" size="30" id="email" onchange="checkEmail()">
-onSubmit
-onSubmit 用于在提交表单之前验证所有的表单域。
-下面是一个使用 onSubmit 事件的例子。当用户单击表单中的确认按钮时，checkForm() 函数就会被调用。假若域的值无效，此次提交就会被取消。checkForm() 函数的返回值是 true 或者 false。如果返回值为true，则提交表单，反之取消提交。
-<form method="post" action="xxx.htm" onsubmit="return checkForm()">
-onMouseOver 和 onMouseOut
-onMouseOver 和 onMouseOut 用来创建“动态的”按钮。
-下面是一个使用 onMouseOver 事件的例子。当 onMouseOver 事件被脚本侦测到时，就会弹出一个警告框：
-<a href="http://www.w3school.com.cn"
-onmouseover="alert('An onMouseOver event');return false">
-
-<img src="w3school.gif" width="100" height="30">
-
-</a>
-* JavaScript Try...Catch 语句
-Previous Page
-Next Page
-try...catch 的作用是测试代码中的错误。
-实例
-try...catch 语句
-如何编写 try...catch 语句。
-带有确认框的 try...catch 语句
-另一个编写 try...catch 语句的例子。
-JavaScript - 捕获错误
-当我们在网上冲浪时，总会看到带有 runtime 错误的 Javascript 警告框，同时会询问我们“是否进行 debug？”。像这样的错误信息或许对开发人员有用，对用户则未必。当错误发生时，他们往往会选择离开这个站点。
-本节向你讲解如何捕获和处理 Javascript 的错误消息，这样就可以为受众提供更多的便利。
-有两种在网页中捕获错误的方法：
-使用 try...catch 语句。(在 IE5+、Mozilla 1.0、和 Netscape 6 中可用)
-使用 onerror 事件。这是用于捕获错误的老式方法。(Netscape 3 以后的版本可用)
-Try...Catch 语句
-try...catch 可以测试代码中的错误。try 部分包含需要运行的代码，而 catch 部分包含错误发生时运行的代码。
-语法：
-try
-{
-   //在此运行代码
-}
-catch(err)
-{
-   //在此处理错误
-}
-注意：try...catch 使用小写字母。大写字母会出错。
-实例 1
 下面的例子原本用在用户点击按钮时显示 "Welcome guest!" 这个消息。不过 message() 函数中的 alert() 被误写为 adddlert()。这时错误发生了：
 <html>
 <head>
@@ -3634,7 +285,7 @@ try
   {
   adddlert("Welcome guest!")
   }
-catch(err)
+  catch(err)
   {
   txt="There was an error on this page.\n\n"
   txt+="Click OK to continue viewing this page,\n"
@@ -3655,93 +306,1097 @@ catch(err)
 </html>
 onerror 事件
 我们马上会讲解 onerror 事件。但首先您需要学习如何使用 throw 语句来创建异常。throw 语句可以与 try...catch 语句一起使用。
-* JavaScript onerror 事件
-Previous Page
-Next Page
-使用 onerror 事件是一种老式的标准的在网页中捕获 Javascript 错误的方法。
-实例
-onerror 事件
-如何使用 onerror 事件捕获网页中的错误。
-onerror 事件
-我们刚讲过如何使用 try...catch 声明来捕获网页中的错误。现在，我们继续讲解如何使用 onerror 事件来达到相同的目的。
-只要页面中出现脚本错误，就会产生 onerror 事件。
-如果需要利用 onerror 事件，就必须创建一个处理错误的函数。你可以把这个函数叫作 onerror 事件处理器 (onerror event handler)。这个事件处理器使用三个参数来调用：msg（错误消息）、url（发生错误的页面的 url）、line（发生错误的代码行）。
-语法：
-onerror=handleErrfunction handleErr(msg,url,l)
-{
-//Handle the error here
-return true or false
-}
-浏览器是否显示标准的错误消息，取决于 onerror 的返回值。如果返回值为 false，则在控制台 (JavaScript console) 中显示错误消息。反之则不会。
-实例：
-下面的例子展示如何使用 onerror 事件来捕获错误：
-<html>
-<head>
+** 正则 search replace
+   #+BEGIN_SRC js
+          var s="helo world";
+          var i=s.search(/wo/i);
+     i: 不区分大小写
+   #+END_SRC
+
+** json
+   JSON用于描述数据结构，有以下形式存在。
+   对象（object）：一个对象以{开始，并以}结束。一个对象包含一系列非排序的名称／值对，每个名称／值对之间使用,分区。
+   名称／值（collection）：名称和值之间使用：隔开，一般的形式是：
+   {name:value}
+   一个名称是一个字符串； 一个值可以是一个字符串，一个数值，一个对象，一个布尔值，一个有序列表，或者一个null值。
+   值的有序列表（Array）：一个或者多个值用,分区后，使用[，]括起来就形成了这样的列表，形如：
+   [collection, collection]
+   字符串：以""括起来的一串字符。
+   数值：一系列0-9的数字组合，可以为负数或者小数。还可以用e或者E表示为指数形式。
+   布尔值：表示为true或者false。
+  
+ #+BEGIN_SRC json
+ {
+       "firstName": "John",
+       "lastName": "Smith",
+       "sex": "male",
+       "age": 25,
+       "address": 
+       {
+           "streetAddress": "21 2nd Street",
+           "city": "New York",
+           "state": "NY",
+           "postalCode": "10021"
+       },
+       "phoneNumber": 
+       [
+           {
+             "type": "home",
+             "number": "212 555-1234"
+           },
+           {
+             "type": "fax",
+             "number": "646 555-4567"
+           }
+       ]
+   }
+ [
+ {
+      "text":"This is the text","color":"dark_red","bold":"true","strikethough":"true","clickEvent":
+           {"action":"open_url","value":"zh.wikipedia.org"},
+      "hoverEvent":
+           {"action":"show_text","value":
+                {"extra":"something"}
+           }
+ },
+ {
+      "translate":"item.dirt.name","color":"blue","italic":"true"
+ }
+ ]
+
+ #+END_SRC
+** json 函数
+   var strify = JSON.stringify(arr);
+   var arrParse = JSON.parse(strify);
+** 定时器 
+ 执行一次 setTimeout
+ 重复执行 setInterval
+ #+BEGIN_SRC html 
+   <html>
+     <head>
+       <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+       <title>无标题文档</title>
+       <script language="JavaScript" type="text/javascript">
+         var str = "这个是测试用的范例文字";
+         var seq = 0;
+         var second=1000; //间隔时间1秒钟
+         function scroll() {
+         msg = str.substring(0, seq+1);
+         document.getElementByIdx_x_x('word').innerHTML = msg;
+         seq++;
+         if (seq >= str.length) seq = 0;
+         }
+       </script>
+     </head>
+     <body onload="setInterval('scroll()',second)">
+       <div id="word"></div><br/><br/>
+     </body>
+   </html>
+ <p>页面上显示时钟：</p>
+ <p id="demo"></p>
+ <button onclick="myStopFunction()">停止时钟</button>
+ <script>
+ var myVar=setInterval(function(){myTimer()},1000);
+ function myTimer(){
+	 var d=new Date();
+	 var t=d.toLocaleTimeString();
+	 document.getElementById("demo").innerHTML=t;
+ }
+ function myStopFunction(){
+	 clearInterval(myVar);
+ }
+ </script>
+
+
+ #+END_SRC
+** Date对象
+#+BEGIN_SRC js
+        new Date() // 当前日期和时间
+        new Date(milliseconds) //返回从 1970 年 1 月 1 日至今的毫秒数
+        new Date(dateString)
+        new Date(year, month, day, hours, minutes, seconds, milliseconds)
+      var today = new Date()
+      var d1 = new Date("October 13, 1975 11:13:00")
+      var d2 = new Date(79,5,24)
+      var d3 = new Date(79,5,24,11,33,0)
+  设置日期
+    var myDate=new Date();
+    myDate.setFullYear(2010,0,14);
+
+设置日期为5天后
+  var myDate=new Date();
+  myDate.setDate(myDate.getDate()+5);
+#+END_SRC
+** 原型
+#+BEGIN_SRC js
+小写转大写
+  Array.prototype.myUcase=function(){
+      for (i=0;i<this.length;i++){
+          this[i]=this[i].toUpperCase();
+      }
+  }
+#+END_SRC
+* DOM
+*** window
+**** 属性 （常量)
+     closed 	      返回窗口是否已被关闭
+     defaultStatus 	设置或返回窗口状态栏中的默认文本
+     innerheight 	  返回窗口的文档显示区的高度。
+     innerwidth 	  返回窗口的文档显示区的宽度。
+     length 	      设置或返回窗口中的框架数量。
+     location 	    用于窗口或框架的 Location 对象。请参阅 Location 对象。 
+     name 	        设置或返回窗口的名称。
+     outerheight 	  返回窗口的外部高度。 
+     outerwidth 	  返回窗口的外部宽度。 
+     pageXOffset 	  设置或返回当前页面相对于窗口显示区左上角的 X 位置。
+     pageYOffset 	  设置或返回当前页面相对于窗口显示区左上角的 Y 位置。
+     parent 	      返回父窗口。 	
+     self 	        返回对当前窗口的引用。等价于 Window 属性。 	
+     status 	      设置窗口状态栏的文本。
+     top 	          返回最顶层的先辈窗口。
+     screenLeft     IE、Safari 和 Opera 支持 screenLeft 和 screenTop
+     screenTop
+     screenX        Firefox 和 Safari 支持 screenX 和 screenY。   
+     screenY        只读整数。声明了窗口的左上角在屏幕上的的 x 坐标和 y 坐标。
+     onload
+**** 方法
+     alert() 	           显示带有一段消息和一个确认按钮的警告框。
+     blur() 	           把键盘焦点从顶层窗口移开。
+     clearInterval() 	   取消由 setInterval() 设置的 timeout。 
+     clearTimeout()      取消由 setTimeout() 方法设置的 timeout。
+     close() 	           关闭浏览器窗口。 
+     confirm() 	         显示带有一段消息以及确认按钮和取消按钮的对话框。
+     createPopup() 	     创建一个 pop-up 窗口
+     focus() 	           把键盘焦点给予一个窗口
+     moveBy() 	         可相对窗口的当前坐标把它移动指定的像素
+     moveTo() 	         把窗口的左上角移动到一个指定的坐标。
+     open() 	           打开一个新的浏览器窗口或查找一个已命名的窗口
+     print()    	       打印当前窗口的内容。(打印机）
+     prompt() 	         显示可提示用户输入的对话框。 
+     resizeBy() 	       按照指定的像素调整窗口的大小。
+     resizeTo() 	       把窗口的大小调整到指定的宽度和高度。
+     scrollBy() 	       按照指定的像素值来滚动内容。 
+     scrollTo() 	       把内容滚动到指定的坐标。
+     setInterval() 	     按照指定的周期（以毫秒计）来调用函数或计算表达式。
+     setTimeout() 	     在指定的毫秒数后调用函数或计算表达式。
+*** navigator
+**** 属性
+     appCodeName 	        返回浏览器的代码名。 
+     appMinorVersion 	    返回浏览器的次级版本。
+     appName 	            返回浏览器的名称。 
+     appVersion 	        返回浏览器的平台和版本信息。
+     browserLanguage 	    返回当前浏览器的语言。
+     cookieEnabled 	      返回指明浏览器中是否启用 cookie 的布尔值。
+     cpuClass 	          返回浏览器系统的 CPU 等级。 
+     onLine 	            返回指明系统是否处于脱机模式的布尔值。
+     platform 	          返回运行浏览器的操作系统平台。 
+     systemLanguage 	    返回 OS 使用的默认语言。
+     language
+     userAgent 	          返回由客户机发送服务器的 user-agent 头部的值。 
+     userLanguage 	      返回 OS 的自然语言设置。
+**** 方法
+     javaEnabled() 	      规定浏览器是否启用 Java。
+     taintEnabled() 	    规定浏览器是否启用数据污点 (data tainting)
+*** screen
+**** 属性
+     availHeight 	     返回显示屏幕的高度 (除 Windows 任务栏之外)。
+     availWidth 	     返回显示屏幕的宽度 (除 Windows 任务栏之外)。 
+     bufferDepth 	     设置或返回在 off-screen bitmap buffer 中调色板的比特深度。
+     colorDepth 	     返回目标设备或缓冲器上的调色板的比特深度。
+     deviceYDPI 	     返回显示屏幕的每英寸垂直点数。 
+     height 	         返回显示屏幕的高度。 
+     pixelDepth 	     返回显示屏幕的颜色分辨率（比特每像素）
+     width 	           返回显示器屏幕的宽度。 
+*** history
+**** 属性
+     length            返回浏览器历史列表中的 URL 数量
+**** 方法
+     back() 	          加载 history 列表中的前一个 URL 	
+     forward() 	        加载 history 列表中的下一个 URL 
+     go() 	            加载 history 列表中的某个具体页面 [Num|URL] e: -1 前一个页面	
+*** location
+**** 属性
+     hash 	            设置或返回从井号 (#) 开始的 URL（锚）。
+     host 	            设置或返回主机名和当前 URL 的端口号。 
+     hostname 	        设置或返回当前 URL 的主机名。 
+     href 	            设置或返回完整的 URL。
+     pathname 	        设置或返回当前 URL 的路径部分。 
+     port 	            设置或返回当前 URL 的端口号。
+     protocol 	        设置或返回当前 URL 的协议。 
+     search           	设置或返回从问号 (?) 开始的 URL（查询部分）。
+**** 方法
+     assign() 	        加载新的文档。 
+     reload() 	        重新加载当前文档。
+     replace() 	        用新的文档替换当前文档。 
+*** document
+**** 集合
+     all[]       	      提供对文档中所有 HTML 元素的访问。 document.all[0],不会用样式,script
+     anchors[] 	        返回对文档中所有 Anchor 对象的引用。 
+     applets 	          返回对文档中所有 Applet 对象的引用。
+     forms[] 	          返回对文档中所有 Form 对象引用。
+     images[] 	        返回对文档中所有 Image 对象引用。
+     links[] 	          返回对文档中所有 Area 和 Link 对象引用。
+**** 属性
+     body    	          提供对 <body> 元素的直接访问。对于定义了框架集的文档，该属性引用最外层的 <frameset>。 	  	  	  	 
+     cookie 	          设置或返回与当前文档有关的所有 cookie。
+     domain 	          返回当前文档的域名。 	
+     lastModified 	    返回文档被最后修改的日期和时间。 该值来自于 Last-Modified HTTP 头部，它是由 Web 服务器发送的可选项	
+     referrer 	        返回载入当前文档的文档的 URL。
+     title 	            返回当前文档的标题。 
+     URL 	              返回当前文档的 URL。 
+**** 方法
+     close() 	             关闭用 document.open() 方法打开的输出流，并显示选定的数据。 
+     getElementById() 	   返回对拥有指定 id 的第一个对象的引用。
+     getElementsByName()   返回带有指定名称的对象集合。 	
+     getElementsByTagName()返回带有指定标签名的对象集合。
+     getElementsByClassName()返回带有指定 class 的对象集合。
+     open() 	             打开一个流，以收集来自任何 document.write() 或 document.writeln() 方法的输出。
+     write()    	         向文档写 HTML 表达式 或 JavaScript 代码。 
+     writeln() 	           等同于 write() 方法，不同的是在每个表达式之后写一个换行符。 
+#+BEGIN_SRC javascript
 <script type="text/javascript">
-onerror=handleErr
-var txt=""
-
-function handleErr(msg,url,l)
-{
-txt="There was an error on this page.\n\n"
-txt+="Error: " + msg + "\n"
-txt+="URL: " + url + "\n"
-txt+="Line: " + l + "\n\n"
-txt+="Click OK to continue.\n\n"
-alert(txt)
-return true
-}
-
-function message()
-{
-adddlert("Welcome guest!")
-}
+function createNewDoc()
+  {
+  var newDoc=document.open("text/html","replace");
+  var txt="<html><body>学习 DOM 非常有趣！</body></html>";
+  newDoc.write(txt);
+  newDoc.close();
+  }
 </script>
-</head>
+#+END_SRC
+*** 公共属性
+    className 	           Sets or returns the class attribute of an element
+    dir 	                 (设置文字方向) ltr默认。从左向右的文本方向。rtl 	从右向左的文本方向。	
+    lang 	                 Sets or returns the language code for an element
+    title 	               Sets or returns an element's advisory title 
+*** Style
+    document.getElementById("id").style.property="值"
+**** 属性
+***** 背景
+      background 	          在一行中设置所有的背景属性 
+      backgroundAttachment 	设置背景图像是否固定或随页面滚动 
+      backgroundColor 	    设置元素的背景颜色 
+      backgroundImage 	    设置元素的背景图像 
+      backgroundPosition 	  设置背景图像的起始位置 
+      backgroundPositionX 	设置backgroundPosition属性的X坐标 
+      backgroundPositionY 	设置backgroundPosition属性的Y坐标 
+      backgroundRepeat 	    设置是否及如何重复背景图像
+***** 边框和边距
+      border             	在一行设置四个边框的所有属性 	
+      borderBottom  	    在一行设置底边框的所有属性 
+      borderBottomColor 	设置底边框的颜色 	
+      borderBottomStyle 	设置底边框的样式 	
+      borderBottomWidth 	设置底边框的宽度 	
+      borderColor     	  设置所有四个边框的颜色 (可设置四种颜色) 	
+      borderLeft       	  在一行设置左边框的所有属性 
+      borderLeftColor 	  设置左边框的颜色 	
+      borderLeftStyle 	  设置左边框的样式 	
+      borderLeftWidth 	  设置左边框的宽度 	
+      borderRight 	      在一行设置右边框的所有属性
+      borderRightColor 	  设置右边框的颜色 	
+      borderRightStyle 	  设置右边框的样式 	
+      borderRightWidth 	  设置右边框的宽度 	
+      borderStyle 	      设置所有四个边框的样式 (可设置四种样式) 
+      borderTop 	        在一行设置顶边框的所有属性 
+      borderTopColor 	    设置顶边框的颜色 		
+      borderTopStyle 	    设置顶边框的样式 		
+      borderTopWidth 	    设置顶边框的宽度 		
+      borderWidth 	      设置所有四条边框的宽度 (可设置四种宽度) 
+      margin 	            设置元素的边距 (可设置四个值)
+      marginBottom        设置元素的底边距
+      marginLeft 	        设置元素的左边距 	
+      marginRight 	      设置元素的右边据
+      marginTop 	        设置元素的顶边距 	
+      outline 	          在一行设置所有的outline属性 
+      outlineColor 	      设置围绕元素的轮廓颜色 	
+      outlineStyle 	      设置围绕元素的轮廓样式 	
+      outlineWidth 	      设置围绕元素的轮廓宽度 	
+      padding 	          设置元素的填充 (可设置四个值)
+      paddingBottom       设置元素的下填充
+      paddingLeft 	      设置元素的左填充
+      paddingRight 	      设置元素的右填充
+      paddingTop 	        设置元素的顶填充 	
+***** 布局
+      clear    	        设置在元素的哪边不允许其他的浮动元素 	
+      clip      	      设置元素的形状 	
+      content 	        设置元信息 	
+      counterIncrement 	设置其后是正数的计数器名称的列表。其中整数指示每当元素出现时计数器的增量。默认是1。
+      counterReset 	    设置其后是正数的计数器名称的列表。其中整数指示每当元素出现时计数器被设置的值。默认是0。
+      cssFloat 	        设置图像或文本将出现（浮动）在另一元素中的何处。 	
+      cursor   	        设置显示的指针类型 
+      direction 	      设置元素的文本方向 	
+      display 	        设置元素如何被显示 	inherit父的属性继承
+      height 	          设置元素的高度 
+      markerOffset 	    设置marker box的principal box距离其最近的边框边缘的距离
+      marks 	          设置是否cross marks或crop marks应仅仅被呈现于page box边缘之外 	
+      maxHeight 	      设置元素的最大高度 	
+      maxWidth 	        设置元素的最大宽度 	
+      minHeight 	      设置元素的最小高度 	
+      minWidth 	        设置元素的最小宽度 	
+****** overflow 	规定如何处理不适合元素盒的内容 	
+       overflow-x:      hidden;隐藏水平滚动条
+       verticalAlign 	  设置对元素中的内容进行垂直排列 
+       visibility 	    设置元素是否可见 
+       width 	          设置元素的宽度
+***** 列表
+      listStyle 	在一行设置列表的所有属性 
+      listStyleImage 	把图像设置为列表项标记 
+      listStylePosition改变列表项标记的位置 	
+      listStyleType 	设置列表项标记的类型
+***** 定位
+      bottom 	设置元素的底边缘距离父元素底边缘的之上或之下的距离 	
+      left       	置元素的左边缘距离父元素左边缘的左边或右边的距离 	
+      position 	把元素放置在static, relative, absolute 或 fixed 的位置 	
+      right 	            置元素的右边缘距离父元素右边缘的左边或右边的距离 	
+      top 	            设置元素的顶边缘距离父元素顶边缘的之上或之下的距离 	
+      zIndex 	设置元素的堆叠次序
+***** 文本
+      color 	设置文本的颜色 
+      font 	在一行设置所有的字体属性 
+      fontFamily 	设置元素的字体系列。
+      fontSize 	设置元素的字体大小。
+      fontSizeAdjust 	设置/调整文本的尺寸 
+      fontStretch 	设置如何紧缩或伸展字体
+      fontStyle 	设置元素的字体样式 
+      fontVariant 	用小型大写字母字体来显示文本 
+      fontWeight 	设置字体的粗细 
+      letterSpacing 	设置字符间距 
+      lineHeight 	设置行间距 
+      quotes 	设置在文本中使用哪种引号 
+      textAlign 	排列文本 
+      textDecoration 	设置文本的修饰 
+      textIndent 	缩紧首行的文本 
+      textShadow 	设置文本的阴影效果
+      textTransform 	对文本设置大写效果 
+      whiteSpace 	设置如何设置文本中的折行和空白符 	
+      wordSpacing 	设置文本中的词间距 
+***** Table 
+      borderCollapse 	设置表格边框是否合并为单边框，或者像在标准的HTML中那样分离。 
+      borderSpacing 	设置分隔单元格边框的距离 
+      captionSide 	设置表格标题的位置 	
+      emptyCells 	设置是否显示表格中的空单元格
+      tableLayout 	设置用来显示表格单元格、行以及列的算法
+*** node
+**** 节点属性
+     innerHTML: 获取元素内容,很多东西
+     nodeName 规定节点的名称
+     nodeValue 规定节点的值 (文本节点有值)
+     nodeType 返回节点的类型。nodeType 是只读的
+      #+BEGIN_SRC 
+      元素 	1
+      属性 	2
+      文本 	3
+      注释 	8
+文档 	9
+      #+END_SRC
+      : 通过使用一个元素节点的 parentNode、firstChild 以及 lastChild 属性
+**** 修改
+***** 创建新的 HTML 元素
+      var para=document.createElement("p");
+      var node=document.createTextNode("This is new.");
+      para.appendChild(node);
+**** HTML DOM - 元素
+***** 创建新的 HTML 元素 - appendChild()您首先必须创建该元素，然后把它追加到已有的元素上。
+***** 创建新的HTML元素 - insertBefore()
+***** 删除已有的HTML元素
+      #+BEGIN_SRC 
+      var child=document.getElementById("p1");
+      child.parentNode.removeChild(child);
+      #+END_SRC
+***** 替换 HTML 元素
+      : 如需替换 HTML DOM 中的元素，请使用 replaceChild() 方法：
+      #+BEGIN_SRC 
+      var parent=document.getElementById("div1");
+      var child=document.getElementById("p1");
+      parent.replaceChild(para,child);
+      #+END_SRC
+**** HTML DOM事件
+***** window 事件属性
+      onload    页面结束加载之后触发。   
+      onresize  当浏览器窗口被调整大小时触发。 
+***** FORM 事件
+      onselect      script 在元素中文本被选中后触发。            
+      onsubmit      script 在提交表单时触发。                   
+***** 键盘事件
+      onkeydown  script 在用户按下按键时触发。
+      onkeypress script 在用户敲击按钮时触发。
+      onkeyup    script 当用户释放按键时触发。
+***** Mouse事件
+      onclick
+      ondblclick
+      onmousedown
+      onscroll
+***** Media事件
+      onabort
+      onplay
+***** onmousedown、onmouseup 以及 onclick 事件
+* bootstrap
+  bootstrap 建立了一个响应式的12列格网布局系统，它引入了fixed(固定) and fluid-with(浮动)的两种布局方式. 
+  我们从全局样式(global style),格网系统（grid system），流式格网（fluid grid system）,自定义（customing）,
+  布局（layouts）,响应式设计（responsive design ）这 六个方面讲解 scaffolding
+  \* global style
+  bootstrip 要求 html5 的文件类型，so <!DOCTYPE html>
+  同时，它通过bootstrap.less 文件来设置 全局排版和链接显示风格，其中去掉了 body的margin,使用
+  @baseFontFamily,@baseFontSize,@linkColor 等变量来控制基本排版
+  \* 栅格系统（grid system）
+  默认的bootstrap格网系统提供了一个宽达940像素的12列的格网。这意味着你页面的默认宽度是940px
+  最小的单元要素宽度是940/12px.
+  bootstrap 内置了一套响应式、移动设备优先的流式栅格系统。随着屏幕设备或视口（viewport）尺寸的增加，系统会自动分为最多12列
+  就是通过一系列的行（row）与列（column）的组合创建页面布局，然后你的内容就可以放入到你创建好的布局当中。
+  行（row）必须包含在.container中，以便为其赋予合适的排列(alignment)和内补(padding).
+  使用行（row）在水平方向创建一组列(column).
+  你的内容应当放置于列（column）内，而且,只有列（column)可以作为行（row）的直接子元素。
+  类似Predefined grid classes like .row and .col-xs-4 这些预订义的栅格class可以用来快速创建 栅格布局。
+  bootstrap 源码中定义的mixin也可以用来创建语义化的布局。
+  通过设置padding 从而创建列(column)之间的间隔（gutter)。然后通过为第一和最后一列设置负值的margin从而抵消掉padding的影响。
+  栅格系统中的列是通过指定1到12的值来表示其跨越的范围。例如，三个等宽的列可以使用三个.col-xs-4来创建。
+  sm md lg xl 和默认
+  offset push pull 设定偏移
+** 栅格选项
+|           | 手机（<768px) | 平板(>768px) | 桌面（>992px) |          |
+| class前缀 | .col-xs-      | .col-sm-     | .col-md-      | .col-lg- |
+| 列数      | 12            |              |               |          |
+\* 流式系统 (fluid grid system)
+\* 自定义(customing)
+\* 布局(layouts)
+\* 响应式设计(responsive design)
+abc璇
+abc璇
+abc璇
 
-<body>
-<input type="button" value="View message" onclick="message()" />
-</body>
-* json 字符串
-数组转字符串
-var arr = [1,2,3,4,'巴德','merge'];
-var str = arr.join(',');
-console.log(str); // 1,2,3,4,巴德,merge
-字符串转数组
-var str = '1,2,3,4,巴德,merge';
-var arr = str.split(',');
-console.log(arr);     // ["1", "2", "3", "4", "巴德", "merge"]   数组
-console.log(arr[4]);  // 巴德
-字符串转数组，数组转数组格式化，数组格式化转数组
-var str = '1,2,3,4,巴德,merge';
-var arr = str.split(',');
-var strify = JSON.stringify(arr);
-console.log(arr);       // ["1", "2", "3", "4", "巴德", "merge"]   数组
-console.log(arr[4]);    // 巴德
-console.log(strify);    // ["1", "2", "3", "4", "巴德", "merge"]   字符串
+璇
+璇
+璇
+璇
+jjjk璇
+璇
+璇
+璇
+璇
+abc璇
+abc璇
+abc璇
+abc璇
+璇
+* bootstrap css
+** 移动设备优先
+   适应设备<meta name="viewport" content="width=device-width,initial-scale=1.0">
+   禁用缩放 user-scalable=no  maximum-scale=1.0
+* source code 
+  #+BEGIN_SRC javascript
+  var a=35;
+var b=53;
+var c=a+b; 
+var str='a,b,c';
+var myarr = ['a', 'b', 'c'];
 
-var arrParse = JSON.parse(strify);
-console.log(arrParse);  // ["1", "2", "3", "4", "巴德", "merge"]   数组
+var mutou="mutou";
+var zuozi={
+    'color':'black',  
+    'cailiao':mutou,  
+    'chang':123  
+};
 
-* Tern: Intelligent JavaScript tooling Demo Docs Code
+var d='2017-8-8';
+var e='2017-8-7';
+var timestamp = Date.parse(new Date(d));
+var timestamp2 = Date.parse(new Date(e));
+//timestamp = timestamp / 1000;
+
+//console.log(timestamp);         // 
+//console.log(timestamp2);
+
+//console.log(timestamp>timestamp2);
+var diannao = new Object();
+
+diannao.display='led';
+diannao.keyboard='leven';
+var copydian=diannao;
+copydian.display='eld';
+//console.log(diannao.display);
+//console.log(diannao.display);
+
+function f(arg){
+    arg.name='bbb'; 
+}
+
+var arg= new Object();
+
+arg.name='cc';
+f(arg);
+
+//console.log(arg.name);
+
+//基本类型值的传递如同基本类型变量的复制一样，而引用类型值的传递，则如同引用类型变量的复制一样。因为访问变量有按值和按引用两种方式，而参数只能按值传递。
+//理解在做什么和说什么。这样会对事物的理解有所加强。
+//在向参数 被传递的值会被复制给一个局部变量。即命名参数，或者用  就是arguments  对象中的一个元素。在向参数传递引用类型的值时，会把这个值在内存中的地址
+//复制给一个局部变量, 因此这个局部变量的变化会反映在函数的外部。
+
+
+function addTen(num){
+    num +=10;
+    return num;
+}
+
+//console.log(typeof(addTen));
+
+var nul=null;
+//console.log(typeof(nul));
+
+var stri="este";
+var num=23.1234;
+
+//console.log(typeof(stri));
+//console.log(typeof(num));
+
+var o= new Object();
+//console.log(o instanceof Object);
+//执行环境定义了变量或者函数有访问的其他数据。每个执行环境都有一个与之关联的变量对象。环境中定义的所有变量和函数
+//在web浏览器中，全局环境被认为是window对象，因此所有全局变量和函数都是作为window 对象的属性和方法创建的。某个执行环境中的所有代码执行完毕后，该环境被销毁，//
+//保存在其中的所有变量和函数定义也随之销毁
+// 每个函数都有自己的执行环境。。 k
+
+for(var i=0;i<11;i++){
+    
+}
+
+var person={
+    name:"wuming",
+    age: 30
+};
+function niaoyuhuaxiang(bird){
+    var output="";
+    if(typeof bird.name == "string"){
+        output+='bird name is '+bird.name;
+    }
+
+    if(typeof bird.age=="number"){
+        output+='bird age is '+bird.age;
+    }
+    return output;
+}
+//console.log(person.age);
+
+var birdinstance={
+    "name":"xiaoniao"
+};
+
+var arr=['a', 'b'];
+
+//console.log(arr.join('||'));
+////console.log(Array.isArray(arr));
+//console.log( arr instanceof Array);
+//console.log(niaoyuhuaxiang(birdinstance));
+// console.log(arr.valueOf());
+
+
+var person1={
+    name:"wuming", 
+    toLocaleString: function(){
+        return "wuming";
+    }, 
+
+    toString: function(){
+        return "wuming";
+    }
+};
+
+
+var person2={
+    toLocaleString: function(){
+        return "xiaoming";
+    }, 
+
+    toString: function(){
+        return "xm";
+    }
+};
+
+var people=[person1, person2];
+//console.log(people.toString());
+//console.log(people.toLocaleString());
+
+var colors= new Array();
+var count=colors.push('red', 'blue', 'green');
+var result=colors.every(function(item, index, array){
+    
+    return index;
+});
+//console.log(result);
+//var index=colors.indexOf("reda")==-1;
+//console.log(index);
+//console.log(colors);
+//colors.reverse();
+//console.log(colors);
+
+//var color1=colors.slice(1, 2);
+
+//console.log(color1);
+
+//var col1=colors.splice(0, 2);
+var col1=colors.splice(2, 0, "Green", "yellow", 'black' );
+//console.log(col1);
+//console.log(colors);
+//插入，可以向指定位置插入任意数量的项，只需提供3个参数：启示位置、0（要删除的项数）和要插入的项。如果要插入多个项，可以再传入第四、第五、以至任意多个项。
+
+//splice 始终返回一个数组，如果没有删除的项，则返回一个空数组
+
+var number=[1, 2,3, 4, 5, 6];
+var sum=number.reduce(function(prev, cur, index, array){
+    return prev+cur;
+});
+//console.log(sum);
+//console.log(number);
+
+
+var everyResult = number.some(function(item, index, array){
+    return item>6;
+});
+
+//console.log(everyResult);
+number.forEach(function(item, index){
+  //  console.log(item);
+  //  console.log(index);
+});
+
+var result = number.map(function(item){
+    return item*2;
+});
+
+
+//console.log(number);
+//console.log(result);
+
+
+var now1 = new Date(Date.now());
+//console.log("start");
+//console.log("end");
+var now2 = Date.now();
+var now=now2-now1;
+//console.log("time is");
+//console.log(now);
+
+//console.log(now1.getFullYear());
+
+
+var text="hell bge lo age world";
+var pattern1=/[ab]ge/g;
+var t=pattern1.exec(text);
+//console.log(pattern1.lastIndex);
+//input 最近一次要匹配的字符串。
+//lastMatch 最近一次的匹配项。
+// var text = "this has been a short summer";
+// var pattern = /(.)hort/g;
+// if(pattern.text(text)){
+//alert(RegExp.$_);
+//alert(RegExp["$`"]);
+//}
+
+//但相对于perl所支持的高级正则表达式。  匹配字符串开始和结尾的|A和\Z 锚点 , 但支持^ 和$符号表示开头和结尾
+//lookahead 向后查找jjJKJJKJj
+
+var xiaoqing = function(arg1, arg2){
+    return arg1+arg2;
+};
+
+//最后一种定义函数的方式是使用Function构造函数。最后一个参数被看作是函数体
+//var sum = new Function("num1", "num2", "return num1+num2");
+//函数申明 解析器n 函数的名字仅仅是 脱缰的野马，伴随着疼痛，驶入远方的田野。 这个属性中保存着调用当前函数的函数的引用 caller 如果没有删除的项
+//是在全局作用域
+
+function outer(){
+    inner();
+}
+
+function inner(){
+    console.log("inner");
+    console.log(arguments.callee.caller);
+}
+
+function sayName(name){
+    console.log(name); 
+}
+
+//console.log(sayName.length);
+
+//prototype 是保存他们所有实例方法的真正所在。诸如toString() 和valueOf() 等的方法实际上都保存在prototype, prototype属性
+//是不可枚举的，因此使用for in 无法发现
+//apply() 和call(). 一个是在其中运行函数的作用域，另一个是参数数组。其中，第二个参数可以是Array的实例，也可以是arguments 对象。j
+
+function sum1(num1, num2){
+    return num1+num2;
+}
+
+function callSum1(num1, num2){
+    return sum1.apply(this, arguments);
+}
+//console.log(callSum1(3, 4));
+
+var stringValue="ahello world";
+//console.log(stringValue.charCodeAt(0));
+//console.log(stringValue.localeCompare("ahello world"));
+//localCompare, 最好判断小于0 determine
+//使用这种结构，就可以确保自己的代码在任何实现中都可以正确地运行了。 fromCharCode().这个方法的任务是接收一或者多个字符编码，然后将他们转换成一个字符串。
+//charCodeAt相反的过程。
+var strs=String.fromCharCode(97, 98, 99);
+//console.log(strs);
+//
+//Global 和Math
+//global 对象可以说是最特别的一个对象了，因为不管你从什么角度，这个对象都是不存在的。Ecmascript 中的Global 对象在某种意义上说是作为一个终极的“兜底儿对象”。
+//isNaN(), isFinite parseInt parseFloat
+//enableURI 不会对本身属于URI 的特殊字符进行编码，例如冒号，正斜杠, 而encodeURIComponent()则会对它发现的任何非标准字符进行编码。
+
+var uri="http://www.wrox.com/illegal value.html#start";
+//console.log(encodeURI(uri));
+//console.log(encodeURIComponent(uri));
+//对应的是decodeURI 和decodeURIComponent
+//eval().只接受一个参数
+//eval("console.log('a')");
+//console.log(Math.E);
+//console.log(Math.PI);
+//console.log(Math.LN10);
+
+var afloat=2.12;
+//console.log(Math.ceil(afloat));
+///console.log(Math.floor(afloat));
+//console.log(Math.round(afloat));
+//console.log(Math.floor(Math.random()*100));
+
+//理解对象
+//创建自定义对象的最简单方式就是创建一个Object实例，然后再为它添加属性和方法，
+var person = new Object();
+person.name="wuming";
+person.age=23;
+person.job = "Software Engineer";
+
+person.sayName=function(){
+    //console.log("my name is wuming");
+    console.log("my name is "+this.name);
+};
+
+
+//person.sayName();
+
+
+var book = {
+    _year:2017,
+    edition:1
+};
+
+
+
+Object.defineProperty(book, "year", {
+    get:function(){
+        return this._year;
+    }, 
+    set:function(newValue){
+        if(newValue> 2017){
+            this._year = newValue;
+            this.edition += newValue - 2017;
+        } 
+    }
+});
+
+
+book.year = 2019;
+//console.log(book);
+
+
+//工厂模式，这种模式抽象了创建具体对象的过程。
+function createPerson(name, age, job){
+    var o= new Object();
+    o.name=name;
+    o.age= age;
+    o.job= job;
+
+    o.sayName=function(){
+        console.log("myname is "+ this.name);
+    };
+
+    return o;
+}
+
+var p1=createPerson("wuming", 30, "shiye");
+var p2=createPerson("mingming", 30, "shiye");
+//console.log(p1);
+//p1.sayName();
+//函数createPerson()能够根据接受的参数来构建一个包含所有必要信息的Person对象。可以无数次地调用这个汉素，而每次它都会返回一个包含三个属性的一个方法
+//的对象, 这就是工厂模式，相当于类的概念。工厂模式虽然解决了创建多个相似对象的问题，但却没有解决识别的问题（即怎样知道一个对象的类别）。随着JavaScript
+//的发展，又一个新模式出现了。
+//构造函数模式
+//
+
+function Person2(name, age, job){
+    this.name = name; 
+    this.age = age;
+    this.job = job;
+
+    this.sayName = function(){
+        console.log(this.name);
+    };
+}
+
+
+var pp1=new Person2("wm", 39, "shiye");
+//console.log(pp1.constructor == Person2);
+//在这个例子中，person2()函数取代了createPerson函数，不同是没有显示创建对象;直接将属性和方法赋给了this对象。没有return 语句。
+//按照惯例，构造函数始终都应该以一个大写字母开头，区别于其他函数。这又是一个语法糖吧。
+//1.创建一个新对象;
+//2.将构造函数的作用域付给新对象。
+//3.执行构造函数中的代码
+//4.返回新对象。
+
+//原型模式
+//我们创建的每一个函数都有一个prototype属性，这个属性是一个指针。指向一个对象。而这个对象的用途是包含可以由特定类型的所有实例共享的属性和方法。
+//如果按照字面意思来理解，那么prototype就是通过调用构造函数而创建的那个对象实例的原型对象。使用原型对象的好处是可以让所有实例共享他所包含的属性
+//和方法。换句话说，不必在构造函数中定义对象实例的信息，而是将这些信息直接添加到原型对象中，
+function Person(){
+    
+}
+
+
+Person.prototype.name= "wuming1";
+Person.prototype.age = 30;
+Person.prototype.job = "shiye";
+
+Person.prototype.sayName= function(){
+    console.log(this.name);
+};
+
+var per1=new Person();
+//per1.sayName();
+
+//递归
+function jiechen(num){
+    if(num<=1){
+        return 1;
+    }else{
+        return num*jiechen(num-1);
+    }
+}
+
+
+//console.log(jiechen(3));
+
+//命名函数
+var factorial = (function f(num){
+    if(num<=1)
+        return 1;
+    else{
+        return num*f(num-1);
+    }
+
+});
+
+//console.log(factorial(4));
+
+//BOM 的核心是window, 表示浏览器的一个实例。在浏览器中，window 对象有双重角色，他既是通过javascript 访问浏览器窗口的一个接口，又是ecmascript 规定的global对象。
+//这意味着在网页中定义的任何一个对象、变量和函数，都以window 作为根对象。
+//console.log(window);
+
+//如果页面中包含框架，则每个框架都拥有自己的window对象，并且保存在frames集合中。在frames 集合中，可以通过数值索引（从0开始，从左至右，从上到下）
+//或者框架名称来访问相应的window对象。每个window 对象都有一个name属性
+//<html>,</html> 
+//以上代码创建了一个框架集，其中一个框架居上，两个框架居下。可以通过window.frames[0] 来引用上方的框架.最好通过top.frames[0]引用
+//以上好像失效了。
+
+//window.open()方法可以导航窗口。
+//如果是浏览器扩展或其他程序阻止弹出窗口，那么window.open()通常会抛出一个错误。
+var blocked=false;
+try{
+    var winstate= window.open("www.baidu.com", "_blank");
+    if(winstate === null){
+        blocked=true;
+    }
+}
+catch(ex){
+    blocked=true;
+}
+if(blocked){
+//    console.log("the popup was blocked");
+}
+
+//间歇调用和超时调用 setTimeout , setInterval
+
+// setInterval(function(){
+//     console.log("a");
+// }, 1000);
+//取消间歇调用 clearInterval(intervalId);
+
+
+//客户端检测
+//私有标准导致的。补救措施
+//能力检测，识别浏览器的能力，
+// if(object.nengli){
+//     ....
+// return 
+// }
+
+function getElement(id){
+    if(document.getElementById){
+        return document.getElementById(id);
+    }else if(document.all){
+        return docuemnt.all[id];
+    }else{
+        throw new Error("No way to retrieve elements");
+    }
+
+}
+
+
+//DOM(文档对象模型)是针对HTML 和XML文档的一个API。
+//Document
+//Element html
+// Element  head  ->Element title ->Text  title中包含的页面标题字符串
+// Element body
+// someNode.nodeType == Node.Element_node , 或者1是元素Node
+
+//事件
+//javascript 与 html之间的交互是通过事件实现的。事件，就是文档或浏览器窗口中发生的一些特定
+//的交互瞬间。可以使用侦听器来预订事件，以便事件发生时执行相应代码。支持页面的行为和页面外观之间的松散耦合。
+//一般使用事件冒泡流而不是捕获流（两者正好相反）
+
+//<input type="button" onclick="alert('hh')">
+
+//    <form method="post">
+//   <input type="text" name="username" value="">
+//  <input type="button" value="Echo Username" onclick="alert(username.value)">
+//  </form>
+//添加事件的方式
+//var btn=document.getElementById("myBtn");
+//btn.onclick=function(){};
+//btn.addEventListener("click", function(){}, false);
+
+//手机触摸事件
+//touchstart：当手指触摸屏幕时触发；即使已经有一个手指放在了屏幕上也会触发。
+//touchmove：当手指在屏幕上滑动时连续地触发。在这个事件发生期间，调用preventDefault()可以阻止滚动。
+//touchend：当手指从屏幕上移开时触发。
+//touchcancel：当系统停止跟踪触摸时触发。关于此事件的确切触发时间，文档中没有明确说明。
+
+
+//事件委托，可以封装在一个 switch 　中而不是一个一个添加click  事件, 产用父的子事件
+//var list= document.getElementById("myLinks");
+//EventUtil.addHandler(list, "click", function(event){
+//   event = EventUtil.getTarget(event); 
+//});
+
+//移除元素时最好将他绑定的事件处理程序移除　btn.onclick= null;
+
+
+//json, 与javascript不同的是, 属性必须加双引号，json的字符串必须是双引号。其次，没有末尾分号。因为不是语句　
+//与xml相比，解析数据特别简单，你想想html解析数据方式。
+//books[2].title
+//doc.getElementsByTagName("book")[2].getAttribute("title")
+// 看看两者的比较
+//json对象有两个方法
+//stringify
+//parse
+
+
+var booka = {
+    title:"xiaoming", 
+    age:32,  
+    job:"shiye"
+};
+
+var stjson=' {"title":"xiaoming","age":32,"job":"shiye"}';
+//var jsonText=JSON.stringify(booka);
+var jsonText=JSON.parse(stjson);
+
+
+//console.log(jsonText);
+
+//stringify 后面加参数起到过滤作用
+///var jsonText = JSON.stringify(book, ["title", "edition"]);
+
+//或者
+
+// var jsonText = JSON.stringify(book, function(key, value){
+//     switch(key){
+//     case "authors":
+//         return value.join(",");
+// case "year":
+//     return 5000;
+//     case "edition":
+//         return undefined;
+//     default:
+//         return value;
+//     }
+// });
+
+//Ajax技术, 核心是XMLHttpRequest
+
+  #+END_SRC
+* js-mode
+** smart code fold [, z e]
+   
+| Key Binding | Description              |
+|-------------+--------------------------|
+| ~SPC m z c~ | hide element             |
+| ~SPC m z o~ | show element             |
+| ~SPC m z r~ | show all element         |
+| ~SPC m z e~ | toggle hide/show element |
+| ~SPC m z F~ | toggle hide functions    |
+| ~SPC m z C~ | toggle hide comments     |
+
+** refactoring:js2-refactor  Spc m r 开头
+** auto-completion and documention: tern
+*** document
+   | Key Binding   | Description                           |
+   |---------------+---------------------------------------|
+   | ~SPC m r d b~ | insert JSDoc comment for current file |
+   | ~SPC m r d f~ | insert JSDoc comment for function     |
+   | ~SPC m r d t~ | insert tag to comment                 |
+   | ~SPC m r d h~ | show list of available jsdoc tags     |
+*** auto-complete and document
+    | Key Binding   | Description                                                                              |
+    |---------------+------------------------------------------------------------------------------------------|
+    | ~SPC m C-g~   | brings you back to last place you were when you pressed M-..                             |
+    | ~SPC m g g~   | jump to the definition of the thing under the cursor                                     |
+    | ~SPC m g G~   | jump to definition for the given name                                                    |
+    | ~SPC m h d~   | find docs of the thing under the cursor. Press again to open the associated URL (if any) |
+    | ~SPC m h t~   | find the type of the thing under the cursor                                              |
+    | ~SPC m r r V~ | rename variable under the cursor using tern                                              |
+
+** coffeescript support
+** formatting with web-beautify
+| ~SPC m =~   | beautify code in js2-mode, json-mode, web-mode, and css-mode |
+** Get the path to a JSON value with [[https://github.com/Sterlingg/json-snatcher][json-snatcher]]
+** REPL(交互） available via [[https://github.com/skeeto/skewer-mode][skewer-mode]] and [[https://github.com/pandeiro/livid-mode][livid-mode (输出　skewer-log)]]
+   会打开两个交互，一个是控制台，一个是浏览器，都可以交互
+   命令行：　先　求下缓冲中的值，就可以输出变量值了
+   浏览器：一个 console 一个alert
+  skewer Provides live interaction with JavaScript, CSS, and HTML in a web browser.
+  Expressions are sent on-the-fly from an editing buffer to be evaluated in the browser, 
+  just like Emacs does with an inferior Lisp process in Lisp modes.
+  you need a running httpd server and a page loaded with skewer.
+   | Key Binding | Description                                                      |
+   |-------------+------------------------------------------------------------------|
+   | ~SPC m e e~ | evaluates the last expression                                    |
+   | ~SPC m e E~ | evaluates and inserts the result of the last expression at point |
+
+| Key Binding | Description                                                                        |
+|-------------+------------------------------------------------------------------------------------|
+| ~SPC m s a~ | Toggle live evaluation of whole buffer in REPL on buffer changes                   |
+| ~SPC m s b~ | send current buffer contents to the skewer REPL                                    |
+| ~SPC m s B~ | send current buffer contents to the skewer REPL and switch to it in insert state   |
+| ~SPC m s f~ | 发送函数给解释器send current function at point to the skewer REPL                          |
+| ~SPC m s F~ | send current function at point to the skewer REPL and switch to it in insert state |
+| ~SPC m s i~ | starts/switch to the skewer REPL                                                   |
+| ~SPC m s r~ | send current region to the skewer REPL                                             |
+| ~SPC m s R~ | send current region to the skewer REPL and switch to it in insert state            |
+| ~SPC m s s~ | switch to REPL                                                                     |
+
+** flycheck :eslint or jshint
+** tern reference manual
+   Tern: Intelligent JavaScript tooling Demo Docs Code
+   
 Contents
-** The Tern server
-   The bin/tern binary (node.js script, really), is used to start a Tern server. You will usually want to let an editor plugin
-   start it for you,
-   but it can be started manually, which can be useful for debugging.
-
-(Note that the basic structure of the server is also available through a programming interface, and that some project, especially those
- running client-side in a browser, will want to use that instead of the HTTP server described here.)
-
-When started, the server will look for a .tern-project file in the current directory or one of the directories above that, and use it
-for its configuration. If no project file is found, it’ll fall back to a default configuration. You can change this default configuration by
-putting a .tern-config file, with the same format as .tern-project, in your home directory.
-
-A server write the port it is listening on (which is random) to standard output on startup. It will serve a simple JSON protocol via HTTP on 
-that port. Clients can upload code and ask questions about the code through this protocol.
-
-The following command-line flags are supported:
-
+*** The Tern server
+    bin/tern(node.js 脚本）
+    服务启动后，先查找　.tern-project 文件，在当前目录，没有就找上一级，这样递归(会找到 ~ 目录，最后是/ 目录) 可以在.tern-config 文件中配置, 会打开一个接口，然后跟客户端交互
+    #+BEGIN_SRC doc
+命令行参数：
 --port <number>
 Specify a port to listen on, instead of the default behavior of letting the OS pick a random unused port.
 
@@ -3752,790 +1407,36 @@ Specify a host to listen on. Defaults to 127.0.0.1. Pass null or any to listen o
 By default, the server will shut itself down after five minutes of inactivity. Pass it a this option to disable auto-shutdown.
 
 --ignore-stdin
-    By default, the server will close when its standard input stream is closed. Pass this flag to disable that behavior.
+By default, the server will close when its standard input stream is closed. Pass this flag to disable that behavior.
 
 --verbose
-    Will cause the server to spit out information about the requests and responses that it handles, and any errors that are raised. Useful for debugging.
+Will cause the server to spit out information about the requests and responses that it handles, and any errors that are raised. Useful for debugging.
 
 --no-port-file
-The server won’t write a .tern-port file. Can be used if the port files are a problem for you. Will prevent other clients
- from finding the server (and may thus result in multiple servers for the same project).
-
-** JSON protocol
-** Programming interface
-** JSON type definitions
-** Server plugins
-** Doc comments
-** String completion
-** CommonJS modules
-** node
-** node-style module resolution
-** Module-loading infrastructure
-** ES6 module support
-** webpack resolve support
-** RequireJS
-** Angular.js
-** Third-party plugins
-** Project configuration
-** Utilities
-** Inference engine
-** Context
-** Analysis
-** Types
-** Abstract values
-** Constraints
-** Scopes
-** Utilities
-** Editor plugins
-** Emacs
-** Vim
-** Sublime Text
-** Eclipse
-** Gedit
-** TextMate
-** Related Software
-
-JSON protocol
-Sending queries to a Tern server is done by making POST requests to the server’s port (using / as the requests’s path) with 
-a JSON document in the body of the request.
-
-This document should be an object, with three optional fields, query, files, and timeout.
-The first (query) describes the kind of information you are requesting. It may be omitted if the request is only used to
- push new code to the server (in which case you’ll get an empty object, {} as response). The files property, if given, contains 
-an array of file specifications, as described below. It may be omitted when the query should operate on the code that the server
- already has, without adding anything new. When the timeout field is set, it should contain a number, which is interpreted as the
- maximum amount of milliseconds to work (CPU work, ignoring I/O) on this request before returning with a timeout error.
-
-A query is an object with at least a type property, which determines what kind of query it is. Depending on the type, other properties 
-must or may be present in order to provide further details.
-
-These are the queries that a Tern server understands by default. (Plug-ins may add custom query types.)
-completions
-
-    Asks the server for a set of completions at the given point.
-
-    Accepted fields are:
-
-    file, end (required)
-
-        Specify the location to complete at. See below.
-    types (optional, default false)
-
-        Whether to include the types of the completions in the result data.
-    depths (optional, default false)
-
-        Whether to include the distance (in scopes for variables, in prototypes for properties) between the completions and the origin position in the result data.
-    docs, urls, origins (optional, default false)
-
-        Whether to include documentation strings, urls, and origin files (if found) in the result data.
-    filter (optional, default true)
-
-        When on, only completions that match the current word at the given point will be returned. Turn this off to get all results, so that you can filter on the client side.
-    caseInsensitive (optional, default false)
-
-        Whether to use a case-insensitive compare between the current word and potential completions.
-    guess (optional, default true)
-
-        When completing a property and no completions are found, Tern will use some heuristics to try and return some properties anyway. Set this to false to turn that off.
-    sort (optional, default true)
-
-        Determines whether the result set will be sorted.
-    expandWordForward (optional, default true)
-
-        When disabled, only the text before the given position is considered part of the word. When enabled (the default), the whole variable name that the cursor is on will be included.
-    omitObjectPrototype (optional, default true)
-
-        Whether to ignore the properties of Object.prototype unless they have been spelled out by at least to characters.
-    includeKeywords (optional, default false)
-
-        Whether to include JavaScript keywords when completing something that is not a property.
-    inLiteral (optional, default true)
-
-        If completions should be returned when inside a literal.
-
-    The result returned will be an object with start and end properties, which give the start and end offsets of the word that was completed, an isProperty property that holds a boolean indicating whether the completion is for a property or a variable, and a completions property holding an array of completions. When one of the types, depths, docs, urls, or origins options was passed, the array will hold objects with a name property (the completion text), and, depending on the options, type, depth, doc, url, and origin properties. When none of these options are enabled, the result array will hold plain strings.
-type
-
-    Query the type of something.
-
-    file, end (required), start (optional)
-
-        Specify the expression we want the type of. See below.
-    preferFunction (optional, default false)
-
-        Set to true when you are interested in a function type. This will cause function types to win when something has multiple types.
-    depth (optional, default 0)
-
-        Determines how deep the type string must be expanded. Nested objects will only display property types up to this depth, and be represented by their type name or a representation showing only property names below it.
-
-    The returned object will have the following properties:
-
-    type (string)
-
-        A description of the type of the value. May be "?" when no type was found.
-    guess (bool)
-
-        Whether the given type was guessed, or should be considered reliable.
-    name (string, optional)
-
-        The name associated with the type.
-    exprName (string, optional)
-
-        When the inspected expression was an identifier or a property access, this will hold the name of the variable or property.
-    doc, url, origin (strings, optional)
-
-        If the type had documentation and origin information associated with it, these will also be returned.
-
-definition
-
-    Asks for the definition of something. This will try, for a variable or property, to return the point at which it was defined. If that fails, or the chosen expression is not an identifier or property reference, it will try to return the definition site of the type the expression has. If no type is found, or the type is not an object or function (other types don’t store their definition site), it will fail to return useful information.
-
-    Only takes file, end (required), and start (optional) fields to specify the expression you want the definition of. See below.
-
-    The returned object will have the following properties:
-
-    start, end (offsets, optional)
-
-        The start and end positions of the definition.
-    file (string, optional)
-
-        The file in which the definition was defined.
-    context (string, optional), contextOffset (number, optional)
-
-        A slice of the code in front of the definition, and the offset from the start of the context to the actual definition. Can be used to find a definition’s location in a modified file.
-    doc, url, origin (strings, optional)
-
-        If the definition had documentation or an origin associated with it, it will be returned.
-
-documentation
-
-    Get the documentation string and URL for a given expression, if any.
-
-    Takes file, end (required), and start (optional) fields to specify the expression we are interested in. See below.
-
-    Returns an object with the following properties:
-
-    doc, url, origin (strings, optional)
-
-        The documentation string, url, and the origin of the definition or value, if any.
-
-refs
-
-    Used to find all references to a given variable or property.
-
-    Takes file, end (required), and start (optional) fields to specify the expression we are interested in. See below.
-
-    Returns an object with a name property holding the name of the variable or property, a refs property holding an array of {file, start, end} objects, and, for variables, a type property holding either "global" or "local".
-rename
-
-    Rename a variable in a scope-aware way.
-
-    Takes file, end (required), and start (optional) fields to specify the variable we want to rename (see below), and a newName property that gives the new name of the variable.
-
-    Returns an object whose changes property holds an array of {file, start, end, text} objects, which give the changes that must be performed to apply the rename. The client is responsible for doing the actual modification.
-properties
-
-    Get a list of all known object property names (for any object).
-
-    prefix (string, optional)
-
-        Causes the server to only return properties that start with the given string.
-    sort (optional, default true)
-
-        Whether the result should be sorted.
-
-    The returned object will have a completions property holding an array of strings, which are the property names.
-files
-
-    Get the files that the server currently holds in its set of analyzed files.
-
-    Does not take any parameters. Returns an object with a files property holding an array of strings (the file names).
-
-When specifying a location, which is needed for most of the query types, the required file field may hold either a filename, or a string in the form "#N", where N should be an integer referring to one of the files included in the request (more on that later). The required end field is an offset into this file, either a number or a {line, ch} object. It should point at the end of the expression the request is interested in, or somewhere inside of it if that doesn’t end up pointing inside a sub-expression (in which case the inner expression would be used). An optional start field can be used to disambiguate between expressions—if given, the innermost expression that spans the range between start and end will be used.
-
-Offsets into a file can be either (zero-based) integers, or {line, ch} objects, where both line and ch are zero-based integers. Offsets returned by the server will be integers, unless the lineCharPositions field in the request was set to true, in which case they will be {line, ch} objects.
-
-The format of the doc field in responses will, by default, only contain the first few sentences of the documentation string, and have newlines stripped. To get the full string, with newlines intact, you can add a docFormat field to your query with the value "full".
-
-Requests that take an input expression also accept a variable field which, when given, will cause the server to not look for an expression in the code, but to make up a variable expression with the given name. This does not remove the need to pass in an end, since that will be used to determine the scope in which the variable is interpreted.
-
-The files property of a request must, if present, hold an array of file descriptions. These can be complete files, which have a type property holding "full" and name and text properties holding strings. Complete files will be stored by the server and can be reused in later requests.
-
-Alternatively, you can pass in partial files. This is useful when needing to perform a query on a large file without re-uploading and re-analyzing the whole file. A partial file has a type property holding the string "part", a text property holding some slice of the file (starting at a line boundary), a name property referring to an existing file, and an offset property, either an integer or a {line, ch} object, indicating the approximate position of the fragment in the file.
-
-To remove a file from the server’s model of the project, you can include an object with a name property that identifies the file and a type property of "delete".
-Programming interface
-
-The base server (without HTTP or configuration-file reading) is implemented in lib/tern.js. That package exposes a Server constructor that can be used to create a server. It takes an object holding configuration options as argument. These are recognized (all have a default):
-
-defs (array of strings)
-
-    The definition objects to load into the server’s environment.
-plugins (object)
-
-    Specifies the set of plugins that the server should load. The property names of the object name the plugins, and their values hold options that will be passed to them.
-ecmaVersion (number)
-
-    The ECMAScript version to parse. Should be either 5 or 6. Default is 6.
-getFile (function)
-
-    Provides a way for the server to try and fetch the content of files. Depending on the async option, this is either a function that takes a filename and returns a string (when not async), or a function that takes a filename and a callback, and calls the callback with an optional error as the first argument, and the content string (if no error) as the second.
-async (bool)
-
-    Indicates whether getFile is asynchronous. Default is false.
-fetchTimeout (number)
-
-    Indicates the maximum amount of milliseconds to wait for an asynchronous getFile before giving up on it. Defaults to 1000.
-
-A server object has the following methods:
-
-addFile(name: string, text?: string, parent?: string)
-
-    Register a file with the server. Note that files can also be included in requests. When using this to automatically load a dependency, specify the name of the file (as Tern knows it) as the third argument. That way, the file is counted towards the dependency budget of the root of its dependency graph.
-delFile(name: string)
-
-    Unregister a file.
-request(doc: object, callback: fn(error, response))
-
-    Perform a request. doc is a (parsed) JSON document as described in the protocol documentation. The callback function will be called when the request completes. If an error occurred, it will be passed as a first argument. Otherwise, the resonse (parsed) JSON object will be passed as second argument.
-
-    When the server hasn’t been configured to be asynchronous, the callback will be called before request returns.
-flush(callback: fn())
-
-    Forces all files to be fetched an analyzed, and then calls the callback function.
-on(eventType: string, handler: fn())
-
-    Register an event handler for the named type of event.
-off(eventType: string, handler: fn())
-
-    Unregister an event handler.
-addDefs(defs: object, atFront?: bool)
-
-    Add a set of type definitions to the server. If atFront is true, they will be added before all other existing definitions. Otherwise, they are added at the back.
-deleteDefs(name: string)
-
-    Delete a set of type definitions from the server, by providing the name, taken from defs[!name] property from the definitions. If that property is not available in the current type definitions, it can’t be removed.
-loadPlugin(name: string, options?: object)
-
-    Load a server plugin (or don’t do anything, if the plugin is already loaded).
-
-The server fires the following type of events (mostly useful for plugins):
-
-"reset" ()
-
-    When the server throws away its current analysis data and starts a fresh run.
-"beforeLoad" (file)
-
-    Before analyzing a file. file is an object holding {name, text, scope} properties.
-"afterLoad" (file)
-
-    After analyzing a file.
-"preParse" (text, options)
-
-    Will be run right before a file is parsed, and passed the given text and options. If a handler returns a new text value, the origin text will be overriden. This is useful for instance when a plugin is able to extract JavaScript content from an HTML file.
-"postParse" (ast, text)
-
-    Run right after a file is parsed, and passed the parse tree and the parsed file as arguments.
-"preInfer" (ast, scope)
-
-    Run right before the type inference pass, passing the syntax tree and a scope object.
-"postInfer" (ast, scope)
-
-    Run after the type inference pass.
-"typeAt" (file, end, expr, type)
-
-    Run after Tern attempts to find the type at the position end in the given file. A handler may return either the given type (already calculated by Tern and earlier "typeAt" passes) or an alternate type to be used instead. This is useful when a plugin can provide a more helpful type than Tern (e.g. within comments).
-"completion" (file, query)
-
-    Run at the start of a completion query. May return a valid completion result to replace the default completion algorithm.
-
-JSON type definitions
-
-To be able to specify the types of things without actually analyzing source code, either because there is no JavaScript source code (as for the built-in types) or because the source code is too big, or because Tern is unable to construct the correct types from the source code, Tern defines a JSON data format for specifying types. A few examples of files in this format can be found in the defs/ directory in the distribution.
-
-A type definition data structure is basically a tree of objects, where the top-level object specifies variables in the global scope, and the nested objects specify properties of object types. Properties prefixed with an exclamation point (!) hold special directives, all other properties refer to variable or property names.
-
-Here is an example:
-
-{
-  "!name": "mylibrary",
-  "!define": {
-    "point": {
-      "x": "number",
-      "y": "number"
-    }
-  },
-  "MyConstructor": {
-    "!type": "fn(arg: string)",
-    "staticFunction": "fn() -> bool",
-    "prototype": {
-      "property": "[number]",
-      "clone": "fn() -> +MyConstructor",
-      "getPoint": "fn(i: number) -> point"
-    }
-  },
-  "someOtherGlobal": "string"
-}
-
-This defines a library that sets two globals, MyConstructor holding a constructor function, and someOtherGlobal holding a string. The origin of the types, variables, and properties defined by this document will be "mylibrary", as set by the !name property.
-
-The value of a variable or property can be either a string or an object. Strings can be one of the built-in types ("number", "string", "bool"), a function type ("fn(arg1: type1, arg2: type2) -> rettype", where -> rettype is optional), or an array type ("[type]"). Strings can also name types, either by describing the path to the type in the global scope ("Date.prototype") or by referring to one of the local definitions in the !define property of the document. Finally, a type can be prefixed with a + to indicate an instance of a constructor (+Date).
-
-Objects describe types by enumerating their properties. By default, their type will simply be an instance of Object, but a !type property can be used to make the type a function or array type, as the example does for MyConstructor. Alternatively, a !proto property can be used to give the object a custom prototype, for example "!proto": Element.prototype.
-
-Documentation can be attached to a type using !doc, which should hold a (short) documentation string and !url, which should hold a URL that has the full documentation of the type or function being defined.
-
-Finally, a function can be annotated with effects that it has. These aren’t currently documented, but you can search for !effects in defs/ecmascript.json to see some examples. Similarly, a function type string’s return type may contain the variables !0 (the first argument’s type, !N for the N-1th), !this (the self type of the call), and a special property !ret (the return type of a function).
-Server plugins
-
-Plugins are JavaScript programs that add extra functionality to a server. The distribution currently comes plugins for parsing doc comments, and plugins for node.js and RequireJS, which teach the Tern server about the dependency management mechanisms defined by those systems (as well as, for node.js, including types for the built-in libraries).
-
-A plugin can use several hooks to add custom behavior.
-
-infer.registerFunction(name: string, f: fn(self, args, argnodes))
-
-    This is a function in the inference engine module that allows custom ways to compute function return types or effects. When a function is specified to return !custom:myname or has an effect "custom myname", a call to the function will cause the function registered under "myname" to be called with the argument types and argument AST nodes given to the call. This is used, for example, to make calls to require trigger the necessary machinations to fetch a dependency and return its type.
-tern.registerPlugin(name: string, fn(Server, options))
-
-    This can be used to register an initialization function for the plugin with the given name. A Tern server, when configured to load this plugin, will call this initialization function, passing in the server instance and the options specified for the plugin (if any). This is the place where you register event handlers on the server, add type definitions, load other plugins as dependencies, and/or initialize the plugin’s state.
-
-    See the server’s list of events for ways to wire up plugin behavior.
-tern.defineQueryType(name: string, desc: object)
-
-    Defines a new type of query with the server. The desc object is a property describing the request. It should at least have a run property, which holds a function fn(Server, query) that will be called to handle queries with a type property that matches the given name. It may also have a takesFile property which, if true, will cause the server to try and resolve the file on which the query operates (from its file property) and pass that (a {name, text, scope, ast} object) as a third argument to the run function. You will probably need to use the inference module’s API to do someting useful in this function.
-
-Doc comments plugin
-
-This plugin, which is enabled by default in the bin/tern server, parses comments before function declarations, variable declarations, and object properties. It will look for JSDoc-style type declarations, and try to parse them and add them to the inferred types, and it will treat the first sentence of comment text as the docstring for the defined variable or property.
-
-To turn this plugin off, set doc_comment: null in your plugin option.
-
-The plugin understands the following configuration parameters:
-
-strong
-
-    When enabled, types specified in comments take precedence over inferred types.
-
-**** String completion plugin
-     When enabled, this plugin will gather (short) strings in your code, and completing 
-     when inside a string will try to complete to previously seen strings. Takes a single 
-     option, maxLength, which controls the maximum length of string values to gather, and 
-     defaults to 15.
-
-**** CommonJS module plugin
-     This plugin implements CommonJS-style (require("foo")) modules. It will wrap 
-     files in a file-local scope, and bind require, module, and exports in this scope.
-     Does not implement a module resolution strategy (see for example the node_resolve plugin). 
-     Depends on the modules plugin.
-
-**** Node.js plugin
-     The node.js plugin, called "node", provides variables that are part of the node 
-     environment, such as process and __dirname, and loads the commonjs and node_resolve
-     plugins to allow node-style module loading. It defines types for the built-in modules 
-     that node.js provides ("fs", "http", etc).
-
-**** Node.js resolve plugin
-     This plugin defines the node.js module resolution strategy—things like defaulting to 
-     index.js when requiring a directory and searching node_modules directories. It depends
-     on the modules plugin. Note that this plugin only does something meaningful when the Tern
-     server is running on node.js itself.
-
-**** Modules plugin
-     This is a supporting plugin to act as a dependency for other module-loading and 
-     module-resolving plugins. It understands the following configuration parameters:
-
-dontLoad
-
-    Can be set to true to disable dynamic loading of required modules entirely, or to a regular expression to disable loading of files that match the expression.
-load
-
-    If dontLoad isn’t given, this setting is checked. If it is a regular expression, the plugin will only load files that match the expression.
-modules
-
-    Can be used to assign JSON type definitions to certain modules, so that those are loaded instead of the source code itself. If given, should be an object mapping module names to either JSON objects defining the types in the module, or a string referring to a file name (relative to the project directory) that contains the JSON data.
-
-ES modules plugin
-
-This plugin (es_modules) builds on top of the modules plugin to support ECMAScript 6’s import and export based module inclusion.
-Webpack plugin
-
-This plugin ("webpack") make use of enhance-resolve module from webpack https://webpack.github.io/, so it can understand the resolve field of webpack.config.js for file resolving. commonjs plugin and es_modules plugin plugin are loaded in the meanwhile for correct file resolve, this also means you can still have commonjs and/or es_modules in your .tern-project file, but not necessary.
-
-You can use configPath option for resolve the config file of webpack like:
-
-{
-  "libs": [
-  ],
-  "plugins": {
-    "webpack": {
-      "configPath": "./lib/webpack.prod.js",
-    }
-  }
-}
-
-configPath should be a file path relative to .tern-project, you can omit it if they’re in the same folder.
-RequireJS plugin
-
-This plugin ("requirejs") teaches the server to understand RequireJS-style dependency management. It defines the global functions define and requirejs, and will do its best to resolve dependencies and give them their proper types.
-
-These options are understood:
-
-baseURL
-
-    The base path to prefix to dependency filenames.
-paths
-
-    An object mapping filename prefixes to specific paths. For example {"acorn": "lib/acorn/"}.
-override
-
-    An object that can be used to override some dependency names to refer to predetermined types. The value associated with a name can be a string starting with the character =, in which case the part after the = will be interpreted as a global variable (or dot-separated path) that contains the proper type. If it is a string not starting with =, it is interpreted as the path to the file that contains the code for the module. If it is an object, it is interpreted as JSON type definition.
-
-Angular.js plugin
-
-Adds the angular object to the top-level environment, and tries to wire up some of the bizarre dependency management scheme from this library, so that dependency injections get the right types. Enabled with the name "angular".
-Third-party plugins
-
-It is possible to write third-party plugins or JSON type definitions and distribute them independently, either as packages using npm or as raw JavaScript files.
-
-When a name attribute is specified in the libs section of the project configuration, Tern first searches for a file name.json in its distribution defs directory, then for a file name.json in the user’s project directory, and finally for an installed package named "tern-name" to load as a JSON Type Definition. A JSON Type Definition distributed as an npm package must have a package name matching the pattern "tern-name".
-
-When a name attribute is specified in the plugins section of the project configuration, Tern first searches for a file name.js in its distribution plugin directory, then for a file name.js in the user’s project directory, and finally for an installed package named "tern-name" to load as a plugin. A plugin distributed as an npm package must have a package name matching the pattern "tern-name".
-
-The main module for a third-party plugin that will be installed outside of the Tern distribution should export a single method initialize(ternDir: string) which takes the location of the Tern distribution loading the plugin as an argument. Tern will call this method immediately after loading the plugin to tell the plugin where to find Tern modules. A plugin with this method will work regardless of its install location relative to the Tern distribution, but plugins without it may fail to find Tern modules or even silently load the wrong Tern modules depending on install location.
-
-Plugin packages can specify the Tern version required as a peer dependency.
-Project configuration
-
-A .tern-project file is a JSON file in a format like this:
-
-{
-  "libs": [
-    "browser",
-    "jquery"
-  ],
-  "loadEagerly": [
-    "importantfile.js"
-  ],
-  "plugins": {
-    "requirejs": {
-      "baseURL": "./",
-      "paths": {}
-    }
-  }
-}
-
-The libs property refers to the JSON type descriptions that should be loaded into the environment for this project. See the defs/ directory for examples. The strings given here will be suffixed with .json, and searched for first in the project’s own dir, and then in the defs/ directory of the Tern distribution.
-
-By default, local files are loaded into the Tern server when queries are run on them in the editor. loadEagerly allows you to force some files to always be loaded, it may be an array of filenames or glob patterns (i.e. foo/bar/*.js). The dontLoad option can be used to prevent Tern from loading certain files. It also takes an array of file names or glob patterns.
-
-The plugins field may hold object used to load and configure Tern plugins. The names of the properties refer to files that implement plugins, either in the project dir or under plugin/ in the Tern directory. Their values are configuration objects that will be passed to the plugins. You can leave them at {} when you don’t need to pass any options.
-
-You can specify an ecmaVersion field to configure the version of ECMAScript that Tern parses. The default is 6, and leaving it at that should be safe even for ECMAScript 5 code, but you can set it to 5 as well.
-
-To configure the amount of work Tern is prepared to do to load a single dependency, the dependencyBudget option can be added to a project file. It indicates the maximum size of the files loaded in response to a single dependency (through plugins that load dependencies, such as the node and RequireJS plugins), counted in expressions. The default value is 20 000. Files loaded as dependencies of dependencies count towards the budget of the original dependency.
-Utilities
-
-bin/test
-
-    Runs Tern’s own testsuite. Tests are defined in the test/ directory, as code interspersed with comments that indicate the types and conditions to check for.
-bin/condense
-
-    Utility for condensing source code down to a JSON type definition file. Takes a list of files to condense, optionally interleaved with filenames prefixed with a +, which will be loaded (to provide type information) but not included in the output.
-
-    Pass --plugin name or --plugin name={jsonconfig} to load plugins. Use --def file to load JSON definitions.
-
-Inference engine
-
-The inference engine module (lib/infer.js) implements a system that, given a context and an abstract syntax tree (parsed representation of the code), tries to infer the types of the variables and properties in the code.
-
-The parser is implemented in a separate module, Acorn, which provides a regular JavaScript parser, an error-tolerant parser, and a number of utilities for iterating through and searching in abstract syntax trees. The syntax tree format used by Acorn and Tern is described in the Mozilla parser API document (though support for features that are not in ECMAScript 5, such as let, is omitted).
-
-A high-level description of the way Tern’s type inference algorithm works can be found in a blog post I wrote on the subject.
-
-This module also exposes some utility functions that are useful to implement the services the server exposes.
-Context
-
-A context is an object that holds a global JavaScript scope, as well as some meta-information and state used by the type inference process. Almost all operations in the inference module require a context.
-
-To prevent having to pass the context around through every function, a form of dynamic binding is used—the withContext function executes a function body with a given object used as the current context.
-
-infer.Context(defs: [object])
-
-    A constructor function for contexts. defs should be an array of type definition objects, which will be used to initialize the global scope.
-infer.withContext(context: Context, f: fn())
-
-    Calls f with the current context bound to context. Basically, all code that does something with the inference engine should be wrapped in such a call.
-infer.cx() → Context
-
-    Returns the current context object.
-context.topScope
-
-    The top-level scope of the context.
-
-Analysis
-
-To push code into a context, you first parse it, yielding a syntax tree, and then tell Tern to analyze that.
-
-infer.parse(text: string, options?: {}) → AST
-
-    Parse a piece of code for use by Tern. Will automatically fall back to the error-tolerant parser if the regular parser can’t parse the code.
-infer.analyze(ast: AST, name: string, scope?: Scope)
-
-    Analyze a syntax tree. name will be used to set the origin of types, properties, and variables produced by this code. The optional scope argument can be used to specify a scope in which the code should be analyzed. It will default to the top-level scope.
-
-The same code, or slightly modified variants of the same code, can be analyzed in a context multiple times. The variables and properties that the context knows, as well as the types it assigns to them, will become the union of the variables and types created by the various forms of the code. When incrementally re-analyzing code as it is being edited, this leads to a degradation in the preciseness of the results. To prevent that, it is possible to purge all elements that come from a specific origin from a context.
-
-infer.purgeTypes(origins: [string], start?: number, end?: number)
-
-    Purges the types that have one of the origins given from the context. start and end can be given to only purge types that occurred in the source code between those offsets. This is not entirely precise—the state of the context won’t be back where it was before the file was analyzed—but it prevents most of the noticeable inaccuracies that re-analysis tends to produce.
-infer.markVariablesDefinedBy(scope: Scope, origins: [string], start?: number, end?: number)
-
-    Cleaning up variables is slightly trickier than cleaning up types. This does a first pass over the given scope, and marks variables defined by the given origins. This is indended to be followed by a call to analyze and then a call to purgeMarkedVariables.
-infer.purgeMarkedVariables
-
-    Purges variables that were marked by a call to markVariablesDefinedBy and not re-defined in the meantime.
-
-Types
-
-Tern has a more or less complete implementation of the JavaScript type system.
-
-infer.Obj(proto, name?: string)
-
-    Constructor for the type that represents JavaScript objects. proto may be another object, or true as a short-hand for Object.prototype, or null for prototype-less objects.
-infer.Fn(name: string?, self: AVal, args: [AVal], argNames: [string], retval: AVal)
-
-    Constructor for the type that implements functions. Inherits from Obj. The AVal types are used to track the input and output types of the function.
-infer.Arr(contentType: AVal)
-
-    Constructor that creates an array type with the given content type.
-context.num
-
-    The primitive number type.
-context.str
-
-    The primitive string type.
-context.bool
-
-    The primitive boolean type.
-
-Types expose the following interface (plus some AVal-compatibility methods, see below).
-
-type.name: string
-
-    The name of the type, if any.
-type.origin: string
-
-    The origin file of the type.
-type.originNode: AST
-
-    The syntax node that defined the type. Only present for object and function types, and even for those it may be missing (if the type was created by a type definition file, or synthesized in some other way).
-type.toString(maxDepth: number) → string
-
-    Return a string that describes the type. maxDepth indicates the depth to which inner types should be shown.
-type.getProp(prop: string) → AVal
-
-    Get an AVal that represents the named property of this type.
-type.forAllProps(f: fn(prop: string, val: AVal, local: bool))
-
-    Call the given function for all properties of the object, including properties that are added in the future.
-
-Object types have a few extra methods and properties.
-
-obj.proto
-
-    The prototype of the object, or null.
-obj.props
-
-    An object mapping the object’s known properties to AVals. Don’t manipulate this directly (ever), only use it if you have to iterate over the properties.
-obj.hasProp(prop: string) → AVal?
-
-    Looks up the AVal associated with the given property, or returns null if it doesn’t exist.
-obj.defProp(prop: string, originNode?: AST) → AVal
-
-    Looks up the given property, or defines it if it did not yet exist (in which case it will be associated with the given AST node).
-
-Abstract values
-
-Abstract values are objects used to represent sets of types. Each variable and property has an abstract value associated with it, but they are also used for other purposes, such as tracking the return type of a function, or building up the type for some kinds of expressions.
-
-In a cleanly typed program where each thing has only a single type, abstract values will all have one type associated with them. When, for example, a variable can hold two different types of values, the associated abstract value will hold both these types. In some cases, no type can be assigned to something at all, in which case the abstract value remains empty.
-
-Abstract values expose the following interface:
-
-infer.AVal()
-
-    Constructor. Creates an empty AVal.
-aval.addType(type: Type, weight?: number)
-
-    Add a type to this abstract value. If the type is already in there, this is a no-op. weight can be given to give this type a non-default weight, which is mostly useful when adding a provisionary type that should be overridden later if a real type is found. The default weight is 100, and passing a weight lower than that will make the type assignment “weak”.
-aval.propagate(target: Constraint)
-
-    Sets this AVal to propagate all types it receives to the given constraint. This is the mechanism by which types are propagated through the type graph.
-aval.hasType(type: Type) → bool
-
-    Queries whether the AVal currently holds the given type.
-aval.isEmpty() → bool
-
-    Queries whether the AVal is empty.
-aval.getType(guess?: bool) → Type?
-
-    Asks the abstract value for its current type. May return null when there is no type, or conflicting types are present. When guess is true or not given, an empty AVal will try to use heuristics based on its propagation edges to guess a type.
-aval.getFunctionType() → Type?
-
-    Asks the AVal if it contains a function type. Useful when you aren’t interested in other kinds of types.
-
-Abstract values that are used to represent variables or properties will have, when possible, an originNode property pointing to an AST node.
-
-As a memory-consuming hack, types also expose the interface of abstact values, so that in cases where an AVal is expected, but the precise type is known, the type object can simply be used.
-
-The infer.ANull value is a special AVal-like object that never holds any types, and discards types added to it. It can be used as a placeholder in situations where we either aren’t interested in the types, or there simply are no types.
-Constraints
-
-Constraints are things that can receive values. They use the same addType method to receive them, which causes all AVals to also be useable as constraints. The inference engine defines a number of additional constraints to propagate values in more indirect ways. See the blog post on the inference algorithm for some examples.
-
-infer.constraint(methods: object) → constructor
-
-    This is a constructor-constructor for constraints. It’ll create a constructor with all the given methods copied into its prototype, which will run its construct method on its arguments when instantiated.
-
-Beyond addType, there are a few optional methods that constraints can expose to tell the system something about itself.
-
-constraint.typeHint() → Type?
-
-    May return a type that getType can use to “guess” its type based on the fact that it propagates to this constraint.
-constraint.propHint() → string?
-
-    May return a string when this constraint is indicative of the presence of a specific property in the source AVal.
-
-Scopes
-
-Scopes are derived from the Obj type, and variables are represented the same way as properties.
-
-infer.Scope(parent?: Scope)
-
-    Constructor for scope objects. The top scope won’t have a parent.
-scope.defVar(name: string, originNode: AST) → AVal
-
-    Ensures that this scope or some scope above it has a property by the given name (defining it in the top scope if it is missing), and, if the property doesn’t already have an originNode, assigns the given node to it.
-
-Utilities
-
-These are miscellaneous utilities that come in helpful when doing code analysis.
-
-infer.findExpressionAt(ast: AST, start: number?, end: number, scope?: Scope) → {node, state}
-
-    Searches the given syntax tree for an expression that ends at the given end offset and, if start is given, starts at the given start offset. scope can be given to override the outer scope, which defaults to the context’s top scope. Will return a {node, state} object if successful, where node is AST node, and state is the scope at that point. Returns null if unsuccessful.
-infer.findExpressionAround(ast: AST, start: number?, end: number, scope?: Scope) → {node, state}
-
-    Similar to findExpressionAround, except that it will return the innermost expression node that spans the given range, rather than only exact matches.
-infer.expressionType(expr: {node, state}) → AVal
-
-    Determine an expression for the given node and scope (as returned by the functions above). Will return an AVal or plain Type.
-infer.scopeAt(ast: AST, pos: number, scope?: Scope) → Scope
-
-    Find the scope at a given position in the syntax tree. The scope parameter can be used to override the scope used for code that isn’t wrapped in any function.
-infer.findRefs(ast: AST, scope: Scope, name: string, refScope: Scope, f: fn(AST, Scope))
-
-    Will traverse the given syntax tree, using scope as the starting scope, looking for references to variable name that resolve to scope refScope, and call f with the node of the reference and its local scope for each of them.
-infer.findPropRefs(ast: AST, scope: Scope, objType: Obj, propName: string, f: fn(AST))
-
-    Analogous to findRefs, but used to look for references to a specific property instead. Whereas findRefs is precise, this is dependent on type inference, and thus can not be relied on to be precise.
-
-Whenever the code in lib/infer.js guesses a type through fuzzy heuristics (through getType or expressionType), it sets a flag. The following two function allow access to this flag:
-
-infer.didGuess() → bool
-
-    Test whether the guessing flag is set.
-infer.resetGuessing(val?: bool)
-
-    Reset the guessing flag.
-
-Editor plugins
-
-If your editor of choice is not yet supported, you are encouraged to try and port one of the existing plugins to it. When figuring out how things work, the code powering the demo, in doc/demo/demo.js, might also come in useful.
-
-All these plugins use the node.js-based server, and thus require that (as well as npm) to be installed.
-Emacs
-
-The Emacs mode is part of the main tern repository. It can be installed as follows:
-
-    Make sure you are using Emacs 24 or later. The Tern mode requires lexical scoping.
-
-    Clone this repository somewhere. Do npm install to get the dependencies.
-
-    Make Emacs aware of emacs/tern.el. For example by adding this to your .emacs file:
-
-    (add-to-list 'load-path "/path/to/tern/emacs/")
-    (autoload 'tern-mode "tern.el" nil t)
-
-    Optionally set tern-mode to be automatically enabled for your JavaScript mode of choice. Here’s the snippet for js-mode:
-
-    (add-hook 'js-mode-hook (lambda () (tern-mode t)))
-
-The Emacs mode uses the bin/tern server, and project configuration is done with a .tern-project file.
-
-Buffers in tern-mode add a completion-at-point function that activates Tern’s completion. So, unless you rebound the key, M-tab (or C-M-i) will trigger completion.
-
-When the point is in an argument list, Tern will show argument names and types at the bottom of the screen.
-
-The following additional keys are bound:
-
-M-.
-
-    Jump to the definition of the thing under the cursor.
-M-,
-
-    Brings you back to last place you were when you pressed M-..
-C-c C-r
-
-    Rename the variable under the cursor.
-C-c C-c
-
-    Find the type of the thing under the cursor.
-C-c C-d
-
-    Find docs of the thing under the cursor. Press again to open the associated URL (if any).
-
-Auto-Complete
-
-If you want to use auto-complete.el for completion, append following codes:
-
-(eval-after-load 'tern
-   '(progn
-      (require 'tern-auto-complete)
-      (tern-ac-setup)))
-
-If tern-ac-on-dot is non-nil (default), typing .(dot) invokes auto-complete to select completions. Calling the command tern-ac-complete, one can invoke auto-complete manually.
-Vim
-
-The Vim plugin is maintained in a separate repository. Please see its README for details.
-Sublime Text
-
-There are two implementations of Sublime Text modules for Tern. One written by me, at https://github.com/ternjs/tern_for_sublime. This one uses the node.js-based server. The other is written by Sergey Chikuyonok, and can be found at https://github.com/emmetio/sublime-tern. It uses a Python V8 bridge to run the server.
-
-See the readme files in those repositories for details.
-Eclipse / Java
-
-tern.java is a Tern client written in Java. It includes Eclipse integration.
-gedit
-
-tern_for_gedit integrates Tern with the gedit editor.
-TextMate
-
-JavaScript Tern Completion.tmbundle integrates Tern with TextMate.
-Related Software
-
-This is a place to gather links to software that is built on Tern. Drop me an email if you want to suggest a link.
-jsctags
-
-jsctags is a tool that generates ctags files from JavaScript code by using Tern’s inference engine.
-CodeMirror Tern addon
-
-The CodeMirror browser-based editor has an addon for integrating with Tern.
-tern.ace
-
-tern.ace integrates Tern in the ACE editor.
-tern.orion
-
-tern.orion integrates Tern in the Orion editor.
-
-
+The server won’t write a .tern-port file. Can be used if the port files are a problem for you. Will prevent other clients from finding the server (and may thus result in multiple servers for the same project).
+
+
+    #+END_SRC
+*** JSON protocol
+    发送请求是　用ＰＯＳＴ方式，请求的是一个ｊson 格式的对象文档
+    This document should be an object, with three optional fields, query, files, and timeout.
+*** Server plugins
+    #+BEGIN_SRC json
+      A .tern-project file is a JSON file in a format like this:
+      libs 是默认插件，第三方插件在　plugins 中，　中间的是专门插件
+            {
+              "libs": [
+                "browser",
+                "jquery"
+              ],
+              "loadEagerly": [
+                "importantfile.js"
+              ],
+              "plugins": {
+                "requirejs": {
+                  "baseURL": "./",
+                  "paths": {}
+                }
+              }
+            }
+    #+END_SRC

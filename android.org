@@ -1,16 +1,10 @@
-res/layout/main.xml 定义了
-* 建立在linux上的抽象层,
-  android 包含了操作系统，中间件，与关键应用程序．，以及一组用于编写移动应用程序的API库
-  所有应用程序都在同一优先级
-  linux内核->库->android运行时(核心库和dalvik)虚拟机->应用程序框架->应用层
-  Android应用程序框架{
-  Activity manager 和Fragment manager
-  视图 View
-  Notification manager
-  content provider
-  resource manager
-  intent
-  }
+* 什么是android架构？ 任务处理分出的几层抽象层
+* 什么是android 四层架构？ linux内核层，系统运行库层，应用框架层，应用层
+* 什么是android的四大组件?
+  活动 Activity 
+  服务 Service
+  广播接收器 Broadcast receiver
+  内容提供器 Content provider
 ** 设置开发环境
 *** 1.JDK
     前提
@@ -211,11 +205,11 @@ $ ls
 
       点击运行，成功。
 *** Emacs用JDEE编写Android程序
-      前文介绍了如何用Maven构建Android工程，现在进一步介绍如何使用JDEE编写程序。
-      首先要安装一个m2jdee的插件，能够根据maven的pom.xml中的配置生成jdee所需的prj.el文件。
+    前文介绍了如何用Maven构建Android工程，现在进一步介绍如何使用JDEE编写程序。
+    首先要安装一个m2jdee的插件，能够根据maven的pom.xml中的配置生成jdee所需的prj.el文件。
 
-      获取该项目：
-          git clone git@gitlab.com:devtool/m2jdee.git  
+    获取该项目：
+    git clone git@gitlab.com:devtool/m2jdee.git  
       或者
           git clone https://gitlab.com/devtool/m2jdee.git  
 
@@ -430,5 +424,158 @@ Intent 是 不同组件间相互导航的纽带。
 
 (length (visible-frame-list))
 
-* android base on java
-jdk的版本也就是java 的版本. 到了 java 5.0版本, 又叫 internal version number: 1.5.0
+* 什么是AVD模拟器？ 别的平台的任务在电脑上运行
+* 什么是android 开发环境？ 编译器要用到，而且要用到java 模拟器以执行java程序，集成开发环境（软件工程）
+* 什么是android 版本？ 任务之间的差异，同时不同版本api也不同
+* 什么是android 项目？ 就是软件工程  
+* 什么是 项目文件夹内容？ 
+  src gen(自动生成）bin(编译好的apk) libs 第三方的jar 包
+  AndroidManifest.xml 项目配置文件
+* 什么是 AndroidManifest.xml? 任何android 组件都要在此注册
+* 什么是 日志工具 Log?  
+  android 的 android.util.Log提供几个方法
+1.Log.v() 打印最繁琐的日志信息 verbose
+2.Log.d() 打印调试信息 debug
+3.Log.i() 打印比较重要的信息  info
+4.Log.w() 打印警告信息 warn
+5.Log.e() 打印错误信息 error
+* 什么是 日志过滤工具？ 可以输出定义的日志 
+* 什么是 活动? 
+* 什么是 包？ 把类打包 
+* 什么是  
+* 什么是  
+* 什么是  
+* 什么是  
+* 什么是  
+* 什么是  
+* SDK常用命令 
+** adb(android调试桥) 使用5037端口 
+*** 显示连接的设备：adb devices   
+*** 指定模拟器/设备实例
+    adb -s <serialNumber> <command>
+    <serialNumber>参数表示序列号；<command>参数表示执行的命令。
+
+    例如，需要在emulator-5554上安装HelloWorld.apk应用，可以执行如下命令：
+    adb -s emulator-5554 install HelloWorld.apk
+    如果只有一个模拟器，则可以省略serialNumber
+*** 模拟器/设备实例的文件复制
+    adb push <local> <remote>
+    adb push <remote> <local>
+*** 进入shell    
+    adb shell
+** android命令
+   android命令是一个非常重要的开发工具，其功能如下：
+   
+   ［√］创建、删除和查看Android虚拟设备（AVD）。
+   ［√］创建和更新Android项目。
+   ［√］更新Android SDK，内容包括新平台、插件和文档等。
+*** 获得可用的Android平台
+    android list targets
+
+** emulator命令    
+   emulator -avd <avd_name> [-<option> [<value>]] ... [-<qemu args>]
+* 用户界面设计   
+  Android提供了4种控制UI界面的方法，下面分别进行介绍。
+** 1.使用XML布局文件控制UI界面
+   。res\layout下写布局文件
+   。在Activity中使用以下Java代码显示XML文件中布局的内容。
+   setContentView(R.layout.main);
+
+   
+   真机模拟
+* Gradle 依赖管理工具   
+  默认下载路径 /home/USER/.gradle/wrapper/dists
+** app/build.gradle 项目的最主要的配置文件
+** wrapper.properties  gradle的配置文件 
+** build.gradle 整个项目的的基本配置
+** settings.gradle 项目的全局的配置文件
+** 编译并查看ｇithub android源码   
+1.查看项目的gradle版本  ./gradlew -v
+2.下载gradle依赖　./gradlew clean
+3.编译apk文件   ./gradlew build
+app/build/outputs/apk 一种unaligned 代表没zip优化，unsigned 代表没签名
+./gradlew assembleDebug 编译并打 Debug 包
+./gradlew assembleRelease 编译并打 Release 的包
+
+** 导入Android studio
+* 创建应用程序   
+  由组件通过 Manifest 绑定而成
+** Manifest
+   <service android:name=".MyService">
+   </service>
+   <activity android:name=".MyActivity">
+   </activity>
+   <provider>, <receiver>
+   <uses-library> 使用共享库
+组件：
+** Activity 表示层
+** Service  
+** Content Provider 数据存储器
+** Intent 消息传递框架
+** Broadcast Receiver Intent侦听器
+** Widget   
+** Notification 向用户发送消息   
+* 分离资源
+** 创建资源 res/  
+   资源类型包含：简单值、Drawable、颜色、布局、动画、样式、菜单、xml文件和原始资源
+   R文件是对资源文件夹的引用
+*** 简单值:
+<resources>
+<string name="app_name">To Do List</string>
+<string name="app_name">&lt;b>To Do List&lt;/b></string>
+<string name="app_name"><b>To Do List</b></string>
+<string name="app_name">To Do List</string>
+</resources>
+*** 颜色
+<color name="blue">#00F</color>
+*** 尺寸
+    <dimen name="border">5dp</dimen>
+    px(屏幕像素)
+    in(物理英寸)
+    pt(物理点)
+    mm(物理毫米)
+    dp(非密度制约的像素)
+    sp(scale-independent缩放比例无关的像素)
+*** 样式和主题
+    <style name="base_text">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#111</item>
+    </style>
+    继承 parent关键字
+    <style name="small_text" parent="base_text">
+*** Drawable
+    资源标识符是没有扩展名的小写字母文件名。
+*** 布局
+*** 动画
+*** 菜单
+    <menu>
+       <item android:id="@+id/menu_refresh"/>
+    </menu>
+** 使用资源
+   setContentView(R.layout.main);
+*** 当需要资源本身的实例时：
+   Resources myResources = getResources();
+   
+   cahrSequence styleText = myResources.getText(R.string.stop_message);
+   Drawable icon = myResoureces.getDrawable(R.drawable.app_icon);
+   int Blue = myResources.getColor(R.color.opeque_blue);
+   float borderWidth = myResources.getDimension(R.dimen.standard_border);
+   
+   Animation tranOut;
+   tranOut = AnimationUtils.loadAnimation(this, R.anim.spin_shrink_fade);
+
+   String[] stringArray;
+   stringArray = myResources.getStringArray(R.array.string_array);
+   
+   int[] intArray = myResources.getIntArray(R.array.integer_array);
+*** 在资源内引用资源
+    使用@符号，就可以在资源中引用另一个资源.
+    attribute= "@[packagename:]resourcetype/resourceidentifier"
+*** 使用系统资源 
+    charSequence httpError = getString(android.R.string.httpErrorBadUrl);
+    
+    XML中
+    android:text="@android:string/httpErrorBadUrl"
+*** 在当前主题中引用样式
+    使用?android: 而不是@
+    android:textColor="?android:textColor"
