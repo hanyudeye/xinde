@@ -58,7 +58,7 @@
 #+END_SRC
 ** 配置变量，默认配置变量添加在 .spacemacs 末尾 或者 custom-file 会写在 配置文件里
 ** 不想用某个包 (setq-default dotspacemacs-excluded-packages '(rainbow-delimiters))
-* 什么是spacemacs 层配置？
+* 自定义层
   结构
 #+BEGIN_SRC 
 [LAYER_NAME]
@@ -100,10 +100,10 @@
 #+END_SRC
 * 键绑定
 ** 全局绑定 会被模式绑定覆盖
-(global-set-key (kbd "C-]") 'forward-char)
-//被下面的覆盖了
-(define-key evil-insert-state-map (kbd "C-]") 'forward-char)
-//用前导键
+   (global-set-key (kbd "C-]") 'forward-char)
+   //被下面的覆盖了
+   (define-key evil-insert-state-map (kbd "C-]") 'forward-char)
+   //用前导键
 #+BEGIN_SRC emacs-lisp
 (spacemacs/set-leader-keys "C-]" 'forward-char)
 (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "C-]" 'forward-char)
@@ -449,34 +449,8 @@ Other help key bindings:
 
 Navigation key bindings in =help-mode=:
 
-* 文件操作
-| Key Binding | Description                                                                                            |
-|-------------+--------------------------------------------------------------------------------------------------------|
-| ~SPC f b~   | go to file bookmarks                                                                                   |
-| ~SPC f c~   | copy current file to a different location                                                              |
-| ~SPC f C d~ | convert file from unix to dos encoding                                                                 |
-| ~SPC f C u~ | convert file from dos to unix encoding                                                                 |
-| ~SPC f D~   | delete a file and the associated buffer (ask for confirmation)                                         |
-| ~SPC f E~   | open a file with elevated privileges (sudo edit)                                                       |
-| ~SPC f f~   | open file                                                                                              |
-| ~SPC f F~   | try to open the file under point                                                                       |
-| ~SPC f h~   | open binary file with =hexl= (a hex editor)                                                            |
-| ~SPC f j~   | jump to the current buffer file in dired                                                               |
-| ~SPC f J~   | open a junk file, in mode determined by the file extension provided (defaulting to =fundamental mode=) |
-| ~SPC f l~   | open file literally in =fundamental mode=                                                              |
-| ~SPC f L~   | Locate a file (using =locate=)                                                                         |
-| ~SPC f o~   | open a file using the default external program                                                         |
-| ~SPC f R~   | rename the current file                                                                                |
-| ~SPC f s~   | save a file                                                                                            |
-| ~SPC f S~   | save all files                                                                                         |
-| ~SPC f r~   | open a recent file                                                                                     |
-| ~SPC f t~   | toggle file tree side bar using [[https://github.com/jaypei/emacs-neotree][NeoTree]]                                                                |
-| ~SPC f v d~ | add a directory variable                                                                               |
-| ~SPC f v f~ | add a local variable to the current file                                                               |
-| ~SPC f v p~ | add a local variable to the first line of the current file                                             |
-| ~SPC f y~   | show and copy current file absolute path in the minibuffer                                             |
 * ace-link模式
-在 help-mode 和 info-mode 中可以 用 o 快速跳转
+  在 help-mode 和 info-mode 中可以 用 o 快速跳转
 * 自动保存
 * 通过语义列出符号 SPC s j  
 * 寄存器
@@ -648,16 +622,7 @@ Navigation key bindings in =help-mode=:
 
 spacemacs 的文档保存在 doc 目录下, 包含有 CONVENTIONS.org, DOCUMENTATION.org 等文档文件, 建议大家多多阅读.
 
-* 第十三天: 定制你的 Layer
-
-视频地址如下:
-
-- [[http://pan.baidu.com/s/1kVroHCj][百度网盘]]
-- [[http://v.youku.com/v_show/id_XMTYyOTcyNjk0NA==.html][优酷]]
-- [[https://youtu.be/RMofkN3IcKE][Youtube]]
-
-主要内容:
-
+* 定制你的 Layer
 1. 修复上一期视频中 occur-mode 启动的问题
 2. 修复 ivy0.8 导致的问题, 同时简单探讨了一下今后如何避免和处理类似的问题
 3. 介绍 post-init 和 pre-init 的用法, 介绍了如何定制 spacemacs 的 company-mode
@@ -781,11 +746,6 @@ Symbol's function definition is void: evilified-state-evilify-map
 在这种情况下, spacemacs 不会在 chinese layer 中加载 youdao-dictionary 这个 package, 而是在我们的 layer 中加载这个 package, 以实现对 spacemacs 内置的package 的定制.
 
 * 文件和 Buffer 操作
-1. 我的配置和 spacemacs配置的一些不同点
-2. 文件相关操作
-3. Buffer 相关操作
-4. Dired
-
 ** 不同点
 - 没有使用官方的 modeline, 而是采用自己定制的
 - 排除掉了大量的作者认为对他没有作用的 package, 因为这些 package 确实不经常使用, 反而可能导致一些 BUG 或者导致 spacemacs 启动或使用过程中变慢
@@ -859,9 +819,7 @@ Symbol's function definition is void: evilified-state-evilify-map
 21. SPC f s/S 保存当前 buffer 或 所有 buffer.
 ** buffer 相关操作
 1. SPC b . 打开 Buffer Selection Transient State, 在该模式下可以进行更多的操作, 由 hydra 提供.
-
 2. SPC b b 切换到已经打开的 buffer.
-
 3. SPC b d 关闭一个 buffer.
 
 4. SPC b f !!!!! 在 finder 中打开当前文件, 只在 Mac系统下生效.
@@ -871,39 +829,16 @@ Symbol's function definition is void: evilified-state-evilify-map
 6. SPC b h 进入 \*spacemacs\* buffer.
 7. SPC b k 使用正则表达式来删除 buffer.
 8. SPC b N 新建一个 buffer.
+9. SPC b m 删除除当前 buffer 外的所有 buffer.
 
-9. SPC b m
+10. SPC b R 使用 emacs 自动备份的文件恢复文件.
 
-  删除除当前 buffer 外的所有 buffer.
+11. SPC b s 跳转到 scratch buffer.
 
-10. SPC b R
-
-  使用 emacs 自动备份的文件恢复文件.
-
-11. SPC b s
-
-  跳转到 scratch buffer.
-
-12. SPC b w
-
-  关闭/打开 buffer 的 read-only.
-
-13. SPC b Y
-
-  复制整个 buffer 的内容.
-
-14. SPC b P
-
-  将剪切板的内容粘贴到整个 buffer.
-
-15. SPC <tab>
-
-  在当前 buffer 和上一个打开的 buffer 中进行切换.
-
-** Dired
-
-在第四天的内容中已经讲解过 Dired Mode 的操作, 具体可以查看 [[https://book.emacs-china.org/#orgheadline22][Dired Mode]].
-
+12. SPC b w 关闭/打开 buffer 的 read-only.
+13. SPC b Y 复制整个 buffer 的内容.
+14. SPC b P 将剪切板的内容粘贴到整个 buffer.
+15. SPC <tab> 在当前 buffer 和上一个打开的 buffer 中进行切换.
 * layout, windows 和 project 相关
 ** Layout 操作
    1. SPC l L 加载 layout 文件
@@ -938,6 +873,10 @@ Symbol's function definition is void: evilified-state-evilify-map
 3. SPC p p 切换到其他的 project
 4. SPC p l 切换到其他的 project 并创建一个新的 layout
 5. find-file-in-project 这是一个插件, 支持全平台. 目前绑定在 SUPER f 快捷键上.
+*** 工程
+    1.目录下创建空的 .projectile
+  2. 在文件/home/wuming/.emacs.d/.cache/projectile-bookmarks.eld中添加目录
+  3. 也可以在变量 project ... file 中添加 后缀文件类型
 * 使用 ctags 和 company-etags
   这期视频主要介绍 ctags 和 company-mode 的使用.
 ** 为什么使用 ctags

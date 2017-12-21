@@ -1798,3 +1798,42 @@ RewriteRule	^(.*)$	index.php/$1	[QSA,PT,L]
     ini_set("display_errors", "On");   
     error_reporting(E_ALL); //-1是关闭
 #+END_SRC
+* 初始化
+  <?php
+ /**********************************************
+ *  __construct  对象初始化函数使用
+ *  destruct      析构函数的使用
+ *  $this         关键字的使用（$this关键字是用来访问当前对象中的对象属性和对象 *        方法的系统变量）
+ * 
+ **********************************************/
+ header("Content-Type:text/html;charset=UTF-8");
+ class mypc{
+  public $name;
+  public $type;
+
+  function __construct($name='',$type=''){ //初始化对象，将初始化值放在括号内
+   $this->name=$name;
+   $this->type=$type;
+
+  }
+  function vod(){
+   return $this->name.$this->type.'播放电影';
+  }
+  function game(){
+   return $this->name.$this->type.'玩游戏';
+  }
+  /************************
+  * 当对象内部的操作执行完毕的时候，
+  * __destruct()被调用，
+  * 然后对象所使用的内存被释放出来。规则：后进先出
+  **************************/
+  function __destruct(){
+   echo "<br>==============".$this->name;
+  }
+ }
+
+ $pc1 = new mypc('家用电脑','台式机');
+ echo $pc1->vod()."<br>";
+ //当$pc1=null;的时候是当前实例操作完成后直接释放出对象
+ $pic2 = new mypc('公司电脑','笔记本');
+ echo $pic2->game();
