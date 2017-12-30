@@ -1,10 +1,11 @@
-* spacemacs 互动性强，扩展好，交际好，适应能力强，就够了，帮助足够，哈哈
-  risk of RSI  减轻腰肌劳损 还治病
-  增强扩展  更新 手动更新？ 在项目中用git pull origin 
-  更新包扩展？ 可以用命令 configuration-layer/update-packages 或点击主页面　update package
-* 扩展 以层或包的形式  
+* spacemacs
+  互动，扩展，交际，适应，帮助
+  risk of RSI  减轻腰肌劳损
+  更新 git pull origin 
+  更新包 configuration-layer/update-packages 或点击主页面　update package
+* 层或包
 ** .spacemacs 配置的扩展  SPACEMACSDIR 
-   重新配置后, 就要重新初始化 spacemacs , 命令 SPC f e R
+   重新配置后,就要重新初始化 spacemacs , 命令 SPC f e R
    test test-dotfile
    编辑样式 dotspacemacs-editing-style变量 或者 M-m t E/ SPC t E h 会取消hybrid模式，就是vim模式
    前导键 空格 就是 Spacemacs 的命名来源
@@ -99,14 +100,14 @@
    ))
 #+END_SRC
 * 键绑定
-** 全局绑定 会被模式绑定覆盖
+  全局绑定 会被模式绑定覆盖
    (global-set-key (kbd "C-]") 'forward-char)
    //被下面的覆盖了
    (define-key evil-insert-state-map (kbd "C-]") 'forward-char)
    //用前导键
 #+BEGIN_SRC emacs-lisp
-(spacemacs/set-leader-keys "C-]" 'forward-char)
-(spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "C-]" 'forward-char)
+  (spacemacs/set-leader-keys "C-]" 'forward-char)
+  (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "C-]" 'forward-char)
 #+END_SRC
 * spacemacs?
    主模式相关快捷键 SPC m
@@ -347,11 +348,9 @@
      (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
      (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
 
-* spacemacs 默认对于不使用的包　会被删除？　不包含在层中的会删除，查看
+* 默认对于不使用的包　会被删除？　不包含在层中的会删除，查看
   dotspacemacs-install-packages 变量
-* Dotfile? spacemacs 配置文件
-** 什么是测试点文件？ 检查点文件的语法， dotspacemacs/test-dotfile
-** 什么是点文件执行顺序？
+* 点文件执行顺序
 1.spacespacemacs / layers
 2.spacespacemacs / init 
 3.dotspacemacs / user-init
@@ -416,8 +415,17 @@ If this variable is set to =nil= (default) its value will be same as
 
 * 布局
 ** 工程布局 布局名和工程名同名
+* 切换透明度 ~SPC TT~
+* 切换系统监视器 ~SPC tms~
+* 书签 看小说用的 ~SPC fb~ 
+  | 键绑定| 说明|
+| ------------- + ----------------------------------- ----------- |
+| 〜Cd〜| 删除选中的书签|
+| 〜Ce〜| 编辑所选书签|
+| 〜Cf〜| 切换文件名位置|
+| 〜Co〜| 在另一个窗口|中打开选定的书签
 * 工作空间 这环境弄的有点特殊
-* EScaping 在vim 中很重要
+* EScaping 键
   (setq-default evil-escape-key-sequence "jj"))
 * 键绑定帮助  
 | Key Binding | Description                                               |
@@ -461,7 +469,7 @@ Navigation key bindings in =help-mode=:
   | ~SPC r r~   | show helm register                 |
   | ~SPC r y~   | show kill ring                     |
 
-* 错误 通过flycheck 给出
+* flycheck 
   | Key Binding | Description                                                           |
   |-------------+-----------------------------------------------------------------------|
   | ~SPC t s~   | toggle flycheck                                                       |
@@ -1018,7 +1026,8 @@ company-etags 不能对所有的 mode 进行补全, 例如在 org-mode 中默认
 
 在该变量中定义了可以使用 company-etags 的 mode, 将 org-mode 加入该变量的值中即可在 org-mode 使用 company-etags 进行补全.
 ctags 支持上百种语言, 学会使用 ctags 能够提交效率.
-* gtags模式, 除了第一次,生成外，以后都是自动生成的
+* gtags
+ 除了第一次,生成外，以后都是自动生成的
 =helm-gtags= and =ggtags= are clients for GNU Global. GNU Global is a source
 code tagging system that allows querying symbol locations in source code, such
 as definitions or references. Adding the =gtags= layer enables both of these
@@ -1258,3 +1267,32 @@ modes.
  | ~SPC m g S~ | show stack of visited locations                                              |
  | ~SPC m g y~ | find symbols   状态栏显示符号                                                |
  | ~SPC m g u~ | manually update tag database 手动更新tag数据库                               |
+* 在当前目录中搜索 
+| 〜SPC /〜或〜SPC sd〜| 用第一个找到的工具搜索|
+* 在一个项目中搜索
+| 〜SPC /〜或〜SPC sp〜| 搜索第一个找到的工具|
+* nov mode 查看epub 文档
+* Emacs Lisp layer
+  调试： 1，在函数设断点 SPC mdf 2.到运行处或测试处 后 , ee 执行. s 进入 o 出去
+| 〜SPC mdt〜 | insert =（debug）=打印堆栈跟踪并重新评估函数 |
+  格式代码 SPC m = b
+* pdf-tools
+** 搜索   
+Searching搜索 with =occur= can be done by using =pdf-occur= (~SPC m s s~).
+** 导航
+   上/下一页 K/J
+   第一页、最后一页 gg /G
+   跳到几页 gt  gl
+   标记 m 跳 '
+** 大纲
+  链接 o
+  大纲 O
+  刷新 r
+** 注释
+** 匹配窗口
+   +/- 放大缩小 重置 zr
+** 切片 就是一个页面的显示部分，被切的其他不显示
+鼠标切片 SPC m s m 重置  SPC m s r
+* 批量重命名 wdired 
+  在目录buff 下 输入 spc w b, 一个个编辑，最后提交 C-c C-c
+  退出wdired模式，您需要按C-c ESC
