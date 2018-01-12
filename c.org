@@ -1,13 +1,14 @@
+想象 自己写了一个编译器，怎么解释文字达到 执行某种任务 完成某件事情 , 结果就是完成某件事情，且正确完成
 * c-c++mode
-** 语法检查 通过 flycheck
-** 反汇编 disaster
-** 代码格式化 clang-format
-** 底部定义提示 semantic
-** 导航 cscope
-** 自动完成 
+** 语法检查 通过 flycheck  当前有
+** 反汇编 disaster        当前有
+** 代码格式化 clang-format 当前有
+** 底部定义提示 semantic   当前有
+** 导航 cscope    还没用到
+** 自动完成    当前有
 1. c-c++-enable-clang-support 打开
 2.ycmd 层打开
-** 调试 realgud
+** 调试 realgud 还没用到
 ** 支持CMake 脚本构建
    CMake 是一个跨平台的，开源的构建系统（BuildSystem）。CMake 可以通过 CMakeLists.txt 文件来产生特定平台的标准的构建文件，例如：为 Unix 平台生成makefiles文件（使用GCC编译），为 Windows MSVC 生成 projects/workspaces（使用VS IDE编译）或Makefile文件（使用nmake编译）。
 CMake Hello World
@@ -589,17 +590,6 @@ FOREACH(VAR RANGE 10)
       MESSAGE(${VAR})
 ENDFOREACH(VAR)
 输出：
-0
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
 范围和步进 语法：
 FOREACH(loop_var RANGE start stop [step])
        COMMAND1(ARGS ...)
@@ -637,67 +627,216 @@ SET(LIBRARY\_OUTPUT\_PATH ${PROJECT\_BINARY\_DIR}/lib)
 ####cmake中如何给变量赋值 参考SET和AUX_SOURCE_DIRECTORY用法
 
 建议：在Project根目录先建立build,然后在build文件夹内运行cmake ..，这样就不会污染源代码, 如果不想要这些自动生成的文件了，只要简单的删除build文件夹就可以
-* c 
-** 预处理器指令
-  函数
-  变量
-  数组 {}
-  定义 int i; //声明，也是定义
-  声明 extern int i; //声明，不是定义
+** CMake configuration
+=cmake-ide= plugin works out of the box, but there are few useful configuration
+options.
+
+To configure project you need to create =.dir-locals.el= file. In case of using
+make as CMake backend you can use =helm-make= to select required build target.
+
+Here is a sample configuration. This configuration forces =cmake-ide= to use the
+local directory and pass that directory to =helm-make=. Such config allows to
+build your project with ~SPC c c~ key binding.
+
+#+BEGIN_SRC emacs-lisp
+((nil .
+      ((cmake-ide-project-dir . "~/Project")
+       (cmake-ide-build-dir . "~/Project/build")
+       (cmake-ide-cmake-opts . "-DCMAKE_BUILD_TYPE=Debug")
+       (helm-make-build-dir . "build")
+       (helm-make-arguments . "-j7"))))
+#+END_SRC
+创建 CMakeLists.txt 文件
+#+BEGIN_SRC cmakelist
+PROJECT (LEARN)
+
+#SET(SRC_LIST main.cpp)
+SET(SRC_LIST learn.c)
+
+MESSAGE(STATUS "This is BINARY dir " ${HELLO_BINARY_DIR})
+
+MESSAGE(STATUS "This is SOURCE dir "${HELLO_SOURCE_DIR})
+
+ADD_EXECUTABLE(learn ${SRC_LIST})
+
+#+END_SRC
+** Key Bindings
+
+| Key Binding | Description                                                             |
+|-------------+-------------------------------------------------------------------------|
+| ~SPC m g a~ | open matching file                                                      |
+|             | (e.g. switch between .cpp and .h, requires a project to work)           |
+| ~SPC m g A~ | open matching file in another window                                    |
+|             | (e.g. switch between .cpp and .h, requires a project to work)           |
+| ~SPC m D~   | disaster: disassemble c/c++ code                                        |
+| ~SPC m r~   | srefactor: refactor thing at point.                                     |
+| ~SPC m p c~ | Run CMake and set compiler flags for auto-completion and flycheck       |
+| ~SPC m p C~ | Run CMake if compilation database JSON file is not found                |
+| ~SPC m p d~ | Remove file connected to current buffer and kill buffer, then run CMake |
+| ~SPC m c c~ | Compile project                                                         |
+
+*Note:*  [[https://github.com/tuhdo/semantic-refactor][semantic-refactor]]  is only available for Emacs 24.4+.
+
+** Debugger (realgud)   这里能选择好几种调试器调试不同语言
+我测试的是c ，我先 SPC m d d, 选择默认的 gdb 调试器，然后 用 file 读入 可执行文件 （记住!, 不是源码）
+可能之前先设好断点  或之后，然后 执行 r , 不管在源码或在 gdb 中 ，可能要在执行后才可以，就OK了
+
+ | Key Binding | Description     |
+ |-------------+-----------------|
+ | ~SPC m d d~ | open cmd buffer |
+ | ~SPC m d e~ | eval variable   |
+ | ~s~         | step over       |
+ | ~i~         | step into       |
+ | ~b~         | set break       |
+ | ~B~         | unset break     |
+ | ~o~         | step out        |
+ | ~c~         | continue        |
+ | ~e~         | eval variable   |
+ | ~r~         | restart         |
+ | ~q~         | quit debug      |
+ | ~S~         | goto cmd buffer |
+
+** realgud
+   Quick start
+Use M-x load-library RET realgud RET to load RealGUD.
+
+Launching the debugger
+Open a source file, then use M-x realgud:<debugger-name> to start your favorite debugger (for example, you can use M-x realgud:pdb to launch PDB, a Python debugger). RealGUD opens two windows: the command window (showing the debugger's REPL), and the source window, showing your code (with some debuggers, such as realgud:gdb, this window does not appear until you type start in the command window). An solid arrow ▶ indicates the current line in the source window. Grayed out arrows indicate previous positions.
+
+Using the debugger
+All usual debugger commands work in the command window: for example, you can type n RET in the command window to step forward one source line. But RealGUD's power lies in the source window: in it, most single keys correspond to a debugger action. For example, you can press n in the source window to step forward.
+
+Source window commands
+Here is a quick rundown of the most useful commands. “:mouse2:” indicates mouse commands (commands that can be run by clicking on a variable or in the margins). Many of the commands are accessible from the tool bar (tool-bar-mode) and the menu (menu-bar-mode).
+
+Motion commands
+
+Command	Action
+n, F10	Next (aka “step over”, “step through”)
+s, SPC, F11	Step (aka “step into”)
+f, S-F11	Finish (aka “step out”, “return”)
+c, F5	Continue (run to next break point)
+Using breakpoints
+
+Command	Action
+b, F9	Set breakpoint :mouse2:
+D	Clear breakpoint :mouse2: (by number)
+Inspecting variables
+
+Command	Action
+mouse-2 (middle button)	Inspect variable under cursor (in tooltip) :mouse2:
+e	Evaluate expression
+Control commands
+
+Command	Action
+q, S-F5	Quit
+R, r	Run (aka “restart”)
+S	Go to command window
+Supported debuggers
+RealGUD supports many external debuggers. Help us support even more!
+
+Advanced topics
+Extra commands
+“⚙” indicates a work-in-progress (contributions welcome!)
+
+Command	Action
+U	Until (run to a greater source line)
+u, >	Up stack (move to older stack frame)
+d, <	Down stack (move to younger stack frame)
+X	Clear breakpoint (by line)
+j	Jump to current line ⚙
+-	Disable breakpoint ⚙
++	Enable breakpoint ⚙
+Tracking an existing debugger process
+Use M-x realgud-track-mode inside an existing shell, or eshell buffer to track an already-running debugger process.
+
+* c language
+** 编译器函数，预处理器指令, 杂行为，用来协助生成程序的
+   头文件： 先定义，后使用的先后顺序不能变
+** 数据类型
+*** 定义类型 int i; //声明，也是定义
+*** 定义结构
+    结构体
+ #+BEGIN_SRC c
+ struct [structure tag]
+ {
+    member definition;
+    member definition;
+    ...
+    member definition;
+ } [one or more structure variables]; 
+ #+END_SRC
+ C 共用体
+ #+BEGIN_SRC c
+ union [union tag]
+ {
+    member definition;
+    member definition;
+    ...
+    member definition;
+ } [one or more union variables];  
+ #+END_SRC
+ C 位域 (节省空间)
+ #+BEGIN_SRC c
+ struct
+ {
+   unsigned int widthValidated : 1;
+   unsigned int heightValidated : 1;
+ } status;
+ #+END_SRC
+ C typedef (别名)
+ : typedef unsigned char BYTE;
+
+*** 声明 extern int i; //声明，不是定义
   常量 使用 #define 预处理器。 //预处理器会处理掉,不用编译器处理 |  使用 const 关键字。
   C 存储类 定义 C 程序中变量/函数的范围（可见性）和生命周期
-*** auto 存储类是所有局部变量默认的存储类
-*** register 存储类用于定义存储在寄存器中而不是 RAM 中的局部变量,最大尺寸等于寄存器的大小
-: 不能对它应用一元的 '&' 运算符（因为它没有内存位置
-*** static 存储类指示编译器在程序的生命周期内保持局部变量的存在，而不需要在每次它进入和离开作用域时进行创建和销毁
-*** extern 存储类用于提供一个全局变量的引用，全局变量对所有的程序文件都是可见的。
-语句 & 表达式
-注释 /* comment */ or //
-C 结构体
-#+BEGIN_SRC c
-struct [structure tag]
-{
-   member definition;
-   member definition;
-   ...
-   member definition;
-} [one or more structure variables]; 
-#+END_SRC
-C 共用体
-#+BEGIN_SRC c
-union [union tag]
-{
-   member definition;
-   member definition;
-   ...
-   member definition;
-} [one or more union variables];  
-#+END_SRC
-C 位域 (节省空间)
-#+BEGIN_SRC c
-struct
-{
-  unsigned int widthValidated : 1;
-  unsigned int heightValidated : 1;
-} status;
-#+END_SRC
-C typedef (别名)
-: typedef unsigned char BYTE;
-** C 输入 & 输出
-*** getchar() & putchar() 函数
-int getchar(void) 函数从屏幕读取下一个可用的字符，并把它返回为一个整数。这个函数在同一个时间内只会读取一个单一的字符。您可以在循环内使用这个方法，以便从屏幕上读取多个字符。
-int putchar(int c) 函数把字符输出到屏幕上，并返回相同的字符。这个函数在同一个时间内只会输出一个单一的字符。您可以在循环内使用这个方法，以便在屏幕上输出多个字符。
-*** gets() & puts() 函数
-char *gets(char *s) 函数从 stdin 读取一行到 s 所指向的缓冲区，直到一个终止符或 EOF。
-int puts(const char *s) 函数把字符串 s 和一个尾随的换行符写入到 stdout。
-*** scanf() 和 printf() 函数
-     int scanf(const char *format, ...) 函数从标准输入流 stdin 读取输入，并根据提供的 format 来浏览输入。
-int printf(const char *format, ...) 函数把输出写入到标准输出流 stdout ，并根据提供的格式产生输出。
-** C 文件读写
-*** 打开 FILE *fopen( const char * filename, const char * mode );
-*** 关闭 int fclose( FILE *fp );
-*** 写入 int fputc( int c, FILE *fp ); /int fputs( const char *s, FILE *fp );
-*** 读取 char *fgets( char *buf, int n, FILE *fp );
+**** auto 存储类是所有局部变量默认的存储类
+**** register 存储类用于定义存储在寄存器中而不是 RAM 中的局部变量,最大尺寸等于寄存器的大小
+ : 不能对它应用一元的 '&' 运算符（因为它没有内存位置
+**** static 存储类指示编译器在程序的生命周期内保持局部变量的存在，而不需要在每次它进入和离开作用域时进行创建和销毁
+**** extern 存储类用于提供一个全局变量的引用，全局变量对所有的程序文件都是可见的。
+*** 常量 变量
+    常量的作用域广
+*** 位
+*** 数字
+    整型、浮点型、指针型和聚合类型（包含数组和结构体）
+*** 字符串
+    
+*** 数组 {}
+*** 链表
+*** 字典
+*** 图
+*** 实现
+**** 符号 符号位 和 原码，反码，补码, 可以构造出有符号的数
+** 函数
+*** 输入输出函数
+**** getchar() & putchar() 函数
+ int getchar(void) 函数从屏幕读取下一个可用的字符，并把它返回为一个整数。这个函数在同一个时间内只会读取一个单一的字符。您可以在循环内使用这个方法，以便从屏幕上读取多个字符。
+ int putchar(int c) 函数把字符输出到屏幕上，并返回相同的字符。这个函数在同一个时间内只会输出一个单一的字符。您可以在循环内使用这个方法，以便在屏幕上输出多个字符。
+**** gets() & puts() 函数
+ char *gets(char *s) 函数从 stdin 读取一行到 s 所指向的缓冲区，直到一个终止符或 EOF。
+ int puts(const char *s) 函数把字符串 s 和一个尾随的换行符写入到 stdout。
+**** scanf() 和 printf() 函数
+      int scanf(const char *format, ...) 函数从标准输入流 stdin 读取输入，并根据提供的 format 来浏览输入。
+ int printf(const char *format, ...) 函数把输出写入到标准输出流 stdout ，并根据提供的格式产生输出。
+*** 内存管理 动态内存分配与管理 <stdlib.h>
+**** void *calloc(int num, int size);该函数分配一个带有 num 个元素的数组，每个元素的大小为 size 字节。
+**** void free(void *address);该函数释放 address 所指向的h内存块。
+**** void *malloc(int num);该函数分配一个 num 字节的数组，并把它们进行初始化。
+**** void *realloc(void *address, int newsize);该函数重新分配内存，把内存扩展到 newsize。
+     
+ 对于长的 先是 l 然后是 符号位， 跟定义时一样
+*** 文件
+**** 文件读写
+***** 打开 FILE *fopen( const char * filename, const char * mode );
+***** 关闭 int fclose( FILE *fp );
+***** 写入 int fputc( int c, FILE *fp ); /int fputs( const char *s, FILE *fp );
+***** 读取 char *fgets( char *buf, int n, FILE *fp );
+*** 字符串处理 string.h
+    strlen 和 sizeof
+** 控制流程
+*** 分支
+*** 循环
 ** 头文件
 #+BEGIN_SRC c
 #ifndef HEADER_FILE
@@ -711,7 +850,7 @@ the entire header file file
  ...
  #include SYSTEM_H
 #+END_SRC
-** C 错误处理
+** 错误处理
    : 大多数的 C 或 UNIX 函数调用返回 1 或 NULL，同时会设置一个错误代码 errno，该错误代码是全局变量，表示在函数调用期间发生了错误。您可以在 <error.h> 头文件中找到各种各样的错误代码。
    : 开发人员应该在程序初始化时，把 errno 设置为 0，这是一种良好的编程习惯。0 值表示程序中没有错误。
 *** perror() 函数显示您传给它的字符串，后跟一个冒号、一个空格和当前 errno 值的文本表示形式。
@@ -719,14 +858,8 @@ the entire header file file
 *** 程序退出状态
 ****  exit(EXIT_FAILURE) 调用系统宏
 ****  exit(EXIT_SUCCESS)
-** 内存管理 动态内存分配与管理 <stdlib.h>
-*** void *calloc(int num, int size);该函数分配一个带有 num 个元素的数组，每个元素的大小为 size 字节。
-*** void free(void *address);该函数释放 address 所指向的h内存块。
-*** void *malloc(int num);该函数分配一个 num 字节的数组，并把它们进行初始化。
-*** void *realloc(void *address, int newsize);该函数重新分配内存，把内存扩展到 newsize。
-     
-对于长的 先是 l 然后是 符号位， 跟定义时一样
-* gcc 基于C/C++的预处理器和编译器
+* gcc 
+基于C/C++的预处理器和编译器
   -o：指定生成的输出文件,所以编译多个文件是,-o 没有意义；
   -E：仅执行编译预处理； .i
   -S：将C代码转换为汇编代码；.s
@@ -1217,12 +1350,12 @@ switch语句的操作数类型是long.
    : --change-leading-char
    : --remove-leading-char
    : --prefix-symbols=string
-* 合并库 ar crv libfoo.a a.o b.o
+* 归档、合并库
+  ar crv libfoo.a a.o b.o
   可以省略 $ gcc –o program program.o –L. –lfoo
-* $ ldd program  看看加载的库
+* 加载的库  
+$ ldd program
 * 重构？ 后期动态修改代码的思想（比如 多次使用的数字 最后用 宏替换）
-* C 仅有的四种数据类型？ 整型、浮点型、指针型和聚合类型（包含数组和结构体）
-* 符号？ 符号位 和 原码，反码，补码, 可以构造出有符号的数
 * C 语言的 limits.h文件? 不同平台 int /char/short/long/long long 表示的值不同，所以定义了专门的最大最小宏 用来测试
   [[file:image/intmacro.png][宏定义]] 
 * limits.h 的位置？ 位置在 /usr/include下

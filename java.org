@@ -1,5 +1,155 @@
-* 什么是java语言
-** 什么是java Options?
+* java-mode
+** Ensime key bindings
+*** Search
+
+ | Key Binding | Description                                         |
+ |-------------+-----------------------------------------------------|
+ | ~SPC m /~   | incremental search using =ensime-scalex= major mode |
+ | ~SPC m ?~   | incremental search in all live buffers              |
+
+*** Ensime Search Mode
+
+ | Key Binding | Description                                                       |
+ |-------------+-------------------------------------------------------------------|
+ | ~C-j~       | Move to next match                                                |
+ | ~C-k~       | Move to previous match                                            |
+ | ~C-i~       | Insert at point import of current result                          |
+ | ~RET~       | Jump to the target of the currently selected ensime-search-result |
+ | ~C-q~       | Quit ensime search                                                |
+
+*** sbt
+
+ | Key Binding | Description         |
+ |-------------+---------------------|
+ | ~SPC m b .~ | sbt transient state |
+ | ~SPC m b b~ | sbt command         |
+ | ~SPC m b c~ | compile             |
+ | ~SPC m b C~ | clean command       |
+ | ~SPC m b i~ | switch to sbt shell |
+ | ~SPC m b p~ | package command     |
+ | ~SPC m b r~ | run command         |
+
+*** Typecheck
+
+ | Key Binding | Description                     |
+ |-------------+---------------------------------|
+ | ~SPC m c t~ | type check the current file     |
+ | ~SPC m c T~ | type check all the open buffers |
+
+*** Debug
+
+ | Key Binding | Description                 |
+ |-------------+-----------------------------|
+ | ~SPC m d A~ | Attach to a remote debugger |
+ | ~SPC m d b~ | set breakpoint              |
+ | ~SPC m d B~ | clear breakpoint            |
+ | ~SPC m d C~ | clear all breakpoints       |
+ | ~SPC m d c~ | continue                    |
+ | ~SPC m d i~ | inspect value at point      |
+ | ~SPC m d n~ | next                        |
+ | ~SPC m d o~ | step out                    |
+ | ~SPC m d q~ | quit                        |
+ | ~SPC m d r~ | run                         |
+ | ~SPC m d s~ | step                        |
+ | ~SPC m d t~ | backtrace                   |
+
+ *Note:* These key bindings need a transient-state, PR welcome :-)
+
+*** Errors
+
+ | Key Binding | Description                                        |
+ |-------------+----------------------------------------------------|
+ | ~SPC m e e~ | print error at point                               |
+ | ~SPC m e l~ | show all errors and warnings                       |
+ | ~SPC m e s~ | switch to buffer containing the stack trace parser |
+
+*** Goto
+
+ | Key Binding | Description          |
+ |-------------+----------------------|
+ | ~SPC m g g~ | go to definition     |
+ | ~SPC m g i~ | go to implementation |
+ | ~SPC m g t~ | go to test           |
+
+*** Print and yank types
+
+ |-------------+--------------------------------|
+ | ~SPC m h T~ | print full type name at point  |
+ | ~SPC m h t~ | print short type name at point |
+ | ~SPC m y T~ | yank full type name at point   |
+ | ~SPC m y t~ | yank short type name at point  |
+
+*** Documentation, Inspect
+
+ | Key Binding | Description                            |
+ |-------------+----------------------------------------|
+ | ~SPC m h h~ | show documentation for symbol at point |
+ | ~SPC m h u~ | show uses for symbol at point          |
+ | ~SPC m i i~ | inspect type at point                  |
+ | ~SPC m i I~ | inspect type in other frame            |
+ | ~SPC m i p~ | inspect project package                |
+
+*** Server
+
+ | Key Binding | Description                                            |
+ |-------------+--------------------------------------------------------|
+ | ~SPC m D f~ | reload open files                                      |
+ | ~SPC m D r~ | regenerate the =.ensime= and restart the ensime server |
+ | ~SPC m D s~ | start ensime server                                    |
+
+*** Refactoring
+
+ | Key Binding | Description                                                          |
+ |-------------+----------------------------------------------------------------------|
+ | ~SPC m r a~ | add type annotation                                                  |
+ | ~SPC m r f~ | format source                                                        |
+ | ~SPC m r d~ | get rid of an intermediate variable (=ensime-refactor-inline-local=) |
+ | ~SPC m r D~ | get rid of an intermediate variable (=ensime-undo-peek=)             |
+ | ~SPC m r i~ | organize imports                                                     |
+ | ~SPC m r m~ | extract a range of code into a method                                |
+ | ~SPC m r r~ | rename a symbol project wide                                         |
+ | ~SPC m r t~ | import type at point                                                 |
+ | ~SPC m r v~ | extract a range of code into a variable                              |
+ | ~SPC m z~   | expand/contract region                                               |
+
+*** Tests
+
+ | Key Binding | Description              |
+ |-------------+--------------------------|
+ | ~SPC m t a~ | test command (sbt)       |
+ | ~SPC m t r~ | test quick command (sbt) |
+ | ~SPC m t t~ | test only (sbt)          |
+
+*** REPL
+
+ | Key Binding | Description                                                         |
+ |-------------+---------------------------------------------------------------------|
+ | ~SPC m s a~ | ask for a file to be loaded in the REPL                             |
+ | ~SPC m s b~ | send buffer to the REPL                                             |
+ | ~SPC m s B~ | send buffer to the REPL and focus the REPL buffer in =insert state= |
+ | ~SPC m s i~ | start or switch to the REPL inferior process                        |
+ | ~SPC m s r~ | send region to the REPL                                             |
+ | ~SPC m s R~ | send region to the REPL and focus the REPL buffer in =insert state= |
+** ensime java集成环境  
+   1.在工程下执行 sbt ensimeConfig 生成项目
+   2.emacs 打开服务并连接服务 ensime 就可以了, 多连接几次，可能在下载依赖
+   3.如要要用build 功能, 需配置，可以创建一个project/build.properties
+   #+BEGIN_SRC scala
+   sbt.version=1.0.4  
+   #+END_SRC
+   查看版本，可以在 sbt 命令行下，执行 sbtVersion
+  
+   这样就可以 build , 和执行了
+*** 什么是错误？ error 里面有 
+** sbt scala 写的 交互式构建工具
+   echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+   sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
+   sudo apt-get update
+   sudo apt-get install sbt
+   sbt repositories
+** maven 中国镜像
+* java目录
+** Options
    java CLASSNAME
    CLASSPATH 设置全局路径, 跟 PATH 常量差不多(编译和运行时都可用)
   指定搜索路径, 默认在当前目录 java -cp C:\workspace;C:\classes HelloWorld
@@ -19,11 +169,9 @@
 
       /** This is a C-style comment, but it
       is also a Javadoc comment. */
-      /**
-
 #+END_SRC
 : 注释中可以嵌入Html tag
-*
+  *
   * @param delay - elapsed time, in milliseconds
   * @throws TakesTooLongException
   * @returns total time, in milliseconds
@@ -408,10 +556,10 @@ eclipse
    •  Use case specification
    •  Class discovery and problem domain decomposition
    •  Technical requirements specification (architecturing)
-          •  Testing
-          •  Code and release management
-          •  Production and operations support
-          •  Bug and enhancement tracking
+   •  Testing
+   •  Code and release management
+   •  Production and operations support
+   •  Bug and enhancement tracking
 
 ** Swing 
 #+BEGIN_SRC java
@@ -575,46 +723,111 @@ public class hw
    Date类是以 UTC 为时间纪元 为状态设定的.
 Date类对日期的处理有局限, 如不能表示中国的农历等日期
 so, 类库实现者 将保存时间 与 给时间点命名分开. 一个 Date 类, 一个 GregorianCalendar 类
-* 什么是java名字空间? 设计成反写域名 com.xx
-* 什么是java引用其他的类? import
-* 什么是静态导入？ import static 可以不加类名调用对象的静态属性或方法
-* 什么是静态方法, 静态数据?
-* 什么是构造器的重载? 可以用this([param])
-* 什么是超类 ? super.method, 超类的构造器 super(param..)
-* 什么是 main的固定写法？ public static void main(String[] args)
-* 什么是不同公共文件类 必须写在不同文件？ java 这么规定的
-* 什么是给一个合适的警告或错误提示？ 这在编译器中特别有用
-* 什么是文档注释？ /** 开始 */ 结束
-  javadoc 文件名
-@see 放入链接
-@version 放入版本号
-@author 作者
-@param 方法参数
-@return 返回
-@throws
-* 什么是java 中没有unsigned类型? 说明都是有符号的
-* 什么是浮点的正无穷？　Double.POSITIVE_INFINITY
+* java
+** 对象   --语法
+   文字
+   整数
+   ArrayList
+   Iterator 
+   小数 默认 double, float 要加个 后缀 f 
+   多个数 []
+** 对象操作
+*** 文字
+    长度  length() 
+    equals
+    equalsIgnoreCase
+    toLowerCase
+    startsWith endsWith
+    substring
+*** 数组
+    ArrayList
+    add
+*** sound
+*** video
+*** music
+*** 异常
+** 流程控制 
+   for(String str: args)
+** 文档 
+** java Date 函数
+默认不带参数是 当前时间
+System.out.printf("%1$tm / %1$td \n",d);
+printf 函数的精致操作,%s 是输出字符串 
+Wed Jan 10 12:37:55 CST 2018
+** 运行在Java虚拟机上，又不像是解释型语言
+   java 虚拟机为下列各项做出了定义
+   指令集
+   注册类
+   类文件格式
+   栈
+垃圾收集堆
+存储区
+** java 运行环境执行三大任务
+   加载代码
+校验代码
+执行代码
+** 编译 javac 
+   -classpath Path
+   -d Dir   指定编译后的类存放路径
+   -g  生成调试表
+   -nowarn 关闭警告
+   -verbose 打开详细信息
+   -o 优化
+   相对的会在 当前目录一起编译 引用的文件，或者在classpath中找
+** 执行 需使用解释器 java
+** 类、包
+java 类库中有几个重要的包
+java.lang
+java.awt
+java.net
+java.io
+java.util
+
+类库被组织成几个包, 每个包含几个类
+java.lang   中 String, Math, Integer 和 Thread
+java.awt  包含图形类
+java.applet  包含可执行 applet 的特殊行为的类
+java.net 包含网络
+java.util  包含任务设置的实用程序类，如随机数，定义系统特性 ，日历
+
+引用其他的类 import
+静态导入？ import static 可以不加类名调用对象的静态属性或方法
+** appletviewer othions URL 测试 applet 的简单工具
+** 文档注释
+   /** 开始 */ 结束
+   javadoc 文件名
+   @see 放入链接
+   @version 放入版本号
+   @author 作者
+   @param 方法参数
+   @return 返回
+   @throws
+* 构造器的重载 可以用this([param])
+* 超类 super.method, 超类的构造器 super(param..)
+* 给一个合适的警告或错误提示？ 这在编译器中特别有用
+* java 中没有unsigned类型? 说明都是有符号的
+* 浮点的正无穷？　Double.POSITIVE_INFINITY
   Double.NEGATIVE_INFINITY
   Double.NaN 不能单纯比较
   Double.isNaN()
-* 什么是boolean? 名字都变了
-* 什么是常量定义？　 final 
-* 什么是导入数学库？ import static java.lang.Math.*;
-* 什么是数学的舍入成整数？ Math.round
-* 什么是数学的向下舍入？ Math.floor 返回的是 浮点表示的整数
-* 什么是数字进制转换？
+* boolean? 名字都变了
+* 常量定义？　 final 
+* 导入数学库？ import static java.lang.Math.*;
+* 数学的舍入成整数？ Math.round
+* 数学的向下舍入？ Math.floor 返回的是 浮点表示的整数
+* 数字进制转换？
 System.out.println(Integer.toBinaryString(a));
 转换成八进制把Binary换成Octal
 转换成十六进制把Binary换成Hex
-* 什么是枚举不能为本地变量？ 不同的函数分为不同的地域，所以不能在函数内定义，而是在大局内，类内定义
+* 枚举不能为本地变量？ 不同的函数分为不同的地域，所以不能在函数内定义，而是在大局内，类内定义
   enum Diannao{LIANXIANG,DELL,HUIPU};
-* 什么是java 中的String结构？ 是一个个 unicode 代码点，所以操作时注意, 代码点是char
-* 什么是子串？ substring
-* 什么是串相等？ "str".equals(obj)
-* 什么是 java.lang 库？
+* String结构？ 是一个个 unicode 代码点，所以操作时注意, 代码点是char
+* substring
+* 串相等 "str".equals(obj)
+* java.lang 库？
 java.lang.string
 java.util
-* 什么是java 默认导入的库？
+* java 默认导入的库
   java.awt:提交用户界面元件。
   java.io:提供与设备无关的输入，输出流支持、
   java.lang:提供支持Java的基础类、
@@ -625,60 +838,95 @@ java.util
   javax.servlet.*
   javax.servlet.jsp.*
   javax.servlet.http；
-* 什么是输入输出对象？ 这对象专门 细致地输入整数，整行 什么的
+* 输入输出对象 这对象专门 细致地输入整数，整行 什么的
 ** 什么是 Scanner? 键盘输入对象  java.util 中
    这种函数性抽象的东西，需要参数指定输入到哪里 new Scanner(System.in) 键盘缓冲
    对于字符串类型的数字，可以用 Integer.parseInt 或Double.parseDouble转换 
    输入容易数据错误
-* 什么是退出虚拟机执行？ exit(int status)  状态表示退出码，限定的数字，难道是继承
-* 什么是Date? 日期啊，时间也是日期一部分 这个类过时了, 用GregorianCalendar 格里高利
+* 退出虚拟机执行？ exit(int status)  状态表示退出码，限定的数字，难道是继承
+* Date? 日期啊，时间也是日期一部分 这个类过时了, 用GregorianCalendar 格里高利
   int  year=c.get(Calendar.YEAR);//获取年份  
 int  month=c.get(Calendar.MONTH);//获取月份  
 int  day=c.get(Calendar.DATE);//获取日期  
 int  minute=c.get(Calendar.MINUTE);//分  
 int  hour=c.get(Calendar.HOUR);//小时  
 int  second=c.get(Calendar.SECOND);//秒 
-* 什么是数组？ 一堆东西
+* 数组？ 一堆东西
 排序 Array.sort  只能是数字 组, 返回为空，输出的是参数所指向的数组对象
-* 什么是命令行参数？ 用空格隔开的都是一个参数字串
-* 什么是类，对象，实例化？ 更好模块化，调试，扩展
-* 什么是javac 编译？ 相对的会在 当前目录一起编译 引用的文件，或者在classpath中找
-* 什么是构造器？ 同类名相同 ，默认构造器，没参数的类名
-* 把类放在包中？ package com.aa.bb; 注意匹配目录(这个在引用的时候有用），编译原包时不管什么目录
-* 什么是设置类路径？ 因为类可能被放在不同目录中方便调用, 为了把类集中起来， 要配置 CLASSPATH环境变量或 设定 -classpath选项, 用: 分隔
-* 什么是继承? extends 原有的字段如果相同，就不用重写了，除非不同
-  使用父类的东西 super
-  构造函数直接可用 super, 同this 调用自己的其他构造器，两个用法
-* 什么是阻止继承？ final
-* 什么是抽象类？ 
-* 什么是泛型数组？ ArrayList<Classname> shuzu = new ArrayList<Classname>(); 数组要指定长度，而带指针的数组（链表）不需要指定长度.
-  方法：
-  ensureCapacity(100) 如果估算出长度
-  add 添加
-  size 尺寸
-  trimToSize 内存整理
-  get
-  set(i, obj)
-  remove
-* 什么是异常？ 
-  #+BEGIN_SRC java
-             try {
-                String name = "//penfold/Session";
-                // Obtain reference to the remote object
-                Session sess = (Session) Naming.lookup(name);
-                System.out.println("Pointless RMI Client. 47 + 13 = " +
-                                          sess.add(47,13) + ", right?");
-             } catch (Exception e) {
-                e.printStackTrace();
-             }
+* 命令行参数？ 用空格隔开的都是一个参数字串
+* 类，对象，实例化？ 更好模块化，调试，扩展
+* 构造器？ 同类名相同 ，默认构造器，没参数的类名
+* 把类放在包中 package com.aa.bb; 注意匹配目录(这个在引用的时候有用），编译原包时不管什么目录
+* 设置类路径 因为类可能被放在不同目录中方便调用, 为了把类集中起来， 要配置 CLASSPATH环境变量或 设定 -classpath选项, 用: 分隔
+* 继承? extends 原有的字段如果相同，就不用重写了，除非不同
+  类的东西 super
+  数直接可用 super, 同this 调用自己的其他构造器，两个用法
+* 阻止继承 final
+* 抽象类？ 
+* 泛型数组？ ArrayList<Classname> shuzu = new ArrayList<Classname>(); 数组要指定长度，而带指针的数组（链表）不需要指定长度.
+  
+  Capacity(100) 如果估算出长度
+  加
+  寸
+  Size 内存整理
+  
+   obj)
+  
+* 异常？ 
+  N_SRC java
+       try {
+          String name = "//penfold/Session";
+          // Obtain reference to the remote object
+          Session sess = (Session) Naming.lookup(name);
+          System.out.println("Pointless RMI Client. 47 + 13 = " +
+                                    sess.add(47,13) + ", right?");
+       } catch (Exception e) {
+          e.printStackTrace();
+       }
 
-  #+END_SRC
-* 什么是反射？ 用class, 返回方法，字段
+  SRC
+* 反射？ 用class, 返回方法，字段
   getDeclaringClass
   getExceptionTypes
   getModifiers
   getName
 * iterator 迭代 ，相比数组操作简单点  ArrayList
   Iterator.next()
-* 什么是
-* 什么是
+* eclipse
+  Eclipse导入工程后工程上显示一个小红叉，但工程里没有文件错误，也没有语法错误，百思不得其解啊，
+  后来在网上找了一些资料说是项目引用的类库路径有问题。【项目】->【右键】->【build path】->【configure build path】->【libraries】，
+  查看一下引用的类库路径。网上都说是因为这里引用错误引起的，但是我在项目导入的时候做的第一件事情就是修改这里的library，因此不是这个原因。
+  在problems中显示错误是：Target runtime Apache Tomcat 6.0 is not defined. 在网上查了一下终于找到解决方法。
+  方法是：在工程目录下的.settings文件夹里，打开org.eclipse.wst.common.project.facet.core.xml文件，其内容是：
+
+<?xmlversion="1.0"encoding="UTF-8"?> 
+<faceted-project> 
+<runtimename="Apache Tomcat v6.0"/> 
+<fixedfacet="jst.web"/> 
+<fixedfacet="jst.java"/> 
+<installedfacet="jst.java"version="6.0"/> 
+<installedfacet="jst.web"version="2.5"/> 
+<installedfacet="wst.jsdt.web"version="1.0"/> 
+</faceted-project>
+
+将其修改为：
+
+<?xml version="1.0" encoding="UTF-8" ?> 
+<faceted-project>
+</faceted-project>
+PS:进行上面的修改以后虽然没有错误了，但是想发布网站demo的时候发现没有【run as】->【run on server】这个选项了。
+这时候我们创建一个demo2的web project，然后查看.settings下的org.eclipse.wst.common.project.facet.core.xml，我们发现其内容是：
+
+<?xml version="1.0" encoding="UTF-8" ?> 
+ <faceted-project>
+  <runtime name="Apache Tomcat v6.0.29" /> 
+  <fixed facet="jst.web" /> 
+  <fixed facet="java" /> 
+  <fixed facet="wst.jsdt.web" /> 
+  <installed facet="java" version="1.6" /> 
+  <installed facet="jst.web" version="2.5" /> 
+  <installed facet="wst.jsdt.web" version="1.0" /> 
+  </faceted-project>
+那么我们只需要将该代码拷贝到网站demo下的.settings目录下，
+将原来的org.eclipse.wst.common.project.facet.core.xml覆盖即可。
+覆盖以后我们在Eclipse就能够使用【run as】->【run on server】来发布demo了。
