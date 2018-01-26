@@ -316,9 +316,11 @@ or lines in a file hosted on Git web services like GitHub, GitLab, Bitbucket...
   override this behavior by setting the variable =git-link-open-in-browser= to
   =nil=.
 * svn
-** svn 重新验证证书 ->会在用户名和密码错误的情况下重新验证 
-Error:  “Server certificate verification failed: issuer is not trusted”
-使用终端执行如下命令： svn list https://your.repository.url 接下来选择对应的（临时）/（永久）即可。
+  1、svn checkout 简写为svn co   svn-host 检出代码
+  2、svn info 查看svn信息(创建svn版本后才可以使用)
+  3、svn status 查看当前svn状态，包括未加入版本及未更新、上传
+  4、svn add path | file 将传目录或文件添加至svn
+  5、svn ci  －－message ‘mem’ 这里一定要有message,不然会报错。
 ** help
    查看修改的文件记录
    svn cat -- 显示特定版本的某文件内容。
@@ -396,7 +398,7 @@ vimdiff "$@"
 3. 打开的文件就是忽略列表文件了（默认是空的），每一行是一项，在该文件中输入temp，保存退出
 
 4. svn st查看状态，temp的?状态已经消除了
-
+   
 如果在svn propedit svn:ignore .时报错：svn: None of the environment variables SVN_EDITOR, VISUAL or EDITOR are set, and no 'editor-cmd' run-time configuration option was found
 
 说明SVN的默认属性编辑器没有设置，设置方法如下：
@@ -451,7 +453,6 @@ svn ci -m '忽略test.php文件'
 
 这时候，无论你如何修改test.php文件，再使用svn st时，也不会出现修改提示符合M了。
 jpg改doc
-
 * 我的Git工作流(上)
 初始化工作
 新建好项目之后，打开终端，运行：

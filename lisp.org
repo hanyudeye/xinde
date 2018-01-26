@@ -1,8 +1,42 @@
-* 数据类型(对象会有类型，但lisp(变量） 对象的类型可以变）
-** 基本类型（自带), 解释型语言不强制声明类型, 但要注意类型, 编程类型
-interger, float, cons, symbol, string, vector, hash-table, subr, byte-code function
-整数，浮点，字符，符号（函数），序列, 列表, 数组、向量，字符串，矢量（一维数组, 用一些符号存储方向）
-布尔，哈希表（超快查找表），宏，字节码，
+* 数据类型
+** 基本类型
+   interger, float
+*** 点对符号
+   cons  '(rose . red)
+    '(rose . red)
+    #+BEGIN_SRC lisp
+      (setq alist-of-colors
+            '((rose . red) (lily . white) (buttercup . yellow)))
+      (cdr '((rose . red) (lily . white) (buttercup . yellow)))
+    #+END_SRC
+*** symbol, string, vector, hash-table, subr, byte-code function
+   整数，浮点，字符，符号（函数），序列, 列表, 数组、向量，字符串，矢量（一维数组, 用一些符号存储方向）
+   布尔，哈希表（超快查找表），宏，字节码，
+*** 向量 vector
+    [1 "two" (three)]      ; A vector of three elements.
+*** 控制字符
+  表示法？ 加个问号 ?Q?81, 使用 (insert ?\s)
+  特殊的控制字符
+     ?\a ⇒ 7                 ; control-g, ‘C-g’
+     ?\b ⇒ 8                 ; backspace, <BS>, ‘C-h’
+     ?\t ⇒ 9                 ; tab, <TAB>, ‘C-i’
+     ?\n ⇒ 10                ; newline, ‘C-j’
+     ?\v ⇒ 11                ; vertical tab, ‘C-k’
+     ?\f ⇒ 12                ; formfeed character, ‘C-l’
+     ?\r ⇒ 13                ; carriage return, <RET>, ‘C-m’
+     ?\e ⇒ 27                ; escape character, <ESC>, ‘C-[’
+     ?\s ⇒ 32                ; space character, <SPC>
+     ?\\ ⇒ 92                ; backslash character, ‘\’
+     ?\d ⇒ 127               ; delete character, <DEL>
+*** 转义语法 对于转义符号 \ 的用法 (insert ?\u662f)是
+  1.指定unicode字符 ?\uNNNN, N是十六制数字   
+  2.用x指定十六进制字符码 ?\x41  八进制 ？\002
+  3.控制字符   ?\^I ⇒ 9     ?\C-I ⇒ 9   这里 ^ 和 C 等价 , a是0，以此类推，？是历史原因 127, 查看 lisp 手册
+  4.元字符语法 用<META> 键修饰 , 有 2**27这么多位长
+  ‘?\M-A’ 表示 ‘M-A’
+  ‘?\M-\C-b’, ‘?\C-\M-b’, or ‘?\M-\002’表示 ‘C-M-b’ 
+  5.‘?\H-\M-\A-x’ represents ‘Alt-Hyper-Meta-x’
+  6.‘?\C-\S-o’ or ‘?\C-\S-O’ represents the shifted-control-o character.
 ** editing 类型
 *** Buffer Type::         The basic object of editing.
 *** Marker Type::         A position in a buffer.
@@ -16,62 +50,232 @@ interger, float, cons, symbol, string, vector, hash-table, subr, byte-code funct
 *** Keymap Type::         What function a keystroke invokes.
 *** Overlay Type::        How an overlay is represented.
 *** Font Type::           Fonts for displaying text.
-* 对象的字符输出形式
-print 函数
-* 控制字符表示法？ 加个问号 ?Q?81, 使用 (insert ?\s)
-  特殊的控制字符
-     ?\a ⇒ 7                 ; control-g, ‘C-g’
-     ?\b ⇒ 8                 ; backspace, <BS>, ‘C-h’
-     ?\t ⇒ 9                 ; tab, <TAB>, ‘C-i’
-     ?\n ⇒ 10                ; newline, ‘C-j’
-     ?\v ⇒ 11                ; vertical tab, ‘C-k’
-     ?\f ⇒ 12                ; formfeed character, ‘C-l’
-     ?\r ⇒ 13                ; carriage return, <RET>, ‘C-m’
-     ?\e ⇒ 27                ; escape character, <ESC>, ‘C-[’
-     ?\s ⇒ 32                ; space character, <SPC>
-     ?\\ ⇒ 92                ; backslash character, ‘\’
-     ?\d ⇒ 127               ; delete character, <DEL>
-* 通用的转义语法？ 对于转义符号 \ 的用法 (insert ?\u662f)是
-  1.指定unicode字符 ?\uNNNN, N是十六制数字   
-  2.用x指定十六进制字符码 ?\x41  八进制 ？\002
-  3.控制字符   ?\^I ⇒ 9     ?\C-I ⇒ 9   这里 ^ 和 C 等价 , a是0，以此类推，？是历史原因 127, 查看 lisp 手册
-  4.元字符语法 用<META> 键修饰 , 有 2**27这么多位长
-  ‘?\M-A’ 表示 ‘M-A’
-  ‘?\M-\C-b’, ‘?\C-\M-b’, or ‘?\M-\002’表示 ‘C-M-b’ 
-  5.‘?\H-\M-\A-x’ represents ‘Alt-Hyper-Meta-x’
-  6.‘?\C-\S-o’ or ‘?\C-\S-O’ represents the shifted-control-o character.
-* cons cell? 是一种 car 插槽 和 cdr 插槽 组合而成的对象
-* 列表？ 列表是由一系列 cons cell组成的对象
-* 原子？ 相当于基本数据
-* 点对符号? 表示 cons cell 的一种方式
-  '(rose . red)
-  #+BEGIN_SRC lisp
-(setq alist-of-colors
-      '((rose . red) (lily . white) (buttercup . yellow)))
-(cdr '((rose . red) (lily . white) (buttercup . yellow)))
-  #+END_SRC
-* 向量？ vector
-  [1 "two" (three)]      ; A vector of three elements.
-* eval? 求值，调用lisp解释器
-* 控制结构?
-** 1.一段程序        
+* 函数
+  print 函数
+  setq 赋值语句
+  eval 求值
+  insert 插入字符串
+  局部变量定义  let ((name value)(name2 value))
+ 输入 (read-from-minibuffer "Enter your name: ")
+ 列表　(setq names '("xiaoli" "xiaoming"))
+* 控制结构
+** 一段程序        
   #+BEGIN_SRC lisp
     (progn (print "The first form")
            (print "The second form")
            (print "The third form"))
   #+END_SRC 
  prog2, prog3 的含义就是 返回的参数是哪一个 
-** 2.if
+** if
    #+BEGIN_SRC lisp
      (if nil
          (print 'true)
        'very-false)
 #+END_SRC
-* lisp interaction mode? buffer中可以直接解释lisp代码
-* 符号表达式？ 函数式编程，函数是第一位的，比如，吃，穿，用
-* setq? 赋值语句
-* insert? 插入字符串
-* 代码段？　用progn包含的东西
-* 局部变量定义?  let ((name value)(name2 value))
-* 输入？ (read-from-minibuffer "Enter your name: ")
-* 列表？　(setq names '("xiaoli" "xiaoming"))
+* lisp mode
+** lisp interaction mode buffer中可以直接解释lisp代码
+* elisp
+** 数据类型
+    “integer”, “float”, “cons”, “symbol”, “string”, “vector”,
+“hash-table”, “subr”, and “byte-code function”, plus several special
+types, such as “buffer”, 
+*** Numbers	
+    整数，浮点
+    #b101100 ⇒ 44
+     #o54 ⇒ 44
+     #x2c ⇒ 44
+     #24r1k ⇒ 44 基数(进位radix)是24 的值， 可以是2 到36 作为基数
+     有些机器位数过大会溢出，要注意
+     
+    操作(= 3 4)
+    isnan 判断浮点
+    frexp x
+*** Strings and Characters	Strings, and functions that work on them.
+*** Lists	Lists, cons cells, and related functions.
+*** Sequences Arrays Vectors	Lists, strings and vectors are called sequences. Certain functions act on any kind of sequence. The description of vectors is here as well.
+*** Hash Tables	Very fast lookup-tables.
+*** Symbols	Symbols represent names, uniquely.
+** 定义变量
+   setq 
+** 数据操作
+*** 数据转换
+    (truncate 2.3)
+    floor 地板
+    ceiling 天花板
+    round 四舍五入
+*** 算术操作
+    1+
+    1-
+    + - * / % mod(允许浮点数）
+   floor  ffloor 区别是一个返回整数，一个返回.0的小数 
+   fceiling
+   fround
+   sin
+   cos
+   tan
+   asin
+   acos
+   random 随机数
+**** 位操作 
+     lsh 左移
+     ash 符号位  如果是负数移位，就有区别
+     logand 逻辑与
+     logior 逻辑或
+     logxor 异或
+     lognot 非
+*** 字串操作
+ string-or-null-p
+ char-or-string-p
+ make-string count character  从字符创造字串
+ (make-string 5 ?x) "xxxxx"
+ (string ?a ?b ?c) 拼接 
+ substring
+ split-string
+ char-equal
+ string=
+ number-to-string number
+ string-to-number
+ char-to-string
+ format string &rest object
+ format-message string &rest objects
+ downcase
+*** 列表操作
+    consp object
+    atom  判断是不是基本元素
+    listp
+    null
+    访问元素
+ car
+ cdr
+ car-safe
+ pop 后面只能变量
+ nth n list
+ nthcdr n list 
+ last list n   
+ safe-length list
+
+ 构建
+ (cons 1 '(2))
+ append
+
+ 修改
+ push element listname
+
+ 关联列表
+      ((pine . cones)
+       (oak . acorns)
+       (maple . seeds))
+
+ 属性列表
+*** 列表扩展操作
+    sequenceq 是否是序列
+    length
+    elt sequence index  返回第几个元素, 从0开始
+    copy-sequence
+    reverse sequence
+    数组 [ 23 2 3]
+    arrayp object 是否数组
+    向量 数据类型不同的数组
+** Evaluation	How Lisp expressions are evaluatd.
+** 流程控制
+** Variables	Using symbols in programs to stand for values.
+** 函数
+** Macros	Macros are a way to extend the Lisp language.
+** Customization	Making variables and faces customizable.
+** Loading	
+   加载 load-file filename
+** Byte Compilation	Compilation makes programs run faster.
+** Debugging	Tools and tips for debugging Lisp programs.
+** Read and Print	Converting Lisp objects to text and back.
+** Minibuffers	Using the minibuffer to read input.
+** Command Loop	How the editor command loop works, and how you can call its subroutines.
+** Keymaps	Defining the bindings from keys to commands.
+** Modes	Defining major and minor modes.
+** Documentation	Writing and using documentation strings.
+** Files	Accessing files.
+** Backups and Auto-Saving	Controlling how backups and auto-save files are made.
+** Buffers	Creating and using buffer objects.
+** Windows	Manipulating windows and displaying buffers.
+** Frames	Making multiple system-level windows.
+** Positions	Buffer positions and motion functions.
+** Markers	Markers represent positions and update automatically when the text is changed.
+** Text	Examining and changing text in buffers.
+** Non-ASCII Characters	Non-ASCII text in buffers and strings.
+** Searching and Matching	Searching buffers for strings or regexps.
+** Syntax Tables	The syntax table controls word and list parsing.
+** Abbrevs	How Abbrev mode works, and its data structures.
+** Processes	Running and communicating with subprocesses.
+** Display	Features for controlling the screen display.
+** System Interface	Getting the user id, system type, environment variables, and other such things.
+** Packaging	Preparing Lisp code for distribution.
+** Appendices
+** Antinews	Info for users downgrading to Emacs 24.
+** GNU Free Documentation License	The license for this documentation.
+** GPL	Conditions for copying and changing GNU Emacs.
+** Tips	Advice and coding conventions for Emacs Lisp.
+** GNU Emacs Internals	Building and dumping Emacs; internal data structures.
+** Standard Errors	List of some standard error symbols.
+** Standard Keymaps	List of some standard keymaps.
+** Standard Hooks	List of some standard hook variables.
+** Index	Index including concepts, functions, variables, and other terms.
+* lisp列表 列表编程
+lisp 能识别的是 变量 或基本数据，不是的符号要 带 ' 号表示 符号某某, 基本类型带与不带都能识别
+还能识别操作，而识别操作的关键是 用 () 配对
+
+变量有名字属性，而符号是没有的，只有本身的值属性, 被定义的变量也能识别
+* 函数
+** 变量赋值
+   set setq
+** 局部变量定义
+   let
+   (let (
+(a 3)
+(b 4)
+))
+要两个括号
+** 函数定义 
+   defun
+** 使函数成为交互函数
+   就是 M-x 找的到的
+   #+BEGIN_SRC elisp
+     (defun fun()
+       " 说明"
+       (interactive "p") ;;添加这一段
+       (message "xxx")
+       )  
+   #+END_SRC
+** 交互方式
+   (interactive "r")  会将点位所在区域的开始值和结束值作为参量 要选择一个区域，不然取同一个值
+   (interactive "BAppend to buffer:") 提示输入缓冲区名字, 得到的值是缓冲区名
+** 字节编译
+byte-compile-file
+** 输入输出
+   message 输出到mini框
+** 编辑器内部
+   buffer-name
+   buffer-file-name
+   switch-to-buffer
+   point
+   point-min
+   point-max
+   buffer-size
+  goto-char 
+  push-mark
+  beginning-of-buffer
+  mark-whole-buffer
+  append-to-buffer
+  copy-to-buffer
+** 按键
+
+** 保存流程
+   save-excursion
+* 流程控制
+  数字, 字串都是真, nil 是假
+  if 条件
+  运行
+#+BEGIN_SRC elisp
+if else
+  (if (< 3 2)
+      (message "zhegn")
+  (message "buzhegnque"))
+#+END_SRC
