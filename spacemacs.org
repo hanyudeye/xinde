@@ -1,1321 +1,1772 @@
-* spacemacs 互动性强，扩展好，交际好，适应能力强，就够了，帮助足够，哈哈
-  risk of RSI  减轻腰肌劳损 还治病
-  增强扩展  更新 手动更新？ 在项目中用git pull origin 
-  更新包扩展？ 可以用命令 configuration-layer/update-packages 或点击主页面　update package
-* 扩展 以层或包的形式  
-** .spacemacs 配置的扩展  SPACEMACSDIR 
-   重新配置后, 就要重新初始化 spacemacs , 命令 SPC f e R
-   test test-dotfile
-   编辑样式 dotspacemacs-editing-style变量 或者 M-m t E/ SPC t E h 会取消hybrid模式，就是vim模式
-   前导键 空格 就是 Spacemacs 的命名来源
-   C-u 是vim的上翻页，SPC-u 是emacs的 数字参数
-** 配置dotspacemacs/layers   
-   官方层 ~/.emacs.d/layers
-   私人层~/.emacs.d/private
-   自定义 在.myconfig 文件夹(setq-default dotspacemacs-configuration-layer-path '("~/.myconfig/"))
-** 设置层变量 :variables
-#+BEGIN_SRC emacs-lisp
-(defun dotspacemacs/layers ()
-  ;; List of configuration layers to load.
-  (setq-default dotspacemacs-configuration-layers
-    '(auto-completion
-      (git :variables
-           git-magit-status-fullscreen t
-           git-variable-example nil)
-      smex)))
-#+END_SRC
-** 取消层的某些服务
-#+BEGIN_SRC emacs-lisp
-(defun dotspacemacs/layers ()
-  ;; List of configuration layers to load.
-  (setq-default dotspacemacs-configuration-layers
-    '(org git
-      (auto-completion :disabled-for org git))))
-#+END_SRC
-** 允许某些层服务
-#+BEGIN_SRC emacs-lisp
+* spacemacs
+** 优点  
+  互动，扩展，交际，适应，帮助
+  risk of RSI  减轻腰肌劳损
+  更新 git pull origin 
+** 更新包
+ configuration-layer/update-packages 或点击主页面　update package
+** 点文件执行顺序
+ 1.spacespacemacs / layers
+ 2.spacespacemacs / init 
+ 3.dotspacemacs / user-init
+ 4.spacespacemacs / user-config
+ 5.dotspacemacs / emacs-custom-settings
+** 层 
+*** 层或包
+**** .spacemacs 配置的扩展  SPACEMACSDIR 
+     重新配置后,就要重新初始化 spacemacs , 命令 SPC f e R
+     test test-dotfile
+     编辑样式 dotspacemacs-editing-style变量 或者 M-m t E/ SPC t E h 会取消hybrid模式，就是vim模式
+     前导键 空格 就是 Spacemacs 的命名来源
+     C-u 是vim的上翻页，SPC-u 是emacs的 数字参数
+**** 配置dotspacemacs/layers   
+     官方层 ~/.emacs.d/layers
+     私人层~/.emacs.d/private
+     自定义 在.myconfig 文件夹(setq-default dotspacemacs-configuration-layer-path '("~/.myconfig/"))
+**** 设置层变量 :variables
+  #+BEGIN_SRC emacs-lisp
   (defun dotspacemacs/layers ()
     ;; List of configuration layers to load.
     (setq-default dotspacemacs-configuration-layers
-      '(java python c-c++
-        (auto-completion :enabled-for))))
-#+END_SRC
-** 忽略的包/允许包
-#+BEGIN_SRC emacs-lisp
-(defun dotspacemacs/layers ()
-  ;; List of configuration layers to load.
-  (setq-default dotspacemacs-configuration-layers
-    '(auto-completion
-      (spacemacs-ui-visual :packages (not neotree fancy-battery))))
-#+END_SRC
+      '(auto-completion
+        (git :variables
+             git-magit-status-fullscreen t
+             git-variable-example nil)
+        smex)))
+  #+END_SRC
+**** 取消层的某些服务
+  #+BEGIN_SRC emacs-lisp
+  (defun dotspacemacs/layers ()
+    ;; List of configuration layers to load.
+    (setq-default dotspacemacs-configuration-layers
+      '(org git
+        (auto-completion :disabled-for org git))))
+  #+END_SRC
+**** 允许某些层服务
+  #+BEGIN_SRC emacs-lisp
+    (defun dotspacemacs/layers ()
+      ;; List of configuration layers to load.
+      (setq-default dotspacemacs-configuration-layers
+        '(java python c-c++
+          (auto-completion :enabled-for))))
+  #+END_SRC
+**** 忽略的包/允许包
+  #+BEGIN_SRC emacs-lisp
+  (defun dotspacemacs/layers ()
+    ;; List of configuration layers to load.
+    (setq-default dotspacemacs-configuration-layers
+      '(auto-completion
+        (spacemacs-ui-visual :packages (not neotree fancy-battery))))
+  #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-(defun dotspacemacs/layers ()
-  ;; List of configuration layers to load.
-  (setq-default dotspacemacs-configuration-layers
-    '(auto-completion
-      (spacemacs-ui-visual :packages neotree fancy-battery)))
-#+END_SRC
-** 配置变量，默认配置变量添加在 .spacemacs 末尾 或者 custom-file 会写在 配置文件里
-** 不想用某个包 (setq-default dotspacemacs-excluded-packages '(rainbow-delimiters))
-* 什么是spacemacs 层配置？
-  结构
-#+BEGIN_SRC 
-[LAYER_NAME]
-| __ [local] 本地包
-| | __ [包1]
-| | ...
-| | __ [包n]
-|  -  layers.el
-| __ packages.el
-| __ funcs.el
-| __ config.el
-| __ keybindings.el
-[] =目录
-#+END_SRC
+  #+BEGIN_SRC emacs-lisp
+  (defun dotspacemacs/layers ()
+    ;; List of configuration layers to load.
+    (setq-default dotspacemacs-configuration-layers
+      '(auto-completion
+        (spacemacs-ui-visual :packages neotree fancy-battery)))
+  #+END_SRC
+**** 配置变量，默认配置变量添加在 .spacemacs 末尾 或者 custom-file 会写在 配置文件里
+**** 不想用某个包 (setq-default dotspacemacs-excluded-packages '(rainbow-delimiters))
+*** 自定义层
+    结构
+  #+BEGIN_SRC 
+  [LAYER_NAME]
+  | __ [local] 本地包
+  | | __ [包1]
+  | | ...
+  | | __ [包n]
+  |  -  layers.el
+  | __ packages.el
+  | __ funcs.el
+  | __ config.el
+  | __ keybindings.el
+  [] =目录
+  #+END_SRC
 
-** layers.el? 声明附加图层的位置
-** packages.el 包的列表及其配置函数（init，post-init等）
-** funcs.el 在图层中定义所有的函数
-** config.el 图层配置
-** keybindings.el 
-** package?
-   需要在package.el 中第一函数
-#+BEGIN_SRC 
-(defun <layer> / init-xxx()... body)
-#+END_SRC
-** 排除包？
-#+BEGIN_SRC emacs-lisp
-（setq <layer> -excluded-packages'（package1 package2 ...）
-#+END_SRC
-** 添加包？
-#+BEGIN_SRC emacs-lisp
-   (defun dotspacemacs / layers()
-  “配置图层声明...”
-  （setq默认
-   ;; ...
-   dotspacemacs-additional-packages'（llvm-mode dts-mode）
-   ;; ...
-   ))
-#+END_SRC
-* 键绑定
-** 全局绑定 会被模式绑定覆盖
-(global-set-key (kbd "C-]") 'forward-char)
-//被下面的覆盖了
-(define-key evil-insert-state-map (kbd "C-]") 'forward-char)
-//用前导键
-#+BEGIN_SRC emacs-lisp
-(spacemacs/set-leader-keys "C-]" 'forward-char)
-(spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "C-]" 'forward-char)
-#+END_SRC
-* spacemacs?
-   主模式相关快捷键 SPC m
-   模式和状态
-   层
-   Spacemacs 具有层的概念。层类似于 vim 中的插件。它们提供可以在 Spacemacs 中使用的 新功能。
-   键位绑定约定
-     SPC b . 	   缓冲区微状态。
-     窗口
-     SPC w v 或 :vsplit 	    在右侧打开一个垂直分割。
-     SPC w s 或 :split 	    在下部打开一个水平分割。
-     SPC w h/j/k/l 	    在窗口间导航。
-     SPC w H/J/K/L 	    移动当前窗口。
-     SPC w . 	    窗口微状态。
-
-     文件
-     Spacemacs 中所有文件命令都有 SPC f 前缀。
-     SPC f f 	    打开一个缓冲区搜索当前目录中的文件。
-     SPC f r 	    打开一个缓冲区在最近打开的文件中搜索。
-     SPC f s 或 :w 	    保存当前文件。
-     :x 	    保存当前文件并退出。
-     :e <file> 	    打开<file>
-
-     帮助系统
-     Emacs 具有一个可扩展的帮助系统。所有的快捷键都有SPC h d 前缀，以允许便捷地访问帮助系统。
-     最重要的快捷键是 SPC h d f, SPC h d k, 和 SPC h d v。同样还有 SPC <f1> 允许用户搜索文档。
-     SPC h d f 	    对一个功能提示并显示其文档。
-     SPC h d k 	    对一个快捷键提示并显示其绑定的内容。
-     SPC h d v 	    对一个变量提示并显示其文档和当前值。
-     SPC <f1> 	    搜索一个命令，功能，变量或接口，并显示其文档
-     不论何时，你遇到怪异的行为或想知道是什么东西做的，这些功能是你应该首先查阅的。
-
-     探索
-     SPC f e h 	    列出所有层并允许你浏览层上的文件。
-     SPC ? 	    列出所有快捷键。
-
-     .spacemacs  文件
-     SPC f e d 	                打开你的 .spacemacs
-     SPC f e D 	                使用diff 通过默认模版手动更新你的 .spacemacs 
-
-     Emacs Lisp
-     变量
-     设置变量是定制 Spacemacs 行为最常见的方式。语法很简单：
-     (setq variable value) ; Syntax
-     ;; Setting variables example
-     (setq variable1 t; True
-     variable2 nil ; False
-     variable3 '("A" "list" "of" "things"))
-
-     快捷键
-     定义快捷键是几乎每个人都想做的事情，最好的方式就是使用内置的 define-key 函数。
-     (define-key map new-keybinding function) ; Syntax
-     ;; Map H to go to the previous buffer in normal mode
-     (define-key evil-normal-state-map (kbd "H") 'spacemacs/previous-useful-buffer)
-     ;; Mapping keybinding to another keybinding
-     (define-key evil-normal-state-map (kbd "H") (kbd "^")) ; H goes to beginning of the line
-
-     map 是你想要绑定键位到的 keymap。大多数情况下你会使用
-     evil-<state-name>-state-map。其对应不同的 evil-mode 状态。例如，使用 evil-insert-state-map 映射用于插入模式的快捷键。
-
-     使用 evil-leader/set-key 函数来映射 <Leader> 快捷键。
-     (evil-leader/set-key key function) ; Syntax
-     ;; Map killing a buffer to <Leader> b c
-     (evil-leader/set-key "bc" 'kill-this-buffer)
-     ;; Map opening a link to <Leader> o l only in org-mode
-     (evil-leader/set-key-for-mode 'org-mode
-     "ol" 'org-open-at-point)
-  
-     函数
-     你可能偶尔想要定义一个函数做更复杂的定制，语法很简单：
-     (defun func-name (arg1 arg2)
-     "docstring"
-     ;; Body
-     )
-     ;; Calling a function
-     (func-name arg1 arg1)
-     这里有个现实可用的示例函数：
-
-     ;; This snippet allows you to run clang-format before saving
-     ;; given the current file as the correct filetype.
-     ;; This relies on the c-c++ layer being enabled.
-     (defun clang-format-for-filetype ()
-     "Run clang-format if the current file has a file extensions
-     in the filetypes list."
-     (let ((filetypes '("c" "cpp")))
-     (when (member (file-name-extension (buffer-file-name)) filetypes)
-     (clang-format-buffer))))
-     ;; See http://www.gnu.org/software/emacs/manual/html_node/emacs/Hooks.html for
-     ;; what this line means
-     (add-hook 'before-save-hook 'clang-format-for-filetype)
-
-     激活一个层
-     正如上文术语那段所说，层提供一个简单的方式来添加特性。可在 .spacemacs 文件中激活
-     一个层。
-     在文件中找到 dotspacemacs-configuration-layers 变量，默认情况下，它看起来应该是这样的：
-     (defun dotspacemacs/layers ()
-     (setq-default
+**** layers.el? 声明附加图层的位置
+**** packages.el 包的列表及其配置函数（init，post-init等）
+**** funcs.el 在图层中定义所有的函数
+**** config.el 图层配置
+**** keybindings.el 
+**** package?
+     需要在package.el 中第一函数
+  #+BEGIN_SRC 
+  (defun <layer> / init-xxx()... body)
+  #+END_SRC
+**** 排除包？
+  #+BEGIN_SRC emacs-lisp
+  （setq <layer> -excluded-packages'（package1 package2 ...）
+  #+END_SRC
+**** 添加包？
+  #+BEGIN_SRC emacs-lisp
+     (defun dotspacemacs / layers()
+    “配置图层声明...”
+    （setq默认
      ;; ...
-     dotspacemacs-configuration-layers '(;; auto-completion
-     ;; better-defaults
-     emacs-lisp
-     ;; (git :variables
-     ;;      git-gutter-use-fringe t)
-     ;; markdown
-     ;; org
-     ;; syntax-checking
-     )))
-
-     你可以通过删除分号来取消注释这些建议的层，开箱即用。要添加一个层，就把它的名字添
-     加到列表中并重启
-     Emacs 或按 SPC f e R。使用 SPC f e h 来显示所有的层和他们的文档。
-
-     创建一个层
-     为了将配置分组或当配置与你的 .spacemacs 文件之间不匹配时，你可以创建一个配置层
-     。Spacemacs 提供了一个内建命令用于生成层的样板文件：SPC
-     :configuration-layer/create-layer。
-     这条命令将会生成一个如下的文件夹：
-
-     [layer-name]
-     |__ [local]*
-     | |__ [example-mode-1]
-     | |     ...
-     | |__ [example-mode-n]
-     |__ config.el*
-     |__ funcs.el*
-     |__ keybindings.el*
-     |__ packages.el
-
-     [] = 文件夹
-     \ * = 不是命令生成的文件
-
-     Packages.el 文件包含你可以在 <layer-name>-packages 变量中安装的包的列表。
-     所有 MELPA 仓库中的包都可以添加到这个列表中。还可以使用 :excludedt 特性将包包含
-     在列表中。
-     每个包都需要一个函数来初始化。这个函数必须以这种模式命名：
-     <layer-name>/init-<package-name>。
-     这个函数包含了包的配置。同时还有一个 pre/post-init 函数来在包加载之前或之后运行代码。它看起来想这个样子：
-
-     (setq layer-name-packages '(example-package
-     ;;这个层通过设置:excluded 属性
-     ;;为真(t)来卸载example-package-2
-     (example-package-2 :excluded t)))
-     (defun layer-name/post-init-package ()
-     ;;在这里添加另一个层的包的配置
-     )
-     (defun layer-name/init-example-package ()
-     ;;在这里配置example-package
-     )
-
-     **注意**：只有一个层可以具有一个对于包的 init 函数。如果你想覆盖另一个层对一个包
-     的配置，请使用 use-package hooks 中的 <layer-name>/pre-init 函数。
-     如果 MELPA 中没有你想要的包，你必须是由一个本地包或一个包源。关于此的更多信息可以从层的剖析处获得。
-
-     确保你添加了你的层到你的 .spacemacs 文件中，并重启 spacemacs 以激活。
-     关于层的加载过程和层的工作原理的详细描述可以参考LAYERS.org。
-
-     安装一个单独的包
-     有时创建一个层会有点大材小用了，也许你仅仅想要一个包而不想维持整个层。Spacemacs
-     在 .spacemacs 文件中的 dotspacemacs/layers 函数里提供了一个叫做
-     dotspacemacs-additional-packages 的变量，只要在列表中添加一个包名，它就会在你重
-     启的时候被安装。
-     下一段来说明如何加载这个包。
-     加载包
-     有没有想过 Spacemacs 如何可以在仅仅几秒钟之内加载超过 100 个包呢？
-     如此低的加载时间必须需要某种难以理解的黑魔法吧。还好这不是真的，多亏有了
-     use-package。
-     它是一个可以轻松实现对包进行延迟加载和配置的包。以下是它的基础用法：
-
-     ;; Basic form of use-package declaration. The :defer t tells use-package to
-     ;; try to lazy load the package.
-     (use-package package-name
-     :defer t)
-     ;; The :init section is run before the package loads The :config section is
-     ;; run after the package loads
-     (use-package package-name
-     :defer t
-     :init
-     (progn
-     ;; Change some variables
-     (setq variable1 t variable2 nil)
-     ;; Define a function
-     (defun foo ()
-     (message "%s" "Hello, World!")))
-     :config
-     (progn
-     ;; Calling a function that is defined when the package loads
-     (function-defined-when-package-loads)))
-
-     这只是 use-package 的一个非常基本的概述。它还有许多其他的方式来控制包的加载，就不在这里介绍了。
-     卸载一个包
-
-     Spacemacs 在 .spacemacs 文件中的 dotspacemacs/init 函数里提供了一个叫做
-     dotspacemacs-excluded-packages 的变量。只要在列表中添加一个包名，它就会在你重启的时候被卸载。
-     常见调整
-     本段是为了想要做更多调整的人所写的。除非另有说明，所有这些设置都去你的
-     .spacemacs 文件中的
-     dotspacemacs/user-config 函数里完成。
-
-     变更 escape 键
-     Spacemacs 使用 [[https://github.com/syl20bnr/evil-escape][evil-escape]] 来允许从许多拥有一个快捷键的 major-modes 中跳出。
-     你可以在你的 dotspacemacs/user-config 函数中像这样定制变量：
-     (defun dotspacemacs/user-config ()
+     dotspacemacs-additional-packages'（llvm-mode dts-mode）
      ;; ...
-     ;; Set escape keybinding to "jk"
-     (setq-default evil-escape-key-sequence "jk"))
-     更多的文档可以在 evil-escape README 中找到。
-
-     变更配色方案
-     .spacemacs 文件的 dotspacemacs/init 函数中有一个 dotspacemacs-themes 变量
-     。这是一个可以用 SPC T n 键循环的主题的列表。列表中的第一个主题是在启动时加载的主题。
-     以下为示例：
-
-     (defun dotspacemacs/init
-     ;; Darktooth theme is the default theme
-     ;; Each theme is automatically installed.
-     ;; Note that we drop the -theme from the package name.
-     ;; Ex. darktooth-theme -> darktooth
-     (setq-default dotspacemacs-themes '(darktooth
-     soothe
-     gotham)))
-
-     可以使用 SPC T h 键列出和选择所有已安装的主题。
-     非高亮搜索
-     Spacemacs 模仿了默认的 vim 行为，会高亮显示搜索结果，尽管你不在它们之间进行导航。
-     你可以使用 SPC s c 或 :nohlsearch 来关闭搜索结果高亮。
-     若再也不需要自动高亮结果，你可以卸载 evil-search-highlight-persist 包。
-
-     会话
-     当你打开 Spacemacs 时，它不会自动恢复窗口和缓冲区。如果你常使用 vim 会话，
-     你可能要在你的 .spacemacs 文件中的 dotspacemacs/user-config 里添加
-     (desktop-save-mode t)，然后你就可以使用 SPC : desktop-read 加载已被保存的会话。
-     桌面文件的位置可以使用 desktop-dirname 变量设置。要自动加载一个会话，就在你的
-     .spacemacs 文件中添加 (desktop-read)。
-
-     使用 visual lines 导航
-     Spacemacs 使用 vim 默认 actual lines 导航，即使它们被包装了。如果你想要让 j 和 k
-     的行为如 g j 和 g k 一般，将一下代码添加到你的 .spacemacs 文件：
-     (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
-     (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
-
-* spacemacs 默认对于不使用的包　会被删除？　不包含在层中的会删除，查看
-  dotspacemacs-install-packages 变量
-* Dotfile? spacemacs 配置文件
-** 什么是测试点文件？ 检查点文件的语法， dotspacemacs/test-dotfile
-** 什么是点文件执行顺序？
-1.spacespacemacs / layers
-2.spacespacemacs / init 
-3.dotspacemacs / user-init
-4.spacespacemacs / user-config
-5.dotspacemacs / emacs-custom-settings
-* 主题
-boolean 注释背景 spacemacs-theme-comment-bg
-(setq-default dotspacemacs-themes '(spacemacs-light leuven zenburn))
-* 字体
- dotspacemacs-default-font 
-#+BEGIN_SRC emacs-lisp
-(setq-default dotspacemacs-default-font '("Source Code Pro"
-                                          :size 13
-                                          :weight normal
-                                          :width normal
-                                          :powerline-scale 1.1))
-#+END_SRC
-* 模式行
-  行号
-#+BEGIN_SRC emacs-lisp
-  (setq-default dotspacemacs-lines-numbers '(:relative nil
-                                             :disabled-for-modes dired-mode
-                                                                 doc-view-mode
-                                                                 markdown-mode
-                                                                 org-mode
-                                                                 pdf-view-mode
-                                                                 text-mode
-                                             :size-limit-kb 1000))
-#+END_SRC
-* Frame title
-Default frame title displays name of current process and hostname of system. You
-can include more information (like name of current file, name of current project
-etc) by setting =dotspacemacs-frame-title-format= variable.
-
-Following format short codes are avialable:
-
-| Code | Description                                                                  |
-|------+------------------------------------------------------------------------------|
-| =%a= | the `abbreviated-file-name', or `buffer-name'                                |
-| =%t= | `projectile-project-name'                                                    |
-| =%I= | `invocation-name'                                                            |
-| =%S= | `system-name'                                                                |
-| =%U= | contents of $USER                                                            |
-| =%b= | buffer name                                                                  |
-| =%f= | visited file name                                                            |
-| =%F= | frame name                                                                   |
-| =%s= | process status                                                               |
-| =%p= | percent of buffer above top of window, or Top, Bot or All                    |
-| =%P= | percent of buffer above bottom of window, perhaps plus Top, or Bottom or All |
-| =%m= | mode name                                                                    |
-| =%n= | Narrow if appropriate                                                        |
-| =%z= | mnemonics of buffer, terminal, and keyboard coding systems                   |
-| =%Z= | like %z, but including the end-of-line format"                               |
-
-*** Iconified (tabified) title
-If you are using tiling window manager with tab support you may want to display
-different title for inactive tabs with =dotspacemacs-icon-title-format=
-variable. Short codes are same as for frame title.
-
-If this variable is set to =nil= (default) its value will be same as
-=dotspacemacs-frame-title-format=.
-
-* 布局
-** 工程布局 布局名和工程名同名
-* 工作空间 这环境弄的有点特殊
-* EScaping 在vim 中很重要
-  (setq-default evil-escape-key-sequence "jj"))
-* 键绑定帮助  
-| Key Binding | Description                                               |
-|-------------+-----------------------------------------------------------|
-| ~SPC h d b~ | describe bindings                                         |
-| ~SPC h d c~ | describe current character under point                    |
-| ~SPC h d d~ | describe current expression under point                   |
-| ~SPC h d f~ | describe a function                                       |
-| ~SPC h d F~ | describe a face                                           |
-| ~SPC h d k~ | describe a key                                            |
-| ~SPC h d K~ | describe a keymap                                         |
-| ~SPC h d l~ | copy last pressed keys that you can paste in gitter chat  |
-| ~SPC h d m~ | describe current modes                                    |
-| ~SPC h d p~ | describe a package (Emacs built-in function)              |
-| ~SPC h d P~ | describe a package (Spacemacs layer information)          |
-| ~SPC h d s~ | copy system information that you can paste in gitter chat |
-| ~SPC h d t~ | describe a theme                                          |
-| ~SPC h d v~ | describe a variable                                       |
-
-Other help key bindings:
-
-| Key Binding | Description                                           |
-|-------------+-------------------------------------------------------|
-| ~SPC h SPC~ | discover Spacemacs documentation, layers and packages |
-| ~SPC h i~   | search in info pages with the symbol at point         |
-| ~SPC h k~   | show top-level bindings with =which-key=              |
-| ~SPC h m~   | search available man pages                            |
-| ~SPC h n~   | browse emacs news                                     |
-
-Navigation key bindings in =help-mode=:
-
-* 文件操作
-| Key Binding | Description                                                                                            |
-|-------------+--------------------------------------------------------------------------------------------------------|
-| ~SPC f b~   | go to file bookmarks                                                                                   |
-| ~SPC f c~   | copy current file to a different location                                                              |
-| ~SPC f C d~ | convert file from unix to dos encoding                                                                 |
-| ~SPC f C u~ | convert file from dos to unix encoding                                                                 |
-| ~SPC f D~   | delete a file and the associated buffer (ask for confirmation)                                         |
-| ~SPC f E~   | open a file with elevated privileges (sudo edit)                                                       |
-| ~SPC f f~   | open file                                                                                              |
-| ~SPC f F~   | try to open the file under point                                                                       |
-| ~SPC f h~   | open binary file with =hexl= (a hex editor)                                                            |
-| ~SPC f j~   | jump to the current buffer file in dired                                                               |
-| ~SPC f J~   | open a junk file, in mode determined by the file extension provided (defaulting to =fundamental mode=) |
-| ~SPC f l~   | open file literally in =fundamental mode=                                                              |
-| ~SPC f L~   | Locate a file (using =locate=)                                                                         |
-| ~SPC f o~   | open a file using the default external program                                                         |
-| ~SPC f R~   | rename the current file                                                                                |
-| ~SPC f s~   | save a file                                                                                            |
-| ~SPC f S~   | save all files                                                                                         |
-| ~SPC f r~   | open a recent file                                                                                     |
-| ~SPC f t~   | toggle file tree side bar using [[https://github.com/jaypei/emacs-neotree][NeoTree]]                                                                |
-| ~SPC f v d~ | add a directory variable                                                                               |
-| ~SPC f v f~ | add a local variable to the current file                                                               |
-| ~SPC f v p~ | add a local variable to the first line of the current file                                             |
-| ~SPC f y~   | show and copy current file absolute path in the minibuffer                                             |
-* ace-link模式
-在 help-mode 和 info-mode 中可以 用 o 快速跳转
-* 自动保存
-* 通过语义列出符号 SPC s j  
-* 寄存器
-  | Key Binding | Description                        |
-  |-------------+------------------------------------|
-  | ~SPC r e~   | show evil yank and named registers |
-  | ~SPC r m~   | show marks register                |
-  | ~SPC r r~   | show helm register                 |
-  | ~SPC r y~   | show kill ring                     |
-
-* 错误 通过flycheck 给出
-  | Key Binding | Description                                                           |
-  |-------------+-----------------------------------------------------------------------|
-  | ~SPC t s~   | toggle flycheck                                                       |
-  | ~SPC e c~   | clear all errors                                                      |
-  | ~SPC e h~   | describe a flycheck checker                                           |
-  | ~SPC e l~   | toggle the display of the =flycheck= list of errors/warnings          |
-  | ~SPC e n~   | go to the next error                                                  |
-  | ~SPC e p~   | go to the previous error                                              |
-  | ~SPC e v~   | verify flycheck setup (useful to debug 3rd party tools configuration) |
-  | ~SPC e .~   | error transient state                                                 |
-
-* 注释 SPC ; ;
-* 创建你的第一个 Spacemacs Layer
-1. 如何更新 Spacemacs, 同步官方 develop 分支及注意事项
-2. Layer 的 variables 变量及使用方法
-3. 如何创建自己的 Layer
-4. 如何定制 modeline
-5. evlified state
-
-** 如何更新 Spacemacs
-
-可以通过 git 的方式来更新代码, 假设我们使用的是 develop 分支:
-
-#+BEGIN_SRC shell
-  git checkout develop
-  git fetch upstream
-  git merge upstream/develop
-#+END_SRC
-
-一般来说, 如果你不熟悉 emacs 并且你的 Spacemacs 配置能够正常工作, 则不需要频繁的更新代码, 以避免更新之后配置不能使用.
-
-** variables 变量
-
-每一个 layer 都可以配置一些变量, 可以通过 *SPC h SPC* 然后输入 layer 名称, 点击对应的选项即可打开该 layer 的 README.org 文件.
-然后按下 SPC f j 进入 dired 模式, 选择 config.el 文件打开, 该文件中即定义了该 layer 的变量.
-
-例如 better-default layer 的变量如下:
-
-#+BEGIN_SRC emacs-lisp
-  (defvar better-defaults-move-to-beginning-of-code-first t
-    "when t, first stroke of C-a will move the cursor to the beginning of code.
-  When nil, first stroke will go to the beginning of line.
-  Subsequent strokes will toggle between beginning of line and beginning of code.")
-
-  (defvar better-defaults-move-to-end-of-code-first nil
-    "when t, first stroke of C-e will move the cursor to the end of code (before comments).
-  When nil, first stroke will go to the end of line (after comments).
-  Subsequent strokes will toggle between end of line and end of code.")
-#+END_SRC
-
-要配置使用这些变量, 可以在启用 layer 时使用如下的代码:
-
-#+BEGIN_SRC emacs-lisp
-  (better-defaults :variables
-                   better-defaults-move-to-end-of-code-first t)
-#+END_SRC
-
-** 定制 modeline
-
-在 emacs25.1 中, 该版本的 modeline 和以前版本不同, 可以通过如下方式将 modeline 修改为以前的显示形状:
-
-在 dotspacemacs/user-config 中加入如下代码:
-
-#+BEGIN_SRC emacs-lisp
-  (setq ns-use-srgb-colorspace nil)
-#+END_SRC
-
-** 创建自己的 layer
-假设我们需要创建一个 layer, 名叫 zilongshanren, 并且在 layer 下包含一个名叫 youdao-dictionary 的 package.
-
-首先利用 spacemacs 提供的函数创建 layer. 按下 M-x 并且输入 configuration-layer/create-layer, 然后选择路径 ~/.spacemacs.d,
-确定创建 README, 然后我们就可以看到 layer 创建成功.
-
-每一个 layer 的结构如下:
-
-#+BEGIN_EXAMPLE
-    [layer_name]
-      |__ [local]
-      | |__ [package 1]
-      | |     ...
-      | |__ [package n]
-      |-- layers.el
-      |__ packages.el
-      |__ funcs.el
-      |__ config.el
-      |__ keybindings.el
-
-    [] = directory
-#+END_EXAMPLE
-
-即每一个 layer 目录下都可以包含 layers.el, packages.el 等文件, 以及一个名叫 local 的目录.
-
-每一个文件的内容描述如下:
-
-| 文件名          | 用处                                                                                        |
-|----------------+--------------------------------------------------------------------------------------------------|
-| layers.el      | 申明一些额外的 layer 依赖 |
-| packages.el    | 一些 layer 使用到的 package 以及相关配置函数 |
-| funcs.el       | 定义一些 layer 层次的函数, 即全局函数 |
-| config.el      | layer 的配置, 此处定义的配置可以在 .spacemacs 中申明 layer 时进行配置, 也可以定义 emacs 的默认配置 |
-| keybindings.el | 快捷键配置 |
-
-现在我们可以把 youdao-dictionary 加入到 layer 中, 编辑 packages.el:
-
-#+BEGIN_SRC emacs-lisp
-
-  ;; 添加 package
-  (defconst zilongshanren-packages
-    '(youdao-dictionary)
-    )
-
-  ;; 初始化 package
-  ;; 可以使用 , d m 快捷键, 然后按下 e 展开宏
-  (defun zilongshanren/init-youdao-dictionary ()
-    (use-package youdao-dictionary
-      :defer t
-      :init
-      (spacemacs/set-leader-keys "oy" 'youdao-dictionary-search-at-point+)
-      )
-    )
-#+END_SRC
-
-编辑 config.el 文件:
-
-#+BEGIN_SRC emacs-lisp
-  ;; 开启行号显示
-  (global-linum-mode t)
-
-  ;; 定义快捷键
-  (global-set-key (kbd "M-s o") 'occur-dwim)
-
-  ;; 将 occur 的 buffer 中的光标移动方式修改为 HJKL
-  (evilified-state-evilify-map occur-mode-map
-    :mode occur-mode)
-#+END_SRC
-
-编辑 keybindings.el 文件:
-
-#+BEGIN_SRC emacs-lisp
-  ;; dwin = do what i mean.
-  (defun occur-dwim ()
-    "Call `occur' with a sane default."
-    (interactive)
-    (push (if (region-active-p)
-              (buffer-substring-no-properties
-               (region-beginning)
-               (region-end))
-            (let ((sym (thing-at-point 'symbol)))
-              (when (stringp sym)
-                (regexp-quote sym))))
-          regexp-history)
-    (call-interactively 'occur))
-#+END_SRC
-
-然后将 zilongshanren 加到 *dotspacemacs-configuration-layers* 变量中, 即可让 layer 配置生效.
-
-** 文档
-
-spacemacs 的文档保存在 doc 目录下, 包含有 CONVENTIONS.org, DOCUMENTATION.org 等文档文件, 建议大家多多阅读.
-
-* 第十三天: 定制你的 Layer
-
-视频地址如下:
-
-- [[http://pan.baidu.com/s/1kVroHCj][百度网盘]]
-- [[http://v.youku.com/v_show/id_XMTYyOTcyNjk0NA==.html][优酷]]
-- [[https://youtu.be/RMofkN3IcKE][Youtube]]
-
-主要内容:
-
-1. 修复上一期视频中 occur-mode 启动的问题
-2. 修复 ivy0.8 导致的问题, 同时简单探讨了一下今后如何避免和处理类似的问题
-3. 介绍 post-init 和 pre-init 的用法, 介绍了如何定制 spacemacs 的 company-mode
-4. 介绍 layers.el 文件, 演示该文件的作用
-5. 介绍 layer 的 package 的 location 变量, 演示了如何从 github 获取并安装 package 的方法
-
-** 修复上一期视频中的配置问题
-
-在之前的配置代码中, 如果我们启动 emacs 会出现以下错误:
-
-#+BEGIN_EXAMPLE
-Symbol's function definition is void: evilified-state-evilify-map
-#+END_EXAMPLE
-
-这是因为这个符号在 config.el 中使用的时候还是空的, 我们可以通过以下方式修复, 编辑 config.el 文件, 将以下代码移动到 dotspacemacs/user-config 函数中:
-
-#+BEGIN_SRC emacs-lisp
-  (evilified-state-evilify-map occur-mode-map
-    :mode occur-mode)
-#+END_SRC
-
-** 修复 ivy0.8 的问题
-
-在 ivy 升级到0.8版本时, 对其中一个API的返回值进行了修改:
-
-#+BEGIN_SRC emacs-lisp
-  (let (res)
-    (ivy-with
-     '(ivy-read "test: "
-                '(("one" . 1) ("three" . 3))
-                :action (lambda (x) (setq res x)))
-     "t C-m")
-    res)
-  ;; =>
-  ;; ("three" . 3)
-#+END_SRC
-
-在之前的版本中, 这个函数的返回值是 3, 在0.8版本中被修改为了一个列表. 如果要修复这个问题, 我们需要在使用返回值的时候加上 cdr, 具体的修改可以查看[[https://github.com/syl20bnr/spacemacs/pull/6478][fix break API changes for ivy 0.8]].
-
-** post-init 和 pre-init
-
-有一些 mode 已经安装, 例如 company-mode 已经被 auto-completion layer 安装, 如果这时我们还想对该 mode 进行一些定制, 那么我们可以这样处理:
-
-1. 在我们的 layer 中添加这个包
-
-#+BEGIN_SRC emacs-lisp
+     ))
+  #+END_SRC
+*** 创建你的第一个 Spacemacs Layer
+  1. 如何更新 Spacemacs, 同步官方 develop 分支及注意事项
+  2. Layer 的 variables 变量及使用方法
+  3. 如何创建自己的 Layer
+  4. 如何定制 modeline
+  5. evlified state
+
+**** 如何更新 Spacemacs
+
+  可以通过 git 的方式来更新代码, 假设我们使用的是 develop 分支:
+
+  #+BEGIN_SRC shell
+    git checkout develop
+    git fetch upstream
+    git merge upstream/develop
+  #+END_SRC
+
+  一般来说, 如果你不熟悉 emacs 并且你的 Spacemacs 配置能够正常工作, 则不需要频繁的更新代码, 以避免更新之后配置不能使用.
+
+**** variables 变量
+
+  每一个 layer 都可以配置一些变量, 可以通过 *SPC h SPC* 然后输入 layer 名称, 点击对应的选项即可打开该 layer 的 README.org 文件.
+  然后按下 SPC f j 进入 dired 模式, 选择 config.el 文件打开, 该文件中即定义了该 layer 的变量.
+
+  例如 better-default layer 的变量如下:
+
+  #+BEGIN_SRC emacs-lisp
+    (defvar better-defaults-move-to-beginning-of-code-first t
+      "when t, first stroke of C-a will move the cursor to the beginning of code.
+    When nil, first stroke will go to the beginning of line.
+    Subsequent strokes will toggle between beginning of line and beginning of code.")
+
+    (defvar better-defaults-move-to-end-of-code-first nil
+      "when t, first stroke of C-e will move the cursor to the end of code (before comments).
+    When nil, first stroke will go to the end of line (after comments).
+    Subsequent strokes will toggle between end of line and end of code.")
+  #+END_SRC
+
+  要配置使用这些变量, 可以在启用 layer 时使用如下的代码:
+
+  #+BEGIN_SRC emacs-lisp
+    (better-defaults :variables
+                     better-defaults-move-to-end-of-code-first t)
+  #+END_SRC
+
+**** 定制 modeline
+
+  在 emacs25.1 中, 该版本的 modeline 和以前版本不同, 可以通过如下方式将 modeline 修改为以前的显示形状:
+
+  在 dotspacemacs/user-config 中加入如下代码:
+
+  #+BEGIN_SRC emacs-lisp
+    (setq ns-use-srgb-colorspace nil)
+  #+END_SRC
+
+**** 创建自己的 layer
+  假设我们需要创建一个 layer, 名叫 zilongshanren, 并且在 layer 下包含一个名叫 youdao-dictionary 的 package.
+
+  首先利用 spacemacs 提供的函数创建 layer. 按下 M-x 并且输入 configuration-layer/create-layer, 然后选择路径 ~/.spacemacs.d,
+  确定创建 README, 然后我们就可以看到 layer 创建成功.
+
+  每一个 layer 的结构如下:
+
+  #+BEGIN_EXAMPLE
+      [layer_name]
+        |__ [local]
+        | |__ [package 1]
+        | |     ...
+        | |__ [package n]
+        |-- layers.el
+        |__ packages.el
+        |__ funcs.el
+        |__ config.el
+        |__ keybindings.el
+
+      [] = directory
+  #+END_EXAMPLE
+
+  即每一个 layer 目录下都可以包含 layers.el, packages.el 等文件, 以及一个名叫 local 的目录.
+
+  每一个文件的内容描述如下:
+
+  | 文件名          | 用处                                                                                        |
+  |----------------+--------------------------------------------------------------------------------------------------|
+  | layers.el      | 申明一些额外的 layer 依赖 |
+  | packages.el    | 一些 layer 使用到的 package 以及相关配置函数 |
+  | funcs.el       | 定义一些 layer 层次的函数, 即全局函数 |
+  | config.el      | layer 的配置, 此处定义的配置可以在 .spacemacs 中申明 layer 时进行配置, 也可以定义 emacs 的默认配置 |
+  | keybindings.el | 快捷键配置 |
+
+  现在我们可以把 youdao-dictionary 加入到 layer 中, 编辑 packages.el:
+
+  #+BEGIN_SRC emacs-lisp
+
     ;; 添加 package
     (defconst zilongshanren-packages
-      '(youdao-dictionary
-        company  ; 添加 company package
+      '(youdao-dictionary)
+      )
+
+    ;; 初始化 package
+    ;; 可以使用 , d m 快捷键, 然后按下 e 展开宏
+    (defun zilongshanren/init-youdao-dictionary ()
+      (use-package youdao-dictionary
+        :defer t
+        :init
+        (spacemacs/set-leader-keys "oy" 'youdao-dictionary-search-at-point+)
         )
       )
-#+END_SRC
+  #+END_SRC
 
-2. 然后定义一个 post-init 函数
+  编辑 config.el 文件:
 
-#+BEGIN_SRC emacs-lisp
-  ;; 定制 company-mode
-  (defun zilongshanren/post-init-company ()
-    (setq company-minimum-prefix-length 1)
-    )
-#+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    ;; 开启行号显示
+    (global-linum-mode t)
 
-然后重启 emacs 即可以看到定制的效果.
+    ;; 定义快捷键
+    (global-set-key (kbd "M-s o") 'occur-dwim)
 
-对于 package 的三个函数: pre-init, init, post-init, spacemacs是按照这个顺序来依次调用的.
-
-** location
-
-在安装 package 时, 我们如果只输入 package 的名字, 那么默认是从 melpa 下载安装的. 如果我们想自定义 package 的安装地址, 那么我们就可以使用 location 变量.
-
-*** 自带 package
-
-例如我们使用一个自带的 occur package:
-
-#+BEGIN_SRC emacs-lisp
-  ;; 自定义 package 安装地址
-  (defconst zilongshanren-packages
-    '(youdao-dictionary
-      (occur-mode :location built-in)
-      )
-    )
-
-  ;; 初始化 occur mode
-  (defun zilongshanren/init-occur-mode ()
+    ;; 将 occur 的 buffer 中的光标移动方式修改为 HJKL
     (evilified-state-evilify-map occur-mode-map
-      :mode occur-mmode)
-    )
-#+END_SRC
+      :mode occur-mode)
+  #+END_SRC
 
-*** 从 github 安装
-
-例如我们从 github 安装 gulpjs package:
-
-#+BEGIN_SRC emacs-lisp
-  ;; 自定义 package 安装地址
-  (defconst zilongshanren-packages
-    '(youdao-dictionary
-      (occur-mode :location built-in)
-      (gulpjs :location (recipe :fetcher github :repo "zilongshanren/emacs-gulpjs"))
-      )
-    )
-
-  (defun zilongshanren/init-gulpjs ()
-    (use-package gulpjs
-      :init)
-    )
-#+END_SRC
-
-在 emacs 启动时就会从 github 上下载 guiljs package 并安装到本地.
-
-** layers.el
-
-如果我们需要对某些 layer 中的 package 配置进行大量的重写, 那么我们可以移除这个 layer 的某个 package. 我们可以通过 layers.el 来实现这一点, 例如移除 chinese layer 的 youdao-dictionary package:
-
-#+BEGIN_SRC emacs-lisp
-  (configuration-layer/remove-layer 'youdao-dictionary)
-#+END_SRC
-
-然后我们可以在自己的 layer 中添加这个 package, 然后对它进行定制.
-在这种情况下, spacemacs 不会在 chinese layer 中加载 youdao-dictionary 这个 package, 而是在我们的 layer 中加载这个 package, 以实现对 spacemacs 内置的package 的定制.
-
-* 文件和 Buffer 操作
-1. 我的配置和 spacemacs配置的一些不同点
-2. 文件相关操作
-3. Buffer 相关操作
-4. Dired
-
-** 不同点
-- 没有使用官方的 modeline, 而是采用自己定制的
-- 排除掉了大量的作者认为对他没有作用的 package, 因为这些 package 确实不经常使用, 反而可能导致一些 BUG 或者导致 spacemacs 启动或使用过程中变慢
-
-** 文件相关操作
-1. SPC p f
-  在当前的项目中查找文件, 类似于 vim 中的 Ctrl-p. 在作者的配置中, 该快捷键被绑定到了以下函数:
+  编辑 keybindings.el 文件:
 
   #+BEGIN_SRC emacs-lisp
-    (defun zilongshanren/open-file-with-projectile-or-counsel-git ()
+    ;; dwin = do what i mean.
+    (defun occur-dwim ()
+      "Call `occur' with a sane default."
       (interactive)
-      (if (zilongshanren/vcs-project-root)
-          (counsel-git)
-        (if (projectile-project-p)
-            (projectile-find-file)
-          (ido-find-file))))
+      (push (if (region-active-p)
+                (buffer-substring-no-properties
+                 (region-beginning)
+                 (region-end))
+              (let ((sym (thing-at-point 'symbol)))
+                (when (stringp sym)
+                  (regexp-quote sym))))
+            regexp-history)
+      (call-interactively 'occur))
   #+END_SRC
 
-  该函数会针对不同的项目类型使用不同的查找方式:
-   - 如果是 git 项目, 那么使用 counsel-git 来查找文件, 不使用 projectile 的原因是 counsel-git 更快
-   - 如果是 projectile 项目, 即在项目的根目录中存在 .projectile 文件, 那么使用 projectile-find-file 来查找文件
-   - 否则使用 ido-fine-file 来查找文件
+  然后将 zilongshanren 加到 *dotspacemacs-configuration-layers* 变量中, 即可让 layer 配置生效.
 
-2. SPC f f
-  从当前目录开始查找文件. 在作者的配置中同时启用了 ivy-layer 和 helm-layer, 默认使用的是 helm 来查找文件.
-  
-3. SPC f L
-  使用 helm-locate 来在当前系统中查找文件.
+**** 文档
 
-4. SPC f l
-  查找文件并使用 literal(逐字, 只能是ascii 形式， 对于utf 显示形式 '\350\380'） 的方式来打开文件, 使用 literal 方式打开的文件不会附加编码信息, 例如 utf-8 编码中可能存在的 BOM 头信息, 使用 literal 模式即可以看到 BOM头.
+  spacemacs 的文档保存在 doc 目录下, 包含有 CONVENTIONS.org, DOCUMENTATION.org 等文档文件, 建议大家多多阅读.
 
-5. SPC f h 查找文件并使用二进制的方式来打开文件, 可以使用 C-c C-c 回到之前的模式.
+*** 定制你的 Layer
+  1. 修复上一期视频中 occur-mode 启动的问题
+  2. 修复 ivy0.8 导致的问题, 同时简单探讨了一下今后如何避免和处理类似的问题
+  3. 介绍 post-init 和 pre-init 的用法, 介绍了如何定制 spacemacs 的 company-mode
+  4. 介绍 layers.el 文件, 演示该文件的作用
+  5. 介绍 layer 的 package 的 location 变量, 演示了如何从 github 获取并安装 package 的方法
 
-6. SPC f o 使用外部程序打开文件.
+**** 修复上一期视频中的配置问题
 
-7. SPC f E 使用 sudo 来编辑文件, 当某些文件是只读的时候可以采用这种方式来编辑文件.
+  在之前的配置代码中, 如果我们启动 emacs 会出现以下错误:
 
-8. SPC f D 删除当前的文件和 buffer.
+  #+BEGIN_EXAMPLE
+  Symbol's function definition is void: evilified-state-evilify-map
+  #+END_EXAMPLE
 
-9. SPC f j 以当前文件的目录打开 dired buffer.
-
-10. SPC f r 使用 ivy 打开最近文件列表.
-
-11. SPC f R 重命名当前文件.
-
-12. SPC f v 
-  添加 local variables, 可以通过这个功能给项目做一些特殊的设置.
-  例如按下 SPC f v, 然后选择 add-dir-local-variable, 选择 org-mode, 再选择org-highlight-links 变量, 此时 emacs 会在当前文件的目录下生成一个 .dir-locals.el 文件, 内容如下:
+  这是因为这个符号在 config.el 中使用的时候还是空的, 我们可以通过以下方式修复, 编辑 config.el 文件, 将以下代码移动到 dotspacemacs/user-config 函数中:
 
   #+BEGIN_SRC emacs-lisp
-  ;;; Directory Local Variables
-  ;;; For more information see (info "(emacs) Directory Variables")
-
-  ((org-mode
-    (org-highlight-links)))
+    (evilified-state-evilify-map occur-mode-map
+      :mode occur-mode)
   #+END_SRC
 
-  这个文件中的代码会在当前目录下的所有文件 buffer 中生效.
+**** 修复 ivy0.8 的问题
 
-13. SPC f y 拷贝当前文件的全路径.
+  在 ivy 升级到0.8版本时, 对其中一个API的返回值进行了修改:
 
-14. SPC f a d 列出最近访问的目录, 使用命令行工具 fasd 实现.
+  #+BEGIN_SRC emacs-lisp
+    (let (res)
+      (ivy-with
+       '(ivy-read "test: "
+                  '(("one" . 1) ("three" . 3))
+                  :action (lambda (x) (setq res x)))
+       "t C-m")
+      res)
+    ;; =>
+    ;; ("three" . 3)
+  #+END_SRC
 
-15. SPC f C d/u 将当前文件的编码转换为 DOS/UNIX 编码., unix 编码少一个换行, 真的
-16. SPC f e d 打开 .spacemacs 或 .spacemacs.d/init.el 文件.
-17. SPC f e i 打开 .emacs 或 .emacs.d/init.el 文件.
-18. SPC f e l 打开系统中已经安装的 el 文件.
-19. SPC f c 复制文件.
-20. SPC f b 打开标签.
-21. SPC f s/S 保存当前 buffer 或 所有 buffer.
-** buffer 相关操作
-1. SPC b . 打开 Buffer Selection Transient State, 在该模式下可以进行更多的操作, 由 hydra 提供.
+  在之前的版本中, 这个函数的返回值是 3, 在0.8版本中被修改为了一个列表. 如果要修复这个问题, 我们需要在使用返回值的时候加上 cdr, 具体的修改可以查看[[https://github.com/syl20bnr/spacemacs/pull/6478][fix break API changes for ivy 0.8]].
 
-2. SPC b b 切换到已经打开的 buffer.
+**** post-init 和 pre-init
 
-3. SPC b d 关闭一个 buffer.
+  有一些 mode 已经安装, 例如 company-mode 已经被 auto-completion layer 安装, 如果这时我们还想对该 mode 进行一些定制, 那么我们可以这样处理:
 
-4. SPC b f !!!!! 在 finder 中打开当前文件, 只在 Mac系统下生效.
+  1. 在我们的 layer 中添加这个包
 
-5. SPC b B/i 以类似 Dired Mode 的形式打开 buffer 列表, 在这个列表中可以执行和 Dired Mode 类似的操作.
+  #+BEGIN_SRC emacs-lisp
+      ;; 添加 package
+      (defconst zilongshanren-packages
+        '(youdao-dictionary
+          company  ; 添加 company package
+          )
+        )
+  #+END_SRC
 
-6. SPC b h 进入 \*spacemacs\* buffer.
-7. SPC b k 使用正则表达式来删除 buffer.
-8. SPC b N 新建一个 buffer.
+  2. 然后定义一个 post-init 函数
 
-9. SPC b m
-
-  删除除当前 buffer 外的所有 buffer.
-
-10. SPC b R
-
-  使用 emacs 自动备份的文件恢复文件.
-
-11. SPC b s
-
-  跳转到 scratch buffer.
-
-12. SPC b w
-
-  关闭/打开 buffer 的 read-only.
-
-13. SPC b Y
-
-  复制整个 buffer 的内容.
-
-14. SPC b P
-
-  将剪切板的内容粘贴到整个 buffer.
-
-15. SPC <tab>
-
-  在当前 buffer 和上一个打开的 buffer 中进行切换.
-
-** Dired
-
-在第四天的内容中已经讲解过 Dired Mode 的操作, 具体可以查看 [[https://book.emacs-china.org/#orgheadline22][Dired Mode]].
-
-* layout, windows 和 project 相关
-** Layout 操作
-   1. SPC l L 加载 layout 文件
-   2. SPC l l 在 layout 之间切换
-   3. SPC l s 将 layout 保存到文件
-   4. SPC l <tab> 在当前 layout 和上一个 layout 之间切换
-   5. SPC l o 配置 layout
-   6. SPC l R 重命名 layout
-   7. SPC l ? 显示更多的与 layout 相关的命令
-** Window 相关操作
-1. SPC w - 上下拆分窗口
-2. SPC w / 左右拆分窗口
-3. SPC w . 显示更多的与 window micro state 的相关的命令
-4. SPC w 2/3 左右显示 2/3 个窗口
-5. SPC w = 将窗口均等分
-6. SPC w b 切换到 minibuffer
-7. SPC w d 删除当前窗口
-8. SPC w h/j/k/l 向 左/下/上/右 移动窗口
-9. SPC w m 最大化显示当前窗口
-10. SPC W H/J/K/L 将当前窗口向 左/下/上/右 移动
-11. SPC w u/U 取消/重置上次操作
-12. SPC w o 切换到其他 frame
-13. SPC w F 创建一个新的 frame
-14. SPC w 1/2/3/4 切换到对应的编号的窗口
-15. SPC w w 依次切换到其他窗口
-16. SPC w W 使用字母标识需要跳转的窗口, 并按下字母进行跳转
-17. SPC t g 将当前显示的窗口与其他窗口进行黄金分割显示
-18. SPC t - 开启/关闭 将光标始终显示在中心行
-** project 相关操作
-1. SPC p f 在当前 project 中查找并打开文件
-2. SPC p b 在当前 project 中查找打开的 buffer
-3. SPC p p 切换到其他的 project
-4. SPC p l 切换到其他的 project 并创建一个新的 layout
-5. find-file-in-project 这是一个插件, 支持全平台. 目前绑定在 SUPER f 快捷键上.
-* 使用 ctags 和 company-etags
-  这期视频主要介绍 ctags 和 company-mode 的使用.
-** 为什么使用 ctags
-   ctags 是一个开源的, 可以方便的对大型代码库进行索引的软件, 在使用 ctags 生成 tag 之后就可以非常方便的在这些 tag 中进行跳转.
-   因为有些编程语言, 例如 javascript 或者 lua, 它们不能进行精确的语义补全, 在有 ctags 进行索引补全的情况下也可以方便编写代码.
-
-   在之前也介绍过 term-mode, 也可以做到一些语义补全. 但是它也有一些缺点:
-1. 配置方式复杂, 对于比较大的项目的配置比较有难度
-2. 有些时候不能得到想要的补全结果
-
-之前作者使用 YCMD 来对 C/C++ 代码进行补全, 但是它不太稳定, 现在已经切换为 ctags 来进行补全, 对于调试和 profile 会使用 IDE 进行操作.
-** 如何配置 ctags
-   首先新建一个 testJs-ctags 目录, 然后在该目录下新建 a.js 以及 b.js 两个文件:
-
-#+BEGIN_SRC shell
-  mkdir testJs-ctags
-  cd testJs-ctags
-  touch a.js
-  touch b.js
-#+END_SRC
-
-然后编辑 a.js 的内容如下:
-
-#+BEGIN_SRC javascript
-  var func1 = function () {
-      console.log("func1");
-  };
-
-  var func2 = function () {
-  };
-#+END_SRC
-
-然后在 b.js 中的补全中可以显示处 func1 和 func2 的补全提示的. 为了更方便的讲解之后的内容, 我们可以查看使用的补全的后端:
-输入 M-x, diminish-undo, 选择 company-mode, 这样在 modeline 就可以看到 company-mode 的具体信息.
-h
-再次输入 fun 等待弹出补全提示, 在补全选项中上下移动, 可以看到使用的补全后端包括 dabbrev-code 和 etags 等,
- 如果我们关闭 a.js 的 buffer, 就不会出现 func1 和 func2 的补全选项.
-
-在之前的操作中, 我们并没有生成 ctags, 为什么也能使用 ctags 补全呢? 我们可以使用 SPC h d v, 
-然后输出 tags-table-list 来查看该变量的值, 当前的值是指向作者 cocos目录下的 TAGS 文件.
-使用以下代码清空该值:
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default tags-table-list nil)
-#+END_SRC
-
-然后再次尝试补全, 这时就不会使用 ctags 补全了.
-
-那么如何生成 ctags 补全的文件呢? 使用以下命令即可:
-
-#+BEGIN_SRC shell
-  cd testJs-ctags
-  ctags -e a.js
-  # 针对目录
-  # ctags -eR foldername
-#+END_SRC
-
-company-etags 在进行补全的时候, 会从变量 tags-table-list 值的文件列表中去查找 tags, 而且 tags 是不区分语言的.
-
-如果需要手动加载 TAGS 文件, 那么可以调用 visit-tags-table 命令. 而在打开一个文件时, ctags 会从文件所在的目录进行查找, 一直到根目录,
- 加载所找到的 TAGS 文件.
-
-** 如何高效的使用 ctags
-*** 自动重新生成 TAGS 文件
-在使用 ctags 的过程中, 如果文件的内容被改变, 那么需要重新生成 TAGS 文件, 以便 ctags 的补全结果更精确.
- 作者实现了一个函数来自动加载必须的 TAGS 文件:
-
-#+BEGIN_SRC emacs-lisp
-  (defun my-setup-develop-environment ()
-    (interactive)
-    (when (my-project-name-contains-substring "guanghui")
-      (cond
-       ((my-project-name-contains-substring "cocos2d-x")
-        ;; C++ project don't need html tags
-        (setq tags-table-list (list (my-create-tags-if-needed "~/cocos2d-x/cocos"))))
-       ((my-project-name-contains-substring "Github/fireball")
-        (message "load tags for fireball engine repo...")
-        ;; html project donot need C++ tags
-        (setq tags-table-list (list (my-create-tags-if-needed "~/Github/fireball/engine/cocos2d")))))))
-#+END_SRC
-
-有另外一个工具函数, 当保存文件时会自动的重新生成 TAGS:
-
-#+BEGIN_SRC emacs-lisp
-  (defun my-auto-update-tags-when-save (prefix)
-    (interactive "P")
-    (cond
-     ((not my-tags-updated-time)
-      (setq my-tags-updated-time (current-time)))
-
-     ((and (not prefix)
-           (< (- (float-time (current-time)) (float-time my-tags-updated-time)) 300))
-      ;; < 300 seconds
-      (message "no need to update the tags")
+  #+BEGIN_SRC emacs-lisp
+    ;; 定制 company-mode
+    (defun zilongshanren/post-init-company ()
+      (setq company-minimum-prefix-length 1)
       )
-     (t
-      (setq my-tags-updated-time (current-time))
-      (my-update-tags)
-      (message "updated tags after %d seconds." (- (float-time (current-time)) (float-time my-tags-updated-time))))))
-#+END_SRC
+  #+END_SRC
 
-可以将 my-auto-udpate-tags-when-save 函数加入 after-save-hook 中, 或者绑定到快捷键上.
+  然后重启 emacs 即可以看到定制的效果.
 
-*** 配置规则来生成更多的 TAGS
-    ctags 自身也有一个配置文件, 可以在该文件中定义规则来更好的生成 TAGS, 一个配置文件的示例如下:
+  对于 package 的三个函数: pre-init, init, post-init, spacemacs是按照这个顺序来依次调用的.
+
+**** location
+
+  在安装 package 时, 我们如果只输入 package 的名字, 那么默认是从 melpa 下载安装的. 如果我们想自定义 package 的安装地址, 那么我们就可以使用 location 变量.
+
+***** 自带 package
+
+  例如我们使用一个自带的 occur package:
+
+  #+BEGIN_SRC emacs-lisp
+    ;; 自定义 package 安装地址
+    (defconst zilongshanren-packages
+      '(youdao-dictionary
+        (occur-mode :location built-in)
+        )
+      )
+
+    ;; 初始化 occur mode
+    (defun zilongshanren/init-occur-mode ()
+      (evilified-state-evilify-map occur-mode-map
+        :mode occur-mmode)
+      )
+  #+END_SRC
+
+***** 从 github 安装
+
+  例如我们从 github 安装 gulpjs package:
+
+  #+BEGIN_SRC emacs-lisp
+    ;; 自定义 package 安装地址
+    (defconst zilongshanren-packages
+      '(youdao-dictionary
+        (occur-mode :location built-in)
+        (gulpjs :location (recipe :fetcher github :repo "zilongshanren/emacs-gulpjs"))
+        )
+      )
+
+    (defun zilongshanren/init-gulpjs ()
+      (use-package gulpjs
+        :init)
+      )
+  #+END_SRC
+
+  在 emacs 启动时就会从 github 上下载 guiljs package 并安装到本地.
+
+**** layers.el
+
+  如果我们需要对某些 layer 中的 package 配置进行大量的重写, 那么我们可以移除这个 layer 的某个 package. 我们可以通过 layers.el 来实现这一点, 例如移除 chinese layer 的 youdao-dictionary package:
+
+  #+BEGIN_SRC emacs-lisp
+    (configuration-layer/remove-layer 'youdao-dictionary)
+  #+END_SRC
+
+  然后我们可以在自己的 layer 中添加这个 package, 然后对它进行定制.
+  在这种情况下, spacemacs 不会在 chinese layer 中加载 youdao-dictionary 这个 package, 而是在我们的 layer 中加载这个 package, 以实现对 spacemacs 内置的package 的定制.
+
+*** Emacs Lisp layer
+    调试： 1，在函数设断点 SPC mdf 2.到运行处或测试处 后 , ee 执行. s 进入 o 出去
+  | 〜SPC mdt〜 | insert =（debug）=打印堆栈跟踪并重新评估函数 |
+    格式代码 SPC m = b
+** 按键
+*** 键绑定
+    (evil-leader/set-key "o y" 'copy-to-clipboard)
+    全局绑定 会被模式绑定覆盖
+     (global-set-key (kbd "C-]") 'forward-char)
+     //被下面的覆盖了
+     (define-key evil-insert-state-map (kbd "C-]") 'forward-char)
+     //用前导键
+  #+BEGIN_SRC emacs-lisp
+    (spacemacs/set-leader-keys "C-]" 'forward-char)
+    (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "C-]" 'forward-char)
+  #+END_SRC
+*** 快捷键 
+     主模式相关快捷键 SPC m
+     模式和状态
+     层
+     Spacemacs 具有层的概念。层类似于 vim 中的插件。它们提供可以在 Spacemacs 中使用的 新功能。
+     键位绑定约定
+       SPC b . 	   缓冲区微状态。
+       窗口
+       SPC w v 或 :vsplit 	    在右侧打开一个垂直分割。
+       SPC w s 或 :split 	    在下部打开一个水平分割。
+       SPC w h/j/k/l 	    在窗口间导航。
+       SPC w H/J/K/L 	    移动当前窗口。
+       SPC w . 	    窗口微状态。
+
+       文件
+       Spacemacs 中所有文件命令都有 SPC f 前缀。
+       SPC f f 	    打开一个缓冲区搜索当前目录中的文件。
+       SPC f r 	    打开一个缓冲区在最近打开的文件中搜索。
+       SPC f s 或 :w 	    保存当前文件。
+       :x 	    保存当前文件并退出。
+       :e <file> 	    打开<file>
+
+       帮助系统
+       Emacs 具有一个可扩展的帮助系统。所有的快捷键都有SPC h d 前缀，以允许便捷地访问帮助系统。
+       最重要的快捷键是 SPC h d f, SPC h d k, 和 SPC h d v。同样还有 SPC <f1> 允许用户搜索文档。
+       SPC h d f 	    对一个功能提示并显示其文档。
+       SPC h d k 	    对一个快捷键提示并显示其绑定的内容。
+       SPC h d v 	    对一个变量提示并显示其文档和当前值。
+       SPC <f1> 	    搜索一个命令，功能，变量或接口，并显示其文档
+       不论何时，你遇到怪异的行为或想知道是什么东西做的，这些功能是你应该首先查阅的。
+
+       探索
+       SPC f e h 	    列出所有层并允许你浏览层上的文件。
+       SPC ? 	    列出所有快捷键。
+
+       .spacemacs  文件
+       SPC f e d 	                打开你的 .spacemacs
+       SPC f e D 	                使用diff 通过默认模版手动更新你的 .spacemacs 
+
+       Emacs Lisp
+       变量
+       设置变量是定制 Spacemacs 行为最常见的方式。语法很简单：
+       (setq variable value) ; Syntax
+       ;; Setting variables example
+       (setq variable1 t; True
+       variable2 nil ; False
+       variable3 '("A" "list" "of" "things"))
+
+       快捷键
+       定义快捷键是几乎每个人都想做的事情，最好的方式就是使用内置的 define-key 函数。
+       (define-key map new-keybinding function) ; Syntax
+       ;; Map H to go to the previous buffer in normal mode
+       (define-key evil-normal-state-map (kbd "H") 'spacemacs/previous-useful-buffer)
+       ;; Mapping keybinding to another keybinding
+       (define-key evil-normal-state-map (kbd "H") (kbd "^")) ; H goes to beginning of the line
+
+       map 是你想要绑定键位到的 keymap。大多数情况下你会使用
+       evil-<state-name>-state-map。其对应不同的 evil-mode 状态。例如，使用 evil-insert-state-map 映射用于插入模式的快捷键。
+
+       使用 evil-leader/set-key 函数来映射 <Leader> 快捷键。
+       (evil-leader/set-key key function) ; Syntax
+       ;; Map killing a buffer to <Leader> b c
+       (evil-leader/set-key "bc" 'kill-this-buffer)
+       ;; Map opening a link to <Leader> o l only in org-mode
+       (evil-leader/set-key-for-mode 'org-mode
+       "ol" 'org-open-at-point)
+  
+       函数
+       你可能偶尔想要定义一个函数做更复杂的定制，语法很简单：
+       (defun func-name (arg1 arg2)
+       "docstring"
+       ;; Body
+       )
+       ;; Calling a function
+       (func-name arg1 arg1)
+       这里有个现实可用的示例函数：
+
+       ;; This snippet allows you to run clang-format before saving
+       ;; given the current file as the correct filetype.
+       ;; This relies on the c-c++ layer being enabled.
+       (defun clang-format-for-filetype ()
+       "Run clang-format if the current file has a file extensions
+       in the filetypes list."
+       (let ((filetypes '("c" "cpp")))
+       (when (member (file-name-extension (buffer-file-name)) filetypes)
+       (clang-format-buffer))))
+       ;; See http://www.gnu.org/software/emacs/manual/html_node/emacs/Hooks.html for
+       ;; what this line means
+       (add-hook 'before-save-hook 'clang-format-for-filetype)
+
+       激活一个层
+       正如上文术语那段所说，层提供一个简单的方式来添加特性。可在 .spacemacs 文件中激活
+       一个层。
+       在文件中找到 dotspacemacs-configuration-layers 变量，默认情况下，它看起来应该是这样的：
+       (defun dotspacemacs/layers ()
+       (setq-default
+       ;; ...
+       dotspacemacs-configuration-layers '(;; auto-completion
+       ;; better-defaults
+       emacs-lisp
+       ;; (git :variables
+       ;;      git-gutter-use-fringe t)
+       ;; markdown
+       ;; org
+       ;; syntax-checking
+       )))
+
+       你可以通过删除分号来取消注释这些建议的层，开箱即用。要添加一个层，就把它的名字添
+       加到列表中并重启
+       Emacs 或按 SPC f e R。使用 SPC f e h 来显示所有的层和他们的文档。
+
+       创建一个层
+       为了将配置分组或当配置与你的 .spacemacs 文件之间不匹配时，你可以创建一个配置层
+       。Spacemacs 提供了一个内建命令用于生成层的样板文件：SPC
+       :configuration-layer/create-layer。
+       这条命令将会生成一个如下的文件夹：
+
+       [layer-name]
+       |__ [local]*
+       | |__ [example-mode-1]
+       | |     ...
+       | |__ [example-mode-n]
+       |__ config.el*
+       |__ funcs.el*
+       |__ keybindings.el*
+       |__ packages.el
+
+       [] = 文件夹
+       \ * = 不是命令生成的文件
+
+       Packages.el 文件包含你可以在 <layer-name>-packages 变量中安装的包的列表。
+       所有 MELPA 仓库中的包都可以添加到这个列表中。还可以使用 :excludedt 特性将包包含
+       在列表中。
+       每个包都需要一个函数来初始化。这个函数必须以这种模式命名：
+       <layer-name>/init-<package-name>。
+       这个函数包含了包的配置。同时还有一个 pre/post-init 函数来在包加载之前或之后运行代码。它看起来想这个样子：
+
+       (setq layer-name-packages '(example-package
+       ;;这个层通过设置:excluded 属性
+       ;;为真(t)来卸载example-package-2
+       (example-package-2 :excluded t)))
+       (defun layer-name/post-init-package ()
+       ;;在这里添加另一个层的包的配置
+       )
+       (defun layer-name/init-example-package ()
+       ;;在这里配置example-package
+       )
+
+       **注意**：只有一个层可以具有一个对于包的 init 函数。如果你想覆盖另一个层对一个包
+       的配置，请使用 use-package hooks 中的 <layer-name>/pre-init 函数。
+       如果 MELPA 中没有你想要的包，你必须是由一个本地包或一个包源。关于此的更多信息可以从层的剖析处获得。
+
+       确保你添加了你的层到你的 .spacemacs 文件中，并重启 spacemacs 以激活。
+       关于层的加载过程和层的工作原理的详细描述可以参考LAYERS.org。
+
+       安装一个单独的包
+       有时创建一个层会有点大材小用了，也许你仅仅想要一个包而不想维持整个层。Spacemacs
+       在 .spacemacs 文件中的 dotspacemacs/layers 函数里提供了一个叫做
+       dotspacemacs-additional-packages 的变量，只要在列表中添加一个包名，它就会在你重
+       启的时候被安装。
+       下一段来说明如何加载这个包。
+       加载包
+       有没有想过 Spacemacs 如何可以在仅仅几秒钟之内加载超过 100 个包呢？
+       如此低的加载时间必须需要某种难以理解的黑魔法吧。还好这不是真的，多亏有了
+       use-package。
+       它是一个可以轻松实现对包进行延迟加载和配置的包。以下是它的基础用法：
+
+       ;; Basic form of use-package declaration. The :defer t tells use-package to
+       ;; try to lazy load the package.
+       (use-package package-name
+       :defer t)
+       ;; The :init section is run before the package loads The :config section is
+       ;; run after the package loads
+       (use-package package-name
+       :defer t
+       :init
+       (progn
+       ;; Change some variables
+       (setq variable1 t variable2 nil)
+       ;; Define a function
+       (defun foo ()
+       (message "%s" "Hello, World!")))
+       :config
+       (progn
+       ;; Calling a function that is defined when the package loads
+       (function-defined-when-package-loads)))
+
+       这只是 use-package 的一个非常基本的概述。它还有许多其他的方式来控制包的加载，就不在这里介绍了。
+       卸载一个包
+
+       Spacemacs 在 .spacemacs 文件中的 dotspacemacs/init 函数里提供了一个叫做
+       dotspacemacs-excluded-packages 的变量。只要在列表中添加一个包名，它就会在你重启的时候被卸载。
+       常见调整
+       本段是为了想要做更多调整的人所写的。除非另有说明，所有这些设置都去你的
+       .spacemacs 文件中的
+       dotspacemacs/user-config 函数里完成。
+
+       变更 escape 键
+       Spacemacs 使用 [[https://github.com/syl20bnr/evil-escape][evil-escape]] 来允许从许多拥有一个快捷键的 major-modes 中跳出。
+       你可以在你的 dotspacemacs/user-config 函数中像这样定制变量：
+       (defun dotspacemacs/user-config ()
+       ;; ...
+       ;; Set escape keybinding to "jk"
+       (setq-default evil-escape-key-sequence "jk"))
+       更多的文档可以在 evil-escape README 中找到。
+
+       变更配色方案
+       .spacemacs 文件的 dotspacemacs/init 函数中有一个 dotspacemacs-themes 变量
+       。这是一个可以用 SPC T n 键循环的主题的列表。列表中的第一个主题是在启动时加载的主题。
+       以下为示例：
+
+       (defun dotspacemacs/init
+       ;; Darktooth theme is the default theme
+       ;; Each theme is automatically installed.
+       ;; Note that we drop the -theme from the package name.
+       ;; Ex. darktooth-theme -> darktooth
+       (setq-default dotspacemacs-themes '(darktooth
+       soothe
+       gotham)))
+
+       可以使用 SPC T h 键列出和选择所有已安装的主题。
+       非高亮搜索
+       Spacemacs 模仿了默认的 vim 行为，会高亮显示搜索结果，尽管你不在它们之间进行导航。
+       你可以使用 SPC s c 或 :nohlsearch 来关闭搜索结果高亮。
+       若再也不需要自动高亮结果，你可以卸载 evil-search-highlight-persist 包。
+
+       会话
+       当你打开 Spacemacs 时，它不会自动恢复窗口和缓冲区。如果你常使用 vim 会话，
+       你可能要在你的 .spacemacs 文件中的 dotspacemacs/user-config 里添加
+       (desktop-save-mode t)，然后你就可以使用 SPC : desktop-read 加载已被保存的会话。
+       桌面文件的位置可以使用 desktop-dirname 变量设置。要自动加载一个会话，就在你的
+       .spacemacs 文件中添加 (desktop-read)。
+
+       使用 visual lines 导航
+       Spacemacs 使用 vim 默认 actual lines 导航，即使它们被包装了。如果你想要让 j 和 k
+       的行为如 g j 和 g k 一般，将一下代码添加到你的 .spacemacs 文件：
+       (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
+       (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+
+*** EScaping 键
+    (setq-default evil-escape-key-sequence "jj"))
+*** 键绑定帮助  
+  | Key Binding | Description                                               |
+  |-------------+-----------------------------------------------------------|
+  | ~SPC h d b~ | describe bindings                                         |
+  | ~SPC h d c~ | describe current character under point                    |
+  | ~SPC h d d~ | describe current expression under point                   |
+  | ~SPC h d f~ | describe a function                                       |
+  | ~SPC h d F~ | describe a face                                           |
+  | ~SPC h d k~ | describe a key                                            |
+  | ~SPC h d K~ | describe a keymap                                         |
+  | ~SPC h d l~ | copy last pressed keys that you can paste in gitter chat  |
+  | ~SPC h d m~ | describe current modes                                    |
+  | ~SPC h d p~ | describe a package (Emacs built-in function)              |
+  | ~SPC h d P~ | describe a package (Spacemacs layer information)          |
+  | ~SPC h d s~ | copy system information that you can paste in gitter chat |
+  | ~SPC h d t~ | describe a theme                                          |
+  | ~SPC h d v~ | describe a variable                                       |
+
+  Other help key bindings:
+
+  | Key Binding | Description                                           |
+  |-------------+-------------------------------------------------------|
+  | ~SPC h SPC~ | discover Spacemacs documentation, layers and packages |
+  | ~SPC h i~   | search in info pages with the symbol at point         |
+  | ~SPC h k~   | show top-level bindings with =which-key=              |
+  | ~SPC h m~   | search available man pages                            |
+  | ~SPC h n~   | browse emacs news                                     |
+
+  Navigation key bindings in =help-mode=:
+
+*** 快速访问 ace-link模式
+    在 help-mode 和 info-mode 中可以 用 o 快速跳转
+*** 通过语义列出符号 SPC s j  
+*** 寄存器
+    | Key Binding | Description                        |
+    |-------------+------------------------------------|
+    | ~SPC r e~   | show evil yank and named registers |
+    | ~SPC r m~   | show marks register                |
+    | ~SPC r r~   | show helm register                 |
+    | ~SPC r y~   | show kill ring                     |
+*** 文件和 Buffer 操作
+**** 不同点
+  - 没有使用官方的 modeline, 而是采用自己定制的
+  - 排除掉了大量的作者认为对他没有作用的 package, 因为这些 package 确实不经常使用, 反而可能导致一些 BUG 或者导致 spacemacs 启动或使用过程中变慢
+
+**** 文件相关操作
+  1. SPC p f
+    在当前的项目中查找文件, 类似于 vim 中的 Ctrl-p. 在作者的配置中, 该快捷键被绑定到了以下函数:
+
+    #+BEGIN_SRC emacs-lisp
+      (defun zilongshanren/open-file-with-projectile-or-counsel-git ()
+        (interactive)
+        (if (zilongshanren/vcs-project-root)
+            (counsel-git)
+          (if (projectile-project-p)
+              (projectile-find-file)
+            (ido-find-file))))
+    #+END_SRC
+
+    该函数会针对不同的项目类型使用不同的查找方式:
+     - 如果是 git 项目, 那么使用 counsel-git 来查找文件, 不使用 projectile 的原因是 counsel-git 更快
+     - 如果是 projectile 项目, 即在项目的根目录中存在 .projectile 文件, 那么使用 projectile-find-file 来查找文件
+     - 否则使用 ido-fine-file 来查找文件
+
+  2. SPC f f
+    从当前目录开始查找文件. 在作者的配置中同时启用了 ivy-layer 和 helm-layer, 默认使用的是 helm 来查找文件.
+  
+  3. SPC f L
+    使用 helm-locate 来在当前系统中查找文件.
+
+  4. SPC f l
+    查找文件并使用 literal(逐字, 只能是ascii 形式， 对于utf 显示形式 '\350\380'） 的方式来打开文件, 使用 literal 方式打开的文件不会附加编码信息, 例如 utf-8 编码中可能存在的 BOM 头信息, 使用 literal 模式即可以看到 BOM头.
+
+  5. SPC f h 查找文件并使用二进制的方式来打开文件, 可以使用 C-c C-c 回到之前的模式.
+
+  6. SPC f o 使用外部程序打开文件.
+
+  7. SPC f E 使用 sudo 来编辑文件, 当某些文件是只读的时候可以采用这种方式来编辑文件.
+
+  8. SPC f D 删除当前的文件和 buffer.
+
+  9. SPC f j 以当前文件的目录打开 dired buffer.
+
+  10. SPC f r 使用 ivy 打开最近文件列表.
+
+  11. SPC f R 重命名当前文件.
+
+  12. SPC f v 
+    添加 local variables, 可以通过这个功能给项目做一些特殊的设置.
+    例如按下 SPC f v, 然后选择 add-dir-local-variable, 选择 org-mode, 再选择org-highlight-links 变量, 此时 emacs 会在当前文件的目录下生成一个 .dir-locals.el 文件, 内容如下:
+
+    #+BEGIN_SRC emacs-lisp
+    ;;; Directory Local Variables
+    ;;; For more information see (info "(emacs) Directory Variables")
+
+    ((org-mode
+      (org-highlight-links)))
+    #+END_SRC
+
+    这个文件中的代码会在当前目录下的所有文件 buffer 中生效.
+
+  13. SPC f y 拷贝当前文件的全路径.
+
+  14. SPC f a d 列出最近访问的目录, 使用命令行工具 fasd 实现.
+
+  15. SPC f C d/u 将当前文件的编码转换为 DOS/UNIX 编码., unix 编码少一个换行, 真的
+  16. SPC f e d 打开 .spacemacs 或 .spacemacs.d/init.el 文件.
+  17. SPC f e i 打开 .emacs 或 .emacs.d/init.el 文件.
+  18. SPC f e l 打开系统中已经安装的 el 文件.
+  19. SPC f c 复制文件.
+  20. SPC f b 打开标签.
+  21. SPC f s/S 保存当前 buffer 或 所有 buffer.
+**** buffer 相关操作
+  1. SPC b . 打开 Buffer Selection Transient State, 在该模式下可以进行更多的操作, 由 hydra 提供.
+  2. SPC b b 切换到已经打开的 buffer.
+  3. SPC b d 关闭一个 buffer.
+
+  4. SPC b f !!!!! 在 finder 中打开当前文件, 只在 Mac系统下生效.
+
+  5. SPC b B/i 以类似 Dired Mode 的形式打开 buffer 列表, 在这个列表中可以执行和 Dired Mode 类似的操作.
+
+  6. SPC b h 进入 \*spacemacs\* buffer.
+  7. SPC b k 使用正则表达式来删除 buffer.
+  8. SPC b N 新建一个 buffer.
+  9. SPC b m 删除除当前 buffer 外的所有 buffer.
+
+  10. SPC b R 使用 emacs 自动备份的文件恢复文件.
+
+  11. SPC b s 跳转到 scratch buffer.
+
+  12. SPC b w 关闭/打开 buffer 的 read-only.
+  13. SPC b Y 复制整个 buffer 的内容.
+  14. SPC b P 将剪切板的内容粘贴到整个 buffer.
+  15. SPC <tab> 在当前 buffer 和上一个打开的 buffer 中进行切换.
+*** 对齐文本
+| 键绑定       | 说明           |
+| 〜SPC xa＆〜 | 在＆  对齐区域 |
+*** 键绑定？ 
+    1.可以使用命令 (global-set-key (kbd "C-f") 'forward-word)
+    2.模式下（define-key evil-insert-state-map（kbd“C-”））'forward-char）
+*** 文本插入
+    | 键绑定| 说明|
+  | ------------- + ----------------------------------- ------------------------------------ |
+  | 〜SPC ill〜| 插入lorem-ipsum列表|
+  | 〜SPC ilp〜| 插入lorem-ipsum段落|
+  | 〜SPC ils〜| 插入lorem-ipsum句子|
+  | 〜SPC ip 1〜| 插入简单的密码|
+  | 〜SPC ip 2〜| 插入更强的密码|
+  | 〜SPC ip 3〜| 为偏执狂|插入密码
+  | 〜SPC ipp〜| 插入发音简单的密码|
+  | 〜SPC ipn〜| 插入数字密码|
+  | 〜SPC iu〜| 搜索Unicode字符并将其插入到活动缓冲区中。|
+  | 〜SPC i U 1〜| 插入UUIDv1（使用通用参数来插入CID格式）|
+  | 〜SPC i U 4〜| 插入UUIDv4（使用通用参数来插入CID格式）|
+  | 〜SPC我UU〜| 插入UUIDv4（使用通用参数来插入CID格式）|
+
+  *提示：*您可以用数字改变插入的密码的长度
+  前缀参数，例如〜SPC U 24 SPC ipp〜将插入一个密码
+  24个字符。
+** 批量重命名 wdired  执行 wdired 相关的命令就好
+     在目录buff 下 输入 wdired...., 最后提交 C-c C-c
+     退出wdired模式，您需要按C-c ESC
+** 界面
+*** 主题
+ boolean 注释背景 spacemacs-theme-comment-bg
+ (setq-default dotspacemacs-themes '(spacemacs-light leuven zenburn))
+*** 字体
+  dotspacemacs-default-font 
+ #+BEGIN_SRC emacs-lisp
+ (setq-default dotspacemacs-default-font '("Source Code Pro"
+                                           :size 13
+                                           :weight normal
+                                           :width normal
+                                           :powerline-scale 1.1))
+ #+END_SRC
+*** 模式行
+    行号
+  #+BEGIN_SRC emacs-lisp
+    (setq-default dotspacemacs-lines-numbers '(:relative nil
+                                               :disabled-for-modes dired-mode
+                                                                   doc-view-mode
+                                                                   markdown-mode
+                                                                   org-mode
+                                                                   pdf-view-mode
+                                                                   text-mode
+                                               :size-limit-kb 1000))
+  #+END_SRC
+*** Frame title
+  Default frame title displays name of current process and hostname of system. You
+  can include more information (like name of current file, name of current project
+  etc) by setting =dotspacemacs-frame-title-format= variable.
+
+  Following format short codes are avialable:
+
+  | Code | Description                                                                  |
+  |------+------------------------------------------------------------------------------|
+  | =%a= | the `abbreviated-file-name', or `buffer-name'                                |
+  | =%t= | `projectile-project-name'                                                    |
+  | =%I= | `invocation-name'                                                            |
+  | =%S= | `system-name'                                                                |
+  | =%U= | contents of $USER                                                            |
+  | =%b= | buffer name                                                                  |
+  | =%f= | visited file name                                                            |
+  | =%F= | frame name                                                                   |
+  | =%s= | process status                                                               |
+  | =%p= | percent of buffer above top of window, or Top, Bot or All                    |
+  | =%P= | percent of buffer above bottom of window, perhaps plus Top, or Bottom or All |
+  | =%m= | mode name                                                                    |
+  | =%n= | Narrow if appropriate                                                        |
+  | =%z= | mnemonics of buffer, terminal, and keyboard coding systems                   |
+  | =%Z= | like %z, but including the end-of-line format"                               |
+
+***** Iconified (tabified) title
+  If you are using tiling window manager with tab support you may want to display
+  different title for inactive tabs with =dotspacemacs-icon-title-format=
+  variable. Short codes are same as for frame title.
+
+  If this variable is set to =nil= (default) its value will be same as
+  =dotspacemacs-frame-title-format=.
+
+*** 切换透明度 ~SPC TT~
+*** 切换系统监视器 ~SPC tms~
+*** 换行 SPC-t-l 开关truncate line
+*** 书签 看小说用的 ~SPC fb~ 
+    | 键绑定 | 说明                             |
+    | 〜Cd〜 | 删除选中的书签                   |
+    | 〜Ce〜 | 编辑所选书签                     |
+    | 〜Cf〜 | 切换文件名位置                   |
+    | 〜Co〜 | 在另一个窗口    中打开选定的书签 |
+    |        |                                  |
+*** 文本的缓冲区显示 可以集中显示选中的文本
+    | 〜SPC nf〜 | 将缓冲区缩小到当前函数   |
+    | 〜SPC np〜 | 将缓冲区缩小到可见页面   |
+    | 〜SPC nr〜 | 将缓冲区缩小到选定的文本 |
+    | 〜SPC nw〜 | 加宽，即显示整个缓冲区   |
+
+*** frame缩放
+    | 键绑定         | 说明                           |
+    | 〜SPC zf +〜   | 放大帧内容并启动帧缩放瞬态     |
+    | 〜SPC zf =〜   | 放大帧内容并启动帧缩放瞬态     |
+    | 〜SPC zf  - 〜 | 缩小帧内容并启动帧缩放瞬态     |
+    | 〜SPC zf 0〜   | 重置帧内容大小并启动​​帧缩放瞬态 |
+    | 〜+〜          | 放大                           |
+    | 〜=〜          | 放大                           |
+    | 〜 - 〜        | 缩小                           |
+    | 〜0〜          | 重置缩放                       |
+    | 任何其他键     | 保留缩放框架的过渡状态         |
+
+*** 文本缩放
+    | 键绑定         | 说明                                     |
+    | 〜SPC zx +〜   | 放大字体并启动字体缩放瞬态               |
+    | 〜SPC zx =〜   | 放大字体并启动字体缩放瞬态               |
+    | 〜SPC zx  - 〜 | 缩小字体并启动字体缩放瞬态               |
+    | 〜SPC zx 0〜   | 重置字体大小（不缩放）并启动字体缩放瞬态 |
+    | 〜+〜          | 增加字体大小                             |
+    | 〜=〜          | 增加字体大小                             |
+    | 〜 - 〜        | 减小字体大小                             |
+    | 〜0〜          | 重置字体大小                             |
+    | 任何其他键     | 保持字体缩放瞬态                         |
+
+  请注意，/只/当前缓冲区的文本被缩放，其他缓冲区，
+   
+** 开发
+*** flycheck 
+    | Key Binding | Description                                                           |
+    |-------------+-----------------------------------------------------------------------|
+    | ~SPC t s~   | toggle flycheck                                                       |
+    | ~SPC e c~   | clear all errors                                                      |
+    | ~SPC e h~   | describe a flycheck checker                                           |
+    | ~SPC e l~   | toggle the display of the =flycheck= list of errors/warnings          |
+    | ~SPC e n~   | go to the next error                                                  |
+    | ~SPC e p~   | go to the previous error                                              |
+    | ~SPC e v~   | verify flycheck setup (useful to debug 3rd party tools configuration) |
+    | ~SPC e .~   | error transient state                                                 |
+
+*** 注释 SPC ; ;
+*** layout, windows 和 project 相关
+**** Layout 操作
+     1. SPC l L 加载 layout 文件
+     2. SPC l l 在 layout 之间切换
+     3. SPC l s 将 layout 保存到文件
+     4. SPC l <tab> 在当前 layout 和上一个 layout 之间切换
+     5. SPC l o 配置 layout
+     6. SPC l R 重命名 layout
+     7. SPC l ? 显示更多的与 layout 相关的命令
+**** Window 相关操作
+  1. SPC w - 上下拆分窗口
+  2. SPC w / 左右拆分窗口
+  3. SPC w . 显示更多的与 window micro state 的相关的命令
+  4. SPC w 2/3 左右显示 2/3 个窗口
+  5. SPC w = 将窗口均等分
+  6. SPC w b 切换到 minibuffer
+  7. SPC w d 删除当前窗口
+  8. SPC w h/j/k/l 向 左/下/上/右 移动窗口
+  9. SPC w m 最大化显示当前窗口
+  10. SPC W H/J/K/L 将当前窗口向 左/下/上/右 移动
+  11. SPC w u/U 取消/重置上次操作
+  12. SPC w o 切换到其他 frame
+  13. SPC w F 创建一个新的 frame
+  14. SPC w 1/2/3/4 切换到对应的编号的窗口
+  15. SPC w w 依次切换到其他窗口
+  16. SPC w W 使用字母标识需要跳转的窗口, 并按下字母进行跳转
+  17. SPC t g 将当前显示的窗口与其他窗口进行黄金分割显示
+  18. SPC t - 开启/关闭 将光标始终显示在中心行
+**** project 相关操作
+  1. SPC p f 在当前 project 中查找并打开文件
+  2. SPC p b 在当前 project 中查找打开的 buffer
+  3. SPC p p 切换到其他的 project
+  4. SPC p l 切换到其他的 project 并创建一个新的 layout
+  5. find-file-in-project 这是一个插件, 支持全平台. 目前绑定在 SUPER f 快捷键上.
+***** 工程
+      1.目录下创建空的 .projectile
+    2. 在文件/home/wuming/.emacs.d/.cache/projectile-bookmarks.eld中添加目录
+    3. 也可以在变量 project ... file 中添加 后缀文件类型
+*** 使用 ctags 和 company-etags
+    这期视频主要介绍 ctags 和 company-mode 的使用.
+**** 为什么使用 ctags
+     ctags 是一个开源的, 可以方便的对大型代码库进行索引的软件, 在使用 ctags 生成 tag 之后就可以非常方便的在这些 tag 中进行跳转.
+     因为有些编程语言, 例如 javascript 或者 lua, 它们不能进行精确的语义补全, 在有 ctags 进行索引补全的情况下也可以方便编写代码.
+
+     在之前也介绍过 term-mode, 也可以做到一些语义补全. 但是它也有一些缺点:
+  1. 配置方式复杂, 对于比较大的项目的配置比较有难度
+  2. 有些时候不能得到想要的补全结果
+
+  之前作者使用 YCMD 来对 C/C++ 代码进行补全, 但是它不太稳定, 现在已经切换为 ctags 来进行补全, 对于调试和 profile 会使用 IDE 进行操作.
+**** 如何配置 ctags
+     首先新建一个 testJs-ctags 目录, 然后在该目录下新建 a.js 以及 b.js 两个文件:
+
+  #+BEGIN_SRC shell
+    mkdir testJs-ctags
+    cd testJs-ctags
+    touch a.js
+    touch b.js
+  #+END_SRC
+
+  然后编辑 a.js 的内容如下:
+
+  #+BEGIN_SRC javascript
+    var func1 = function () {
+        console.log("func1");
+    };
+
+    var func2 = function () {
+    };
+  #+END_SRC
+
+  然后在 b.js 中的补全中可以显示处 func1 和 func2 的补全提示的. 为了更方便的讲解之后的内容, 我们可以查看使用的补全的后端:
+  输入 M-x, diminish-undo, 选择 company-mode, 这样在 modeline 就可以看到 company-mode 的具体信息.
+  h
+  再次输入 fun 等待弹出补全提示, 在补全选项中上下移动, 可以看到使用的补全后端包括 dabbrev-code 和 etags 等,
+   如果我们关闭 a.js 的 buffer, 就不会出现 func1 和 func2 的补全选项.
+
+  在之前的操作中, 我们并没有生成 ctags, 为什么也能使用 ctags 补全呢? 我们可以使用 SPC h d v, 
+  然后输出 tags-table-list 来查看该变量的值, 当前的值是指向作者 cocos目录下的 TAGS 文件.
+  使用以下代码清空该值:
+
+  #+BEGIN_SRC emacs-lisp
+    (setq-default tags-table-list nil)
+  #+END_SRC
+
+  然后再次尝试补全, 这时就不会使用 ctags 补全了.
+
+  那么如何生成 ctags 补全的文件呢? 使用以下命令即可:
+
+  #+BEGIN_SRC shell
+    cd testJs-ctags
+    ctags -e a.js
+    # 针对目录
+    # ctags -eR foldername
+  #+END_SRC
+
+  company-etags 在进行补全的时候, 会从变量 tags-table-list 值的文件列表中去查找 tags, 而且 tags 是不区分语言的.
+
+  如果需要手动加载 TAGS 文件, 那么可以调用 visit-tags-table 命令. 而在打开一个文件时, ctags 会从文件所在的目录进行查找, 一直到根目录,
+   加载所找到的 TAGS 文件.
+
+**** 如何高效的使用 ctags
+***** 自动重新生成 TAGS 文件
+  在使用 ctags 的过程中, 如果文件的内容被改变, 那么需要重新生成 TAGS 文件, 以便 ctags 的补全结果更精确.
+   作者实现了一个函数来自动加载必须的 TAGS 文件:
+
+  #+BEGIN_SRC emacs-lisp
+    (defun my-setup-develop-environment ()
+      (interactive)
+      (when (my-project-name-contains-substring "guanghui")
+        (cond
+         ((my-project-name-contains-substring "cocos2d-x")
+          ;; C++ project don't need html tags
+          (setq tags-table-list (list (my-create-tags-if-needed "~/cocos2d-x/cocos"))))
+         ((my-project-name-contains-substring "Github/fireball")
+          (message "load tags for fireball engine repo...")
+          ;; html project donot need C++ tags
+          (setq tags-table-list (list (my-create-tags-if-needed "~/Github/fireball/engine/cocos2d")))))))
+  #+END_SRC
+
+  有另外一个工具函数, 当保存文件时会自动的重新生成 TAGS:
+
+  #+BEGIN_SRC emacs-lisp
+    (defun my-auto-update-tags-when-save (prefix)
+      (interactive "P")
+      (cond
+       ((not my-tags-updated-time)
+        (setq my-tags-updated-time (current-time)))
+
+       ((and (not prefix)
+             (< (- (float-time (current-time)) (float-time my-tags-updated-time)) 300))
+        ;; < 300 seconds
+        (message "no need to update the tags")
+        )
+       (t
+        (setq my-tags-updated-time (current-time))
+        (my-update-tags)
+        (message "updated tags after %d seconds." (- (float-time (current-time)) (float-time my-tags-updated-time))))))
+  #+END_SRC
+
+  可以将 my-auto-udpate-tags-when-save 函数加入 after-save-hook 中, 或者绑定到快捷键上.
+
+***** 配置规则来生成更多的 TAGS
+      ctags 自身也有一个配置文件, 可以在该文件中定义规则来更好的生成 TAGS, 一个配置文件的示例如下:
     
-#+BEGIN_EXAMPLE
---exclude=*.svn*
---exclude=*.git*
---exclude=*tmp*
---exclude=.#*
---tag-relative=yes
---recurse=yes
+  #+BEGIN_EXAMPLE
+  --exclude=*.svn*
+  --exclude=*.git*
+  --exclude=*tmp*
+  --exclude=.#*
+  --tag-relative=yes
+  --recurse=yes
 
---langdef=js
+  --langdef=js
 
---regex-js=/[ \t.]([A-Z][A-Z0-9._$]+)[ \t]*[=:][ \t]*([0-9"'\[\{]|null)/\1/n,constant/
+  --regex-js=/[ \t.]([A-Z][A-Z0-9._$]+)[ \t]*[=:][ \t]*([0-9"'\[\{]|null)/\1/n,constant/
 
---langdef=css
---langmap=css:.css
---regex-css=/^[ \t]*\.([A-Za-z0-9_-]+)/.\1/c,class,classes/
-#+END_EXAMPLE
+  --langdef=css
+  --langmap=css:.css
+  --regex-css=/^[ \t]*\.([A-Za-z0-9_-]+)/.\1/c,class,classes/
+  #+END_EXAMPLE
 
-在配置文件中可以使用 --exclude 来忽略文件或路径, 使用 --langdef 来定义哪些文件属于 js 文件, 使用 --regex-js 来定义 TAGS 生成时的匹配规则.
-这些匹配规则中可以使用正则表达式来提取内容生成 TAGS.
+  在配置文件中可以使用 --exclude 来忽略文件或路径, 使用 --langdef 来定义哪些文件属于 js 文件, 使用 --regex-js 来定义 TAGS 生成时的匹配规则.
+  这些匹配规则中可以使用正则表达式来提取内容生成 TAGS.
 
-*** 使用 etags-select 来浏览项目
-    在有 TAGS 之后, 可以使用 ctags 来方便的浏览文件内容.
-    例如在某个函数名上点击 [, g], 然后选择 etags-select-find-tag-at-point, 这时会把所有相关的内容列出到 buffer 中, 然后可以选择想要跳转的位置跳转过去.
+***** 使用 etags-select 来浏览项目
+      在有 TAGS 之后, 可以使用 ctags 来方便的浏览文件内容.
+      例如在某个函数名上点击 [, g], 然后选择 etags-select-find-tag-at-point, 这时会把所有相关的内容列出到 buffer 中, 然后可以选择想要跳转的位置跳转过去.
 
-** 最后的思考
-company-etags 不能对所有的 mode 进行补全, 例如在 org-mode 中默认是不使用 company-etags 的.
-因为在 company-etags.el 文件中有如下的代码:
+**** 最后的思考
+  company-etags 不能对所有的 mode 进行补全, 例如在 org-mode 中默认是不使用 company-etags 的.
+  因为在 company-etags.el 文件中有如下的代码:
+
+  #+BEGIN_SRC emacs-lisp
+    (defvar company-etags-modes '(prog-mode c-mode objc-mode c++-mode java-mode
+                                            jde-mode pascal-mode perl-mode python-mode))
+  #+END_SRC
+
+  在该变量中定义了可以使用 company-etags 的 mode, 将 org-mode 加入该变量的值中即可在 org-mode 使用 company-etags 进行补全.
+  ctags 支持上百种语言, 学会使用 ctags 能够提交效率.
+*** Error
+ 下一个错误 SPC e n
+*** 数字增加/减少？
+   对于数字或小数 
+ | 〜SPC n +〜   | 增加指示点下的数量并启动暂态 |
+ | 〜SPC n  - 〜 | 减少指示点下的数量并启动暂态 |
+ 参数（即〜10 SPC n +〜将点数加10）
+*** gtags
+   除了第一次,生成外，以后都是自动生成的
+  =helm-gtags= and =ggtags= are clients for GNU Global. GNU Global is a source
+  code tagging system that allows querying symbol locations in source code, such
+  as definitions or references. Adding the =gtags= layer enables both of these
+  modes.
+
+**** Features:
+  - Select any tag in a project retrieved by gtags
+  - Resume previous helm-gtags session
+  - Jump to a location based on context
+  - Find definitions
+  - Find references
+  - Present tags in current function only
+  - Create a tag database
+  - Jump to definitions in file
+  - Show stack of visited locations
+  - Manually update tag database
+  - Jump to next location in context stack
+  - Jump to previous location in context stack
+  - Jump to a file in tag database
+  - Enables =eldoc= in modes that otherwise might not support it.
+  - Enables =company complete= in modes that otherwise might not support it.
+
+**** Install 安装
+***** GNU Global (gtags)
+   To use gtags, you first have to install [[https://www.gnu.org/software/global/download.html][GNU Global]].
+
+   You can install =global= from the software repository of your OS; however, many
+   OS distributions are out of date, and you will probably be missing support for
+   =pygments= and =exuberant ctags=, and thus support for many languages. We
+   recommend installing from source. If not for example to install on Ubuntu:
+
+   #+begin_src sh
+     sudo apt-get install global
+   #+end_src
+
+****** Install on OSX using Homebrew
+   #+begin_src sh options
+     brew install global --with-pygments --with-ctags
+   #+end_src
+
+****** Install on *nix from source
+******* Install recommended dependencies
+   To take full advantage of global you should install 2 extra packages in
+   addition to global: pygments and ctags (exuberant). You can do this using
+   your normal OS package manager, e.g., on Ubuntu
+
+   #+BEGIN_SRC sh
+     sudo apt-get install exuberant-ctags python-pygments
+   #+END_SRC
+
+
+******* Install with recommended features
+   Download the latest tar.gz archive, then run these commands:
+
+   #+BEGIN_SRC sh
+     tar xvf global-6.5.3.tar.gz
+     cd global-6.5.3
+     ./configure --with-exuberant-ctags=/usr/bin/ctags
+     make
+     sudo make install
+   #+END_SRC
+
+******* Configure your environment to use pygments and ctags
+   To be able to use =pygments= and =ctags=, you need to copy the sample
+   =gtags.conf= either to =/etc/gtags.conf= or =$HOME/.globalrc=. For example:
+
+   #+begin_src sh
+     cp gtags.conf ~/.globalrc
+   #+end_src
+
+   Additionally you should define GTAGSLABEL in your shell startup file e.g.
+   with sh/ksh:
+
+   #+begin_src sh
+     echo export GTAGSLABEL=pygments >> .profile
+   #+end_src
+
+****** Conflict between =ctags= and emacs's =etags= binary
+   If you installed =emacs= from source after =ctags=, your original =ctags= binary
+   is probably replaced by emacs's =etags=. To get around this you will need to
+   configure =emacs= as following before installing:
+
+   #+begin_src sh
+     ./configure --program-transform-name='s/^ctags$/ctags.emacs/'
+   #+end_src
+
+   To check if you have the correct version of =ctags= execute:
+
+   #+begin_src sh
+     ctags --version | grep Exuberant
+   #+end_src
+
+   If yo do not get any output then it means you have the wrong =ctags= and must
+   install it again.
+
+***** Emacs Configuration
+   To use this configuration layer, add it to your =~/.spacemacs=. You
+   will need to add =gtags= to the existing =dotspacemacs-configuration-layers=.
+
+   #+begin_src emacs-lisp
+     (setq dotspacemacs-configuration-layers
+           '( ;; ...
+             gtags
+              ;; ...
+             ))
+   #+end_src
+
+****** Disabling by default
+   If =ggtags-mode= is too intrusive you can disable it by default, by setting the
+   layer variable =gtags-enable-by-default= to =nil=.
+
+   #+BEGIN_SRC emacs-lisp
+     (setq-default dotspacemacs-configuration-layers
+       '((gtags :variables gtags-enable-by-default t)))
+   #+END_SRC
+
+   This variable can also be set as a file-local or directory-local variable for
+   additional control per project.
+
+**** Usage 使用
+   Before using the =gtags=, remember to create a GTAGS database by the following
+   methods:
+
+   首先创建 gtags 文件
+   - From within Emacs, runs the command =helm-gtags-create-tags=, which is bound
+     to ~SPC m g c~. If the language is not directly supported by GNU Global, you
+     can choose =ctags= or =pygments= as a backend to generate tag database.
+     如果global 不支持 此语言，那么可以换工具, 或者在终端执行
+
+   - From inside terminal, runs gtags at your project root in terminal:
+
+   #+BEGIN_SRC sh
+     cd /path/to/project/root
+     gtags
+   #+END_SRC
+
+   If the language is not directly supported by =gtags=, and you have not set the
+   GTAGSLABEL environment variable, use this command instead:
+
+   #+BEGIN_SRC sh
+     gtags --gtagslabel=pygments
+   #+END_SRC
+
+****** Language Support
+******* Built-in languages
+   If you do not have =ctags= or =pygments= enabled gtags will only produce
+   tags for the following languages:
+
+   - asm
+   - c/c++
+   - java
+   - php
+   - yacc
+
+******* Exuberant ctags languages
+   If you have enabled =exuberant ctags= and use that as the backend (i.e.,
+   =GTAGSLABEL=ctags= or =--gtagslabel=ctags=) the following additional languages
+   will have tags created for them:
+
+   - c#
+   - erlang
+   - javascript
+   - common-lisp
+   - emacs-lisp
+   - lua
+   - ocaml
+   - python
+   - ruby
+   - scheme
+   - vimscript
+   - windows-scripts (.bat .cmd files)
+
+******* Universal ctags languages
+   If instead you installed you the newer/beta =universal ctags= and use that
+   as the backend (i.e., GTAGSLABEL=ctags or --gtagslabel=ctags) the following
+   additional languages will have tags created for them:
+
+   - clojure
+   - d
+   - go
+   - rust
+
+******* Pygments languages (plus symbol and reference tags)
+   In order to look up symbol references for any language not in the built in
+   parser you must use the pygments backend. When this backend is used global
+   actually uses both ctags and pygments to find the definitions and uses of
+   functions and variables as well as "other symbols".
+
+   If you enabled pygments (the best choice) and use that as the backend (i.e.,
+   =GTAGSLABEL=pygments= or =--gtagslabel=pygments=) the following additional
+   languages will have tags created for them:
+
+   - elixir
+   - fsharp
+   - haskell
+   - octave
+   - racket
+   - scala
+   - shell-scripts
+   - tex
+
+***** Eldoc integration
+   This layer also integrates =ggtags= for its Eldoc feature. That means, when
+   writing code, you can look at the minibuffer (at the bottom) and see variable
+   and function definition of the symbol the cursor is on. However, this feature is
+   only activated for programming modes that are not one of these languages:
+
+   - C
+   - C++
+   - Common Lisp
+   - Emacs Lisp
+   - Python
+   - Ruby
+
+   Since these modes have better Eldoc integration already.
+
+   In addition, if output from =compile= (bound to ~SPC c C~), =shell-command=
+   (bound to ~SPC !~ and ~M-!~) or =async-shell-command= (bound to ~M-&~) commands
+   contains symbol in your project, you move cursor on such symbol and use any of
+   the gtags commands.
+**** Key bindings, emacs 环境的用法
+
+   | Key Binding | Description                                                                  |
+   |-------------+------------------------------------------------------------------------------|
+   | ~SPC m g C~ | create a tag database 第一步，创建标记文件                                   |
+   | ~SPC m g f~ | jump to a file in tag database    跳到包含那个tag 的文件                     |
+   | ~SPC m g g~ | jump to a location based on context       这个更精确，调到函数定义           |
+   | ~SPC m g G~ | jump to a location based on context (open another window) 另个窗口           |
+   | ~SPC m g d~ | find definitions                      跟上面没区别                           |
+   | ~SPC m g i~ | present tags in current function only 这个给你选一下tag链表,表示可能它会认错 |
+   | ~SPC m g l~ | jump to definitions in file           如果这个tag是本文件定义的，这个可以用  |
+   | ~SPC m g n~ | jump to next location in context stack                                       |
+   | ~SPC m g p~ | jump to previous location in context stack                                   |
+   | ~SPC m g r~ | find references                         有几个人用了这函数                   |
+   | ~SPC m g R~ | resume previous helm-gtags session       看看tags 文件中有多少tag            |
+   | ~SPC m g s~ | select any tag in a project retrieved by gtags 看看tags 文件中有多少tag      |
+   | ~SPC m g S~ | show stack of visited locations                                              |
+   | ~SPC m g y~ | find symbols   状态栏显示符号                                                |
+   | ~SPC m g u~ | manually update tag database 手动更新tag数据库                               |
+*** 文件比较 ediff
+** 搜索
+*** 在当前目录中搜索 
+  | 〜SPC /〜或〜SPC sd〜| 用第一个找到的工具搜索|
+*** 网页
+ | 〜SPC swg〜 | 在emacs中获取Google建议。在浏览器中打开Goog​​le搜索结果。 |
+ | 〜SPC sww〜| 在emacs中获取维基百科建议。在浏览器中打开维基百科页面。|
+  也可以用duck-duck-go
+*** 在一个项目中搜索
+   | 〜SPC /〜或〜SPC sp〜| 搜索第一个找到的工具|
+* 模块
+** nov mode 查看epub 文档 
+   describe-mode V       
+   nov-view-content-source [    
+   nov-previous-document]     
+   nov-next-document g      
+   nov-render-document h               
+   describe-mode m 
+   nov-display-metadata n 
+   nov-next-document p             
+   nov-previous-document q  
+   quit-window t         
+   nov-goto-toc   （到顶部) v    
+   nov-view-source  (看源码)
+** pdf-tools
+*** 搜索   
+ Searching搜索 with =occur= can be done by using =pdf-occur= (~SPC m s s~).
+*** 导航
+    上/下一页 K/J
+    第一页、最后一页 gg /G
+    跳到几页 gt  gl
+    标记 m 跳 '
+*** 大纲
+   链接 o
+   大纲 O
+   刷新 r
+*** 注释
+*** 匹配窗口
+    +/- 放大缩小 重置 zr
+*** 切片 就是一个页面的显示部分，被切的其他不显示
+ 鼠标切片 SPC m s m 重置  SPC m s r
+** Meghanada? 可以方便处理java语言的任务
+   1.打开关闭 任务
+   2.语言内Navigation 
+  | ~SPC m g b~ | Jump back to previous location |
+  | ~SPC m g g~ | Jump to declaration            |
+  |             |                                |
+  3.编译文件、工程
+  | ~SPC m c b~ | Compile file (buffer) |
+  | ~SPC m c c~ | Compile project       |
+  4.测试
+  | ~SPC m t a~ | Run all tests |
+  5.附加功能
+  | ~SPC m =~   | Beautify code                          |
+  | ~SPC m r i~ | Optimize imports                       |
+  | ~SPC m r I~ | Import all                             |
+  | ~SPC m r n~ | Create a new class, interface, or enum |
+  6.执行
+  | ~SPC m x :~ | Run task    |
+*** Meghanada的配置文件？
+  .meghanada.conf 必须在工程根目录 , 配置详情查看 git doc 文件
+  #+BEGIN_SRC conf
+      # Set JAVA_HOME
+      # Type: string
+    java-home = "/usr/lib/jvm/default"
+
+    # Set java version
+    # Type: string
+    #
+    # It is same effect following code.
+    # System.setProperty("java.specification.version", val);
+    java-version = "1.8"
+
+    # Set source compatibility
+    # Type: string
+    compile-source = "1.8"
+
+    # Set target compatibility
+    # Type: string
+    compile-target = "1.8"
+
+    # Set dependencies file list (jar filepath)
+    # Type: string list
+    dependencies = ["/home/user/.m2/repository/org/apache/maven/maven-model/3.3.9/maven-model-3.3.9.jar", "/home/user/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.22/plexus-utils-3.0.22.jar", "/home/user/.m2/repository/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar" ... ]
+
+    # Set test dependencies file list (jar filepath)
+    # Type: string list
+    test-dependencies = ["/home/ma2/.m2/repository/junit/junit/4.12/junit-4.12.jar" ... ]
+
+    # Set source directories
+    # Type: string list
+    #sources = ["src/main/java"]
+
+    # Set resource directories
+    # Type: string list
+    #resources = ["src/main/resources"]
+
+    # Set classes output directory
+    # Type: string
+    output = "."
+
+    # Set test source directories
+    # Type: string list
+    #test-sources = ["src/test/java"]
+
+    # Set testt resource directories
+    # Type: string list
+    #test-resources = ["src/test/resources"]
+
+    # Set test classes output directory
+    # Type: string
+    #test-output = "build/test/classes"
+
+    # Set include file filter
+    # Type: string list
+    #
+    # Filter strings are must regex string.
+    include-file = [".*Parser*." ... ]
+
+    # Set exclude file filter
+    # Type: string list
+    #
+    # Filter strings are must regex string.
+    exclude-file = [".*TEST*." ... ]
+
+  #+END_SRC
+** w3m推荐配置?
+   #+BEGIN_SRC lisp
+  (defun dotspacemacs/user-config ()
+   (setq w3m-home-page "https://www.google.com")
+   ;; W3M Home Page
+   (setq w3m-default-display-inline-images t)
+   (setq w3m-default-toggle-inline-images t)
+   ;; W3M default display images
+   (setq w3m-command-arguments '("-cookie" "-F"))
+   (setq w3m-use-cookies t)
+   ;; W3M use cookies
+   (setq browse-url-browser-function 'w3m-browse-url)
+   ;; Browse url function use w3m
+   (setq w3m-view-this-url-new-session-in-background t)
+   ;; W3M view url new session in background
+ ) 
+   #+END_SRC
+
+** emacsclient
+ 告诉正在运行的emacs 访问文件, 与emacs服务器一起使用
+ emacsclient [ 选项 ] 文件
+ -c，--create-frame 使用一个新框架而不是在现有框架
+ -d，--display = DISPLAY 告诉服务器在给定的显示器上显示文件。
+ -nw，-t，--tty  在当前终端上打开一个新的Emacs框架
+ 最后 ，编辑完缓冲区后，输入“Cx＃”（“server-edit”）
+** python模式
+*** 自动完成 anaconda-mode 蟒蛇, 绿蟒模式
+*** 查找文档 
+    SPC mhd 使用helm-pydoc 查找文档
+*** 块间跳转 anaconda-mode-find-definitions
+    SPC mgb 跳回
+*** 是抑制未使用的导入 没使用的块，导入了也多余 autoflake(小薄片）
+   pip install autoflake
+*** 对输入进行排序 要安装 isort , 通过 pip install isort
+*** 运行python脚本 SPC mcc
+** Yasnippet 小片段snippet
+   使用 keyname + M-/  有参数用TAB索引
+   添加 最简单的地方是在~/.emacs.d/private/snippets目录中。
+   在这个目录结构下，你应该创建一个以你的片段的相关模式命名的文件夹，例如markdown-mode。
+   在这个模式文件夹中，创建名称基于您希望的代码段别名的文件。
+   格式：　$0 是最后一个
+ #+BEGIN_SRC snappt
+ #contributor : Jimmy Wu <frozenthrone88@gmail.com>
+ #name :<form method="..." id="..." action="..."></form>
+ # --
+ <form method="$1" id="$2" action="$3">
+   $0
+ </form>
+ #+END_SRC
+
+ 现有文本创建　helm-yas-create-snippet-on-region
+ 刷新 yas-load-snippet-buffer　
+ 测试  yas-tryout-snippet
+ 自动完成中显示　snippet 把变量设为：auto-completion-enable-snippets-in-popup为t。
+** markdown
+*** 预览 默认是内部浏览器，配置    
+  1. (markdown :variables markdown-live-preview-engine 'vmd)
+  2. sudo npm install -g vmd, 感觉都一样 spc m c p
+  4.在chrome 层配置flymd, 可以 Write markdown in Emacs and realtime 
+  show in chrome using [[https://github.com/mola-T/flymd][flymd]]
+*** 生成 大纲
+    ~SPC SPC markdown-toc-generate-toc RET~
+*** Key bindings
+**** Element insertion
+
+  | Key Binding | Description                                                       |
+  |-------------+-------------------------------------------------------------------|
+  | ~SPC m -~   | insert horizontal line                                            |
+  | ~SPC m h i~ | insert header dwim                                                |
+  | ~SPC m h I~ | insert header setext dwim                                         |
+  | ~SPC m h 1~ | insert header atx 1                                               |
+  | ~SPC m h 2~ | insert header atx 2                                               |
+  | ~SPC m h 3~ | insert header atx 3                                               |
+  | ~SPC m h 4~ | insert header atx 4                                               |
+  | ~SPC m h 5~ | insert header atx 5                                               |
+  | ~SPC m h 6~ | insert header atx 6                                               |
+  | ~SPC m h !~ | insert header setext 1                                            |
+  | ~SPC m h @~ | insert header setext 2                                            |
+  | ~SPC m i l~ | insert inline link dwim                                           |
+  | ~SPC m i L~ | insert reference link dwim                                        |
+  | ~SPC m i u~ | insert uri                                                        |
+  | ~SPC m i f~ | insert footnote                                                   |
+  | ~SPC m i w~ | insert wiki link                                                  |
+  | ~SPC m i i~ | insert image                                                      |
+  | ~SPC m i I~ | insert reference image                                            |
+  | ~SPC m i t~ | insert Table of Contents (toc)                                    |
+  | ~SPC m x b~ | make region bold or insert bold                                   |
+  | ~SPC m x i~ | make region italic or insert italic                               |
+  | ~SPC m x c~ | make region code or insert code                                   |
+  | ~SPC m x C~ | make region code or insert code (Github Flavored Markdown format) |
+  | ~SPC m x q~ | make region blockquote or insert blockquote                       |
+  | ~SPC m x Q~ | blockquote region                                                 |
+  | ~SPC m x p~ | make region or insert pre                                         |
+  | ~SPC m x P~ | pre region                                                        |
+
+**** Element removal
+
+  | Key Binding | Description         |
+  |-------------+---------------------|
+  | ~SPC m k~   | kill thing at point |
+
+**** Completion
+
+  | Key Binding | Description |
+  |-------------+-------------|
+  | ~SPC m ]~   | complete    |
+
+**** Following and Jumping
+
+  | Key Binding | Description           |
+  |-------------+-----------------------|
+  | ~SPC m o~   | follow thing at point |
+  | ~SPC m j~   | jump                  |
+
+**** Indentation
+
+  | Key Binding | Description   |
+  |-------------+---------------|
+  | ~SPC m \>~  | indent region |
+  | ~SPC m \<~  | exdent region |
+
+**** Header navigation
+
+  | Key Binding | Description                  |
+  |-------------+------------------------------|
+  | ~gj~        | outline forward same level   |
+  | ~gk~        | outline backward same level  |
+  | ~gh~        | outline up one level         |
+  | ~gl~        | outline next visible heading |
+
+**** Buffer-wide commands
+
+  | Key Binding | Description                                                                          |
+  |-------------+--------------------------------------------------------------------------------------|
+  | ~SPC m c ]~ | complete buffer                                                                      |
+  | ~SPC m c m~ | other window                                                                         |
+  | ~SPC m c p~ | preview                                                                              |
+  | ~SPC m c P~ | live preview using engine defined with layer variable =markdown-live-preview-engine= |
+  | ~SPC m c e~ | export                                                                               |
+  | ~SPC m c v~ | export and preview                                                                   |
+  | ~SPC m c o~ | open                                                                                 |
+  | ~SPC m c w~ | kill ring save                                                                       |
+  | ~SPC m c c~ | check refs                                                                           |
+  | ~SPC m c n~ | cleanup list numbers                                                                 |
+  | ~SPC m c r~ | render buffer                                                                        |
+
+**** List editing
+
+  | Key Binding | Description      |
+  |-------------+------------------|
+  | ~SPC m l i~ | insert list item |
+
+**** Movement
+
+  | Key Binding | Description        |
+  |-------------+--------------------|
+  | ~SPC m {~   | backward paragraph |
+  | ~SPC m }~   | forward paragraph  |
+  | ~SPC m N~   | next link          |
+  | ~SPC m P~   | previous link      |
+
+**** Promotion, Demotion
+
+  | Key Binding | Description        |
+  |-------------+--------------------|
+  | ~M-k~       | markdown-move-up   |
+  | ~M-j~       | markdown-move-down |
+  | ~M-h~       | markdown-promote   |
+  | ~M-l~       | markdown-demote    |
+
+**** Toggles
+
+  | Key Binding | Description          |
+  |-------------+----------------------|
+  | ~SPC m t i~ | toggle inline images |
+  | ~SPC m t l~ | toggle hidden urls   |
+  | ~SPC m t t~ | toggle checkbox      |
+  | ~SPC m t w~ | toggle wiki links    |
+** chrome 
+   可以和 emacs 交互
+*** 编辑文本 
+    需安装 chrome 插件 edit with emacs
+    edit-server 编辑服务器会自动启动, 来处理来自Chrome的编辑请求
+    Edit text boxes with Emacs using [[https://github.com/stsquad/emacs_chrome][edit-server]]
+    那么，在 网页的文本域中输入时，点击 edit-with-emacs 小图标会自动跳出 emacs
+    看下下面 的配置
+****  Configuration
+Use =edit-server-url-major-mode-alist= to choose a major mode initialization
+function based on =edit-server-url=, or fall back to
+=edit-server-default-major-mode= that has a current value of =markdown-mode=.
 
 #+BEGIN_SRC emacs-lisp
-  (defvar company-etags-modes '(prog-mode c-mode objc-mode c++-mode java-mode
-                                          jde-mode pascal-mode perl-mode python-mode))
+  (defun dotspacemacs/user-config ()
+  ;; Open github text areas as org buffers
+  ;; currently they are opened as markdown
+    (setq edit-server-url-major-mode-alist
+        '(("github\\.com" . org-mode))))
 #+END_SRC
 
-在该变量中定义了可以使用 company-etags 的 mode, 将 org-mode 加入该变量的值中即可在 org-mode 使用 company-etags 进行补全.
-ctags 支持上百种语言, 学会使用 ctags 能够提交效率.
-* gtags模式, 除了第一次,生成外，以后都是自动生成的
-=helm-gtags= and =ggtags= are clients for GNU Global. GNU Global is a source
-code tagging system that allows querying symbol locations in source code, such
-as definitions or references. Adding the =gtags= layer enables both of these
-modes.
+To change frame defaults (width, height, etc. use =edit-server-new-frame-alist=)
 
-** Features:
-- Select any tag in a project retrieved by gtags
-- Resume previous helm-gtags session
-- Jump to a location based on context
-- Find definitions
-- Find references
-- Present tags in current function only
-- Create a tag database
-- Jump to definitions in file
-- Show stack of visited locations
-- Manually update tag database
-- Jump to next location in context stack
-- Jump to previous location in context stack
-- Jump to a file in tag database
-- Enables =eldoc= in modes that otherwise might not support it.
-- Enables =company complete= in modes that otherwise might not support it.
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'edit-server-new-frame-alist '(width  . 140))
+  (add-to-list 'edit-server-new-frame-alist '(height . 60))
+#+END_SRC
 
-** Install 安装
-*** GNU Global (gtags)
- To use gtags, you first have to install [[https://www.gnu.org/software/global/download.html][GNU Global]].
+If you want Emacs to switch focus to Chrome after done editing, you can utilize
+=edit-server-done-hook=.
 
- You can install =global= from the software repository of your OS; however, many
- OS distributions are out of date, and you will probably be missing support for
- =pygments= and =exuberant ctags=, and thus support for many languages. We
- recommend installing from source. If not for example to install on Ubuntu:
+Emacs cannot control focus of windows for external apps, so you need to use some
+sort of command line window manager like =wmctrl=.
 
- #+begin_src sh
-   sudo apt-get install global
- #+end_src
+The following example works on OS X:
 
-**** Install on OSX using Homebrew
- #+begin_src sh options
-   brew install global --with-pygments --with-ctags
- #+end_src
-
-**** Install on *nix from source
-***** Install recommended dependencies
- To take full advantage of global you should install 2 extra packages in
- addition to global: pygments and ctags (exuberant). You can do this using
- your normal OS package manager, e.g., on Ubuntu
-
- #+BEGIN_SRC sh
-   sudo apt-get install exuberant-ctags python-pygments
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'edit-server-done-hook (lambda () (shell-command "open -a \"Google Chrome\"")))
+#+END_SRC
 
 
-***** Install with recommended features
- Download the latest tar.gz archive, then run these commands:
+#+BEGIN_SRC 
 
- #+BEGIN_SRC sh
-   tar xvf global-6.5.3.tar.gz
-   cd global-6.5.3
-   ./configure --with-exuberant-ctags=/usr/bin/ctags
-   make
-   sudo make install
- #+END_SRC
+技巧和窍门
+定制
+控制调用
+与Google Mail集成
+更改默认模式
+与其他模式集成
+技巧和窍门
+如果使用代理，则可能需要将“--proxy-bypass-list = 127.0.0.1：9292”参数添加到chrome命令行。
+定制
+该扩展有许多变量，可以定制各种行为。目前他们是：
 
-***** Configure your environment to use pygments and ctags
- To be able to use =pygments= and =ctags=, you need to copy the sample
- =gtags.conf= either to =/etc/gtags.conf= or =$HOME/.globalrc=. For example:
+编辑服务器新帧 - 如果不是零，编辑每个缓冲区在一个新的框架（并提高）
+edit-server-new-frame-alist - 新帧的帧参数。看‘default-frame-alist’例子。如果为零，则新框架将使用现有的‘default-frame-alist’值。
+目前有两个钩子
 
- #+begin_src sh
-   cp gtags.conf ~/.globalrc
- #+end_src
+edit-server-start-hook - 用当前缓冲区调用准备编辑
+edit-server-done-hook - 当用户完成编辑并退出编辑缓冲区时调用。例如，在导航离开textarea页面的情况下，使用以下命令来保存textarea的内容：
+    （lambda（）（kill-ring-save（point-min）（point-max）））
+控制调用
+如果你已经在--daemon模式下运行Emacs的一个实例，那么你可以把代码包装成如下形式：
 
- Additionally you should define GTAGSLABEL in your shell startup file e.g.
- with sh/ksh:
+（当（和（daemonp）（locate-library “edit-server”））
+   （需要 ' 编辑服务器）
+   （编辑服务器启动））
+编辑要在新的缓冲区中打开要编辑的页面，而不是运行Emacs实例的新帧，请执行以下操作：
 
- #+begin_src sh
-   echo export GTAGSLABEL=pygments >> .profile
- #+end_src
+（当（定位库“编辑服务器”）
+  （需要 ' 编辑服务器）
+  （setq edit-server-new-frame nil）
+  （编辑服务器启动））
+与Google Mail集成
+Gmail已经切换到一个新的撰写窗口，不幸中断了互动edit-server。但幸运的是，有人已经为此解决了一个问题：https：//github.com/frobtech/edit-server-htmlize
 
-**** Conflict between =ctags= and emacs's =etags= binary
- If you installed =emacs= from source after =ctags=, your original =ctags= binary
- is probably replaced by emacs's =etags=. To get around this you will need to
- configure =emacs= as following before installing:
+要使用，只需确保edit-server-htmlize.el在你的load-path，然后做：
 
- #+begin_src sh
-   ./configure --program-transform-name='s/^ctags$/ctags.emacs/'
- #+end_src
+（autoload'edit-server-maybe-dehtmlize-buffer “edit-server-htmlize”  “edit-server-htmlize” t）
+（自动加载“edit-server-maybe-htmlize-buffer    ”edit-server-htmlize“  ”edit-server-htmlize“ t）
+（add-hook'edit-server-start-hook'edit-server-maybe-dehtmlize-buffer）
+（add-hook'edit-server-done-hook'edit-server-maybe-htmlize-buffer）
+更改默认模式
+要使编辑服务器以某种其他模式（除了文本模式）工作，请编辑edit-server.el并更改以下行：
 
- To check if you have the correct version of =ctags= execute:
+   （定义派生模式 编辑服务器文本模式文本模式“编辑服务器文本模式”
+像这样的东西：
 
- #+begin_src sh
-   ctags --version | grep Exuberant
- #+end_src
+   （定义派生模式 编辑服务器文本模式降价模式“编辑服务器文本模式”
+与其他模式集成
+TODO：看看整合作为外部...
 
- If yo do not get any output then it means you have the wrong =ctags= and must
- install it again.
+在运行Aquamacs 2.1的OS X上，我将如何强制Aquamacs在Chrome上方添加新的消息框？目前，一个新的框架在Aquamacs之上打开，但在Chrome之下。另外，我认为ALT + E按钮在Chrome 10.0.612.1 dev上不起作用 - 没有引发Aquamacs窗口。
 
-*** Emacs Configuration
- To use this configuration layer, add it to your =~/.spacemacs=. You
- will need to add =gtags= to the existing =dotspacemacs-configuration-layers=.
+在运行Aquamacs（版本3.x开发）的OS X上：强制Aquamacs成为前端应用程序（使所有框架向前，而不仅仅是新的“编辑”框架）：（add- hook'edit -server-start-hook（lambda （）（do-applescript“告诉应用程序”Aquamacs \“激活”）））
 
- #+begin_src emacs-lisp
-   (setq dotspacemacs-configuration-layers
-         '( ;; ...
-           gtags
-            ;; ...
-           ))
- #+end_src
+我已经介绍了如何将编辑服务器与org模式集成，以便将编辑保存到组织模式任务中，并记下花在他们上的时间。
 
-**** Disabling by default
- If =ggtags-mode= is too intrusive you can disable it by default, by setting the
- layer variable =gtags-enable-by-default= to =nil=.
 
- #+BEGIN_SRC emacs-lisp
-   (setq-default dotspacemacs-configuration-layers
-     '((gtags :variables gtags-enable-by-default t)))
- #+END_SRC
+#+END_SRC
+*** 预览 markdown, 现在是失效的
+| ~SPC a F~ | flymd-flyit |
+Solution 1: Using other browser for flymd-flyit, like Firefox.
 
- This variable can also be set as a file-local or directory-local variable for
- additional control per project.
+Add this to your init file.
+#+BEGIN_SRC lisp
+ (defun my-flymd-browser-function (url)
+   (let ((browse-url-browser-function 'browse-url-firefox))
+     (browse-url url)))
+ (setq flymd-browser-open-function 'my-flymd-browser-function)
+#+END_SRC
 
-** Usage 使用
- Before using the =gtags=, remember to create a GTAGS database by the following
- methods:
+Solution 2: Still using google chrome. But you need to kill all google chrome process before using flymd-flyit. This is not recommended.
 
- 首先创建 gtags 文件
- - From within Emacs, runs the command =helm-gtags-create-tags=, which is bound
-   to ~SPC m g c~. If the language is not directly supported by GNU Global, you
-   can choose =ctags= or =pygments= as a backend to generate tag database.
-   如果global 不支持 此语言，那么可以换工具, 或者在终端执行
+Add this to your init file.
+#+BEGIN_SRC lisp
+    (defun my-flymd-browser-function (url)
+      (let ((process-environment (browse-url-process-environment)))
+        (apply 'start-process
+               (concat "google-chrome " url) nil
+               "google-chrome"
+               (list "--new-window" "--allow-file-access-from-files" url))))
+               (setq flymd-browser-open-function 'my-flymd-browser-function)
 
- - From inside terminal, runs gtags at your project root in terminal:
 
- #+BEGIN_SRC sh
-   cd /path/to/project/root
-   gtags
- #+END_SRC
-
- If the language is not directly supported by =gtags=, and you have not set the
- GTAGSLABEL environment variable, use this command instead:
-
- #+BEGIN_SRC sh
-   gtags --gtagslabel=pygments
- #+END_SRC
-
-**** Language Support
-***** Built-in languages
- If you do not have =ctags= or =pygments= enabled gtags will only produce
- tags for the following languages:
-
- - asm
- - c/c++
- - java
- - php
- - yacc
-
-***** Exuberant ctags languages
- If you have enabled =exuberant ctags= and use that as the backend (i.e.,
- =GTAGSLABEL=ctags= or =--gtagslabel=ctags=) the following additional languages
- will have tags created for them:
-
- - c#
- - erlang
- - javascript
- - common-lisp
- - emacs-lisp
- - lua
- - ocaml
- - python
- - ruby
- - scheme
- - vimscript
- - windows-scripts (.bat .cmd files)
-
-***** Universal ctags languages
- If instead you installed you the newer/beta =universal ctags= and use that
- as the backend (i.e., GTAGSLABEL=ctags or --gtagslabel=ctags) the following
- additional languages will have tags created for them:
-
- - clojure
- - d
- - go
- - rust
-
-***** Pygments languages (plus symbol and reference tags)
- In order to look up symbol references for any language not in the built in
- parser you must use the pygments backend. When this backend is used global
- actually uses both ctags and pygments to find the definitions and uses of
- functions and variables as well as "other symbols".
-
- If you enabled pygments (the best choice) and use that as the backend (i.e.,
- =GTAGSLABEL=pygments= or =--gtagslabel=pygments=) the following additional
- languages will have tags created for them:
-
- - elixir
- - fsharp
- - haskell
- - octave
- - racket
- - scala
- - shell-scripts
- - tex
-
-*** Eldoc integration
- This layer also integrates =ggtags= for its Eldoc feature. That means, when
- writing code, you can look at the minibuffer (at the bottom) and see variable
- and function definition of the symbol the cursor is on. However, this feature is
- only activated for programming modes that are not one of these languages:
-
- - C
- - C++
- - Common Lisp
- - Emacs Lisp
- - Python
- - Ruby
-
- Since these modes have better Eldoc integration already.
-
- In addition, if output from =compile= (bound to ~SPC c C~), =shell-command=
- (bound to ~SPC !~ and ~M-!~) or =async-shell-command= (bound to ~M-&~) commands
- contains symbol in your project, you move cursor on such symbol and use any of
- the gtags commands.
-** Key bindings, emacs 环境的用法
-
- | Key Binding | Description                                                                  |
- |-------------+------------------------------------------------------------------------------|
- | ~SPC m g C~ | create a tag database 第一步，创建标记文件                                   |
- | ~SPC m g f~ | jump to a file in tag database    跳到包含那个tag 的文件                     |
- | ~SPC m g g~ | jump to a location based on context       这个更精确，调到函数定义           |
- | ~SPC m g G~ | jump to a location based on context (open another window) 另个窗口           |
- | ~SPC m g d~ | find definitions                      跟上面没区别                           |
- | ~SPC m g i~ | present tags in current function only 这个给你选一下tag链表,表示可能它会认错 |
- | ~SPC m g l~ | jump to definitions in file           如果这个tag是本文件定义的，这个可以用  |
- | ~SPC m g n~ | jump to next location in context stack                                       |
- | ~SPC m g p~ | jump to previous location in context stack                                   |
- | ~SPC m g r~ | find references                         有几个人用了这函数                   |
- | ~SPC m g R~ | resume previous helm-gtags session       看看tags 文件中有多少tag            |
- | ~SPC m g s~ | select any tag in a project retrieved by gtags 看看tags 文件中有多少tag      |
- | ~SPC m g S~ | show stack of visited locations                                              |
- | ~SPC m g y~ | find symbols   状态栏显示符号                                                |
- | ~SPC m g u~ | manually update tag database 手动更新tag数据库                               |
+#+END_SRC
+    

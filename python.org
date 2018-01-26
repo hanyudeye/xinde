@@ -1,4 +1,4 @@
-* python option?
+* option
 -d      提供调试输出
 -O      生成优化的字节码(生成 .pyo 文件)
 -S      不导入 site 模块以在启动时查找 Python 路径
@@ -7,33 +7,46 @@
 -Q opt  除法选项(参阅文档)
 -c cmd  运行以命令行字符串形式提交的 Python 脚本
 file    从给定的文件运行 Python 脚本(参阅后文)
-* python？
-** 什么是Python 环境变量? 跟C中一样，就是查一些python专用的配置环境
+* python
+** 环境变量
  PYTHONPATH	PYTHONPATH是Python搜索路径，默认我们import的模块都会从PYTHONPATH里面寻找。
  PYTHONSTARTUP 	Python启动后，先寻找PYTHONSTARTUP环境变量，然后执行此文件中变量指定的执行代码。
  PYTHONCASEOK 	加入PYTHONCASEOK的环境变量, 就会使python导入模块的时候不区分大小写.
  PYTHONHOME 	另一种模块搜索路径。它通常内嵌于的PYTHONSTARTUP或PYTHONPATH目录中，使得两个模块库更容易切换。
-** 什么是Python 中文编码？ 可以对中文的长编码进行正确的显示
- 默认编码格式是 ASCII 格式
-  # -*- coding: UTF-8 -*- 或者 #coding=utf-8.
-  encoding='UTF-8'
-** 什么是Python (变量)?
-1. List（列表）list = [ 'runoob', 786 , 2.23, 'john', 70.2 ] list[1:2]
-2. 元组 tuple = ( 'runoob', 786 , 2.23, 'john', 70.2 )!元组不让更新
-3. 字典 tinydict = {'name': 'john','code':6734, 'dept': 'sales'} 
-冰箱={'苹果':3,'梨子':5,'橘子':3}
-** 什么是类型 type？
-** 什么是算术运算符?
+** 中文编码
+   # -*- coding: UTF-8 -*- 
+   # coding=utf-8
+** 类型
+   1. List（列表）list = [ 'runoob', 786 , 2.23, 'john', 70.2 ] list[1:2]
+   2. 元组 tuple = ( 'runoob', 786 , 2.23, 'john', 70.2 )!元组不让更新
+   3. 字典 tinydict = {'name': 'john','code':6734, 'dept': 'sales'} 
+*** 双精度浮点型
+不精确的，如果想用更加精度的(精度位数多了)，可以导入 decimals, 但其实还是没算对
+设置精度后可能就算对了，没想
+#+BEGIN_SRC python
+设置精度
+  >>> from decimal import *
+  >>> getcontext()
+  Context(prec=28, rounding=ROUND_HALF_EVEN, Emin=-999999999, Emax=999999999,
+          capitals=1, flags=[], traps=[Overflow, DivisionByZero,
+          InvalidOperation])
+
+  >>> getcontext().prec = 7       # Set a new precision
+#+END_SRC
+
+#+RESULTS:
+
+** 算术运算符
    **	幂 - 返回x的y次幂	a**b 为10的20次方， 输出结果 100000000000000000000
    //	取整除 - 返回商的整数部分	9//2 输出结果 4 , 9.0//2.0 输出结果 4.0
-** 什么是条件语句?
-#+BEGIN_SRC python
-if 判断条件：
-    执行语句……
-else：
-    执行语句……
+** 流程控制
+   #+BEGIN_SRC python
+     if 判断条件：
+     执行语句……
+     else：
+     执行语句……
 #+END_SRC
-** 什么是循环语句?
+
 while循环
 #+BEGIN_SRC 
 while 判断条件：
@@ -47,12 +60,16 @@ for iterating_var in sequence:
 循环控制
 break
 continue
-** 什么是帮助
-help()  dir()
-** 什么是pass 语句 空语句 ，替换 为其他语言的占位符 ;
-** 什么是Python 模块
+assert(3>4) 断言, 产生此种情况会中断
+
+** 帮助
+   help()  函数或类文档字串说明
+   dir() 函数或类的性质
+** pass 语句 空语句 ，替换 为其他语言的占位符 ;
+** 模块, 一个模块几个类
+  !模块名(文件名) 与 类名 相同 
 *** import 语句 导入模块,一个模块只会执行一次,不管插入多少语句
-import module1[, module2[,... moduleN]
+    import module1[, module2[,... moduleN]
 *** From…import 语句
 : Python的from语句让你从模块中导入一个指定的部分到当前命名空间中
 *** globals()和locals()函数
@@ -60,52 +77,128 @@ import module1[, module2[,... moduleN]
 *** reload()函数
 : 当一个模块被导入到一个脚本，模块顶层部分的代码只会被执行一次。
 : 因此，如果你想重新执行模块里顶层部分的代码，可以用reload()函数
-*** Python中的包 相当于c中的头文件
-** 什么是Python 文件I/O
-*** 键盘输入
-**** : raw_input函数
-: raw_input([prompt]) 函数从标准输入读取一个行，并返回一个字符串（去掉结尾的换行符）：
-**** : input函数
-: input([prompt]) 函数和 raw_input([prompt]) 函数基本类似，但是 input 可以接收一个Python表达式作为输入，并将运算结果返回
-*** 打开和关闭文件 
-**** open 
-**** close
-**** write
-**** read
-**** 文件定位
-**** 重命名和删除文件
-**** remove()方法
-*** 目录
-**** mkdir()方法 
-**** chdir()方法 
-**** rmdir()方法 
-** 什么是Python 异常处理
+*** 完成模块
+**** 定义用于模块的错误和异常
+    #+BEGIN_SRC python
+      class sendException(Exception):
+            pass
+    #+END_SRC
+**** 定义模块中要输出的项 
+    from module import classname/functionname
+    __all__ 中确定的 或是 除去_ 开头的 是公有的
+**** 编写文档
+    '''items'''
+**** 测试, 写好注释, 执行方法
+**** 提供调用的回退函数
+**** 安装模块     
+     通常在 sys.path 的 site-packages 目录下
+** 包 一个包几个类
+   使用操作系统原有的目录结构、包是一个目录、如 Hello, 然后在里面创建__init__.py 文件，该文件提示该目录是包目录
+   在目录下创建类，类名同文件名要相同，默认只执行 __init__.py 文件，需要在里面 用 from 文件 import 同文件名同的类名
+   就可以在调用的源码中 import 包名 了
+   
+实例化 时 是 包名+类名
+** 测试模块和包
+   if __name== '__main__'
+   __name__是 模块或包名的变量, __main__ 用来测试模块中的方法 
+** 函数
+*** 定义 def funname(a="a"): 默认值
+*** 对象属性 
+    对象的长度  len(obj), 整数没有长度
+    打开文件 open(fn, mode) 以 mode('r' = 读, 'w'= 写)方式打开一个文件名为 fn 的文件
+    对象type 还能判断是类 还是实例, 还可以直接用isinstance()判断
+    读键盘 input(str)
+    切片 相当于从 排序的东西 选择 某种间隔的东西, 符号代表反向
+ #+BEGIN_SRC python
+foostr = 'abcde'
+foostr[::-1]
+ #+END_SRC 
+ and or 没有C 中的 || 和&& 了
+ is, is not 比较两个东西一样不一样
+ not 逻辑否定
+*** 文件
+**** 键盘输入
+***** : raw_input函数
+ : raw_input([prompt]) 函数从标准输入读取一个行，并返回一个字符串（去掉结尾的换行符）：
+***** : input函数
+ : input([prompt]) 函数和 raw_input([prompt]) 函数基本类似，但是 input 可以接收一个Python表达式作为输入，并将运算结果返回
+**** 打开和关闭文件 
+***** open 
+***** close
+***** write
+***** read
+***** 文件定位
+***** 重命名和删除文件
+***** remove()方法
+**** 目录
+***** mkdir()方法 
+***** chdir()方法 
+***** rmdir()方法 
+*** math
+    max()
+    pow(100,	2) 平方
+    sqrt  平方根
+    e
+*** operator	 提供了中缀运算
+    add()  和
+    sub()
+    mul
+    div
+    concat
+    operator.lt(a, b)
+   operator.le(a, b)
+   operator.eq(a, b)
+   operator.ne(a, b)
+   operator.__lt__(a, b)
+   operator.__le__(a, b)
+   operator.__eq__(a, b)
+   operator.__ne__(a, b)
+   operator.__ge__(a, b)
+   operator.__gt__(a, b)
+*** functools
+** 异常处理
 *** 捕捉异常可以使用try/except语句
 #+BEGIN_SRC python
-try:
-<语句>        #运行别的代码
-except <名字>：
-<语句>        #如果在try部份引发了'name'异常
-except <名字>，<数据>:
-<语句>        #如果引发了'name'异常，获得附加的数据
-else:
-<语句>        #如果没有异常发生
+  try:
+  <语句>        #运行别的代码
+  except <名字>：
+  <语句>        #如果在try部份引发了'name'异常
+  except <名字>，<数据>:
+  <语句>        #如果引发了'name'异常，获得附加的数据
+  else:
+  <语句>        #如果没有异常发生
 #+END_SRC
 *** 触发异常
 : raise [Exception [, args [, traceback]]]
-** 什么是Python 的类
-   class
+** 类
+*** class
+    类中方法定义 必须带 self
    #+BEGIN_SRC python
-   class wa:
-    def __init__(self, items={}):
-        '''items'''
-        if type(item)!=type({}):
-            raise TypeError("类型错误")
-        self.items=items
-        return
+     class wa:
+      def __init__(self, items={}):
+          '''items'''
+          if type(item)!=type({}):
+              raise TypeError("类型错误")
+          self.items=items
+          return
+         def	deposit(self,	amount):
+          self.balance	=	self.balance	+	amount
+          return	self.balance
+         def	withdraw(self,	amount):
+          if	amount	>	self.balance:
+           return	'Insufficient	funds'
    #+END_SRC
-*** 类
+*** 初始化函数 
+    __init
+*** 类的实例 ，没有new 关键词
+    a = Acc('xx')
 *** 类的继承
+    #+BEGIN_SRC python
+      class Subclass(Parentclass):
+             def __init__(self):
+              Parentclass.__init__
+
+    #+END_SRC
 *** 类属性与方法
 **** 类的私有属性
      __private_attrs：两个下划线开头，声明该属性为私有，不能在类地外部被使用或直接访问。在类内部的方法中使用时 self.__private_attrs。
@@ -113,7 +206,8 @@ else:
      在类地内部，使用def关键字可以为类定义一个方法，与一般函数定义不同，类方法必须包含参数self,且为第一个参数
 **** 类的私有方法
      __private_method：两个下划线开头，声明该方法为私有方法，不能在类地外部调用。在类的内部调用 self.__private_methods 
-** 什么是Python CGI编程 引入python cgi库
+*** type 函数
+** CGI编程 引入python cgi库
 : CGI程序可以是Python脚本，PERL脚本，SHELL脚本，C或者C++程序等
 *** Web服务器支持及配置
 
@@ -180,193 +274,291 @@ SCRIPT_FILENAME	CGI脚本的完整路径
 SCRIPT_NAME	CGI脚本的的名称
 SERVER_NAME	这是你的 WEB 服务器的主机名、别名或IP地址。
 SERVER_SOFTWARE	这个环境变量的值包含了调用CGI程序的HTTP服务器的名称和版本号。例如，上面的值为Apache/2.2.14(Unix)
-** 什么是python操作mysql数据库 MySQLdb
-** 什么是Python 网络编程
+** MySQLdb
+** 网络编程
 ***  低级别的网络服务支持基本的 Socket，它提供了标准的 BSD Sockets API，可以访问底层操作系统Socket接口的全部方法。
 ***  高级别的网络服务模块 SocketServer， 它提供了服务器中心类，可以简化网络服务器的开发。
-** 什么是Python 多线程
-** 什么是python GUI编程(Tkinter)
-** 什么是Python JSON
+** 多线程
+** GUI编程(Tkinter)
+** JSON
 *** encode 	将 Python 对象编码成 JSON 字符串
 *** decode	将已编码的 JSON 字符串解码为 Python 对象
-    
     pip install --upgrade "jedi>=0.9.0" "json-rpc>=1.8.1" "service_factory>=0.1.5"
-* 显示对象的属性? dir()
-* 显示文档字符串？   help([obj])
-  没有显示注释
-而__doc__方法 只返回文档字符串，文档字符串在 定义下面标记
-* 对象的长度？  len(obj), 整数没有长度
-* 打开文件？  open(fn, mode) 以 mode('r' = 读, 'w'= 写)方式打开一个文件名为 fn 的文件
-* 读键盘？ input(str)
-* 对象type? 还能判断是类 还是实例, 还可以直接用isinstance()判断
-* 切片？ 相当于从 排序的东西 选择 某种间隔的东西, 符号代表反向
- #+BEGIN_SRC python
-foostr = 'abcde'
-foostr[::-1]
- #+END_SRC 
-* and or? 没有C 中的 || 和&& 了
-*  is, is not? 比较两个东西一样不一样
-  N_SRC python
-a  'hat', -9.3]
-b 
-a 
-Tr
-a  b
-Fa
-  SRC
-* not? 逻辑否定
-* TODO 什么是python只有双精度浮点型？ 简单了，取消了单精度，但是浮点型是
-不精确的，如果想用更加精度的(精度位数多了)，可以导入 decimals, 但其实还是没算对
-设置精度后可能就算对了，没想
-#+BEGIN_SRC python
-设置精度
-  >>> from decimal import *
-  >>> getcontext()
-  Context(prec=28, rounding=ROUND_HALF_EVEN, Emin=-999999999, Emax=999999999,
-          capitals=1, flags=[], traps=[Overflow, DivisionByZero,
-          InvalidOperation])
+* python mode
+** Features:
+- Auto-completion using [[https://github.com/proofit404/anaconda-mode][anaconda-mode]]
+- Code Navigation using  [[https://github.com/proofit404/anaconda-mode][anaconda-mode]]
+- Documentation Lookup using  [[https://github.com/proofit404/anaconda-mode][anaconda-mode]]  and [[https://github.com/tsgates/pylookup][pylookup]]
+- Test Runners using [[https://github.com/syl20bnr/nose.el][nose.el]] or [[https://github.com/ionrock/pytest-el][pytest]]
+- Virtual Environment using  [[https://github.com/jorgenschaefer/pyvenv][pyvenv]] and [[https://github.com/yyuu/pyenv][pyenv]]
+- semantic mode is enabled
+- PEP8 compliant formatting via [[https://github.com/google/yapf][YAPF]]
+- PEP8 checks with [[https://pypi.python.org/pypi/flake8][flake8]] or [[https://pypi.python.org/pypi/pylint/1.6.4][pylint]]
+- Suppression of unused import with [[https://github.com/myint/autoflake][autoflake]]
+- Use the ~%~ key to jump between blocks with [[https://github.com/redguardtoo/evil-matchit][evil-matchit]]
+- Sort imports with [[https://pypi.python.org/pypi/isort][isort]]
 
-  >>> getcontext().prec = 7       # Set a new precision
-#+END_SRC
-* 下约进 的整除？ // 就是这个符号
-* 位运算？
-整算符
-位                       功能 
-~n                 单目运算,对数的每一位取反。结果为  要取反的数 和 结果+1 的和是0, 不知道有个屁用
-nunum2             Num1 左移 num2 位 
-nunum2             Num1 右移 num2 位 
-nuum2              num1 与 num2 按位 与
-nuum2             num1 异或 num2
-nuum2             num1 与 num2 按位 或
-* 比大小? cmp(num1, num2)
-  n3 没有了，要导入包operator, 
-  N_SRC python3
-  or.lt(a, b)
-op.le(a, b)
-op.eq(a, b)
-op.ne(a, b)
-op.ge(a, b)
-op.gt(a, b)
-op.__lt__(a, b)
-op.__le__(a, b)
-op.__eq__(a, b)
-op.__ne__(a, b)
-op.__ge__(a, b)
-op.__gt__(a, b)
-  SRC
-* 转换函数？
-  r, base)      ==> int 
-  (num)            ==> str 
-  (num)            ==> str 
-  (num)           ==> str
-* 数据？ 能表示任何东西，不管多少
-字字 类
-tu列(1, 3, 4)[0]
-注特别灵活
-字: "AA", 'bb': "BB"}['bb'][1]
-集含键，因为数据不能重复
-* 中文报错？ SyntaxError: Non-ASCII character '\xe6' 
-设考虑多语言  
-脚加
-#cgbk
-#cutf-8
-#-ing: UTF-8 -*- 
-* 变量？ 下文处理上文的数据，怎么标示
-* 范围？ range
-rastart,]stop[,step]) 。起始值为 start, 结束值为 stop - 1; start
-默 0, step默认值为1。
-* continue? 被打断或者没意义了需要重新做
-* 异常？
-  N_SRC python
-  
-  )
-exxception as e:
-   Exception.message
-   "hello"
-  SRC
-* 模块？ 人穿衣服，导入就像人穿衣服
-  块，文件就是模块, 创建文件
-  块 模块名.东西
-  载的模块 list(sys.modules.keys())
-  ys.modules.pop('modulename']
-  载 sys.modules['modulename']  /或 reload(modulename)
-* sys模块？ 穿的工作服，工作服有什么特点，简练，正式 import, 或者 from 模块 import 对象 或 *
-*是命令行参数？ sys.argv变量
-*是
-*是
-*是
-*是
-* 包？ 目录, 并且目录中有 __init__.py 文件, 然后在目录里放模块文件，
-在__.py 下写 import 的模块，那么 类就归属包，模块也归属包，既然是继承，就直接包名调用
-* 文件? 人的身体是实物，人也是实物
-  rite close readline
-  h.isfile
-* 操作文件？ 模块 shutil
-  hutil.move()
-  
-  od
-  ir os.mkdirs
-  ir 空目录
-  .rmtree 包含子目录一起删
-  lob.glob("/home/wuming/M*") 好像要绝对路径，不应该啊
-* Python 函数
- #_SRC python
- dctionname( parameters ):
-  _文档字符串"
-  ion_suite
-  n [expression]
- #RC
-* lambda? 希腊文字的第十一个字母(入), 函数做参数, 用在filter中，这个函数比较难写
-  N_SRC python
-  r_me = [1, 2, 4, 5, 6, 8, 9]
-  lt = filter(lambda x: x % 2 == 0, fiter_me)
-  SRC
-  句
-#+SRC python
-fuambda x: x % 2 == 0
-re filter(func, fiter_me)
+** Install
+*** Layer
+ To use this configuration layer, add it to your =~/.spacemacs=. You will need to
+ add =python= to the existing =dotspacemacs-configuration-layers= list in this
+ file.
 
-#+C
+*** Dependencies
+**** Auto-completion: Anaconda dependencies
+ =anaconda-mode= tries to install the dependencies itself but sometimes
+ it does not work and you may encounter the following message when
+ opening a python buffer:
 
-ma
-#+SRC python
-  =['a', 'b', 'c']
-  =map(lambda x: "前缀 is %s" & x, map_me)
-  result
-#+C
-* 列表解析？ 
-* getopt 模块？
-* os.fork()? 进程, 复制这程序到别的地方，就有两个东西运行
-  d 是0，说明复制人在干活，不来，是本人在干活
-* os.execl()? 复制人干活了，我没有了，而上面的我还在
-  N_SRC python
-pi.fork()
-precond test"
-if= 0:
-  t("this is the child")
-  t("i'm going to exec another program now")
-  xecl("/bin/cat", 'cat', '/etc/networks')
-el
-  t("the child is pid %d" % pid)
-os)
+ #+begin_example
+     Blocking call to accept-process-output with quit inhibited!!
+ #+end_example
 
-wa父进程什么不做，等子进程返回
-  SRC
-* 线程？
-* 内置函数 dir(__builtins__)
-* 网络库？
-urllib
-urlparse
-httplib
-ftplib
-gopher
-poplib  pop3服务器
-imaplib imap服务器
-nntplib nntp服务器
-smtplib 标准邮件服务器
-* pdb 调试模块
-* 时间模块 
-* 优化模块
-* copy模块
-* cmd 模块
-* 
+ To fix this, install the =anaconda-mode= [[https://github.com/proofit404/anaconda-mode/wiki][anaconda-deps]] by hand:
+
+ #+begin_src sh
+     pip install --upgrade "jedi>=0.9.0" "json-rpc>=1.8.1" "service_factory>=0.1.5"
+ #+end_src
+
+ If you encounter problems with Jedi 1.0 consider downgrading to 0.9.0. See [[https://github.com/davidhalter/jedi/issues/873][this
+ issue]] for details.
+
+ Source: https://github.com/proofit404/anaconda-mode#issues
+
+ If you are facing errors such as "Unable to run anaconda-mode server", try
+ setting your =PYTHONPATH= as explained at
+ https://github.com/proofit404/anaconda-mode#pythonpath
+
+**** Syntax checking
+ Syntax checking uses =flake8= package:
+ #+begin_src sh
+     pip install flake8
+ #+end_src
+
+*** Test runner
+ Both =nose= and =pytest= are supported. By default =nose= is used.
+ To choose your test runner set the layer variable =python-test-runner= to
+ either =nose= or =pytest=.
+
+ #+BEGIN_SRC emacs-lisp
+ (setq-default dotspacemacs-configuration-layers
+   '((python :variables python-test-runner 'pytest)))
+ #+END_SRC
+
+ If you need both then you can set =python-test-runner= to a list like this:
+ #+BEGIN_SRC emacs-lisp
+ (setq-default dotspacemacs-configuration-layers
+   '((python :variables python-test-runner '(pytest nose))))
+ #+END_SRC
+
+ This means that =pytest= is your primary test runner. To use the secondary test
+ runner you can call the test functions with a prefix argument e.g. ~SPC u SPC m
+ t t~ to run one test with =nose=.
+
+ To set project specific test runners you can set =python-test-runner= in a
+ directory local variable in your project root. ~SPC f v d~ in Spacemacs. See
+ [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Directory-Variables.html][the official documentation]] for more information.
+
+ The root of the project is detected with a =.git= directory or a =setup.cfg= file.
+*** Automatic buffer formatting on save
+    To enable automatic buffer formatting on save with  [[https://github.com/google/yapf][YAPF]] set the variable
+    =python-enable-yapf-format-on-save= to =t=.
+ #+BEGIN_SRC emacs-lisp
+   (setq-default dotspacemacs-configuration-layers '(
+     (python :variables python-enable-yapf-format-on-save t)))
+ #+END_SRC
+
+*** autoflake
+ To be able to suppress unused imports easily, install [[https://github.com/myint/autoflake][autoflake]]:
+
+ #+BEGIN_SRC sh
+   pip install autoflake
+ #+END_SRC
+
+*** pylookup
+ To use =pylookup= on ~SPC m h H~, make sure you update the database first, using
+ ~SPC SPC pylookup-update~.
+
+*** Hy-mode
+ To be able to connect to an inferior lisp repl in =hy-mode=, you need to make sure
+ that hy is installed.
+
+ #+BEGIN_SRC sh
+   pip install hy
+ #+END_SRC
+
+** Management of Python versions and virtual environments
+*** Manage virtual environments with pyvenv
+ A virtual environment provides isolation of your Python package versions. For a
+ general overview see [[http://docs.python-guide.org/en/latest/dev/virtualenvs/][this site]]. [[http://virtualenvwrapper.readthedocs.io/en/latest/index.html][Virtualenvwrapper]] which is also explained in the
+ previous link, is a program which manages your virtual environments in a central
+ location set by the =WORKON_HOME= environment variable.
+
+ Spacemacs integration of virtual environments and virtualenvwrapper is provided
+ by the [[https://github.com/jorgenschaefer/pyvenv][pyvenv]] package. It provides the following keybindings:
+
+ | Key Binding | Description                                     |
+ |-------------+-------------------------------------------------|
+ | ~SPC m V a~ | activate a virtual environment in any directory |
+ | ~SPC m V d~ | deactivate active virtual environment           |
+ | ~SPC m V w~ | work on virtual environment in =WORKON_HOME=    |
+
+*** Manage multiple Python versions with pyenv
+ If you need multiple Python versions (e.g. Python 2 and Python 3) then take a
+ look at [[https://github.com/yyuu/pyenv][pyenv]]. It enables the installation and managment of multiple
+ Python versions.
+ [[https://www.brianthicks.com/post/2015/04/15/automate-your-python-environment-with-pyenv/][This blogpost]] gives a good overview on how to use the tool. Spacemacs
+ integration is provided by [[https://github.com/proofit404/pyenv-mode][pyenv mode]] which has the following keybindings.
+
+ | Key Binding | Description                          |
+ |-------------+--------------------------------------|
+ | ~SPC m v s~ | set a pyenv environment with [[https://github.com/pyenv/pyenv][pyenv]]   |
+ | ~SPC m v u~ | unset a pyenv environment with [[https://github.com/pyenv/pyenv][pyenv]] |
+
+ Pyenv can also manage virtual environments for each of the Python versions it
+ has installed. Those will be listed alongside your Python versions.
+
+**** Automatic activation of local pyenv version
+ A project-specific pyenv version may be written to a file called
+ =.python-version= using the [[https://github.com/yyuu/pyenv/blob/master/COMMANDS.md#user-content-pyenv-local][pyenv local]] command.
+
+ Spacemacs can search in parent directories for this file, and automatically set
+ the pyenv version. The behavior can be set with the variable
+ =python-auto-set-local-pyenv-version= to:
+ - =on-visit= (default) set the version when you visit a python buffer,
+ - =on-project-switch= set the version when you switch projects,
+ - =nil= to disable.
+
+ The same is also possible on pyvenv with a file called =.venv=. The behavior
+ can be set with the variable =python-auto-set-local-pyvenv-virtualenv== to:
+ - =on-visit= (default) set the virtualenv when you visit a python buffer,
+ - =on-project-switch= set the virtualenv when you switch projects,
+ - =nil= to disable.
+
+** Key Bindings
+*** Inferior REPL process 在交互模式下, 需SPC m s i
+ Start a Python or iPython inferior REPL process with ~SPC m s i~.
+ If =ipython= is available in system executable search paths, =ipython=
+ will be used to launch python shell; otherwise, default =python=
+ interpreter will be used.  You may change your system executable
+ search path by activating a virtual environment.
+
+ Send code to inferior process commands:
+
+ | Key Binding | Description                                     |
+ |-------------+-------------------------------------------------|
+ | ~SPC m s b~ | send buffer and keep code buffer focused        |
+ | ~SPC m s B~ | send buffer and switch to REPL in insert mode   |
+ | ~SPC m s f~ | send function and keep code buffer focused 发送光标处函数 |
+ | ~SPC m s F~ | send function and switch to REPL in insert mode |
+ | ~SPC m s i~ | start inferior REPL process                     |
+ | ~SPC m s r~ | send region and keep code buffer focused        |
+ | ~SPC m s R~ | send region and switch to REPL in insert mode   |
+ | ~CTRL+j~    | next item in REPL history                       |
+ | ~CTRL+k~    | previous item in REPL history                   |
+*** Running Python Script in shell
+ To run a Python script like you would in the shell press ~SPC m c c~
+ to start the Python script in comint mode. This is useful when working with
+ multiple Python files since the REPL does not reload changes made in other
+ modules.
+
+ | Key Binding | Description                                                               |
+ |-------------+---------------------------------------------------------------------------|
+ | ~SPC m c c~ | Execute current file in a comint shell                                    |
+ | ~SPC m c C~ | Execute current file in a comint shell and switch to it in =insert state= |
+
+ *Note:* With the universal argument ~SPC u~ you can enter a new
+ compilation command.
+用 spc u spc m c c 可以输入执行脚本的命令, 可以在后面加参数
+*** Testing (没装 nose)
+ Test commands start with ~m t~. To use the secondary test runner call the
+ function with a prefix argument, for example ~SPC u SPC m t a~.
+ | No Debug    | Description                                              |
+ |-------------+----------------------------------------------------------|
+ | ~SPC m t a~ | launch all tests of the project                          |
+ | ~SPC m t b~ | launch all tests of the current buffer (same as module)  |
+ | ~SPC m t m~ | launch all tests of the current module                   |
+ | ~SPC m t s~ | launch all tests of the current suite (only with =nose=) |
+ | ~SPC m t t~ | launch the current test (function)                       |
+
+ | Debug       | Description                                                            |
+ |-------------+------------------------------------------------------------------------|
+ | ~SPC m t A~ | launch all tests of the project in debug mode                          |
+ | ~SPC m t B~ | launch all tests of the current buffer (module) in debug mode          |
+ | ~SPC m t M~ | launch all tests of the current module in debug mode                   |
+ | ~SPC m t S~ | launch all tests of the current suite in debug mode (only with =nose=) |
+ | ~SPC m t T~ | launch the current test (function) in debug mode                       |
+
+*** Refactoring
+
+ | Key Binding | Description                          |
+ |-------------+--------------------------------------|
+ | ~SPC m r i~ | remove unused imports with [[https://github.com/myint/autoflake][autoflake]] |
+ | ~SPC m r I~ | sort imports with [[https://pypi.python.org/pypi/isort][isort]]              |
+
+*** Live coding
+ Live coding is provided by the [[https://github.com/donkirkby/live-py-plugin][live-py-plugin.]]
+
+ | Key Binding | Description         |
+ |-------------+---------------------|
+ | ~SPC m l~   | Toggle live-py-mode |
+
+*** Hy REPL process
+ Start a Hy inferior repel process with ~SPC m s i~. If =hy= is
+ available in system executable search paths, =hy= will be used to
+ launch the shell. You may change your system executable search path
+ by activating a virtual enviornment.
+
+ Send code to hy REPL commands:
+
+ | Key Binding | Description                                               |
+ |-------------+-----------------------------------------------------------|
+ | ~SPC m s b~ | send buffer and keep code buffer focused                  |
+ | ~SPC m s B~ | switch to REPL                                            |
+ | ~SPC m s e~ | send sexp in front of the cursor to the REPL              |
+ | ~SPC m s f~ | send function to REPL and stay in buffer                  |
+ | ~SPC m s F~ | send function to REPL and switch to repl buffer           |
+ | ~SPC m s i~ | start inferior hy repl                                    |
+ | ~SPC m s r~ | send current region to the REPL and stay in buffer        |
+ | ~SPC m s R~ | send current region to the REPL and switch to repl buffer |
+
+*** Other Python commands
+
+ | Key Binding | Description                                                                  |
+ |-------------+------------------------------------------------------------------------------|
+ | ~SPC m =~   | Reformat the buffer according to PEP8 using  [[https://github.com/google/yapf][YAPF]]                            |
+ | ~SPC m d b~ | toggle a breakpoint using =wdb=, =ipdb=, =pudb= or =pdb=                     |
+ | ~SPC m g g~ | go to definition using =anaconda-mode-find-definitions= (~C-o~ to jump back) |
+ | ~SPC m g a~ | go to assignment using =anaconda-mode-find-assignments= (~C-o~ to jump back) |
+ | ~SPC m g b~ | jump back                                                                    |
+ | ~SPC m g u~ | navigate between usages with =anaconda-mode-find-references=                 |
+ | ~SPC m h d~ | look for documentation using =helm-pydoc=                                    |
+ | ~SPC m h h~ | quick documentation using anaconda                                           |
+ | ~SPC m h H~ | open documentation in =firefox= using [[https://github.com/tsgates/pylookup][pylookup]]                               |
+ | ~SPC m v s~ | set a pyenv environment with [[https://github.com/pyenv/pyenv][pyenv]]                                           |
+ | ~SPC m v u~ | unset a pyenv environment with [[https://github.com/pyenv/pyenv][pyenv]]                                         |
+ | ~SPC m V w~ | work on virtual environment in =WORKON_HOME=                                 |
+ | ~SPC m V a~ | activate a virtual environment in any directory                              |
+ | ~SPC m V d~ | deactivate active virtual environment                                        |
+
+** Configuration
+*** Fill column
+ If you want to customize the fill column value, use something like this inside
+ the =user-init= function in your =.spacemacs=:
+
+ #+BEGIN_SRC elisp
+ (setq-default dotspacemacs-configuration-layers '(
+     (python :variables python-fill-column 99)))
+ #+END_SRC
+
+*** Sort imports
+ If you want imports to be automatically sorted when you save a file (using
+ [[https://pypi.python.org/pypi/isort][isort]]), set the =python-sort-imports-on-save= variable in the python layer
+ config section:
+
+ #+BEGIN_SRC elisp
+ (setq-default dotspacemacs-configuration-layers
+   '((python :variables python-sort-imports-on-save t)))
+ #+END_SRC
+
+ or as a directory-local variable (for per-project settings).
