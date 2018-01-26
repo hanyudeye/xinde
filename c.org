@@ -1,14 +1,13 @@
 * c-c++mode
-  编译 SPC c c 就好了
-** 语法检查 通过 flycheck  当前有
-** 反汇编 disaster        当前有
-** 代码格式化 clang-format 当前有
-** 底部定义提示 semantic   当前有
-** 导航 cscope    还没用到
-** 自动完成    当前有
+** 语法检查 通过 flycheck
+** 反汇编 disaster
+** 代码格式化 clang-format
+** 底部定义提示 semantic
+** 导航 cscope
+** 自动完成 
 1. c-c++-enable-clang-support 打开
 2.ycmd 层打开
-** 调试 realgud 还没用到
+** 调试 realgud
 ** 支持CMake 脚本构建
    CMake 是一个跨平台的，开源的构建系统（BuildSystem）。CMake 可以通过 CMakeLists.txt 文件来产生特定平台的标准的构建文件，例如：为 Unix 平台生成makefiles文件（使用GCC编译），为 Windows MSVC 生成 projects/workspaces（使用VS IDE编译）或Makefile文件（使用nmake编译）。
 CMake Hello World
@@ -17,8 +16,8 @@ CMake Hello World
 #include <stdio.h>
 int main()
 {
-printf("Hello World");
-return 0;
+   printf("Hello World");
+   return 0;
 }
 编写CMakeLists.txt，并与hello.cpp放在同一个目录。
 project(hello)
@@ -590,6 +589,17 @@ FOREACH(VAR RANGE 10)
       MESSAGE(${VAR})
 ENDFOREACH(VAR)
 输出：
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
 范围和步进 语法：
 FOREACH(loop_var RANGE start stop [step])
        COMMAND1(ARGS ...)
@@ -627,185 +637,225 @@ SET(LIBRARY\_OUTPUT\_PATH ${PROJECT\_BINARY\_DIR}/lib)
 ####cmake中如何给变量赋值 参考SET和AUX_SOURCE_DIRECTORY用法
 
 建议：在Project根目录先建立build,然后在build文件夹内运行cmake ..，这样就不会污染源代码, 如果不想要这些自动生成的文件了，只要简单的删除build文件夹就可以
-** CMake configuration
-=cmake-ide= plugin works out of the box, but there are few useful configuration
-options.
-
-To configure project you need to create =.dir-locals.el= file. In case of using
-make as CMake backend you can use =helm-make= to select required build target.
-
-Here is a sample configuration. This configuration forces =cmake-ide= to use the
-local directory and pass that directory to =helm-make=. Such config allows to
-build your project with ~SPC c c~ key binding.
-
-#+BEGIN_SRC emacs-lisp
-((nil .
-      ((cmake-ide-project-dir . "~/Project")
-       (cmake-ide-build-dir . "~/Project/build")
-       (cmake-ide-cmake-opts . "-DCMAKE_BUILD_TYPE=Debug")
-       (helm-make-build-dir . "build")
-       (helm-make-arguments . "-j7"))))
-#+END_SRC
-创建 CMakeLists.txt 文件
-#+BEGIN_SRC cmakelist
-PROJECT (LEARN)
-
-#SET(SRC_LIST main.cpp)
-SET(SRC_LIST learn.c)
-
-MESSAGE(STATUS "This is BINARY dir " ${HELLO_BINARY_DIR})
-
-MESSAGE(STATUS "This is SOURCE dir "${HELLO_SOURCE_DIR})
-
-ADD_EXECUTABLE(learn ${SRC_LIST})
-
-#+END_SRC
-** Key Bindings
-
-| Key Binding | Description                                                             |
-|-------------+-------------------------------------------------------------------------|
-| ~SPC m g a~ | open matching file                                                      |
-|             | (e.g. switch between .cpp and .h, requires a project to work)           |
-| ~SPC m g A~ | open matching file in another window                                    |
-|             | (e.g. switch between .cpp and .h, requires a project to work)           |
-| ~SPC m D~   | disaster: disassemble c/c++ code                                        |
-| ~SPC m r~   | srefactor: refactor thing at point.                                     |
-| ~SPC m p c~ | Run CMake and set compiler flags for auto-completion and flycheck       |
-| ~SPC m p C~ | Run CMake if compilation database JSON file is not found                |
-| ~SPC m p d~ | Remove file connected to current buffer and kill buffer, then run CMake |
-| ~SPC m c c~ | Compile project                                                         |
-
-*Note:*  [[https://github.com/tuhdo/semantic-refactor][semantic-refactor]]  is only available for Emacs 24.4+.
-
-** Debugger (realgud)   这里能选择好几种调试器调试不同语言
-我测试的是c ，我先 SPC m d d, 选择默认的 gdb 调试器，然后 用 file 读入 可执行文件 （记住!, 不是源码）
-可能之前先设好断点  或之后，然后 执行 r , 不管在源码或在 gdb 中 ，可能要在执行后才可以，就OK了
-
- | Key Binding | Description     |
- |-------------+-----------------|
- | ~SPC m d d~ | open cmd buffer |
- | ~SPC m d e~ | eval variable   |
- | ~s~         | step over       |
- | ~i~         | step into       |
- | ~b~         | set break       |
- | ~B~         | unset break     |
- | ~o~         | step out        |
- | ~c~         | continue        |
- | ~e~         | eval variable   |
- | ~r~         | restart         |
- | ~q~         | quit debug      |
- | ~S~         | goto cmd buffer |
-
-** realgud
-   Quick start
-Use M-x load-library RET realgud RET to load RealGUD.
-
-Launching the debugger
-Open a source file, then use M-x realgud:<debugger-name> to start your favorite debugger (for example, you can use M-x realgud:pdb to launch PDB, a Python debugger). RealGUD opens two windows: the command window (showing the debugger's REPL), and the source window, showing your code (with some debuggers, such as realgud:gdb, this window does not appear until you type start in the command window). An solid arrow ▶ indicates the current line in the source window. Grayed out arrows indicate previous positions.
-
-Using the debugger
-All usual debugger commands work in the command window: for example, you can type n RET in the command window to step forward one source line. But RealGUD's power lies in the source window: in it, most single keys correspond to a debugger action. For example, you can press n in the source window to step forward.
-
-Source window commands
-Here is a quick rundown of the most useful commands. “:mouse2:” indicates mouse commands (commands that can be run by clicking on a variable or in the margins). Many of the commands are accessible from the tool bar (tool-bar-mode) and the menu (menu-bar-mode).
-
-Motion commands
-
-Command	Action
-n, F10	Next (aka “step over”, “step through”)
-s, SPC, F11	Step (aka “step into”)
-f, S-F11	Finish (aka “step out”, “return”)
-c, F5	Continue (run to next break point)
-Using breakpoints
-
-Command	Action
-b, F9	Set breakpoint :mouse2:
-D	Clear breakpoint :mouse2: (by number)
-Inspecting variables
-
-Command	Action
-mouse-2 (middle button)	Inspect variable under cursor (in tooltip) :mouse2:
-e	Evaluate expression
-Control commands
-
-Command	Action
-q, S-F5	Quit
-R, r	Run (aka “restart”)
-S	Go to command window
-Supported debuggers
-RealGUD supports many external debuggers. Help us support even more!
-
-Advanced topics
-Extra commands
-“⚙” indicates a work-in-progress (contributions welcome!)
-
-Command	Action
-U	Until (run to a greater source line)
-u, >	Up stack (move to older stack frame)
-d, <	Down stack (move to younger stack frame)
-X	Clear breakpoint (by line)
-j	Jump to current line ⚙
--	Disable breakpoint ⚙
-+	Enable breakpoint ⚙
-Tracking an existing debugger process
-Use M-x realgud-track-mode inside an existing shell, or eshell buffer to track an already-running debugger process.
-
-* c 
-** 编译器函数，预处理器指令, 杂行为，用来协助生成程序的
-   头文件： 先定义，后使用的先后顺序不能变
-** 数据类型
-*** 定义类型 int i; //声明，也是定义
-*** 定义结构
-    结构体
- #+BEGIN_SRC c
- struct [structure tag]
- {
-    member definition;
-    member definition;
-    ...
-    member definition;
- } [one or more structure variables]; 
- #+END_SRC
- C 共用体
- #+BEGIN_SRC c
- union [union tag]
- {
-    member definition;
-    member definition;
-    ...
-    member definition;
- } [one or more union variables];  
- #+END_SRC
- C 位域 (节省空间)
- #+BEGIN_SRC c
- struct
- {
-   unsigned int widthValidated : 1;
-   unsigned int heightValidated : 1;
- } status;
- #+END_SRC
- C typedef (别名)
- : typedef unsigned char BYTE;
-
-*** 声明 extern int i; //声明，不是定义
-  常量 使用 #define 预处理器。 //预处理器会处理掉,不用编译器处理 |  使用 const 关键字。
-  C 存储类 定义 C 程序中变量/函数的范围（可见性）和生命周期
+* 什么是c 
+  声明先于函数/数据定义  头文件, 搜索的当前目录, 相对路径
+  函数/数据 库文件  .o  .so , 加载不用管, 自动的
+  gcc -g main.c lib.o otherlib.c 
+  编译 gcc -c 
+** 程序结构
+*** 预处理器指令
+   函数
+   变量
+   数组 {}
+   定义 int i; //声明，也是定义
+   声明 extern int i; //声明，不是定义
+   常量 使用 #define 预处理器。 //预处理器会处理掉,不用编译器处理 |  使用 const 关键字。
+   C 存储类 定义 C 程序中变量/函数的范围（可见性）和生命周期
 **** auto 存储类是所有局部变量默认的存储类
 **** register 存储类用于定义存储在寄存器中而不是 RAM 中的局部变量,最大尺寸等于寄存器的大小
- : 不能对它应用一元的 '&' 运算符（因为它没有内存位置
+: 不能对它应用一元的 '&' 运算符（因为它没有内存位置
 **** static 存储类指示编译器在程序的生命周期内保持局部变量的存在，而不需要在每次它进入和离开作用域时进行创建和销毁
 **** extern 存储类用于提供一个全局变量的引用，全局变量对所有的程序文件都是可见的。
-*** 常量 变量
-    常量的作用域广
-*** 位
-*** sizeof  以字节为单位，用来跨平台，因为不同平台int不同，所以，用sizeof 能确切计算int 的值
-*** 数字
-    整型、浮点型、指针型和聚合类型（包含数组和结构体）
-*** 字符串
-    
-*** 数组 {}
-*** i++ 和++i的区别？ 只在表达式中，
-    前缀运算符首先增加变量的值，然后复制一份拷贝；而后缀运算符首先复制一份拷贝，再增加变量的值
+语句 & 表达式
+注释 /* comment */ or //
+C 结构体
+#+BEGIN_SRC c
+struct [structure tag]
+{
+   member definition;
+   member definition;
+   ...
+   member definition;
+} [one or more structure variables]; 
+#+END_SRC
+C 共用体
+#+BEGIN_SRC c
+union [union tag]
+{
+   member definition;
+   member definition;
+   ...
+   member definition;
+} [one or more union variables];  
+#+END_SRC
+C 位域 (节省空间)
+#+BEGIN_SRC c
+struct
+{
+  unsigned int widthValidated : 1;
+  unsigned int heightValidated : 1;
+} status;
+#+END_SRC
+C typedef (别名)
+: typedef unsigned char BYTE;
+*** C 输入 & 输出
+**** getchar() & putchar() 函数
+int getchar(void) 函数从屏幕读取下一个可用的字符，并把它返回为一个整数。这个函数在同一个时间内只会读取一个单一的字符。您可以在循环内使用这个方法，以便从屏幕上读取多个字符。
+int putchar(int c) 函数把字符输出到屏幕上，并返回相同的字符。这个函数在同一个时间内只会输出一个单一的字符。您可以在循环内使用这个方法，以便在屏幕上输出多个字符。
+**** gets() & puts() 函数
+char *gets(char *s) 函数从 stdin 读取一行到 s 所指向的缓冲区，直到一个终止符或 EOF。
+int puts(const char *s) 函数把字符串 s 和一个尾随的换行符写入到 stdout。
+**** scanf() 和 printf() 函数
+     int scanf(const char *format, ...) 函数从标准输入流 stdin 读取输入，并根据提供的 format 来浏览输入。
+int printf(const char *format, ...) 函数把输出写入到标准输出流 stdout ，并根据提供的格式产生输出。
+*** C 文件读写
+**** 打开 FILE *fopen( const char * filename, const char * mode );
+**** 关闭 int fclose( FILE *fp );
+**** 写入 int fputc( int c, FILE *fp ); /int fputs( const char *s, FILE *fp );
+**** 读取 char *fgets( char *buf, int n, FILE *fp );
+*** 头文件
+#+BEGIN_SRC c
+#ifndef HEADER_FILE
+#define HEADER_FILE
+the entire header file file
+#endif
+#+END_SRC
+**** 多系统
+#+BEGIN_SRC c
+ #define SYSTEM_H "system_1.h"
+ ...
+ #include SYSTEM_H
+#+END_SRC
+*** C 错误处理
+    : 大多数的 C 或 UNIX 函数调用返回 1 或 NULL，同时会设置一个错误代码 errno，该错误代码是全局变量，表示在函数调用期间发生了错误。您可以在 <error.h> 头文件中找到各种各样的错误代码。
+    : 开发人员应该在程序初始化时，把 errno 设置为 0，这是一种良好的编程习惯。0 值表示程序中没有错误。
+**** perror() 函数显示您传给它的字符串，后跟一个冒号、一个空格和当前 errno 值的文本表示形式。
+**** strerror() 函数，返回一个指针，指针指向当前 errno 值的文本表示形式。
+**** 程序退出状态
+*****  exit(EXIT_FAILURE) 调用系统宏
+*****  exit(EXIT_SUCCESS)
+*** 内存管理 动态内存分配与管理 <stdlib.h>
+**** void *calloc(int num, int size);该函数分配一个带有 num 个元素的数组，每个元素的大小为 size 字节。
+**** void free(void *address);该函数释放 address 所指向的h内存块。
+**** void *malloc(int num);该函数分配一个 num 字节的数组，并把它们进行初始化。
+**** void *realloc(void *address, int newsize);该函数重新分配内存，把内存扩展到 newsize。
+     
+对于长的 先是 l 然后是 符号位， 跟定义时一样
+* 什么是gcc 基于C/C++的预处理器和编译器
+  -o：指定生成的输出文件,所以编译多个文件是,-o 没有意义；
+  -E：仅执行编译预处理； .i
+  -S：将C代码转换为汇编代码；.s
+  -wall：显示警告信息；
+  -c：仅执行编译操作，不进行连接操作。.o
+** 1. 预处理 gcc -E test.c -o test.i
+   -C:
+   -H:
+   -include:
+** 2. 编译为汇编代码   gcc -S test.i -o test.s
+   masm=intel	汇编代码 
+   -std 指定使用的语言标准
+** 3. gas  gcc -c test.s -o test.o
+   :-Wa,option
+   :-llibrary 连接名为library的库文件
+   :-L 指定额外路径
+   :-m32
+** 4. ld  gcc test.o -o test
+   :-lobjc 这个-l选项的特殊形式用于连接Objective C程序.
+   :-nostartfiles 不连接系统标准启动文件,而标准库文件仍然正常使用.
+   :-nostdlib 不连接系统标准启动文件和标准库文件.只把指定的文件传递给连接器.
+   :-static 在支持动态连接(dynamic linking)的系统上,阻止连接共享库.该选项在其他系统上无效.
+   :-shared 生成一个共享目标文件,他可以和其他目标文件连接产生可执行文件.只有部分系统支持该选项.
+   :-symbolic 建立共享目标文件的时候,把引用绑定到全局符号上.对所有无法解析的引用作出警
+   告(除非用连接编辑选项 `-Xlinker -z -Xlinker defs'取代).只有部分系统支持该选项.
+   :-u symbol 使连接器认为取消了symbol的符号定义,从而连接库模块以取得定义.你可以使用多
+   个 `-u'选项,各自跟上不同的符号,使得连接器调入附加的库模块.
+   : [-e ENTRY]|[--entry=ENTRY]	 使用 ENTRY (入口)标识符作为程序执行的开始端,而不是缺省入口.   
+   : -lAR	在连接文件列表中增加归档库文件AR.可以多次使用这个选项. 凡指定一项AR,ld 就会在路径列表中增加一项对libar.a的搜索.
+   : -LSEARCHDIR   这个选项将路径SEARCHDIR添加到路径列表, ld在这个列表中搜索归档库.
+   可以多次使用这个选项.缺省的搜索路径集(不使用-L时)取决于ld使用的
+   模拟模式(emulation)及其配置.在连接脚本中,可以用SEARCH_DIR命令指定路径. 
+   : -Tbss org
+   : -Tdata org
+   : -Ttext org
+   把org作为输出文件的段起始地址 --- 特别是 --- bss,data,或text段.org必须是十六进制整数. 
+   : -X    删除 全部 临时的 局部符号. 大多数 目的文件 中, 这些 局部符	    号 的 名字 用 `L' 做 开头.
+   : -x    删除 全部 局部符号. 
+   : -m 指定仿真环境,这里要与gcc 的选项 -m32一致; -V显示 支持的仿真：本机支持   elf_x86_64   
+   elf32_x86_64   elf_i386   i386linux   elf_l1om   elf_k1om   i386pep   i386pe
+   LDFLAGS="-L/usr/lib64 -L/lib64" 全局常量
+   : 注意,如果连接器通过被编译器驱动来间接引用(比如gcc), 那所有的连接器命令行选项前必须加上前缀'-Wl'
+   gcc -Wl,--startgroup foo.o bar.o -Wl,--endgroup 
+   : `-b INPUT-FORMAT'
+   `--format=INPUT-FORMAT' [binary]
+   'ld'可以被配置为支持多于一种的目标文件.缺省的格式是从环境变量'GNUTARGET'中得到的.
+   你也可以从一个脚本中定义输入格式,使用的命令是'TARGET'. 
+   : `--oformat OUTPUT-FORMAT'	  指定输出目标文件的二进制格式.一般不需要指定,ld的缺省输出格式配置
+   为/各个机器上最常用的/ 格式. output-format是一个 字符串,BFD库支持的格式名称:在操作系统一层了,如果是操作系统本身,加入此选项
+   : [`-N']|[`--omagic']
+   把text和data节设置为可读写.同时,取消数据节的页对齐,同时,取消对共享库的连接.如果输出格式
+   支持Unix风格的magic number, 把输出标志为'OMAGIC'. 
+** 5. 检错
+   : -Wall 产生尽可能多的警告信息
+   : -Werror GCC会在所有产生警告的地方停止编译
+** 6. 库文件连接 .a .so
+   : 包含文件 -I /usr/dirpath    
+   : 库   -L /dirpath   -llibname  不要.a 或.so 后缀
+   : 强制静态库 gcc –L /usr/dev/mysql/lib –static –lmysqlclient test.o –o test
+   静态库链接时搜索路径顺序：
+   1. ld会去找GCC命令中的参数-L
+   2. 再找gcc的环境变量LIBRARY_PATH
+   3. 再找内定目录 /lib /usr/lib /usr/local/lib 这是当初compile gcc时写在程序内的
+
+   动态链接时、执行时搜索路径顺序:
+   1. 编译目标代码时指定的动态库搜索路径
+   2. 环境变量LD_LIBRARY_PATH指定的动态库搜索路径
+   3. 配置文件/etc/ld.so.conf中指定的动态库搜索路径
+   4. 默认的动态库搜索路径/lib
+   5. 默认的动态库搜索路径/usr/lib
+   有关环境变量：
+   LIBRARY_PATH环境变量：指定程序静态链接库文件搜索路径
+   LD_LIBRARY_PATH环境变量：指定程序动态链接库文件搜索路径
+** 7. 调试
+   -g:
+   -gstabs:
+   -gcoff:
+   -gdwarf:
+** 8. 优化
+   -O0 不优化
+   -fcaller-saves: 
+** 9. 目标机选项(Target Option) 交叉编译
+   -b machine 
+   -V version 哪个版本的gcc
+** 10.配置相关选项(Configuration Dependent Option)
+   M680x0 选项
+   i386选项
+** 11.总体选项(Overall Option)
+   -x language
+   明确指出后面输入文件的语言为language (而不是从文件名后缀得到的默认选择).
+
+** 12.目录选项(DIRECTORY OPTION)
+   :-Idir 在头文件的搜索路径列表中添加dir 目录.
+   :-Ldir 在`-l'选项的搜索路径列表中添加dir目录.
+
+** 13.C 文件与 汇编文件编译
+   以下涉及到不同编译器对符号的处理问题。比如我们写个汇编文件，汇编后，汇编文件中的符号未变，但是当我们写个C文件再生成目标文件后，源文件中的符号前可能加了下划线，当两者之间发生引用关系时可能无法连接，此时我们会用到下面的命令。
+   : --change-leading-char
+   : --remove-leading-char
+   : --prefix-symbols=string
+* 什么是对的C语言？ 对的数据（语言)通过编译器 输出对的数据
+* 什么是文档生成工具？ 帮助文档不要了吗？
+* 什么是c 的一般用途？ 用来生成中间库，用makefile管理, 不做界面这种活， 
+* 什么是重构？ 后期动态修改代码的思想（比如 多次使用的数字 最后用 宏替换）
+* 什么是C 仅有的四种数据类型？ 整型、浮点型、指针型和聚合类型（包含数组和结构体）
+* 什么是符号？ 符号位 和 原码，反码，补码, 可以构造出有符号的数
+* 什么是C 语言的 limits.h文件? 不同平台 int /char/short/long/long long 表示的值不同，所以定义了专门的最大最小宏 用来测试
+  [[file:image/intmacro.png][宏定义]] 
+* 什么是 limits.h 的位置？ 位置在 /usr/include下
+* 什么是 溢出？ 数学符号在运算后超出限定，出错的情况
+* 什么是 溢出的危害？ c语言在运行时，不会进行溢出检查，所以要特别小心
+* 什么是隐式数据转换带来的溢出危害？ 类型转换后进行运算会发生错误
+* 什么是预防溢出？ 避免在一个表达式中使用 有符号与无符号 运算
+* 什么是char? 早期计算机使用的是ASCII码，没有中文，历史产物
+* 什么是getchar()? getchar()会返回int型，因为EOF被定义为-1，如果是char，则可能是无符号型，则永不停止
+* 什么是判断char 是否有符号？ 可以用CHAR_MIN 输出 printf("%d", CHAR_MIN)
+* 什么是计算机小数？ 用二进制形式来表示小数的方式
+* 什么是浮点数的精度？ 在 float.h文件中，FLT_MAX, FLT_MIN [[file:image/float.png][浮点]] 
+* 什么是有符号浮点的printf 表示？ %f 是无符号，%e是有符号 2e+2 e表示10的2次方
+* 什么是浮点的比较？ fabs()<FLT_EPSILON
+* 什么是常量后缀？ 10UL 增加可读性,和编译器的解释的正确性
+* 什么是sizeof ? 以字节为单位，用来跨平台，因为不同平台int不同，所以，用sizeof 能确切计算int 的值
+* 什么是i++ 和++i的区别？ 只在表达式中，
+前缀运算符首先增加变量的值，然后复制一份拷贝；而后缀运算符首先复制一份拷贝，再增加变量的值
 m=*p++; /* 等价于下面两个语句 */
 分解成*(p++) *(p+1)
 因为是后缀，先求拷贝, 则成为下面的形式
@@ -813,96 +863,27 @@ m=*p++; /* 等价于下面两个语句 */
 m=*p;
 p++;
 
-*** 链表
-*** static? 不管在哪？都不会挂掉，相当于一直存在的东西, 但还有隐私属性
- [[file:image/static.png][static]] 
-*** 字典
-*** 图
-*** 实现
-**** 符号 符号位 和 原码，反码，补码, 可以构造出有符号的数
-*** 常量后缀 10UL 增加可读性,和编译器的解释的正确性
-** 函数
-*** 输入输出函数
-**** getchar() & putchar() 函数
- int getchar(void) 函数从屏幕读取下一个可用的字符，并把它返回为一个整数。这个函数在同一个时间内只会读取一个单一的字符。您可以在循环内使用这个方法，以便从屏幕上读取多个字符。
- int putchar(int c) 函数把字符输出到屏幕上，并返回相同的字符。这个函数在同一个时间内只会输出一个单一的字符。您可以在循环内使用这个方法，以便在屏幕上输出多个字符。
-**** gets() & puts() 函数
- char *gets(char *s) 函数从 stdin 读取一行到 s 所指向的缓冲区，直到一个终止符或 EOF。
- int puts(const char *s) 函数把字符串 s 和一个尾随的换行符写入到 stdout。
-**** scanf() 和 printf() 函数
-      int scanf(const char *format, ...) 函数从标准输入流 stdin 读取输入，并根据提供的 format 来浏览输入。
- int printf(const char *format, ...) 函数把输出写入到标准输出流 stdout ，并根据提供的格式产生输出。
-*** 内存管理 动态内存分配与管理 <stdlib.h>
-**** void *calloc(int num, int size);该函数分配一个带有 num 个元素的数组，每个元素的大小为 size 字节。
-**** void free(void *address);该函数释放 address 所指向的h内存块。
-**** void *malloc(int num);该函数分配一个 num 字节的数组，并把它们进行初始化。
-**** void *realloc(void *address, int newsize);该函数重新分配内存，把内存扩展到 newsize。
-     
- 对于长的 先是 l 然后是 符号位， 跟定义时一样
-*** 文件
-**** 文件读写
-***** 打开 FILE *fopen( const char * filename, const char * mode );
-***** 关闭 int fclose( FILE *fp );
-***** 写入 int fputc( int c, FILE *fp ); /int fputs( const char *s, FILE *fp );
-***** 读取 char *fgets( char *buf, int n, FILE *fp );
-*** 字符串处理 string.h
-    strlen 和 sizeof
-** 控制流程
-*** 分支
-*** 循环
-** 头文件
-#+BEGIN_SRC c
-#ifndef HEADER_FILE
-#define HEADER_FILE
-the entire header file file
-#endif
-#+END_SRC
-*** 多系统
-#+BEGIN_SRC c
- #define SYSTEM_H "system_1.h"
- ...
- #include SYSTEM_H
-#+END_SRC
-** 类型扩充
-  <stddef.h> 
-*** size_t 
-*** ptrdiff_t
-*** NULL
-*** max_align_t
-*** offsetof <stdalign.h>
-*** bool ture false stdbool.h
-** 动态内存分配与管理
-** 错误处理
-   : 大多数的 C 或 UNIX 函数调用返回 1 或 NULL，同时会设置一个错误代码 errno，该错误代码是全局变量，表示在函数调用期间发生了错误。您可以在 <error.h> 头文件中找到各种各样的错误代码。
-   : 开发人员应该在程序初始化时，把 errno 设置为 0，这是一种良好的编程习惯。0 值表示程序中没有错误。
-*** perror() 函数显示您传给它的字符串，后跟一个冒号、一个空格和当前 errno 值的文本表示形式。
-*** strerror() 函数，返回一个指针，指针指向当前 errno 值的文本表示形式。
-*** 程序退出状态
-****  exit(EXIT_FAILURE) 调用系统宏
-****  exit(EXIT_SUCCESS)
-** 帮助
-   linux 下 man, 最方便 google
-* 库
-** 数据  
-  limits.h文件 不同平台 int /char/short/long/long long 表示的值不同，
-  所以定义了专门的最大最小宏 用来测试
-  CHAR_MIN 输出 printf("%d", CHAR_MIN)
-  [[file:image/intmacro.png][宏定义]] 
-浮点数的精度 在 float.h文件中，FLT_MAX, FLT_MIN [[file:image/float.png][浮点]] 
-浮点的比较 fabs()<FLT_EPSILON
-** io
-***  getchar() getchar()会返回int型，因为EOF被定义为-1，如果是char，则可能是无符号型，则永不停止
-*** 流 通过opening来关联，closing 取消关联. 用 FILE * 定义.
-*** gets() puts() ？ 字符串
-*** scanf? 格式化输入函数, 
+* 什么是流？ 通过opening来关联，closing 取消关联. 用 FILE * 定义.
+* 什么是getchar() putchar()? 输入一个字符, 输出一个字符
+* 什么是gets() puts() ？ 字符串
+* 什么是scanf? 格式化输入函数, 
 当使用scanf 输入short 类型整数、long 类型整数、以及double 类型浮点数的时候，一定要使用与之对应的正确的格式修饰符，分别为“%hd”，“%ld”，以及“%lf”。
-*** 缓冲区？ 在输入中，有一块内存作为你输入东西的地方, 里面有东西在, 而scanf等输入读取的是缓冲中的内容直到缓冲空，让你重新输入
+* 什么是复杂的函数？ 会写吗？ 有的函数很复杂的
+* 什么是缓冲区？ 在输入中，有一块内存作为你输入东西的地方, 里面有东西在, 而scanf等输入读取的是缓冲中的内容直到缓冲空，让你重新输入
   键盘输入都被保存在输入缓冲区内，直到用户输入回车，输入函数才去缓冲区读取。输入函数从缓冲区读取时，如果缓冲区为空，程序会暂停；否则输入函数会从缓冲区读入对应的数据。
   利用gets 读入字符串时，空格和tab 都是字符串的一部分。gets 以回车和EOF 为字符串的终止符，同时把回车从缓冲区读走。
   掌握利用while 循环清空缓冲区的方法，但是不要用fflush(stdin)。
   如果你的程序要求对用户输入的各种不规范格式或错误要求有很高的容错程度，尝试一下fgets 和sscanf 的组合来完成用户输入的读取。
-*** 安全的字符串输入函数？ fgets(char * str, int num, FILE * stream)
-** 数学相关库函数
+* 什么是溢出攻击？ 输入的对象越过边界到内存的其他区域, 
+* 什么是安全的字符串输入函数？ fgets(char * str, int num, FILE * stream)
+* 什么是条件编译？ 可以设定一些东西，预处理器会判断这些东西
+* 什么是static? 不管在哪？都不会挂掉，相当于一直存在的东西, 但还有隐私属性
+ [[file:image/static.png][static]] 
+* 什么是编译器和链接器？ 编译器少做了定位的事情, 给链接器做了
+* 什么是头文件？ 头文件中只应该包含那些不申请内存的声明语句, 如果包含了变量，可能会造成变量的重复定义
+* 什么是name mangle（乱砍）？ C++中有
+* 什么是 查找库函数？ linux 下 man, 最方便 google
+* 什么是数学相关库函数？
   int        abs(int i)                      返回整型参数i的绝对值
 double    cabs(struct complex znum)        返回复数znum的绝对值
 double    fabs(double x)                   返回双精度参数x的绝对值
@@ -965,566 +946,42 @@ unsigned int _clear87()     清除浮点状态字并返回原来的浮点状
 void           _fpreset()     重新初使化浮点数学程序包
 unsigned int _status87()    返回浮点状态字
 
-** 字符串相关库函数
-** 时间函数库函数
-** system
-** signal 函数
-** 数组初始化函数 memset(array, 0, sizeof(array))
-** 内存
-*** memcpy 拷贝，就不用赋值了，慢
-* 工具     
-** gcc 
- 基于C/C++的预处理器和编译器
-   -o：指定生成的输出文件,所以编译多个文件是,-o 没有意义；
-   -E：仅执行编译预处理； .i
-   -S：将C代码转换为汇编代码；.s
-   -wall：显示警告信息；
-   -c：仅执行编译操作，不进行连接操作。.o
-*** 选项 GCC 5
-**** 下面的`-m'选项用于HPPA族计算机: HPPA 计算机选项 忽略
-    -mpa-risc-1-0
-    生成PA 1.0处理器的目标码.
-    -mpa-risc-1-1
-    生成PA 1.1处理器的目标码.
-    -mkernel
-    生成适用于内核的目标码.特别要避免add指令,它有一个参数是DP寄存器;用addil 代替add指令.这样可以避免HP-UX连接器的某个严重bug.
-    -mshared-libs
-    生成能够连接HP-UX共享库的目标码.该选项还没有实现全部功能,对PA目标默认为关闭.使用这个选项会导致 编译器生成错误的目标码.
-    -mno-shared-libs
-    不生成连接HP-UX共享库的目标码.这是PA目标的默认选项.
-    -mlong-calls
-    生成的目标码允许同一个源文件中的函数调用,调用点和被调函数的距离可以超过256K之远.不需要打开这个开关选项, 除非连接器给出``branch out of range errors``这样的错误.
-    -mdisable-fpregs
-    防止任何情况下使用浮点寄存器.编译内核需要这个选项,内核切换浮点寄存器的执行环境速度非常缓慢.如果打开了这个 开关选项同时试图浮点操作,编译将失败.
- -mdisable-indexing
- 防止编译器使用索引地址模式(indexing address mode).这样在MACH上编译MIG生成的代码时,可以 避免一些非常晦涩的问题.
- -mtrailing-colon
- 在标记定义(label definition)的末尾添加一个冒号(用于ELF汇编器).
-**** 下面的`-m'选项用于Intel 80960族计算机:
-     -mcpu-type
-     默认机器类型为cpu-type ,使编译器产生对应的指令,地址模式和内存对齐.默认的 cpu-type是kb;其他选择有ka, mc, ca, cf, sa,和sb.
-     -mnumerics
-     -msoft-float
-     -mnumerics开关选项指出处理器不支持浮点指令. -msoft-float开关选项指出不应该认为 机器支持浮点操作.
-     -mleaf-procedures
-     -mno-leaf-procedures
- 企图(或防止)改变叶过程(leaf procedure),使其可被bal指令以及call指令 调用.对于直接函数调用,如果bal指令能够被汇编器或连接器替换,这可以产生更有效的代码,但是其他情况下 产生较低效的代码,例如通过函数指针调用函数,或使用了不支持这种优化的连接器.
- -mtail-call
- -mno-tail-call
- 执行(或不执行)更多的尝试(除过编译器那些机器无关部分),优化进入分支的尾递归(tail-recursive)调用.你 可能不需要这个,因为检测什么地方无效没有全部完成.默认开关是-mno-tail-call.
- -mcomplex-addr
- -mno-complex-addr
- 认为(或不认为)在当前的i960设备上,值得使用复合地址模式(complex addressing mode).复合地址模式 可能不值得用到K系列,但是一定值得用在C系列.目前除了CB和CC处理器,其他处理器上 -mcomplex-addr是默认选项.
- -mcode-align
- -mno-code-align
- 把目标码对齐到8字节边界上(或者不必),这样读取会快一些.目前只对C系列默认打开.
- -mic-compat
- -mic2.0-compat
- -mic3.0-compat
- 兼容iC960 v2.0或v3.0.
- -masm-compat
- -mintel-asm
- 兼容iC960汇编器.
- -mstrict-align
- -mno-strict-align
- 不允许(或允许)边界不对齐的访问.
- -mold-align
- 使结构对齐(structure-alignment)兼容Intel的gcc发行版本1.3 (基于gcc 1.37).目前 这个选项有点问题,因为#pragma align 1总是作同样的设定,而且无法关掉.
-**** 下面的`-m'选项用于DEC Alpha设备:
+* 什么是字符串相关库函数？
+* 什么是字符和数字转换库函数？
+* 什么是时间函数库函数？
+* 什么是 多使用库函数？ 库函数有很多复杂的功能函数，要善于利用，不用重复造轮子
+* 什么是 system, signal 函数?
+* 什么是 数组初始化函数？ memset(array, 0, sizeof(array))
+* 什么是 memcpy? 拷贝，就不用赋值了，慢
+* 什么是release 和 debug? release 通常不进行边界检查, 而debug 会
+  gcc -DDBUG
+* 什么是 指针 指向？ 如果还不知到指针指向哪？就指向NULL
+* 什么是typedef struct? 为定义的结构赋予新名字
+  #+BEGIN_SRC c
+  typedef struct student{
+    char *name;
+    unsigned int age;
+    char *address;
+  } STU;
+  STU student1;
+  student1.name="wuming";
+  student1.address="wuxi jiangyin";
+  printf("%s\n",student1.address);
+  #+END_SRC
+  方法2:
+ #+BEGIN_SRC c
+   程序11-3 利用结构类型定义变量
+    
+   struct student{
+   int num;
+   char name[20];
+   ...
+   } student1,student2;
+    
+   struct student student3; /* 定义student3变量 */
 
- -mno-soft-float
- -msoft-float
- 使用(或不使用)硬件浮点指令进行浮点运算.打开-msoft-float时,将使用 `libgcc1.c'中的函数执行浮点运算.除非它们被仿真浮点操作的例程替换,或者类似,它们被编译为调用 仿真例程,这些例程将发出浮点操作.如果你为不带浮点操作的Alpha编译程序,你必须确保建立了这个库,以便不调用 仿真例程.
- 注意,不带浮点操作的Alpha也要求拥有浮点寄存器.
-
- -mfp-reg
- -mno-fp-regs
- 生成使用(或不使用)浮点寄存器群的目标代码. -mno-fp-regs包含有-msoft-float 开关选项.如果不使用浮点寄存器,浮点操作数就象整数一样通过整数寄存器传送,浮点运算结果放到$0而不是$f0.这是非标准 调用,因此任何带有浮点参数或返回值的函数,如果被-mno-fp-regs开关编译过的目标码调用,它也必须 用这个选项编译.
- 这个选项的典型用法是建立内核,内核不使用任何浮点寄存器,因此没必要保存和恢复这些寄存器.
-
- 下面附加的选项出现在System V第四版中,用于兼容这些系统中的其他编译器:
-
- -G
- 在SVr4系统中, gcc出于兼容接受了`-G'选项(然后传递给连接器).可是我们建议使用 `-symbolic'或`-shared'选项,而不在gcc命令行上出现连接选项.
- -Qy
- 验证编译器用的工具的版本,输出到.ident汇编指令.
- -Qn
- 制止输出端的.ident指令(默认选项).
- -YP,dirs
- 对于`-l'指定的库文件,只搜索dirs.你可以在dirs中用冒号隔开各个 目录项.
- -Ym,dir
- 在dir目录中寻找M4预处理器.汇编器使用这个选项.
-
-**** 代码生成选项(CODE GENERATION OPTION)
-
-     下面的选项和平台无关,用于控制目标码生成的接口约定.
-     大部分选项以`-f'开始.这些选项拥有确定和否定两种格式; `-ffoo'的否定格式是 `-fno-foo'.后面的描述将只列举其中的一个格式---非默认的格式.你可以通过添加或去掉 `no-'推测出另一个格式.
-
- -fnonnull-objects
- 假设通过引用(reference)取得的对象不为null (仅C++).
- 一般说来, GNU C++对通过引用取得的对象作保守假设.例如,编译器一定会检查下似代码中的a不为 null:
-
- obj &a = g (); a.f (2);
-
- 检查类似的引用需要额外的代码,然而对于很多程序是不必要的.如果你的程序不要求这种检查,你可以用 `-fnonnull-objects'选项忽略它.
-
- -fpcc-struct-return
- 函数返回struct和union值时,采用和本地编译器相同的参数约定.对于较小的结构, 这种约定的效率偏低,而且很多机器上不能重入;它的优点是允许GCC编译的目标码和PCC编译的目标码互相调用.
- -freg-struct-return
- 一有可能就通过寄存器返回struct和union函数值.对于较小的结构,它比 -fpcc-struct-return更有效率.
- 如果既没有指定-fpcc-struct-return ,也没有指定-freg-struct-return, GNU CC默认使用目标机的标准约定.如果没有标准约定, GNU CC默认采用-fpcc-struct-return.
-
- -fshort-enums
- 给enum类型只分配它声明的值域范围的字节数.就是说, enum类型等于大小足够的 最小整数类型.
- -fshort-double
- 使double类型的大小和float一样.
- -fshared-data
- 要求编译结果的数据和非const变量是共享数据,而不是私有数据.这种差别仅在某些操作系统上面有意义, 那里的共享数据在同一个程序的若干进程间共享,而私有数据在每个进程内都有副件.
- -fno-common
- 即使未初始化的全局变量也分配在目标文件的bss段,而不是把它们当做普通块(common block)建立.这样的 结果是,如果在两个不同的编译结果中声明了同一个变量(没使用extern ),连接它们时会产生错误. 这个选项可能有用的唯一情况是,你希望确认程序能在其他系统上运行,而其他系统总是这么做.
- -fno-ident
- 忽略`#ident'指令.
- -fno-gnu-linker
- 不要把全局初始化部件(如C++的构造子和解构子)输出为GNU连接器使用的格式(在GNU连接器是标准方法的系统 上).当你打算使用非GNU连接器的时候可以用这个选项,非GNU连接器也需要collect2程序确保系统连接器 放入构造子(constructor)和解构子(destructor). (GNU CC的发布包中包含有collect2 程序.)对于必须使用collect2的系统,编译器驱动程序gcc自动配置为这么做.
- -finhibit-size-directive
- 不要输出.size汇编指令,或其他类似指令,当某个函数一分为二,两部分在内存中距离很远时会引起问题. 当编译`crtstuff.c'时需要这个选项;其他情况下都不应该使用.
- -fverbose-asm
- 输出汇编代码时放些额外的注释信息.这个选项仅用于确实需要阅读汇编输出的时候(可能调试编译器自己的时候).
- -fvolatile
- 使编译器认为所有通过指针访问的内存是易变内存(volatile).
- -fvolatile-global
- 使编译器认为所有的外部和全局变量是易变内存.
- -fpic
- 如果支持这种目标机,编译器就生成位置无关目标码.适用于共享库(shared library).
- -fPIC
- 如果支持这种目标机,编译器就输出位置无关目标码.适用于动态连接(dynamic linking),即使分支需要大范围 转移.
- -ffixed-reg
- 把名为reg的寄存器按固定寄存器看待(fixed register);生成的目标码不应该引用它(除了或许 用作栈指针,帧指针,或其他固定的角色).
- reg必须是寄存器的名字.寄存器名字取决于机器,用机器描述宏文件的REGISTER_NAMES宏 定义.
-
- 这个选项没有否定格式,因为它列出三路选择.
-
- -fcall-used-reg
- 把名为reg的寄存器按可分配寄存器看待,不能在函数调用间使用.可以临时使用或当做变量使用,生存期 不超过一个函数.这样编译的函数无需保存和恢复reg寄存器.
- 如果在可执行模块中,把这个选项说明的寄存器用作固定角色将会产生灾难性结果,如栈指针或帧指针.
-
- 这个选项没有否定格式,因为它列出三路选择.
-
- -fcall-saved-reg
- 把名为reg的寄存器按函数保护的可分配寄存器看待.可以临时使用或当做变量使用,它甚至能在函数间 生存.这样编译的函数会保存和恢复使用中的reg寄存器.
- 如果在可执行模块中,把这个选项说明的寄存器用作固定角色将会产生灾难性结果,如栈指针或帧指针.
-
- 另一种灾难是用这个选项说明的寄存器返回函数值.
-
- 这个选项没有否定格式,因为它列出三路选择.
-
-**** PRAGMAS
-
- GNU C++支持两条`#pragma'指令使同一个头文件有两个用途:对象类的接口定义, 对象类完整的内容定义.
- #pragma interface
- (仅对C++)在定义对象类的头文件中,使用这个指令可以节省大部分采用该类的目标文件的大小.一般说来,某些信息 (内嵌成员函数的备份副件,调试信息,实现虚函数的内部表格等)的本地副件必须保存在包含类定义的各个目标文件中.使用这个 pragma指令能够避免这样的复制.当编译中引用包含`#pragma interface'指令的头文件时,就 不会产生这些辅助信息(除非输入的主文件使用了`#pragma implementation'指令).作为替代,目标文件 将包含可被连接时解析的引用(reference).
- #pragma implementation
- #pragma implementation "objects.h"
- (仅对C++)如果要求从头文件产生完整的输出(并且全局可见),你应该在主输入文件中使用这条pragma.头文件 中应该依次使用`#pragma interface'指令.在implementation文件中将产生全部内嵌成员函数 的备份,调试信息,实现虚函数的内部表格等.
- 如果`#pragma implementation'不带参数,它指的是和源文件有相同基本名的包含文件;例如, `allclass.cc'中, `#pragma implementation'等于`#pragma implementation allclass.h'.如果某个implementation文件需要从多个头文件引入代码,就应该 使用这个字符串参数.
-
- 不可能把一个头文件里面的内容分割到多个implementation文件中.
-
-**** 文件(FILE)
-     file.c             C源文件
-     file.h             C头文件(预处理文件)
-     file.i            预处理后的C源文件
-     file.C             C++源文件
-     file.cc            C++源文件
-     file.cxx           C++源文件
-     file.m             Objective-C源文件
-     file.s            汇编语言文件
-     file.o            目标文件
-     a.out             连接的输出文件
-     TMPDIR/cc*        临时文件
-     LIBDIR/cpp        预处理器
-     LIBDIR/cc1         C编译器
-     LIBDIR/cc1plus     C++编译器
-     LIBDIR/collect    某些机器需要的连接器前端(front end)程序
-     LIBDIR/libgcc.a    GCC子例程(subroutine)库
-     /lib/crt[01n].o   启动例程(start-up)
-     LIBDIR/ccrt0       C++的附加启动例程
-     /lib/libc.a       标准C库,另见intro (3)
-     /usr/include       #include文件的标准目录
-     LIBDIR/include     #include文件的标准gcc目录
-     LIBDIR/g++-include #include文件的附加g++目录
-    
-     LIBDIR通常为/usr/local/lib/machine/version. 
-     TMPDIR来自环境变量TMPDIR (如果存在,缺省为/usr/tmp ,否则为 /tmp).
-*** 1. 预处理 gcc -E test.c -o test.i
-    -C:
-    -H:
-    -include:
-*** 预处理器选项(Preprocessor Option)
-    下列选项针对C预处理器,预处理器用在正式编译以前,对C 源文件进行某种处理.
-    如果指定了`-E'选项, GCC只进行预处理工作.下面的某些选项必须和`-E'选项一起才 有意义,因为他们的输出结果不能用于编译.
-    -include file
-    在处理常规输入文件之前,首先处理文件file,其结果是,文件file的内容先得到编译. 命令行上任何`-D'和`-U'选项永远在`-include file'之前处理, 无论他们在命令行上的顺序如何.然而`-include'和`-imacros'选项按书写顺序处理.
-    -imacros file
-    在处理常规输入文件之前,首先处理文件file,但是忽略输出结果.由于丢弃了文件file的 输出内容, `-imacros file'选项的唯一效果就是使文件file中的宏定义生效, 可以用于其他输入文件.在处理`-imacrosfile'选项之前,预处理器首先处理`-D' 和`-U'选项,并不在乎他们在命令行上的顺序.然而`-include'和 `-imacros'选项按书写顺序处理.
-    -idirafter dir
-    把目录dir添加到第二包含路径中.如果某个头文件在主包含路径(用`-I'添加的路径)中没有 找到,预处理器就搜索第二包含路径.
-    -iprefix prefix
-    指定prefix作为后续`-iwithprefix'选项的前缀.
-    -iwithprefix dir
-    把目录添加到第二包含路径中.目录名由prefix和dir合并而成,这里 prefix被先前的`-iprefix'选项指定.
-    -nostdinc
-    不要在标准系统目录中寻找头文件.只搜索`-I'选项指定的目录(以及当前目录,如果合适).
-    结合使用`-nostdinc'和`-I-'选项,你可以把包含文件搜索限制在显式指定的目录.
-    -nostdinc++
-    不要在C++专用标准目录中寻找头文件,但是仍然搜索其他标准目录. (当建立`libg++'时使用 这个选项.)
-    -undef
-    不要预定义任何非标准宏. (包括系统结构标志).
-    -E
-    仅运行C预处理器.预处理所有指定的C源文件,结果送往标准输出或指定的输出文件.
-    -C
- 告诉预处理器不要丢弃注释.配合`-E'选项使用.
- -P
- 告诉预处理器不要产生`#line'命令.配合`-E'选项使用.
- -M  [ -MG ]
- 告诉预处理器输出一个适合make的规则,用于描述各目标文件的依赖关系.对于每个源文件,预处理器输出 一个make规则,该规则的目标项(target)是源文件对应的目标文件名,依赖项(dependency)是源文件中 `#include引用的所有文件.生成的规则可以是单行,但如果太长,就用`/'-换行符续成多行.规则 显示在标准输出,不产生预处理过的C程序.
- `-M'隐含了`-E'选项.
- `-MG'要求把缺失的头文件按存在对待,并且假定他们和源程序文件在同一目录下.必须和 `-M'选项一起用.
- -MM  [ -MG ]
- 和`-M'选项类似,但是输出结果仅涉及用户头文件,象这样`#include file"'.忽略系统头文件如`#include <file>'.
- -MD
- 和`-M'选项类似,但是把依赖信息输出在文件中,文件名通过把输出文件名末尾的`.o'替换为 `.d'产生.同时继续指定的编译工作---`-MD'不象`-M'那样阻止正常的编译任务.
- Mach的实用工具`md'能够合并`.d'文件,产生适用于`make'命令的单一的 依赖文件.
- -MMD
- 和`-MD'选项类似,但是输出结果仅涉及用户头文件,忽略系统头文件.
- -H
- 除了其他普通的操作, GCC显示引用过的头文件名.
- -Aquestion(answer)
- 如果预处理器做条件测试,如`#if #question(answer)',该选项可以断言(Assert) question的答案是answer. -A-'关闭一般用于描述目标机的标准断言.
- -Dmacro
- 定义宏macro,宏的内容定义为字符串`1'.
- -Dmacro=defn
- 定义宏macro的内容为defn.命令行上所有的`-D'选项在 `-U'选项之前处理.
- -Umacro
- 取消宏macro. `-U'选项在所有的`-D'选项之后处理,但是优先于任何 `-include'或`-imacros'选项.
- -dM
- 告诉预处理器输出有效的宏定义列表(预处理结束时仍然有效的宏定义).该选项需结合`-E'选项使用.
- -dD
- 告诉预处理器把所有的宏定义传递到输出端,按照出现的顺序显示.
- -dN
- 和`-dD'选项类似,但是忽略宏的参量或内容.只在输出端显示`#define name.
- 汇编器选项(ASSEMBLER OPTION)
-
- -Wa,option
- 把选项option传递给汇编器.如果option含有逗号,就在逗号处分割成多个选项.
- 连接器选项(LINKER OPTION)
-
- 下面的选项用于编译器连接目标文件,输出可执行文件的时候.如果编译器不进行 连接,他们就毫无意义.
- object-file-name
- 如果某些文件没有特别明确的后缀a special recognized suffix, GCC就认为他们是目标文件或库文件. (根据文件内容,连接器能够区分目标文件和库文件).如果GCC执行连接操作,这些目标文件将成为连接器的输入文件.
- -llibrary
- 连接名为library的库文件.
- 连接器在标准搜索目录中寻找这个库文件,库文件的真正名字是`liblibrary.a'.连接器会 当做文件名得到准确说明一样引用这个文件.
- 搜索目录除了一些系统标准目录外,还包括用户以`-L'选项指定的路径.
- 一般说来用这个方法找到的文件是库文件---即由目标文件组成的归档文件(archive file).连接器处理归档文件的 方法是:扫描归档文件,寻找某些成员,这些成员的符号目前已被引用,不过还没有被定义.但是,如果连接器找到普通的 目标文件,而不是库文件,就把这个目标文件按平常方式连接进来.指定`-l'选项和指定文件名的唯一区别是, `-l选项用`lib'和`.a'把library包裹起来,而且搜索一些目录.
- -lobjc
- 这个-l选项的特殊形式用于连接Objective C程序.
- -nostartfiles
- 不连接系统标准启动文件,而标准库文件仍然正常使用.
- -nostdlib
- 不连接系统标准启动文件和标准库文件.只把指定的文件传递给连接器.
- -static
- 在支持动态连接(dynamic linking)的系统上,阻止连接共享库.该选项在其他系统上无效.
- -shared
- 生成一个共享目标文件,他可以和其他目标文件连接产生可执行文件.只有部分系统支持该选项.
- -symbolic
- 建立共享目标文件的时候,把引用绑定到全局符号上.对所有无法解析的引用作出警告(除非用连接编辑选项 `-Xlinker -z -Xlinker defs'取代).只有部分系统支持该选项.
- -Xlinker option
- 把选项option传递给连接器.可以用他传递系统特定的连接选项, GNU CC无法识别这些选项.
- 如果需要传递携带参数的选项,你必须使用两次`-Xlinker',一次传递选项,另一次传递他的参数. 例如,如果传递`-assert definitions',你必须写成`-Xlinker -assert -Xlinker definitions',而不能写成`-Xlinker "-assert definitions"',因为这样会把整个 字符串当做一个参数传递,显然这不是连接器期待的.
- -Wl,option
- 把选项option传递给连接器.如果option中含有逗号,就在逗号处分割成多个选项.
- -u symbol
- 使连接器认为取消了symbol的符号定义,从而连接库模块以取得定义.你可以使用多个 `-u'选项,各自跟上不同的符号,使得连接器调入附加的库模块.
- 目录选项(DIRECTORY OPTION)
-
- 下列选项指定搜索路径,用于查找头文件,库文件,或编译器的某些成员:
- -Idir
- 在头文件的搜索路径列表中添加dir 目录.
- -I-
- 任何在`-I-'前面用`-I'选项指定的搜索路径只适用于`#include "file"'这种情况;他们不能用来搜索`#include <file>'包含的头文件.
- 如果用`-I'选项指定的搜索路径位于`-I-'选项后面,就可以在这些路径中搜索所有的 `#include'指令. (一般说来-I选项就是这么用的.)
- 还有, `-I-'选项能够阻止当前目录(存放当前输入文件的地方)成为搜索`#include "file"'的第一选择.没有办法克服`-I-'选项的这个效应.你可以指定 `-I.'搜索那个目录,它在调用编译器时是当前目录.这和预处理器的默认行为不完全一样,但是结果通常 令人满意.
- `-I-'不影响使用系统标准目录,因此, `-I-'和`-nostdinc'是不同的选项.
- -Ldir
- 在`-l'选项的搜索路径列表中添加dir目录.
- -Bprefix
- 这个选项指出在何处寻找可执行文件,库文件,以及编译器自己的数据文件.
- 编译器驱动程序需要执行某些下面的子程序: `cpp', `cc1' (或C++的 `cc1plus'), `as'和`ld'.他把prefix当作欲执行的程序的 前缀,既可以包括也可以不包括`machine/version/'.
- 对于要运行的子程序,编译器驱动程序首先试着加上`-B'前缀(如果存在).如果没有找到文件,或没有指定 `-B'选项,编译器接着会试验两个标准前缀`/usr/lib/gcc/'和 `/usr/local/lib/gcc-lib/'.如果仍然没能够找到所需文件,编译器就在`PATH'环境变量 指定的路径中寻找没加任何前缀的文件名.
- 如果有需要,运行时(run-time)支持文件`libgcc.a'也在`-B'前缀的搜索范围之内. 如果这里没有找到,就在上面提到的两个标准前缀中寻找,仅此而已.如果上述方法没有找到这个文件,就不连接他了.多数 情况的多数机器上, `libgcc.a'并非必不可少.
- 你可以通过环境变量GCC_EXEC_PREFIX获得近似的效果;如果定义了这个变量,其值就和上面说的 一样用做前缀.如果同时指定了`-B'选项和GCC_EXEC_PREFIX变量,编译器首先使用 `-B'选项,然后才尝试环境变量值.
- 警告选项(WARNING OPTION)
-
- 警告是针对程序结构的诊断信息,程序不一定有错误,而是存在风险,或者可能存在 错误.
- 下列选项控制GNU CC产生的警告的数量和类型:
- -fsyntax-only
- 检查程序中的语法错误,但是不产生输出信息.
- -w
- 禁止所有警告信息.
- -Wno-import
- 禁止所有关于#import的警告信息.
- -pedantic
- 打开完全服从ANSI C标准所需的全部警告诊断;拒绝接受采用了被禁止的语法扩展的程序.
- 无论有没有这个选项,符合ANSI C标准的程序应该能够被正确编译(虽然极少数程序需要`-ansi' 选项).然而,如果没有这个选项,某些GNU扩展和传统C特性也得到支持.使用这个选项可以拒绝这些程序.没有理由 使用这个选项,他存在只是为了满足一些书呆子(pedant).
- 对于替选关键字(他们以`__'开始和结束) `-pedantic'不会产生警告信息. Pedantic 也不警告跟在__extension__后面的表达式.不过只应该在系统头文件中使用这种转义措施,应用程序最好 避免.
- -pedantic-errors
- 该选项和`-pedantic'类似,但是显示错误而不是警告.
- -W
- 对下列事件显示额外的警告信息:
-    *
- 非易变自动变量(nonvolatile automatic variable)可能在调用longjmp时发生改变. 这些警告仅在优化编译时发生.
- 编译器只知道对setjmp的调用,他不可能知道会在哪里调用longjmp,事实上一个 信号处理例程可以在程序的任何地点调用他.其结果是,即使程序没有问题,你也可能会得到警告,因为无法在可能出现问题 的地方调用longjmp.
-    *
- 既可以返回值,也可以不返回值的函数. (缺少结尾的函数体被看作不返回函数值)例如,下面的函数将导致这种警告:
- 由于GNU CC不知道某些函数永不返回(含有abort和longjmp),因此有可能出现 虚假警告.
-    *
- 表达式语句或逗号表达式的左侧没有产生作用(side effect).如果要防止这种警告,应该把未使用的表达式强制转换 为void类型.例如,这样的表达式`x[i,j]'会导致警告,而`x[(void)i,j]'就不会.
-    *
- 无符号数用`>'或`<='和零做比较.
- -Wimplicit-int
- 警告没有指定类型的声明.
- -Wimplicit-function-declaration
- 警告在声明之前就使用的函数.
- -Wimplicit
- 同-Wimplicit-int和-Wimplicit-function-declaration.
- -Wmain
- 如果把main函数声明或定义成奇怪的类型,编译器就发出警告.典型情况下,这个函数用于外部连接, 返回int数值,不需要参数,或指定两个参数.
- -Wreturn-type
- 如果函数定义了返回类型,而默认类型是int型,编译器就发出警告.同时警告那些不带返回值的 return语句,如果他们所属的函数并非void类型.
- -Wunused
- 如果某个局部变量除了声明就没再使用,或者声明了静态函数但是没有定义,或者某条语句的运算结果显然没有使用, 编译器就发出警告.
- -Wswitch
- 如果某条switch语句的参数属于枚举类型,但是没有对应的case语句使用枚举元素,编译器 就发出警告. ( default语句的出现能够防止这个警告.)超出枚举范围的case语句同样会 导致这个警告.
- -Wcomment
- 如果注释起始序列`/*'出现在注释中,编译器就发出警告.
- -Wtrigraphs
- 警告任何出现的trigraph (假设允许使用他们).
- -Wformat
- 检查对printf和scanf等函数的调用,确认各个参数类型和格式串中的一致.
- -Wchar-subscripts
- 警告类型是char的数组下标.这是常见错误,程序员经常忘记在某些机器上char有符号.
- -Wuninitialized
- 在初始化之前就使用自动变量.
- 这些警告只可能做优化编译时出现,因为他们需要数据流信息,只有做优化的时候才估算数据流信息.如果不指定 `-O'选项,就不会出现这些警告.
- 这些警告仅针对等候分配寄存器的变量.因此不会发生在声明为volatile的变量上面,不会发生在已经 取得地址的变量,或长度不等于1, 2, 4, 8字节的变量.同样也不会发生在结构,联合或数组上面,即使他们在 寄存器中.
- 注意,如果某个变量只计算了一个从未使用过的值,这里可能不会警告.因为在显示警告之前,这样的计算已经被 数据流分析删除了.
- 这些警告作为可选项是因为GNU CC还没有智能到判别所有的情况,知道有些看上去错误的代码其实是正确的.下面是 一个这样的例子:
- 如果y始终是1, 2或3,那么x总会被初始化,但是GNU CC不知道这一点.下面是 另一个普遍案例:
- 这里没有错误,因为只有设置了save_y才使用他.
- 把所有不返回的函数定义为volatile可以避免某些似是而非的警告.
- -Wparentheses
- 在某些情况下如果忽略了括号,编译器就发出警告.
- -Wtemplate-debugging
- 当在C++程序中使用template的时候,如果调试(debugging)没有完全生效,编译器就发出警告. (仅用于C++).
- -Wall
- 结合所有上述的`-W'选项.通常我们建议避免这些被警告的用法，我们相信,恰当结合宏的使用能够 轻易避免这些用法。
- 剩下的`-W...'选项不包括在`-Wall'中,因为我们认为在必要情况下,这些被编译器警告 的程序结构,可以合理的用在"干净的"程序中.
- -Wtraditional
- 如果某些程序结构在传统C中的表现和ANSI C不同,编译器就发出警告.
-    *
- 宏参出现在宏体的字符串常量内部.传统C会替换宏参,而ANSI C则视其为常量的一部分.
-    *
- 某个函数在块(block)中声明为外部,但在块结束后才调用.
-    *
- switch语句的操作数类型是long.
- -Wshadow
- 一旦某个局部变量屏蔽了另一个局部变量,编译器就发出警告.
- -Wid-clash-len
- 一旦两个确定的标识符具有相同的前len个字符,编译器就发出警告.他可以协助你开发一些将要在某些 过时的,危害大脑的编译器上编译的程序.
- -Wpointer-arith
- 任何语句如果依赖于函数类型的大小(size)或者void类型的大小,编译器就发出警告. GNU C为了 便于计算void *指针和函数指针,就把这些类型的大小定义为1.
- -Wcast-qual
- 一旦某个指针强制类型转换以便移除类型修饰符时,编译器就发出警告.例如,如果把const char * 强制转换为普通的char *时,警告就会出现.
- -Wcast-align
- 一旦某个指针类型强制转换时,导致目标所需的地址对齐(alignment)增加,编译器就发出警告.例如,某些机器上 只能在2或4字节边界上访问整数,如果在这种机型上把char *强制转换成int *类型, 编译器就发出警告.
- -Wwrite-strings
- 规定字符串常量的类型是const char[length],因此,把这样的地址复制给 non-const char *指针将产生警告.这些警告能够帮助你在编译期间发现企图写入字符串常量 的代码,但是你必须非常仔细的在声明和原形中使用const,否则他们只能带来麻烦;所以我们没有让 `-Wall'提供这些警告.
- -Wconversion
- 如果某函数原形导致的类型转换和无函数原形时的类型转换不同,编译器就发出警告.这里包括定点数和浮点数的 互相转换,改变定点数的宽度或符号,除非他们和缺省声明(default promotion)相同.
- -Waggregate-return
- 如果定义或调用了返回结构或联合的函数,编译器就发出警告. (从语言角度你可以返回一个数组,然而同样会 导致警告.)
- -Wstrict-prototypes
- 如果函数的声明或定义没有指出参数类型,编译器就发出警告. (如果函数的前向引用说明指出了参数类型,则允许后面 使用旧式风格的函数定义,而不会产生警告.)
- -Wmissing-prototypes
- 如果没有预先声明函数原形就定义了全局函数,编译器就发出警告.即使函数定义自身提供了函数原形也会产生这个警告. 他的目的是检查没有在头文件中声明的全局函数.
- -Wmissing-declarations
- 如果没有预先声明就定义了全局函数,编译器就发出警告.即使函数定义自身提供了函数原形也会产生这个警告.这个选项 的目的是检查没有在头文件中声明的全局函数.
- -Wredundant-decls
- 如果在同一个可见域某定义多次声明,编译器就发出警告,即使这些重复声明有效并且毫无差别.
- -Wnested-externs
- 如果某extern声明出现在函数内部,编译器就发出警告.
- -Wenum-clash
- 对于不同枚举类型之间的转换发出警告(仅适用于C++).
- -Wlong-long
- 如果使用了long long 类型就发出警告.该警告是缺省项.使用`-Wno-long-long' 选项能够防止这个警告. `-Wlong-long'和`-Wno-long-long'仅在 `-pedantic'之下才起作用.
- -Woverloaded-virtual
- (仅适用于C++.)在继承类中,虚函数的定义必须匹配虚函数在基类中声明的类型特征(type signature).当 继承类声明了某个函数,它可能是个错误的尝试企图定义一个虚函数,使用这个选项能够产生警告:就是说,当某个函数和基类 中的虚函数同名,但是类型特征不符合基类的任何虚函数,编译器将发出警告.
- -Winline
- 如果某函数不能内嵌(inline),无论是声明为inline或者是指定了-finline-functions 选项,编译器都将发出警告.
- -Werror
- 视警告为错误;出现任何警告即放弃编译.
-*** 2. 编译为汇编代码   gcc -S test.i -o test.s
-    masm=intel	汇编代码 
-    -std 指定使用的语言标准
-*** 3. gas  gcc -c test.s -o test.o
-    :-Wa,option
-    :-llibrary 连接名为library的库文件
-    :-L 指定额外路径
-    :-m32
-*** 4. ld  gcc test.o -o test
-    :-lobjc 这个-l选项的特殊形式用于连接Objective C程序.
-    :-nostartfiles 不连接系统标准启动文件,而标准库文件仍然正常使用.
-    :-nostdlib 不连接系统标准启动文件和标准库文件.只把指定的文件传递给连接器.
-    :-static 在支持动态连接(dynamic linking)的系统上,阻止连接共享库.该选项在其他系统上无效.
-    :-shared 生成一个共享目标文件,他可以和其他目标文件连接产生可执行文件.只有部分系统支持该选项.
-    :-symbolic 建立共享目标文件的时候,把引用绑定到全局符号上.对所有无法解析的引用作出警
-    告(除非用连接编辑选项 `-Xlinker -z -Xlinker defs'取代).只有部分系统支持该选项.
-    :-u symbol 使连接器认为取消了symbol的符号定义,从而连接库模块以取得定义.你可以使用多
-    个 `-u'选项,各自跟上不同的符号,使得连接器调入附加的库模块.
-    : [-e ENTRY]|[--entry=ENTRY]	 使用 ENTRY (入口)标识符作为程序执行的开始端,而不是缺省入口.   
-    : -lAR	在连接文件列表中增加归档库文件AR.可以多次使用这个选项. 凡指定一项AR,ld 就会在路径列表中增加一项对libar.a的搜索.
-    : -LSEARCHDIR   这个选项将路径SEARCHDIR添加到路径列表, ld在这个列表中搜索归档库.
-    可以多次使用这个选项.缺省的搜索路径集(不使用-L时)取决于ld使用的
-    模拟模式(emulation)及其配置.在连接脚本中,可以用SEARCH_DIR命令指定路径. 
-    : -Tbss org
-    : -Tdata org
-    : -Ttext org
-    把org作为输出文件的段起始地址 --- 特别是 --- bss,data,或text段.org必须是十六进制整数. 
-    : -X    删除 全部 临时的 局部符号. 大多数 目的文件 中, 这些 局部符	    号 的 名字 用 `L' 做 开头.
-    : -x    删除 全部 局部符号. 
-    : -m 指定仿真环境,这里要与gcc 的选项 -m32一致; -V显示 支持的仿真：本机支持   elf_x86_64   
-    elf32_x86_64   elf_i386   i386linux   elf_l1om   elf_k1om   i386pep   i386pe
-    LDFLAGS="-L/usr/lib64 -L/lib64" 全局常量
-    : 注意,如果连接器通过被编译器驱动来间接引用(比如gcc), 那所有的连接器命令行选项前必须加上前缀'-Wl'
-    gcc -Wl,--startgroup foo.o bar.o -Wl,--endgroup 
-    : `-b INPUT-FORMAT'
-    `--format=INPUT-FORMAT' [binary]
-    'ld'可以被配置为支持多于一种的目标文件.缺省的格式是从环境变量'GNUTARGET'中得到的.
-    你也可以从一个脚本中定义输入格式,使用的命令是'TARGET'. 
-    : `--oformat OUTPUT-FORMAT'	  指定输出目标文件的二进制格式.一般不需要指定,ld的缺省输出格式配置
-    为/各个机器上最常用的/ 格式. output-format是一个 字符串,BFD库支持的格式名称:在操作系统一层了,如果是操作系统本身,加入此选项
-    : [`-N']|[`--omagic']
-    把text和data节设置为可读写.同时,取消数据节的页对齐,同时,取消对共享库的连接.如果输出格式
-    支持Unix风格的magic number, 把输出标志为'OMAGIC'. 
-*** 5. 检错
-    : -Wall 产生尽可能多的警告信息
-    : -Werror GCC会在所有产生警告的地方停止编译
-*** 6. 库文件连接 .a .so
-    : 包含文件 -I /usr/dirpath    
-    : 库   -L /dirpath   -llibname  不要.a 或.so 后缀
-    : 强制静态库 gcc –L /usr/dev/mysql/lib –static –lmysqlclient test.o –o test
-    静态库链接时搜索路径顺序：
-    1. ld会去找GCC命令中的参数-L
-    2. 再找gcc的环境变量LIBRARY_PATH
-    3. 再找内定目录 /lib /usr/lib /usr/local/lib 这是当初compile gcc时写在程序内的
-
-    动态链接时、执行时搜索路径顺序:
-    1. 编译目标代码时指定的动态库搜索路径
-    2. 环境变量LD_LIBRARY_PATH指定的动态库搜索路径
-    3. 配置文件/etc/ld.so.conf中指定的动态库搜索路径
-    4. 默认的动态库搜索路径/lib
-    5. 默认的动态库搜索路径/usr/lib
-    有关环境变量：
-    LIBRARY_PATH环境变量：指定程序静态链接库文件搜索路径
-    LD_LIBRARY_PATH环境变量：指定程序动态链接库文件搜索路径
-*** 7. 调试
-    -g:
-    -gstabs:
-    -gcoff:
-    -gdwarf:
-*** 8. 优化
-    -O0 不优化
-    -fcaller-saves: 
-*** 9. 目标机选项(Target Option) 交叉编译
-    -b machine 
-    -V version 哪个版本的gcc
-*** 10.配置相关选项(Configuration Dependent Option)
-    M680x0 选项
-    i386选项
-*** 11.总体选项(Overall Option)
-    -x language
-    明确指出后面输入文件的语言为language (而不是从文件名后缀得到的默认选择).
-
-*** 12.目录选项(DIRECTORY OPTION)
-    :-Idir 在头文件的搜索路径列表中添加dir 目录.
-    :-Ldir 在`-l'选项的搜索路径列表中添加dir目录.
-
-*** 13.C 文件与 汇编文件编译
-    以下涉及到不同编译器对符号的处理问题。比如我们写个汇编文件，汇编后，汇编文件中的符号未变，但是当我们写个C文件再生成目标文件后，源文件中的符号前可能加了下划线，当两者之间发生引用关系时可能无法连接，此时我们会用到下面的命令。
-    : --change-leading-char
-    : --remove-leading-char
-    : --prefix-symbols=string
-** 归档、合并库
-   ar crv libfoo.a a.o b.o
-   可以省略 $ gcc –o program program.o –L. –lfoo
-** 加载的库  
- $ ldd program
-* za
-** UNIX环境下的C 对二进制流文件的读写有两套班子：1) fopen,fread,fwrite ; 2) open, read, write
-这里简单的介绍一下他们的区别。
-
-1. fopen 系列是标准的C库函数；open系列是 POSIX 定义的，是UNIX系统里的system call。
-也就是说，fopen系列更具有可移植性；而open系列只能用在 POSIX 的操作系统上。
-
-2. 使用fopen 系列函数时要定义一个指代文件的对象，被称为“文件句柄”（file handler），是一个结构体；而open系列使用的是一个被称为“文件描述符” （file descriptor）的int型整数。
-
-3. fopen 系列是级别较高的I/O，读写时使用缓冲；而open系列相对低层，更接近操作系统，读写时没有缓冲。由于能更多地与操作系统打交道，open系列可以访问更改一些fopen系列无法访问的信息，如查看文件的读写权限。这些额外的功能通常因系统而异。
-
-4. 使用fopen系列函数需要"#include <sdtio.h>"；使用open系列函数需要"#include <fcntl.h>" ，链接时要之用libc（-lc）
-
-小结：
-总的来说，为了使程序获得更好的可移植性，未到非得使用一些fopen系列无法实现的功能的情况下，fopen系列是首选。
-
- 
-
-———————————————————————————————————————————————————————
-
- 
-
-open和fopen的区别：
-
-1.缓冲文件系统
-缓冲文件系统的特点是：在内存开辟一个“缓冲区”，为程序中的每一个文件使用，当执行读文件的操作时，从磁盘文件将数据先读入内存“缓冲区”， 装满后再从内存“缓冲区”依此读入接收的变量。执行写文件的操作时，先将数据写入内存“缓冲区”，待内存“缓冲区”装满后再写入文件。由此可以看出，内存 “缓冲区”的大小，影响着实际操作外存的次数，内存“缓冲区”越大，则操作外存的次数就少，执行速度就快、效率高。一般来说，文件“缓冲区”的大小随机器 而定。
-fopen, fclose, fread, fwrite, fgetc, fgets, fputc, fputs, freopen, fseek, ftell, rewind等
-2.非缓冲文件系统
-缓冲文件系统是借助文件结构体指针来对文件进行管理，通过文件指针来对文件进行访问，既可以读写字符、字符串、格式化数据，也可以读写二进制数 据。非缓冲文件系统依赖于操作系统，通过操作系统的功能对文件进行读写，是系统级的输入输出，它不设文件结构体指针，只能读写二进制文件，但效率高、速度 快，由于ANSI标准不再包括非缓冲文件系统，因此建议大家最好不要选择它。本书只作简单介绍。open, close, read, write, getc, getchar, putc, putchar 等
-前者属于低级IO，后者是高级IO。
-前者返回一个文件描述符(用户程序区的)，后者返回一个文件指针。
-前者无缓冲，后者有缓冲。
-前者与 read, write 等配合使用， 后者与 fread, fwrite等配合使用。
-后者是在前者的基础上扩充而来的，在大多数情况下，用后者。
-http://blog.chinaunix.net/u/21067/showart_213410.html
-open 是系统调用 返回的是文件句柄，文件的句柄是文件在文件描述副表里的索引，fopen是C的库函数，返回的是一个指向文件结构的指针。
- 
-
-fopen是ANSIC标准中的C语言库函数，在不同的系统中应该调用不同的内核api 
-linux中的系统函数是open，fopen是其封装函数，个人观点。仅供参考。
-
-文件描述符是linux下的一个概念,linux下的一切设备都是以文件的形式操作.如网络套接字、硬件设备等。当然包括操作文件。
-fopen是标准c函数。返回文件流而不是linux下文件句柄。
-
-设备文件不可以当成流式文件来用，只能用open
-fopen是用来操纵正规文件的，并且设有缓冲的，跟open还是有一些区别
-
-一般用fopen打开普通文件，用open打开设备文件
-
-fopen是标准c里的,而open是linux的系统调用.
-他们的层次不同.
-fopen可移植,open不能
-
-我认为fopen和open最主要的区别是fopen在用户态下就有了缓存，在进行read和write的时候减少了用户态和内核态的切换，而open则每次都需要进行内核态和用户态的切换；表现为，如果顺序访问文件，fopen系列的函数要比直接调用open系列快；如果随机访问文件open要比fopen快。
-
- 
-
-  
+ #+END_SRC 
+* 什么是结构体中的洞？ 结构体是内存对齐的，所以可能会浪费内存
+* 什么是assert? void assert(int expression) 判断表达式逻辑值
+  #define NDEBUG 禁用 assert
+* 什么是面向对象中的错误处理？ 语句 try catch
