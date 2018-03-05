@@ -1,14 +1,12 @@
 * java-mode
 ** Ensime key bindings
 *** Search
-
  | Key Binding | Description                                         |
  |-------------+-----------------------------------------------------|
  | ~SPC m /~   | incremental search using =ensime-scalex= major mode |
  | ~SPC m ?~   | incremental search in all live buffers              |
 
 *** Ensime Search Mode
-
  | Key Binding | Description                                                       |
  |-------------+-------------------------------------------------------------------|
  | ~C-j~       | Move to next match                                                |
@@ -18,7 +16,6 @@
  | ~C-q~       | Quit ensime search                                                |
 
 *** sbt
-
  | Key Binding | Description         |
  |-------------+---------------------|
  | ~SPC m b .~ | sbt transient state |
@@ -30,14 +27,12 @@
  | ~SPC m b r~ | run command         |
 
 *** Typecheck
-
  | Key Binding | Description                     |
  |-------------+---------------------------------|
  | ~SPC m c t~ | type check the current file     |
  | ~SPC m c T~ | type check all the open buffers |
 
 *** Debug
-
  | Key Binding | Description                 |
  |-------------+-----------------------------|
  | ~SPC m d A~ | Attach to a remote debugger |
@@ -148,45 +143,64 @@
    sudo apt-get install sbt
    sbt repositories
 ** maven 中国镜像
-* java目录
-** Options
-   java CLASSNAME
-   CLASSPATH 设置全局路径, 跟 PATH 常量差不多(编译和运行时都可用)
-  指定搜索路径, 默认在当前目录 java -cp C:\workspace;C:\classes HelloWorld
-  JVM 会依 CLASSPATH 路径顺序,搜索是否有对应的类文档,先找到先载入。
-  java -cp C:\workspace;C:\lib\abc.jar;C:\lib\xyz.jar SomeApp
-** javadoc
-      The javadoc command has the following general form:
-      javadoc [options...] [package names...] [source filenames...]
-#+BEGIN_SRC 
-      $ javadoc net.multitool.Payback
-      -public -protected -package -private
-      -sourcepath      and -classpath -verbose     and -quiet
-      -doclet starting_class
+** 选择后端
+   我选的是 ensime, 此工具可以管理好多类工程
+*** sbt工程 
+安装 sbt
+   #+BEGIN_SRC shell
+     nix-env --install sbt
+#+END_SRC
+*** gradle工程
+    Refer to the [[https://ensime.org/build_tools/gradle/][Ensime installation instructions]] to install the =ensime-gradle=
+*** 配置
+    Follow [[https://ensime.github.io/build_tools/sbt/][the ENSIME configuration instructions]]. Spacemacs uses
+*** 使用
+    ~SPC SPC spacemacs/ensime-gen-and-restart~ or ~SPC m D r~ generates a new config
+for a project and starts the server. Afterwards ~SPC SPC ensime~ or ~SPC m D s~
+will suffice do the trick.
+*** 注意
+    ENSIME is originally built for Scala, so support for java is not complete, in
+    particular refactoring doesn't work.
+    ensime 原来是为 scala 语言服务的，Java不完善
 
-      /* This is a C-style comment, but it
-      is _not_ a Javadoc comment. */
+* java工具
+** 编译 javac 
+   -classpath Path
+   -d Dir   指定编译后的类存放路径
+   -g  生成调试表
+   -nowarn 关闭警告
+   -verbose 打开详细信息
+   -o 优化
+   
+   相对的会在 当前目录一起编译 引用的文件，或者在classpath中找
+   编译 java CLASSNAME
+   包含jar包 指定搜索路径, 默认在当前目录 java -cp C:\workspace;C:\classes HelloWorld
+   JVM 会依 CLASSPATH 路径顺序,搜索是否有对应的类文档,先找到先载入。
+** javadoc 文档生成器
+   javadoc [options...] [package names...] [source filenames...]
+#+BEGIN_SRC java
+  $ javadoc net.multitool.Payback
+        -public -protected -package -private
+        -sourcepath      and -classpath -verbose     and -quiet
+        -doclet starting_class
 
-      /** This is a C-style comment, but it
+  /** This is a C-style comment, but it
       is also a Javadoc comment. */
 #+END_SRC
-: 注释中可以嵌入Html tag
-  *
-  * @param delay - elapsed time, in milliseconds
-  * @throws TakesTooLongException
-  * @returns total time, in milliseconds
-  *
-  * @see net.multitool.util.TakesTooLongException, net.multitool.ctrl.Time#count
-  *
-  */
-public long
-addWait(long delay)
-{
-    // ...
-}
-** javah
+
+*** 文档注释
+    /** 开始 */ 结束
+    javadoc 文件名
+    @see 放入链接
+    @version 放入版本号
+    @author 作者
+    @param 方法参数
+    @return 返回
+    @throws
+** javah 
        Example 5.7 Java application with a native method (GetUser.java)
-       public class GetUser {
+       #+BEGIN_SRC java
+        public class GetUser {
           static {
              System.loadLibrary("getuser");
           }
@@ -197,10 +211,12 @@ addWait(long delay)
              System.out.println(usr.getUserName());
           }
        }
- 
+       #+END_SRC
+
        $ javah GetUser //生成Ｃ格式的头文件/定义文件
     Example 5.8 Header file for GetUser native methods (GetUser.h)
-    /* DO NOT EDIT THIS FILE - it is machine generated */
+    #+BEGIN_SRC c
+     /* DO NOT EDIT THIS FILE - it is machine generated */
     #include <jni.h>
     /* Header for class GetUser */
     #ifndef _Included_GetUser
@@ -229,269 +245,14 @@ addWait(long delay)
        cuserid(buffer);
        return (*jenv)->NewStringUTF(jenv, buffer);
     }
- 
+    #+END_SRC
+    
+    #+BEGIN_SRC bash
       $ cc -c GetUser.c
-       $ cc -shared -o libgetuser.so GetUser.o
-       $ export LD_LIBRARY_PATH=.
- 
-** Remote Method Invocation (RMI) 相当于WEB开发
-   The Session interface
-        package net.multitool.RMIDemo;
-        import java.rmi.*;
-        public interface Session extends Remote {
-           public int add(int x, int y) throws RemoteException;
-        }
-        The two important things to note here are that the interface must extend
-        java.rmi.Remote and that any remote method must be defined as throwing
-        java.rmi.RemoteException. 
-The Session server implementation
-        package net.multitool.RMIDemo;
-        import net.multitool.RMIDemo.*;
-        import java.rmi.*;
-        import java.rmi.server.*;
-        /** SessionImpl is the server class for the Session RMI interface.
-          */
-        public class
-        SessionImpl
-           extends UnicastRemoteObject
-           implements Session
-        {
-           /** Constructor needed to ensure call to UnicastRemoteObject
-             * constructor and to thus propagate the possible exception.
-             */
-           public SessionImpl() throws RemoteException {
-              super();
-           }
-           /** A static main() for the server. */
-           public static void main(String[] arglist)
-           {
-              if (System.getSecurityManager() == null) {
-                System.setSecurityManager(new RMISecurityManager());
-              }
-              String rmiName = "//penfold/Session";
-              try {
-                Session adder = new SessionImpl();
-                Naming.rebind(rmiName, adder);
-              } catch (Exception e) {
-                e.printStackTrace();
-              }
-           }
-           /** Implementation of the RMI method, add. */
-           public int add(int x, int y) throws java.rmi.RemoteException
-           {
-              return x+y;
-           }
-        }
-       The RMI client program
-        package net.multitool.RMIDemo;
-        import java.rmi.*;
-        public class Client {
-           public static void main(String[] arglist) {
-             if (System.getSecurityManager() == null) {
-                System.setSecurityManager(new RMISecurityManager());
-             }
-             try {
-                String name = "//penfold/Session";
-                // Obtain reference to the remote object
-                Session sess = (Session) Naming.lookup(name);
-                System.out.println("Pointless RMI Client. 47 + 13 = " +
-                                          sess.add(47,13) + ", right?");
-             } catch (Exception e) {
-                e.printStackTrace();
-             }
-           }
-        }
- $ rmic net.multitool.RMIDemo.SessionImpl
- $ rmiregistry 21099 &
- 
-** The Java Debugger  
-   $ jdb GetUser
-   An actual jdb session, with commentary
-   $ jdb
-   Initializing jdb ...
-   > stop in FetchURL.main (1)
-   Deferring breakpoint FetchURL.main.
-   It will be set after the class is loaded.
-   > run FetchURL http://localhost
-   run FetchURL http://localhost
-   Set uncaught java.lang.Throwable
-   Set deferred uncaught java.lang.Throwable
-   >
-   VM Started: Set deferred breakpoint FetchURL.main
-   Breakpoint hit: "thread=main", FetchURL.main(), line=48 bci=0
-   for (i = 0; i < args.length; i++)
-   main[1] list
-44         {
-45           int i;
-46           FetchURL f;
-47
-48 =>(2)       for (i = 0; i < args.length; i++)
-49           {
-50               System.out.println(args[i] + ":");
-51               System.out.println(new FetchURL(args[i]));
-52           }
-53         }
-main[1] step
->
-Step completed: "thread=main", FetchURL.main(), line=50 bci=5
-50               System.out.println(args[i] + ":");
-main[1] step
-> http://localhost:
-Step completed: "thread=main", FetchURL.main(), line=51 bci=32
-51               System.out.println(new FetchURL(args[i]));
-main[1] step
->
-Step completed: "thread=main", FetchURL.<init>(), line=8 bci=0
-8        {
-main[1] list
-4     public class FetchURL {
-5        private URL requestedURL;
-5.9  The Java Debugger                                            153
-6
-7         public FetchURL(String urlName)
-8 =>      {
-9             try {
-10                requestedURL = new URL(urlName);
-11             } catch (Exception e) {
-12                e.printStackTrace();
-13             }
-main[1] step
->
-Step completed: "thread=main", FetchURL.<init>(), line=10 bci=4
-10                requestedURL = new URL(urlName);
-main[1] step (3)
->
-Step completed: "thread=main", FetchURL.<init>(), line=11 bci=16
-11             } catch (Exception e) {
-main[1] step
->
-Step completed: "thread=main", FetchURL.<init>(), line=14 bci=27
-14          }
-main[1] step
->
-Step completed: "thread=main", FetchURL.main(), line=51 bci=45
-51                System.out.println(new FetchURL(args[i]));
-main[1] step
->
-Step completed: "thread=main", FetchURL.toString(), line=19 bci=2
-19             String rc = "";
-main[1] list
-15
-16
-17          public String toString()
-18          {
-19 =>          String rc = "";
-20             String line;
-21             BufferedReader rdr;
-22
-23             try {
-24                rdr = new BufferedReader(
-main[1] step
->
-Step completed: "thread=main", FetchURL.toString(), line=24 bci=3
-24                rdr = new BufferedReader(
-154                      Chapter 5 The Sun Microsystems Java Software Development Kit
-main[1] step
->
-Step completed: "thread=main", FetchURL.toString(), line=30 bci=28
-30              while ((line = rdr.readLine()) != null)
-main[1] step
->
-Step completed: "thread=main", FetchURL.toString(), line=32 bci=31
-32                 rc = rc + line + "\n";
-main[1] list
-28              );
-29
-30              while ((line = rdr.readLine()) != null)
-31              {
-32 =>              rc = rc + line + "\n";
-33              }
-34           } catch (Exception e) {
-35              e.printStackTrace();
-36              rc = null;
-37           }
-main[1] step
->
-Step completed: "thread=main", FetchURL.toString(), line=30 bci=55
-30              while ((line = rdr.readLine()) != null)
-main[1] step
->
-Step completed: "thread=main", FetchURL.toString(), line=32 bci=31
-32                 rc = rc + line + "\n";
-main[1] step
->
-Step completed: "thread=main", FetchURL.toString(), line=30 bci=55
-30              while ((line = rdr.readLine()) != null)
-main[1] step
->
-Step completed: "thread=main", FetchURL.toString(), line=32 bci=31
-32                 rc = rc + line + "\n";
-main[1] dump this (4)
-  this = {
-     requestedURL: instance of java.net.URL(id=378)
-}
-main[1] dump rc     (5)
-   rc = "<HTML>
-           <HEAD>
-5.9  The Java Debugger                                                      155
-"
-main[1] list 36
-32                   rc = rc + line + "\n";
-33                }
-34             } catch (Exception e) {
-35                e.printStackTrace();
-36 =>             rc = null;
-37             }
-38
-39             return rc;
-40         }
-41
-main[1] stop at FetchURL:39        (6)
-Set breakpoint FetchURL:39
-main[1] cont
->
-Breakpoint hit: "thread=main", FetchURL.toString(), line=39 bci=79
-39             return rc;
-main[1] dump rc
-   rc = "<HTML>
-             <HEAD>
-               <TITLE>RedHat Linux Laptop</TITLE>
-             </HEAD>
-             <BODY>
-               <H1>RedHat Linux Laptop</H1>
-               <P>You have contacted Michael Schwarz's RedHat Linux Laptop.
-               You would probably rather
-               <A HREF="http://www.multitool.net/">see his permanent Web
-               page</A> since this server goes up and down all the time, what
-               with it being on a laptop.</P>
-             </BODY>
-          </HTML>
-"
-main[1] step
-> <HTML>
-     <HEAD>
-       <TITLE>RedHat Linux Laptop</TITLE>
-     </HEAD>
-     <BODY>
-       <H1>RedHat Linux Laptop</H1>
-       <P>You have contacted Michael Schwarz's RedHat Linux Laptop.
-       You would probably rather
-       <A HREF="http://www.multitool.net/">see his permanent Web
-       page</A> since this server goes up and down all the time, what
-       with it being on a laptop.</P>
-     </BODY>
-   </HTML>
-156                             Chapter 5    The Sun Microsystems Java Software Development Kit
-Step completed: "thread=main", FetchURL.main(), line=48 bci=48
-48              for (i = 0; i < args.length; i++)
-main[1] step
->
-Step completed: "thread=main", FetchURL.main(), line=53 bci=57
-53          }
-main[1] step
->
-The application exited
-$
+      $ cc -shared -o libgetuser.so GetUser.o
+      $ export LD_LIBRARY_PATH=.
+    #+END_SRC
+
 ** 反编译
    javap
 ** jar
@@ -506,227 +267,16 @@ $jar cmf pp.jar manifest bin/*.class
    Main-Class: net.multitool.Payback.Payback
 #+END_SRC
  
-** TOOL kit
-   extcheck
-jarsigner
-** IBM Classes
-      IBM’s Eclipse project (which we begin to cover in Chapter 10) provides a large
-      GUI API library called SWT  
-** The GNU Compiler for Java
-    (gcj)
-    The GNU Compiler for Java provides a native binary compiler for Java code.
-    gcj [options...] [codefile...] [@listfile...] [libraryfile...]
-  : The GNU Compiler for Java (gcj) does not fully support the AWT or Swing GUIs
 ** build tool
-  Ant:(蚂蚁) make 对java的局限
-  The ANT_HOME environment variable should be set
-  JAVA_HOME 也要设定
-  build.xml
-  <?xml version="1.0"?>
-  A buildfile must contain exactly one project tag.
-  The project tag contains three attributes:
-  ::project::
-  name The name of the project.
-  default The default target (see next section).
-  basedir
-  ::project::
-  :target:
-  srcdir Location of the Java source files.
-  destdir Location to store the class files.
-  includes
-  excludes
-  classpath The classpath to use.
-  sourcepath
-  classpathref The classpath to use, given as a reference to a path defined elsewhere.
-  extdirs Location of installed extensions.
-  nowarn defaults to off (i.e., warnings are shown).
-  debug
-  debuglevel
-  optimize
-  deprecation
-  verbose
-  depend
-  :target:
-
-** IDE
-netbean
-eclipse
-** 项目
-   •  Requirements gathering
-   •  Use case specification
-   •  Class discovery and problem domain decomposition
-   •  Technical requirements specification (architecturing)
-   •  Testing
-   •  Code and release management
-   •  Production and operations support
-   •  Bug and enhancement tracking
-
-** Swing 
-#+BEGIN_SRC java
-import java.awt.*;
-import javax.swing.*;
-public class hw
-{
-    public static void main(String[] args)
-    {
-        //Create the top-level container
-        JFrame frame = new JFrame();
-        JLabel hi = new JLabel("Hello, world.");
-        frame.getContentPane().add(hi, BorderLayout.CENTER);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack(); // kicks the UI into action
-        frame.setVisible(true);
-    } // main
-} // class hw
-#+END_SRC
-** SERVLET
-   • Write a Java class that extends HttpServlet
-   • In that class, write the following methods:
-   • init()
-   • destroy()
-   • doGet() and/or doPost()
-#+BEGIN_SRC java
-   //Example 18.1 A “Hello, world” servlet
-    /*
-    * HiServlet.java
-    */
-    package net.multitool.servlet;
-    import javax.servlet.*;
-    import javax.servlet.http.*;
-    /**
-      * Simple Servlet that generates a page of HTML
-      */
-    public class HiServlet extends HttpServlet
-    {
-       /**
-         * Think of this as the constructor for the servlet.
-         * We need do nothing for our example,
-         * but we should call our parent object.
-         */
-       public void init(ServletConfig config)
-       throws ServletException
-       {
-          super.init(config);
-       } // init
-       /**
-       * Called when the Web server is shutting down
-       * or wants to shut down this particular servlet.
-       * We need do nothing.
-       */
-       public void destroy()
-       {
-       } // destroy
-       /**
-         * Handles the HTTP GET method.
-         * @param request servlet request
-         * @param response servlet response
-         */
-         protected void doGet(HttpServletRequest request, HttpServletResponse response)
-         throws ServletException, java.io.IOException
-         {
-         doBoth(request, response);
-         } // doGet
-         /**
-           * Handles the HTTP POST method.
-           * @param request servlet request
-           * @param response servlet response
-           */
-         protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, java.io.IOException
-         {
-         doBoth(request, response);
-         } // doPost
-         /**
-           * Requests for both HTTP GET and POST methods come here,
-           * because we're not doing anything different
-           * between the two request types. This way we need only one
-           * version of the code that does the real work.
-           * @param request servlet request
-           * @param response servlet response
-           */
-         protected void doBoth(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, java.io.IOException
-         {
-         java.io.PrintWriter out = response.getWriter();
-            response.setContentType("text/html");
-            /* output our page of html */
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>A Java Servlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("Hello, world.");
-            out.println("</body>");
-            out.println("</html>");
-            out.close();
-         } // doBoth
-         /**
-         * Returns a short description of the servlet.
-         */
-         public String getServletInfo()
-         {
-          return "Very Simple Servlet";
-          } // getServletInfo()
-          } // class HiServlet
- 
-
-#+END_SRC
-** JSP
-#+BEGIN_SRC jsp
-<table border=1 width=50%>
-      <tr>
-      <th>Account</th>
-      <th>Owner</th>
-      <th>Value</th>
-      </tr>
-      <% // for each subaccount:
-         for (Iterator actit = acct.getAllSubs(); actit.hasNext(); ) {
-           Account suba = (Account) actit.next();
-           %>
-           <tr>
-           <td><a href="BPControl?name=<%= suba.getName() %>&func=cd">
-           <%= suba.getName() %>
-           </a></td>
-           <td>albing</td>
-           <td>
-           <%= suba.getTotal().toString() %>
-           </td>
-           </tr>
-      <%
-       } // next acct
-      %>
-      </table>
-#+END_SRC
-** 语言特性
-   完全面向对象
-   文件名要同公开类的类名相同, 一个文件只能有一个公开类
-   公开方法 public static void main(String[] args)
+*** ant
+*** maven
+* java
+** 对象
+   文字
    申明常量 final
+   整数
    严格浮点计算 strictfp
    boolean 不能强制转换，但可以 int castb=b?1:0;
-   类和对象
-   package and import
-   java.lang 会默认import
-          原始码文档或位码文档都可以使用 JAR 文档封装,在“命令提示符”模式下,可以使用 JDK 的 jar 工具程序来制作 JAR 文档。可以参考以下文件:
-** 库
-   import static java.lang.Math.*; 
-   Math.pow(2, 3)次方
-   String类是一个类库实现
-   S.equals(SS)
-   equalsIgnoreCase
-   import java.util.*; 
-   new Scanner(System.in)
-   nextLine, nextInt()
-   System.out.print()
-** ERROR
-** Date
-   Date类是以 UTC 为时间纪元 为状态设定的.
-Date类对日期的处理有局限, 如不能表示中国的农历等日期
-so, 类库实现者 将保存时间 与 给时间点命名分开. 一个 Date 类, 一个 GregorianCalendar 类
-* java
-** 对象   --语法
-   文字
-   整数
    ArrayList
    Iterator 
    小数 默认 double, float 要加个 后缀 f 
@@ -748,33 +298,6 @@ so, 类库实现者 将保存时间 与 给时间点命名分开. 一个 Date �
 *** 异常
 ** 流程控制 
    for(String str: args)
-** 文档 
-** java Date 函数
-默认不带参数是 当前时间
-System.out.printf("%1$tm / %1$td \n",d);
-printf 函数的精致操作,%s 是输出字符串 
-Wed Jan 10 12:37:55 CST 2018
-** 运行在Java虚拟机上，又不像是解释型语言
-   java 虚拟机为下列各项做出了定义
-   指令集
-   注册类
-   类文件格式
-   栈
-垃圾收集堆
-存储区
-** java 运行环境执行三大任务
-   加载代码
-校验代码
-执行代码
-** 编译 javac 
-   -classpath Path
-   -d Dir   指定编译后的类存放路径
-   -g  生成调试表
-   -nowarn 关闭警告
-   -verbose 打开详细信息
-   -o 优化
-   相对的会在 当前目录一起编译 引用的文件，或者在classpath中找
-** 执行 需使用解释器 java
 ** 类、包
 java 类库中有几个重要的包
 java.lang
@@ -792,141 +315,359 @@ java.util  包含任务设置的实用程序类，如随机数，定义系统特
 
 引用其他的类 import
 静态导入？ import static 可以不加类名调用对象的静态属性或方法
-** appletviewer othions URL 测试 applet 的简单工具
-** 文档注释
-   /** 开始 */ 结束
-   javadoc 文件名
-   @see 放入链接
-   @version 放入版本号
-   @author 作者
-   @param 方法参数
-   @return 返回
-   @throws
-* 构造器的重载 可以用this([param])
-* 超类 super.method, 超类的构造器 super(param..)
-* 给一个合适的警告或错误提示？ 这在编译器中特别有用
-* java 中没有unsigned类型? 说明都是有符号的
-* 浮点的正无穷？　Double.POSITIVE_INFINITY
-  Double.NEGATIVE_INFINITY
-  Double.NaN 不能单纯比较
-  Double.isNaN()
-* boolean? 名字都变了
-* 常量定义？　 final 
-* 导入数学库？ import static java.lang.Math.*;
-* 数学的舍入成整数？ Math.round
-* 数学的向下舍入？ Math.floor 返回的是 浮点表示的整数
-* 数字进制转换？
-System.out.println(Integer.toBinaryString(a));
-转换成八进制把Binary换成Octal
-转换成十六进制把Binary换成Hex
-* 枚举不能为本地变量？ 不同的函数分为不同的地域，所以不能在函数内定义，而是在大局内，类内定义
-  enum Diannao{LIANXIANG,DELL,HUIPU};
-* String结构？ 是一个个 unicode 代码点，所以操作时注意, 代码点是char
-* substring
-* 串相等 "str".equals(obj)
-* java.lang 库？
-java.lang.string
-java.util
-* java 默认导入的库
-  java.awt:提交用户界面元件。
-  java.io:提供与设备无关的输入，输出流支持、
-  java.lang:提供支持Java的基础类、
-  Java.net:提供支持联网的类。
-  java.util:提供实用方法和数据结构的。
-  默认导入的包
-  Java.lang.*
-  javax.servlet.*
-  javax.servlet.jsp.*
-  javax.servlet.http；
-* 输入输出对象 这对象专门 细致地输入整数，整行 什么的
-** 什么是 Scanner? 键盘输入对象  java.util 中
-   这种函数性抽象的东西，需要参数指定输入到哪里 new Scanner(System.in) 键盘缓冲
-   对于字符串类型的数字，可以用 Integer.parseInt 或Double.parseDouble转换 
-   输入容易数据错误
-* 退出虚拟机执行？ exit(int status)  状态表示退出码，限定的数字，难道是继承
-* Date? 日期啊，时间也是日期一部分 这个类过时了, 用GregorianCalendar 格里高利
-  int  year=c.get(Calendar.YEAR);//获取年份  
-int  month=c.get(Calendar.MONTH);//获取月份  
-int  day=c.get(Calendar.DATE);//获取日期  
-int  minute=c.get(Calendar.MINUTE);//分  
-int  hour=c.get(Calendar.HOUR);//小时  
-int  second=c.get(Calendar.SECOND);//秒 
-* 数组？ 一堆东西
-排序 Array.sort  只能是数字 组, 返回为空，输出的是参数所指向的数组对象
-* 命令行参数？ 用空格隔开的都是一个参数字串
-* 类，对象，实例化？ 更好模块化，调试，扩展
-* 构造器？ 同类名相同 ，默认构造器，没参数的类名
-* 把类放在包中 package com.aa.bb; 注意匹配目录(这个在引用的时候有用），编译原包时不管什么目录
-* 设置类路径 因为类可能被放在不同目录中方便调用, 为了把类集中起来， 要配置 CLASSPATH环境变量或 设定 -classpath选项, 用: 分隔
-* 继承? extends 原有的字段如果相同，就不用重写了，除非不同
-  类的东西 super
-  数直接可用 super, 同this 调用自己的其他构造器，两个用法
-* 阻止继承 final
-* 抽象类？ 
-* 泛型数组？ ArrayList<Classname> shuzu = new ArrayList<Classname>(); 数组要指定长度，而带指针的数组（链表）不需要指定长度.
-  
-  Capacity(100) 如果估算出长度
-  加
-  寸
-  Size 内存整理
-  
-   obj)
-  
-* 异常？ 
-  N_SRC java
-       try {
-          String name = "//penfold/Session";
-          // Obtain reference to the remote object
-          Session sess = (Session) Naming.lookup(name);
-          System.out.println("Pointless RMI Client. 47 + 13 = " +
-                                    sess.add(47,13) + ", right?");
-       } catch (Exception e) {
-          e.printStackTrace();
-       }
+*** java Date 函数
+默认不带参数是 当前时间
+System.out.printf("%1$tm / %1$td \n",d);
+printf 函数的精致操作,%s 是输出字符串 
+Wed Jan 10 12:37:55 CST 2018
+** 异常
+   #+BEGIN_SRC java
+         try {
+           String name = "//penfold/Session";
+           // Obtain reference to the remote object
+           Session sess = (Session) Naming.lookup(name);
+           System.out.println("Pointless RMI Client. 47 + 13 = " +
+                                     sess.add(47,13) + ", right?");
+        } catch (Exception e) {
+           e.printStackTrace();
+        }
+   #+END_SRC
+* java 
+** 第1篇　基础知识
+*** 第1章　初识Java 
+   1 1.1　Java简介 
+   2 1.2　Java语言的特性 
+   3 1.3　搭建Java环境 
+   设置 PATH 和JAVA_HOME(库文件）
+   4 1.4　第一个Java程序 
+   5 1.5　小结 
 
-  SRC
-* 反射？ 用class, 返回方法，字段
-  getDeclaringClass
-  getExceptionTypes
-  getModifiers
-  getName
-* iterator 迭代 ，相比数组操作简单点  ArrayList
-  Iterator.next()
-* eclipse
-  Eclipse导入工程后工程上显示一个小红叉，但工程里没有文件错误，也没有语法错误，百思不得其解啊，
-  后来在网上找了一些资料说是项目引用的类库路径有问题。【项目】->【右键】->【build path】->【configure build path】->【libraries】，
-  查看一下引用的类库路径。网上都说是因为这里引用错误引起的，但是我在项目导入的时候做的第一件事情就是修改这里的library，因此不是这个原因。
-  在problems中显示错误是：Target runtime Apache Tomcat 6.0 is not defined. 在网上查了一下终于找到解决方法。
-  方法是：在工程目录下的.settings文件夹里，打开org.eclipse.wst.common.project.facet.core.xml文件，其内容是：
+*** 第2章　熟悉Eclipse开发工具 
+    1 2.1　熟悉Eclipse 
+    2 2.2　使用Eclipse 
+    3 2.3　程序调试 
+    4 2.4　小结 
+    5 2.5　实践与练习 
 
-<?xmlversion="1.0"encoding="UTF-8"?> 
-<faceted-project> 
-<runtimename="Apache Tomcat v6.0"/> 
-<fixedfacet="jst.web"/> 
-<fixedfacet="jst.java"/> 
-<installedfacet="jst.java"version="6.0"/> 
-<installedfacet="jst.web"version="2.5"/> 
-<installedfacet="wst.jsdt.web"version="1.0"/> 
-</faceted-project>
+*** 第3章　Java语言基础 
+  1 3.1　Java主类结构 
+  2 3.2　基本数据类型 
+  3 3.3　变量与常量 
+  4 3.4　运算符 
+  5 3.5　数据类型转换 
+  6 3.6　代码注释与编码规范 
+  7 3.7　小结 
+  8 3.8　实践与练习 
 
-将其修改为：
+*** 第4章　流程控制 
 
-<?xml version="1.0" encoding="UTF-8" ?> 
-<faceted-project>
-</faceted-project>
-PS:进行上面的修改以后虽然没有错误了，但是想发布网站demo的时候发现没有【run as】->【run on server】这个选项了。
-这时候我们创建一个demo2的web project，然后查看.settings下的org.eclipse.wst.common.project.facet.core.xml，我们发现其内容是：
+  1 4.1　复合语句 
+  2 4.2　条件语句 
+  3 4.3　循环语句 
+  4 4.4　小结 
+  5 4.5　实践与练习 
 
-<?xml version="1.0" encoding="UTF-8" ?> 
- <faceted-project>
-  <runtime name="Apache Tomcat v6.0.29" /> 
-  <fixed facet="jst.web" /> 
-  <fixed facet="java" /> 
-  <fixed facet="wst.jsdt.web" /> 
-  <installed facet="java" version="1.6" /> 
-  <installed facet="jst.web" version="2.5" /> 
-  <installed facet="wst.jsdt.web" version="1.0" /> 
-  </faceted-project>
-那么我们只需要将该代码拷贝到网站demo下的.settings目录下，
-将原来的org.eclipse.wst.common.project.facet.core.xml覆盖即可。
-覆盖以后我们在Eclipse就能够使用【run as】->【run on server】来发布demo了。
+  5 第5章　字符串 
+
+  1 5.1　String类 
+  2 5.2　连接字符串 
+  3 5.3　获取字符串信息 
+  4 5.4　字符串操作 
+  5 5.5　格式化字符串 
+  6 5.6　使用正则表达式 
+  7 5.7　字符串生成器 
+  8 5.8　小结 
+  9 5.9　实践与练习 
+
+  6 第6章　数组 
+
+  1 6.1　数组概述 
+  2 6.2　一维数组的创建及使用 
+  3 6.3　二维数组的创建及使用 
+  4 6.4　数组的基本操作 
+  5 6.5　数组排序算法 
+  6 6.6　小结 
+  7 6.7　实践与练习 
+
+  7 第7章　类和对象 
+
+  1 7.1　面向对象概述 
+  2 7.2　类 
+  3 7.3　类的构造方法 
+  4 7.4　静态变量、常量和方法 
+  5 7.5　类的主方法 
+  6 7.6　对象 
+  7 7.7　小结 
+  8 7.8　实践与练习 
+
+  8 第8章　包装类 
+
+  1 8.1　Integer 
+  2 8.2　Boolean 
+  3 8.3　Byte 
+  4 8.4　Character 
+  5 8.5　Double 
+  6 8.6　Number 
+  7 8.7　小结 
+  8 8.8　实践与练习 
+
+  9 第9章　数字处理类 
+
+  1 9.1　数字格式化 
+  2 9.2　数学运算 
+  3 9.3　随机数 
+  4 9.4　大数字运算 
+  5 9.5　小结 
+  6 9.6　实践与练习 
+
+ 8 第2篇　核心技术 
+
+  1 第10章　接口、继承与多态 
+
+  1 10.1　类的继承 
+  2 10.2　Object类 
+  3 10.3　对象类型的转换 
+  4 10.4　使用instanceof操作符判断对象类型 
+  5 10.5　方法的重载 
+  6 10.6　多态 
+  7 10.7　抽象类与接口 
+  8 10.8　小结 
+  9 10.9　实践与练习 
+
+  2 第11章　类的高级特性 
+
+  1 11.1　Java类包 
+  2 11.2　final变量 
+  3 11.3　final方法 
+  4 11.4　final类 
+  5 11.5　内部类 
+  6 11.6　小结 
+  7 11.7　实践与练习 
+
+  3 第12章　异常处理 
+
+  1 12.1　异常概述 
+  2 12.2　处理程序异常错误 
+  3 12.3　Java常见异常 
+  4 12.4　自定义异常 
+  5 12.5　在方法中抛出异常 
+  6 12.6　运行时异常 
+  7 12.7　异常的使用原则 
+  8 12.8　小结 
+  9 12.9　实践与练习 
+
+  4 第13章　Swing程序设计 
+
+  1 13.1　Swing概述 
+  2 13.2　常用窗体 
+  3 13.3　标签组件与图标 
+  4 13.4　常用布局管理器 
+  5 13.5　常用面板 
+  6 13.6　按钮组件 
+  7 13.7　列表组件 
+  8 13.8　文本组件 
+  9 13.9　常用事件监听器 
+  10 13.10　小结 
+  11 13.11　实践与练习 
+
+  5 第14章　集合类 
+
+  1 14.1　集合类概述 
+  2 14.2　Collection接口 
+  3 14.3　List集合 
+  4 14.4　Set集合 
+  5 14.5　Map集合 
+  6 14.6　小结 
+  7 14.7　实践与练习 
+
+  6 第15章　I/O（输入/输出） 
+
+  1 15.1　流概述 
+  2 15.2　输入/输出流 
+  3 15.3　File类 
+  4 15.4　文件输入/输出流 
+  5 15.5　带缓存的输入/输出流 
+  6 15.6　数据输入/输出流 
+  7 15.7　ZIP压缩输入/输出流 
+  8 15.8　小结 
+  9 15.9　实践与练习 
+
+  7 第16章　反射 
+
+  1 16.1　Class类与Java反射 
+  2 16.2　使用Annotation功能 
+  3 16.3　小结 
+  4 16.4　实践与练习 
+
+  8 第17章　枚举类型与泛型 
+
+  1 17.1　枚举类型 
+  2 17.2　泛型 
+  3 17.3　小结 
+  4 17.4　实践与练习 
+
+  9 第18章　多线程 
+
+  1 18.1　线程简介 
+  2 18.2　实现线程的两种方式 
+  3 18.3　线程的生命周期 
+  4 18.4　操作线程的方法 
+  5 18.5　线程的优先级 
+  6 18.6　线程同步 
+  7 18.7　小结 
+  8 18.8　实践与练习 
+
+  10 第19章　网络通信 
+
+  1 19.1　网络程序设计基础 
+  2 19.2　TCP程序设计基础 
+  3 19.3　UDP程序设计基础 
+  4 19.4　小结 
+  5 19.5　实践与练习 
+
+  11 第20章　数据库操作 
+
+  1 20.1　数据库基础知识 
+  2 20.2　JDBC概述 
+  3 20.3　JDBC中常用的类和接口 
+  4 20.4　数据库操作 
+  5 20.5　小结 
+  6 20.6　实践与练习 
+
+ 9 第3篇　高级应用 
+
+  1 第21章　Swing表格组件 
+
+  1 21.1　利用JTable类直接创建表格 
+  2 21.2　表格模型与表格 
+  3 21.3　提供行标题栏的表格 
+  4 21.4　小结 
+  5 21.5　实践与练习 
+
+  2 第22章　Swing树组件 
+
+  1 22.1　简单的树 
+  2 22.2　处理选中节点事件 
+  3 22.3　遍历树节点 
+  4 22.4　定制树 
+  5 22.5　维护树模型 
+  6 22.6　处理展开节点事件 
+  7 22.7　小结 
+  8 22.8　实践与练习 
+
+  3 第23章　Swing其他高级组件 
+
+  1 23.1　高级组件面板 
+  2 23.2　菜单 
+  3 23.3　工具栏 
+  4 23.4　文件选择器 
+  5 23.5　进度条 
+  6 23.6　系统托盘 
+  7 23.7　桌面集成控件 
+  8 23.8　小结 
+  9 23.9　实践与练习 
+
+  4 第24章　高级布局管理器 
+
+  1 24.1　箱式布局管理器 
+  2 24.2　卡片布局管理器 
+  3 24.3　网格组布局管理器 
+  4 24.4　弹簧布局管理器 
+  5 24.5　小结 
+  6 24.6　实践与练习 
+
+  5 第25章　高级事件处理 
+
+  1 25.1　键盘事件 
+  2 25.2　鼠标事件 
+  3 25.3　窗体事件 
+  4 25.4　选项事件 
+  5 25.5　表格模型事件 
+  6 25.6　小结 
+  7 25.7　实践与练习 
+
+  6 第26章　AWT绘图与音频播放 
+
+  1 26.1　Java绘图 
+  2 26.2　绘制图形 
+  3 26.3　绘图颜色与笔画属性 
+  4 26.4　绘制文本 
+  5 26.5　绘制图片 
+  6 26.6　图像处理 
+  7 26.7　播放音频文件 
+  8 26.8　小结 
+  9 26.9　实践与练习 
+
+  7 第27章　打印技术 
+
+  1 27.1　打印控制类 
+  2 27.2　“打印”对话框 
+  3 27.3　打印页面 
+  4 27.4　多页打印 
+  5 27.5　打印预览 
+  6 27.6　小结 
+  7 27.7　实践与练习 
+
+ 10 第4篇　项目实战 
+
+  1 第28章　企业进销存管理系统 
+
+  1 28.1　系统分析 
+  2 28.2　系统设计 
+  3 28.3　开发环境 
+  4 28.4　数据库与数据表设计 
+  5 28.5　创建项目 
+  6 28.6　系统文件夹组织结构 
+  7 28.7　公共类设计 
+  8 28.8　系统登录模块设计 
+  9 28.9　系统主窗体设计 
+  10 28.10　进货单模块设计 
+  11 28.11　销售单模块设计 
+  12 28.12　库存盘点模块设计 
+  13 28.13　数据库备份与恢复模块设计 
+  14 28.14　运行项目 
+  15 28.15　系统打包发行 
+  16 28.16　开发常见问题与解决 
+  17 28.17　小结 
+
+ 11 附录A　JDK7改进的功能 
+
+  1 A.1　语法 
+
+  1 A.1.1　switch语句允许使用字符串 
+  2 A.1.2　整型数据支持二进制形式 
+  3 A.1.3　数值型数据中可以出现下划线 
+  4 A.1.4　 泛型实例的创建可以通过类型推断来简化 
+  5 A.1.5　try-with-resources 语句 
+  6 A.1.6　改进了捕获多个异常时的类型检查 
+  7 A.1.7　在可变参数方法中传递非具体化参数时，改进编译
+  警告和错误 
+
+  2 A.2　网络 
+  3 A.3　Java 2D 
+  4 A.4　Swing 
+  5 A.5　Java I/O 
+  6 A.6　并发 
+  7 A.7　安全性 
+  8 A.8　Java XML 
+  9 A.9　Java虚拟器（JVM） 
+
+* awt
+  #+BEGIN_SRC java
+    import java.awt.*;
+
+    public class ChatClient extends Frame {
+
+        public static void main(String[] args){
+            new ChatClient().launchFrame(); 
+        }
+
+
+        public void launchFrame(){
+            this.setLocation(400,300);
+            this.setSize(300,300);
+            this.setVisible(true);
+        }
+    }
+
+  #+END_SRC

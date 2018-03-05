@@ -46,23 +46,9 @@ composer config repo.packagist composer https://packagist.phpcomposer.com
 需要加版本的话
 composer require "foo/bar:1.0.0"
 
-
 ** 帮助
 *** 邮件列表 list.ubuntu.com
 *** 帮助irc ubuntu-zh 论坛 wiki
-** 忘记登录密码
-   1,启动时在启动的linux系统（或grub到计时结束前）上按下“e”键
-   2，选中类似“于kernel /boot/vmlinuz-2.4.18-14 ”按“e”键
-   3,修改命令行，加入linux single，结果如下：
-   kernel /vmlinuz-2.6.18-8.el5  ro root=LABEL=/ rhgb quiet linux single
-   4,回车返回，按b键,进入命令行
-   5, #vi /etc/shadow 编辑shadow
-   将第一行，即以root开头的一行中root:后和下一个:前的内容删除，
-   第一行将类似于
-   root::……
-   保存
-   (如果保存不了，是文件属性的问题，就chmod 755 /etc/shadow，这样就OK了)
-6. #reboot重启，root密码为空
 ** 任务 相对用户说的 fg bg
    jobs 
    -l：显示进程号；
@@ -143,6 +129,35 @@ composer require "foo/bar:1.0.0"
 0 * * * *                  # 每小时的0点执行一次任务，比如6:00，10:00  
 6,10 * 2 * *            # 每个月2号，每小时的6分和10分执行一次任务  
 **** pkill 可以按照进程名杀死进程
+**** 进程属性
+    ls /proc/PID 
+    
+cwd 进程运行目录
+exe 程序绝对路径
+cmdline 运行时的命令行命令
+environ 环境变量
+fd 打开或使用的文件的符号链接
+** 用户管理
+*** 添加用户   
+     useradd -m -g users -G wheel -s /bin/bash ikke
+     passwd ikke
+
+     安装 sudo
+     pacman -S sudo
+     打开 /etc/sudoers 文件，找到 root ALL=(ALL) ALL 并依葫芦画瓢添加 ikke ALL=(ALL) ALL 即可。
+*** 忘记登录密码
+   1,启动时在启动的linux系统（或grub到计时结束前）上按下“e”键
+   2，选中类似“于kernel /boot/vmlinuz-2.4.18-14 ”按“e”键
+   3,修改命令行，加入linux single，结果如下：
+   kernel /vmlinuz-2.6.18-8.el5  ro root=LABEL=/ rhgb quiet linux single
+   4,回车返回，按b键,进入命令行
+   5, #vi /etc/shadow 编辑shadow
+   将第一行，即以root开头的一行中root:后和下一个:前的内容删除，
+   第一行将类似于
+   root::……
+   保存
+   (如果保存不了，是文件属性的问题，就chmod 755 /etc/shadow，这样就OK了)
+6. #reboot重启，root密码为空
 * 软件
 ** 压缩
 *** 7z 
@@ -364,6 +379,135 @@ composer require "foo/bar:1.0.0"
      trace-reg on    每执行一条打印cpu               
      xp /32bx 0x90000  查询从0x90000开始的32个字节内容 
 *** make GNU的工程化编译工具
+*** eclipse
+**** eclipse快捷键
+   1. 常用快捷键
+   这是使用工具的第一步，熟练使用快捷键对于我们编写程序会起到相当大帮助，所以这里笔者列出的快捷键建议大家必须都掌握。
+   Ctrl + 鼠标左键（类、方法、属性的变量名词）：定位跟踪某变量声明或定义的位置
+   Ctrl + S：保存当前文件
+   Ctrl + X：剪切
+   Ctrl + C：复制
+   Ctrl + V：粘贴
+   Ctrl + D：删除当前行
+   Ctrl + F：查找/替换（当前编辑窗口）
+   Ctrl + H：全局搜索
+   Ctrl + /：注释当前行或多行代码
+   Ctrl + Shift + C：注释当前行或多行代码
+   Ctrl + Shift + F：格式化当前代码
+   Ctrl + Shift + O：缺少的Import语句被加入，多余的Import语句被删除（先把光标定位到需导入包的类名上）
+   Ctrl + Shift + S：保存所有文件
+   Ctrl + Shift + X：把当前选中的文本全部变为大写
+   Ctrl + Shift + Y：把当前选中的文本全部变为小写
+   Alt + /：代码智能提示
+   Alt + Shift + R：重命名（包括文件名、类名、方法名、变量名等等，非常好用）
+   Alt + Shift + J：生成类或方法的注释
+   Alt + Shift + S：打开Source窗口（生成get、set方法，实现、覆盖接口或类的方法，很常用）
+   Alt + Shift + D, J：如果有main方法入口，则以Debug方式执行代码
+   Alt + Shift + X, J：如果有main方法入口，则以Run方式执行代码
+ 
+ 
+   2. 插件推荐
+   Eclipse默认情况下是一个纯净版的，所以功能简单，而开源IDE最为强大的莫过于各种插件，通过使用插件可以帮助我们减少大量编写代码的工作量，
+   也帮助我们降低了编写代码的难度，所以懂得安装必要插件，也是熟练使用IDE的鉴证。
+   ① hibernate Tools
+   Hibernate Tools是一套全新而且完整的面向Hibernate3的工具集合，它包含了Eclipse插件和Ant编译流程，是JBoss Tools的核心组件。使用该插件能大大减少我们
+   使用Hibernate的工作量，支持自动生成全部Hibernate的xml文件、javabean、HTML表单文件等。
+   安装地址：http://download.jboss.org/jbosstools/updates/development/indigo/
+   ② spring IDE
+   Spring IDE是Spring官方网站推荐的Eclipse插件，可提供在开发Spring时对Bean定义文件进行提示、验证并以可视化的方式查看各个Bean之间
+   的依赖关系等，对基于spring框架的项目开发提供了有力的支持。
+   安装地址：http://dist.springsource.com/release/TOOLS/update/e3.6/
+   ③ Subclipse
+   Subclipse是基于Eclipse的SVN插件，支持所有版本的Eclipse，团队开发必备插件。
+   安装地址：http://subclipse.tigris.org/update_1.8.x
+   ④ Findbugs
+   FindBugs是一个能静态分析源代码中可能会出现Bug的Eclipse插件工具。它检查类或者 JAR 文件，将字节码与一组缺陷模式进行对比以发现可能的问题。
+   利用这个工具，就可以在不实际运行程序的情况对软件进行分析。它可以帮助改进代码的质量。
+   安装地址：http://findbugs.cs.umd.edu/eclipse/
+   ⑤ Sysdeo Tomcat Launcher Plugin
+   Sysdeo Tomcat Launcher Plugin是Tomcat的Eclipse插件，帮助我们自动部署tomcat服务器。该插件不是必要插件，可以不装。
+   下载地址：http://www.eclipsetotale.com/tomcatPlugin/tomcatPluginV33.zip
+ 
+   插件安装方法
+   插件大概有三种安装方法：
+   第一种：知道在线安装地址。Eclipse→Help→Install New Software...→地址栏（Work with）中输入安装地址→
+   勾选要安装的插件→Next→同意安装协议→Finish→等待安装完毕→按要求重启Eclipse
+   第二种：手动从官网下载好插件并手动与Eclipse集成。这种方法一般的思路是：先关闭Eclipse，然后将下载好的插件解压后，复制到Eclipse安装目
+   录下的plugins文件夹和features文件夹下，如果必要的话再创建一个link文件，再重新打开Eclipse。
+   第三种：在线搜索安装。Eclipse→Help→Eclipse Marketplace...→在搜索栏输入要查找的插件→点击Install按钮→等待安装完毕→按要求重启Eclipse
+   这里笔者推荐第一种，如果不知道安装地址，那么就用第三种，第二种方法有时操作错误的话就会出现问题，风险较大，所以不推荐。
+ 
+   3. tomcat
+   ① 配置
+   Window→Preferences→Server→Runtime Environment→Add→Apache→选择tomcat版本→Next→更改显示名称（Name）
+   →Browse...浏览选择事先解压好的tomcat文件夹→选择jre→Finish→OK→打开Servers窗体→右击选择New→Server→选择tomcat版本→
+   选择刚配置好的tomcat→Next→选择项目→Finish
+   ② 使用心得
+   当我们修改某处代码后，启动tomcat发现页面没有变化时，要先关掉tomcat，右击Servers窗口中tomcat服务器图标，选择Clean...
+   来清理下编译后的源码，再启动tomcat来重新编译下源码。
+   而且如果部署多个，或tomcat异常时，右击Servers窗口中tomcat服务器图标，选择Properties，检查General选项右侧Location是否正确，
+   如果不正确则点击Switch Location。
+   虽然一个tomcat支持同时启动多个项目，但项目多启动时会很慢，所以如果不是工程项目需要的话，建议tomcat只部署启动一个项目，将暂时无用的项目移除。
+   当web项目启动加载时间过长导致tomcat启动失败的话，可适当延长tomcat启动超时的时间（默认45秒），双击Servers窗口中tomcat
+   服务器打开tomcat属性窗口，点击右上方Timeouts选项，修改Start(in seconds)的时间。
+   eclipse默认情况下是调用tomcat接口模拟启动tomcat，而不是真正启动tomcat，所以大家经常会遇到一件怪事：启动tomcat后，虽然能正常进web项目首页，
+   却仅不了tomcat小猫首页（即http://localhost:8080/），并且web项目部署编译后生成的文件也不在tomcat文件目录下的work目录下。
+   解决办法：如果tomcat服务器下已经部署了项目，就先要将其全部移除，即右击Servers窗口中tomcat服务器图标，选择Add and Remove...，
+   单击Remove All按钮，单击Finish按钮。之后先Clean清理下，再双击tomcat服务器图标打开属性窗口，选择左侧中间Server Locations选项，
+   选择下方第二个单选按钮（Use Tomcat installation），并将Deploy path文本框中的"wtpwebapps"（默认值）改为webapps，也就是tomcat中发布
+   项目所在的文件夹名字，最好再将项目重新部署到tomcat上，启动tomcat后，就可以看到熟悉的小猫页面了，同时在tomcat文件目录下的work文件夹下也能
+   看见熟悉的编译后的页面文件了。
+   如果代码出现引入javax.servlet.http.*报错，说明是缺少tomcat的jar包，引入即可。方法：在左侧资源管理器右击项目，选择Build Path下的
+   Configure Build Path...，右侧点击Add Library...按钮，选择Server Runtime，点击Next后选择tomcat，Finish。
+ 
+   4. eclipse常见配置
+   ● 字体大小
+   Window→Preferences→General→Appearance→Colors and Fonts→右侧窗口→Basic选项→双击Text Font
+   ● 修改打开文件的编辑浏览器
+   Window→Preferences→General→Editors→File Associations→选择要修改的文件类型→在下方选择编辑浏览器
+   ● 显示/隐藏代码行号
+   Window→Preferences→General→Editors→勾选Show line numbers
+   ● 添加自定义jar包Libraries
+   Window→Preferences→Java→Build Path→User Libraries→右侧点击New...→输入名称→点击Add JARs...→浏览选择相应的jar文件
+   ● 配置tomcat等服务器
+   Window→Preferences→Server→Runtime Environment→Add...→选择需要的服务器（以tomcat为例请见上面tomcat配置）
+   ● 修改格式化代码的换行判定
+   Window→Preferences→Java→Code Style→Formatter→右侧点击New...→输入名称→点击OK→在弹出的窗口选择Line Wrapping选项卡→修改Maixmum line width文本框的值（默认80）
+   ● 添加xml的dtd、xsd等xml语法规则文件，实现代码自动提示
+   Window→Preferences→XML→XML Catalog→右侧点击Add...→Key type选择Public ID→Location浏览选择你所下载的DTD文件的物理位置→Key填入xml文档头部 <!DOCTYPE sqlMapConfig PUBLIC 后面的那些url地址→OK
+   ● 修改编码格式
+   右击你要修改的项目/包/类→选择Properties→在Resource选项右侧的Text file encoding下选择你需要的编码格式
+   ● 相同名称（包括类名、方法名、变量名等等）以不同背景色标识出来
+   见下图：
+
+   或者按快捷键：Alt + Shift + O
+ 
+   在Window→Preferences下有许多配置，这里并不可能介绍很全，所以只列出最为常用的，大家有时间可能多进这里看看，再多点点多试试就明白了。
+ 
+ 
+   5. SVN
+   ● 上传项目至SVN服务器
+   右击要上传的项目→Team→Share Project...→SVN→创建新的资源库位置/使用现有的资源库→Next→（输入URL地址）→Next→使用项目名称作为文件夹名→Next→Finish→（输入用户名/密码）
+   注意："使用项目名称作为文件夹名"时，要保证SVN服务器端已创建与项目名称相同的文件夹，否则会导入失败。如果SVN端创建的文件夹名与项目名称不符，则在该步骤选择"使用指定的模块名"以确保SVN服务器端与项目名称一致。
+   ● 下载项目从SVN服务器
+   在资源管理器空白处右击→Import...→选择SVN文件夹→从SVN检出项目→创建新的资源库位置/使用现有的资源库→Next→（输入URL地址）→Next→做为新项目检出，并使用新建项目向导进行配置→Finish→Yes→配置新建项目（如输入项目名称）→OK
+   注意：这个"输入URL地址"与上面上传项目的不同，这个URL地址需要输入项目具体所在的文件夹，而上一个因为有"使用项目名称作为文件夹名"这步，所以不需要带文件夹名称。
+   ● 提交、更新、还原文件
+   选中需要提交的文件、jar包、javabean等文件然后右击→Team→选择相应的操作。（这个基本地球人看看都会，所以就不多说了）
+ 
+ 
+   所谓学武功首先要被口诀练习基本招式，只有打好基础，才能快速参悟渗透"上层武功"，所以希望笔者写的"基本心法"能助各位菜鸟早日成为威震四海的武林高手！
+   pp
+   java.lang.RuntimeException: error:  out: An error has occurred.  See the log file
+   /home/wuming/.eclipse/org.eclipse.platform_4.6.3_1353066266_linux_gtk_x86_64/configuration/1498476862792.log
+	   at org.eclim.installer.step.EclipseInfo.installInstallerPlugin(EclipseInfo.java:185)
+	   at org.eclim.installer.step.EclipseInfoStep$1.run(EclipseInfoStep.java:67)
+	   at foxtrot.AbstractWorkerThread$1.run(AbstractWorkerThread.java:40)
+	   at java.security.AccessController.doPrivileged(Native Method)
+	   at foxtrot.AbstractWorkerThread.runTask(AbstractWorkerThread.java:36)
+	   at foxtrot.workers.SingleWorkerThread.run(SingleWorkerThread.java:199)
+	   at foxtrot.workers.SingleWorkerThread.run(SingleWorkerThread.java:182)
+	   at java.lang.Thread.run(Thread.java:748)
 ** xclip 这个剪切板和 图形下的剪切板不是同一个
 *** 保存到剪切板
    ls -al | xclip
@@ -784,6 +928,18 @@ pathname -options [-print -exec -ok ...]
   /quit
   要给 foo 发送一条内容为 "Hello Mr. Foo"的私人消息,请输入
   /msg foo Hello Mr. Foo
+  
+
+**** irc 频道
+     #linuxba 国内linux贴吧
+     #c_lang_cn C语言中文irc频道
+     ##g讲到这里，必须得推广下自己的频道，##g，作为一个大水比，同时也是小白，
+     #archlinux-cn 
+     #emacs
+     #orz
+     #debiancn
+     #kali
+     #osdev 操作系统开发频道
 ** 数据库
 *** mysql 
 ***** 导出
@@ -963,10 +1119,6 @@ ssh user@host cat /path/to/some/file | xclip
     开启:sudo modprobe  psmouse
     只关闭触摸板: synclient touchpadoff=1
     开启:synclient touchpadoff=0
-    rmmod 从运行的内核中移除指定的内核模块
-    insmod 将给定的模块加载到内核中
-    lsmod 显示已载入系统的模块
-
 ** 屏幕截图
   import -frame window.tif
 *** shutter 
@@ -1104,135 +1256,146 @@ ssh user@host cat /path/to/some/file | xclip
      sudo ln -s /etc/apache2/sites-available/other /etc/apache2/sites-enabled/other  
 **** 检查
      sudo apache2ctl configtest 
-* 正则 foo ——————字符串"foo" ^foo ——————以"foo"开头的字符串 foo$ ——————以"foo"结尾的字符串 ^foo$ ——————"foo"开头和结尾，（只能是他自己 ） [abc]—————— a 或者b 或者c [a-z] —————— a到z之间任意字母 [^A-Z]——————除了 A-Z这些之外的字符 (gif|jpg)——————"gif"或者 "jpeg" [a-z]+—————— 一个或者多个 a到z之间任意字母 [0-9.-]—————— 0-9之间任意数字，或者 点 或者 横线 ^[a-zA-Z0-9_]{1,}$—————— 至少一个字母数字下划线 ([wx])([yz])—————— wy或wz或xy或xz [^A-Za-z0-9]—————— 字符数字之外的字符 ([A-Z]{3}|[0-9]{4})—————— 三个大写字母或者4个数字 \B 匹配非单词边界。'er\B' 能匹配 "verb" 中的 'er'，但不能匹配 "never" 中的 'er'。 \cx 匹配由 x 指明的控制字符。例如， \cM 匹配一个 Control-M 或回车符。x 的值必须为 A-Z 或 a-z 之一。否则，将 c 视为一个原义的 'c' 字符。 \d 匹配一个数字字符。等价于 [0-9]。 \D 匹配一个非数字字符。等价于 [^0-9]。 \f 匹配一个换页符。等价于 \x0c 和 \cL。 \n 匹配一个换行符。等价于 \x0a 和 \cJ。 \r 匹配一个回车符。等价于 \x0d 和 \cM。 \s 匹配任何空白字符，包括空格、制表符、换页符等等。等价于 [ \f\n\r\t\v]。 \S 匹配任何非空白字符。等价于 [^ \f\n\r\t\v]。 \t 匹配一个制表符。等价于 \x09 和 \cI。 \v 匹配一个垂直制表符。等价于 \x0b 和 \cK。 \w 匹配包括下划线的任何单词字符。等价于'[A-Za-z0-9_]'。 \W 匹配任何非单词字符。等价于 '[^A-Za-z0-9_]'。 \xn 匹配 n，其中 n 为十六进制转义值。十六进制转义值必须为确定的两个数字长。例如，'\x41' 匹配 "A"。'\x041' 则等价于 '\x04' & "1"。正则表达式中可以使用 ASCII 编码。. \num 匹配 num，其中 num 是一个正整数。对所获取的匹配的引用。例如，'(.)\1' 匹配两个连续的相同字符。 \n 标识一个八进制转义值或一个向后引用。如果 \n 之前至少 n 个获取的子表达式，则 n 为向后引用。否则，如果 n 为八进制数字 (0-7)，则 n 为一个八进制转义值。 \nm 标识一个八进制转义值或一个向后引用。如果 \nm 之前至少有 nm 个获得子表达式，则 nm 为向后引用。如果 \nm 之前至少有 n 个获取，则 n 为一个后跟文字 m 的向后引用。如果前面的条件都不满足，若 n 和 m 均为八进制数字 (0-7)，则 \nm 将匹配八进制转义值 nm。 \nml 如果 n 为八进制数字 (0-3)，且 m 和 l 均为八进制数字 (0-7)，则匹配八进制转义值 nml。 \un 匹配 n，其中 n 是一个用四个十六进制数字表示的 Unicode 字符。例如， \u00A9 匹配版权符号 (?)。 常用的正则表达式 1、非负整数："^\d+$" 2、正整数："^[0-9]*[1-9][0-9]*$" 3、非正整数："^((-\d+)|(0+))$" 4、负整数："^-[0-9]*[1-9][0-9]*$" 5、整数："^-?\d+$" 6、非负浮点数："^\d+(\.\d+)?$" 7、正浮点数："^((0-9)+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$" 8、非正浮点数："^((-\d+\.\d+)?)|(0+(\.0+)?))$" 9、负浮点数："^(-((正浮点数正则式)))$" 10、英文字符串："^[A-Za-z]+$" 11、英文大写串："^[A-Z]+$" 12、英文小写串："^[a-z]+$" 13、英文字符数字串："^[A-Za-z0-9]+$" 14、英数字加下划线串："^\w+$" 15、E-mail地址："^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$" 16、URL："^[a-zA-Z]+://(\w+(-\w+)*)(\.(\w+(-\w+)*))*(\?\s*)?$" PHP 常用正则表达式整理 表单验证匹配 验证账号，字母开头，允许 5-16 字节，允许字母数字下划线：^[a-zA-Z][a-zA-Z0-9_]{4,15}$ 验证账号，不能为空，不能有空格，只能是英文字母：^\S+[a-z A-Z]$ 验证账号，不能有空格，不能非数字：^\d+$ 验证用户密码，以字母开头，长度在 6-18 之间：^[a-zA-Z]\w{5,17}$ 验证是否含有 ^%&',;=?$\ 等字符：[^%&',;=?$\x22]+ 匹配Email地址：\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)* 匹配腾讯QQ号：[1-9][0-9]{4,} 匹配日期，只能是 2004-10-22 格式：^\d{4}\-\d{1,2}-\d{1,2}$ 匹配国内电话号码：^\d{3}-\d{8}|\d{4}-\d{7,8}$ 评注：匹配形式如 010-12345678 或 0571-12345678 或 0831-1234567 匹配中国邮政编码：^[1-9]\d{5}(?!\d)$ 匹配身份证：\d{14}(\d{4}|(\d{3}[xX])|\d{1}) 评注：中国的身份证为 15 位或 18 位 不能为空且二十字节以上：^[\s|\S]{20,}$ 字符匹配 匹配由 26 个英文字母组成的字符串：^[A-Za-z]+$ 匹配由 26 个大写英文字母组成的字符串：^[A-Z]+$ 匹配由 26 个小写英文字母组成的字符串：^[a-z]+$ 匹配由数字和 26 个英文字母组成的字符串：^[A-Za-z0-9]+$ 匹配由数字、26个英文字母或者下划线组成的字符串：^\w+$ 匹配空行：\n[\s| ]*\r 匹配任何内容：[\s\S]* 匹配中文字符：[\x80-\xff]+ 或者 [\xa1-\xff]+ 只能输入汉字：^[\x80-\xff],{0,}$ 匹配双字节字符(包括汉字在内)：[^\x00-\xff] 匹配数字 只能输入数字：^[0-9]*$ 只能输入n位的数字：^\d{n}$ 只能输入至少n位数字：^\d{n,}$ 只能输入m-n位的数字：^\d{m,n}$ 匹配正整数：^[1-9]\d*$ 匹配负整数：^-[1-9]\d*$ 匹配整数：^-?[1-9]\d*$ 匹配非负整数（正整数 + 0）：^[1-9]\d*|0$ 匹配非正整数（负整数 + 0）：^-[1-9]\d*|0$ 匹配正浮点数：^[1-9]\d*\.\d*|0\.\d*[1-9]\d*$ 匹配负浮点数：^-([1-9]\d*\.\d*|0\.\d*[1-9]\d*)$ 匹配浮点数：^-?([1-9]\d*\.\d*|0\.\d*[1-9]\d*|0?\.0+|0)$ 匹配非负浮点数（正浮点数 + 0）：^[1-9]\d*\.\d*|0\.\d*[1-9]\d*|0?\.0+|0$ 匹配非正浮点数（负浮点数 + 0）：^(-([1-9]\d*\.\d*|0\.\d*[1-9]\d*))|0?\.0+|0$ 其他 匹配HTML标记的正则表达式（无法匹配嵌套标签）：<(\S*?)[^>]*>.*?</\1>|<.*? /> 匹配网址 URL ：[a-zA-z]+://[^\s]* 匹配 IP 地址：((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?) 匹配完整域名：[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\.? 提示 上述正则表达式通常都加了 ^ 与 $ 来限定字符的起始和结束，如果需要匹配的内容包括在字符串当中，可能需要考虑去掉 ^ 和 $ 限定符。 以上正则表达式仅供参考，使用时请检验后再使用s 
-* eclipse快捷键
-1. 常用快捷键
-这是使用工具的第一步，熟练使用快捷键对于我们编写程序会起到相当大帮助，所以这里笔者列出的快捷键建议大家必须都掌握。
-Ctrl + 鼠标左键（类、方法、属性的变量名词）：定位跟踪某变量声明或定义的位置
-Ctrl + S：保存当前文件
-Ctrl + X：剪切
-Ctrl + C：复制
-Ctrl + V：粘贴
-Ctrl + D：删除当前行
-Ctrl + F：查找/替换（当前编辑窗口）
-Ctrl + H：全局搜索
-Ctrl + /：注释当前行或多行代码
-Ctrl + Shift + C：注释当前行或多行代码
-Ctrl + Shift + F：格式化当前代码
-Ctrl + Shift + O：缺少的Import语句被加入，多余的Import语句被删除（先把光标定位到需导入包的类名上）
-Ctrl + Shift + S：保存所有文件
-Ctrl + Shift + X：把当前选中的文本全部变为大写
-Ctrl + Shift + Y：把当前选中的文本全部变为小写
-Alt + /：代码智能提示
-Alt + Shift + R：重命名（包括文件名、类名、方法名、变量名等等，非常好用）
-Alt + Shift + J：生成类或方法的注释
-Alt + Shift + S：打开Source窗口（生成get、set方法，实现、覆盖接口或类的方法，很常用）
-Alt + Shift + D, J：如果有main方法入口，则以Debug方式执行代码
-Alt + Shift + X, J：如果有main方法入口，则以Run方式执行代码
- 
- 
-2. 插件推荐
-Eclipse默认情况下是一个纯净版的，所以功能简单，而开源IDE最为强大的莫过于各种插件，通过使用插件可以帮助我们减少大量编写代码的工作量，
-也帮助我们降低了编写代码的难度，所以懂得安装必要插件，也是熟练使用IDE的鉴证。
-① hibernate Tools
-Hibernate Tools是一套全新而且完整的面向Hibernate3的工具集合，它包含了Eclipse插件和Ant编译流程，是JBoss Tools的核心组件。使用该插件能大大减少我们
-使用Hibernate的工作量，支持自动生成全部Hibernate的xml文件、javabean、HTML表单文件等。
-安装地址：http://download.jboss.org/jbosstools/updates/development/indigo/
-② spring IDE
-Spring IDE是Spring官方网站推荐的Eclipse插件，可提供在开发Spring时对Bean定义文件进行提示、验证并以可视化的方式查看各个Bean之间
-的依赖关系等，对基于spring框架的项目开发提供了有力的支持。
-安装地址：http://dist.springsource.com/release/TOOLS/update/e3.6/
-③ Subclipse
-Subclipse是基于Eclipse的SVN插件，支持所有版本的Eclipse，团队开发必备插件。
-安装地址：http://subclipse.tigris.org/update_1.8.x
-④ Findbugs
-FindBugs是一个能静态分析源代码中可能会出现Bug的Eclipse插件工具。它检查类或者 JAR 文件，将字节码与一组缺陷模式进行对比以发现可能的问题。
-利用这个工具，就可以在不实际运行程序的情况对软件进行分析。它可以帮助改进代码的质量。
-安装地址：http://findbugs.cs.umd.edu/eclipse/
-⑤ Sysdeo Tomcat Launcher Plugin
-Sysdeo Tomcat Launcher Plugin是Tomcat的Eclipse插件，帮助我们自动部署tomcat服务器。该插件不是必要插件，可以不装。
-下载地址：http://www.eclipsetotale.com/tomcatPlugin/tomcatPluginV33.zip
- 
-插件安装方法
-插件大概有三种安装方法：
-第一种：知道在线安装地址。Eclipse→Help→Install New Software...→地址栏（Work with）中输入安装地址→
-勾选要安装的插件→Next→同意安装协议→Finish→等待安装完毕→按要求重启Eclipse
-第二种：手动从官网下载好插件并手动与Eclipse集成。这种方法一般的思路是：先关闭Eclipse，然后将下载好的插件解压后，复制到Eclipse安装目
-录下的plugins文件夹和features文件夹下，如果必要的话再创建一个link文件，再重新打开Eclipse。
-第三种：在线搜索安装。Eclipse→Help→Eclipse Marketplace...→在搜索栏输入要查找的插件→点击Install按钮→等待安装完毕→按要求重启Eclipse
-这里笔者推荐第一种，如果不知道安装地址，那么就用第三种，第二种方法有时操作错误的话就会出现问题，风险较大，所以不推荐。
- 
-3. tomcat
-① 配置
-Window→Preferences→Server→Runtime Environment→Add→Apache→选择tomcat版本→Next→更改显示名称（Name）
-→Browse...浏览选择事先解压好的tomcat文件夹→选择jre→Finish→OK→打开Servers窗体→右击选择New→Server→选择tomcat版本→
-选择刚配置好的tomcat→Next→选择项目→Finish
-② 使用心得
-当我们修改某处代码后，启动tomcat发现页面没有变化时，要先关掉tomcat，右击Servers窗口中tomcat服务器图标，选择Clean...
-来清理下编译后的源码，再启动tomcat来重新编译下源码。
-而且如果部署多个，或tomcat异常时，右击Servers窗口中tomcat服务器图标，选择Properties，检查General选项右侧Location是否正确，
-如果不正确则点击Switch Location。
-虽然一个tomcat支持同时启动多个项目，但项目多启动时会很慢，所以如果不是工程项目需要的话，建议tomcat只部署启动一个项目，将暂时无用的项目移除。
-当web项目启动加载时间过长导致tomcat启动失败的话，可适当延长tomcat启动超时的时间（默认45秒），双击Servers窗口中tomcat
-服务器打开tomcat属性窗口，点击右上方Timeouts选项，修改Start(in seconds)的时间。
-eclipse默认情况下是调用tomcat接口模拟启动tomcat，而不是真正启动tomcat，所以大家经常会遇到一件怪事：启动tomcat后，虽然能正常进web项目首页，
-却仅不了tomcat小猫首页（即http://localhost:8080/），并且web项目部署编译后生成的文件也不在tomcat文件目录下的work目录下。
-解决办法：如果tomcat服务器下已经部署了项目，就先要将其全部移除，即右击Servers窗口中tomcat服务器图标，选择Add and Remove...，
-单击Remove All按钮，单击Finish按钮。之后先Clean清理下，再双击tomcat服务器图标打开属性窗口，选择左侧中间Server Locations选项，
-选择下方第二个单选按钮（Use Tomcat installation），并将Deploy path文本框中的"wtpwebapps"（默认值）改为webapps，也就是tomcat中发布
-项目所在的文件夹名字，最好再将项目重新部署到tomcat上，启动tomcat后，就可以看到熟悉的小猫页面了，同时在tomcat文件目录下的work文件夹下也能
-看见熟悉的编译后的页面文件了。
-如果代码出现引入javax.servlet.http.*报错，说明是缺少tomcat的jar包，引入即可。方法：在左侧资源管理器右击项目，选择Build Path下的
-Configure Build Path...，右侧点击Add Library...按钮，选择Server Runtime，点击Next后选择tomcat，Finish。
- 
-4. eclipse常见配置
-● 字体大小
-Window→Preferences→General→Appearance→Colors and Fonts→右侧窗口→Basic选项→双击Text Font
-● 修改打开文件的编辑浏览器
-Window→Preferences→General→Editors→File Associations→选择要修改的文件类型→在下方选择编辑浏览器
-● 显示/隐藏代码行号
-Window→Preferences→General→Editors→勾选Show line numbers
-● 添加自定义jar包Libraries
-Window→Preferences→Java→Build Path→User Libraries→右侧点击New...→输入名称→点击Add JARs...→浏览选择相应的jar文件
-● 配置tomcat等服务器
-Window→Preferences→Server→Runtime Environment→Add...→选择需要的服务器（以tomcat为例请见上面tomcat配置）
-● 修改格式化代码的换行判定
-Window→Preferences→Java→Code Style→Formatter→右侧点击New...→输入名称→点击OK→在弹出的窗口选择Line Wrapping选项卡→修改Maixmum line width文本框的值（默认80）
-● 添加xml的dtd、xsd等xml语法规则文件，实现代码自动提示
-Window→Preferences→XML→XML Catalog→右侧点击Add...→Key type选择Public ID→Location浏览选择你所下载的DTD文件的物理位置→Key填入xml文档头部 <!DOCTYPE sqlMapConfig PUBLIC 后面的那些url地址→OK
-● 修改编码格式
-右击你要修改的项目/包/类→选择Properties→在Resource选项右侧的Text file encoding下选择你需要的编码格式
-● 相同名称（包括类名、方法名、变量名等等）以不同背景色标识出来
-见下图：
+** 窗口管理器
+*** i3 
+**** 安装xserver
+     安装必需驱动和X环境：apt-get install xserver-xorg-input-evdev xserver-xorg-input-kbd xserver-xorg-input-mouse xserver-xorg-video-（查看下方）
+  如果是虚拟机，此处使用xserver-xorg-video-vesa和xserver-xorg-video-vmware
+  如果是Intel核显，用xserver-xorg-video-intel
+  如果是A卡，xserver-xorg-video-ati
+  如果是N卡，xserver-xorg-video-nvidia
+  （A卡和N卡可能需要闭源驱动才能搞定，具体查找官方wiki。）
 
-或者按快捷键：Alt + Shift + O
- 
-在Window→Preferences下有许多配置，这里并不可能介绍很全，所以只列出最为常用的，大家有时间可能多进这里看看，再多点点多试试就明白了。
- 
- 
-5. SVN
-● 上传项目至SVN服务器
-右击要上传的项目→Team→Share Project...→SVN→创建新的资源库位置/使用现有的资源库→Next→（输入URL地址）→Next→使用项目名称作为文件夹名→Next→Finish→（输入用户名/密码）
-注意："使用项目名称作为文件夹名"时，要保证SVN服务器端已创建与项目名称相同的文件夹，否则会导入失败。如果SVN端创建的文件夹名与项目名称不符，则在该步骤选择"使用指定的模块名"以确保SVN服务器端与项目名称一致。
-● 下载项目从SVN服务器
-在资源管理器空白处右击→Import...→选择SVN文件夹→从SVN检出项目→创建新的资源库位置/使用现有的资源库→Next→（输入URL地址）→Next→做为新项目检出，并使用新建项目向导进行配置→Finish→Yes→配置新建项目（如输入项目名称）→OK
-注意：这个"输入URL地址"与上面上传项目的不同，这个URL地址需要输入项目具体所在的文件夹，而上一个因为有"使用项目名称作为文件夹名"这步，所以不需要带文件夹名称。
-● 提交、更新、还原文件
-选中需要提交的文件、jar包、javabean等文件然后右击→Team→选择相应的操作。（这个基本地球人看看都会，所以就不多说了）
- 
- 
-所谓学武功首先要被口诀练习基本招式，只有打好基础，才能快速参悟渗透"上层武功"，所以希望笔者写的"基本心法"能助各位菜鸟早日成为威震四海的武林高手！
-pp
-java.lang.RuntimeException: error:  out: An error has occurred.  See the log file
-/home/wuming/.eclipse/org.eclipse.platform_4.6.3_1353066266_linux_gtk_x86_64/configuration/1498476862792.log
-	at org.eclim.installer.step.EclipseInfo.installInstallerPlugin(EclipseInfo.java:185)
-	at org.eclim.installer.step.EclipseInfoStep$1.run(EclipseInfoStep.java:67)
-	at foxtrot.AbstractWorkerThread$1.run(AbstractWorkerThread.java:40)
-	at java.security.AccessController.doPrivileged(Native Method)
-	at foxtrot.AbstractWorkerThread.runTask(AbstractWorkerThread.java:36)
-	at foxtrot.workers.SingleWorkerThread.run(SingleWorkerThread.java:199)
-	at foxtrot.workers.SingleWorkerThread.run(SingleWorkerThread.java:182)
-	at java.lang.Thread.run(Thread.java:748)
+
+  装完了这些之后再安装i3之类的其他软件包，就不会因为依赖没解决好而把所有xserver包全部安装，只需要装自己必需的就可以了。
+**** 安装i3
+  执行apt-get install i3 zsh vim sakura lightdm ttf-wqy-zenhei
+  其 中sakura是个terminal，不自己选择的话i3会默认依赖rxvt，个人不喜欢这个终端，gnome-terminal，xfce4- terminal，包括tilda，guake等等其他的终端都会有一大堆的依赖，sakura的功能足够，而且并没有依赖桌面环境。lightdm是登 录管理器，也可以不要，自己执行startx。
+  安装的过程中可以ctrl+alt+f2切换到另一个tty编辑一下语言环境——
+  nano /etc/environment
+  添加这两行
+  LANG=zh_CN.UTF-8
+  LC_ALL=zh_CN.UTF-8
+
+  等安装完毕就可以重启了。
+
+
+   Vbox虚拟机可以直接安装aptget install virtualboxguestx11 virtualboxguestutils，之后就能实现和主机的复制粘贴，共享文件夹之类操作。
+
+**** 登录配置
+  登录之后会提示你配置文件缺失，是否自动建立一个，回车就好。
+  选择win或者alt键，作为mod键（意思就是，在i3里面的各种操作，都是靠这个键和其他按键组合完成），选一个自己喜欢的回车。
+
+  然后就会剩下一个光秃秃的界面，除了地下的一条状态栏之外啥都没有。同时按下刚刚设置的mod键（alt或者win）和回车键，会打开全屏状态的终端，这里是sakura~
+
+**** 默认快捷键
+  mod键+回车，打开新的终端。无聊的话可以打开无数个…
+  mod键+h，表示下一次在当前窗口右侧打开终端，
+  mod键+v，表示下一次在当前窗口下方打开终端。
+  简单操作一下就会理解，上一个布局——
+
+**** 再安装一些需要的软件
+     apt-get install xcompmgr sudo fcitx fcitx-rime feh midori network-manager-gnome volumeicon-alsa pulseaudio pavucontrol xorg lxappearance fonts-arphic-uming flashplugin-nonfree
+  其中xcompmgr可以用来实现终端透明，fcitx输入 法，feh是图片查看器并且我们需要用它来设置桌面背景，
+  midori浏览器，networkmanager管理网络（就是nm- applet）volumeicon用来当控制音量的小插件，pulseaudio pavucontrol 驱动声卡配置声音（debian好像不要alsa了？xfce4里面的混音器都拆掉了），xorg里面有个xrandr是需要的，可以用来添加系统托盘， lxappearance用来调节gtk主题和字体，uming字体可以防止flash里面中文方块。
+
+
+  开启systemtray，我们可以在桌面右下角方便的操作网络、音量、输入法——
+  在终端键入xrandr --output 然后空格使用补全，会自动弹出你可用的显示器，（我在虚拟机里是VGA-0，自己机器上是HDMI，这个应该和硬件有关，不需要管。）然后添加 --primary
+  整条命令最终看起来是这样的：xrandr --output VGA-0 --primary
+
+
+  编辑i3的配置文件，在文件最底部添加一下指令
+  vim .config/i3/config（需要退出root状态，仅编辑自己home下的config）
+
+
+  # Autostart
+  exec --no-startup-id xcompmgr &
+  exec --no-startup-id nm-applet
+  exec --no-startup-id fcitx
+  exec --no-startup-id xrandr --output VGA-0 --primary
+  exec --no-startup-id volumeicon
+
+
+  再重启一下，（或者按下ctrl+alt+e，然后鼠标点击yes，exit x回到lightdm界面重新登录。）
+  现在进入桌面，应该可以看到左下角已经有了输入法\网络\音量调节的按钮。如图——
+
+
+  至此，基本的i3环境就算完毕了。一些操作——
+  mod键+d，可以打开dmenu，会在屏幕顶部打开一个“启动器”，键入命令的同时后方会自动显示可用的命令，这里可以使用tab补全。
+
+  关闭窗口：shift+mod键+q
+  调整窗口大小：同时按下mod键+r，左下角会有红色字体提示resize，按下方向键或者hjkl查看窗口状况~esc退出调整。
+
+  设置壁纸—>feh --bg-scale /path/to/your/pictures(自行替换)
+  添加到config的autostart部分可以实现开机自动设置壁纸。
+
+
+  补充，刚刚给自己组了两个屏幕，i3的双屏需要自己稍微配置以下才能好用。
+  方法：在自动启动部分添加如下命令（删掉原来的语句）
+  exec xrandr --output HDMI1 --mode 1920x1080 --right-of VGA1
+  exec xrandr --output VGA1 --mode 1440x900 --left-of HDMI1
+  同时，系统托盘的显示也要进行一下调整
+  修改为
+  bar {
+  status_command i3status
+  tray_output HDMI1 
+  tray_output VGA1
+  }
+  简单解释一下。
+  启动i3时，使用xrandr配置双屏。--mode指定分辨率，--right-of或者--left-of指定显示器位置。系统托盘部分添加新屏幕的名称。
+
+
+  配 置之后，两台显示器都能以各自的分辨率展示，workspace1是显示器1，2是显示器2，打开新workspace的方式和之前相同，不过会固定在你 打开的显示器上，比如在显示器1打开workspace3，那这个工作区就会“绑定”显示器1上，在显示器2里面按mod+3会跳转回显示器1。说的有点 绕，一会儿上图。
+
+** 屏幕管理
+*** xrandr
+      xrandr 命令行可以很方便地切换双屏，常用方式如下，其他的可以自己探索：
+  xrandr --output VGA --same-as LVDS --auto
+           打开外接显示器(最高分辨率)，与笔记本液晶屏幕显示同样内容（克隆）
+  xrandr --output VGA --same-as LVDS --mode 1024x768
+           打开外接显示器(分辨率为1024x768)，与笔记本液晶屏幕显示同样内容（克隆）
+  xrandr --output VGA --right-of LVDS --auto
+           打开外接显示器(最高分辨率)，设置为右侧扩展屏幕
+  xrandr --output VGA --off
+            关闭外接显示器
+  xrandr --output VGA --auto --output LVDS --off
+          打开外接显示器，同时关闭笔记本液晶屏幕（只用外接显示器工作）
+  xrandr --output VGA --off --output LVDS --auto
+          关闭外接显示器，同时打开笔记本液晶屏幕 (只用笔记本液晶屏)
+  （最后两种情况请小心操作，不要误把两个屏幕都关掉了。。。。）
+
+* 正则 
+  foo ——————字符串"foo" 
+  ^foo ——————以"foo"开头的字符串 
+  foo$ ——————以"foo"结尾的字符串 
+  ^foo$ ——————"foo"开头和结尾，（只能是他自己 ） 
+  [abc]—————— a 或者b 或者c 
+  [a-z] —————— a到z之间任意字母 
+  [^A-Z]——————除了 A-Z这些之外的字符 
+  (gif|jpg)——————"gif"或者 "jpeg" 
+  [a-z]+—————— 一个或者多个 a到z之间任意字母
+  [0-9.-]—————— 0-9之间任意数字，或者 点 或者 横线
+  ^[a-zA-Z0-9_]{1,}$—————— 至少一个字母数字下划线 
+  ([wx])([yz])—————— wy或wz或xy或xz
+  [^A-Za-z0-9]—————— 字符数字之外的字符 
+  ([A-Z]{3}|[0-9]{4})—————— 三个大写字母或者4个数字
+  \B 匹配非单词边界。
+  'er\B' 能匹配 "verb" 中的 'er'，但不能匹配 "never" 中的 'er'。 
+  \cx 匹配由 x 指明的控制字符。例如， \cM 匹配一个 Control-M 或回车符。x 的值必须为 A-Z 或 a-z 之一。否则，将 c 视为一个原义的 'c' 字符。
+ \d 匹配一个数字字符。等价于 [0-9]。 
+\D 匹配一个非数字字符。等价于 [^0-9]。
+ \f 匹配一个换页符。等价于 \x0c 和 \cL。 
+ \n 匹配一个换行符。等价于 \x0a 和 \cJ。
+ \r 匹配一个回车符。等价于 \x0d 和 \cM。 
+\s 匹配任何空白字符，包括空格、制表符、换页符等等。等价于 [ \f\n\r\t\v]。
+ \S 匹配任何非空白字符。等价于 [^ \f\n\r\t\v]。 
+\t 匹配一个制表符。等价于 \x09 和 \cI。 
+\v 匹配一个垂直制表符。等价于 \x0b 和 \cK。
+ \w 匹配包括下划线的任何单词字符。等价于'[A-Za-z0-9_]'。 
+\W 匹配任何非单词字符。等价于 '[^A-Za-z0-9_]'。 
+\xn 匹配 n，其中 n 为十六进制转义值。十六进制转义值必须为确定的两个数字长。例如，'\x41' 匹配 "A"。'\x041' 则等价于 '\x04' & "1"。正则表达式中可以使用 ASCII 编码。. 
+\num 匹配 num，其中 num 是一个正整数。对所获取的匹配的引用。例如，'(.)\1' 匹配两个连续的相同字符。 \n 标识一个八进制转义值或一个向后引用。如果 \n 之前至少 n 个获取的子表达式，则 n 为向后引用。否则，如果 n 为八进制数字 (0-7)，则 n 为一个八进制转义值。 \nm 标识一个八进制转义值或一个向后引用。如果 \nm 之前至少有 nm 个获得子表达式，则 nm 为向后引用。如果 \nm 之前至少有 n 个获取，则 n 为一个后跟文字 m 的向后引用。如果前面的条件都不满足，若 n 和 m 均为八进制数字 (0-7)，则 \nm 将匹配八进制转义值 nm。 \nml 如果 n 为八进制数字 (0-3)，且 m 和 l 均为八进制数字 (0-7)，则匹配八进制转义值 nml。 \un 匹配 n，其中 n 是一个用四个十六进制数字表示的 Unicode 字符。例如， \u00A9 匹配版权符号 (?)。 常用的正则表达式 1、非负整数："^\d+$" 2、正整数："^[0-9]*[1-9][0-9]*$" 3、非正整数："^((-\d+)|(0+))$" 4、负整数："^-[0-9]*[1-9][0-9]*$" 5、整数："^-?\d+$" 6、非负浮点数："^\d+(\.\d+)?$" 7、正浮点数："^((0-9)+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*))$" 8、非正浮点数："^((-\d+\.\d+)?)|(0+(\.0+)?))$" 9、负浮点数："^(-((正浮点数正则式)))$" 10、英文字符串："^[A-Za-z]+$" 11、英文大写串："^[A-Z]+$" 12、英文小写串："^[a-z]+$" 13、英文字符数字串："^[A-Za-z0-9]+$" 14、英数字加下划线串："^\w+$" 15、E-mail地址："^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$" 16、URL："^[a-zA-Z]+://(\w+(-\w+)*)(\.(\w+(-\w+)*))*(\?\s*)?$" PHP 常用正则表达式整理 表单验证匹配 验证账号，字母开头，允许 5-16 字节，允许字母数字下划线：^[a-zA-Z][a-zA-Z0-9_]{4,15}$ 验证账号，不能为空，不能有空格，只能是英文字母：^\S+[a-z A-Z]$ 验证账号，不能有空格，不能非数字：^\d+$ 验证用户密码，以字母开头，长度在 6-18 之间：^[a-zA-Z]\w{5,17}$ 验证是否含有 ^%&',;=?$\ 等字符：[^%&',;=?$\x22]+ 匹配Email地址：\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)* 匹配腾讯QQ号：[1-9][0-9]{4,} 匹配日期，只能是 2004-10-22 格式：^\d{4}\-\d{1,2}-\d{1,2}$ 匹配国内电话号码：^\d{3}-\d{8}|\d{4}-\d{7,8}$ 评注：匹配形式如 010-12345678 或 0571-12345678 或 0831-1234567 匹配中国邮政编码：^[1-9]\d{5}(?!\d)$ 匹配身份证：\d{14}(\d{4}|(\d{3}[xX])|\d{1}) 评注：中国的身份证为 15 位或 18 位 不能为空且二十字节以上：^[\s|\S]{20,}$ 字符匹配 匹配由 26 个英文字母组成的字符串：^[A-Za-z]+$ 匹配由 26 个大写英文字母组成的字符串：^[A-Z]+$ 匹配由 26 个小写英文字母组成的字符串：^[a-z]+$ 匹配由数字和 26 个英文字母组成的字符串：^[A-Za-z0-9]+$ 匹配由数字、26个英文字母或者下划线组成的字符串：^\w+$ 匹配空行：\n[\s| ]*\r 匹配任何内容：[\s\S]* 匹配中文字符：[\x80-\xff]+ 或者 [\xa1-\xff]+ 只能输入汉字：^[\x80-\xff],{0,}$ 匹配双字节字符(包括汉字在内)：[^\x00-\xff] 匹配数字 只能输入数字：^[0-9]*$ 只能输入n位的数字：^\d{n}$ 只能输入至少n位数字：^\d{n,}$ 只能输入m-n位的数字：^\d{m,n}$ 匹配正整数：^[1-9]\d*$ 匹配负整数：^-[1-9]\d*$ 匹配整数：^-?[1-9]\d*$ 匹配非负整数（正整数 + 0）：^[1-9]\d*|0$ 匹配非正整数（负整数 + 0）：^-[1-9]\d*|0$ 匹配正浮点数：^[1-9]\d*\.\d*|0\.\d*[1-9]\d*$ 匹配负浮点数：^-([1-9]\d*\.\d*|0\.\d*[1-9]\d*)$ 匹配浮点数：^-?([1-9]\d*\.\d*|0\.\d*[1-9]\d*|0?\.0+|0)$ 匹配非负浮点数（正浮点数 + 0）：^[1-9]\d*\.\d*|0\.\d*[1-9]\d*|0?\.0+|0$ 匹配非正浮点数（负浮点数 + 0）：^(-([1-9]\d*\.\d*|0\.\d*[1-9]\d*))|0?\.0+|0$ 其他 匹配HTML标记的正则表达式（无法匹配嵌套标签）：<(\S*?)[^>]*>.*?</\1>|<.*? /> 匹配网址 URL ：[a-zA-z]+://[^\s]* 匹配 IP 地址：((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?) 匹配完整域名：[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+\.? 提示 上述正则表达式通常都加了 ^ 与 $ 来限定字符的起始和结束，如果需要匹配的内容包括在字符串当中，可能需要考虑去掉 ^ 和 $ 限定符。 以上正则表达式仅供参考，使用时请检验后再使用s
 * 一般问题
 ** 中文乱码  
 *** unzip中文乱码 
@@ -1405,7 +1568,7 @@ file.close()
      pacman -S grub
      grub-install /dev/sda
      grub-mkconfig -o /boot/grub/grub.cfg
-**** 用户
+**** 用户管理
      useradd -m -g users -G wheel -s /bin/bash ikke
      passwd ikke
 

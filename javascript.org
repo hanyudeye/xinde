@@ -1,189 +1,12 @@
-* MUI
-** 下拉刷新
-为实现下拉刷新功能，大多H5框架都是通过DIV模拟下拉回弹动画，在低端android手机上，DIV动画经常出现卡顿现象（特别是图文列表的情况）；
- mui通过双webview解决这个DIV的拖动流畅度问题；拖动时，拖动的不是div，而是一个完整的webview（子webview），回弹动画使用原生动画；
-在iOS平台，H5的动画已经比较流畅，故依然使用H5方案。两个平台实现虽有差异，但mui经过封装，可使用一套代码实现下拉刷新。
-
-主页面内容比较简单，只需要创建子页面即可：
-mui.init({
-    subpages:[{
-      url:pullrefresh-subpage-url,//下拉刷新内容页面地址
-      id:pullrefresh-subpage-id,//内容页面标志
-      styles:{
-        top:subpage-top-position,//内容页面顶部位置,需根据实际页面布局计算，若使用标准mui导航，顶部默认为48px；
-        .....//其它参数定义
-      }
-    }]
-  });
-
-iOS平台的下拉刷新，使用的是mui封装的区域滚动组件， 为保证两个平台的DOM结构一致，内容页面需统一按照如下DOM结构构建：
-
-<!--下拉刷新容器-->
-<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
-  <div class="mui-scroll">
-    <!--数据列表-->
-    <ul class="mui-table-view mui-table-view-chevron">
-      
-    </ul>
-  </div>
-</div>
-
-其次，通过mui.init方法中pullRefresh参数配置下拉刷新各项参数，如下：
-
-mui.init({
-  pullRefresh : {
-    container:"#refreshContainer",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
-    down : {
-      height:50,//可选,默认50.触发下拉刷新拖动距离,
-      auto: true,//可选,默认false.自动下拉刷新一次
-      contentdown : "下拉可以刷新",//可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
-      contentover : "释放立即刷新",//可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
-      contentrefresh : "正在刷新...",//可选，正在刷新状态时，下拉刷新控件上显示的标题内容
-      callback :pullfresh-function //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-    }
-  }
-});
-
-下拉刷新是mui框架的一个插件，该插件目前有下拉刷新结束、滚动到特定位置两个方法；
-下拉刷新结束
-
-在下拉刷新过程中，当获取新数据后，需要执行endPulldownToRefresh方法， 该方法的作用是关闭“正在刷新”的雪花进度提示，内容区域回滚顶部位置，如下：。
-
-function pullfresh-function() {
-     //业务逻辑代码，比如通过ajax从服务器获取新数据；
-     ......
-     //注意，加载完新数据后，必须执行如下代码，注意：若为ajax请求，则需将如下代码放置在处理完ajax响应数据之后
-     mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
-}
-
-滚动到特定位置
-
-下拉刷新组件滚动到特定位置的方法类似区域滚动组件
-
-    scrollTo( xpos , ypos [, duration] )
-        xpos
-        Type: Integer
-        要在窗口文档显示区左上角显示的文档的 x 坐标
-        ypos
-        Type: Integer
-        要在窗口文档显示区左上角显示的文档的 y 坐标
-        duration
-        Type: Integer
-        滚动时间周期，单位是毫秒
-
-示例：在hello mui下拉刷新示例中，实现了双击标题栏，让列表快速回滚到顶部的功能；代码如下：
-
-var contentWebview = null;
-//监听标题栏的双击事件
-document.querySelector('header').addEventListener('doubletap',function () {
-	if(contentWebview==null){
-		contentWebview = plus.webview.currentWebview().children()[0];
-	}
-	//内容区滚动到顶部
-	contentWebview.evalJS("mui('#pullrefresh').pullRefresh().scrollTo(0,0,100)");
-});
-
-更改下拉刷新文字位置
-
-*可以解决修改下拉刷新子页面默认top值后,下拉刷新提示框位置异常问题
-
-根据实际需求在父页面给mui-content设置top属性
-
-.mui-bar-nav ~ .mui-content .mui-pull-top-pocket{
-  top: 180px !important;
-}
-
-扩展阅读
-
-问答社区话题讨论： 下拉刷新
-代码块激活字符:    mpull(DOM结构)
-minitpull(初始化组件)
-mmpull(组件方法)
-
-mui遵循 MIT License
-
-    最新版本 v3.5.0 · 问答社区 · Issues · Releases · 
-
-** 上拉加载
-mui的上拉加载和下拉刷新类似，都属于pullRefresh插件，使用过程如下：
-    1、页面滚动到底，显示“正在加载...”提示（mui框架提供）
-    2、执行加载业务数据逻辑（开发者提供）
-    3、加载完毕，隐藏"正在加载"提示（mui框架提供）
-开发者只需关心业务逻辑，实现加载更多数据即可。
-
-初始化
-初始化方法类似下拉刷新，通过mui.init方法中pullRefresh参数配置上拉加载各项参数，如下：
-
-mui.init({
-  pullRefresh : {
-    container:refreshContainer,//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
-    up : {
-      height:50,//可选.默认50.触发上拉加载拖动距离
-      auto:true,//可选,默认false.自动上拉加载一次
-      contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
-      contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
-      callback :pullfresh-function //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-    }
-  }
-});
-
-结束上拉加载
-
-加载完新数据后，需要执行endPullupToRefresh()方法，结束转雪花进度条的“正在加载...”过程
-
-    .endPullupToRefresh( nomore )
-        nomore
-        Type: Boolean
-        是否还有更多数据；若还有更多数据，则传入false; 否则传入true，之后滚动条滚动到底时，将不再显示“上拉显示更多”的提示语，而显示“没有更多数据了”的提示语；
-
-示例：
-
-function pullfresh-function() {
-     //业务逻辑代码，比如通过ajax从服务器获取新数据；
-     ......
-     //注意：
-     //1、加载完新数据后，必须执行如下代码，true表示没有更多数据了：
-     //2、若为ajax请求，则需将如下代码放置在处理完ajax响应数据之后
-     this.endPullupToRefresh(true|false);
-}
-
-重置上拉加载
-
-若部分业务中，有重新触发上拉加载的需求（比如当前类别已无更多数据，但切换到另外一个类别后，应支持继续上拉加载），此时调用.refresh(true)方法，可重置上拉加载控件，如下代码：
-
-//pullup-container为在mui.init方法中配置的pullRefresh节点中的container参数；
-//注意：refresh()中需传入true
-mui('#pullup-container').pullRefresh().refresh(true);
-
-禁用上拉刷新
-
-在部分场景下希望禁用上拉加载，比如在列表数据过少时，不想显示“上拉显示更多”、“没有更多数据”的提示语，开发者可以通过调用disablePullupToRefresh()方法实现类似需求，代码如下：
-
-//pullup-container为在mui.init方法中配置的pullRefresh节点中的container参数；
-mui('#pullup-container').pullRefresh().disablePullupToRefresh();
-
-启用上拉刷新
-
-使用disablePullupToRefresh()方法禁用上拉加载后，可通过enablePullupToRefresh()方法再次启用上拉加载，代码如下：
-
-//pullup-container为在mui.init方法中配置的pullRefresh节点中的container参数；
-mui('#pullup-container').pullRefresh().enablePullupToRefresh();
-
-扩展阅读
-
-    1、上拉加载时，怎么隐藏底部的“没有更多数据了”?
-    2、问答社区话题讨论：上拉加载
-
-mui遵循 MIT License
-
-    最新版本 v3.5.0 · 问答社区 · Issues · Releases · 
 * javascript
-  nodejs js.js 或浏览器 打开
+** 运行
+   nodejs js.js 
+   浏览器 
 ** 输出
-1.window.alert()
-2.document.write()
-3.innerHTML
-4.console.log
+   window.alert()
+   document.write()
+   innerHTML
+   console.log
 ** 对象
    Document, Element, Function, Array ,Boolean ,Date , String  , Number
    Math , Object, RegExp
@@ -200,7 +23,6 @@ mui遵循 MIT License
 
    #+BEGIN_SRC 
   JavaScript for...in 语句循环遍历对象的属性, 数组。
-  日期 Date() getTime() setFullYear() toUTString getDay()
   数组 concat() join() sort() Array()
   RegExp 对象有 3 个方法：test()、exec() 以及 compile()。
   #+END_SRC
@@ -306,13 +128,6 @@ try
 </html>
 onerror 事件
 我们马上会讲解 onerror 事件。但首先您需要学习如何使用 throw 语句来创建异常。throw 语句可以与 try...catch 语句一起使用。
-** 正则 search replace
-   #+BEGIN_SRC js
-          var s="helo world";
-          var i=s.search(/wo/i);
-     i: 不区分大小写
-   #+END_SRC
-
 ** json
    JSON用于描述数据结构，有以下形式存在。
    对象（object）：一个对象以{开始，并以}结束。一个对象包含一系列非排序的名称／值对，每个名称／值对之间使用,分区。
@@ -365,9 +180,6 @@ onerror 事件
  ]
 
  #+END_SRC
-** json 函数
-   var strify = JSON.stringify(arr);
-   var arrParse = JSON.parse(strify);
 ** 定时器 
  执行一次 setTimeout
  重复执行 setInterval
@@ -409,150 +221,180 @@ onerror 事件
 
 
  #+END_SRC
-** Date对象
-#+BEGIN_SRC js
-        new Date() // 当前日期和时间
-        new Date(milliseconds) //返回从 1970 年 1 月 1 日至今的毫秒数
-        new Date(dateString)
-        new Date(year, month, day, hours, minutes, seconds, milliseconds)
-      var today = new Date()
-      var d1 = new Date("October 13, 1975 11:13:00")
-      var d2 = new Date(79,5,24)
-      var d3 = new Date(79,5,24,11,33,0)
-  设置日期
-    var myDate=new Date();
-    myDate.setFullYear(2010,0,14);
-
-设置日期为5天后
-  var myDate=new Date();
-  myDate.setDate(myDate.getDate()+5);
-#+END_SRC
 ** 原型
 #+BEGIN_SRC js
-小写转大写
-  Array.prototype.myUcase=function(){
-      for (i=0;i<this.length;i++){
-          this[i]=this[i].toUpperCase();
-      }
-  }
+  小写转大写
+    Array.prototype.myUcase=function(){
+        for (i=0;i<this.length;i++){
+            this[i]=this[i].toUpperCase();
+        }
+    }
 #+END_SRC
+** 函数库(对象库)
+*** Date对象
+ #+BEGIN_SRC js
+         日期 Date() getTime() setFullYear() toUTString getDay()
+         new Date() // 当前日期和时间
+         new Date(milliseconds) //返回从 1970 年 1 月 1 日至今的毫秒数
+         new Date(dateString)
+         new Date(year, month, day, hours, minutes, seconds, milliseconds)
+
+      milliseconds 毫秒（0-999） 1秒=1000毫秒
+         var today = new Date()
+         var d1 = new Date("October 13, 1975 11:13:00")
+         var d2 = new Date(79,5,24)
+         var d3 = new Date(79,5,24,11,33,0)
+          设置日期
+         var myDate=new Date();
+         myDate.setFullYear(2010,0,14);
+
+         设置日期为5天后
+         var myDate=new Date();
+         myDate.setDate(myDate.getDate()+5);
+   getTime 获取毫秒时间
+ #+END_SRC
+*** Math
+    abs 绝对值
+    E 自然对数
+    LN2 2的自然对数
+    PI 圆周率
+    Math.SQRT2 2的平方根
+    sqrt 平方根
+    pow(x, y) x的y次方
+    max
+    min
+    ceil 上
+    floor 下
+    round 四舍五入
+*** json 函数
+   var strify = JSON.stringify(arr);
+   var arrParse = JSON.parse(strify);
+*** 正则 search replace
+    #+BEGIN_SRC js
+           var s="helo world";
+           var i=s.search(/wo/i);
+      i: 不区分大小写
+    #+END_SRC
+
 * DOM
 *** window
-**** 属性 （常量)
-     closed 	      返回窗口是否已被关闭
-     defaultStatus 	设置或返回窗口状态栏中的默认文本
-     innerheight 	  返回窗口的文档显示区的高度。
-     innerwidth 	  返回窗口的文档显示区的宽度。
-     length 	      设置或返回窗口中的框架数量。
-     location 	    用于窗口或框架的 Location 对象。请参阅 Location 对象。 
-     name 	        设置或返回窗口的名称。
-     outerheight 	  返回窗口的外部高度。 
-     outerwidth 	  返回窗口的外部宽度。 
-     pageXOffset 	  设置或返回当前页面相对于窗口显示区左上角的 X 位置。
-     pageYOffset 	  设置或返回当前页面相对于窗口显示区左上角的 Y 位置。
-     parent 	      返回父窗口。 	
-     self 	        返回对当前窗口的引用。等价于 Window 属性。 	
-     status 	      设置窗口状态栏的文本。
-     top 	          返回最顶层的先辈窗口。
-     screenLeft     IE、Safari 和 Opera 支持 screenLeft 和 screenTop
-     screenTop
-     screenX        Firefox 和 Safari 支持 screenX 和 screenY。   
-     screenY        只读整数。声明了窗口的左上角在屏幕上的的 x 坐标和 y 坐标。
-     onload
-**** 方法
-     alert() 	           显示带有一段消息和一个确认按钮的警告框。
-     blur() 	           把键盘焦点从顶层窗口移开。
-     clearInterval() 	   取消由 setInterval() 设置的 timeout。 
-     clearTimeout()      取消由 setTimeout() 方法设置的 timeout。
-     close() 	           关闭浏览器窗口。 
-     confirm() 	         显示带有一段消息以及确认按钮和取消按钮的对话框。
-     createPopup() 	     创建一个 pop-up 窗口
-     focus() 	           把键盘焦点给予一个窗口
-     moveBy() 	         可相对窗口的当前坐标把它移动指定的像素
-     moveTo() 	         把窗口的左上角移动到一个指定的坐标。
-     open() 	           打开一个新的浏览器窗口或查找一个已命名的窗口
-     print()    	       打印当前窗口的内容。(打印机）
-     prompt() 	         显示可提示用户输入的对话框。 
-     resizeBy() 	       按照指定的像素调整窗口的大小。
-     resizeTo() 	       把窗口的大小调整到指定的宽度和高度。
-     scrollBy() 	       按照指定的像素值来滚动内容。 
-     scrollTo() 	       把内容滚动到指定的坐标。
-     setInterval() 	     按照指定的周期（以毫秒计）来调用函数或计算表达式。
-     setTimeout() 	     在指定的毫秒数后调用函数或计算表达式。
-*** navigator
 **** 属性
-     appCodeName 	        返回浏览器的代码名。 
-     appMinorVersion 	    返回浏览器的次级版本。
-     appName 	            返回浏览器的名称。 
-     appVersion 	        返回浏览器的平台和版本信息。
-     browserLanguage 	    返回当前浏览器的语言。
-     cookieEnabled 	      返回指明浏览器中是否启用 cookie 的布尔值。
-     cpuClass 	          返回浏览器系统的 CPU 等级。 
-     onLine 	            返回指明系统是否处于脱机模式的布尔值。
-     platform 	          返回运行浏览器的操作系统平台。 
-     systemLanguage 	    返回 OS 使用的默认语言。
-     language
-     userAgent 	          返回由客户机发送服务器的 user-agent 头部的值。 
-     userLanguage 	      返回 OS 的自然语言设置。
+***** closed 	      返回窗口是否已被关闭
+***** defaultStatus 	设置或返回窗口状态栏中的默认文本
+***** innerheight 	  返回窗口的文档显示区的高度。
+***** innerwidth 	  返回窗口的文档显示区的宽度。
+***** length 	      设置或返回窗口中的框架数量。
+***** location 	    用于窗口或框架的 Location 对象。请参阅 Location 对象。 
+***** name 	        设置或返回窗口的名称。
+***** outerheight 	  返回窗口的外部高度。 
+***** outerwidth 	  返回窗口的外部宽度。 
+***** pageXOffset 	  设置或返回当前页面相对于窗口显示区左上角的 X 位置。
+***** pageYOffset 	  设置或返回当前页面相对于窗口显示区左上角的 Y 位置。
+***** parent 	      返回父窗口。 	
+***** self 	        返回对当前窗口的引用。等价于 Window 属性。 	
+***** status 	      设置窗口状态栏的文本。
+***** top 	          返回最顶层的先辈窗口。
+***** screenLeft     IE、Safari 和 Opera 支持 screenLeft 和 screenTop
+***** screenTop
+***** screenX        Firefox 和 Safari 支持 screenX 和 screenY。   
+***** screenY        只读整数。声明了窗口的左上角在屏幕上的的 x 坐标和 y 坐标。
+***** onload
 **** 方法
-     javaEnabled() 	      规定浏览器是否启用 Java。
-     taintEnabled() 	    规定浏览器是否启用数据污点 (data tainting)
+***** alert() 	           显示带有一段消息和一个确认按钮的警告框。
+***** blur() 	           把键盘焦点从顶层窗口移开。
+***** clearInterval() 	   取消由 setInterval() 设置的 timeout。 
+***** clearTimeout()      取消由 setTimeout() 方法设置的 timeout。
+***** close() 	           关闭浏览器窗口。 
+***** confirm() 	         显示带有一段消息以及确认按钮和取消按钮的对话框。
+***** createPopup() 	     创建一个 pop-up 窗口
+***** focus() 	           把键盘焦点给予一个窗口
+***** moveBy() 	         可相对窗口的当前坐标把它移动指定的像素
+***** moveTo() 	         把窗口的左上角移动到一个指定的坐标。
+***** open() 	           打开一个新的浏览器窗口或查找一个已命名的窗口
+     window.open("http://www.baidu.com", "_blank");
+***** opener 访问打开的原窗口
+***** print()    	       打印当前窗口的内容。(打印机）
+***** prompt() 	         显示可提示用户输入的对话框。 
+***** resizeBy() 	       按照指定的像素调整窗口的大小。
+***** resizeTo() 	       把窗口的大小调整到指定的宽度和高度。
+***** scrollBy() 	       按照指定的像素值来滚动内容。 
+***** scrollTo() 	       把内容滚动到指定的坐标。
+***** setInterval() 	     按照指定的周期（以毫秒计）来调用函数或计算表达式。
+***** setTimeout() 	     在指定的毫秒数后调用函数或计算表达式。
+*** navigator 浏览器
+**** 属性
+***** appCodeName 	        返回浏览器的代码名。 
+***** appMinorVersion 	    返回浏览器的次级版本。
+***** appName 	            返回浏览器的名称。 
+***** appVersion 	        返回浏览器的平台和版本信息。
+***** browserLanguage 	    返回当前浏览器的语言。
+***** cookieEnabled 	      返回指明浏览器中是否启用 cookie 的布尔值。
+***** cpuClass 	          返回浏览器系统的 CPU 等级。 
+***** onLine 	            返回指明系统是否处于脱机模式的布尔值。
+***** platform 	          返回运行浏览器的操作系统平台。 
+***** systemLanguage 	    返回 OS 使用的默认语言。
+***** language
+***** userAgent 	          返回由客户机发送服务器的 user-agent 头部的值。 
+***** userLanguage 	      返回 OS 的自然语言设置。
+**** 方法
+***** javaEnabled() 	      规定浏览器是否启用 Java。
+***** taintEnabled() 	    规定浏览器是否启用数据污点 (data tainting)
 *** screen
 **** 属性
-     availHeight 	     返回显示屏幕的高度 (除 Windows 任务栏之外)。
-     availWidth 	     返回显示屏幕的宽度 (除 Windows 任务栏之外)。 
-     bufferDepth 	     设置或返回在 off-screen bitmap buffer 中调色板的比特深度。
-     colorDepth 	     返回目标设备或缓冲器上的调色板的比特深度。
-     deviceYDPI 	     返回显示屏幕的每英寸垂直点数。 
-     height 	         返回显示屏幕的高度。 
-     pixelDepth 	     返回显示屏幕的颜色分辨率（比特每像素）
-     width 	           返回显示器屏幕的宽度。 
+***** availHeight 	     返回显示屏幕的高度 (除 Windows 任务栏之外)。
+***** availWidth 	     返回显示屏幕的宽度 (除 Windows 任务栏之外)。 
+***** bufferDepth 	     设置或返回在 off-screen bitmap buffer 中调色板的比特深度。
+***** colorDepth 	     返回目标设备或缓冲器上的调色板的比特深度。
+***** deviceYDPI 	     返回显示屏幕的每英寸垂直点数。 
+***** height 	         返回显示屏幕的高度。 
+***** pixelDepth 	     返回显示屏幕的颜色分辨率（比特每像素）
+***** width 	           返回显示器屏幕的宽度。 
 *** history
 **** 属性
-     length            返回浏览器历史列表中的 URL 数量
+***** length            返回浏览器历史列表中的 URL 数量
 **** 方法
-     back() 	          加载 history 列表中的前一个 URL 	
-     forward() 	        加载 history 列表中的下一个 URL 
-     go() 	            加载 history 列表中的某个具体页面 [Num|URL] e: -1 前一个页面	
-*** location
+***** back() 	          加载 history 列表中的前一个 URL 	
+***** forward() 	        加载 history 列表中的下一个 URL 
+***** go() 	            加载 history 列表中的某个具体页面 [Num|URL] e: -1 前一个页面	
+*** location 跟浏览器url 相关
 **** 属性
-     hash 	            设置或返回从井号 (#) 开始的 URL（锚）。
-     host 	            设置或返回主机名和当前 URL 的端口号。 
-     hostname 	        设置或返回当前 URL 的主机名。 
-     href 	            设置或返回完整的 URL。
-     pathname 	        设置或返回当前 URL 的路径部分。 
-     port 	            设置或返回当前 URL 的端口号。
-     protocol 	        设置或返回当前 URL 的协议。 
-     search           	设置或返回从问号 (?) 开始的 URL（查询部分）。
+***** hash 	            设置或返回从井号 (#) 开始的 URL（锚）。
+***** host 	            设置或返回主机名和当前 URL 的端口号。 
+***** hostname 	        设置或返回当前 URL 的主机名。 
+***** href 	            设置或返回完整的 URL。
+***** pathname 	        设置或返回当前 URL 的路径部分。 
+***** port 	            设置或返回当前 URL 的端口号。
+***** protocol 	        设置或返回当前 URL 的协议。 
+***** search           	设置或返回从问号 (?) 开始的 URL（查询部分）。
 **** 方法
-     assign() 	        加载新的文档。 
-     reload() 	        重新加载当前文档。
-     replace() 	        用新的文档替换当前文档。 
+***** assign() 	        加载新的文档。 
+***** reload() 	        重新加载当前文档。
+***** replace() 	        用新的文档替换当前文档。 
 *** document
 **** 集合
-     all[]       	      提供对文档中所有 HTML 元素的访问。 document.all[0],不会用样式,script
-     anchors[] 	        返回对文档中所有 Anchor 对象的引用。 
-     applets 	          返回对文档中所有 Applet 对象的引用。
-     forms[] 	          返回对文档中所有 Form 对象引用。
-     images[] 	        返回对文档中所有 Image 对象引用。
-     links[] 	          返回对文档中所有 Area 和 Link 对象引用。
+***** all[]       	      提供对文档中所有 HTML 元素的访问。 document.all[0],不会用样式,script
+***** anchors[] 	        返回对文档中所有 Anchor 对象的引用。 
+***** applets 	          返回对文档中所有 Applet 对象的引用。
+***** forms[] 	          返回对文档中所有 Form 对象引用。
+***** images[] 	        返回对文档中所有 Image 对象引用。
+***** links[] 	          返回对文档中所有 Area 和 Link 对象引用。
 **** 属性
-     body    	          提供对 <body> 元素的直接访问。对于定义了框架集的文档，该属性引用最外层的 <frameset>。 	  	  	  	 
-     cookie 	          设置或返回与当前文档有关的所有 cookie。
-     domain 	          返回当前文档的域名。 	
-     lastModified 	    返回文档被最后修改的日期和时间。 该值来自于 Last-Modified HTTP 头部，它是由 Web 服务器发送的可选项	
-     referrer 	        返回载入当前文档的文档的 URL。
-     title 	            返回当前文档的标题。 
-     URL 	              返回当前文档的 URL。 
+***** body    	          提供对 <body> 元素的直接访问。对于定义了框架集的文档，该属性引用最外层的 <frameset>。 	  	  	  	 
+***** cookie 	          设置或返回与当前文档有关的所有 cookie。
+***** domain 	          返回当前文档的域名。 	
+***** lastModified 	    返回文档被最后修改的日期和时间。 该值来自于 Last-Modified HTTP 头部，它是由 Web 服务器发送的可选项	
+***** referrer 	        返回载入当前文档的文档的 URL。
+***** title 	            返回当前文档的标题。 
+***** URL 	              返回当前文档的 URL。 
 **** 方法
-     close() 	             关闭用 document.open() 方法打开的输出流，并显示选定的数据。 
-     getElementById() 	   返回对拥有指定 id 的第一个对象的引用。
-     getElementsByName()   返回带有指定名称的对象集合。 	
-     getElementsByTagName()返回带有指定标签名的对象集合。
-     getElementsByClassName()返回带有指定 class 的对象集合。
-     open() 	             打开一个流，以收集来自任何 document.write() 或 document.writeln() 方法的输出。
-     write()    	         向文档写 HTML 表达式 或 JavaScript 代码。 
-     writeln() 	           等同于 write() 方法，不同的是在每个表达式之后写一个换行符。 
+***** close() 	             关闭用 document.open() 方法打开的输出流，并显示选定的数据。 
+***** getElementById() 	   返回对拥有指定 id 的第一个对象的引用。
+***** getElementsByName()   返回带有指定名称的对象集合。 	
+***** getElementsByTagName()返回带有指定标签名的对象集合。
+***** getElementsByClassName()返回带有指定 class 的对象集合。
+***** open() 	             打开一个流，以收集来自任何 document.write() 或 document.writeln() 方法的输出。
+***** write()    	         向文档写 HTML 表达式 或 JavaScript 代码。 
+***** writeln() 	           等同于 write() 方法，不同的是在每个表达式之后写一个换行符。 
 #+BEGIN_SRC javascript
 <script type="text/javascript">
 function createNewDoc()
@@ -565,22 +407,22 @@ function createNewDoc()
 </script>
 #+END_SRC
 *** 公共属性
-    className 	           Sets or returns the class attribute of an element
-    dir 	                 (设置文字方向) ltr默认。从左向右的文本方向。rtl 	从右向左的文本方向。	
-    lang 	                 Sets or returns the language code for an element
-    title 	               Sets or returns an element's advisory title 
+***** className 	           Sets or returns the class attribute of an element
+***** dir 	                 (设置文字方向) ltr默认。从左向右的文本方向。rtl 	从右向左的文本方向。	
+***** lang 	                 Sets or returns the language code for an element
+***** title 	               Sets or returns an element's advisory title 
 *** Style
-    document.getElementById("id").style.property="值"
+***** document.getElementById("id").style.property="值"
 **** 属性
 ***** 背景
-      background 	          在一行中设置所有的背景属性 
-      backgroundAttachment 	设置背景图像是否固定或随页面滚动 
-      backgroundColor 	    设置元素的背景颜色 
-      backgroundImage 	    设置元素的背景图像 
-      backgroundPosition 	  设置背景图像的起始位置 
-      backgroundPositionX 	设置backgroundPosition属性的X坐标 
-      backgroundPositionY 	设置backgroundPosition属性的Y坐标 
-      backgroundRepeat 	    设置是否及如何重复背景图像
+****** background 	          在一行中设置所有的背景属性 
+****** backgroundAttachment 	设置背景图像是否固定或随页面滚动 
+****** backgroundColor 	    设置元素的背景颜色 
+****** backgroundImage 	    设置元素的背景图像 
+****** backgroundPosition 	  设置背景图像的起始位置 
+****** backgroundPositionX 	设置backgroundPosition属性的X坐标 
+****** backgroundPositionY 	设置backgroundPosition属性的Y坐标 
+****** backgroundRepeat 	    设置是否及如何重复背景图像
 ***** 边框和边距
       border             	在一行设置四个边框的所有属性 	
       borderBottom  	    在一行设置底边框的所有属性 
@@ -678,10 +520,10 @@ function createNewDoc()
       tableLayout 	设置用来显示表格单元格、行以及列的算法
 *** node
 **** 节点属性
-     innerHTML: 获取元素内容,很多东西
-     nodeName 规定节点的名称
-     nodeValue 规定节点的值 (文本节点有值)
-     nodeType 返回节点的类型。nodeType 是只读的
+***** innerHTML: 获取元素内容,很多东西
+***** nodeName 规定节点的名称
+***** nodeValue 规定节点的值 (文本节点有值)
+***** nodeType 返回节点的类型。nodeType 是只读的
       #+BEGIN_SRC 
       元素 	1
       属性 	2
@@ -730,58 +572,6 @@ function createNewDoc()
       onabort
       onplay
 ***** onmousedown、onmouseup 以及 onclick 事件
-* bootstrap
-  bootstrap 建立了一个响应式的12列格网布局系统，它引入了fixed(固定) and fluid-with(浮动)的两种布局方式. 
-  我们从全局样式(global style),格网系统（grid system），流式格网（fluid grid system）,自定义（customing）,
-  布局（layouts）,响应式设计（responsive design ）这 六个方面讲解 scaffolding
-  \* global style
-  bootstrip 要求 html5 的文件类型，so <!DOCTYPE html>
-  同时，它通过bootstrap.less 文件来设置 全局排版和链接显示风格，其中去掉了 body的margin,使用
-  @baseFontFamily,@baseFontSize,@linkColor 等变量来控制基本排版
-  \* 栅格系统（grid system）
-  默认的bootstrap格网系统提供了一个宽达940像素的12列的格网。这意味着你页面的默认宽度是940px
-  最小的单元要素宽度是940/12px.
-  bootstrap 内置了一套响应式、移动设备优先的流式栅格系统。随着屏幕设备或视口（viewport）尺寸的增加，系统会自动分为最多12列
-  就是通过一系列的行（row）与列（column）的组合创建页面布局，然后你的内容就可以放入到你创建好的布局当中。
-  行（row）必须包含在.container中，以便为其赋予合适的排列(alignment)和内补(padding).
-  使用行（row）在水平方向创建一组列(column).
-  你的内容应当放置于列（column）内，而且,只有列（column)可以作为行（row）的直接子元素。
-  类似Predefined grid classes like .row and .col-xs-4 这些预订义的栅格class可以用来快速创建 栅格布局。
-  bootstrap 源码中定义的mixin也可以用来创建语义化的布局。
-  通过设置padding 从而创建列(column)之间的间隔（gutter)。然后通过为第一和最后一列设置负值的margin从而抵消掉padding的影响。
-  栅格系统中的列是通过指定1到12的值来表示其跨越的范围。例如，三个等宽的列可以使用三个.col-xs-4来创建。
-  sm md lg xl 和默认
-  offset push pull 设定偏移
-** 栅格选项
-|           | 手机（<768px) | 平板(>768px) | 桌面（>992px) |          |
-| class前缀 | .col-xs-      | .col-sm-     | .col-md-      | .col-lg- |
-| 列数      | 12            |              |               |          |
-\* 流式系统 (fluid grid system)
-\* 自定义(customing)
-\* 布局(layouts)
-\* 响应式设计(responsive design)
-abc璇
-abc璇
-abc璇
-
-璇
-璇
-璇
-璇
-jjjk璇
-璇
-璇
-璇
-璇
-abc璇
-abc璇
-abc璇
-abc璇
-璇
-* bootstrap css
-** 移动设备优先
-   适应设备<meta name="viewport" content="width=device-width,initial-scale=1.0">
-   禁用缩放 user-scalable=no  maximum-scale=1.0
 * source code 
   #+BEGIN_SRC javascript
   var a=35;
@@ -1328,8 +1118,8 @@ var jsonText=JSON.parse(stjson);
 
   #+END_SRC
 * js-mode
-** smart code fold [, z e]
-   
+** 代码折叠
+[, z e]
 | Key Binding | Description              |
 |-------------+--------------------------|
 | ~SPC m z c~ | hide element             |
@@ -1339,8 +1129,10 @@ var jsonText=JSON.parse(stjson);
 | ~SPC m z F~ | toggle hide functions    |
 | ~SPC m z C~ | toggle hide comments     |
 
-** refactoring:js2-refactor  Spc m r 开头
-** auto-completion and documention: tern
+** 反射
+   Spc m r 开头
+** 自动完成
+auto-completion and documention: tern
 *** document
    | Key Binding   | Description                           |
    |---------------+---------------------------------------|
@@ -1359,20 +1151,18 @@ var jsonText=JSON.parse(stjson);
     | ~SPC m r r V~ | rename variable under the cursor using tern                                              |
 
 ** coffeescript support
-** formatting with web-beautify
+** 代码美化
+   formatting with web-beautify
 | ~SPC m =~   | beautify code in js2-mode, json-mode, web-mode, and css-mode |
 ** Get the path to a JSON value with [[https://github.com/Sterlingg/json-snatcher][json-snatcher]]
-** REPL(交互） available via [[https://github.com/skeeto/skewer-mode][skewer-mode]] and [[https://github.com/pandeiro/livid-mode][livid-mode (输出　skewer-log)]]
+** REPL(代码交互） 
+   通过 [[https://github.com/skeeto/skewer-mode][skewer-mode]] 和 [[https://github.com/pandeiro/livid-mode][livid-mode (输出　skewer.log)]]
    会打开两个交互，一个是控制台，一个是浏览器，都可以交互
-   命令行：　先　求下缓冲中的值，就可以输出变量值了
-   浏览器：一个 console 一个alert
-  skewer Provides live interaction with JavaScript, CSS, and HTML in a web browser.
-  Expressions are sent on-the-fly from an editing buffer to be evaluated in the browser, 
-  just like Emacs does with an inferior Lisp process in Lisp modes.
-  you need a running httpd server and a page loaded with skewer.
+   控制台：　skewer.log
+   浏览器：console.log 或 alert
    | Key Binding | Description                                                      |
    |-------------+------------------------------------------------------------------|
-   | ~SPC m e e~ | evaluates the last expression                                    |
+   | ~SPC m e e~ | 选区, 求最后表达式evaluates the last expression                            |
    | ~SPC m e E~ | evaluates and inserts the result of the last expression at point |
 
 | Key Binding | Description                                                                        |
@@ -1380,18 +1170,14 @@ var jsonText=JSON.parse(stjson);
 | ~SPC m s a~ | Toggle live evaluation of whole buffer in REPL on buffer changes                   |
 | ~SPC m s b~ | send current buffer contents to the skewer REPL                                    |
 | ~SPC m s B~ | send current buffer contents to the skewer REPL and switch to it in insert state   |
-| ~SPC m s f~ | 发送函数给解释器send current function at point to the skewer REPL                          |
+| ~SPC m s f~ | 发送函数给解释器send current function at point to the skewer REPL                  |
 | ~SPC m s F~ | send current function at point to the skewer REPL and switch to it in insert state |
 | ~SPC m s i~ | starts/switch to the skewer REPL                                                   |
 | ~SPC m s r~ | send current region to the skewer REPL                                             |
 | ~SPC m s R~ | send current region to the skewer REPL and switch to it in insert state            |
 | ~SPC m s s~ | switch to REPL                                                                     |
 
-** flycheck :eslint or jshint
 ** tern reference manual
-   Tern: Intelligent JavaScript tooling Demo Docs Code
-   
-Contents
 *** The Tern server
     bin/tern(node.js 脚本）
     服务启动后，先查找　.tern-project 文件，在当前目录，没有就找上一级，这样递归(会找到 ~ 目录，最后是/ 目录) 可以在.tern-config 文件中配置, 会打开一个接口，然后跟客户端交互
@@ -1449,3 +1235,241 @@ function ppt(){
     clearInterval(set);
     ......
 }
+* 库
+** MUI
+*** 下拉刷新
+ 为实现下拉刷新功能，大多H5框架都是通过DIV模拟下拉回弹动画，在低端android手机上，DIV动画经常出现卡顿现象（特别是图文列表的情况）；
+  mui通过双webview解决这个DIV的拖动流畅度问题；拖动时，拖动的不是div，而是一个完整的webview（子webview），回弹动画使用原生动画；
+ 在iOS平台，H5的动画已经比较流畅，故依然使用H5方案。两个平台实现虽有差异，但mui经过封装，可使用一套代码实现下拉刷新。
+
+ 主页面内容比较简单，只需要创建子页面即可：
+ mui.init({
+     subpages:[{
+       url:pullrefresh-subpage-url,//下拉刷新内容页面地址
+       id:pullrefresh-subpage-id,//内容页面标志
+       styles:{
+         top:subpage-top-position,//内容页面顶部位置,需根据实际页面布局计算，若使用标准mui导航，顶部默认为48px；
+         .....//其它参数定义
+       }
+     }]
+   });
+
+ iOS平台的下拉刷新，使用的是mui封装的区域滚动组件， 为保证两个平台的DOM结构一致，内容页面需统一按照如下DOM结构构建：
+
+ <!--下拉刷新容器-->
+ <div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+   <div class="mui-scroll">
+     <!--数据列表-->
+     <ul class="mui-table-view mui-table-view-chevron">
+      
+     </ul>
+   </div>
+ </div>
+
+ 其次，通过mui.init方法中pullRefresh参数配置下拉刷新各项参数，如下：
+
+ mui.init({
+   pullRefresh : {
+     container:"#refreshContainer",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+     down : {
+       height:50,//可选,默认50.触发下拉刷新拖动距离,
+       auto: true,//可选,默认false.自动下拉刷新一次
+       contentdown : "下拉可以刷新",//可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+       contentover : "释放立即刷新",//可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+       contentrefresh : "正在刷新...",//可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+       callback :pullfresh-function //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+     }
+   }
+ });
+
+ 下拉刷新是mui框架的一个插件，该插件目前有下拉刷新结束、滚动到特定位置两个方法；
+ 下拉刷新结束
+
+ 在下拉刷新过程中，当获取新数据后，需要执行endPulldownToRefresh方法， 该方法的作用是关闭“正在刷新”的雪花进度提示，内容区域回滚顶部位置，如下：。
+
+ function pullfresh-function() {
+      //业务逻辑代码，比如通过ajax从服务器获取新数据；
+      ......
+      //注意，加载完新数据后，必须执行如下代码，注意：若为ajax请求，则需将如下代码放置在处理完ajax响应数据之后
+      mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
+ }
+
+ 滚动到特定位置
+
+ 下拉刷新组件滚动到特定位置的方法类似区域滚动组件
+
+     scrollTo( xpos , ypos [, duration] )
+         xpos
+         Type: Integer
+         要在窗口文档显示区左上角显示的文档的 x 坐标
+         ypos
+         Type: Integer
+         要在窗口文档显示区左上角显示的文档的 y 坐标
+         duration
+         Type: Integer
+         滚动时间周期，单位是毫秒
+
+ 示例：在hello mui下拉刷新示例中，实现了双击标题栏，让列表快速回滚到顶部的功能；代码如下：
+
+ var contentWebview = null;
+ //监听标题栏的双击事件
+ document.querySelector('header').addEventListener('doubletap',function () {
+	 if(contentWebview==null){
+		 contentWebview = plus.webview.currentWebview().children()[0];
+	 }
+	 //内容区滚动到顶部
+	 contentWebview.evalJS("mui('#pullrefresh').pullRefresh().scrollTo(0,0,100)");
+ });
+
+ 更改下拉刷新文字位置
+
+ *可以解决修改下拉刷新子页面默认top值后,下拉刷新提示框位置异常问题
+
+ 根据实际需求在父页面给mui-content设置top属性
+
+ .mui-bar-nav ~ .mui-content .mui-pull-top-pocket{
+   top: 180px !important;
+ }
+
+ 扩展阅读
+
+ 问答社区话题讨论： 下拉刷新
+ 代码块激活字符:    mpull(DOM结构)
+ minitpull(初始化组件)
+ mmpull(组件方法)
+
+ mui遵循 MIT License
+
+     最新版本 v3.5.0 · 问答社区 · Issues · Releases · 
+
+*** 上拉加载
+ mui的上拉加载和下拉刷新类似，都属于pullRefresh插件，使用过程如下：
+     1、页面滚动到底，显示“正在加载...”提示（mui框架提供）
+     2、执行加载业务数据逻辑（开发者提供）
+     3、加载完毕，隐藏"正在加载"提示（mui框架提供）
+ 开发者只需关心业务逻辑，实现加载更多数据即可。
+
+ 初始化
+ 初始化方法类似下拉刷新，通过mui.init方法中pullRefresh参数配置上拉加载各项参数，如下：
+
+ mui.init({
+   pullRefresh : {
+     container:refreshContainer,//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
+     up : {
+       height:50,//可选.默认50.触发上拉加载拖动距离
+       auto:true,//可选,默认false.自动上拉加载一次
+       contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
+       contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
+       callback :pullfresh-function //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+     }
+   }
+ });
+
+ 结束上拉加载
+
+ 加载完新数据后，需要执行endPullupToRefresh()方法，结束转雪花进度条的“正在加载...”过程
+
+     .endPullupToRefresh( nomore )
+         nomore
+         Type: Boolean
+         是否还有更多数据；若还有更多数据，则传入false; 否则传入true，之后滚动条滚动到底时，将不再显示“上拉显示更多”的提示语，而显示“没有更多数据了”的提示语；
+
+ 示例：
+
+ function pullfresh-function() {
+      //业务逻辑代码，比如通过ajax从服务器获取新数据；
+      ......
+      //注意：
+      //1、加载完新数据后，必须执行如下代码，true表示没有更多数据了：
+      //2、若为ajax请求，则需将如下代码放置在处理完ajax响应数据之后
+      this.endPullupToRefresh(true|false);
+ }
+
+ 重置上拉加载
+
+ 若部分业务中，有重新触发上拉加载的需求（比如当前类别已无更多数据，但切换到另外一个类别后，应支持继续上拉加载），此时调用.refresh(true)方法，可重置上拉加载控件，如下代码：
+
+ //pullup-container为在mui.init方法中配置的pullRefresh节点中的container参数；
+ //注意：refresh()中需传入true
+ mui('#pullup-container').pullRefresh().refresh(true);
+
+ 禁用上拉刷新
+
+ 在部分场景下希望禁用上拉加载，比如在列表数据过少时，不想显示“上拉显示更多”、“没有更多数据”的提示语，开发者可以通过调用disablePullupToRefresh()方法实现类似需求，代码如下：
+
+ //pullup-container为在mui.init方法中配置的pullRefresh节点中的container参数；
+ mui('#pullup-container').pullRefresh().disablePullupToRefresh();
+
+ 启用上拉刷新
+
+ 使用disablePullupToRefresh()方法禁用上拉加载后，可通过enablePullupToRefresh()方法再次启用上拉加载，代码如下：
+
+ //pullup-container为在mui.init方法中配置的pullRefresh节点中的container参数；
+ mui('#pullup-container').pullRefresh().enablePullupToRefresh();
+
+ 扩展阅读
+
+     1、上拉加载时，怎么隐藏底部的“没有更多数据了”?
+     2、问答社区话题讨论：上拉加载
+
+ mui遵循 MIT License
+
+     最新版本 v3.5.0 · 问答社区 · Issues · Releases · 
+** bootstrap css
+*** 移动设备优先
+    适应设备<meta name="viewport" content="width=device-width,initial-scale=1.0">
+    禁用缩放 user-scalable=no  maximum-scale=1.0
+** bootstrap
+   bootstrap 建立了一个响应式的12列格网布局系统，它引入了fixed(固定) and fluid-with(浮动)的两种布局方式. 
+   我们从全局样式(global style),格网系统（grid system），流式格网（fluid grid system）,自定义（customing）,
+   布局（layouts）,响应式设计（responsive design ）这 六个方面讲解 scaffolding
+   \* global style
+   bootstrip 要求 html5 的文件类型，so <!DOCTYPE html>
+   同时，它通过bootstrap.less 文件来设置 全局排版和链接显示风格，其中去掉了 body的margin,使用
+   @baseFontFamily,@baseFontSize,@linkColor 等变量来控制基本排版
+   \* 栅格系统（grid system）
+   默认的bootstrap格网系统提供了一个宽达940像素的12列的格网。这意味着你页面的默认宽度是940px
+   最小的单元要素宽度是940/12px.
+   bootstrap 内置了一套响应式、移动设备优先的流式栅格系统。随着屏幕设备或视口（viewport）尺寸的增加，系统会自动分为最多12列
+   就是通过一系列的行（row）与列（column）的组合创建页面布局，然后你的内容就可以放入到你创建好的布局当中。
+   行（row）必须包含在.container中，以便为其赋予合适的排列(alignment)和内补(padding).
+   使用行（row）在水平方向创建一组列(column).
+   你的内容应当放置于列（column）内，而且,只有列（column)可以作为行（row）的直接子元素。
+   类似Predefined grid classes like .row and .col-xs-4 这些预订义的栅格class可以用来快速创建 栅格布局。
+   bootstrap 源码中定义的mixin也可以用来创建语义化的布局。
+   通过设置padding 从而创建列(column)之间的间隔（gutter)。然后通过为第一和最后一列设置负值的margin从而抵消掉padding的影响。
+   栅格系统中的列是通过指定1到12的值来表示其跨越的范围。例如，三个等宽的列可以使用三个.col-xs-4来创建。
+   sm md lg xl 和默认
+   offset push pull 设定偏移
+*** 栅格选项
+ |           | 手机（<768px) | 平板(>768px) | 桌面（>992px) |          |
+ | class前缀 | .col-xs-      | .col-sm-     | .col-md-      | .col-lg- |
+ | 列数      | 12            |              |               |          |
+ \* 流式系统 (fluid grid system)
+ \* 自定义(customing)
+ \* 布局(layouts)
+ \* 响应式设计(responsive design)
+ abc璇
+ abc璇
+ abc璇
+
+ 璇
+ 璇
+ 璇
+ 璇
+ jjjk璇
+ 璇
+ 璇
+ 璇
+ 璇
+ abc璇
+ abc璇
+ abc璇
+ abc璇
+ 璇
+** echarts
+   ECharts，缩写来自Enterprise Charts，商业级数据图表，一个纯Javascript的图表库，可以流畅的运行在PC和移动设备上，兼容当前绝大部分浏览器（IE6/7/8/9/10/11，chrome，firefox，Safari等），
+   底层依赖轻量级的Canvas类库ZRender，提供直观，生动，可交互，可高度个性化定制的数据可视化图表。创新的拖拽重计算、数据视图、值域漫游等特性大大增强了用户体验，赋予了用户对数据进行挖掘、整合的能力。
+   支持折线图（区域图）、柱状图（条状图）、散点图（气泡图）、K线图、饼图（环形图）、雷达图（填充雷达图）、和弦图、力导向布局图、地图、仪表盘、漏斗图、事件河流图等12类图表，同时提供标题，详情气泡、图例、值域、数据区域、时间轴、工具箱等7个可交互组件，支持多图表、组件的联动和混搭展现。
+** highcharts
+*** Highcharts 基本组成 

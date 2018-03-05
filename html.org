@@ -80,43 +80,26 @@
     window._gaq=[['_setAccount','UA-26147692-1'],['_setDomainName', 'diveintohtml5.info'],['_setAllowHash', false],['_trackPageview'],['_trackPageLoadTime']];(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.src='//www.google-analytics.com/ga.js';s.parentNode.insertBefore(g,s)}(document,'script'));
     </script>
   #+END_SRC
-  #+BEGIN_SRC html
-        <!DOCTYPE html> 声明为 HTML5 文档
-      <html> 元素是 HTML 页面的根元素
-      <head> 元素包含了文档的元（meta）数据
-      <title> 元素描述了文档的标题
-      <body> 元素包含了可见的页面内容
-      <h1> 元素定义一个大标题
-      <p> 元素定义一个段落
-  #+END_SRC
-  #+BEGIN_SRC js
-        <canvas>
-    var c=document.getElementById("myCanvas");
-    var ctx=c.getContext("2d");
-    ctx.fillStyle="#FF0000";
-    ctx.fillRect(0,0,150,75);
-
-  #+END_SRC
 ** svg
    #+BEGIN_SRC html
-        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="190">
+     <svg xmlns="http://www.w3.org/2000/svg" version="1.1" height="190">
        <polygon points="100,10 40,180 190,60 10,60 160,180"
-       style="fill:lime;stroke:purple;stroke-width:5;fill-rule:evenodd;">
-        </svg>
+                style="fill:lime;stroke:purple;stroke-width:5;fill-rule:evenodd;">
+     </svg>
    #+END_SRC
 ** MathML 要浏览器支持
    #+BEGIN_SRC html
- <math xmlns="http://www.w3.org/1998/Math/MathML">
-         <mrow>
-            <msup><mi>a</mi><mn>2</mn></msup>
-            <mo>+</mo>
-				
-            <msup><mi>b</mi><mn>2</mn></msup>
-            <mo>=</mo>
-				
-            <msup><mi>c</mi><mn>2</mn></msup>
-         </mrow>
-      </math>
+     <math xmlns="http://www.w3.org/1998/Math/MathML">
+             <mrow>
+                <msup><mi>a</mi><mn>2</mn></msup>
+                <mo>+</mo>
+
+                <msup><mi>b</mi><mn>2</mn></msup>
+                <mo>=</mo>
+
+                <msup><mi>c</mi><mn>2</mn></msup>
+             </mrow>
+          </math>
 
    #+END_SRC
 ** 多媒体
@@ -139,56 +122,6 @@
     srcNew 	      URL 	规定音频文件的 URL。
 *** <video>
 *** <source>定义多媒体资源 <video> 和 <audio>
-** 拖放（Drag 和 Drop）
-   #+BEGIN_SRC html
-<!DOCTYPE HTML> 
-<html> 
-<head> 
-<meta charset="utf-8"> 
-<title>我是程序员教程(book.wscxy.com)</title> 
-<style type="text/css"> 
-#div1 {width:350px;height:70px;padding:10px;border:1px solid #aaaaaa;} 
-</style> 
-<script> 
-function allowDrop(ev) 
-{ 
-    ev.preventDefault(); 
-} 
-
-function drag(ev) 
-{ 
-    ev.dataTransfer.setData("Text",ev.target.id); 
-} 
-
-function drop(ev) 
-{ 
-    ev.preventDefault(); 
-    var data=ev.dataTransfer.getData("Text"); 
-    ev.target.appendChild(document.getElementById(data)); 
-} 
-</script> 
-</head> 
-<body> 
-
-<p>拖动 book.wscxy.com 图片到矩形框中:</p> 
-
-<div id="div1" ondrop="drop(event)" ondragover="allowDrop(event)"></div> 
-<br> 
-<img id="drag1" src="http://book.wscxy.com/Uploadsk/images/logo.png" draggable="true" ondragstart="drag(event)" width="336" height="69"> 
-
-</body> 
-</html>
-
-   #+END_SRC
-   首先，为了使元素可拖动，把 draggable 属性设置为 true ：
-<img draggable="true">
-
-ondragstart 属性调用了一个函数，drag(event)，它规定了被拖动的数据。
-dataTransfer.setData() 方法设置被拖数据的数据类型和值：
-function drag(ev)
-{
-    ev.dataTransfer.setData("Text",ev.target.id);
-}
 ** Geolocation（地理定位）
 ** section
    <section> 标签定义文档中的节（section、区段）。比如章节、页眉、页脚或文档中的其他部分。
@@ -206,53 +139,3 @@ function drag(ev)
 <figcaption> 标签定义 <figure> 元素的标题.
 <figcaption>元素应该被置于 "figure" 元素的第一个或最后一个子元素的位置。
 ** Web SQL 数据库
-* 响应式 Web 设计 - Viewport
-  手机浏览器 把页面放在一个虚拟的"窗口" viewport中，通常比屏幕宽，就不用把网页挤到很小的窗口中
-** 设置Viewport 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-#+BEGIN_SRC 
-width：控制 viewport 的大小，可以指定的一个值，如果 600，或者特殊的值，如 device-width 为设备的宽度（单位为缩放为 100% 时的 CSS 的像素）。
-height：和 width 相对应，指定高度。
-initial-scale：初始缩放比例，也即是当页面第一次 load 的时候缩放比例。
-maximum-scale：允许用户缩放到的最大比例。
-minimum-scale：允许用户缩放到的最小比例。
-user-scalable：用户是否可以手动缩放。
-#+END_SRC
-** 网格 就像装修房子的时候打格子，每个格子做为什么，由大到小设计
-  通常12列，宽度100%
-#+BEGIN_SRC css
-           ,* {
-              box-sizing: border-box;
-           }
-          首先确保所有的 HTML 元素都有 box-sizing 属性且设置为 border-box。
-          确保边距和边框包含在元素的宽度和高度间。
-        .menu {
-            width: 25%;
-            float: left;
-        }
-        .main {
-            width: 75%;
-            float: left;
-        }
-       设置其他 桌面
-     .col-1 {width: 8.33%;}
-     .col-2 {width: 16.66%;}
-     .col-3 {width: 25%;}
-     .col-4 {width: 33.33%;}
-     .col-5 {width: 41.66%;}
-     .col-6 {width: 50%;}
-     .col-7 {width: 58.33%;}
-     .col-8 {width: 66.66%;}
-     .col-9 {width: 75%;}
-     .col-10 {width: 83.33%;}
-     .col-11 {width: 91.66%;}
-     .col-12 {width: 100%;}
-    这种方式，就不用单独设计元素的宽度了
-  @media only screen and (max-width: 768px) {
-      /* For mobile phones: */
-      [class*="col-"] {
-          width: 100%;
-      }
-  }
-  媒体查询，每列都是100%
-#+END_SRC

@@ -70,3 +70,185 @@
   \s, \S           \S matches any character except whitespace.
   \d, \D           Matches any single digit, 0-9; \D matches any character but a digit.
   \w, \W           Matches any "word" character (upper- and lowercase letters, digits, and the
+** 变窄（narrowing) 
+   这个一个 让你关注于缓冲区特定部分的特性 
+   变窄 narrowing
+   恢复 widen
+* lisp编程
+  语言组织---列表(列表中有数据，函数，语句, 注释）
+** 列表   
+*** 数据列表     
+    '(a b c)
+    '(a b c (e f)) 列表中的子列表就不要 ' 号 了
+*** 函数列表 (+ 3 3)
+*** 原子
+    空格隔断
+    字串 整数 浮点 
+** 程序    
+*** 执行    
+    eval-print-last-sexp
+*** 解释器
+    解释列表
+*** 错误   
+** 语句结构    
+ !  变量名和函数名可以同名，不冲突
+*** 变量    
+   setq
+*** 函数   
+**** 定义
+     defun
+可选参数     (defun begin-of-buffer (&optional arg)())
+**** 判断参量的数据类型	
+   integer-or-marker-p 
+   listp
+**** 函数   
+     message
+***** 交互函数   
+      interactive 
+      "B" 缓冲区名字作为参数, 不存在会创建
+      "b" 缓冲区名字 
+      "p" 前缀参数 (prefix-numeric-value arg) 转化
+     "*" 指缓冲区如果只读会报错 
+***** let函数	
+      #+BEGIN_SRC lisp
+        (let (( a 3)(b 4))
+          (body......)
+ ;;         (message "nihao%d" (+ a b))
+        )
+      #+END_SRC
+      
+***** if 表
+      #+BEGIN_SRC lisp
+        (if (< 3 2)
+            (message "true")
+          (message "here")
+        )
+
+      #+END_SRC
+***** save-excursion      
+保存point, 标记      
+#+BEGIN_SRC lisp
+(let varlist
+(save-excursion
+
+body...))
+
+#+END_SRC
+***** 表函数
+      cons	 建表
+      car. cdr  分表
+      nthcdr
+      setcar
+      setcdr
+      length
+***** 与缓冲区有关的函数	
+beginning-of-buffer
+make-whole-buffer
+append-to-buffer
+copy-to-buffer
+ insert-buffer
+&optional参量
+save-restriction特殊表	
+what-line函数	
+***** 剪切和存储文本	
+  zap-to-char
+  search-forward函数	
+  progn函数	对每个 语句求值，返回值是最后一条语句
+  
+8.1.7   progn表达式主体	73
+8.2   kill-region函数	74
+8.3   delete-region函数：接触C	75
+8.4   用defvar初始化变量	76
+8.5   copy-region-as-kill函数	77
+8.6   回顾	82
+8.7   查找练习	83
+第9章   列表是如何实现的	85
+第10章   找回文本	88
+10.1   kill环总览	88
+10.2   kill-ring-yank-pointer变量	88
+10.3   练习：使用yank函数和nthcdr函数	89
+第11章   循环和递归	90
+11.1   while	90
+11.1.1   while循环和列表	91
+11.1.2   一个例子：print-elements
+      -of-list	92
+11.1.3   使用增量计数器的循环	93
+11.1.4   使用减量计数器的循环	96
+11.2   递归	98
+11.2.1   使用列表的递归函数	99
+11.2.2   用递归算法代替计数器	100
+11.2.3   使用cond的递归例子	102
+11.3   有关循环表达式的练习	102
+第12章   正则表达式查询	104
+12.1   查询sentence-end的正则表达式	104
+12.2   re-search-forward函数	105
+12.3   forward-sentence函数	106
+12.4   forward-paragraph：函数的金矿	109
+12.5   创建自己的“TAGS”文件	115
+12.6   回顾	116
+12.7   练习：使用re-search-forward	117
+第13章   计数：重复和正则表达式	118
+13.1   count-words-region函数	118
+13.2   用递归的方法实现单词计数	123
+13.3   练习：统计标点符号的数量	127
+第14章   统计函数定义中的单词数	128
+14.1   计数什么？	128
+14.2   单词或者符号是由什么构成的？	129
+14.3   count-words-in-defun函数	130
+14.4   在一个文件中统计几个函数定
+          义的单词数	132
+14.5   查找文件	133
+14.6   lengths-list-file函数详解	134
+14.7   在不同文件中统计几个函数定义
+          的单词数	135
+14.8   在不同文件中递归地统计单词数	137
+14.9   为图形显示准备数据	138
+14.9.1   对列表排序	138
+14.9.2   制作一个文件列表	139
+第15章   准备柱型图	144
+15.1   graph-body-print函数	148
+15.2   recursive-graph-body-print
+     函数	150
+15.3   需要打印的坐标轴	151
+15.4   练习	151
+第16章   配置你的“.emacs”文件	152
+16.1   全站点的初始化文件	152
+16.2   为一项任务设置变量	153
+16.3   开始改变“.emacs”文件	153
+16.4   文本和自动填充模式	154
+16.5   邮件别名	156
+16.6   缩排模式	156
+16.7   一些绑定键	156
+16.8   加载文件	157
+16.9   自动加载	158
+16.10   一个简单的功能扩充：
+           line-to-top-of-window	159
+16.11   键图	161
+16.12   X11的颜色	162
+16.13   V19中的小技巧	163
+16.14   修改模式行	163
+***** 数学
+**** 调试	
+17.1   debug	165
+17.2   debug-on-entry	166
+17.3   debug-on-quit和(debug)	168
+17.4   源代码级调试器edebug	168
+17.5   调试练习	170
+第18章   结论	171
+附录A   the-the函数	173
+附录B   kill环的处理	175
+B.1   rotate-yank-pointer函数	175
+B.2   yank函数	180
+B.3   yank-pop函数	182
+附录C   带坐标轴的图	184
+C.1   print-graph函数的变量列表	185
+C.2   print-Y-axis函数	185
+C.2.1   题外话：计算余数	186
+C.2.2   构造一个Y轴元素	188
+C.2.3   创建Y坐标轴	189
+C.2.4   print-Y-axis函数的最后形式	190
+C.3   print-X-axis函数	190
+C.4   打印整个图形	194
+C.4.1   测试print-graph函数	197
+C.4.2   绘制函数中单词和符号数的图形	198
+C.4.3   打印出来的图形	202         

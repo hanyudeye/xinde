@@ -1,16 +1,25 @@
 * spacemacs
 ** 优点  
-  互动，扩展，交际，适应，帮助
-  risk of RSI  减轻腰肌劳损
-  更新 git pull origin 
-** 更新包
- configuration-layer/update-packages 或点击主页面　update package
+   你觉得呢
+** 更新
+*** 更新spacemacs
+    可以通过 git 的方式来更新代码, 假设我们使用的是 develop 分支:
+    一般来说, 如果你不熟悉 emacs 并且你的 Spacemacs 配置能够正常工作, 则不需要频繁的更新代码,
+    以避免更新之后配置不能使用.
+  #+BEGIN_SRC shell
+    git checkout develop
+    git fetch upstream
+    git merge upstream/develop
+  #+END_SRC
+
+*** 更新包
+    configuration-layer/update-packages 或点击主页面　update package
 ** 点文件执行顺序
- 1.spacespacemacs / layers
- 2.spacespacemacs / init 
- 3.dotspacemacs / user-init
- 4.spacespacemacs / user-config
- 5.dotspacemacs / emacs-custom-settings
+   1.spacespacemacs / layers
+   2.spacespacemacs / init 
+   3.dotspacemacs / user-init
+   4.spacespacemacs / user-config
+   5.dotspacemacs / emacs-custom-settings
 ** 层 
 *** 层或包
 **** .spacemacs 配置的扩展  SPACEMACSDIR 
@@ -68,8 +77,21 @@
   #+END_SRC
 **** 配置变量，默认配置变量添加在 .spacemacs 末尾 或者 custom-file 会写在 配置文件里
 **** 不想用某个包 (setq-default dotspacemacs-excluded-packages '(rainbow-delimiters))
+**** 排除包
+  #+BEGIN_SRC emacs-lisp
+  （setq <layer> -excluded-packages'（package1 package2 ...）
+  #+END_SRC
+**** 添加包
+  #+BEGIN_SRC emacs-lisp
+     (defun dotspacemacs / layers()
+    “配置图层声明...”
+    （setq默认
+     ;; ...
+     dotspacemacs-additional-packages'（llvm-mode dts-mode）
+     ;; ...
+     ))
+  #+END_SRC
 *** 自定义层
-    结构
   #+BEGIN_SRC 
   [LAYER_NAME]
   | __ [local] 本地包
@@ -84,56 +106,20 @@
   [] =目录
   #+END_SRC
 
-**** layers.el? 声明附加图层的位置
+**** layers.el 声明附加图层的位置
 **** packages.el 包的列表及其配置函数（init，post-init等）
 **** funcs.el 在图层中定义所有的函数
 **** config.el 图层配置
 **** keybindings.el 
-**** package?
+**** package
      需要在package.el 中第一函数
   #+BEGIN_SRC 
   (defun <layer> / init-xxx()... body)
   #+END_SRC
-**** 排除包？
-  #+BEGIN_SRC emacs-lisp
-  （setq <layer> -excluded-packages'（package1 package2 ...）
-  #+END_SRC
-**** 添加包？
-  #+BEGIN_SRC emacs-lisp
-     (defun dotspacemacs / layers()
-    “配置图层声明...”
-    （setq默认
-     ;; ...
-     dotspacemacs-additional-packages'（llvm-mode dts-mode）
-     ;; ...
-     ))
-  #+END_SRC
-*** 创建你的第一个 Spacemacs Layer
-  1. 如何更新 Spacemacs, 同步官方 develop 分支及注意事项
-  2. Layer 的 variables 变量及使用方法
-  3. 如何创建自己的 Layer
-  4. 如何定制 modeline
-  5. evlified state
+**** 层变量
+     config.el 文件打开, 该文件中即定义了该 layer 的变量.
 
-**** 如何更新 Spacemacs
-
-  可以通过 git 的方式来更新代码, 假设我们使用的是 develop 分支:
-
-  #+BEGIN_SRC shell
-    git checkout develop
-    git fetch upstream
-    git merge upstream/develop
-  #+END_SRC
-
-  一般来说, 如果你不熟悉 emacs 并且你的 Spacemacs 配置能够正常工作, 则不需要频繁的更新代码, 以避免更新之后配置不能使用.
-
-**** variables 变量
-
-  每一个 layer 都可以配置一些变量, 可以通过 *SPC h SPC* 然后输入 layer 名称, 点击对应的选项即可打开该 layer 的 README.org 文件.
-  然后按下 SPC f j 进入 dired 模式, 选择 config.el 文件打开, 该文件中即定义了该 layer 的变量.
-
-  例如 better-default layer 的变量如下:
-
+     例如 better-default layer 的变量如下:
   #+BEGIN_SRC emacs-lisp
     (defvar better-defaults-move-to-beginning-of-code-first t
       "when t, first stroke of C-a will move the cursor to the beginning of code.
@@ -154,39 +140,21 @@
   #+END_SRC
 
 **** 定制 modeline
-
-  在 emacs25.1 中, 该版本的 modeline 和以前版本不同, 可以通过如下方式将 modeline 修改为以前的显示形状:
+  在 emacs25.1 中, 该版本的 modeline 和以前版本不同, 可以通过如下方式将 modeline 
+  修改为以前的显示形状:
 
   在 dotspacemacs/user-config 中加入如下代码:
-
   #+BEGIN_SRC emacs-lisp
     (setq ns-use-srgb-colorspace nil)
   #+END_SRC
 
 **** 创建自己的 layer
-  假设我们需要创建一个 layer, 名叫 zilongshanren, 并且在 layer 下包含一个名叫 youdao-dictionary 的 package.
+     假设我们需要创建一个 layer, 名叫 zilongshanren, 并且在 layer 下包含一个名叫 
+     youdao-dictionary 的 package.
 
-  首先利用 spacemacs 提供的函数创建 layer. 按下 M-x 并且输入 configuration-layer/create-layer, 然后选择路径 ~/.spacemacs.d,
-  确定创建 README, 然后我们就可以看到 layer 创建成功.
-
-  每一个 layer 的结构如下:
-
-  #+BEGIN_EXAMPLE
-      [layer_name]
-        |__ [local]
-        | |__ [package 1]
-        | |     ...
-        | |__ [package n]
-        |-- layers.el
-        |__ packages.el
-        |__ funcs.el
-        |__ config.el
-        |__ keybindings.el
-
-      [] = directory
-  #+END_EXAMPLE
-
-  即每一个 layer 目录下都可以包含 layers.el, packages.el 等文件, 以及一个名叫 local 的目录.
+     首先利用 spacemacs 提供的函数创建 layer. 按下 M-x 并且输入 
+     configuration-layer/create-layer, 然后选择路径 ~/.spacemacs.d,
+     确定创建 README, 然后我们就可以看到 layer 创建成功.
 
   每一个文件的内容描述如下:
 
@@ -898,6 +866,40 @@
 
   请注意，/只/当前缓冲区的文本被缩放，其他缓冲区，
    
+*** 移动
+**** 在屏幕中移动光标：
+     vi & vim 命令行模式操作移动光标位置都是指移动到要编辑单词、字母的前面。
+
+     按键                                        操作描述
+     h                                            光标左移一个字符；
+     j                                             光标下移一行；
+     k                                            光标上移一行；
+     l                                             光标右移一个字符；
+
+     数值  +  G                                光标移至“数值”所指行的行首；
+     ^H                                          光标移至当前屏幕显示首行的行首；
+     ^M                                          光标移至当前屏幕显示的中间行的行首；
+     ^L                                           光标移至当前屏幕显示的最后一行的行首；
+
+**** 在文件行内移动光标：
+     vi & vim 命令行模式操作光标行内移动，单词间以空格作为分隔字符，标点符号看作一个单词。
+     
+     按键                                        操作描述
+     0    （数字零）                        光标移动到光标所在行的行首；
+     $                                           光标移动到光标所在行的行末；
+     w                                          光标移动到下一个单词的首字母前；
+     b                                           光标移动到上一个单词的首字母前；
+     e                                           光标移动到当前光标所在单词的最后字符前；
+**** 屏幕滚动：
+     ^F                                            屏幕向下滚动一屏；
+     ^B                                            屏幕向上滚动一屏；
+     ^E                                            屏幕向下滚动一行；
+     ^Y                                            屏幕向上滚动一行；
+     ^D                                            屏幕向下滚动半屏；
+     ^U                                            屏幕向上滚动半屏；
+     z + Enter                                     滚动屏幕，使当前光标所在行处于屏幕第一行；
+     z + .                                         滚动屏幕，使当前光标所在行处于屏幕中间行；
+     z + -                                         滚动屏幕，使当前光标所在行处于屏幕最后一行；
 ** 开发
 *** flycheck 
     | Key Binding | Description                                                           |
@@ -1769,4 +1771,8 @@ Add this to your init file.
 
 
 #+END_SRC
-    
+** Tramp
+编辑远程文件 /ssh:phil@remotehost:records/pizza-toppings.txt
+** shell
+*** 列出进程 C-c C-s   
+*** 中断子进程 term-interrupt-subjob

@@ -1,4 +1,3 @@
-想象 自己写了一个编译器，怎么解释文字达到 执行某种任务 完成某件事情 , 结果就是完成某件事情，且正确完成
 * c-c++mode
 ** 语法检查 通过 flycheck  当前有
 ** 反汇编 disaster        当前有
@@ -750,7 +749,7 @@ j	Jump to current line ⚙
 Tracking an existing debugger process
 Use M-x realgud-track-mode inside an existing shell, or eshell buffer to track an already-running debugger process.
 
-* c language
+* c 
 ** 编译器函数，预处理器指令, 杂行为，用来协助生成程序的
    头文件： 先定义，后使用的先后顺序不能变
 ** 数据类型
@@ -858,6 +857,10 @@ the entire header file file
 *** 程序退出状态
 ****  exit(EXIT_FAILURE) 调用系统宏
 ****  exit(EXIT_SUCCESS)
+** 库
+*** 归档、合并库
+  ar crv libfoo.a a.o b.o
+  $ gcc –o program program.o –L. –lfoo
 * gcc 
 基于C/C++的预处理器和编译器
   -o：指定生成的输出文件,所以编译多个文件是,-o 没有意义；
@@ -1350,156 +1353,3 @@ switch语句的操作数类型是long.
    : --change-leading-char
    : --remove-leading-char
    : --prefix-symbols=string
-* 归档、合并库
-  ar crv libfoo.a a.o b.o
-  可以省略 $ gcc –o program program.o –L. –lfoo
-* 加载的库  
-$ ldd program
-* 重构？ 后期动态修改代码的思想（比如 多次使用的数字 最后用 宏替换）
-* C 语言的 limits.h文件? 不同平台 int /char/short/long/long long 表示的值不同，所以定义了专门的最大最小宏 用来测试
-  [[file:image/intmacro.png][宏定义]] 
-* limits.h 的位置？ 位置在 /usr/include下
-* 溢出？ 数学符号在运算后超出限定，出错的情况
-* 溢出的危害？ c语言在运行时，不会进行溢出检查，所以要特别小心
-* 隐式数据转换带来的溢出危害？ 类型转换后进行运算会发生错误
-* 预防溢出？ 避免在一个表达式中使用 有符号与无符号 运算
-* char? 早期计算机使用的是ASCII码，没有中文，历史产物
-* getchar()? getchar()会返回int型，因为EOF被定义为-1，如果是char，则可能是无符号型，则永不停止
-* 判断char 是否有符号？ 可以用CHAR_MIN 输出 printf("%d", CHAR_MIN)
-* 计算机小数？ 用二进制形式来表示小数的方式
-* 浮点数的精度？ 在 float.h文件中，FLT_MAX, FLT_MIN [[file:image/float.png][浮点]] 
-* 有符号浮点的printf 表示？ %f 是无符号，%e是有符号 2e+2 e表示10的2次方
-* 浮点的比较？ fabs()<FLT_EPSILON
-* 常量后缀？ 10UL 增加可读性,和编译器的解释的正确性
-* sizeof ? 以字节为单位，用来跨平台，因为不同平台int不同，所以，用sizeof 能确切计算int 的值
-* i++ 和++i的区别？ 只在表达式中，
-前缀运算符首先增加变量的值，然后复制一份拷贝；而后缀运算符首先复制一份拷贝，再增加变量的值
-m=*p++; /* 等价于下面两个语句 */
-分解成*(p++) *(p+1)
-因为是后缀，先求拷贝, 则成为下面的形式
-
-m=*p;
-p++;
-
-* 流？ 通过opening来关联，closing 取消关联. 用 FILE * 定义.
-* getchar() putchar()? 输入一个字符, 输出一个字符
-* gets() puts() ？ 字符串
-* scanf? 格式化输入函数, 
-当使用scanf 输入short 类型整数、long 类型整数、以及double 类型浮点数的时候，一定要使用与之对应的正确的格式修饰符，分别为“%hd”，“%ld”，以及“%lf”。
-* 复杂的函数？ 会写吗？ 有的函数很复杂的
-* 缓冲区？ 在输入中，有一块内存作为你输入东西的地方, 里面有东西在, 而scanf等输入读取的是缓冲中的内容直到缓冲空，让你重新输入
-  键盘输入都被保存在输入缓冲区内，直到用户输入回车，输入函数才去缓冲区读取。输入函数从缓冲区读取时，如果缓冲区为空，程序会暂停；否则输入函数会从缓冲区读入对应的数据。
-  利用gets 读入字符串时，空格和tab 都是字符串的一部分。gets 以回车和EOF 为字符串的终止符，同时把回车从缓冲区读走。
-  掌握利用while 循环清空缓冲区的方法，但是不要用fflush(stdin)。
-  如果你的程序要求对用户输入的各种不规范格式或错误要求有很高的容错程度，尝试一下fgets 和sscanf 的组合来完成用户输入的读取。
-* 溢出攻击？ 输入的对象越过边界到内存的其他区域, 
-* 安全的字符串输入函数？ fgets(char * str, int num, FILE * stream)
-* 条件编译？ 可以设定一些东西，预处理器会判断这些东西
-* static? 不管在哪？都不会挂掉，相当于一直存在的东西, 但还有隐私属性
- [[file:image/static.png][static]] 
-* 编译器和链接器？ 编译器少做了定位的事情, 给链接器做了
-* 头文件？ 头文件中只应该包含那些不申请内存的声明语句, 如果包含了变量，可能会造成变量的重复定义
-* name mangle（乱砍）？ C++中有
-* 查找库函数？ linux 下 man, 最方便 google
-* 数学相关库函数？
-  int        abs(int i)                      返回整型参数i的绝对值
-double    cabs(struct complex znum)        返回复数znum的绝对值
-double    fabs(double x)                   返回双精度参数x的绝对值
-long      labs(long n)                     返回长整型参数n的绝对值
-double     exp(double x)                   返回指数函数ex的值
-double frexp(double value,int *eptr)     返回value=x*2n中x的值,n存贮在eptr中
-double ldexp(double value,int exp);      返回value*2exp的值
-double     log(double x)                   返回logex的值
-double log10(double x)                   返回log10x的值
-double     pow(double x,double y)          返回xy的值
-double pow10(int p)                      返回10p的值
-double    sqrt(double x)                   返回+√x的值
-double    acos(double x)                   返回x的反余弦cos-1(x)值,x为弧度
-double    asin(double x)                   返回x的反正弦sin-1(x)值,x为弧度
-double    atan(double x)                   返回x的反正切tan-1(x)值,x为弧度
-double atan2(double y,double x)          返回y/x的反正切tan-1(x)值,y的x为弧度
-double     cos(double x)                   返回x的余弦cos(x)值,x为弧度
-double     sin(double x)                   返回x的正弦sin(x)值,x为弧度
-double     tan(double x)                   返回x的正切tan(x)值,x为弧度
-double    cosh(double x)                   返回x的双曲余弦cosh(x)值,x为弧度
-double    sinh(double x)                   返回x的双曲正弦sinh(x)值,x为弧度
-double    tanh(double x)                   返回x的双曲正切tanh(x)值,x为弧度
-double hypot(double x,double y)          返回直角三角形斜边的长度(z),
-                                         x和y为直角边的长度,z2=x2+y2
-double    ceil(double x)                   返回不小于x的最小整数
-double floor(double x)                   返回不大于x的最大整数
-void     srand(unsigned seed)              初始化随机数发生器
-int       rand()                           产生一个随机数并返回这个数
-double    poly(double x,int n,double c[])从参数产生一个多项式
-double    modf(double value,double *iptr)将双精度数value分解成尾数和阶
-double    fmod(double x,double y)          返回x/y的余数
-double frexp(double value,int *eptr)     将双精度数value分成尾数和阶
-double    atof(char *nptr)                 将字符串nptr转换成浮点数并返回这个浮点数
-double    atoi(char *nptr)                 将字符串nptr转换成整数并返回这个整数
-double    atol(char *nptr)                 将字符串nptr转换成长整数并返回这个整数
-char     *ecvt(double value,int ndigit,int *decpt,int *sign)
-           将浮点数value转换成字符串并返回该字符串
-char     *fcvt(double value,int ndigit,int *decpt,int *sign)
-           将浮点数value转换成字符串并返回该字符串
-char     *gcvt(double value,int ndigit,char *buf)
-           将数value转换成字符串并存于buf中,并返回buf的指针
-char    *ultoa(unsigned long value,char *string,int radix)
-           将无符号整型数value转换成字符串并返回该字符串,radix为转换时所用基数
-char     *ltoa(long value,char *string,int radix)
-           将长整型数value转换成字符串并返回该字符串,radix为转换时所用基数
-char     *itoa(int value,char *string,int radix)
-           将整数value转换成字符串存入string,radix为转换时所用基数
-double atof(char *nptr) 将字符串nptr转换成双精度数,并返回这个数,错误返回0
-int      atoi(char *nptr) 将字符串nptr转换成整型数,    并返回这个数,错误返回0
-long     atol(char *nptr) 将字符串nptr转换成长整型数,并返回这个数,错误返回0
-double strtod(char *str,char **endptr)将字符串str转换成双精度数,并返回这个数,
-long     strtol(char *str,char **endptr,int base)将字符串str转换成长整型数,
-                                                 并返回这个数,
-int            matherr(struct exception *e)
-                用户修改数学错误返回信息函数(没有必要使用)
-double         _matherr(_mexcep why,char *fun,double *arg1p,
-                        double *arg2p,double retval)
-                  用户修改数学错误返回信息函数(没有必要使用)
-unsigned int _clear87()     清除浮点状态字并返回原来的浮点状态
-void           _fpreset()     重新初使化浮点数学程序包
-unsigned int _status87()    返回浮点状态字
-
-* 字符串相关库函数？
-* 字符和数字转换库函数？
-* 时间函数库函数？
-* 什么是 多使用库函数？ 库函数有很多复杂的功能函数，要善于利用，不用重复造轮子
-* 什么是 system, signal 函数?
-* 什么是 数组初始化函数？ memset(array, 0, sizeof(array))
-* 什么是 memcpy? 拷贝，就不用赋值了，慢
-* 什么是release 和 debug? release 通常不进行边界检查, 而debug 会
-  gcc -DDBUG
-* 什么是 指针 指向？ 如果还不知到指针指向哪？就指向NULL
-* 什么是typedef struct? 为定义的结构赋予新名字
-  #+BEGIN_SRC c
-  typedef struct student{
-    char *name;
-    unsigned int age;
-    char *address;
-  } STU;
-  STU student1;
-  student1.name="wuming";
-  student1.address="wuxi jiangyin";
-  printf("%s\n",student1.address);
-  #+END_SRC
-  方法2:
- #+BEGIN_SRC c
-   程序11-3 利用结构类型定义变量
-    
-   struct student{
-   int num;
-   char name[20];
-   ...
-   } student1,student2;
-    
-   struct student student3; /* 定义student3变量 */
-
- #+END_SRC 
-* 什么是结构体中的洞？ 结构体是内存对齐的，所以可能会浪费内存
-* 什么是assert? void assert(int expression) 判断表达式逻辑值
-  #define NDEBUG 禁用 assert
-* 什么是面向对象中的错误处理？ 语句 try catch

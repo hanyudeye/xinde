@@ -1,22 +1,13 @@
-* 常见错误
-  : php 文件权限对 file_exist()等文件函数影响大
-* 安装配置
-  配置文件/etc/php/7.0/apache2
+* 软件的安装与配置
+  配置文件/etc/php/7.0/apache2/php.ini
   这是命令行配置 /etc/php/7.0/cli/php.ini 
-  错误配置  
-  #+BEGIN_SRC php
-    ini_set("display_errors", "On"); 
-    error_reporting(E_ALL); //-1是关闭
-  #+END_SRC
 ** 安装
    ./configure --with-mysql --with-apxs=/www/bin/apxs
-*** apache 配置
+*** apache的支持
     LoadModule php5_module        libexec/libphp5.so
-    不同系统安装方式不一样
+    或
     apt install libapache2-mod-php php-common
-    支持模块 php-curl php-mysql
-    会自动添加 extension
-    
+    不同系统安装方式不一样
 **** 隐藏入口文件
      index.php 相当于main 函数，apache 默认 会与此文件产生关系。
      在url 中隐藏此字串的方法是设置
@@ -32,7 +23,7 @@
      RewriteRule	^(.*)$	index.php/$1	[QSA,PT,L]
      </IfModule>
 
-*** nginx
+*** nginx的支持
     vim /usr/local/nginx/conf/nginx.conf
     修改默认的 location 块，使其支持 .php 文件：
 
@@ -49,34 +40,45 @@
     fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
     fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
     }
-* php 语言
-** 解析标记<?PHP ?> 
+** 模块安装  
+   apt install php-curl 
+   php-mysql
+*** 手动加载模块 
+    1. a2enmod rewrite 加载 rewrite模块
+    2. 创建 到 mods-enabled 的软链接 ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
+    3. 注意 虚拟主机 中 AllowOverride 为 All
+*** 模块安装路径
+   查找扩展路径 php -ini |grep extension
+   extension_dir => /usr/lib/php/20151012
+** php配置  
+*** 配置错误提示 
+  #+BEGIN_SRC php
+    ini_set("display_errors", "On"); 
+    error_reporting(E_ALL); //-1是关闭
+  #+END_SRC
+* php语言
+  特性标记<?PHP ?>
 ** 数据 
    object array resource 
-** 预定义常量/变量数据
-   定义 define("const",33);
-   环境常量 $_SERVER 这种常量只有服务器端才能用, 命令行下展示的是bash 里的常量
-   __file__ | __FILE__ 函数返回的是脚本所在在的路径
-   __line__ 文件中的当前行号。
-*** 数据
-**** 服务器数据 $_SERVER
+*** 预定义常量/变量数据
+**** 定义常量 
+     常量和变量的区别之一是 没有 $
+      define("const",33);
+**** 预定义常量/变量
+***** web端     
+****** 服务器数据 $_SERVER
 	   $_SERVER["SERVER_PORT"]  //获取端口  
 	   $_SERVER['HTTP_HOST']  	 //获取域名或主机地址 如test.cn
      $_SERVER['SERVER_NAME']  //获取域名或主机地址 注：只是主域名如test.cn
 	   $_SERVER["REQUEST_URI"]  //获取域名后的详细地址 如：/index.php?id=123 ...  
-	   $_SERVER['SERVER_ROOT']  //请求的网页主目录
+	 !!!  $_SERVER['SERVER_ROOT']  //请求的网页主目录, 好像没用了
      $_SERVER['SCRIPT_NAME']  //包含当前脚本的路径
      $_SERVER['PHP_SELF']  //获取PHP文件名 
 	   $_SERVER["QUERY_STRING"]  //获取PHP后的网址参数  
 	   $_SERVER['HTTP_REFERER']  //来源网页的详细地址  
-**** $_SESSION
-     $_SESSION["userid"]=$manager['adminid'];
-**** 客户机数据 $_POST  $_GET 
-     PHP预定义变量之 $_SERVER （查看服务器和执行环境信息） 介绍 ：
-     $_SERVER['REMOTE_PORT'] //端口。
-     $_SERVER['REMOTE_ADDR'] //当前用户 IP
-     $_SERVER['REMOTE_HOST'] //当前用户主机名 
-     $_SERVER['SERVER_NAME'] //服务器主机的名称。
+     $_SERVER['REMOTE_ADDR'] #正在浏览当前页面用户的 IP 地址。
+     $_SERVER['REMOTE_HOST'] #正在浏览当前页面用户的主机名。
+     $_SERVER['REMOTE_PORT'] #用户连接到服务器时所使用的端口。
      $_SERVER['PHP_SELF']//正在执行脚本的文件名
      $_SERVER['argv'] //传递给该脚本的参数。
      $_SERVER['argc'] //传递给程序的命令行参数的个数。
@@ -105,16 +107,23 @@
      $_SERVER['PHP_AUTH_USER'] #当 PHP 运行在 Apache 模块方式下，并且正在使用 HTTP 认证功能，这个变量便是用户输入的用户名。
      $_SERVER['PHP_AUTH_PW'] #当 PHP 运行在 Apache 模块方式下，并且正在使用 HTTP 认证功能，这个变量便是用户输入的密码。
      $_SERVER['AUTH_TYPE'] #当 PHP 运行在 Apache 模块方式下，并且正在使用 HTTP 认证功能，这个变量便是认证的类型
-**** 命令行 $argc $argv
-** 区域范围
-   local（局部）
-   global（全局）来自于$var= $GLOBALS["var"] === global $var(建立一个引用,不能赋值)
-   static（静态）
-   用名字空间会不会好点
+****** $_SESSION 会话
+****** __FILE__ 文件路径
+       __line__ 文件中的当前行号
+****** 客户机数据 $_POST  $_GET 
+***** console端
+      环境变量
+****** 命令行 $argc $argv
+*** 数据影响区域
+**** local 函数内部
+**** global 整个项目
+     $var= $GLOBALS["var"] === global $var(建立一个引用,不能赋值)
+**** static（静态）
 ** 函数 
-*** 定义 function($arr)   传递值
-*** function add_some_extra(&$string) 传递引用
-*** 定义引用返回function &functionname
+*** 定义 
+    function($arr)   传递值
+    function add_some_extra(&$string) 传递引用
+    function &functionname  引用返回
 *** 内部函数、扩展函数
 *** 类型相关操作
     类型比较 is_number instanceof(继承也可以, 对类和接口）跟 is_a 一样的功能
@@ -276,7 +285,7 @@
 	   key()	从关联数组中取得键名。
 	   krsort()	对数组按照键名逆向排序。
 	   ksort()	对数组按照键名排序。
-	   list()	把数组中的值赋给一些变量。
+***** list()	把数组中的值赋给一些变量。 list($a, $b, $c)=['a', 'b', 'c'];
 	   natcasesort()	用“自然排序”算法对数组进行不区分大小写字母的排序。
 	   natsort()	用“自然排序”算法对数组排序。
 	   next()	将数组中的内部指针向前移动一位。
@@ -582,14 +591,14 @@
      htmlentities — Convert all applicable characters to HTML entities
      htmlspecialchars_decode — 将特殊的 HTML 实体转换回普通字符
      htmlspecialchars — Convert special characters to HTML entities
-**** implode — 将一个一维数组的值转化为字符串
+***** implode — 将一个一维数组的值转化为字符串
      #+BEGIN_SRC php
        <?php
        $arr = array('Hello','World!','I','love','Shanghai!');
        echo implode(" ",$arr);
        ?>
      #+END_SRC
-**** join — 别名 implode
+***** join — 别名 implode
      lcfirst — 使一个字符串的第一个字符小写
      levenshtein — 计算两个字符串之间的编辑距离
      localeconv — Get numeric formatting information
@@ -835,7 +844,7 @@
      socket_shutdown — Shuts down a socket for receiving, sending, or both
      socket_strerror — Return a string describing a socket error
      socket_write — Write to a socket
-*** 日志
+*** 日志记录函数
     可以把函数执行流程写入日志
     file_put_contents(filepath,"out:".$data, FILE_APPEND); 追加到文本
 ** 流程控制
@@ -895,8 +904,9 @@
 *** 对象序列化
     所有php里面的值都可以使用函数serialize()来返回一个包含字节流的字符串来表示。unserialize()函数能够重新把字符串变回php原来的值。 序列化一个对象将会保存对象的所有变量，但是不会保存对象的方法，只会保存类的名字。
 ** 命名空间
-   使用命名空间是 先 require 文件
+   使用命名空间的关键字 use 同require功能一样 , 不用重复使用
    命名空间 namespace my\name; 引用 $a= new my\name::class(); use
+   命名空间 namespace my\name; 引用 $a= new my\name\class(); use
    当前命名空间常量 __NAMESPACE__
    别名 use My\Full\Classname as Another;
    调用全局 同名函数 \gloFunc(); 前面加个 \, 若果同当前函数同名
@@ -905,6 +915,55 @@
    另外，所有非 PHP 代码包括空白符都不能出现在命名空间的声明之前：
    另外，与PHP其它的语言特征不同，同一个命名空间可以定义在多个文件中，即允许将同
    一个命名空间的内容分割存放在不同的文件中。
+   Import and Alias
+   函数
+     <?php
+     use func Namespace\functionName;
+     functionName();
+     To import a constant, change use to use constant:
+     <?php
+     use constant Namespace\CONST_NAME;
+     echo CONST_NAME;
+
+     多名字空间
+     PHP lets you define multiple namespaces in a single PHP file like this:
+    <?php
+    namespace Foo {
+         // Declare classes, interfaces, functions, and constants here
+    }
+    namespace Bar {
+         // Declare classes, interfaces, functions, and constants here
+    }
+\ prefix 指代全局命名空间
+** trait 
+   #+BEGIN_SRC php
+     <?php
+     trait Geocodable {
+          {
+              $this->address = $address;
+          }
+          public function getLatitude()
+         {
+             if (isset($this->geocoderResult) === false) {
+                  $this->geocodeAddress();
+             }
+             return $this->geocoderResult->getLatitude();
+         }
+         public function getLongitude()
+         {
+             if (isset($this->geocoderResult) === false) {
+                  $this->geocodeAddress();
+             }
+             return $this->geocoderResult->getLongitude();
+         }
+         protected function geocodeAddress()
+         {
+             $this->geocoderResult = $this->geocoder->geocode($this->address);
+             return true;
+         }
+     }
+
+   #+END_SRC
 ** 调用外部工具  执行shell shell_exec()
 ** 错误输出 die($msg)
    层次结构
@@ -970,19 +1029,12 @@
 ** 压缩  
 *** zip
     Windows 用户需要在 php.ini 里使 php_zip.dll 可用，以便使用这些函数。
-    Linux 系统 ¶
-    为了使用这些函数，必须在编译 PHP 时用 --enable-zip 配置选项来提供 zip 支持。
+    Linux 在编译 PHP 时用 --enable-zip 配置选项来提供 zip 支持。
 *** Bzip2
 *** LZF
 *** Rar
 *** ZipArchive
-** PECL php扩展仓库
-   下载: pecl install extname
-   这里可以指定版本   extname-0.1
-   或者svn: $ svn checkout http://svn.php.net/repository/pecl/extname/trunk extname
-   然后在php.ini 中激活扩展 ubuntu 中要创建软链接, 包含在文件夹中的, 所以不用修改php.ini文件 
-   php-config  php配置信息
-** 导入excel
+** excel
    最近因项目需要，需要开发一个模块，把系统中的一些数据导出成Excel，修改后再导回系统。就趁机对这个研究了一番，下面进行一些总结。
    基本上导出的文件分为两种：
    1：类Excel格式，这个其实不是传统意义上的Excel文件，只是因为Excel的兼容能力强，能够正确打开而已。修改这种文件后再保存，通常会提示你是否要转换成Excel文件。
@@ -999,8 +1051,8 @@
    导入导出都成，可以导出office2007格式，同时兼容2003。
    下载下来的包中有文档和例子，大家可以自行研究。
    抄段例子出来：
-   PHP代码
-   <?php   
+   #+BEGIN_SRC php
+    <?php   
    /**  
    */   
    
@@ -1024,35 +1076,9 @@
    echo date(’H:i:s’) . ” Set properties\n”;   
    $objPHPExcel->getProperties()->setCreator(”Maarten Balliauw”);   
    $objPHPExcel->getProperties()->setLastModifiedBy(”Maarten Balliauw”);   
-   $objPHPExcel->getProperties()->setTitle(”Office 2007 XLSX Test Document”);   
-   $objPHPExcel->getProperties()->setSubject(”Office 2007 XLSX Test Document”);   
-   $objPHPExcel->getProperties()->setDescrīption(”Test document for Office 2007 XLSX, generated using PHP classes.”);   
-   $objPHPExcel->getProperties()->setKeywords(”office 2007 openxml php”);   
-   $objPHPExcel->getProperties()->setCategory(”Test result file”);   
-   
-   // Add some data   
-   echo date(’H:i:s’) . ” Add some data\n”;   
-   $objPHPExcel->setActiveSheetIndex(0);   
-   $objPHPExcel->getActiveSheet()->setCellValue(’A1′, ‘Hello’);   
-   $objPHPExcel->getActiveSheet()->setCellValue(’B2′, ‘world!’);   
-   $objPHPExcel->getActiveSheet()->setCellValue(’C1′, ‘Hello’);   
-   $objPHPExcel->getActiveSheet()->setCellValue(’D2′, ‘world!’);   
-   
-   // Rename sheet   
-   echo date(’H:i:s’) . ” Rename sheet\n”;   
-   $objPHPExcel->getActiveSheet()->setTitle(’Simple’);   
-   
-   // Set active sheet index to the first sheet, so Excel opens this as the first sheet   
-   $objPHPExcel->setActiveSheetIndex(0);   
-   
-   // Save Excel 2007 file   
-   echo date(’H:i:s’) . ” Write to Excel2007 format\n”;   
-   $objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);   
-   $objWriter->save(str_replace(’.php’, ‘.xlsx’, __FILE__));   
-   
-   // Echo done   
-   echo date(’H:i:s’) . ” Done writing file.\r\n”;  
-
+   $objPHPExcel-
+  
+   #+END_SRC
  
 
    2、使用pear的Spreadsheet_Excel_Writer类
@@ -1060,9 +1086,7 @@
    此类依赖于OLE,下载地址：http://pear.php.net/package/OLE
    需要注意的是导出的Excel文件格式比较老，修改后保存会提示是否转换成更新的格式。
    不过可以设定格式，很强大。
-
-
-   PHP代码
+#+BEGIN_SRC php
    <?php   
    require_once ‘Spreadsheet/Excel/Writer.php’;   
    
@@ -1088,7 +1112,7 @@
    // Let’s send the file   
    $workbook->close();   
    ?>  
-
+#+END_SRC
 
    3:利用smarty，生成符合Excel规范的XML或HTML文件
    支持格式，非常完美的导出方案。不过导出来的的本质上还是XML文件，如果用来导入就需要另外处理了。
@@ -1227,7 +1251,7 @@
    }   
    
    ?>  
-** mPDF   (make PDF ??) [[file+emacs:/home/wuming/soft/extend/phpextend/mpdfmanual.pdf][manualpage]]
+** mPDF
    支持 html标签, 样式的导出(不是全部样式, 如floating只能部分)
    使用了很多代码, 有荣誉的人很多
 *** install
@@ -1235,11 +1259,8 @@
     测试: [path_to_mpdf_folder]/mpdf/examples/
     要改变/tmp/文件夹的目录, 看手册 ^_^
 ** 音频 ID3
-** 扩展安装路径
-   查找扩展路径 php -ini |grep extension
-   extension_dir => /usr/lib/php/20151012
-** 二维码插件 phpqrcode
-
+** 图像
+*** 二维码 phpqrcode
    phpqrcode.php提供了一个关键的png()方法，其中
    参数$text表示生成二位的的信息文本；
    参数$outfile表示是否输出二维码图片 文件，默认否；
@@ -1328,6 +1349,162 @@
    echo '<img src="helloweixin.png">';   
    复制代码
    由于二维码允许有一定的容错性，一般的二维码即使在遮住部分但仍然能够解码，经常我们扫描二维码的时候扫描到甚至不到一半时就能解码扫描结果，这是因为生成器会将部分信息重复表示来提高其容错度，这就是为什么我们在二维码中间加个LOGO图片并不影响解码结果的原因。
+** 扩展管理器
+*** pecl
+   下载: pecl install extname
+   这里可以指定版本   extname-0.1
+   或者svn: $ svn checkout http://svn.php.net/repository/pecl/extname/trunk extname
+   然后在php.ini 中激活扩展 ubuntu 中要创建软链接, 包含在文件夹中的, 所以不用修改php.ini文件 
+   php-config  php配置信息
+*** Composer 依赖管理器
+**** 安装composer
+    curl -sS https://getcomposer.org/installer | php
+    mv composer.phar /usr/local/bin/composer
+**** 设置镜像地址(中国的镜像地址 -g参数表示全局配置)
+     composer config -g repo.packagist composer https://packagist.phpcomposer.com
+**** 声明依赖
+  在项目目录下创建一个 composer.json 文件，指明依赖，比如，你的项目依赖 monolog：
+  #+BEGIN_SRC json
+  {
+      "require": {
+          "monolog/monolog": "1.2.*"
+      }
+  }
+  #+END_SRC
+
+**** 安装依赖
+     安装依赖非常简单，只需在项目目录下运行：
+     composer install
+   
+     如果没有全局安装的话，则运行：
+     php composer.phar install
+**** 自动加载
+     Composer 提供了自动加载的特性，只需在你的代码的初始化部分中加入下面一行：
+     require 'vendor/autoload.php';
+
+**** 模块仓库
+     packagist.org 是Composer的仓库，很多著名的 PHP 库都能在其中找到。你也可以提交你自己的作品。
+**** 1. 仅更新单个库
+  只想更新某个特定的库，不想更新它的所有依赖，很简单：
+
+  composer update foo/bar
+  此外，这个技巧还可以用来解决“警告信息问题”。你一定见过这样的警告信息：
+
+  Warning: The lock file is not up to date with the latest changes in composer.json, you may be getting outdated dependencies, run update to update them.
+  擦，哪里出问题了？别惊慌！如果你编辑了composer.json，你应该会看到这样的信息。比如，如果你增加或更新了细节信息，比如库的描述、作者、更多参数，甚至仅仅增加了一个空格，都会改变文件的md5sum。然后Composer就会警告你哈希值和composer.lock中记载的不同。
+
+  那么我们该怎么办呢？update命令可以更新lock文件，但是如果仅仅增加了一些描述，应该是不打算更新任何库。这种情况下，只需update nothing：
+
+  $ composer update nothing
+  Loading composer repositories with package information
+  Updating dependencies
+  Nothing to install or update
+  Writing lock file
+  Generating autoload files
+  这样一来，Composer不会更新库，但是会更新composer.lock。注意nothing并不是update命令的关键字。只是没有nothing 这个包导致的结果。如果你输入foobar，结果也一样。
+
+  如果你用的Composer版本足够新，那么你可以直接使用--lock选项：
+
+  composer update --lock
+**** 2. 不编辑composer.json的情况下安装库
+  你可能会觉得每安装一个库都需要修改composer.json太麻烦，那么你可以直接使用require命令。
+
+  composer require "foo/bar:1.0.0"
+  这个方法也可以用来快速地新开一个项目。init命令有--require选项，可以自动编写composer.json：（注意我们使用-n，这样就不用回答问题）
+
+  $ composer init --require=foo/bar:1.0.0 -n
+  $ cat composer.json
+  {
+      "require": {
+          "foo/bar": "1.0.0"
+      }
+  }
+**** 3. 派生很容易
+  初始化的时候，你试过create-project命令么？
+
+  composer create-project doctrine/orm path 2.2.0
+  这会自动克隆仓库，并检出指定的版本。克隆库的时候用这个命令很方便，不需要搜寻原始的URI了。
+
+**** 4. 考虑缓存，dist包优先
+  最近一年以来的Composer会自动存档你下载的dist包。默认设置下，dist包用于加了tag的版本，例如"symfony/symfony": "v2.1.4"，或者是通配符或版本区间，"2.1.*"或">=2.2,<2.3-dev"（如果你使用stable作为你的minimum-stability）。
+
+  dist包也可以用于诸如dev-master之类的分支，Github允许你下载某个git引用的压缩包。为了强制使用压缩包，而不是克隆源代码，你可以使用install和update的--prefer-dist选项。
+
+  下面是一个例子（我使用了--profile选项来显示执行时间）：
+
+  $ composer init --require="twig/twig:1.*" -n --profile
+  Memory usage: 3.94MB (peak: 4.08MB), time: 0s
+
+  $ composer install --profile
+  Loading composer repositories with package information
+  Installing dependencies
+    - Installing twig/twig (v1.12.2)
+      Downloading: 100%
+
+  Writing lock file
+  Generating autoload files
+  Memory usage: 10.13MB (peak: 12.65MB), time: 4.71s
+
+  $ rm -rf vendor
+
+  $ composer install --profile
+  Loading composer repositories with package information
+  Installing dependencies from lock file
+    - Installing twig/twig (v1.12.2)
+      Loading from cache
+
+  Generating autoload files
+  Memory usage: 4.96MB (peak: 5.57MB), time: 0.45s
+  这里，twig/twig:1.12.2的压缩包被保存在~/.composer/cache/files/twig/twig/1.12.2.0-v1.12.2.zip。重新安装包时直接使用。
+
+**** 5. 若要修改，源代码优先
+  当你需要修改库的时候，克隆源代码就比下载包方便了。你可以使用--prefer-source来强制选择克隆源代码。
+
+  composer update symfony/yaml --prefer-source
+  接下来你可以修改文件：
+
+  composer status -v
+  You have changes in the following dependencies:
+  /path/to/app/vendor/symfony/yaml/Symfony/Component/Yaml:
+      M Dumper.php
+  当你试图更新一个修改过的库的时候，Composer会提醒你，询问是否放弃修改：
+
+  $ composer update
+  Loading composer repositories with package information
+  Updating dependencies
+    - Updating symfony/symfony v2.2.0 (v2.2.0- => v2.2.0)
+      The package has modified files:
+      M Dumper.php
+      Discard changes [y,n,v,s,?]?
+**** 为生产环境作准备
+  最后提醒一下，在部署代码到生产环境的时候，别忘了优化一下自动加载：
+
+  composer dump-autoload --optimize
+  安装包的时候可以同样使用--optimize-autoloader。不加这一选项，你可能会发现20%到25%的性能损失。
+
+  如果你需要帮助，或者想要了解某个命令的细节，你可以阅读官方文档或者中文文档，也可以查看JoliCode做的这个交互式备忘单。
+
+**** 简单说下composer update和composer install区别：
+    这里说下 composer 的机制, 当 `composer.lock` 文件存在的时候, 执行 `composer install` 命令时, composer 会更新按照 `composer.lock` 里的 package 指定版本进行安装, 如果是执行 `composer update` 的话, 会更新 `package` 版本, 并更新 `composer.lock` 文件（没明白到底有啥区别，参考知乎）.
+
+    在composer 中国推荐的加速方法就是把默认的国外镜像换成国内的。
+    具体步骤：
+    composer config repo.packagist composer https://packagist.phpcomposer.com
+    该命令是修改config.json配置
+
+  然后在自己项目里面的composer.json文件里面添加如下：
+   "repositories": {
+          "packagist": {
+              "type": "composer",
+              "url": "https://packagist.phpcomposer.com"
+          }
+      }
+
+  测试后，速度是变快了很多。
+
+  原有项目新添加扩展的，都使用 composer require new/package 这种方式来安装。
+  需要加版本的话
+  composer require "foo/bar:1.0.0"
 * CI 框架
 ** 应用程序流程图
 ***    index.php 文件作为前端控制器，初始化运行 CodeIgniter 所需的基本资源；
@@ -1516,7 +1693,7 @@ $this->output->delete_cache('/foo/bar');
 : define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
 *** URI安全
 : CodeIgniter 严格限制 URI 中允许出现的字符，以此来减少恶意数据传到你的应用程序的可能性。
-* PHPUnit入门篇
+* PHPUnit测试框架
 PHPUnit是什么？
 它是一款轻量级的php测试框架
 为什么要用PHPUnit？
@@ -2018,153 +2195,6 @@ else
 ?>
 上面的脚本检测了文件是否已存在，如果不存在，则把文件拷贝到名为 "upload" 的目录下。
 文件上传演示操作如下所示：
-* Composer 
-php 依赖管理器
-** 设置镜像地址(中国的镜像地址 -g参数表示全局配置)
-   composer config -g repo.packagist composer https://packagist.phpcomposer.com
-** 声明依赖
-在项目目录下创建一个 composer.json 文件，指明依赖，比如，你的项目依赖 monolog：
-#+BEGIN_SRC json
-{
-    "require": {
-        "monolog/monolog": "1.2.*"
-    }
-}
-#+END_SRC
-
-** 安装依赖
-   安装依赖非常简单，只需在项目目录下运行：
-   composer install
-   
-   如果没有全局安装的话，则运行：
-   php composer.phar install
-** 自动加载
-   Composer 提供了自动加载的特性，只需在你的代码的初始化部分中加入下面一行：
-   require 'vendor/autoload.php';
-
-** 模块仓库
-   packagist.org 是Composer的仓库，很多著名的 PHP 库都能在其中找到。你也可以提交你自己的作品。
-** 1. 仅更新单个库
-只想更新某个特定的库，不想更新它的所有依赖，很简单：
-
-composer update foo/bar
-此外，这个技巧还可以用来解决“警告信息问题”。你一定见过这样的警告信息：
-
-Warning: The lock file is not up to date with the latest changes in composer.json, you may be getting outdated dependencies, run update to update them.
-擦，哪里出问题了？别惊慌！如果你编辑了composer.json，你应该会看到这样的信息。比如，如果你增加或更新了细节信息，比如库的描述、作者、更多参数，甚至仅仅增加了一个空格，都会改变文件的md5sum。然后Composer就会警告你哈希值和composer.lock中记载的不同。
-
-那么我们该怎么办呢？update命令可以更新lock文件，但是如果仅仅增加了一些描述，应该是不打算更新任何库。这种情况下，只需update nothing：
-
-$ composer update nothing
-Loading composer repositories with package information
-Updating dependencies
-Nothing to install or update
-Writing lock file
-Generating autoload files
-这样一来，Composer不会更新库，但是会更新composer.lock。注意nothing并不是update命令的关键字。只是没有nothing 这个包导致的结果。如果你输入foobar，结果也一样。
-
-如果你用的Composer版本足够新，那么你可以直接使用--lock选项：
-
-composer update --lock
-** 2. 不编辑composer.json的情况下安装库
-你可能会觉得每安装一个库都需要修改composer.json太麻烦，那么你可以直接使用require命令。
-
-composer require "foo/bar:1.0.0"
-这个方法也可以用来快速地新开一个项目。init命令有--require选项，可以自动编写composer.json：（注意我们使用-n，这样就不用回答问题）
-
-$ composer init --require=foo/bar:1.0.0 -n
-$ cat composer.json
-{
-    "require": {
-        "foo/bar": "1.0.0"
-    }
-}
-** 3. 派生很容易
-初始化的时候，你试过create-project命令么？
-
-composer create-project doctrine/orm path 2.2.0
-这会自动克隆仓库，并检出指定的版本。克隆库的时候用这个命令很方便，不需要搜寻原始的URI了。
-
-** 4. 考虑缓存，dist包优先
-最近一年以来的Composer会自动存档你下载的dist包。默认设置下，dist包用于加了tag的版本，例如"symfony/symfony": "v2.1.4"，或者是通配符或版本区间，"2.1.*"或">=2.2,<2.3-dev"（如果你使用stable作为你的minimum-stability）。
-
-dist包也可以用于诸如dev-master之类的分支，Github允许你下载某个git引用的压缩包。为了强制使用压缩包，而不是克隆源代码，你可以使用install和update的--prefer-dist选项。
-
-下面是一个例子（我使用了--profile选项来显示执行时间）：
-
-$ composer init --require="twig/twig:1.*" -n --profile
-Memory usage: 3.94MB (peak: 4.08MB), time: 0s
-
-$ composer install --profile
-Loading composer repositories with package information
-Installing dependencies
-  - Installing twig/twig (v1.12.2)
-    Downloading: 100%
-
-Writing lock file
-Generating autoload files
-Memory usage: 10.13MB (peak: 12.65MB), time: 4.71s
-
-$ rm -rf vendor
-
-$ composer install --profile
-Loading composer repositories with package information
-Installing dependencies from lock file
-  - Installing twig/twig (v1.12.2)
-    Loading from cache
-
-Generating autoload files
-Memory usage: 4.96MB (peak: 5.57MB), time: 0.45s
-这里，twig/twig:1.12.2的压缩包被保存在~/.composer/cache/files/twig/twig/1.12.2.0-v1.12.2.zip。重新安装包时直接使用。
-
-** 5. 若要修改，源代码优先
-当你需要修改库的时候，克隆源代码就比下载包方便了。你可以使用--prefer-source来强制选择克隆源代码。
-
-composer update symfony/yaml --prefer-source
-接下来你可以修改文件：
-
-composer status -v
-You have changes in the following dependencies:
-/path/to/app/vendor/symfony/yaml/Symfony/Component/Yaml:
-    M Dumper.php
-当你试图更新一个修改过的库的时候，Composer会提醒你，询问是否放弃修改：
-
-$ composer update
-Loading composer repositories with package information
-Updating dependencies
-  - Updating symfony/symfony v2.2.0 (v2.2.0- => v2.2.0)
-    The package has modified files:
-    M Dumper.php
-    Discard changes [y,n,v,s,?]?
-** 为生产环境作准备
-最后提醒一下，在部署代码到生产环境的时候，别忘了优化一下自动加载：
-
-composer dump-autoload --optimize
-安装包的时候可以同样使用--optimize-autoloader。不加这一选项，你可能会发现20%到25%的性能损失。
-
-如果你需要帮助，或者想要了解某个命令的细节，你可以阅读官方文档或者中文文档，也可以查看JoliCode做的这个交互式备忘单。
-
-**  简单说下composer update和composer install区别：
-  这里说下 composer 的机制, 当 `composer.lock` 文件存在的时候, 执行 `composer install` 命令时, composer 会更新按照 `composer.lock` 里的 package 指定版本进行安装, 如果是执行 `composer update` 的话, 会更新 `package` 版本, 并更新 `composer.lock` 文件（没明白到底有啥区别，参考知乎）.
-
-  在composer 中国推荐的加速方法就是把默认的国外镜像换成国内的。
-  具体步骤：
-  composer config repo.packagist composer https://packagist.phpcomposer.com
-  该命令是修改config.json配置
-
-然后在自己项目里面的composer.json文件里面添加如下：
- "repositories": {
-        "packagist": {
-            "type": "composer",
-            "url": "https://packagist.phpcomposer.com"
-        }
-    }
-
-测试后，速度是变快了很多。
-
-原有项目新添加扩展的，都使用 composer require new/package 这种方式来安装。
-需要加版本的话
-composer require "foo/bar:1.0.0"
 * 日志记录
 error_log("出现大麻烦了!", 1, ". mydomain.com");   //发送到管理员邮箱中   
 error_log("搞砸了!",   2,   "localhost:5000");     //发送到本机对应5000端口的服务器中   
@@ -2187,3 +2217,255 @@ error_log("搞砸了!\n",   3,   "/usr/local/errors.log");  //追加到指定的
   }
  ?>
 #+END_SRC
+* 常见错误
+  : php 文件权限对 file_exist()等文件函数影响大
+* modern php
+** 第一部分 语言功能
+*** 命名空间 (避免在一个对话中方言的冲突)
+    指向具体事物
+*** 声明 namespace
+*** 导入和别名
+    默认使用    $response = new \Symfony\Component\HttpFoundation\Response('Oops'，400);
+    导入 use Symfony\Component\HttpFoundation\Response;
+    别名 use Symfony\Component\HttpFoundation\Response as Res;
+    
+      有用的提示
+      代码到接口
+      性状
+      为什么我们使用特质18
+      如何创建特质19
+      如何使用特质20
+      发电机22
+      创建一个生成器22
+      使用发电机23
+      关闭25
+      创建25
+      附加国家27
+      Zend OPcache 29
+     启用Zend OPcache 29
+     配置Zend OPcache 31
+     使用Zend OPcache 31
+   内置HTTP服务器31
+     启动服务器32
+     配置服务器32
+     路由器脚本33
+     检测内置服务器33
+     缺点33
+   接下来是什么34
+第二部分 好的做法
+3.标准。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。37
+   PHP-FIG的救援37
+   框架互操作性38
+     接口38
+     自动加载39
+     39式
+   什么是PSR？40
+   PSR-1：基本代码风格40
+   PSR-2：严格的代码风格41
+   PSR-3：记录器接口45
+     写一个PSR-3记录器46
+     使用PSR-3记录器47
+   PSR-4：自动加载机47
+     为什么自动加载器很重要47
+     PSR-4 Autoloader策略48
+     如何编写PSR-4自动加载器（以及为什么不应该）49
+4.组件。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。51
+   为什么使用组件？51
+   什么是组件？52
+   组件与框架53
+     不是所有的框架都不好54
+     为作业使用正确的工具54
+   查找组件55
+     商店56
+     选择56
+     留下反馈
+   使用PHP组件57
+vi | 目录
+     如何安装Composer 58
+     如何使用作曲家59
+     示例项目61
+     作曲家和私人存储库64
+   创建PHP组件66
+     供应商和包装名称66
+     命名空间66
+     文件系统组织67
+     composer.json文件68
+     自述文件70
+     组件实现71
+     版本控制72
+     包装师提交73
+     使用组件74
+好的做法。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。75
+   消毒，验证和逃生75
+     消毒输入76
+     验证数据79
+     逃生输出80
+   密码80
+     永远不知道用户密码81
+     永不限制用户密码81
+     永不电子邮件用户密码81
+     用bcrypt散列用户密码82
+     密码哈希API 82
+     用于PHP的密码散列API <5.5.0 87
+   日期，时间和时区87
+     设置默认时区88
+     DateTime类88
+     DateInterval类89
+     DateTimeZone类91
+     DatePeriod类92
+     nesbot /碳组件93
+   数据库93
+     PDO分机93
+     数据库连接和DSN 93
+     准备好的陈述96
+     查询结果98
+     交易100
+   多字节字符串103
+     字符编码104
+                                                                                                               目录| 七
+        输出UTF-8数据105
+     流106
+        流包装106
+        流上下文109
+        流过滤器110
+        自定义流过滤器112
+     错误和例外115
+        例外115
+        异常处理程序118
+        错误119
+        错误处理程序121
+        开发过程中的错误和例外123
+        生产124
+第三部分 部署，测试和调优
+主持。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。129
+     共享服务器129
+     虚拟专用服务器130
+     专用服务器131
+     PaaS 131
+     选择一个托管计划132
+7.配置。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。133
+     我们的目标134
+     服务器设置134
+        首次登录134
+        软件更新135
+        非根用户135
+        SSH密钥对认证136
+        禁用密码和根登录138
+     PHP-FPM 138
+        安装138
+        全局配置139
+        池配置140
+     nginx 143
+        安装143
+        虚拟主机143
+     自动化服务器配置
+     委托服务器供应146
+     进一步阅读147
+viii | 目录
+    接下来是什么147
+ 8.调音。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。149
+    php.ini文件149
+    存储器150
+    Zend OPcache 151
+    文件上传152
+    最长执行时间153
+    会话处理154
+    输出缓冲155
+    实际路径高速缓存155
+    下一步155
+ 9.部署。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。157
+    版本控制157
+    自动部署157
+      使它简单158
+      使其可预测158
+      让它可逆158
+    Capistrano 158
+      它是如何工作的158
+      安装159
+      配置159
+      验证161
+      准备远程服务器161
+      Capistrano钩162
+      部署您的应用程序163
+      回滚您的应用程序163
+    进一步阅读163
+    什么是下一步163
+10.测试。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。165
+    我们为什么要测试？165
+    我们什么时候测试？166
+      在166之前
+      在166期间
+      166后
+    我们测试什么？166
+    我们如何测试？167
+      单元测试167
+      测试驱动开发（TDD）167
+      行为驱动开发（BDD）167
+                                                                                                                      目录| 九
+     PHPUnit 168
+       目录结构169
+       安装PHPUnit 170
+       安装Xdebug 170
+       配置PHPUnit 171
+       Whovian类172
+       WhovianTest测试用例173
+       运行测试175
+       代码覆盖率176
+     用Travis CI 177进行连续测试
+       安装程序177
+       运行178
+     进一步阅读178
+     接下来是什么179
+11.分析。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。181
+     何时使用分析器181
+     轮廓仪的类型181
+     Xdebug 182
+       配置182
+       触发器183
+       分析183
+     XHProf 183
+       安装184
+       XHGUI 184
+       配置185
+       触发器185
+     新的遗物探查器185
+     Blackfire Profiler 186
+     进一步阅读186
+     接下来是什么186
+12. HHVM和Hack。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。187
+     HHVM 187
+       PHP在Facebook 188
+       HHVM和Zend Engine Parity 189
+       HHVM适合我吗？190
+       安装190
+       配置191
+       扩展192
+       使用Supervisord 192监视HHVM
+       HHVM，FastCGI和Nginx 194
+ x | 目录
+     黑客语言195
+       转换PHP到黑客196
+       什么是类型？196
+       静态打字197
+       动态打字198
+       黑客两种方式198
+       黑客类型检查199
+       黑客模式200
+       Hack语法200
+       黑客数据结构202
+       HHVM /黑客与PHP 203
+     进一步阅读204
+13.社区。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。205
+     本地PUG 205
+     会议205
+     辅导206
+     保持最新206
+       网站206
+       邮件列表206
+       Twitter 206
+       播客206
+       幽默207
+ A.安装PHP。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。209
+ B.地方发展环境。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。229
+ 指数。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。237
+*** 
