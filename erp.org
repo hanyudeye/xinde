@@ -1,0 +1,282 @@
+注意：所有界面ID都自动生成，不能更改，一旦更改会出现数据不准确
+
+1.配置菜单,进入系统管理配置界面WebPart界面配置
+1：功能定义 
+
+选择功能定义标签，点击编辑新增
+1)GItem：客户的集团编码(一般固定自动生成)
+2)DItem:客户的公司编码(一般固定自动生成)
+3)AppID:公司名称(一般输入1即可)
+4)@FnLan_FuncDesc:功能描述，允许多语言输入
+5)LinkFunction:关联Object(输入规则：Object(对应的主ObjectID).定义和Object相关联的名称)，如果功能下属有其他功能的话LinkFunction未空值，无需输入。
+6)Owner:目前无用，无需输入
+7)FuncCode：功能编码(一般规格为顶级功能未两位，如10、20、30等，下级功能为1001、 2001 、3001等，例如：顶级功能有系统管理，编码为10，那下面定义的功能编码应为1001或1002等)
+2：菜单定义：
+选择菜单定义标签，点击编辑新增
+1)AppID:公司名称(一般输入1即可)
+2)Name：菜单编码(推荐与功能编码一致)
+3)Lan1_Caption：菜单名称
+4)TreeCode:菜单排列顺序编码
+5)ParentCode:上级菜单编码(form修改菜单上级菜单为m01.m11也就是配置界面)
+6)ShowMenuForm:菜单是否显示左边导航上
+7)hotkey:菜单快捷键
+8)FunctionID：对用的功能的主键ID
+9)Img24：显示菜单大图片
+10)Img16：显示菜单小图片 
+2.配置Object对象 ,进入系统管理配置界面Object定义
+对于一般窗体单据都会有一个主Object，点击新增
+1)ID:ObjectID主键，自动生成
+2)objName：Object名称
+3)ObjectTypeID:对象类型，目前无作用，随便选择
+4)MainObjID：选择上级对象，主要用于显示左边树导航，业务上无作用
+5)LinkTable：关联数据库的表名称
+6)SelectString：查询数据时的Sql语句(如定义Form弹出查询的是否选用Object的话需要定义SelectString查询语句)
+7)UIFormID:相对于的Form ID
+8)UIListFormID:无需输入
+9)ManagerForm：无需输入
+10)MangeAccessory：无需输入
+11)Owner：无需输入
+12)上级菜单用于生成功能菜单时选择上级菜单
+ 选择ObjectF标签：
+1)ID：主键自动生成
+2)ObjectID：自动生成，对应的主OBjectID
+3)Functionname：对用功能定义的LinkFunction自动的Object(….).FunctionName
+4)UIFOrmID:对用Form的主键ID
+5)ManagerForm：目前无用
+6)NeedFormKey：目前无用
+选择Fields标签(如果需要定义object的字段信息，常用于公共弹出查询显示字段信息)：
+1)ID:主键自动生成
+2)ObjectID: 自动生成，对应的主OBjectID
+3)SN:排序
+4)VarName：字段绑定值
+5)VarType：字段类型
+6)Varlength:字段长度
+7)Lan1_Caption:字段名称描述
+8)LinkObjID：目前无用
+9)AllowNull：是否为空
+10)AutoID：目前无用
+11)Owner：目前无用
+12)CodeRuleID:目前无用
+13)Visible：是否显示在界面上
+14)Width:显示长度
+
+ 选择Status标签（定义对象的状态，如单据的已开单，已审核等信息的定义）：
+1)ID：主键自动生成
+2)ObjTypeID：自动生成，对应的主OBjectID
+3)Code：状态编码
+4)Name：状态名称（如已开单，已审核）
+5)NextStep：单据下一个状态
+3.配置Form
+
+1)编码：主键自动生成
+2)系统：所要开发的客户系统的名称，选择，默认一个
+3)界面类型：界面类型包括:表单、网格、主从表、多表格、树加表格、树加网格、复杂、条码扫描、向导。常用的主要有表单、网格、主从表、复杂(其中复杂类型需要定义布局，其他类型无需定义)
+4)名称：窗体的界面名称，允许多语言输入
+5)ButtonStyleID:目前无用
+6)LogLevel：无级别（不记录单据操作日志），级别1和级别2一样（记录单据操作日期）
+7)ShowHandle：显示单据下方操作日志信息
+8)ShowFlag：显示窗体标题信息
+9)ShowButton：是否显示单据上方按钮栏
+10)FormWindowState:目前无用
+11)FormFixSize：目前无用
+12)FormWidth：如果窗体不是弹出窗体，无需设置，否则设置窗体宽度(按像素显示)
+13)FormHeight：如果窗体不是弹出窗体，无需设置，否则设置窗体高度(按像素显示)
+14)IsAnaly:目前无用
+15)FuncID：目前无用
+16)AutoSave：目前无用
+17)Owner：目前无用
+18)IfPopup:窗体是否是弹出窗体
+19)IfModal：窗体是否是模态弹出窗体
+20)IfCompress:窗体传输数据是否采用压缩传输，一般根据数据量大小来觉得是否压缩传输，如果数据量大则考虑压缩传输，否则采用不压缩传输
+21)缓存本地数据：单据输入时是否缓存，如果采用缓存，则用户输入单据中如果突然死机或自动重启，下次打开单据时会自动提醒是否恢复上次输入的数据
+
+选择Datas标签
+1)ID:主键自动生成
+2)CreateFields：点击生成对用的Fields，前提是在Datas的UpdateTable填写所要生成的字段的表名称
+3)DataName：Data的名称，一个Form下DataName是不能重复的
+4)SN：排序值，获取数据的先后顺序
+5)ObjTypeID：对用的ObjectID主键
+6)DataString：Datas的查询语句
+7)ExecuteString：如果定义的DataString有连接查询或者复杂查询的时候，sql无法自动生成更新插入语句，所以可以在此定义一条简单语句，能够执行生成新增，更新，删除语句，如select * from 表名即可
+8)FilterString：用于弹出查询设置返回名值信息，如果一张销售订单里存放着客户ID，而且这个字段是弹出查询的，在显示界面是否需要显示客户名称，就要设置FilterString，参考如下：select * from 客户表 WHERE 客户ID in (select * from 当前datas的表名),这样显示的时候会自动匹配显示客户名称
+9)SortString：Datas排序值，如Name 按Name升序，或Name Desc 按Name降序获取数据的时候
+10)CanUpdate：datas是否更新
+11)LateSet：是否数据延后获取，一般定义有掩码的时候需要设置该选项，注：新系统掩码采用@Fn(DataName.VarName)这种方式
+12)Caption：Data的名称，一般定义备注datas的时候才会设置Caption
+13)PrimaryData：是否主键，一个Form最多只会有一个PrimaryData
+14)MainData: 该属性主要用在导航与表单之间，主从表的主表与从表之间。例如：主表与从表，在从表的MainData中设置主表的DataID,然后在设置LinkField(从表是通过哪一个字段与主表相联系的
+15)LinkField:功能如上
+16)KeyField：一个Data的主键，也是必须要设置的
+17)AreaID：主要是用在复杂的Form类型中。当Form类型是复杂时，该Form中表单、网格、备注等都要设置AreaID，AreaID来自于布局设置的ID
+18)EnableLogic: 该属性控制是在什么状态下能修改,Edit为编辑状态下修改，NotEdit为非编辑状态下能修改
+19)PageSize:是否采用分页显示数据，如果数据量大的是否都会采用分页显示，PageSize设置是一页显示几条数据
+20)UpdateTable：设置CreateFields时的表名称
+21)AllowAddDelline:是否允许增行和删行，一般用于网格控制
+22)AutoFiter：是否显示过滤行，一般用于弹出查询是用于过滤删选数据
+
+
+Fields标签页
+1)ID:主键自动生成
+2)SN：字段显示顺序
+3)VarName：显示字段名
+4)VarType：字段类型，与数据库类型一致
+5)VarLength：字段长度，与数据库一致
+6)ControlType:控件类型
+7)Caption：字段标题
+8)VarLenScale:当控件类型是浮点型是设置小数保留位数
+9)DataField：数据库绑定字段
+10)LinkObjID：设置连接Object也就是连接打开指定的Form
+11)LinkDataID、ListField、BoundField：主要用在Field值的来源控制，LinkData是数据来源的DataID，ListField是Field显示的值，BoundField是Field绑定的值，后台保存的值只会是BoundField
+12)GroupMode：网格合计，有最大值，最小值，合计等
+13)IsMerge：是否合并，当网格中存在两个数据几个字段一样的情况的话设置改属性将自动合并相同行
+14)Width：字段宽度，根据像素，一般情况下网格字段的宽度有80，其他为200
+15)Enabled：是否允许输入
+16)Visible：是否显示
+17)AutoID：是否自动生成ID，一般情况下，主键都自动生成ID
+18)CodeRuleID：设置生成数据规格，一般情况单据类的单据号都自动生成，需设置BO_CodeRule表，填入BO_CodeRule的ID值
+19)IsFixCol：是否固定列，一般网格会设置是否固定列
+20)DataFormat：设置显示格式，目前用于日期显示格式，如yyyy-MM-dd
+21)AllowNull:是否允许为空输入
+
+
+  选择Button标签（新建Form是点击Form界面的生成Button按钮，将自动生成按钮）
+1)ID:主键自动生成
+2)FuncID：目前无用
+3)ButtonKey：按钮编码，无需更改
+4)Lan1_Caption:按钮名称
+5)EnableLogic: 该属性控制是在什么状态下能使用按钮,Edit为编辑状态下使用，NotEdit为非编辑状态下能使用
+6)Visible：是否显示按钮
+7)Owner：目前无用
+8)Sort：按钮排列顺序
+9)EnableGroup：是否开始分组，选择后按钮之间显示分隔符
+
+  Status标签类似Object定义的State标签
+
+ ButtonFieldsLogic标签
+1)FieldsID:选择哪个字段需要控制编辑
+2)Enablelogic：该属性控制是在什么状态下能使用按钮,Edit为编辑状态下使用，NotEdit为非编辑状态下能使用
+
+ButtonState标签（系统按钮在单据的某个状态设置是否能用或者显示）
+1)StatusCode:单据状态
+2)ButtonsID：系统按钮
+3)FuncID：功能
+4)Enabled：是否可用
+5)Visible：是否显示
+6)Owner：无用
+
+FieldsState标签：类似ButtonState标签
+
+
+NewArea标签（窗体界面布局，只针对复杂类型的窗体布局）
+  UI_Layout标签：设置窗体的窗体的行数与列数
+1)ID:自动生成
+2)ROWS:窗体的行数
+3)Cols窗体的列数
+4)LayoutType：是否顶级容器，一个窗体只会存在且只有一个顶级容器
+  UI_LayoutStyle标签:设置行列宽度大小
+1)ID：自动生成
+2)UI_LayoutID:所对应的UI_Layout的ID
+3)Type：类型，行为R，列为C
+4)Name：排列顺序
+5)SizeType：Absolute绝对值需设置SizeValue，AutoSize自适应大小，无需设置SizeValue，Percent按比例显示，需设置SizeValue
+6)SizeValue：设置长宽像素
+
+ UI_LTopContainer标签：设置行列放置控件类型
+1)ID:自动生成
+2)TopContainerType：控件类型，除了Tab标签的选择XtraTabControl，其余选择PanelControl
+3)UI_LayoutID: 所对应的UI_Layout的ID
+4)Caption:目前无用
+5)RowID：行数
+6)ColID：列数
+
+  UI_LContainer标签：设置布局
+1)ID:自动生成，此ID用于Datas的AreaID
+2)UI_LTopCOntainerID:设置第几行第几列，根据UI_LTopContainer标签里的ID
+3)Lan1_Caption：标签名称，一般Tab的是否采用需要lan1_Caption
+4)OrderValue：排序值一般Tab的是否采用需要排序
+5)UI_LayoutID:嵌套表格时放置另外一个表格的ID
+
+
+ CheckData标签：
+数据修改、打开数据，这2个是针对Data的
+自定义按钮，是要定义Field的
+字段修改也是
+报表打印，也是要Data的，因为每个报表都定义一个Data
+首先，允许用关键字“go”分隔语句
+被"go"分隔的语句将按顺序执行，
+基本等价于定义几条CheckData，这样同类的CheckData可以定义在一条数据库记录里，比较清晰
+CallSysFunc
+CallSysFunc(RefreshData) '刷新整个界面 ----------------------------已完成
+CallSysFunc(RefreshData, 111) '刷新某个Data(DataID:111)----------------------------已完成
+
+
+CallSysFunc(LoadData,111) 'Load某个Data(DataID:111)----------------------------已完成
+
+
+CallSysFunc(UserButtonClick,111) '模拟自定义按钮点击(FieldUID:111)----------------------------已完成
+
+
+CallSysFunc(ViewLinkObject,111,222) '查看Object的主界面（ObjectID:111, Object:222）
+
+
+CallSysFunc(EditLinkObject,111,222) '编辑Object（ObjectID:111, ObjectKey:222）
+
+
+CallSysFunc(ViewLinkForm,111,222) '查看Form（FormID:111, FormKey:222）----------------------------已完成
+
+
+CallSysFunc(EditLinkForm,111,222) '编辑Form（FoID:111, FormKey:222）----------------------------已完成
+
+
+CallSysFunc(NewForm,111,"select 11 as aa, 'abc' as bb") '新增Form（FoID:111, Sql语句查询结果做为默认值）
+
+
+CallSysFunc(EditLinkAccessory, 111,222) '编辑附件(ObjectID:111，ObjectKey:222)
+
+
+CallSysFunc(SetFieldValue,111,222) '给字段赋值(FieldUID:111,所赋的值:222)----------------------------已完成
+
+
+CallSysFunc(SetFieldValueCalculator,All_111,@Fn(Sum(DataName.DataField)) - )'FieldUID:111,给字段计算赋值 All_是否更改所有行，否则更改当前行
+
+
+
+CallSysFunc(SaveDataOne,111) '单独保存某个Data（DataUID:111)----------------------------已完成
+
+
+CallSysFunc(Set_ActiveField,111) '界面光标移到某字段(FieldUID:111)----------------------------已完成
+
+
+CallSysFunc(MoveRecord,111,222) '移动Data的记录(DataUID:111, DataKey:222(特殊：@MoveFirst、@MoveLast、@MovePrevious、@MoveNext))
+
+
+'调用系统按钮，后面跟的是ButtonKey)----------------------------已完成
+CallSysFunc(New)
+CallSysFunc(Del)
+CallSysFunc(Edit)
+CallSysFunc(Save)
+CallSysFunc(Print,2) '第二个参数，按钮有下拉的时候，指出触发第几个子按钮。
+.....
+Sql执行成功与否的判定：
+a、没有返回任何记录集，认为执行成功
+
+
+b、所返回的记录集，可能包含以下自定义字段：
+CheckResult  必须要有，没有就报错，0 表示失败，1 表示成功，2表示提问
+CheckMsg 提示信息，失败就是错误信息，成功就是提示信息，提问时候参照4、Msgbox规则来定义Msgbox的显示内容，根据用户回答决定是否成功。
+ReturnKey 返回值，如果有这个字段，那么执行成功后，随后的CheckData可以通过掩码 @ReturnKey 来引用本次脚本的返回值。
+
+
+c、返回记录集，但没有记录（记录数=0），认为执行成功
+
+
+d、返回记录集，只有一条记录的，检查CheckResult内容看是否成功，并根据记录集定义显示提示和返回值。
+界面设计  用布局  layout 的方式
+控件 From 表单
+
+
+主从表  严格按照格式
+
+注意 SN 数据类型
+
+网格 grid
