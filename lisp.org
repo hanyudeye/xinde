@@ -1,100 +1,170 @@
-* 数据类型
-** 基本类型
-   interger, float
-*** 点对符号
-   cons  '(rose . red)
-    '(rose . red)
-    #+BEGIN_SRC lisp
-      (setq alist-of-colors
-            '((rose . red) (lily . white) (buttercup . yellow)))
-      (cdr '((rose . red) (lily . white) (buttercup . yellow)))
+* elisp
+** 数据类型
+*** 基本类型
+    interger, float
+**** 点对符号
+    cons  '(rose . red)
+     '(rose . red)
+     #+BEGIN_SRC lisp
+       (setq alist-of-colors
+             '((rose . red) (lily . white) (buttercup . yellow)))
+       (cdr '((rose . red) (lily . white) (buttercup . yellow)))
+     #+END_SRC
+**** symbol, string, vector, hash-table, subr, byte-code function
+    整数，浮点，字符，符号（函数），序列, 列表, 数组、向量，字符串，矢量（一维数组, 用一些符号存储方向）
+    布尔，哈希表（超快查找表），宏，字节码，
+**** 向量 vector
+     [1 "two" (three)]      ; A vector of three elements.
+**** 控制字符
+   表示法？ 加个问号 ?Q?81, 使用 (insert ?\s)
+   特殊的控制字符
+   ?\a ⇒ 7                 ; control-g, ‘C-g’
+   ?\b ⇒ 8                 ; backspace, <BS>, ‘C-h’
+      ?\t ⇒ 9                 ; tab, <TAB>, ‘C-i’
+      ?\n ⇒ 10                ; newline, ‘C-j’
+      ?\v ⇒ 11                ; vertical tab, ‘C-k’
+      ?\f ⇒ 12                ; formfeed character, ‘C-l’
+      ?\r ⇒ 13                ; carriage return, <RET>, ‘C-m’
+      ?\e ⇒ 27                ; escape character, <ESC>, ‘C-[’
+      ?\s ⇒ 32                ; space character, <SPC>
+      ?\\ ⇒ 92                ; backslash character, ‘\’
+      ?\d ⇒ 127               ; delete character, <DEL>
+**** 转义语法 对于转义符号 \ 的用法 (insert ?\u662f)是
+   1.指定unicode字符 ?\uNNNN, N是十六制数字   
+   2.用x指定十六进制字符码 ?\x41  八进制 ？\002
+   3.控制字符   ?\^I ⇒ 9     ?\C-I ⇒ 9   这里 ^ 和 C 等价 , a是0，以此类推，？是历史原因 127, 查看 lisp 手册
+   4.元字符语法 用<META> 键修饰 , 有 2**27这么多位长
+   ‘?\M-A’ 表示 ‘M-A’
+   ‘?\M-\C-b’, ‘?\C-\M-b’, or ‘?\M-\002’表示 ‘C-M-b’ 
+   5.‘?\H-\M-\A-x’ represents ‘Alt-Hyper-Meta-x’
+   6.‘?\C-\S-o’ or ‘?\C-\S-O’ represents the shifted-control-o character.
+*** editing 类型
+**** Buffer Type::         The basic object of editing.
+**** Marker Type::         A position in a buffer.
+**** Window Type::         Buffers are displayed in windows.
+**** Frame Type::          Windows subdivide frames.
+**** Terminal Type::       A terminal device displays frames.
+**** Window Configuration Type::   Recording the way a frame is subdivided.
+**** Frame Configuration Type::    Recording the status of all frames.
+**** Process Type::        A subprocess of Emacs running on the underlying OS.
+**** Stream Type::         Receive or send characters.
+**** Keymap Type::         What function a keystroke invokes.
+**** Overlay Type::        How an overlay is represented.
+**** Font Type::           Fonts for displaying text.
+** 函数
+   print 函数
+   setq 赋值语句
+   eval 求值
+   insert 插入字符串
+   局部变量定义  let ((name value)(name2 value))
+  输入 (read-from-minibuffer "Enter your name: ")
+  列表　(setq names '("xiaoli" "xiaoming"))
+** 函数
+*** 变量赋值
+    set setq
+*** 局部变量定义
+    let
+    (let (
+ (a 3)
+ (b 4)
+ ))
+ 要两个括号
+*** 函数定义 
+    defun
+*** 使函数成为交互函数
+    就是 M-x 找的到的
+    #+BEGIN_SRC elisp
+      (defun fun()
+        " 说明"
+        (interactive "p") ;;添加这一段
+        (message "xxx")
+        )  
     #+END_SRC
-*** symbol, string, vector, hash-table, subr, byte-code function
-   整数，浮点，字符，符号（函数），序列, 列表, 数组、向量，字符串，矢量（一维数组, 用一些符号存储方向）
-   布尔，哈希表（超快查找表），宏，字节码，
-*** 向量 vector
-    [1 "two" (three)]      ; A vector of three elements.
-*** 控制字符
-  表示法？ 加个问号 ?Q?81, 使用 (insert ?\s)
-  特殊的控制字符
-     ?\a ⇒ 7                 ; control-g, ‘C-g’
-     ?\b ⇒ 8                 ; backspace, <BS>, ‘C-h’
-     ?\t ⇒ 9                 ; tab, <TAB>, ‘C-i’
-     ?\n ⇒ 10                ; newline, ‘C-j’
-     ?\v ⇒ 11                ; vertical tab, ‘C-k’
-     ?\f ⇒ 12                ; formfeed character, ‘C-l’
-     ?\r ⇒ 13                ; carriage return, <RET>, ‘C-m’
-     ?\e ⇒ 27                ; escape character, <ESC>, ‘C-[’
-     ?\s ⇒ 32                ; space character, <SPC>
-     ?\\ ⇒ 92                ; backslash character, ‘\’
-     ?\d ⇒ 127               ; delete character, <DEL>
-*** 转义语法 对于转义符号 \ 的用法 (insert ?\u662f)是
-  1.指定unicode字符 ?\uNNNN, N是十六制数字   
-  2.用x指定十六进制字符码 ?\x41  八进制 ？\002
-  3.控制字符   ?\^I ⇒ 9     ?\C-I ⇒ 9   这里 ^ 和 C 等价 , a是0，以此类推，？是历史原因 127, 查看 lisp 手册
-  4.元字符语法 用<META> 键修饰 , 有 2**27这么多位长
-  ‘?\M-A’ 表示 ‘M-A’
-  ‘?\M-\C-b’, ‘?\C-\M-b’, or ‘?\M-\002’表示 ‘C-M-b’ 
-  5.‘?\H-\M-\A-x’ represents ‘Alt-Hyper-Meta-x’
-  6.‘?\C-\S-o’ or ‘?\C-\S-O’ represents the shifted-control-o character.
-** editing 类型
-*** Buffer Type::         The basic object of editing.
-*** Marker Type::         A position in a buffer.
-*** Window Type::         Buffers are displayed in windows.
-*** Frame Type::          Windows subdivide frames.
-*** Terminal Type::       A terminal device displays frames.
-*** Window Configuration Type::   Recording the way a frame is subdivided.
-*** Frame Configuration Type::    Recording the status of all frames.
-*** Process Type::        A subprocess of Emacs running on the underlying OS.
-*** Stream Type::         Receive or send characters.
-*** Keymap Type::         What function a keystroke invokes.
-*** Overlay Type::        How an overlay is represented.
-*** Font Type::           Fonts for displaying text.
-* 函数
-  print 函数
-  setq 赋值语句
-  eval 求值
-  insert 插入字符串
-  局部变量定义  let ((name value)(name2 value))
- 输入 (read-from-minibuffer "Enter your name: ")
- 列表　(setq names '("xiaoli" "xiaoming"))
-* 控制结构
-** 一段程序        
-  #+BEGIN_SRC lisp
-    (progn (print "The first form")
-           (print "The second form")
-           (print "The third form"))
-  #+END_SRC 
- prog2, prog3 的含义就是 返回的参数是哪一个 
-** if
+*** 交互方式
+    (interactive "r")  会将点位所在区域的开始值和结束值作为参量 要选择一个区域，不然取同一个值
+    (interactive "BAppend to buffer:") 提示输入缓冲区名字, 得到的值是缓冲区名
+*** 字节编译
+    byte-compile-file
+*** 输入输出
+    message 输出到mini框
+*** 编辑器内部
+    buffer-name
+    buffer-file-name
+    switch-to-buffer
+    point
+    point-min
+    point-max
+    buffer-size
+   goto-char 
+   push-mark
+   beginning-of-buffer
+   mark-whole-buffer
+   append-to-buffer
+   copy-to-buffer
+*** 按键
+
+*** 保存流程
+    save-excursion
+** 控制结构
+*** 一段程序        
    #+BEGIN_SRC lisp
-     (if nil
-         (print 'true)
-       'very-false)
-#+END_SRC
+     (progn (print "The first form")
+            (print "The second form")
+            (print "The third form"))
+   #+END_SRC 
+  prog2, prog3 的含义就是 返回的参数是哪一个 
+*** if
+    #+BEGIN_SRC lisp
+      (if nil
+          (print 'true)
+        'very-false)
+ #+END_SRC
+** 命名
+ Elisp 中并没有命名空间（Namespace），换句话说就是所有的变量均为全局变量，所以其 命名方法就变的非常重要。下面是一个简单的命名规则，
+#自定义变量可以使用自己的名字作为命名方式（可以是变量名或者函数名）
+my/XXXX
+
+#模式命名规则
+ModeName-mode
+
+#模式内的变量则可以使用
+ModeName-VariableName
+遵守上面的命名规则可以最大程度的减少命名冲突发生的可能性。
+
+** 流程控制
+   数字, 字串都是真, nil 是假
+   if 条件
+   运行
+ #+BEGIN_SRC elisp
+ if else
+   (if (< 3 2)
+       (message "zhegn")
+   (message "buzhegnque"))
+ #+END_SRC
 * lisp mode
 ** lisp interaction mode buffer中可以直接解释lisp代码
 * elisp
 ** 数据类型
     “integer”, “float”, “cons”, “symbol”, “string”, “vector”,
-“hash-table”, “subr”, and “byte-code function”, plus several special
-types, such as “buffer”, 
+    “hash-table”, “subr”, and “byte-code function”, “buffer”, 
 *** Numbers	
     整数，浮点
     #b101100 ⇒ 44
-     #o54 ⇒ 44
-     #x2c ⇒ 44
-     #24r1k ⇒ 44 基数(进位radix)是24 的值， 可以是2 到36 作为基数
-     有些机器位数过大会溢出，要注意
+    #o54 ⇒ 44
+    #x2c ⇒ 44
+    #24r1k ⇒ 44 基数(进位radix)是24 的值， 可以是2 到36 作为基数
+    有些机器位数过大会溢出，要注意
      
     操作(= 3 4)
     isnan 判断浮点
     frexp x
-*** Strings and Characters	Strings, and functions that work on them.
-*** Lists	Lists, cons cells, and related functions.
-*** Sequences Arrays Vectors	Lists, strings and vectors are called sequences. Certain functions act on any kind of sequence. The description of vectors is here as well.
-*** Hash Tables	Very fast lookup-tables.
-*** Symbols	Symbols represent names, uniquely.
+*** Strings and Characters	Strings
+*** Lists	Lists, cons cells
+*** Sequences 
+*** Hash Tables	
+    Very fast lookup-tables
+*** Symbols	
+    Symbols represent names, uniquely.
 ** 定义变量
    setq 
 ** 数据操作
@@ -223,59 +293,2260 @@ lisp 能识别的是 变量 或基本数据，不是的符号要 带 ' 号表示
 还能识别操作，而识别操作的关键是 用 () 配对
 
 变量有名字属性，而符号是没有的，只有本身的值属性, 被定义的变量也能识别
-* 函数
-** 变量赋值
-   set setq
-** 局部变量定义
-   let
-   (let (
-(a 3)
-(b 4)
-))
-要两个括号
-** 函数定义 
-   defun
-** 使函数成为交互函数
-   就是 M-x 找的到的
-   #+BEGIN_SRC elisp
-     (defun fun()
-       " 说明"
-       (interactive "p") ;;添加这一段
-       (message "xxx")
-       )  
-   #+END_SRC
-** 交互方式
-   (interactive "r")  会将点位所在区域的开始值和结束值作为参量 要选择一个区域，不然取同一个值
-   (interactive "BAppend to buffer:") 提示输入缓冲区名字, 得到的值是缓冲区名
-** 字节编译
-byte-compile-file
-** 输入输出
-   message 输出到mini框
-** 编辑器内部
-   buffer-name
-   buffer-file-name
-   switch-to-buffer
-   point
-   point-min
-   point-max
-   buffer-size
-  goto-char 
-  push-mark
-  beginning-of-buffer
-  mark-whole-buffer
-  append-to-buffer
-  copy-to-buffer
-** 按键
+* setq setq-default
+  区别在于 一个是 设置当前缓冲区的值，一个是在全局空间
+* 关闭自动备份
+  因为使用了版本管理工具，所以不需要了
+(setq make-backup-files nil)
+* 遍历
+;; 遍历每一个缓冲区（Buffer）
+(cl-loop for buf in (buffer-list)
+	 collect (buffer-file-name buf))
 
-** 保存流程
-   save-excursion
-* 流程控制
-  数字, 字串都是真, nil 是假
-  if 条件
-  运行
-#+BEGIN_SRC elisp
-if else
-  (if (< 3 2)
-      (message "zhegn")
-  (message "buzhegnque"))
+;; 寻找 729 的平方根（设置最大为 100 为了防止无限循环）
+(cl-loop for x from 1 to 100
+	 for y = (* x x)
+	 until (>= y 729)
+	 finally return (list x (= y 729)))
+
+你可以在这里找到更多关于循环的使用说明。
+
+* quote 
+(quote foo)
+'foo
+
+quote 的意思是不要执行后面的内容，返回它原本的内容（具体请参考下面的例子）
+
+(print '(+ 1 1)) ;; -> (+ 1 1)
+(print (+ 1 1))  ;; -> 2
+
+;; 第一种
+(setq package-selected-packages my/packages)
+;; 第二种
+(setq package-selected-packages 'my/packages)
+;; 第三种
+(setq package-selected-packages (quote my/packages))
+
+第一种设置是在缓冲区中设置一个名为 package-selected-packages 的变量，将其的值 设定为 my/packages 变量的值。第二种和第三种其实是完全相同的，将一个名为 package-selected-packages 的变量设置为 my/packages 。
+
+* 模块化配置
+  ├── init.el
+  └── lisp
+    ├── custom.el
+    ├── init-better-defaults.el
+    ├── init-helper.el
+    ├── init-keybindings.el
+    ├── init-packages.el
+    ├── init-ui.el
+    └── init-org.el
+
+引入模块
+#+BEGIN_SRC lisp
+  init.el
+
+    (when (>= emacs-major-version 24)
+        (require 'package)
+        (package-initialize)
+        (setq package-archives '(("gnu"   . "http://elpa.emacs-china.org/gnu/")
+           ("melpa" . "http://elpa.emacs-china.org/melpa/"))))
+
+    ;; cl - Common Lisp Extension
+    (require 'cl)
+
+    ;; Add Packages
+
+    (defvar my/packages '(
+             ;; --- Auto-completion ---
+             company
+             ;; --- Better Editor ---
+             smooth-scrolling
+             hungry-delete
+             swiper
+             counsel
+             smartparens
+             ;; --- Major Mode ---
+             js2-mode
+             markdown-mode
+             ;; --- Minor Mode ---
+             ;; Quick Note Taking
+             deft
+             ;; JavaScript REPL
+             nodejs-repl
+             ;; Find OS X Executable Helper Package
+    ;; ...
 #+END_SRC
+
+#+BEGIN_SRC lisp
+下面为 ~/.emacs.d/lisp/init-packages.el 模块中的代码
+
+;;  __        __             __   ___
+;; |__)  /\  /  ` |__/  /\  / _` |__
+;; |    /~~\ \__, |  \ /~~\ \__> |___
+;;                      __   ___        ___      ___
+;; |\/|  /\  |\ |  /\  / _` |__   |\/| |__  |\ |  |
+;; |  | /~~\ | \| /~~\ \__> |___  |  | |___ | \|  |
+(when (>= emacs-major-version 24)
+    (require 'package)
+    (package-initialize)
+    (setq package-archives '(("gnu"   . "http://elpa.emacs-china.org/gnu/")
+			 ("melpa" . "http://elpa.emacs-china.org/melpa/"))))
+
+;; cl - Common Lisp Extension
+(require 'cl)
+
+;; Add Packages
+(defvar my/packages '(
+			   ;; --- Auto-completion ---
+			   company
+			   ;; --- Better Editor ---
+			   smooth-scrolling
+			   hungry-delete
+			   swiper
+			   counsel
+			   smartparens
+			   popwin
+			   ;; --- Major Mode ---
+			   js2-mode
+			   markdown-mode
+
+;; ...
+
+;; 文件末尾
+(provide 'init-packages)
+
+
+#+END_SRC
+
+#+BEGIN_SRC lisp
+下面为 ~/.emacs.d/init.el 入口文件中的代码
+
+(package-initialize)
+
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+
+;; Package Management
+;; -----------------------------------------------------------------
+(require 'init-packages)
+#+END_SRC
+* Major 与 Minor Mode 详解
+在 Emacs 中，Major Mode 又分为三种，
+
+text-mode ，用于编辑文本文件
+special-mode ，特殊模式（很少见）
+prog-mode ，所有的编程语言的父模式
+在每一个模式（mode）中它的名称与各个变量还有函数都是有特定的命名规则，比如所有的 模式都被命名为 ModeName-mode ，里面所设置的快捷键则为 ModeName-mode-key-map ，而所有的钩子则会被命名为 ModeName-mode-hook 。
+* 配置文件模块化（下）
+在这一部分我们首先需要知道的是什么是 features 。在 Emacs 中每一个 feature 都 是一个 Elisp 符号，用于代表一个 Lisp 插件（Package）。
+
+当一个插件调用 (provide 'symbol_name) 函数时，Emacs 就会将这个符号加入到 features 的列表中去。你可以在这里读到更多关于 feature 的内容。
+
+接着我们需要弄明白的是 load-file , load , require , autoload 之间的区别。 （他们之间区别的链接已经再前面贴过了，你也可以在这里找到之前同样的链接）
+
+简单来说， load-file 用于打开某一个指定的文件，用于当你不想让 Emacs 来去决定加 载某个配置文件时（ .el 或者 .elc 文件）。
+
+load 搜索 load-path 中的路径并打开第一个所找到的匹配文件名的文件。此方法用于 你预先不知道文件路径的时候。
+
+require 加载还未被加载的插件。首先它会查看变量 features 中是否存在所要加载的 符号如果不存在则使用上面提到的 load 将其载入。（有点类似于其他编程语言中的 import ）
+
+autoload 用于仅在函数调用时加载文件，使用此方法可以大大节省编辑器的启动时间。
+
+更好的默认设置
+在这一节我们会配置我们的编辑器使其有更好的使用体验。整个过程就如同搭积木一般，将 更好的体验建立在已有的功能基础之上。这样的优化使整个过程变得更高效，也更有趣。
+
+下面的代码可以是 Emacs 自动加载外部修改过的文件。
+
+(global-auto-revert-mode 1)
+
+使用下面的代码可以关闭自己生产的保存文件（之前我们已经关闭过了 Emacs 自动生产的 备份文件了，现在是关闭自动保存文件）。
+
+(setq auto-save-default nil)
+
+如果你发现你在使用中发现了那些编辑行为与你预期的不相符时，你可以通过搜索引擎去寻 找解决方案然后将其加入你的配置中并打造一个真正属于你的神器！
+
+popwin 插件可以自动将光标移动到，新创建的窗口中。使用下面的代码将其启用，
+
+(require 'popwin)
+(popwin-mode 1)
+
+也许你并不喜欢听到错误时的“哔哔”的警告提示音，使用下面的代码你可以关闭 Emacs 中的警告音，
+
+(setq ring-bell-function 'ignore)
+
+每一次当 Emacs 需要与你确认某个命令时需要输入 (yes or no) 比较麻烦，所有我们可 以使用下面的代码，设置一个别名将其简化为只输入 (y or n) 。
+
+(fset 'yes-or-no-p 'y-or-n-p)
+
+* 代码缩进
+indent-region 可以帮我们重新缩进所选区域的代码，但是每一次都选中十分麻烦。使用 下面的代码可以一次重新缩进全部缓冲区的代码。（之后也会介绍更好用的，代码格式美化 的插件）
+
+(defun indent-buffer()
+  (interactive)
+  (indent-region (point-min) (point-max)))
+
+(defun indent-region-or-buffer()
+  (interactive)
+  (save-excursion
+    (if (region-active-p)
+	(progn
+	  (indent-region (region-beginning) (region-end))
+	  (message "Indent selected region."))
+      (progn
+	(indent-buffer)
+	(message "Indent buffer.")))))
+
+然后再将其用下面的代码将其绑定为快捷键，第一个 \ 用于将紧跟的 \ 进行逃脱（escape）。
+
+(global-set-key (kbd "C-M-\\") 'indent-region-or-buffer)
+
+缩写补全
+使用下面的代码我们可以开启 abbrev 模式并定义一个缩写表，每当我们输入下面的缩写 并以空格结束时，Emacs 就会将其自动展开成为我们所需要的字符串。
+
+(setq-default abbrev-mode t)
+(define-abbrev-table 'global-abbrev-table '(
+					    ;; Shifu
+					    ("8zl" "zilongshanren")
+					    ;; Tudi
+					    ("8lxy" "lixinyang")
+					   ))
+
+上面的缩写前使用的 8 也类似于命名空间的作用，使其不会与我们所常用的字符串冲突。
+
+Hippie 补全
+Company 有时候补全功能并不是非常理想，这时就可以使用 Hippie Expand 来完成补全。 Company Mode 补全效果不理想的原因是在不同的区域中会使用不同的后端函数来完成补全， 但是当后端补全函数不能被激活时，则补全就不会被激活。
+
+我们可以将下面的代码加入到我们的配置文件中，来增强 Hippie Expand 的功能，
+
+(setq hippie-expand-try-function-list '(try-expand-debbrev
+					try-expand-debbrev-all-buffers
+					try-expand-debbrev-from-kill
+					try-complete-file-name-partially
+					try-complete-file-name
+					try-expand-all-abbrevs
+					try-expand-list
+					try-expand-line
+					try-complete-lisp-symbol-partially
+					try-complete-lisp-symbol))
+
+然后将其绑定为快捷键，使我们可以更方便的使用它。
+
+(global-set-key (kbd "s-/") 'hippie-expand)
+
+* Dired Mode
+Dired Mode 是一个强大的模式它能让我们完成和文件管理相关的所有操作。
+使用 C-x d 就可以进入 Dired Mode，这个模式类似于图形界面系统中的资源管理器。你 可以在其中查看文件和目录的详细信息，对他们进行各种操作，甚至复制粘贴缓冲区中的内 容。下面是一些常用的操作（下面的所有键均需在 Dired Mode 下使用），
+
++ 创建目录
+g 刷新目录
+C 拷贝
+D 删除
+R 重命名
+d 标记删除
+u 取消标记
+x 执行所有的标记
+这里有几点可以优化的地方。第一是删除目录的时候 Emacs 会询问是否递归删除或拷贝， 这也有些麻烦我们可以用下面的配置将其设定为默认递归删除目录（出于安全原因的考虑， 也许你需要保持此行为。所有文中的配置请务必按需配置）。
+(setq dired-recursive-deletes 'always)
+(setq dired-recursive-copies 'always)
+
+
+第二是，每一次你进入一个回车进入一个新的目录中是，一个新的缓冲区就会被建立。这使 得我们的缓冲区列表中充满了大量没有实际意义的记录。我们可以使用下面的代码，让 Emacs 重用唯一的一个缓冲区作为 Dired Mode 显示专用缓冲区。
+
+(put 'dired-find-alternate-file 'disabled nil)
+
+;; 主动加载 Dired Mode
+;; (require 'dired)
+;; (defined-key dired-mode-map (kbd "RET") 'dired-find-alternate-file)
+
+;; 延迟加载
+(with-eval-after-load 'dired
+    (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
+
+使用延迟加载可以使编辑器加载速度有所提升。
+
+启用 dired-x 可以让每一次进入 Dired 模式时，使用新的快捷键 C-x C-j 就可以进 入当前文件夹的所在的路径。
+
+(require 'dired-x)
+
+使用 (setq dired-dwin-target 1) 则可以使当一个窗口（frame）中存在两个分屏 （window）时，将另一个分屏自动设置成拷贝地址的目标。
+
+最后如果你是 Mac OS X 的用户，可以安装 reveal-in-osx-finder 这个插件（你可以在 这里找到它），它可以将任意文件直接在 Finder 中打开。你想安装这个插件，将其添加至 第二天的插件列表中即可，下次启动 Emacs 时，它就会自动帮你完成下载。
+
+* 打造前端开发神器
+* 隐藏这个换行符或者将其删除。首先下面是隐藏的方法，
+
+(defun hidden-dos-eol ()
+  "Do not show ^M in files containing mixed UNIX and DOS line endings."
+  (interactive)
+  (unless buffer-display-table
+    (setq buffer-display-table (make-display-table)))
+  (aset buffer-display-table ?\^M []))
+
+使用下面的代码则可以定义函数将此换行符删除，
+
+(defun remove-dos-eol ()
+  "Replace DOS eolns CR LF with Unix eolns CR"
+  (interactive)
+  (goto-char (point-min))
+  (while (search-forward "\r" nil t) (replace-match "")))
+
+* Occur(直接对显示搜索的东西）
+可以用于显示变量或函数的定义，我们可以通过 popwin 的 customize-group 将定 义显示设置为右边而不是默认的底部（ customize-group > popwin > Popup Window Position 设置为 right），也可以在这里对其宽度进行调节。
+
+Occur 与普通的搜索模式不同的是，它可以使用 Occur-Edit Mode (在弹出的窗口中按 e 进入编辑模式) 对搜索到的结果进行之间的编辑。
+
+优化 occur 与 imenu
+下面的代码用于配置 Occur Mode 使其默认搜索当前被选中的或者在光标下的字符串：
+
+(defun occur-dwim ()
+  "Call `occur' with a sane default."
+  (interactive)
+  (push (if (region-active-p)
+	    (buffer-substring-no-properties
+	     (region-beginning)
+	     (region-end))
+	  (let ((sym (thing-at-point 'symbol)))
+	    (when (stringp sym)
+	      (regexp-quote sym))))
+	regexp-history)
+  (call-interactively 'occur))
+(global-set-key (kbd "M-s o") 'occur-dwim)
+
+* iedit 是一个可以同时编辑多个区域的插件，它类似 Sublime Text 中的多光标编辑。它的 GitHub 仓库在这里。
+* Org-pomodoro 是一个番茄时间工作法的插件
+* 批量修改文件名
+C-x C-q 就可以直接在 Dired Mode 中进行编辑，使用之前学的 iedit-mode 和区域选择 就可以直接对多个文件进行重命名编辑了。
+
+* 搜索与替换
+全局搜索在我们的编辑工作中是不可缺少的，今天我们介绍的是 ag。它是非常快速的命令 行搜索工具，它是 Linux 的所有搜索工具中最快的。
+ag > pt > ack > grep
+
+(global-set-key (kbd "C-c p s") 'helm-do-ag-project-root)
+使用这个插件我们同样可以在缓冲区对搜索到的结果进行直接的修改，这样就可以做到快速 的搜索与替换。
+* 语法检查器（Linter）
+语法检查器可以在开发动态语言（Interpreted/Dynamic Programming Language）时极大的 提高你的开发效率，它会实时的检查你的代码并将句法错误（Syntax Error）与静态语义 （Static Semantic Error）错误进行高亮与提示。
+我们在这里使用的例子是 JavaScript 的语法检查器 eslint 它的安装方法可以在这里找到。
+
+使用下面的代码可以将 flycheck-mode 在特定模式下激活（下面的例子就是只有在打开 JavaScript 时才会激活语法检查器），
+
+(add-hook 'js2-mode-hook 'flycheck-mode)
+
+使用 flycheck-verify-setup 可以进行语法检查器的选择。
+
+eslint 检查器的配置也可以使用项目目录下的 .eslintrc 来进行配置，更多配置方法可 以在这里找到。
+* 代码块
+yasnippet 是一个代码块补全的插件（GitHub 地址）。使用下面的配置文件将其在所有 的编程语言的模式中激活。
+
+(yas-reload-all)
+(add-hook 'prog-mode-hook #'yas-minor-mode)
+
+自定义代码块的方法可以在上面提供的链接中找到。
+
+auto-yasnippet
+auto-yasnippet 也是一个非常好用代码块补全插件。安装并未其设置快捷键，
+
+(global-set-key (kbd "H-w") #'aya-create)
+(global-set-key (kbd "H-y") #'aya-expand)
+
+简单的使用方法就是使用 ~ 来定义模板，然后调用 aya-create 再使用 aya-expand 来使用模板。
+* evil
+照例我们需要将 Evil 插件添加至我们的插件列表中来完成安装。在重启 Emacs 完成安装 后可以添加下面的代码将其激活。
+
+(evil-mode 1)
+
+在激活 Evil 模式后就可以，在 Emacs 中使用 Vim 的快捷键了。有一点需要注意 C-u 在 Emacs 中有特殊的功所（Universal args）以能我们可以通过使用 customize-group 来对 Evil 模式进行修改，将 Evil Want C U Scroll 设置为开启。
+
+下面的代码可以将 insert state map 中的快捷键清空，使其可以回退（Fallback）到 Emacs State 中，这样我们之前的 Emacs State 里面定义的 C-w 等快捷键就不会被 evil insert minor mode state 所覆盖，
+
+(setcdr evil-insert-state-map nil)
+(define-key evil-insert-state-map [escape] 'evil-normal-state)
+
+这样你就可以使用 Evil 来在 Emacs 中完成百分之八十作用的快捷键操作了。
+
+完整的 Evil Mode 的 PDF 版本的操作指南可以在这里找到，建议从 Vim 转 Emacs 的用户 多次阅读来完整的掌握这个模式的使用方法。
+
+Evil 模式插件
+Leader Key
+在 Emacs 中使用 Leader Key 可以通过 evil-leader 来实现。你需要做的就是在安装后将其激活即可。
+
+提示: 根据cofi/evil-leader 的说明，你应该在激活 evil-mode 之前就激活 global-evil-leader-mode，否则 evil-leader 在几个初始缓冲区(scratch, Message,…)上将不生效。
+
+(global-evil-leader-mode)
+
+Leader Key 可以通过 customize-group 来进行设置（Evil Leader/Leader）。因为之后我 们会转移至 Spacemacs 所以我们可以将其设置为空格键 SPC 。
+
+在通过下面的配置来设置简单的结合 Leader Key 快捷键组合（我们使用不同的键讲不同的 功能分组，例如我们使用 f 键来做关于文件的操作，使用 b 键来做关于缓冲区 （Buffer）的操作），
+
+(evil-leader/set-key
+  "ff" 'find-file
+  "bb" 'switch-to-buffer
+  "0"  'select-window-0
+  "1"  'select-window-1
+  "2"  'select-window-2
+  "3"  'select-window-3
+  "w/" 'split-window-right
+  "w-" 'split-window-below
+  ":"  'counsel-M-x
+  "wM" 'delete-other-windows
+  )
+
+注意上面窗口跳转相关的设置需要 window-numbering 安装后方可生效。
+* Window-numbering
+这个插件可以让我们快速的使用 Leader Key 与数字键的组合来在多个窗口之间进行跳转。 它的 GitHub 地址可以在这里找到。
+
+下载安装后通过下面的代码可以将其激活，
+
+(window-numbering-mode 1)
+
+Evil-Surround
+Evil-surround 是一个 Vim 上非常常用的插件改写的，使用它可以快速的将选中区域进行 匹配的操作，例如选中区域两边同时进行添加或修改括号，引号等操作。
+
+下载安装后使用下面的代码将其激活，
+
+(require 'evil-surround)
+(global-evil-surround-mode)
+
+简单的使用方法就是在选中所选区域后，使用 S( 来将选中区域包括在括号之中。如果想 将括号改变成 " 可以在选中后使用 cs("
+
+Evil-nerd-commenter
+这是一个快速添加与取消注释的插件，它的 GitHub 地址在这里。
+
+使用下面代码可以将其激活，
+
+(evilnc-default-hotkeys)
+
+使用下面的代码将其与 Evil 模式进行绑定，这里我们选择使用 ,/ 作为快捷键。
+
+(define-key evil-normal-state-map (kbd ",/") 'evilnc-comment-or-uncomment-lines)
+(define-key evil-visual-state-map (kbd ",/") 'evilnc-comment-or-uncomment-lines)
+
+Which-key
+which-key 可以显示当前组合键下所有可以使用的全部组合键的选项。使用这个插件可以很 好的解决快捷键太多的问题，我们无需在记忆任何快捷键，而是根据自己的需求使用不同分 组的快捷键后再在其中去需找自己需要的功能。
+
+在下载后可以使用下面的代码进行激活，
+
+(which-key-mode 1)
+
+Org Mode 中的搜索
+C-c a 中可以根据提示使用 s 来进行关键字所搜。使用 t 则可以进行代办事项的搜索。
+* Cask 是一个 Emacs Lisp 的项目管理工具.
+** Cask的安装
+   curl -fsSL https://raw.githubusercontent.com/cask/cask/master/go | python
+   安装过程中 Cask 将会进行 Bootstrap, 安装一些包到~/.emacs.d 目录中.
+   安装完成之后需要将 Cask 的可执行文件目录加入到 PATH 中.
+   可以看到, Cask 的安装过程在 ~/.emacs.d 中新建了一个 .Cask 目录.
+
+** 安装 Pallet: Pallet 是一个基于 Cask 的包管理工具, 可以使用 Emacs 的包安装方式安装.
+   然后使用以下代码启用 Pallet:
+
+   (pallet-mode)  
+   (pallet-init)    ; 在.emacs.d 中生成一个 Cask 文件, 写入源与现有包
+   (pallet-install) ; 将 elpa 中的 package 拷贝到.Cask/<you version>/elpa 目录中
+
+   然后在配置文件中加入以下代码(在其他包加载之前) :
+
+   (require 'cask "<path-to-cask>/cask.el")
+   (cask-initialize)    ; 类似于 package-initialize
+   (require 'pallet)
+   (pallet-mode t)      ; 激活 pallet, 在安装包时将 Cask 文件写入相应信息
+
+   具体使用方式见文档: Pallet
+
+   为何使用 Cask
+   使用 Cask 文件保存包的信息, 可以通过 Cask install 自动安装
+   当有多个版本的 Emacs 时, 将各版本的包单独存放
+   
+   故障排除
+   Emacs24.5 时不能安装 let-alist
+   解决方案: 将 Gnu 的源加入源列表中, 示例代码如下(加入 Cask 文件)
+
+(source "gnu" "http://elpa.zilongshanren.com/gnu/")
+
+在 Emacs24.5 中没有定义 define-advice
+define-advice 是一个 Emacs25 中加入的宏, 在 Emacs24 中不能使用, 可以使用 defadvice 代替:
+
+(defadvice show-paren-function (around fix-show-paren-function activate)
+  (cond ((looking-at-p "\\s(") ad-do-it)
+	(t (save-excursion
+	     (ignore-errors (backward-up-list))
+	     ad-do-it)))
+  )
+
+而且使用 defadvice 相比 define-advice 还有一个优点:
+
+使用 define-advice 定义的代码, 当在 Normal 模式时光标两边的括号不会高亮, 而使用 defadvice 可以.
+
+* Macro 与 Use-package
+** Macro
+什么是 Macro
+宏是一种可以生成代码的代码. 类比与 C 语言中的宏以及 C++中的模板. 先看一个简单的例子:
+
+(defmacro inc (var)
+  (list 'setq var (list '1+ var)))
+
+(setq my-var 1)
+(setq my-var (+ 1 my-var))
+
+(macroexpand '(inc my-var))
+
+以上这个宏的作用是将变量的值+1. 执行以上代码之后, my-var 的结果为 2.
+
+可以使用 macroexpand 获得宏展开的结果, 如以上代码结果为:
+
+(setq my-var (1+ my-var))
+
+我们也可以使用函数来实现相同的功能, 但 Macro 与函数有以下两个区别:
+
+宏的参数并不会被马上求值, 解释器会先展开宏, 宏展开之后解释器才会执行宏展开的 结果; 而函数的参数会马上求值
+宏的执行结果是一个表达式, 该表达式会立即被解释器执行; 而函数的结果是一个值
+backquote
+backquote 是指反引号(`), 即键盘上数字 1 左边的键.
+
+当在 Emacs 输入 backquote 时会插入两个反引号, 可以使用以下代码关闭这个功能:
+
+(sp-local-pair 'emacs-lisp-mode "`" nil :actions nil)
+
+先看以下例子来体会 backquote 的作用:
+
+(defun my-print (number)
+  (message "This is a number: %d" number))
+
+(my-print 2)               ; 1. output= This is a number: 2
+(my-print (+ 2 3))         ; 2. output= This is a number: 5
+
+(quote (+ 1 1))
+;; return a list= (+ 1 1)
+
+(defmacro my-print-2 (number)
+  `(message "This is a number: %d" ,number))
+
+(my-print-2 2)             ; 3. output= This is a number: 2
+(my-print-2 (+ 2 3))       ; 4. output= This is a number: 5
+
+(setq my-var 2)
+(inc my-var)
+
+(defmacro inc2 (var1 var2)
+  (list 'progn (list 'inc var1) (list 'inc var2)))
+
+(macroexpand '(inc2 my-var my-var))
+(macroexpand-all '(inc2 my-var my-var))
+
+quote 的作用是返回后面的表达式, 不对表达式进行求值. 所以以下代码:
+
+(quote (+ 1 1))
+;; return a list= (+ 1 1)
+
+并没有对表达式 (+ 1 1) 进行求值返回 2, 而是返回一个 list.
+
+backquote 的作用与 quote 相似, 同样不对后面的表达式求值, 但是当 backquote 在宏中 与逗号(,)一起使用时, 用逗号修饰的变量将进行求值.
+
+例如以下代码:
+
+(defmacro my-print-2 (number)
+  `(message "This is a number: %d" ,number))
+
+(pp (macroexpand '(my-print-2 (+ 2 3))))
+(my-print-2 (+ 2 3))
+
+当输出 message 且 number 不带逗号时, my-print-2 的执行将提示错误. 因为宏不对参 数进行求值, 所以以上宏展开相当于:
+
+(message "This is a number:" number)
+
+因为我们没有定义 number 变量, 所以执行出错.
+
+而如果加入逗号, 则在宏展开时会对变量 number 进行求值, 展开结果为:
+
+(message "This is a number: %d" (+ 2 3))
+
+在调试宏的过程中, 可以使用 macroexpand 和 macroexpand-all 获取宏展开的结果.
+
+关于 backquote 的更多讨论, 可以见以下地址: lisp 中的`与，是怎么用的？
+
+为什么使用宏
+使用宏可以减少重复的代码, 以下是一个使用宏来定义函数的例子:
+
+(defun prelude-search (query-url prompt)
+  "Open the search url constructed with the QUERY-URL.
+PROMPT sets the `read-string prompt."
+  (browse-url
+   (concat query-url
+	   (url-hexify-string
+	    (if mark-active
+		(buffer-substring (region-beginning) (region-end))
+	      (read-string prompt))))))
+
+(defmacro prelude-install-search-engine (search-engine-name search-engine-url search-engine-prompt)                   ; #1
+  "Given some information regarding a search engine, install the interactive command to search through them"    
+  `(defun ,(intern (format "prelude-%s" search-engine-name)) ()                                                       ; #2
+       ,(format "Search %s with a query or region if any." search-engine-name)                                        ; #3
+       (interactive)
+       (prelude-search ,search-engine-url ,search-engine-prompt)))                                                    ; #4
+
+(prelude-install-search-engine "google"     "http://www.google.com/search?q="              "Google: ")                ; #5
+(prelude-install-search-engine "youtube"    "http://www.youtube.com/results?search_query=" "Search YouTube: ")
+(prelude-install-search-engine "github"     "https://github.com/search?q="                 "Search GitHub: ")
+(prelude-install-search-engine "duckduckgo" "https://duckduckgo.com/?t=lm&q="              "Search DuckDuckGo: ")
+
+下面对以上代码进行讲解:
+
+第#1 行, 通过 prelude-install-search-engine 定义了一个需要 3 个参数的宏, 这个 宏的作用是生成一个函数.
+
+第#2 行, 通过 intern 生成一个符号作为函数名, 名称为　*prelude-xxx* , 其中 xxx 为第一个参数的值.
+
+第#3 行, 生成了这个函数的描述.
+
+第#4 行, 调用 prelude-search 函数进行搜索处理.
+
+第#5 行, 调用这个宏定义了一个名为　*prelude-google* 的函数.
+
+从以上代码可以知道, 我们利用宏生成了４个名称不同的函数, 避免了手动编写函数的问题 (因为这４个函数的代码非常相似, 根据 DRY 原则应该尽量避免做这种重复工作).
+
+关于宏的更多内容, 可以阅读 Paul Graham 的著作　《On Lisp》
+
+prelude-duckduckgo
+Use-package
+简介
+Use-package 是一个宏, 它能让你将一个包的 require 和它的相关的初始化等配置组织 在一起, 避免对同一个包的配置代码散落在不同的文件中.
+
+Use-package 的更多信息参见以下地址: Use-package
+
+一些简单的用法
+更安全的 require
+在 Emacs 中, 当我们要引入一个包时, 通常会使用以下代码:
+
+(require 'package-name)
+
+但是当 package-name 不在 load-path 中时, 以上代码会抛出错误. 使用 Use-package 可以避免:
+
+(use-package package-name)
+
+以上代码展开的结果如下:
+
+(if
+    (not
+     (require 'package-name nil 't))
+    (ignore
+     (message
+      (format "Cannot load %s" 'package-name))))
+
+可以看到, Use-package 使用 ignore 来避免抛出错误, 这样当某个包不存在时, eamcs 也能够正常启动.
+
+将配置集中
+当我们引入某个包时, 有可能需要定义一些与这个包相关的变量, 使用 Use-package 实 现这个需求如下:
+
+(use-package package-name
+  :init
+  (setq my-var1 "xxx")
+  :config
+  (progn
+    (setq my-var2 "xxx")
+    (setq my-var3 "xxx")
+    )
+  )
+
+在上例中, init 后的代码在包的 require 之前执行, 如果这段代码出错则跳过包的 require.
+
+config 后的代码在包的 require 之后执行.
+
+init 与 config 之后只能接单个表达式语句, 如果需要执行多个语句, 可以用 progn .
+
+autoload
+使用 require 时会引入这个包, 但是当你的包很多时会影响启动速度. 而使用 autoload 则可以在真正需要这个包时再 require, 提高启动速度, 避免无谓的 require.
+
+使用 Use-package 可以轻松的实现这个功能:
+
+(use-package package-name
+  :commands
+  (global-company-mode)
+  :defer t
+  )
+
+使用 commands 可以让 package 延迟加载, 如以上代码会首先判断 package 的符号是否 存在, 如果存在则在 package-name 的路径下加载. defer 也可以让 package-name 进行延迟加载.
+
+键绑定
+在之前的代码中, 如果我们需要绑定一个键, 需要使用 global-key-bind 或 define-key 实现, 而使用*Use-package* 实现更简单:
+
+(use-package color-moccur
+  :commands (isearch-moccur isearch-all)
+  :bind (("M-s O" . moccur)
+	 :map isearch-mode-map
+	 ("M-o" . isearch-moccur)
+	 ("M-O" . isearch-moccur-all))
+  :init
+  (setq isearch-lazy-highlight t)
+  :config
+  (use-package moccur-edit))
+
+为什么使用 Use-package
+Use-package 能让相关的配置更为集中, 避免配置分散带来的维护困难
+Use-package 有完善的错误处理, 使配置代码更为健壮
+Spacemacs 也大量使用了 Use-package
+第十天: Company-mode 与 auto-completion
+视频地址如下:
+
+百度网盘
+优酷
+YouTube
+内容概要:
+
+给出 Cask 和 Use-package 的简单示例
+详细介绍 Company-mode 的工作原理, 各种 backend 及其用法
+扩展阅读:
+
+编写一个简单的 comopany backend
+Company Mode Emacs wiki
+升级 Package 之后有 BUG 怎么办
+有些时候我们将一个 Package 升级到最新的版本(例如 github 上最新的 commit), 而该版本可能会存在一些 BUG, 这就会导致我们的配置不能使用.
+
+如果我们使用 stable 版本的 Package(例如使用 github 上最新的 release), 就可以尽量地减少因为升级包之后的 BUG 导致配置不可用的情况.
+
+另一种解决方式是使用 Cask 进行包管理, 举例如下:
+
+首先我们添加一个包, 例如我们编辑 Cask 文件, 添加 monokai-theme :
+
+(depends-on "monokai-theme"
+	    :git "https://github.com/oneKelvinSmith/monokai-emacs/releases"
+	    :ref "02c5f5d")
+
+然后启动 emacs, 但是出现了 BUG. 这时我们可以直接将 ref 的值修改为最新的 commit, Cask 即会更新这个包, 而不用等待 melpa 对包进行更新.
+
+Use-package 的更多用法
+如果我们启用 exec-path-from-shell , 在 emacs 启动时可能会提示 PATH 变量重复定义, 解决方案如下:
+
+(use-package exec-path-from-shell
+  :ensure t
+  :if (and (eq system-type 'darwin) (display-graphic-p))
+  :config
+  (progn
+    (when (string-match-p "/zsh$" (getenv "SHELL"))
+      ;; Use a non-interactive login shell.  A login shell, because my
+      ;; environment variables are mostly set in `.zprofile'.
+      (setq exec-path-from-shell-arguments '("-l")))
+
+    (exec-path-from-shell-initialize)
+    )
+  )
+
+;; (use-package monokai-theme
+;; :ensure t)
+
+其中 if 子句可以确定启用 Package 的条件, 在 config 子句中向 exec-path-from-shell-arguments 即可消除这个警告.
+
+ensure 子句来确保 Package 被安装. 如果要使用 stable 版, 则添加以下子句:
+
+:pin melpa-stable
+
+Company-mode 的工作原理
+Company-mode 需要配合后端使用, 所有的 backend 都保存在 company-backends 这个变量中, 例如在我的环境中该变量值如下:
+
+(company-capf
+ (company-dabbrev-code company-gtags company-etags company-keywords)
+ company-files
+ company-dabbrev
+ )
+
+*company-backends*变量的值是一个列表, 其中的每一项都是一个后端或 Group Backend.
+
+Company-mode 会依次调用该变量中的 backend, 并判断该 backend 是否合适当前 Buffer, 直到找到一个合适的补全后端.
+
+在进行补全项选择的时候, 我们也可以在 mode-line 中看到是使用的哪一个后端.
+
+company-dabbrev: 将当前打开的所有 buffer 中的关键字作为补全显示(默认不使用 scratch buffer).
+company-files: 补全路径.
+如果在补全过程中取消了补全, 也可以使用命令再次开启补全. 例如 company-files 补全方式就可以使用 company-files 函数开启.
+
+在输入英文时可以使用 company-ispell 进行输入提示.
+
+为什么有时 Python 的补全 不工作
+有时在编写 Python 代码的时候补全不能工作, 这时我们可以先查看 company-backends 的值, 查看是否需要安装 company-anaconda 用于补全.
+
+在 Mac 系统中, 如果 anaconda-mode 的安装过程出现错误, 可以参照以下解决方案: Mac 上面编辑 python 的时候安装 anaconda-mode 出错
+
+然后确保在 company-backends 中有 company-anaconda 这个后端即可. 可以使用如下代码:
+
+(add-hook 'python-mode-hook
+	  (lambda ()
+	    (set (make-local-variable 'company-backends) '(company-anaconda))))
+
+以上代码在 python-mode 被激活时设置 company-backends 的变量值为 (company-anaconda), 则在编辑 python 代码时就可以使用 anaconda-mode 进行补全.
+
+在 emacs 中有两种补全方式:
+
+如 company-files 等, 根据关键字等进行补全, 只需要 emacs 自己进行一些处理即可得到补全数据;
+如 company-anaconda 等, 需要使用客户端-服务端模式, 补全后端需要服务端的配合才能得到补全数据.
+在进行编程时, 一般使用第二种补全后端, 例如 编写 python 代码使用 company-anaconda, 编写 C/C++代码使用 company-ycmd, 编写 javascript 代码使用 company-tern.
+
+上述示例代码开启 company-anaconda 时有一个缺点, 比如当我们在 python 的注释时没法使用补全, 因为补全后端只有 company-anaconda, 在注释时不工作. 我们可以将 dabbrev 加入后端列表:
+
+(add-hook 'python-mode-hook
+	  (lambda ()
+	    (set (make-local-variable 'company-backends) '(company-anaconda company-dabbrev))))
+
+当 company-anaconda 不合适时使用 company-dabbrev 进行补全, 即可满足上述需求.
+
+Group Backend
+company-dabbrev-code: 类似于 company-dabbrev, 但是 dabbrev 对代码和注释都进行补全, dabbrev-code 只补全代码.
+
+假设我们的配置代码如下:
+
+(add-hook 'python-mode-hook
+	  (lambda ()
+	    (set (make-local-variable 'company-backends) '((company-anaconda company-dabbrev-code)
+							   company-dabbrev)))
+	  )
+
+如果我们在注释中出现了 xxx 这个字符串, 在编写 python 代码时 xxx 不会出现在补全选项中. 因为在此时会先匹配到 company-anaconda, 并不会进入 company-dabbrev. 而因为 company-anaconda 是一个 Group Backend, 所以 company-dabbrev-code 的补全数据会出现在补全列表中.
+
+怎样写一个简单的补全后端
+因为视频时间关系, 大家可以去阅读以下文章:
+
+Writing the Simplest Emacs company-mode Backend
+
+实现方式简单介绍如下:
+
+定义一个补全数据列表
+定义一个补全函数, 返回对应输入的补全数据
+更多的内容可以查看该文档, 同时在网页右侧的链接中有更多的详细内容.
+
+第十一天: Spacemacs 简介及安装
+视频地址如下:
+
+百度网盘
+优酷
+Youtube
+从今天的内容开始介绍 Spacemacs. 地址: Spacemacs
+
+今天的内容包括:
+
+如何安装 Spacemacs
+一些简单的配置, 以及 package 管理
+管理自己的配置
+安装 Spacemacs
+安装 Spacemacs 非常简单, 只需要将 github 上的仓库克隆即可, 即执行以下命令(如有必要可以先备份以前的配置):
+
+cd ~
+mv .emacs.d .emacs.d.bak
+mv .emacs .emacs.bak
+git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
+
+在克隆完成后直接运行 Emacs. 在第一次使用 Spacemacs 时需要下载一些 Package, 然后在 Bootstrap 完成之后你需要进行如下一些配置:
+
+使用哪种编辑方式, 包括 vim 方式(默认) 以及 emacs 方式.
+使用哪种 Spacemacs distribution. 包括标准版(默认)以及基础版. 区别在于标准版包含非常多的功能, 而基础版只包含核心功能.
+在完成以上两个配置之后, 就会在 HOME 目录生成一个 ~/.spacemacs 配置文件. 然后 Spacemacs 会进行进一步的初始化, 下载更多的需要的 Package. 如果你需要使用 emacs-china 的配置源, 此时可以终止 emacs, 然后在~/.spacemacs 中的 dotspacemacs/user-init 函数中加入以下代码:
+
+(setq configuration-layer--elpa-archives
+      '(("melpa-cn" . "http://elpa.zilongshanren.com/melpa/")
+	("org-cn"   . "http://elpa.zilongshanren.com/org/")
+	("gnu-cn"   . "http://elpa.zilongshanren.com/gnu/")))
+
+重新启动 emacs, 等待 Spacemacs 完成安装即可.
+
+如果你需要更方便的管理你自己的配置, 可以创建 ~/.spacemacs.d 目录, 然后将 ~/.spacemacs 文件移动到该目录中并重命名为 init.el.
+
+在 Spacemacs 中的操作方式如下:
+
+按下 SPC f j 打开 dired 目录
+按下按键 + , 创建 ~/.spacemacs.d 目录
+将光标移动到 .spacemacs 文件上, 按下 R, 将该文件移动到 .spacemacs.d 目录中
+进入 .spacemacs.d 目录, 将光标移动到 .spacemacs 文件上, 按下 R, 将该文件重命名为 init.el
+按下 qq 退出 dired
+然后启动 emacs 即可.
+
+使用这种方式管理配置, 你可以将自己的配置集中到 ~/.spacemacs.d 目录中, 更容易进行统一管理. 你也可以将自己的配置 push 到 github 上.
+
+添加内置的 layer
+在安装完成 Spacemacs 之后, 按下 SPC f e d 打开 ~/.spacemacs 文件, 修改 dotspacemacs-configuration-layers 变量的值, 将 auto-completion, better-defaults, emacs-lisp, git, markdown, org, spell-checking, syntax-checking 等 layer 加入列表.
+
+然后退出 emacs 再重启, 或者按下 SPC f e R 安装需要的 package.
+
+一些简单的配置
+启动时全屏显示
+在 dotspacemacs/init 函数中, 将 dotspacemacs-fullscreen-at-startup 变量设置为 t 即可. 代码如下:
+
+;; If non nil the frame is maximized when Emacs starts up.
+;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
+;; (default nil) (Emacs 24.4+ only)
+dotspacemacs-maximized-at-startup t
+
+ivy layer
+将 ivy 加入 dotspacemacs-configuration-layers 列表中. 按下 CTRL s 使用 swiper 可以进行搜索.
+
+查看 layer 下的 文档信息
+按下 SPC h SPC 即会弹出一个信息窗口, 可以从窗口中选择具体的 layer 或者其他信息进行查看.
+
+删除安装的 package
+只需要将需要删除的 package 名称加入到 dotspacemacs-excluded-packages 变量中, 在下一次启动 emacs 时即会删除该 package. 示例代码如下:
+
+;; A list of packages and/or extensions that will not be install and loaded.
+dotspacemacs-excluded-packages '(vi-tilde-fringe)
+
+安装 package
+在 Spacemacs 中安装 package 时最好不要使用 package-install, 因为这样安装的 package 会在下一次启动时被删除.
+
+Spacemacs 提供了一个方式, 你只需将需要安装的 package 加入到 dotspacemacs-additional-package 变量中即可, 示例代码如下:
+
+;; List of additional packages that will be installed without being
+;; wrapped in a layer. If you need some configuration for these
+;; packages, then consider creating a layer. You can also put the
+;; configuration in `dotspacemacs/user-config'.
+dotspacemacs-additional-packages '(youdao-dictionary)
+
+配置 customize-group
+如果使用 customize-group 对配置进行了修改, 你可以以下代码将生成的 custom.el 配置文件纳入 ~/.spacemacs.d 目录中进行统一管理:
+
+(setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
+(load custom-file 'no-error 'no-message)
+
+修改主题
+只需修改 dotspacemacs-themes 变量的值, 将主题加入列表即可. 在列表中靠前的主题会优先使用. 示例代码如下:
+
+;; List of themes, the first of the list is loaded when spacemacs starts.
+;; Press <SPC> T n to cycle to the next theme in the list (works great
+;; with 2 themes variants, one dark and one light)
+dotspacemacs-themes '(
+		      monokai
+		      ;; spacemacs-dark
+		      ;; spacemacs-light
+		      ;; solarized-light
+		      solarized-dark
+		      ;; leuven
+		      ;; monokai
+		      ;; zenburn
+		      )
+
+第十二天: 创建你的第一个 Spacemacs Layer
+视频地址如下:
+
+百度网盘
+优酷
+YouTube
+主要内容:
+
+如何更新 Spacemacs, 同步官方 develop 分支及注意事项
+Layer 的 variables 变量及使用方法
+如何创建自己的 Layer
+如何定制 modeline
+evlified state
+如何更新 Sapcemacs
+可以通过 git 的方式来更新代码, 假设我们使用的是 develop 分支:
+
+git checkout develop
+git fetch upstream
+git merge upstream/develop
+
+一般来说, 如果你不熟悉 emacs 并且你的 Sapcemacs 配置能够正常工作, 则不需要频繁的更新代码, 以避免更新之后配置不能使用.
+
+variables 变量
+每一个 layer 都可以配置一些变量, 可以通过 SPC h SPC 然后输入 layer 名称, 点击对应的选项即可打开该 layer 的 README.org 文件. 然后按下 SPC f j 进入 dired 模式, 选择 config.el 文件打开, 该文件中即定义了该 layer 的变量.
+
+例如 better-default layer 的变量如下:
+
+(defvar better-defaults-move-to-beginning-of-code-first t
+  "when t, first stroke of C-a will move the cursor to the beginning of code.
+When nil, first stroke will go to the beginning of line.
+Subsequent strokes will toggle between beginning of line and beginning of code.")
+
+(defvar better-defaults-move-to-end-of-code-first nil
+  "when t, first stroke of C-e will move the cursor to the end of code (before comments).
+When nil, first stroke will go to the end of line (after comments).
+Subsequent strokes will toggle between end of line and end of code.")
+
+要配置使用这些变量, 可以在启用 layer 时使用如下的代码:
+
+(better-defaults :variables
+		 better-defaults-move-to-end-of-code-first t)
+
+定制 modeline
+在 emacs25.1 中, 该版本的 modeline 和以前版本不同, 可以通过如下方式将 modeline 修改为以前的显示形状:
+
+在 dotspacemacs/user-config 中加入如下代码:
+
+(setq ns-use-srgb-colorspace nil)
+
+创建自己的 layer
+假设我们需要创建一个 layer, 名叫 zilongshanren, 并且在 layer 下包含一个名叫 youdao-dictionary 的 package.
+
+首先利用 spacemacs 提供的函数创建 layer. 按下 M-x 并且输入 configuration-layer/create-layer, 然后选择路径 ~/.spacemacs.d, 确定创建 README, 然后我们就可以看到 layer 创建成功.
+
+每一个 layer 的结构如下:
+
+[layer_name]
+  |__ [local]
+  | |__ [package 1]
+  | |     ...
+  | |__ [package n]
+  |-- layers.el
+  |__ packages.el
+  |__ funcs.el
+  |__ config.el
+  |__ keybindings.el
+
+[] = directory
+即每一个 layer 目录下都可以包含 layers.el, packages.el 等文件, 以及一个名叫 local 的目录.
+
+每一个文件的内容描述如下:
+
+文件名	用处
+layers.el	申明一些额外的 layer 依赖
+packages.el	一些 layer 使用到的 package 以及相关配置函数
+funcs.el	定义一些 layer 层次的函数, 即全局函数
+config.el	layer 的配置, 此处定义的配置可以在 .spacemacs 中申明 layer 时进行配置, 也可以定义 emacs 的默认配置
+keybindings.el	快捷键配置
+现在我们可以把 youdao-dictionary 加入到 layer 中, 编辑 packages.el:
+
+;; 添加 package
+(defconst zilongshanren-packages
+  '(youdao-dictionary)
+  )
+
+;; 初始化 package
+;; 可以使用 , d m 快捷键, 然后按下 e 展开宏
+(defun zilongshanren/init-youdao-dictionary ()
+  (use-package youdao-dictionary
+    :deter t
+    :init
+    (spacemacs/set-leader-keys "oy" 'youdao-dictionary-search-at-point+)
+    )
+  )
+
+编辑 config.el 文件:
+
+;; 开启行号显示
+(global-linum-mode t)
+
+;; 定义快捷键
+(global-set-key (kbd "M-s o") 'occur-dwim)
+
+;; 将 occur 的 buffer 中的光标移动方式修改为 HJKL
+(evilified-state-evilify-map occur-mode-map
+  :mode occur-mode)
+
+编辑 keybindings.el 文件:
+
+;; dwin = do what i mean.
+(defun occur-dwim ()
+  "Call `occur' with a sane default."
+  (interactive)
+  (push (if (region-active-p)
+	    (buffer-substring-no-properties
+	     (region-beginning)
+	     (region-end))
+	  (let ((sym (thing-at-point 'symbol)))
+	    (when (stringp sym)
+	      (regexp-quote sym))))
+	regexp-history)
+  (call-interactively 'occur))
+
+然后将 zilongshanren 加到 dotspacemacs-configuration-layers 变量中, 即可让 layer 配置生效.
+
+文档
+spacemacs 的文档保存在 doc 目录下, 包含有 CONVENTIONS.org, DOCUMENTATION.org 等文档文件, 建议大家多多阅读.
+
+第十三天: 定制你的 Layer
+视频地址如下:
+
+百度网盘
+优酷
+Youtube
+主要内容:
+
+修复上一期视频中 occur-mode 启动的问题
+修复 ivy0.8 导致的问题, 同时简单探讨了一下今后如何避免和处理类似的问题
+介绍 post-init 和 pre-init 的用法, 介绍了如何定制 spacemacs 的 company-mode
+介绍 layers.el 文件, 演示该文件的作用
+介绍 layer 的 package 的 location 变量, 演示了如何从 github 获取并安装 package 的方法
+修复上一期视频中的配置问题
+在之前的配置代码中, 如果我们启动 emacs 会出现以下错误:
+
+Symbol's function definition is void: evilified-state-evilify-map
+这是因为这个符号在 config.el 中使用的时候还是空的, 我们可以通过以下方式修复, 编辑 config.el 文件, 将以下代码移动到 dotspacemacs/user-init 函数中:
+
+(evilified-state-evilify-map occur-mode-map
+  :mode occur-mmode)
+
+修复 ivy0.8 的问题
+在 ivy 升级到0.8版本时, 对其中一个API的返回值进行了修改:
+
+(let (res)
+  (ivy-with
+   '(ivy-read "test: "
+	      '(("one" . 1) ("three" . 3))
+	      :action (lambda (x) (setq res x)))
+   "t C-m")
+  res)
+;; =>
+;; ("three" . 3)
+
+在之前的版本中, 这个函数的返回值是 3, 在0.8版本中被修改为了一个列表. 如果要修复这个问题, 我们需要在使用返回值的时候加上 cdr, 具体的修改可以查看fix break API changes for ivy 0.8.
+
+post-init 和 pre-init
+有一些 mode 已经安装, 例如 company-mode 已经被 auto-completion layer 安装, 如果这时我们还想对该 mode 进行一些定制, 那么我们可以这样处理:
+
+在我们的 layer 中添加这个包
+;; 添加 package
+(defconst zilongshanren-packages
+  '(youdao-dictionary
+    company  ; 添加 company package
+    )
+  )
+
+然后定义一个 post-init 函数
+;; 定制 company-mode
+(defun zilongshanren/post-init-company ()
+  (setq company-minimum-prefix-length 1)
+  )
+
+然后重启 emacs 即可以看到定制的效果.
+
+对于 package 的三个函数: pre-init, init, post-init, spacemacs是按照这个顺序来依次调用的.
+
+location
+在安装 package 时, 我们如果只输入 package 的名字, 那么默认是从 melpa 下载安装的. 如果我们想自定义 package 的安装地址, 那么我们就可以使用 location 变量.
+
+自带 package
+例如我们使用一个自带的 occur package:
+
+;; 自定义 package 安装地址
+(defconst zilongshanren-packages
+  '(youdao-dictionary
+    (occur-mode :location built-in)
+    )
+  )
+
+;; 初始化 occur mode
+(defun zilongshanren/init-occur-mode ()
+  (evilified-state-evilify-map occur-mode-map
+    :mode occur-mmode)
+  )
+
+从 github 安装
+例如我们从 github 安装 gulpjs package:
+
+;; 自定义 package 安装地址
+(defconst zilongshanren-packages
+  '(youdao-dictionary
+    (occur-mode :location built-in)
+    (gulpjs :location (recipe :fetcher github :repo "zilongshanren/emacs-gulpjs"))
+    )
+  )
+
+(defun zilongshanren/init-gulpjs ()
+  (use-package gulpjs
+    :init)
+  )
+
+在 emacs 启动时就会从 github 上下载 guiljs package 并安装到本地.
+
+layers.el
+如果我们需要对某些 layer 中的 package 配置进行大量的重写, 那么我们可以移除这个 layer 的某个 package. 我们可以通过 layers.el 来实现这一点, 例如移除 chinese layer 的 youdao-dictionary package:
+
+(configuration-layer/remove-layer 'youdao-dictionary)
+
+然后我们可以在自己的 layer 中添加这个 package, 然后对它进行定制. 在这种情况下, spacemacs 不会在 chinese layer 中加载 youdao-dictionary 这个 package, 而是在我们的 layer 中加载这个 package, 以实现对 spacemacs 内置的package 的定制.
+
+第十四天: 文件和 Buffer 操作
+视频地址如下:
+
+百度网盘
+优酷
+Youtube
+主要内容:
+
+我的配置和 spacemacs配置的一些不同点
+文件相关操作
+Buffer 相关操作
+Dired
+不同点
+从今天的视频开始, 将使用 子龙山人的配置 来讲解视频. 这份配置对 spacemacs 的定制有两个不同点:
+
+没有使用官方的 modeline, 而是采用自己定制的
+排除掉了大量的作者认为对他没有作用的 package, 因为这些 package 确实不经常使用, 反而可能导致一些 BUG 或者导致 spacemacs 启动或使用过程中变慢
+文件相关操作
+SPC p f
+
+在当前的项目中查找文件, 类似于 vim 中的 Ctrl-p. 在作者的配置中, 该快捷键被绑定到了以下函数:
+
+(defun zilongshanren/open-file-with-projectile-or-counsel-git ()
+  (interactive)
+  (if (zilongshanren/vcs-project-root)
+      (counsel-git)
+    (if (projectile-project-p)
+	(projectile-find-file)
+      (ido-find-file))))
+
+该函数会针对不同的项目类型使用不同的查找方式:
+
+如果是 git 项目, 那么使用 counsel-git 来查找文件, 不使用 projectile 的原因是 counsel-git 更快
+如果是 projectile 项目, 即在项目的根目录中存在 .projectile 文件, 那么使用 projectile-find-file 来查找文件
+否则使用 ido-fine-file 来查找文件
+SPC f f
+
+从当前目录开始查找文件. 在作者的配置中同时启用了 ivy-layer 和 helm-layer, 默认使用的是 helm 来查找文件.
+
+SPC f L
+
+使用 helm-locate 来在当前系统中查找文件.
+
+SPC f l
+
+查找文件并使用 literal 的方式来打开文件, 使用 literal 方式打开的文件不会附加编码信息, 例如 utf-8 编码中可能存在的 BOM 头信息, 使用 literal 模式即可以看到 BOM头.
+
+SPC f h
+
+查找文件并使用二进制的方式来打开文件, 可以使用 C-c C-c 回到之前的模式.
+
+SPC f o
+
+使用外部程序打开文件.
+
+SPC f E
+
+使用 sudo 来编辑文件, 当某些文件是只读的时候可以采用这种方式来编辑文件.
+
+SPC f D
+
+删除当前的文件和 buffer.
+
+SPC f j
+
+以当前文件的目录打开 dired buffer.
+
+SPC f r
+
+使用 ivy 打开最近文件列表.
+
+SPC f R
+
+重命名当前文件.
+
+SPC f v
+
+添加 local variables, 可以通过这个功能给项目做一些特殊的设置. 例如按下 SPC f v, 然后选择 add-dir-local-variable, 选择 org-mode, 再选择org-highlight-links 变量, 此时 emacs 会在当前文件的目录下生成一个 .dir-locals.el 文件, 内容如下:
+
+;;; Directory Local Variables
+;;; For more information see (info "(emacs) Directory Variables")
+
+((org-mode
+  (org-highlight-links)))
+
+这个文件中的代码会在当前目录下的所有文件 buffer 中生效.
+
+SPC f y
+
+拷贝当前文件的全路径.
+
+SPC f a d
+
+列出最近访问的目录, 使用命令行工具 fasd 实现.
+
+SPC f C d/u
+
+将当前文件的编码转换为 DOS/UNIX 编码.
+
+SPC f e d
+
+打开 .spacemacs 或 .spacemacs.d/init.el 文件.
+
+SPC f e i
+
+打开 .emacs 或 .emacs.d/init.el 文件.
+
+SPC f e l
+
+打开系统中已经安装的 el 文件.
+
+SPC f c
+
+复制文件.
+
+SPC f b
+
+打开标签.
+
+SPC f s/S
+
+保存当前 buffer 或 所有 buffer.
+
+buffer 相关操作
+SPC b .
+
+打开 Buffer Selection Transient State, 在该模式下可以进行更多的操作, 由 hydra 提供.
+
+SPC b b
+
+切换到已经打开的 buffer.
+
+SPC b d
+
+关闭一个 buffer.
+
+SPC b f
+
+在 finder 中打开当前文件, 只在 Mac系统下生效.
+
+SPC b B/i
+
+以类似 Dired Mode 的形式打开 buffer 列表, 在这个列表中可以执行和 Dired Mode 类似的操作.
+
+SPC b h
+
+进入 \*spacemacs\* buffer.
+
+SPC b k
+
+使用正则表达式来删除 buffer.
+
+SPC b N
+
+新建一个 buffer.
+
+SPC b m
+
+删除除当前 buffer 外的所有 buffer.
+
+SPC b R
+
+使用 emacs 自动备份的文件恢复文件.
+
+SPC b s
+
+跳转到 scratch buffer.
+
+SPC b w
+
+关闭/打开 buffer 的 read-only.
+
+SPC b Y
+
+复制整个 buffer 的内容.
+
+SPC b P
+
+将剪切板的内容粘贴到整个 buffer.
+
+SPC <tab>
+
+在当前 buffer 和上一个打开的 buffer 中进行切换.
+
+Dired
+在第四天的内容中已经讲解过 Dired Mode 的操作, 具体可以查看 Dired Mode.
+
+第十五天: 文件和 Buffer 操作
+视频地址如下:
+
+百度网盘
+优酷
+Youtube
+主要内容:
+
+Layout 相关操作
+Window 相关操作
+project 相关操作
+Layout 相关操作
+SPC l L
+
+加载 layout 文件
+
+SPC l l
+
+在 layout 之间切换
+
+SPC l s
+
+将 layout 保存到文件
+
+SPC l <tab>
+
+在当前 layout 和上一个 layout 之间切换
+
+SPC l o
+
+配置 layout
+
+SPC l R
+
+重命名 layout
+
+SPC l ?
+
+显示更多的与 layout 相关的命令
+
+Window 相关操作
+SPC w -
+
+上下拆分窗口
+
+SPC w /
+
+左右拆分窗口
+
+SPC w .
+
+显示更多的与 window micro state 的相关的命令
+
+SPC w 2/3
+
+左右显示 2/3 个窗口
+
+SPC w =
+
+将窗口均等分
+
+SPC w b
+
+切换到 minibuffer
+
+SPC w d
+
+删除当前窗口
+
+SPC w h/j/k/l
+
+向 左/下/上/右 移动窗口
+
+SPC w m
+
+最大化显示当前窗口
+
+SPC W H/J/K/L
+
+将当前窗口向 左/下/上/右 移动
+
+SPC w u/U
+
+取消/重置上次操作
+
+SPC w o
+
+切换到其他 frame
+
+SPC w F
+
+创建一个新的 frame
+
+SPC w 1/2/3/4
+
+切换到对应的编号的窗口
+
+SPC w w
+
+依次切换到其他窗口
+
+SPC w W
+
+使用字母标识需要跳转的窗口, 并按下字母进行跳转
+
+SPC t g
+
+将当前显示的窗口与其他窗口进行黄金分割显示
+
+SPC t -
+
+开启/关闭 将光标始终显示在中心行
+
+project 相关操作
+SPC p f
+
+在当前 project 中查找并打开文件
+
+SPC p b
+
+在当前 project 中查找打开的 buffer
+
+SPC p p
+
+切换到其他的 project
+
+SPC p l
+
+切换到其他的 project 并创建一个新的 layout
+
+find-file-in-project
+
+这是一个插件, 支持全平台. 目前绑定在 SUPER f 快捷键上.
+* 教程
+给出 Cask 和 Use-package 的简单示例
+详细介绍 Company-mode 的工作原理, 各种 backend 及其用法
+扩展阅读:
+
+编写一个简单的 comopany backend
+Company Mode Emacs wiki
+升级 Package 之后有 BUG 怎么办
+有些时候我们将一个 Package 升级到最新的版本(例如 github 上最新的 commit), 而该版本可能会存在一些 BUG, 这就会导致我们的配置不能使用.
+
+如果我们使用 stable 版本的 Package(例如使用 github 上最新的 release), 就可以尽量地减少因为升级包之后的 BUG 导致配置不可用的情况.
+
+另一种解决方式是使用 Cask 进行包管理, 举例如下:
+
+首先我们添加一个包, 例如我们编辑 Cask 文件, 添加 monokai-theme :
+
+(depends-on "monokai-theme"
+	    :git "https://github.com/oneKelvinSmith/monokai-emacs/releases"
+	    :ref "02c5f5d")
+
+然后启动 emacs, 但是出现了 BUG. 这时我们可以直接将 ref 的值修改为最新的 commit, Cask 即会更新这个包, 而不用等待 melpa 对包进行更新.
+
+Use-package 的更多用法
+如果我们启用 exec-path-from-shell , 在 emacs 启动时可能会提示 PATH 变量重复定义, 解决方案如下:
+
+(use-package exec-path-from-shell
+  :ensure t
+  :if (and (eq system-type 'darwin) (display-graphic-p))
+  :config
+  (progn
+    (when (string-match-p "/zsh$" (getenv "SHELL"))
+      ;; Use a non-interactive login shell.  A login shell, because my
+      ;; environment variables are mostly set in `.zprofile'.
+      (setq exec-path-from-shell-arguments '("-l")))
+
+    (exec-path-from-shell-initialize)
+    )
+  )
+
+;; (use-package monokai-theme
+;; :ensure t)
+
+其中 if 子句可以确定启用 Package 的条件, 在 config 子句中向 exec-path-from-shell-arguments 即可消除这个警告.
+
+ensure 子句来确保 Package 被安装. 如果要使用 stable 版, 则添加以下子句:
+
+:pin melpa-stable
+
+Company-mode 的工作原理
+Company-mode 需要配合后端使用, 所有的 backend 都保存在 company-backends 这个变量中, 例如在我的环境中该变量值如下:
+
+(company-capf
+ (company-dabbrev-code company-gtags company-etags company-keywords)
+ company-files
+ company-dabbrev
+ )
+
+*company-backends*变量的值是一个列表, 其中的每一项都是一个后端或 Group Backend.
+
+Company-mode 会依次调用该变量中的 backend, 并判断该 backend 是否合适当前 Buffer, 直到找到一个合适的补全后端.
+
+在进行补全项选择的时候, 我们也可以在 mode-line 中看到是使用的哪一个后端.
+
+company-dabbrev: 将当前打开的所有 buffer 中的关键字作为补全显示(默认不使用 scratch buffer).
+company-files: 补全路径.
+如果在补全过程中取消了补全, 也可以使用命令再次开启补全. 例如 company-files 补全方式就可以使用 company-files 函数开启.
+
+在输入英文时可以使用 company-ispell 进行输入提示.
+
+为什么有时 Python 的补全 不工作
+有时在编写 Python 代码的时候补全不能工作, 这时我们可以先查看 company-backends 的值, 查看是否需要安装 company-anaconda 用于补全.
+
+在 Mac 系统中, 如果 anaconda-mode 的安装过程出现错误, 可以参照以下解决方案: Mac 上面编辑 python 的时候安装 anaconda-mode 出错
+
+然后确保在 company-backends 中有 company-anaconda 这个后端即可. 可以使用如下代码:
+
+(add-hook 'python-mode-hook
+	  (lambda ()
+	    (set (make-local-variable 'company-backends) '(company-anaconda))))
+
+以上代码在 python-mode 被激活时设置 company-backends 的变量值为 (company-anaconda), 则在编辑 python 代码时就可以使用 anaconda-mode 进行补全.
+
+在 emacs 中有两种补全方式:
+
+如 company-files 等, 根据关键字等进行补全, 只需要 emacs 自己进行一些处理即可得到补全数据;
+如 company-anaconda 等, 需要使用客户端-服务端模式, 补全后端需要服务端的配合才能得到补全数据.
+在进行编程时, 一般使用第二种补全后端, 例如 编写 python 代码使用 company-anaconda, 编写 C/C++代码使用 company-ycmd, 编写 javascript 代码使用 company-tern.
+
+上述示例代码开启 company-anaconda 时有一个缺点, 比如当我们在 python 的注释时没法使用补全, 因为补全后端只有 company-anaconda, 在注释时不工作. 我们可以将 dabbrev 加入后端列表:
+
+(add-hook 'python-mode-hook
+	  (lambda ()
+	    (set (make-local-variable 'company-backends) '(company-anaconda company-dabbrev))))
+
+当 company-anaconda 不合适时使用 company-dabbrev 进行补全, 即可满足上述需求.
+
+Group Backend
+company-dabbrev-code: 类似于 company-dabbrev, 但是 dabbrev 对代码和注释都进行补全, dabbrev-code 只补全代码.
+
+假设我们的配置代码如下:
+
+(add-hook 'python-mode-hook
+	  (lambda ()
+	    (set (make-local-variable 'company-backends) '((company-anaconda company-dabbrev-code)
+							   company-dabbrev)))
+	  )
+
+如果我们在注释中出现了 xxx 这个字符串, 在编写 python 代码时 xxx 不会出现在补全选项中. 因为在此时会先匹配到 company-anaconda, 并不会进入 company-dabbrev. 而因为 company-anaconda 是一个 Group Backend, 所以 company-dabbrev-code 的补全数据会出现在补全列表中.
+
+怎样写一个简单的补全后端
+因为视频时间关系, 大家可以去阅读以下文章:
+
+Writing the Simplest Emacs company-mode Backend
+
+实现方式简单介绍如下:
+
+定义一个补全数据列表
+定义一个补全函数, 返回对应输入的补全数据
+更多的内容可以查看该文档, 同时在网页右侧的链接中有更多的详细内容.
+
+第十一天: Spacemacs 简介及安装
+视频地址如下:
+
+百度网盘
+优酷
+Youtube
+从今天的内容开始介绍 Spacemacs. 地址: Spacemacs
+
+今天的内容包括:
+
+如何安装 Spacemacs
+一些简单的配置, 以及 package 管理
+管理自己的配置
+安装 Spacemacs
+安装 Spacemacs 非常简单, 只需要将 github 上的仓库克隆即可, 即执行以下命令(如有必要可以先备份以前的配置):
+
+cd ~
+mv .emacs.d .emacs.d.bak
+mv .emacs .emacs.bak
+git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
+
+在克隆完成后直接运行 Emacs. 在第一次使用 Spacemacs 时需要下载一些 Package, 然后在 Bootstrap 完成之后你需要进行如下一些配置:
+
+使用哪种编辑方式, 包括 vim 方式(默认) 以及 emacs 方式.
+使用哪种 Spacemacs distribution. 包括标准版(默认)以及基础版. 区别在于标准版包含非常多的功能, 而基础版只包含核心功能.
+在完成以上两个配置之后, 就会在 HOME 目录生成一个 ~/.spacemacs 配置文件. 然后 Spacemacs 会进行进一步的初始化, 下载更多的需要的 Package. 如果你需要使用 emacs-china 的配置源, 此时可以终止 emacs, 然后在~/.spacemacs 中的 dotspacemacs/user-init 函数中加入以下代码:
+
+(setq configuration-layer--elpa-archives
+      '(("melpa-cn" . "http://elpa.zilongshanren.com/melpa/")
+	("org-cn"   . "http://elpa.zilongshanren.com/org/")
+	("gnu-cn"   . "http://elpa.zilongshanren.com/gnu/")))
+
+重新启动 emacs, 等待 Spacemacs 完成安装即可.
+
+如果你需要更方便的管理你自己的配置, 可以创建 ~/.spacemacs.d 目录, 然后将 ~/.spacemacs 文件移动到该目录中并重命名为 init.el.
+
+在 Spacemacs 中的操作方式如下:
+
+按下 SPC f j 打开 dired 目录
+按下按键 + , 创建 ~/.spacemacs.d 目录
+将光标移动到 .spacemacs 文件上, 按下 R, 将该文件移动到 .spacemacs.d 目录中
+进入 .spacemacs.d 目录, 将光标移动到 .spacemacs 文件上, 按下 R, 将该文件重命名为 init.el
+按下 qq 退出 dired
+然后启动 emacs 即可.
+
+使用这种方式管理配置, 你可以将自己的配置集中到 ~/.spacemacs.d 目录中, 更容易进行统一管理. 你也可以将自己的配置 push 到 github 上.
+
+添加内置的 layer
+在安装完成 Spacemacs 之后, 按下 SPC f e d 打开 ~/.spacemacs 文件, 修改 dotspacemacs-configuration-layers 变量的值, 将 auto-completion, better-defaults, emacs-lisp, git, markdown, org, spell-checking, syntax-checking 等 layer 加入列表.
+
+然后退出 emacs 再重启, 或者按下 SPC f e R 安装需要的 package.
+
+一些简单的配置
+启动时全屏显示
+在 dotspacemacs/init 函数中, 将 dotspacemacs-fullscreen-at-startup 变量设置为 t 即可. 代码如下:
+
+;; If non nil the frame is maximized when Emacs starts up.
+;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
+;; (default nil) (Emacs 24.4+ only)
+dotspacemacs-maximized-at-startup t
+
+ivy layer
+将 ivy 加入 dotspacemacs-configuration-layers 列表中. 按下 CTRL s 使用 swiper 可以进行搜索.
+
+查看 layer 下的 文档信息
+按下 SPC h SPC 即会弹出一个信息窗口, 可以从窗口中选择具体的 layer 或者其他信息进行查看.
+
+删除安装的 package
+只需要将需要删除的 package 名称加入到 dotspacemacs-excluded-packages 变量中, 在下一次启动 emacs 时即会删除该 package. 示例代码如下:
+
+;; A list of packages and/or extensions that will not be install and loaded.
+dotspacemacs-excluded-packages '(vi-tilde-fringe)
+
+安装 package
+在 Spacemacs 中安装 package 时最好不要使用 package-install, 因为这样安装的 package 会在下一次启动时被删除.
+
+Spacemacs 提供了一个方式, 你只需将需要安装的 package 加入到 dotspacemacs-additional-package 变量中即可, 示例代码如下:
+
+;; List of additional packages that will be installed without being
+;; wrapped in a layer. If you need some configuration for these
+;; packages, then consider creating a layer. You can also put the
+;; configuration in `dotspacemacs/user-config'.
+dotspacemacs-additional-packages '(youdao-dictionary)
+
+配置 customize-group
+如果使用 customize-group 对配置进行了修改, 你可以以下代码将生成的 custom.el 配置文件纳入 ~/.spacemacs.d 目录中进行统一管理:
+
+(setq custom-file (expand-file-name "custom.el" dotspacemacs-directory))
+(load custom-file 'no-error 'no-message)
+
+修改主题
+只需修改 dotspacemacs-themes 变量的值, 将主题加入列表即可. 在列表中靠前的主题会优先使用. 示例代码如下:
+
+;; List of themes, the first of the list is loaded when spacemacs starts.
+;; Press <SPC> T n to cycle to the next theme in the list (works great
+;; with 2 themes variants, one dark and one light)
+dotspacemacs-themes '(
+		      monokai
+		      ;; spacemacs-dark
+		      ;; spacemacs-light
+		      ;; solarized-light
+		      solarized-dark
+		      ;; leuven
+		      ;; monokai
+		      ;; zenburn
+		      )
+
+第十二天: 创建你的第一个 Spacemacs Layer
+视频地址如下:
+
+百度网盘
+优酷
+YouTube
+主要内容:
+
+如何更新 Spacemacs, 同步官方 develop 分支及注意事项
+Layer 的 variables 变量及使用方法
+如何创建自己的 Layer
+如何定制 modeline
+evlified state
+如何更新 Sapcemacs
+可以通过 git 的方式来更新代码, 假设我们使用的是 develop 分支:
+
+git checkout develop
+git fetch upstream
+git merge upstream/develop
+
+一般来说, 如果你不熟悉 emacs 并且你的 Sapcemacs 配置能够正常工作, 则不需要频繁的更新代码, 以避免更新之后配置不能使用.
+
+variables 变量
+每一个 layer 都可以配置一些变量, 可以通过 SPC h SPC 然后输入 layer 名称, 点击对应的选项即可打开该 layer 的 README.org 文件. 然后按下 SPC f j 进入 dired 模式, 选择 config.el 文件打开, 该文件中即定义了该 layer 的变量.
+
+例如 better-default layer 的变量如下:
+
+(defvar better-defaults-move-to-beginning-of-code-first t
+  "when t, first stroke of C-a will move the cursor to the beginning of code.
+When nil, first stroke will go to the beginning of line.
+Subsequent strokes will toggle between beginning of line and beginning of code.")
+
+(defvar better-defaults-move-to-end-of-code-first nil
+  "when t, first stroke of C-e will move the cursor to the end of code (before comments).
+When nil, first stroke will go to the end of line (after comments).
+Subsequent strokes will toggle between end of line and end of code.")
+
+要配置使用这些变量, 可以在启用 layer 时使用如下的代码:
+
+(better-defaults :variables
+		 better-defaults-move-to-end-of-code-first t)
+
+定制 modeline
+在 emacs25.1 中, 该版本的 modeline 和以前版本不同, 可以通过如下方式将 modeline 修改为以前的显示形状:
+
+在 dotspacemacs/user-config 中加入如下代码:
+
+(setq ns-use-srgb-colorspace nil)
+
+创建自己的 layer
+假设我们需要创建一个 layer, 名叫 zilongshanren, 并且在 layer 下包含一个名叫 youdao-dictionary 的 package.
+
+首先利用 spacemacs 提供的函数创建 layer. 按下 M-x 并且输入 configuration-layer/create-layer, 然后选择路径 ~/.spacemacs.d, 确定创建 README, 然后我们就可以看到 layer 创建成功.
+
+每一个 layer 的结构如下:
+
+[layer_name]
+  |__ [local]
+  | |__ [package 1]
+  | |     ...
+  | |__ [package n]
+  |-- layers.el
+  |__ packages.el
+  |__ funcs.el
+  |__ config.el
+  |__ keybindings.el
+
+[] = directory
+即每一个 layer 目录下都可以包含 layers.el, packages.el 等文件, 以及一个名叫 local 的目录.
+
+每一个文件的内容描述如下:
+
+文件名	用处
+layers.el	申明一些额外的 layer 依赖
+packages.el	一些 layer 使用到的 package 以及相关配置函数
+funcs.el	定义一些 layer 层次的函数, 即全局函数
+config.el	layer 的配置, 此处定义的配置可以在 .spacemacs 中申明 layer 时进行配置, 也可以定义 emacs 的默认配置
+keybindings.el	快捷键配置
+现在我们可以把 youdao-dictionary 加入到 layer 中, 编辑 packages.el:
+
+;; 添加 package
+(defconst zilongshanren-packages
+  '(youdao-dictionary)
+  )
+
+;; 初始化 package
+;; 可以使用 , d m 快捷键, 然后按下 e 展开宏
+(defun zilongshanren/init-youdao-dictionary ()
+  (use-package youdao-dictionary
+    :deter t
+    :init
+    (spacemacs/set-leader-keys "oy" 'youdao-dictionary-search-at-point+)
+    )
+  )
+
+编辑 config.el 文件:
+
+;; 开启行号显示
+(global-linum-mode t)
+
+;; 定义快捷键
+(global-set-key (kbd "M-s o") 'occur-dwim)
+
+;; 将 occur 的 buffer 中的光标移动方式修改为 HJKL
+(evilified-state-evilify-map occur-mode-map
+  :mode occur-mode)
+
+编辑 keybindings.el 文件:
+
+;; dwin = do what i mean.
+(defun occur-dwim ()
+  "Call `occur' with a sane default."
+  (interactive)
+  (push (if (region-active-p)
+	    (buffer-substring-no-properties
+	     (region-beginning)
+	     (region-end))
+	  (let ((sym (thing-at-point 'symbol)))
+	    (when (stringp sym)
+	      (regexp-quote sym))))
+	regexp-history)
+  (call-interactively 'occur))
+
+然后将 zilongshanren 加到 dotspacemacs-configuration-layers 变量中, 即可让 layer 配置生效.
+
+文档
+spacemacs 的文档保存在 doc 目录下, 包含有 CONVENTIONS.org, DOCUMENTATION.org 等文档文件, 建议大家多多阅读.
+
+第十三天: 定制你的 Layer
+视频地址如下:
+
+百度网盘
+优酷
+Youtube
+主要内容:
+
+修复上一期视频中 occur-mode 启动的问题
+修复 ivy0.8 导致的问题, 同时简单探讨了一下今后如何避免和处理类似的问题
+介绍 post-init 和 pre-init 的用法, 介绍了如何定制 spacemacs 的 company-mode
+介绍 layers.el 文件, 演示该文件的作用
+介绍 layer 的 package 的 location 变量, 演示了如何从 github 获取并安装 package 的方法
+修复上一期视频中的配置问题
+在之前的配置代码中, 如果我们启动 emacs 会出现以下错误:
+
+Symbol's function definition is void: evilified-state-evilify-map
+这是因为这个符号在 config.el 中使用的时候还是空的, 我们可以通过以下方式修复, 编辑 config.el 文件, 将以下代码移动到 dotspacemacs/user-init 函数中:
+
+(evilified-state-evilify-map occur-mode-map
+  :mode occur-mmode)
+
+修复 ivy0.8 的问题
+在 ivy 升级到0.8版本时, 对其中一个API的返回值进行了修改:
+
+(let (res)
+  (ivy-with
+   '(ivy-read "test: "
+	      '(("one" . 1) ("three" . 3))
+	      :action (lambda (x) (setq res x)))
+   "t C-m")
+  res)
+;; =>
+;; ("three" . 3)
+
+在之前的版本中, 这个函数的返回值是 3, 在0.8版本中被修改为了一个列表. 如果要修复这个问题, 我们需要在使用返回值的时候加上 cdr, 具体的修改可以查看fix break API changes for ivy 0.8.
+
+post-init 和 pre-init
+有一些 mode 已经安装, 例如 company-mode 已经被 auto-completion layer 安装, 如果这时我们还想对该 mode 进行一些定制, 那么我们可以这样处理:
+
+在我们的 layer 中添加这个包
+;; 添加 package
+(defconst zilongshanren-packages
+  '(youdao-dictionary
+    company  ; 添加 company package
+    )
+  )
+
+然后定义一个 post-init 函数
+;; 定制 company-mode
+(defun zilongshanren/post-init-company ()
+  (setq company-minimum-prefix-length 1)
+  )
+
+然后重启 emacs 即可以看到定制的效果.
+
+对于 package 的三个函数: pre-init, init, post-init, spacemacs是按照这个顺序来依次调用的.
+
+location
+在安装 package 时, 我们如果只输入 package 的名字, 那么默认是从 melpa 下载安装的. 如果我们想自定义 package 的安装地址, 那么我们就可以使用 location 变量.
+
+自带 package
+例如我们使用一个自带的 occur package:
+
+;; 自定义 package 安装地址
+(defconst zilongshanren-packages
+  '(youdao-dictionary
+    (occur-mode :location built-in)
+    )
+  )
+
+;; 初始化 occur mode
+(defun zilongshanren/init-occur-mode ()
+  (evilified-state-evilify-map occur-mode-map
+    :mode occur-mmode)
+  )
+
+从 github 安装
+例如我们从 github 安装 gulpjs package:
+
+;; 自定义 package 安装地址
+(defconst zilongshanren-packages
+  '(youdao-dictionary
+    (occur-mode :location built-in)
+    (gulpjs :location (recipe :fetcher github :repo "zilongshanren/emacs-gulpjs"))
+    )
+  )
+
+(defun zilongshanren/init-gulpjs ()
+  (use-package gulpjs
+    :init)
+  )
+
+在 emacs 启动时就会从 github 上下载 guiljs package 并安装到本地.
+
+layers.el
+如果我们需要对某些 layer 中的 package 配置进行大量的重写, 那么我们可以移除这个 layer 的某个 package. 我们可以通过 layers.el 来实现这一点, 例如移除 chinese layer 的 youdao-dictionary package:
+
+(configuration-layer/remove-layer 'youdao-dictionary)
+
+然后我们可以在自己的 layer 中添加这个 package, 然后对它进行定制. 在这种情况下, spacemacs 不会在 chinese layer 中加载 youdao-dictionary 这个 package, 而是在我们的 layer 中加载这个 package, 以实现对 spacemacs 内置的package 的定制.
+
+第十四天: 文件和 Buffer 操作
+视频地址如下:
+
+百度网盘
+优酷
+Youtube
+主要内容:
+
+我的配置和 spacemacs配置的一些不同点
+文件相关操作
+Buffer 相关操作
+Dired
+不同点
+从今天的视频开始, 将使用 子龙山人的配置 来讲解视频. 这份配置对 spacemacs 的定制有两个不同点:
+
+没有使用官方的 modeline, 而是采用自己定制的
+排除掉了大量的作者认为对他没有作用的 package, 因为这些 package 确实不经常使用, 反而可能导致一些 BUG 或者导致 spacemacs 启动或使用过程中变慢
+文件相关操作
+SPC p f
+
+在当前的项目中查找文件, 类似于 vim 中的 Ctrl-p. 在作者的配置中, 该快捷键被绑定到了以下函数:
+
+(defun zilongshanren/open-file-with-projectile-or-counsel-git ()
+  (interactive)
+  (if (zilongshanren/vcs-project-root)
+      (counsel-git)
+    (if (projectile-project-p)
+	(projectile-find-file)
+      (ido-find-file))))
+
+该函数会针对不同的项目类型使用不同的查找方式:
+
+如果是 git 项目, 那么使用 counsel-git 来查找文件, 不使用 projectile 的原因是 counsel-git 更快
+如果是 projectile 项目, 即在项目的根目录中存在 .projectile 文件, 那么使用 projectile-find-file 来查找文件
+否则使用 ido-fine-file 来查找文件
+SPC f f
+
+从当前目录开始查找文件. 在作者的配置中同时启用了 ivy-layer 和 helm-layer, 默认使用的是 helm 来查找文件.
+
+SPC f L
+
+使用 helm-locate 来在当前系统中查找文件.
+
+SPC f l
+
+查找文件并使用 literal 的方式来打开文件, 使用 literal 方式打开的文件不会附加编码信息, 例如 utf-8 编码中可能存在的 BOM 头信息, 使用 literal 模式即可以看到 BOM头.
+
+SPC f h
+
+查找文件并使用二进制的方式来打开文件, 可以使用 C-c C-c 回到之前的模式.
+
+SPC f o
+
+使用外部程序打开文件.
+
+SPC f E
+
+使用 sudo 来编辑文件, 当某些文件是只读的时候可以采用这种方式来编辑文件.
+
+SPC f D
+
+删除当前的文件和 buffer.
+
+SPC f j
+
+以当前文件的目录打开 dired buffer.
+
+SPC f r
+
+使用 ivy 打开最近文件列表.
+
+SPC f R
+
+重命名当前文件.
+
+SPC f v
+
+添加 local variables, 可以通过这个功能给项目做一些特殊的设置. 例如按下 SPC f v, 然后选择 add-dir-local-variable, 选择 org-mode, 再选择org-highlight-links 变量, 此时 emacs 会在当前文件的目录下生成一个 .dir-locals.el 文件, 内容如下:
+
+;;; Directory Local Variables
+;;; For more information see (info "(emacs) Directory Variables")
+
+((org-mode
+  (org-highlight-links)))
+
+这个文件中的代码会在当前目录下的所有文件 buffer 中生效.
+
+SPC f y
+
+拷贝当前文件的全路径.
+
+SPC f a d
+
+列出最近访问的目录, 使用命令行工具 fasd 实现.
+
+SPC f C d/u
+
+将当前文件的编码转换为 DOS/UNIX 编码.
+
+SPC f e d
+
+打开 .spacemacs 或 .spacemacs.d/init.el 文件.
+
+SPC f e i
+
+打开 .emacs 或 .emacs.d/init.el 文件.
+
+SPC f e l
+
+打开系统中已经安装的 el 文件.
+
+SPC f c
+
+复制文件.
+
+SPC f b
+
+打开标签.
+
+SPC f s/S
+
+保存当前 buffer 或 所有 buffer.
+
+buffer 相关操作
+SPC b .
+
+打开 Buffer Selection Transient State, 在该模式下可以进行更多的操作, 由 hydra 提供.
+
+SPC b b
+
+切换到已经打开的 buffer.
+
+SPC b d
+
+关闭一个 buffer.
+
+SPC b f
+
+在 finder 中打开当前文件, 只在 Mac系统下生效.
+
+SPC b B/i
+
+以类似 Dired Mode 的形式打开 buffer 列表, 在这个列表中可以执行和 Dired Mode 类似的操作.
+
+SPC b h
+
+进入 \*spacemacs\* buffer.
+
+SPC b k
+
+使用正则表达式来删除 buffer.
+
+SPC b N
+
+新建一个 buffer.
+
+SPC b m
+
+删除除当前 buffer 外的所有 buffer.
+
+SPC b R
+
+使用 emacs 自动备份的文件恢复文件.
+
+SPC b s
+
+跳转到 scratch buffer.
+
+SPC b w
+
+关闭/打开 buffer 的 read-only.
+
+SPC b Y
+
+复制整个 buffer 的内容.
+
+SPC b P
+
+将剪切板的内容粘贴到整个 buffer.
+
+SPC <tab>
+
+在当前 buffer 和上一个打开的 buffer 中进行切换.
+
+Dired
+在第四天的内容中已经讲解过 Dired Mode 的操作, 具体可以查看 Dired Mode.
+
+第十五天: 文件和 Buffer 操作
+视频地址如下:
+
+百度网盘
+优酷
+Youtube
+主要内容:
+
+Layout 相关操作
+Window 相关操作
+project 相关操作
+Layout 相关操作
+SPC l L
+
+加载 layout 文件
+
+SPC l l
+
+在 layout 之间切换
+
+SPC l s
+
+将 layout 保存到文件
+
+SPC l <tab>
+
+在当前 layout 和上一个 layout 之间切换
+
+SPC l o
+
+配置 layout
+
+SPC l R
+
+重命名 layout
+
+SPC l ?
+
+显示更多的与 layout 相关的命令
+
+Window 相关操作
+SPC w -
+
+上下拆分窗口
+
+SPC w /
+
+左右拆分窗口
+
+SPC w .
+
+显示更多的与 window micro state 的相关的命令
+
+SPC w 2/3
+
+左右显示 2/3 个窗口
+
+SPC w =
+
+将窗口均等分
+
+SPC w b
+
+切换到 minibuffer
+
+SPC w d
+
+删除当前窗口
+
+SPC w h/j/k/l
+
+向 左/下/上/右 移动窗口
+
+SPC w m
+
+最大化显示当前窗口
+
+SPC W H/J/K/L
+
+将当前窗口向 左/下/上/右 移动
+
+SPC w u/U
+
+取消/重置上次操作
+
+SPC w o
+
+切换到其他 frame
+
+SPC w F
+
+创建一个新的 frame
+
+SPC w 1/2/3/4
+
+切换到对应的编号的窗口
+
+SPC w w
+
+依次切换到其他窗口
+
+SPC w W
+
+使用字母标识需要跳转的窗口, 并按下字母进行跳转
+
+SPC t g
+
+将当前显示的窗口与其他窗口进行黄金分割显示
+
+SPC t -
+
+开启/关闭 将光标始终显示在中心行
+
+project 相关操作
+SPC p f
+
+在当前 project 中查找并打开文件
+
+SPC p b
+
+在当前 project 中查找打开的 buffer
+
+SPC p p
+
+切换到其他的 project
+
+SPC p l
+
+切换到其他的 project 并创建一个新的 layout
+
+find-file-in-project
+
+这是一个插件, 支持全平台. 目前绑定在 SUPER f 快捷键上.
+
+更多内容
+对 Spacemacs 中的快捷键操作就介绍到这里, 更多的快捷键介绍可以到 Spacemacs ABC 去查看.
+
+Author: zilongshanren
+
+Created: 2017-06-18 Sun 12:04
+
+Validate

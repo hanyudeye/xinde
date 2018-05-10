@@ -1,6 +1,6 @@
-* 软件的安装与配置
+* 安装与配置(加减软件功能)
   配置文件/etc/php/7.0/apache2/php.ini
-  这是命令行配置 /etc/php/7.0/cli/php.ini 
+  命令行配置 /etc/php/7.0/cli/php.ini 
 ** 安装
    ./configure --with-mysql --with-apxs=/www/bin/apxs
 *** apache的支持
@@ -41,29 +41,894 @@
     fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
     }
 ** 模块安装  
-   apt install php-curl 
-   php-mysql
+   apt install php-curl php-mysql
 *** 手动加载模块 
     1. a2enmod rewrite 加载 rewrite模块
     2. 创建 到 mods-enabled 的软链接 ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
     3. 注意 虚拟主机 中 AllowOverride 为 All
 *** 模块安装路径
-   查找扩展路径 php -ini |grep extension
-   extension_dir => /usr/lib/php/20151012
+    查找扩展路径 php -ini |grep extension
+    extension_dir => /usr/lib/php/20151012
 ** php配置  
 *** 配置错误提示 
   #+BEGIN_SRC php
     ini_set("display_errors", "On"); 
     error_reporting(E_ALL); //-1是关闭
   #+END_SRC
+*** php.ini文件
+  short_open_tag = Off（是否允许使用 PHP 代码开始标志的缩写形式（<? ?> ）。）；
+  memory_limit = 128M（最大使用内存的大小）；
+  upload_max_filesize = 2M（上传附件的最大值），第一个需要改成on，否则的话很多php程序都会运行不了，后面的两项就按照大家的实际需求更改就行了。
+* php教程
+** PHP的基本语法 
+*** 变量 
+**** 变量的类型 
+***** 类型介绍 
+***** 布尔型（boolean） 
+***** 整型（integer） 
+***** 浮点型（float或double） 
+***** 字符串（String） 
+      定义字符串的另种种方法是使用定界符
+#+BEGIN_SRC php
+  $string=<<<EOT
+  这里是字符串，
+  任意换行
+  EOT;
+#+END_SRC      
+***** 数组（Array） 
+      #+BEGIN_SRC php
+        array( [key =>]
+               value
+               , ...
+        )
+
+            $arr = array("foo" => "bar", 12 => true);
+      #+END_SRC
+
+***** 对象（Object） 
+      #+BEGIN_SRC php
+        class Person {                          //使用class关键字定义一个类为Person
+            var $name;                      //在类中定义一个成员属性$name;
+
+            function say() {                //在类中定义一个成员方法say()
+                echo "Doing foo.";     //在成员方法中输出一条语句
+            }
+        }
+
+        $p = new Person;                        //使用new语句实例化类Person的对象放变量$p中
+
+        $p->name="Tom";                      //通过对象$p访问对象中的成员属性$name
+        $p->say();        
+      #+END_SRC
+***** 资源类型（Resource） 
+      资源是通过专门的函数来创建和使用的。使用资源类型变量保存有为打开文件、数据库连接、图形画布区域等的特殊句柄。并由程序员创建、使用和释放。
+     #+BEGIN_SRC php
+             //使用fopen()函数以写的方式打开本目录下的info.txt文件，返回文件资源赋给变量$file_handle
+        $file_handle = fopen("info.txt", "w");
+        var_dump($file_handle);                         //输出resource(3) of type (stream)
+
+        //使用opendir()函数打开Windows系统下的C:\\WINDOWS\\Fonts目录，返回目录资源
+        $dir_handle = opendir("C:\\WINDOWS\\Fonts");
+        var_dump($dir_handle);                          //输出resource(4) of type (stream)
+
+        //使用mysql_connect()函数连接本机的MySQL管理系统，返回MySQL的连接资源
+        $link_mysql = mysql_connect("localhost", "root", "123456");
+        var_dump($link_mysql);                          //输出resource(5) of type (mysql link)
+
+        //使用imagecreate()函数创建一个100x50的画板，返回图像资源
+        $im_handle = imagecreate(100, 50);
+        var_dump($im_handle);                           //输出resource(6) of type (gd)
+
+        //使用xml_parser_create()函数返回xml解析器资源
+        $xml_parser = xml_parser_create();
+        var_dump($xml_parser);                          //输出resource(7) of type (xml)
+     #+END_SRC 
+***** NULL类型 
+      特殊的NULL值表示一个变量没有值，NULL类型唯一可能的值就是NULL。
+      NULL不区分大小写，在下列情况下一个变量被认为是NULL：
+      将变量直接赋值为NULL。
+      声明的变量尚未被赋值。
+      被unset()函数销毁的变量。
+***** 伪类型介绍 
+      伪类型并不是PHP语言中的基本数据类型。只是因为PHP是弱类型语言，所以在一些函数中，一个参数可以接收多种类型的数据，还可以接收别的函数作为回调函数使用
+
+ mixed： 说明一个参数可以接受多种不同的（但并不必须是所有的）类型。例如gettype()可以接受所有的PHP类型，str_replace()可以接受字符串和数组。
+ number： 说明一个参数可以是integer或者float。
+ callback： 有些诸如call_user_function()或usort()的函数接受用户自定义的函数作为一个参数。callback函数不仅可以是一个简单的函数，它还可以是一个对象的方法，包括静态类的方法。一个PHP函数用函数名字符串来传递。可以传递任何内置的或者用户自定义的函数，除了array()，echo()，empty()，eval()，exit()，isset()，list()，print()和unset()。
+***** 数据类型之间相互转换 
+        (bool) "false"       // bool(true)
+        
+***** 变量类型的测试函数 
+      获取类型 echo gettype($bool);
+        
+      is_bool()：判断是否是布尔型。
+      is_int()、is_integer()和is_long()：判断是否是整型。
+      is_float()、is_double()和is_real()：判断是否是浮点数。
+      is_string()：判断是否是字符串。
+      is_array()：判断是否是数组。
+      is_object()：判断是否是对象。
+      is_resource()：判断是否是资源类型。
+      is_null()：判断是否是为空。
+      is_scalar()：判断是否是标量，也就是一个整数、浮点数、布尔型或字符串。
+      is_numeric()：判断是否是任何类型的数字或数字字符串。
+      is_callable()：判断是否是有效的函数名。
+
+*** 常量 
+**** 常量的定义和使用 
+    boolean define (string name, mixed value [, bool case_insensitive]);           //常量定义函数
+    此函数的第一个参数为常量名，第二个参数为常量的值或是表达式，第三个参数是可选的，如果把第三个参数
+    case_insensitive设为TRUE，则常数将会定义成不区分大小写。缺省上是区分大小写的。如果只想检查是否定义了
+    某常量，用defined()函数。常量的声明与使用如下所示：
+    define("BOO", true);                    //声明一个名为BOO的常量，值为布尔型true
+    if (defined('CONSTANT')) {}
+**** 3 5.5.3　预定义常量 
+     __FILE__  当前的文件名  在哪个文件中使用，就代表哪个文件名称  
+     __LINE__  当前的行数  在代码的哪行使用，就代表哪行的行号  
+     __FUNCTION__  当前的函数名  在哪个函数中使用，就代表哪个函数名  
+     __CLASS__  当前的类名  在哪个类中使用，就代表哪个类的类名  
+     __METHOD__  当前对象的方法名  在对象中的哪个方法中使用，就代表这个方法名  
+     PHP_OS  UNIX或WINNT等  执行PHP解析的操作系统名称  
+     PHP_VERSION  5.2.6等  当前PHP服务器的版本  
+     TRUE  TRUE  代表布尔值，真  
+     FALSE  FALSE  代表布尔值，假  
+     NULL  NULL  代表空值  
+     DIRECTORY_SEPARATOR  \或/  根据操作系统决定目录的分隔符  
+     PATH_SEPARATOR  ；或：  根据操作系统决定环境变量的目录列表分隔符  
+     E_ERROR  1  错误，导致PHP脚本运行终止  
+     E_WARNING  2  警告，不会导致PHP脚本运行终止  
+     E_PARSE  4  解析错误，由程序解析器报告  
+     E_NOTICE  8  关键的错误，例如变量末初始化  
+     M_PI  3.1415926535898  Π  
+
+*** PHP中的运算符 
+**** 算术运算符 
+      闰年   if(($year%4 == 0 && $year%100 != 0) || ($year%400 == 0))
+***** 递增运算符
+     $a=10;  //声明一个整型变量$a，值为10
+     $b=$a++; //采用反缀模式将$a自增1
+     $a的值为11，而$b的值为10。首先将$a的值赋给$b，然后将$a的值加1。
+     
+     $a=10;  //声明一个整型变量$a，值为10
+     $b=++$a; //采用前缀模式将$a自增1
+     
+     $a和$b的值都是11，即首先将$a的值加1，然后将$a的值赋给$b。
+**** 字符串运算符 
+     . 号
+**** 赋值运算符 
+  =     
+  +=    
+  -=
+  *=
+  /=
+  %=
+  .=
+**** 比较运算符 
+     >    
+     <    
+     >= 
+     <= 
+     == 
+     ===
+     <>或!=
+     !==
+**** 逻辑运算符 
+     and或&&    
+     or或||
+     not或！
+     xor 
+**** 位运算符 
+     &     
+     ｜
+     ^
+     ~
+     <<
+     >>
+**** 其他运算符 
+     (expr1) ? (expr2) : (expr3)                             //三元运算符
+     执行运算符（``） 
+     错误控制运算符 $my_file = @file ('non_existent_file'); //将其放置在一个PHP表达式之前
+**** 表达式 
+** PHP的语言结构 
+*** 分支结构 
+***** 单一条件分支结构（if） 
+***** 双向条件分支结构（else子句） 
+***** 多向条件分支结构（elseif子句） 
+***** 多向条件分支结构（switch语句） 
+***** 巢状条件分支结构 
+***** 条件分支结构应用实例（简单计算器） 
+*** 循环结构 
+***** while语句 
+***** do…while循环 
+***** for语句 
+***** 特殊的流程控制语句 
+*** PHP中的函数 
+***** 函数的定义 
+    #+BEGIN_SRC php
+ function 函数名 ([参数1, 参数2, … 参数n])
+       函数体;
+}
+    #+END_SRC
+
+***** 自定义函数 
+***** 函数的工作原理和结构化编程 
+***** PHP变量的范围 
+***** 参数的传递 
+***** 变量函数 
+***** 递归函数 
+***** 使用自定义函数库 
+      使用require语句包含并执行config.php文件
+      include_once()和require_once()语句也是在脚本执行期间包括并运行指定文件。
+***** 使用系统函数库 
+** PHP中的数组与数据结构 
+*** 数组的定义 
+*** 多维数组的声明 
+#+BEGIN_SRC php
+$contact1 = array(
+                   array(1, '高某', 'A公司', '北京市', '(010)98765432', 'gm@linux.com'),
+                   array(2, '洛某', 'B公司', '上海市', '(021)12345678', 'lm@apache.com'),
+                   array(3, '峰某', 'C公司', '天津市', '(022)24680246', 'fm@mysql.com'),
+                   array(4, '书某', 'D公司', '重庆市', '(023)13579135', 'sm@php.com')
+           );
+
+
+#+END_SRC
+*** 数组的遍历 
+**** 使用for语句循环遍历数组 
+**** 使用foreach语句遍历数组 
+**** 联合使用list( )、each( )和while循环遍历数组 
+**** 使用数组的内部指针控制函数遍历数组 
+*** 预定义数组 
+**** 服务器变量：$_SERVER 
+**** 环境变量：$_ENV 
+**** HTTP GET变量：$_GET 
+**** HTTP POST变量：$_POST 
+**** request变量：$_REQUEST 
+此关联数组包含$_GET，$_POST和$_COOKIE中的全部内容。
+**** HTTP文件上传变量：$_FILES 
+     使用表单的file输入域上传文件时，必须使用POST提交。但在服务器文件中，并不能通过$_POST超全局数组获取到表单中file域的内容。
+     $_FILES是一个二维数组，包含5个子数组元素，其中第一个下标是表单中file输入域的名称，第二个下标用于描述上传文件
+     的属性。具体文件上传的说明将在后面文件处理的章节中使用大篇幅介绍。
+
+**** HTTP Cookies：$_COOKIE  经由HTTP Cookies方法提交至脚本的变量
+     $_COOKIE超全局数组是经由HTTP Cookies方法提交至脚本的变量。通常这些Cookies是由以前执行的PHP脚本通
+     过setCookie()函数设置到客户端浏览器中的，当PHP脚本从客户浏览器提取了一个cookie后，它将自动地把它转换
+     成一个变量，可以通过这个$_COOKIE超全局数组和cookie的名称来存取指定的cookie值。具体cookie的应用和
+     $_COOKIE超全局数组的使用，将在后面会话控制的章节中使用大篇幅介绍。
+**** Session变量：$_SESSION 
+     在PHP5中，会话控制是在服务器端使用session跟踪用户。当服务器页面中使用session_start()函数打开session
+     后，就可以使用$_SESSION数组注册全局变量，用户就可以在整个网站中访问这些会话信息。如何使用
+     $_SESSION数组注册全局变量，和$_COOKIE数组一起将在后面会话控制的章节中使用大篇幅介绍。
+**** Global变量：$GLOBALS 
+$GLOBALS是由所有已定义的全局变量组成的数组，变量名就是该数组的索引。在所有的脚本中都有效，在函数或
+对象的方法中不需要使用global关键字访问它。所以在函数中使用函数外部声明的全局变量时，可以使用
+$_GLOBALS数组替代global关键字。代码如下所示：
+
+
+<?php
+        $a = 1;                 //声明一个全局变量$a，初始值为1
+        $b = 2;                 //声明一个全局变量$b, 初始值为2
+
+        function Sum() {        //声明一个函数Sum()，在函数体中使用全局变量$a和$b
+           $GLOBALS['b'] = $GLOBALS['a'] + $GLOBALS['b'];       //使用$_GLOBALS数组访问全局变量
+        }
+ 
+*** 数组的相关处理函数 
+**** 数组的键/值操作函数 
+***** array_values() 返回数组中所有元素的值
+***** array_keys() 返回数组中所有的键名
+      array  array_keys ( array input [, mixed search_value [, bool strict]] )
+      
+      如果指定了可选参数search_value，则只返回指定该值的键名，否则input数组中的所有键名都会被返回。
+     #+BEGIN_SRC php
+       $lamp=array("a"=>"Linux","b"=>"Apache","c"=>"MySQL","d"=>"PHP");  //只使第一个必需的参数
+       $a=array(10,20,30,"10");                //声明一个数组，其中元素的值有整数10和字符串”10”
+       print_r(array_keys($a,"10",false));     //使用第三个参数 (false)输出：Array ( [0] => 0 [1] => 3 )
+
+       $a=array(10,20,30,"10");                //声明一个数组，其中元素的值有整数10和字符串”10”
+       print_r(array_keys($a,"10",true));      //使用第三个参数 (true)输出：Array ( [0] => 3) 
+     #+END_SRC 
+***** in_array()函数的作用是检查数组中是否存在某个值，即在数组中搜索给定的值。本函数中有三个参数，前两个参数
+bool  in_array ( mixed needle, array haystack [, bool strict] )
+如果needle参数是字符串， 且strict参数设置为TRUE，则搜索区分大小写。函数array_keys()使用的代码如下所示：
+***** array_flip()的作用是交换数组中的键和值。
+***** array_reverse()作用是将原数组中的元素顺序翻转，创建新的数组并返回。
+      第二个参数是可选项，如果指定为TRUE，则元素的键名保持不变，否则键名将丢失。
+      
+**** 统计数组元素的个数和唯一性 
+***** int count ( mixed var [, int mode] )
+      第二个参数是可选的，规定函数的模式是否递归地计算多维数组中的数组的元素个数。可能的值是0和1，0为默认值，不检测多维数组，1则检测多维数组。
+***** array_count_values()函数用于统计数组中所有值出现的次数
+***** array_unique()函数用于删除数组中重复的值，并返回没有重复值的新数组
+**** 使用回调函数处理数组的函数 
+***** array_fileter()函数用回调函数过滤数组中的元素，返回按用户自定义函数过滤后的新数组
+      array array_filter ( array input [, callback callback] )
+该函数的第一个参数是必选项，要求输入一个被过滤的数组。第二个参数是可选项，将用户自定义的函数名以字符
+串形式传入。如果自定义过滤函数返回true，则被操作的数组的当前值就会被包含在返回的结果数组中，并将结果
+组成一个新的数组。如果原数组是一个关联数组，键名保持不变。函数array_filter()使用的代码如下所示：
+
+        function myFun($var){                                           //自定义函数myFun，如果参数能被2整除则返回真
+                if($var % 2 == 0)
+                        return true;
+        }
+
+        $array = array("a"=>1, "b"=>2, "c"=>3, "d"=>4, "e"=>5);          //声明值为整数序列的数组
+     //使用函数array_filter()将自定义的函数名以字符串的形式传给第二个参数
+        print_r(array_filter($array, "myFun"));                         //过滤后的结果输出Array ( [b] => 2 [d] => 4 )
+?>
+
+在上面的代码中，array_filter()函数依次将$array数组中的每个值传递到myFun()函数中，如果myFun()函数返回
+TRUE，则$array数组的当前值会被包含在返回的结果数组中，并将结果组成一个新的数组返回。
+
+
+***** array_walk()函数对数组中的每个元素应用回调函数处理。如果成功则返回TRUE，否则返回FALSE。该函数有三个
+      bool array_walk ( array &array, callback funcname [, mixed userdata] )
+
+该函数的第一个参数是必选项，要求输入一个被指定的回调函数处理的数组。第二个参数也是必选项，传入用户定
+义的回调函数，用于操作传入第一个参数的数组。array_walk()函数依次将第一个参数的数组中的每个值传递到这
+个自定义的函数中。自定义的这个回调函数中应该接收两个参数，依次传入进来元素的值作为第一个参数，键名作
+为第二个参数。如果在array_walk()函数中提供可选的第三个参数，也将被作为回调函数的第三个参数接收。
+
+如果自定义的回调函数需要的参数比给出得多，则每次array_walk()调用回调函数时都会产生一个E_WARNING级的
+错误。这些警告可以通过在array_walk()调用前加上PHP的错误操作符@来抑制，或者用error_reporting()。
+
+如果回调函数需要直接作用于数组中的值，可以将回调函数的第一个参数指定为引用：&$value。函数array_walk
+()使用的代码如下所示：
+
+
+<?php
+        function myFun1($value,$key) {                                          //定义一个回调函数接收两个参数
+                echo "The key $key has the value $value<br>";                     //将参数连接在一起输出
+        }
+
+        $lamp=array("a"=>"Linux","b"=>"Apache","c"=>"Mysql","d"=>"PHP");    //定义一个数组$lamp
+        array_walk($lamp,"myFun1");                     //使用array_walk函数传入一个数组和一个回调函数
+        /*  执行后输出如下结果：
+            The key a has the value Linux
+            The key b has the value Apache
+            The key c has the value MySQL
+            The key d has the value PHP */
+
+        function myFun2($value,$key,$p)  {              //自定义一个回调函数需要接受三个参数
+                echo "$key $p $value <br>";             //将三个参数连接后输出
+        }
+        
+        array_walk($lamp,"myFun2","has the value");     //使用array_walk函数传入三个参数
+        /*执行后输出如下结果：
+          a has the value Linux
+          b has the value Apache
+          c has the value MySQL
+       d has the value PHP     */
+
+        function myFun3(&$value,$key) {                     //改变量组元素的值（请注意 &$value传入引用）
+                $value="Web";                           //将改变原数组中每个元素的值
+        }
+
+        array_walk($lamp,"myFun3");                     //使用array_walk函数传入两个参数，其中第一个参数为引用
+        print_r($lamp);                                 //输出：Array ( [a] => Web [b] => Web [c] => Web [d] => Web )
+?>
+
+***** 函数array_map() 
+与上一个array_walk()函数相比，array_map()函数将更加灵活，并且可以处理多个数组。将回调函数作用到给定数
+组的元素上，返回用户自定义函数作用后的数组。array_map()是任意参数列表函数，回调函数接受的参数数目应该
+和传递给array_map()函数的数组数目一致。其函数的原型如下：
+**** 数组的排序函数 
+*****      sort()  按由小到大的升序对给定数组的值排序  
+       ( array &array [, int sort_flags] )
+
+第一个参数是必需的，指定需要排序的数组。后一个参数是可选的，给出了排序的方式，可以用以下值改变排序的
+行为：
+
+       SORT_REGULAR–是默认值，将自动识别数组元素的类型进行排序。
+ SORT_NUMERIC–用于数字符素的排序。
+ SORT_STRING–用于字符串元素的排序。
+ SORT_LOCALE_STRING-根据当前的locale设置来把元素当做字符串比较。
+ 
+ rsort  对数组的元素按照键值进行由大到小的逆向排序  
+ usort()  使用用户自定义的回调函数对数组排序  
+***** 根据元素的值对数组排序 
+ asort()  对数组进行由小到大排序并保持索引关系  
+ arsort()  对数组进行由大到小的逆向排序并保持索引关系  
+ uasort()  使用用户自定义的比较回调函数对数组中的值进行排序并保持索引关联  
+      $data = array("l"=>"Linux", "a"=>"Apache","m"=>"MySQL","p"=>"PHP");
+        
+        asort($data);           //使用asort()函数将数组$data按元素的值升序排序，并保留原有的键名和值
+        print_r($data);         //输出：Array ( [a] => Apache [l] => Linux [m] => MySQL [p] => PHP )
+
+        arsort($data);          //使用arsort()函数将数组$data按元素的值降序排序，并保留原有的键名和值
+        print_r($data);         //输出：Array ( [p] => PHP [m] => MySQL [l] => Linux [a] => Apache )
+    
+***** 根据键名对数组排序 
+ ksort()  按照键名对数组进行由小到大的排序，为数组值保留原来的键  
+ krsort()  将数组按照由大到小的键逆向排序，为数组值保留原来的键  
+ uksort()  使用用户自定义的比较回调函数对数组中的键名进行排序  
+ 
+***** 根据“自然排序”法对数组排序 
+ natsort()  用自然顺序算法对给定数组中的元素排序  
+ natcasesort()  用不区分大小写的自然顺序算法对给定数组中的元素排序  
+         $data = array("file1.txt", "file11.txt", "File2.txt", "FILE12.txt", "file.txt");
+        
+        natsort($data);         //普通的“自然排序”
+        print_r($data);         //输出排序后的结果，数组中包括大小写，输出不是正确的排序结果
+
+        natcasesort($data);     //忽略大小写的“自然排序”
+        print_r($data);         //输出“自然排序”后的结果，正常结果
+?
+
+***** 根据用户自定的规则对数组排序 
+
+PHP也能让你定义自己的排序算法，以进行更复杂的排序操作。提供了可以通过创建你自己的比较函数作为回调函
+数的数组排序函数，包括usort()、uasort()和uksort等函数。它们的使用格式一样，并具有相同的参数列表，区别
+在于对键还是值进行排序。其函数的原型分别如下：
+
+
+bool usort ( array &array, callback cmp_function )
+bool uasort ( array &array, callback cmp_function )
+bool uksort ( array &array, callback cmp_function )
+#+BEGIN_SRC php
+        $lamp = array("Linux", "Apache", "MySQL", "PHP");       //声明一个数组，其中元素值的长度不相同
+
+        usort($lamp, "sortByLen");              //使用usort()函数传入用户自定义的回调函数进行数组排序
+        print_r($lamp);         // 排序后输出：Array ( [0] => PHP [1] => MySQL [2] => Linux [3] => Apache )
+        
+        function sortByLen($one, $two) {           //自定义的函数作为回调用函数提供给usort()函数使用
+                if (strlen($one) == strlen($two))  //如果两个参数长度相等返回0，在数组中的位置不变
+                        return 0;
+                else            //第一个参数大于第二个参数返回大于0的数，否则返回小于0的数
+                        return (strlen($one) > strlen($two)) ? 1 : -1;
+        }
+?>
+
+
+#+END_SRC
+
+***** 多维数组的排序 
+ array_multisort()  对多个数组或多维数组进行排序  
+ PHP也允许在多维数组上执行一些比较复杂的排序。例如，首先对一个嵌套数组使用一个普通的键值进行排序，然
+后再根据另一个键值进行排序。这与使用SQL的ORDER BY语句对多个字段进行排序非常相似。可以使用
+array_multisort()函数对多个数组或多维数组进行排序，或者根据某一维或多维对多维数组进行排序。其函数的原
+型分别如下：
+
+
+bool array_multisort ( array ar1 [, mixed arg [, mixed ... [, array ...]]] )
+
+该函数如果成功则返回TRUE，失败则返回FALSE。第一个参数是要排序的主要数组。数组中的值比较为相同的话，
+就按照下一个输入数组中相应值的大小来排序，依此类推。函数array_multisort()使用的代码如下所示：
+
+
+<?php
+        $data = array(                          //声明一个$data数组，仿真了一个行和列数组
+                        array("id" => 1, "soft" => "Linux", "rating" => 3),
+                        array("id" => 2, "soft" => "Apache", "rating" => 1),
+                        array("id" => 3, "soft" => "MySQL", "rating" => 4),
+                        array("id" => 4, "soft" => "PHP", "rating" => 2),
+                );
+        //使用foreach遍历创建两个数组作为array_multisort的参数
+        foreach ($data as $key => $value) {
+                $soft[$key] = $value["soft"];     //将$data中的每个数组元素中键值为soft的值形成数组$soft
+                $rating[$key] = $value["rating"]; //将每个数组元素中键值为rating的值形成数组$rating
+        }
+
+        array_multisort($rating, $soft, $data);  //使用array_multisort()函数传入三个数组进行排序
+        print_r($data);                          //输出排序后的二维数组
+?>
+
+
+**** 拆分、合并、分解和接合数组 
+***** 函数array_slice() 
+array_slice()函数的作用是在数组中根据条件取出一段值并返回。如果数组有字符串键，所返回的数组将保留键名。
+该函数可以设置四个参数，其函数的原型如下：
+
+
+**** 数组与数据结构 
+**** 其他有用的数组处理函数 
+** PHP面向对象的程序设计 
+
+ 1 8.1　面向对象的介绍 
+
+ 1 8.1.1　类和对象之间的关系 
+ 2 8.1.2　面向对象的程序设计 
+
+ 2 8.2　如何抽象一个类 
+
+ 1 8.2.1　类的声明 
+ 2 8.2.2　成员属性 
+ 3 8.2.3　成员方法 
+
+ 3 8.3　通过类实例化对象 
+
+ 1 8.3.1　创建对象 
+ 2 8.3.2　对象类型在内存中的分配 
+ 3 8.3.3　对象中成员的访问 
+ 4 8.3.4　特殊的对象引用“$this” 
+ 5 8.3.5　构造方法与析构方法 
+
+ 4 8.4　封装性 
+
+ 1 8.4.1　设置私有成员 
+ 2 8.4.2　私有成员的访问 
+ 3 8.4.3　__set()、__get()、__isset()和__unset()四个方法 
+
+ 5 8.5　继承性 
+
+ 1 8.5.1　类继承的应用 
+ 2 8.5.2　访问类型控制 
+ 3 8.5.3　子类中重载父类的方法 
+
+ 6 8.6　常见的关键字和魔术方法 
+
+ 1 8.6.1　final关键字的应用 
+ 2 8.6.2　static和const关键字的使用 
+ 3 8.6.3　克隆对象 
+ 4 8.6.4　类中通用的方法__toString() 
+ 5 8.6.5　通过__call()方法处理错误调用 
+ 6 8.6.6　自动加载类 
+ 7 8.6.7　对象串行化 
+
+ 7 8.7　抽象类与接口 
+
+ 1 8.7.1　抽象方法和抽象类 
+ 2 8.7.2　接口技术 
+
+ 8 8.8　多态性的应用 
+ 9 8.9　小结 
+ 10 自测题 
+
+17 第9章　字符串处理与正则表达式 
+
+ 1 9.1　字符串的处理介绍 
+
+ 1 9.1.1　字符串的处理方式 
+ 2 9.1.2　字符串类型的特点 
+
+ 2 9.2　常用的字符串输出函数 
+ 3 9.3　常用的字符串格式化函数 
+
+ 1 9.3.1　去除空格和字符串填补函数 
+ 2 9.3.2　字符串大小写的转换 
+ 3 9.3.3　和HTML标签相关的字符串格式化 
+ 4 9.3.4　其他字符串格式化函数 
+
+ 4 9.4　字符串比较函数 
+
+ 1 9.4.1　按字节顺序进行字符串比较 
+ 2 9.4.2　按自然排序进行字符串比较 
+
+ 5 9.5　正则表达式在字符串处理中的应用 
+
+ 1 9.5.1　正则表达式简介 
+ 2 9.5.2　正则表达式的语法规则 
+
+ 6 9.6　与Perl兼容的正则表达式函数 
+
+ 1 9.6.1　字符串的匹配与查找 
+ 2 9.6.2　字符串的替换 
+ 3 9.6.3　字符串的分割和连接 
+
+ 7 9.7　文章发布操作示例 
+ 8 9.8　小结 
+ 9 自测题 
+ 10 10.3　动态图像处理 
+
+ 1 10.3.1　PHP中GD库的使用 
+ 2 10.3.2　画布管理 
+ 3 10.3.3　设置颜色 
+ 4 10.3.4　生成图像 
+ 5 10.3.5　绘制图像 
+ 6 10.3.6　在图像中绘制文字 
+ 7 10.3.7　在PHP中实现验证码类的设计 
+
+ 11 10.4　小结 
+ 12 自测题 
+
+18 第10章　PHP常用功能模块 
+
+ 1 10.1　错误和异常处理 
+
+ 1 10.1.1　错误类型和基本的调试方法 
+ 2 10.1.2　错误日志 
+ 3 10.1.3　异常处理 
+
+ 2 10.2　日期和时间 
+
+ 1 10.2.1　UNIX时间戳 
+ 2 10.2.2　在PHP中获取日期和时间 
+ 3 10.2.3　日期和时间格式化输出 
+ 4 10.2.4　修改PHP的默认时区 
+ 5 10.2.5　使用微秒计算PHP脚本执行时间 
+
+19 第11章　文件系统处理 
+
+ 1 11.1　文件系统概述 
+
+ 1 11.1.1　文件类型 
+ 2 11.1.2　文件的属性 
+
+ 2 11.2　目录的基本操作 
+
+ 1 11.2.1　解析目录路径 
+ 2 11.2.2　遍历目录 
+ 3 11.2.3　统计目录大小 
+ 4 11.2.4　建立和删除目录 
+ 5 11.2.5　复制或移动目录 
+
+ 3 11.3　文件的基本操作 
+
+ 1 11.3.1　文件的打开与关闭 
+ 2 11.3.2　写入文件 
+ 3 11.3.3　读取文件内容 
+ 4 11.3.4　访问远程文件 
+ 5 11.3.5　移动文件指针 
+ 6 11.3.6　文件的锁定机制 
+ 7 11.3.7　文件的一些基本操作函数 
+
+ 4 11.4　文件的上传与下载 
+
+ 1 11.4.1　文件上传 
+ 2 11.4.2　处理多个文件上传 
+ 3 11.4.3　文件下载 
+
+ 5 11.5　文件系统项目实例 
+
+ 1 11.5.1　功能分析 
+ 2 11.5.2　系统功能设计 
+ 3 11.5.3　实例代码实现 
+
+ 6 11.6　小结 
+ 7 自测题 
+ 8 12.4　SQL语言设计 
+
+ 1 12.4.1　执行DDL命令操作数据对象 
+ 2 12.4.2　使用DML命令操作数据表中的数据记录 
+ 3 12.4.3　通过DQL命令查询数据表中的数据 
+
+ 9 12.5　使用PHP脚本向MySQL服务器发送SQL 
+
+ 1 12.5.1　在PHP脚本中连接MySQL服务器 
+ 2 12.5.2　在PHP程序中选择已创建的数据库 
+ 3 12.5.3　执行SQL命令 
+ 4 12.5.4　在PHP脚本中处理SELECT查询结果集 
+
+ 10 12.6　小结 
+ 11 自测题 
+
+20 第12章　MySQL数据库设计 
+
+ 1 12.1　MySQL数据库管理 
+
+ 1 12.1.1　数据库管理系统 
+ 2 12.1.2　结构化查询语言SQL 
+ 3 12.1.3　MySQL数据库的连接与关闭 
+ 4 12.1.4　创建、选择及查看数据库 
+
+ 2 12.2　MySQL数据库中数据表的设计 
+
+ 1 12.2.1　数据表（Table） 
+ 2 12.2.2　数据值和列类型 
+ 3 12.2.3　数据字段属性 
+ 4 12.2.4　创建、修改及删除表 
+ 5 12.2.5　数据表的类型及存储位置 
+ 6 12.2.6　数据表的默认字符集 
+ 7 12.2.7　创建索引 
+ 8 12.3　数据库的设计步骤 
+ 9 12.3.1　需求分析 
+ 10 12.3.2　概念设计 
+ 11 12.3.3　逻辑设计 
+
+21 第13章　PHP的mysqli扩展 
+
+ 1 13.1　启用mysqli扩展模块 
+ 2 13.2　使用mysqli类 
+
+ 1 13.2.1　连接MySQL服务器 
+ 2 13.2.2　处理连接错误报告 
+ 3 13.2.3　关闭与MySQL服务器连接 
+ 4 13.2.4　执行SQL命令 
+
+ 3 13.3　使用mysqli_result类 
+
+ 1 13.3.1　创建结果集对象 
+ 2 13.3.2　回收查询内存 
+ 3 13.3.3　从结果集中解析数据 
+ 4 13.3.4　从结果集中获取数据列的信息 
+ 5 13.3.5　一次执行多条SQL命令 
+
+ 4 13.4　使用mysqli_stmt类 
+
+ 1 13.4.1　获取预处理语句对象 
+ 2 13.4.2　绑定参数 
+ 3 13.4.3　执行准备好的语句 
+ 4 13.4.4　回收资源 
+ 5 13.4.5　简单的示例分析 
+ 6 13.4.6　使用预处理语句处理SELECT查询结果 
+
+ 5 13.5　数据库事务 
+
+ 1 13.5.1　事务处理 
+ 2 13.5.2　构建事务应用程序 
+
+ 6 13.6　MVC模式实现商品管理系统 
+
+ 1 13.6.1　MVC设计模式 
+ 2 13.6.2　商品管理系统的设计与实现 
+
+ 7 13.7　小结 
+ 8 自测题 
+
+22 第14章　数据库抽象层PDO 
+
+ 1 14.1　PDO所支持的数据库 
+ 2 14.2　PDO的安装 
+ 3 14.3　创建PDO对象 
+
+ 1 14.3.1　以多种方式调用构造方法 
+ 2 14.3.2　PDO对象中的成员方法 
+
+ 4 14.4　使用PDO对象 
+
+ 1 14.4.1　调整PDO的行为属性 
+ 2 14.4.2　PDO处理PHP程序和数据库之间的数据类型转换 
+ 3 14.4.3　PDO的错误处理模式 
+ 4 14.4.4　使用PDO执行SQL语句 
+
+ 5 14.5　PDO对预处理语句的支持 
+
+ 1 14.5.1　了解PDOStatement对象 
+ 2 14.5.2　准备语句 
+ 3 14.5.3　绑定参数 
+ 4 14.5.4　执行准备好的查询 
+ 5 14.5.5　获取数据 
+ 6 14.5.6　大数据对象的存取 
+
+ 6 14.6　PDO的事务处理 
+ 7 14.7　小结 
+ 8 自测题 
+
+23 第15章　会话控制 
+
+ 1 15.1　为什么要使用会话控制 
+ 2 15.2　会话跟踪的方式 
+ 3 15.3　Cookie的应用 
+
+ 1 15.3.1　Cookie概述 
+ 2 15.3.2　向客户端电脑中设置Cookie 
+ 3 15.3.3　在PHP脚本中读取Cookie的资料内容 
+ 4 15.3.4　数组形态的Cookie应用 
+ 5 15.3.5　删除Cookie 
+ 6 15.3.6　基于Cookie的用户登录模块 
+
+ 4 15.4　Session的应用 
+
+ 1 15.4.1　Session概述 
+ 2 15.4.2　配置Session 
+ 3 15.4.3　Session的声明与使用 
+ 4 15.4.4　注册一个会话变量和读取Session 
+ 5 15.4.5　注销变量与销毁Session 
+ 6 15.4.6　传递Session ID 
+
+ 5 15.5　一个简单的邮件系统 
+
+ 1 15.5.1　为邮件系统准备数据 
+ 2 15.5.2　编码实现邮件系统 
+ 3 15.5.3　邮件系统执行说明 
+
+ 6 15.6　小结 
+ 7 自测题 
+ 8 16.6　Smarty模板中的程序逻辑 
+
+ 1 16.6.1　模板中的注释 
+ 2 16.6.2　模板中变量的声明 
+ 3 16.6.3　在模板中输出从PHP分配的变量 
+ 4 16.6.4　模板中变量的数学计算 
+ 5 16.6.5　在模板中使用{$smarty}保留变量 
+ 6 16.6.6　变量调解器 
+ 7 16.6.7　模板的控制结构 
+ 8 16.6.8　在模板中包含子模板 
+
+ 9 16.7　为Smarty模板创建配置文件 
+
+ 1 16.7.1　配置文件语法格式 
+ 2 16.7.2　加载配置文件 
+ 3 16.7.3　引用配置文件中的变量 
+
+ 10 16.8　Smarty处理页面缓存 
+
+ 1 16.8.1　在Smarty中控制缓存 
+ 2 16.8.2　每个页面多个缓存 
+ 3 16.8.3　为缓存实例消除处理开销 
+ 4 16.8.4　清除缓存 
+ 5 16.8.5　关闭局部缓存 
+
+ 11 16.9　应用Smarty实现分页示例 
+
+ 1 16.9.1　准备工作 
+ 2 16.9.2　设计数据库操作类 
+ 3 16.9.3　设计分页操作类 
+ 4 16.9.4　PHP的程序逻辑层 
+ 5 16.9.5　Smarty模板的表现层 
+
+ 12 16.10　小结 
+ 13 自测题 
+
+24 第16章　PHP的模板技术Smarty 
+
+ 1 16.1　什么是模板引擎 
+ 2 16.2　编写自己的模板引擎 
+
+ 1 16.2.1　创建自己的模板引擎类 
+ 2 16.2.2　使用自己的模板引擎 
+ 3 16.2.3　自定义模板的使用示例分析 
+
+ 3 16.3　选择Smarty模板引擎 
+ 4 16.4　安装Smarty及初始化配置 
+
+ 1 16.4.1　安装Smarty 
+ 2 16.4.2　初始化Smarty类库的默认设置 
+ 3 16.4.3　第一个Smarty的简单示例 
+
+ 5 16.5　Smarty在应用程序逻辑层的使用步骤 
+
+25 第17章　内容管理系统（CMS） 
+
+ 1 17.1　Web软件开发流程概述 
+
+ 1 17.1.1　Web开发团队的成员 
+ 2 17.1.2　Web软件开发流程 
+ 3 17.1.3　项目开发规范 
+
+ 2 17.2　需求分析 
+
+ 1 17.2.1　CMS简介 
+ 2 17.2.2　用户行为分析 
+ 3 17.2.3　系统目标 
+ 4 17.2.4　系统特点 
+
+ 3 17.3　系统功能预览 
+
+ 1 17.3.1　CMS系统安装 
+ 2 17.3.2　登录管理平台 
+ 3 17.3.3　常规设置管理 
+ 4 17.3.4　友情链接管理 
+ 5 17.3.5　图片管理 
+ 6 17.3.6　栏目管理 
+ 7 17.3.7　文章管理 
+ 8 17.3.8　用户管理 
+ 9 17.3.9　网站首页 
+ 10 17.3.10　文章列表页面 
+ 11 17.3.11　文章内容页面 
+
+ 4 17.4　数据库设计 
+
+ 1 17.4.1　数据库需求分析 
+ 2 17.4.2　数据表关系 
+
+ 5 17.5　系统架构 
+
+ 1 17.5.1　系统体系结构 
+ 2 17.5.2　管理平台的文件结构 
+ 3 17.5.3　网站前台模板风格的文件结构 
+
+ 6 17.6　常用的功能模块开发 
+
+ 1 17.6.1　系统安装模块设计 
+ 2 17.6.2　管理平台（后台）的模块设计 
+ 3 17.6.3　无限分类模块设计 
+ 4 17.6.4　网站首页面的设计 
+
+ 7 17.7　小结 
+
+26 附录A　PHP配置文件详解 
+27 反侵权盗版声明 
+***** 
 * php语言
   特性标记<?PHP ?>
 ** 数据 
+*** 定义   
    object array resource 
+   $bar = &$foo;                       //这是一个有效的引用赋值
 *** 预定义常量/变量数据
 **** 定义常量 
      常量和变量的区别之一是 没有 $
-      define("const",33);
+     define("const",33);
 **** 预定义常量/变量
 ***** web端     
 ****** 服务器数据 $_SERVER
@@ -2050,12 +2915,22 @@ OK (4 tests)
            [btn_su] [btn_ca]                              
 
 * php-mode
-  执行区域  C-c C-r         php-send-region
-  查网页文档 C-c C-f         php-search-documentation
+  执行区域  php-send-region
+  查网页文档(这个好点, 查关键字的) C-c C-f         php-search-documentation
   看手册    C-c RET         php-browse-manual
-  标记函数   C-M-h           mark-defun
-  注释      C-c C-c         comment-region
-  格式化函数 C-c C-q         c-indent-defun
+  标记函数             mark-defun
+  跳到定义 ~SPC m g g~ 
+  返回  ~C-t~      
+
+** 初始化工程(最好做下)
+1. Run the following
+  #+BEGIN_SRC shell
+    cd /root/of/project
+    touch .ac-php-conf.json
+  #+END_SRC
+2. Inside of spacemacs run:
+  = ac-php-remake-tags-all =
+
 * 简单文件上传 
  注意路径都是相对路径，绝对路径 必须是/home/wuming这种的，要么用常量 ROOT这种
   PHP 文件上传
@@ -2469,3 +3344,18 @@ viii | 目录
  B.地方发展环境。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。229
  指数。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。237
 *** 
+* 函数
+** ini_get — Gets the value of a configuration option
+  Returns the value of the configuration option as a string on success, or an empty
+  string for null values. Returns FALSE if the configuration option doesn't exist.
+
+  选项有
+  display_errors 
+  register_globals 
+  post_max_size = 8M
+  max_execution_time
+  
+  //以下两条获取服务器时间，中国大陆采用的是东八区的时间,设置时区写成Etc/GMT-8
+  date_default_timezone_set("Etc/GMT-8");
+  $systemtime = date("Y-m-d H:i:s",time());
+ 

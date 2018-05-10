@@ -1,7 +1,5 @@
-#+TITLE: This is the title of the document
-
-* org
-** Installation
+* org (笔记, TODO表格)
+** Installation (安装)
 ** Document structure (书的结构） 
 *** Outlines(目录） 
 *** Headlines(简介） 
@@ -322,3 +320,380 @@ Appendix C History and acknowledgments
 C.1 From Carsten 
 C.2 From Bastien 
 C.3 List of contributions 
+* org 模式中 代码编辑 C-c ' 
+  会直接打开语言类型 来编辑代码
+  #+BEGIN_SRC 语言类型
+  
+  #+END_SRC
+* agenda 
+;; 设置默认 Org Agenda 文件目录
+(setq org-agenda-files '("~/org"))
+
+;; 设置 org-agenda 打开快捷键
+(global-set-key (kbd "C-c a") 'org-agenda)
+
+你只需将你的 *.org 文件放入上面所指定的文件夹中就可以开始使用 Agenda 模式了。
+
+C-c C-s 选择想要开始的时间
+C-c C-d 选择想要结束的时间
+C-c a 可以打开 Agenda 模式菜单并选择不同的可视方式（ r ）
+* org-brain
+ 脑图浏览模式  org-brain-visualize =SPC a o b=
+** 配置 
+ 配置 org-brain-path
+** 操作 
+ 同步 org-brain-update-id-locations
+ 
+ 导航 
+ j或TAB	forward-button	转到下一个链接
+ k或S-TAB	backward-button	转到上一个链接
+ b	org-brain-visualize-back	就像网页浏览器中的后退按钮一样。
+ 
+编辑
+h或*	org-brain-new-child	添加一个新的子节点并创建该文件
+
+c	org-brain-add-child	作为一个孩子添加一个现有的条目或新的文件
+C	org-brain-remove-child	删除一个条目的子女关系
+p	org-brain-add-parent	将现有条目或新文件添加为父项
+P	org-brain-remove-parent	删除条目的父关系之一
+f	org-brain-add-friendship	将现有条目或新文件添加为朋友
+F	org-brain-remove-friendship	删除条目的一个朋友关系
+d	org-brain-delete-entry	选择一个条目进行删除。
+
+q org-brain-visualize-quit  退出
+a org-brain-visualize-attach	org-attach在条目上运行（仅限标题条目）
+n	org-brain-pin	如果条目是固定的，则切换
+v	org-brain-visualize	选择并可视化一个不同的条目
+r	org-brain-visualize-random	随机显示您的一个条目。
+R	org-brain-visualize-wander	以设定的时间间隔随机显示。R再次取消。
+
+修改
+t	org-brain-set-title	更改条目的标题。
+T	org-brain-set-tags	更改条目的标签。
+o	org-brain-goto-current	打开当前条目进行编辑
+O	org-brain-goto	选择并编辑您的一个org-brain条目
+
+新增
+l	org-brain-visualize-add-resource	在条目中添加新的资源链接
+C-y	org-brain-visualize-paste-resource	从剪贴板添加新的资源链接
+** 概览
+  PINNED：索引
+
+               + -Python游戏开发 -  +  - 游戏设计
+               + - 编程书籍|
+   编程 -  +  -  Emacs |
+         | |
+         + ----------------- + ----------------- +
+                           |
+                           ▽
+                    游戏编程←→电脑游戏
+
+* org
+** 配置
+   #+STARTUP: indent 缩进打开 或 (setq org-startup-indented t)
+  #+FILETAGS: :Peter:Boss:Secret: 如果希望文档中的所有标题都具有某些标签，只需要定义文档元数据：
+** 写文章 大纲组织(树,竖排)
+*** 插入大纲   
+    \* 
+*** 超链接
+**** 创建链接(引用)
+     直接写
+     #+BEGIN_SRC 
+     
+  http://www.astro.uva.nl/~dominik            on the web
+  file:/home/dominik/images/jupiter.jpg       file, absolute path
+  /home/dominik/images/jupiter.jpg            same as above
+  file:papers/last.pdf                        file, relative path
+  file:projects.org                           another Org file
+  docview:papers/last.pdf::NNN                open file in doc-view mode at page NNN
+  id:B7423F4D-2E8A-471B-8810-C40F074717E9     Link to heading by ID
+  news:comp.emacs                             Usenet link
+  mailto:adent@galaxy.net                     Mail link
+  vm:folder                                   VM folder link
+  vm:folder#id                                VM message link
+  wl:folder#id                                WANDERLUST message link
+  mhe:folder#id                               MH-E message link
+  rmail:folder#id                             RMAIL message link
+  gnus:group#id                               Gnus article link
+  bbdb:R.*Stallman                            BBDB link (with regexp)
+  irc:/irc.com/#emacs/bob                     IRC link
+  info:org:External%20links                   Info node link (with encoded space)
+  
+  对于文件链接，可以用::后面增加定位符的方式链接到文件的特定位置。定位符可以是行号或搜索选项。如：
+  file:~/code/main.c::255                     进入到 255 行
+  file:~/test.txt::2                          进入到 2 行
+  file:~/xx.org::My Target                    找到目标‘<<My Target>>’
+  file:~/xx.org/::#my-custom-id               查找自定义 id 的项
+     #+END_SRC
+     
+  除了上述的自动链接外，还可以显示指定链接，采用如下格式：
+  [[link][description]]
+  前面是大纲，后面是描述 [[锚点][maodian]]
+  [[link]]
+ 
+  定义锚点 #<<my-anchor>>
+  [[my-anchor][内部链接]]
+  
+  脚注可以看作是一种特殊的内部链接，但是要求具有"fn:"前缀：
+  添加脚注链接 [[fn:footprint1][脚注1]]
+  定义脚注 [fn:footprint1], 大纲的一种
+  
+*** 轻量级标记                                                           :bj:
+**** 字体
+  *粗体*
+  /斜体/
+  +删除线+
+  _下划线_
+  下标： H_2 O
+  上标： E=mc^2
+  等宽字：  =git=  或者 ～git～
+**** 表格
+  | Pone | Name  | Age |
+  |------+-------+-----|
+  | 4321 | Anna  |  25 |
+  | 1234 | Peter |  17 |
+ 
+  快捷键	命令	说明
+  M-LEFT/RIGHT	 	移动列
+  M-UP/DOWN	 	移动行
+  M-S-LEFT/RIGHT	 	删除/插入列
+  M-S-UP/DOWN	 	删除/插入行
+  C-c -	 	添加水平分割线
+  C-c RET	 	添加水平分割线并跳到下一行
+  C-c ^	 	根据当前列排序，可以选择排序方式
+
+**** 列表
+  无序列表项以‘-’、‘+’或者‘*‘开头。
+  有序列表项以‘1.’或者‘1)’开头。
+  描述列表用‘::’将项和描述分开。
+  有序列表和无序列表都以缩进表示层级。只要对齐缩进，不管是换行还是分块都认为是处于当前列表项。
+  
+    My favorite scenes are (in this order)
+    1. The attack of the Rohirrim
+    2. Eowyn's fight with the witch king
+       + this was already my favorite scene in the book
+         + I really like Miranda Otto.
+       + hello
+    Important actors in this film are:
+    - Elijah Wood :: He plays Frodo
+      - Sean Austin :: He plays Sam, Frodo's friend.
+    - ::
+
+ 列表操作快捷键
+  TAB	 	折叠列表项
+  M-RET	 	插入项
+  M-S-RET	 	插入带复选框的项
+  M-S-UP/DOWN	 	移动列表项
+  M-LEFT/RIGHT	 	升/降级列表项，不包括子项
+  M-S-LEFT/RIGTH	 	升/降级列表项，包括子项
+  C-c C-c	 	改变复选框状态
+  C-c -	 	更换列表标记（循环切换）
+**** 分隔线
+     五条短线或以上显示为分隔线。
+     -----
+**** 标签                                                     :abc:
+***** 定义     
+  \* Meeting with the French group     :work:
+  \** Summary by Frank                 :boss:notes:
+  \*** TODO Prepare slides for him     :action:
+  则最后一行标题具有 work, boss, notes, action 四个标签。
+
+  更方便的做法是在正文部分用C-c C-q 或直接在标题上用C-c C-c创建标签，这种方式可以列出所有预定义的标签以便选取。
+
+***** 预定义tag
+  在当前文件头部定义
+  这种方式预定义的标签只能在当前文件中使用。使用#+TAGS元数据进行标记，如：
+      #+TAGS: { 桌面(d) 服务器(s) }  编辑器(e) 浏览器(f) 多媒体(m) 压缩(z)    
+  每项之间必须用空格分隔，可以在括号中定义一个快捷键；花括号里的为标签组，只能选择一个
+  对标签定义进行修改后，要在标签定义的位置按 C-c C-c 刷新才能生效。
+
+  在配置文件中定义 上面的标签定义只能在当前文件生效，如果要在所有的.org 文件中生效，需要在 Emacs 配置文件 .emacs 中进行定义：
+  (setq org-tag-alist '(
+
+                      (:startgroup . nil)
+                           ("桌面" . ?d) ("服务器" . ?s)
+                      (:endgroup . nil)
+                      ("编辑器" . ?e)
+                      ("浏览器" . ?f) 
+                      ("多媒体" . ?m)
+                      ))    
+  默认情况下，org会动态维护一个Tag列表，即当前输入的标签若不在列表中，则自动加入列表以供下次补齐使用。
+
+  为了使这几种情况（默认列表、文件预设tags，全局预设tags）同时生效，需要在文件中增加一个空的TAGS定义：
+
+  #+TAGS:
+***** 按tag搜索
+  C-c \	按tag搜索标题
+  C-c / m	搜索并按树状结构显示
+  C-c a m	按标签搜索多个文件（需要将文件加入全局agenda)
+  
+  可以使用逻辑表达式限制条件，更准确灵活的搜索
+  + 和      a+b     同时有这两个标签
+  + 排除    a-b     有 a 但没有 b
+  |     或      a|b     有 a 或者有 b
+  &     和      a&b     同时有 a 和 b，可以用“+”替代
+  在查询视图中 C-c C-c 退出
+
+*** 导出和发布
+**** 文档元数据
+***** 具体包括：
+  #+TITLE:       the title to be shown (default is the buffer name)
+  #+AUTHOR:      the author (default taken from user-full-name)
+  #+DATE:        a date, an Org timestamp1, or a format string for format-time-string
+  #+EMAIL:       his/her email address (default from user-mail-address)
+  #+DESCRIPTION: the page description, e.g. for the XHTML meta tag
+  #+KEYWORDS:    the page keywords, e.g. for the XHTML meta tag
+  #+LANGUAGE:    language for HTML, e.g. ‘en’ (org-export-default-language)
+  #+TEXT:        Some descriptive text to be inserted at the beginning.
+  #+TEXT:        Several lines may be given.
+  #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t ...
+  #+BIND:        lisp-var lisp-val, e.g.: org-export-latex-low-levels itemize
+                 You need to confirm using these, or configure org-export-allow-BIND
+  #+LINK_UP:     the ``up'' link of an exported page
+  #+LINK_HOME:   the ``home'' link of an exported page
+  #+LATEX_HEADER: extra line(s) for the LaTeX header, like \usepackage{xyz}
+  #+EXPORT_SELECT_TAGS:   Tags that select a tree for export
+  #+EXPORT_EXCLUDE_TAGS:  Tags that exclude a tree from export
+  #+XSLT:        the XSLT stylesheet used by DocBook exporter to generate FO file
+  其中#+OPTIONS是复合的选项，包括：
+
+  H:         set the number of headline levels for export
+  num:       turn on/off section-numbers
+  toc:       turn on/off table of contents, or set level limit (integer)
+  \n:        turn on/off line-break-preservation (DOES NOT WORK)
+  @:         turn on/off quoted HTML tags
+  ::         turn on/off fixed-width sections
+  |:         turn on/off tables
+  ^:         turn on/off TeX-like syntax for sub- and superscripts.  If
+             you write "^:{}", a_{b} will be interpreted, but
+             the simple a_b will be left as it is.
+  -:         turn on/off conversion of special strings.
+  f:         turn on/off footnotes like this[1].
+  todo:      turn on/off inclusion of TODO keywords into exported text
+  tasks:     turn on/off inclusion of tasks (TODO items), can be nil to remove
+             all tasks, todo to remove DONE tasks, or list of kwds to keep
+  pri:       turn on/off priority cookies
+  tags:      turn on/off inclusion of tags, may also be not-in-toc
+  <:         turn on/off inclusion of any time/date stamps like DEADLINES
+  *:         turn on/off emphasized text (bold, italic, underlined)
+  TeX:       turn on/off simple TeX macros in plain text
+  LaTeX:     configure export of LaTeX fragments.  Default auto
+  skip:      turn on/off skipping the text before the first heading
+  author:    turn on/off inclusion of author name/email into exported file
+  email:     turn on/off inclusion of author email into exported file
+  creator:   turn on/off inclusion of creator info into exported file
+  timestamp: turn on/off inclusion creation time into exported file
+  d:         turn on/off inclusion of drawers
+  这些元数据可以根据需要设置。建议放在文档的开头部分。如，本文采用的元数据如下：
+
+  #+TITLE: org-mode: 最好的文档编辑利器，没有之一
+  #+AUTHOR:Holbrook Wong
+  #+EMAIL: wanghaikuo@gmail.com
+  #+KEYWORDS: emacs, org-mode
+  #+OPTIONS: H:4 toc:t 
+
+**** 分行区块
+  默认内容不换行，需要留出空行才能换行。定义了分行的区块可以实现普通换行：
+  #+BEGIN_VERSE
+   Great clouds overhead
+   Tiny black birds rise and fall
+   Snow covers Emacs
+       -- AlexSchroeder
+  #+END_VERSE
+  缩进区块
+  通常用于引用，与默认格式相比左右都会留出缩进：
+  #+BEGIN_QUOTE
+    缩进区块
+  #+END_QUOTE
+  居中区块
+  #+BEGIN_CENTER
+  Everything should be made as simple as possible, \\
+  but not any simpler
+  #+END_CENTER
+  代码区块
+  #+BEGIN_SRC ruby
+    require 'redcarpet'
+    md = Redcarpet.new("Hello, world.")
+    puts md.to_html
+  #+END_SRC
+  例子
+  : 单行的例子以冒号开头
+
+  #+BEGIN_EXAMPLE
+   多行的例子
+   使用区块
+  #+END_EXAMPLE
+  注释
+  以‘#‘开头的行被看作注释，不会被导出
+  区块注释采用如下写法：
+
+  #+BEGIN_COMMENT
+    块注释
+    ...
+   #+END_COMMENT
+  表格与图片
+  对于表格和图片，可以在前面增加标题和标签的说明，以方便交叉引用。
+  比如在表格的前面添加：
+
+  #+CAPTION: This is the caption for the next table (or link)
+  #+LABEL: tbl:table1
+  则在需要的地方可以通过
+
+  \ref{table1}
+  来引用该表格。
+
+**** 嵌入Html
+    对于导出html以及发布，嵌入html代码就很有用。比如下面的例子适用于格式化为cnblogs的代码块：
+
+  #+BEGIN_HTML
+    <div class="cnblogs_Highlighter">
+    <pre class="brush:cpp">
+    int main()
+    {
+      return 0;
+    }
+    </pre>
+    </div>
+  #+END_HTML
+  相当于在cnblogs的网页编辑器中插入"c++"代码。
+
+**** 包含文件
+  当导出文档时，你可以包含其他文件中的内容。比如，想包含你的“.emacs”文件，你可以用：
+       #+INCLUDE: "~/.emacs" src emacs-lisp
+  可选的第二个第三个参数是组织方式（例如，“quote”，“example”，或者“src”），如果是 “src”，语言用来格式化内容。组织方式是可选的，如果不给出，文本会被当作 Org 模式的正常处理。用 C-c ,可以访问包含的文件。
+
+**** 嵌入 LaTex
+  对于需要包含数学符号和特殊方程的科学笔记，Org 模式支持嵌入 LaTeX 代码到文件中。你可以直接使用类 TeX 的宏来输入特殊符号，输入方程，或者整个 LaTeX 环境。
+
+  Angles are written as Greek letters \alpha, \beta and \gamma. The mass if
+  the sun is M_sun = 1.989 x 10^30 kg. The radius of the sun is R_{sun} =
+  6.96 x 10^8 m. If $a^2=b$ and $b=2$, then the solution must be either
+  $a=+\sqrt{2}$ or $a=-\sqrt{2}$.
+  \begin{equation}
+  x=\sqrt{b}
+  \end{equation}
+  特殊设置之后，导出 HTML 时 LaTeX 代码片断会生成图片并包含进来。
+
+*** 发布
+  Org 包含一个发布管理系统，可以配置一个由相互链接的 Org 文件组成的工程项目的自动向 HTML 转换。你也可以设置 Org，将导出的 HTML 页面和相应的附件如图片，源代 码文件等自动上传到服务器。
+
+  下面是一个例子：
+
+  (setq org-publish-project-alist
+       '(("org"
+          :base-directory "~/org/"
+          :publishing-directory "~/public_html"
+          :section-numbers nil
+          :table-of-contents nil
+          :style "<link rel=\"stylesheet\"
+                 href=\"../other/mystyle.css\"
+                 type=\"text/css\"/>")))
+  发布相关的命令：
+
+  命令	说明
+  C-c C-e C	提示指明一个项目，将所有的文件发布
+  C-c C-e P	发布包含当前文件的项目
+  C-c C-e F	只发布当前文件
+  C-c C-e E	发布所有项目
+  Org 用时间戳来查看文件是否改变。上面的命令只发布修改过的文件。你可以给它们加上前缀来强制重新发布所有的文件。
+*** fn:footprint1

@@ -1,6 +1,21 @@
-* 表
-** 列-字段
-** 行
+* 表视图
+桶, 文件柜
+|   |   |   |   |   |
+|---+---+---+---+---|
+|   |   |   |   |   |
+|---+---+---+---+---|
+|   |   |   |   |   |
+| + | + | + | + | + |
+|   |   |   |   |   |
+|   |   |   |   |   |
+表
+
+| ID | name   | age | address  | phone |
+|----+--------+-----+----------+-------|
+|  1 | xiaoli |  30 | changzou | 12345 |
+|  2 | xiaom  |  32 | suzou    | 12334 |
+|  3 | hy     |  23 | nixia    | 32322 |
+
 * mysql
 ** 查 
 select * from emp;  #注释
@@ -195,54 +210,6 @@ load data local infile "D:/mysql.txt" into table MYTABLE;
 
 *** #导入.sql文件命令（例如D:/mysql.sql）
 source d:/mysql.sql;  #或者  /. d:/mysql.sql;
-* ms sqlserver 密码 Wuming123
-  sqlcmd -S localhost -U SA -P '<YourPassword>'
-  tsql -S 127.0.0.1 -U sa -P Wuming123  
-** 安装
-*** Import the public repository GPG keys:
-   wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-
-*** Register the Microsoft SQL Server Ubuntu repository:(添加到仓库列表)
-    sudo add-apt-repository "$(wget -qo- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"
-*** 安装
-    sudo apt-get update
-    sudo apt-get install -y mssql-server
-*** 设置sa 的密码
-    sudo /opt/mssql/bin/mssql-conf setup
-*** 验证是否运行
-    systemctl status mssql-server
-*** 远程连接, 防火墙打开 1433端口
-*** 命令行工具
-    To create a database, you need to connect with a tool that can run Transact-SQL statements on the SQL Server.
-    The following steps install the SQL Server command-line tools: sqlcmd and bcp.
-
-**** Import the public repository GPG keys:
-     wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-
-**** Register the Microsoft Ubuntu repository:
-     sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/16.04/prod.list)"
-
-**** 安装工具
-sudo apt-get update
-sudo apt-get install -y mssql-tools unixodbc-dev
-**** 设置环境变量
-For convenience, add /opt/mssql-tools/bin/ to your PATH environment variable. 
-This enables you to run the tools without specifying the full path. Run the following commands 
-to modify the PATH for both login sessions and interactive/non-login sessions:
-
-echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
-echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
-source ~/.bashrc
-
-Sqlcmd is just one tool for connecting to SQL Server to run queries and perform management and development tasks. Other tools include:
-
-mssql-cli (Preview)
-
-** Connect locally(本地连接)
-   sqlcmd -S localhost -U SA -P '<YourPassword>'
-   tsql -S 127.0.0.1 -U sa -P Wuming123  
-   If you later decide to connect remotely, specify the machine name or IP address for the -S parameter, and make sure port 1433 is open on your firewall.
-   远程连接 确保端口1433打开
 * sqlmode
 ** 特性  
 *** 语法高亮 
@@ -314,11 +281,49 @@ I wrote a Python utility that is a drop in replacement for sqlcmd/osql as far as
 
  | ~SPC m = c~ | capitalize SQL keywords in region (if capitalize is enabled) |
 * Tsql
-  T-SQL代表Transact Structure Query Language，它是Microsoft产品，是SQL语言的扩展。
-** T-SQL - 数据类型
-   SQL Server数据类型是指定任何对象的数据类型的属性。 每个列，变量和表达式在SQL Server中具有相关的数据类型。 创建表时可以使用这些数据类型。 您可以根据需要为表列选择特定的数据类型。
+** 连接服务
+   sqlcmd -S localhost -U SA -P '<YourPassword>'
+   tsql -S 127.0.0.1 -U sa -P Wuming123  
+*** 安装
+**** Import the public repository GPG keys:
+    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+
+**** Register the Microsoft SQL Server Ubuntu repository:(添加到仓库列表)
+     sudo add-apt-repository "$(wget -qo- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"
+**** 安装
+     sudo apt-get update
+     sudo apt-get install -y mssql-server
+**** 设置sa 的密码
+     sudo /opt/mssql/bin/mssql-conf setup
+**** 是否运行
+     systemctl status mssql-server
+**** 远程连接, 防火墙打开 1433端口
+**** 命令行工具
+***** Import the public repository GPG keys:
+      wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+
+***** Register the Microsoft Ubuntu repository:
+      sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/16.04/prod.list)"
+
+***** 安装工具
+ sudo apt-get update
+ sudo apt-get install -y mssql-tools unixodbc-dev
+***** 设置环境变量
+      For convenience, add /opt/mssql-tools/bin/ to your PATH environment variable. 
+      This enables you to run the tools without specifying the full path. Run the following commands 
+      to modify the PATH for both login sessions and interactive/non-login sessions:
+      
+      echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
+      echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+      source ~/.bashrc
+      Sqlcmd is just one tool for connecting to SQL Server to run queries and perform management and development tasks. Other tools include:
+*** 连接
+    sqlcmd -S localhost -U SA -P '<YourPassword>'
+    tsql -S 127.0.0.1 -U sa -P Wuming123  
+    If you later decide to connect remotely, specify the machine name or IP address for the -S parameter, and make sure port 1433 is open on your firewall.
+    远程连接 确保端口1433打开
+** 数据类型
 *** 精确数值类型
-    类型	从	至
     bigint	-9,223,372,036,854,775,808	9,223,372,036,854,775,807
     int	2,147,483,648	2,147,483,647
     smallint	-32,768	32,767
@@ -331,11 +336,9 @@ I wrote a Python utility that is a drop in replacement for sqlcmd/osql as far as
     数字和小数是固定精度和标度数据类型，在功能上等效。
 
 *** 近似数值类型
-    类型	从	至
     Float	-1.79E + 308	1.79E + 308
     Real	-3.40E + 38	3.40E + 38
 *** 日期和时间类型
-    类型	从	至
     datetime (3.33毫秒精度)
     1753年1月1日	9999年12月31日
     
@@ -355,25 +358,22 @@ I wrote a Python utility that is a drop in replacement for sqlcmd/osql as far as
     time(100纳秒的精度。在SQL Server 2008中引入)
     00：00：00.0000000	23：59：59.9999999
 *** 字符型
-Sr.No	类型及说明
-1 char 固定长度的非Unicode字符数据，最大长度为8,000个字符。
-2 varchar 最大长度为8,000个字符的可变长度非Unicode数据。
-3 Varchar (max) 可变长度的非Unicode数据，最大长度为231个字符（在SQL Server 2005中引入）。
-4 text 可变长度非Unicode数据，最大长度为2,147,483,647个字符。
+     char 固定长度的非Unicode字符数据，最大长度为8,000个字符。
+     varchar 最大长度为8,000个字符的可变长度非Unicode数据。
+     Varchar (max) 可变长度的非Unicode数据，最大长度为231个字符（在SQL Server 2005中引入）。
+     text 可变长度非Unicode数据，最大长度为2,147,483,647个字符。
 
 *** Unicode
-Sr.No	类型及说明
-1 nchar 固定长度的Unicode数据，最大长度为4,000个字符。
-2 nvarchar 最大长度为4,000个字符的可变长度Unicode数据。
-3 Nvarchar (max) 最大长度为230个字符的可变长度Unicode数据（在SQL Server 2005中引入）。
-4 ntext 最大长度为1,073,741,823个字符的可变长度Unicode数据。
+    nchar 固定长度的Unicode数据，最大长度为4,000个字符。
+    nvarchar 最大长度为4,000个字符的可变长度Unicode数据。
+    Nvarchar (max) 最大长度为230个字符的可变长度Unicode数据（在SQL Server 2005中引入）。
+    ntext 最大长度为1,073,741,823个字符的可变长度Unicode数据。
 
 *** 二进制字符串
-Sr.No	类型及说明
-1 binary 固定长度二进制数据，最大长度为8,000字节。
-2 varbinary 最大长度为8,000字节的可变长度二进制数据。
-3 varbinary(max) 最大长度为231字节的可变长度二进制数据（在SQL Server 2005中引入）。
-4 image 最大长度为2,147,483,647字节的可变长度二进制数据。
+ binary 固定长度二进制数据，最大长度为8,000字节。
+ varbinary 最大长度为8,000字节的可变长度二进制数据。
+ varbinary(max) 最大长度为231字节的可变长度二进制数据（在SQL Server 2005中引入）。
+ image 最大长度为2,147,483,647字节的可变长度二进制数据。
 
 *** 其他数据类型
     SQL_VARIANT -存储各种SQL Server支持的数据类型的值，text，ntext和timestamp除外。
@@ -384,549 +384,205 @@ Sr.No	类型及说明
     TABLE -存储结果集以供稍后处理。
     HIERARCHYID -用于表示层次结构中位置的可变长度的系统数据类型（在SQL Server 2008中引入）。
 
-** 查看表是否存在
-   exec sp_columns TABLENAME
-** T-SQL - 创建表
-   创建一个基本表,包括表名,字段名称,以及每个字段的数据类型。
-   
-   在这个例子中，我们将创建一张名称为CUSTOMERS表,ID为主键,NOT NULL表示这些字段在添加记录时,值不能为空。
+** 库属性
+*** 显示库 
+    select [name] from [sysdatabases] order by [name]
+    select name from sysdatabases
+*** 显示库表
+    select [id], [name] from [sysobjects] where [type] = 'u' order by [name]
+    SELECT name FROM sysobjects WHERE xtype = 'U'
+*** 查看表是否存在
+    exec sp_columns TABLENAME
+*** 查询表中字段 
+    select [name] from [syscolumns] where [name] = 'tableXXX'order by [colid]
+** 库操作
+*** 创建
+    #+BEGIN_SRC sql
+        CREATE DATABASE TestDB
+#+END_SRC
+*** 删除
+    DROP DATBASE $name
+** 运算符
+*** 比较
+    >，<，=，
+*** 逻辑
+    LIKE，NOT LIKE
+    通配符
+    百分号（％）百分号表示零个，一个或多个字符
+    下划线（_）下划线表示单个数字或字符
+** 表操作
+*** 创建表
+    字段自增 IDENTITY(1, 1)
+ #+BEGIN_SRC sql
+     CREATE TABLE CUSTOMERS( 
+      ID   INT              NOT NULL, 
+      NAME VARCHAR (20)     NOT NULL, 
+      AGE  INT              NOT NULL, 
+      ADDRESS  CHAR (25) , 
+      SALARY   DECIMAL (18, 2),        
+      PRIMARY KEY (ID));
+ #+END_SRC
+*** 删除表
+    DROP TABLE table_name;
+*** INSERT表内容
+    INSERT INTO TABLE_NAME [(column1, column2, column3,...columnN)]   
+    VALUES (value1, value2, value3,...valueN); 
+
+    所有列添加值，请确保值的顺序与表中的列的顺序相同。 
+    INSERT INTO TABLE_NAME VALUES (value1,value2,value3,...valueN);
+*** 使用另一个表填充一个表
+    #+BEGIN_SRC sql
+      INSERT INTO first_table_name  
+              SELECT column1, column2, ...columnN  
+                FROM second_table_name 
+                    [WHERE condition];
+    #+END_SRC
+*** 查询
+    SELECT语句用于从以结果表的形式返回从数据库中提取的数据。 这些结果表称为结果集。
+    SELECT column1, column2, columnN FROM table_name;
+*** 查几条
+    SELECT TOP $N * FROM $tablename
+*** 更新（UPDATE)
+    #+BEGIN_SRC sql
+        UPDATE table_name 
+        SET column1 = value1, column2 = value2...., columnN = valueN 
+        WHERE [condition];
+    #+END_SRC
+
+ 您可以使用AND或OR运算符组合N个条件。
+
+*** 删除（DELETE)
+    #+BEGIN_SRC sql
+    DELETE FROM table_name 
+    WHERE [condition]; 
+    #+END_SRC
+*** 排序ORDER BY
+    #+BEGIN_SRC sql
+         SELECT column-list  
+      FROM table_name  
+      [WHERE condition]  
+      [ORDER BY column1, column2, .. columnN] [ASC | DESC];
+      您可以在ORDER BY子句中使用多个列。 确保您使用的任何列进行排序，该列应该在列表中。
+    #+END_SRC
+*** 分组GROUP BY
+ #+BEGIN_SRC sql
+ SELECT column1, column2 
+ FROM table_name 
+ WHERE [ conditions ] 
+ GROUP BY column1, column2 
+ ORDER BY column1, column2 
+
+ SELECT NAME, SUM(SALARY) as [sum of salary] FROM CUSTOMERS 
+    GROUP BY NAME;
+
+ SELECT NAME, SUM(SALARY) as [sum of salary] FROM CUSTOMERS 
+    GROUP BY NAME 
+ #+END_SRC
+*** 唯一 DISTINCT
+    消除所有重复记录并仅提取唯一记录。
+#+BEGIN_SRC 
+ SELECT DISTINCT column1, column2,.....columnN  
+ FROM table_name 
+ WHERE [condition] 
+#+END_SRC
+*** 连接表
 #+BEGIN_SRC sql
 
-CREATE TABLE CUSTOMERS( 
-   ID   INT              NOT NULL, 
-   NAME VARCHAR (20)     NOT NULL, 
-   AGE  INT              NOT NULL, 
-   ADDRESS  CHAR (25) , 
-   SALARY   DECIMAL (18, 2),        
-   PRIMARY KEY (ID));
+ SELECT ID, NAME, AGE, AMOUNT 
+    FROM CUSTOMERS, ORDERS 
+    WHERE  CUSTOMERS.ID = ORDERS.CUSTOMER_ID 
+ OR 
+
+ SELECT A.ID, A.NAME, A.AGE, B.AMOUNT 
+ FROM CUSTOMERS A inner join  ORDERS B on A.ID = B.Customer_ID 
 #+END_SRC
-
-** T-SQL - 删除表
-DROP TABLE table_name;
-** T-SQL- INSERT语句  字符串用单引号
-INSERT INTO TABLE_NAME [(column1, column2, column3,...columnN)]   
-VALUES (value1, value2, value3,...valueN); 
-
-如果要为表的所有列添加值，则不需要在SQL查询中指定列名。 但请确保值的顺序与表中的列的顺序相同。 
-INSERT INTO TABLE_NAME VALUES (value1,value2,value3,...valueN);
-
-INSERT INTO CUSTOMERS (ID,NAME,AGE,ADDRESS,SALARY) 
-VALUES (1, 'Ramesh', 32, 'Ahmedabad', 2000.00 );
-  
-INSERT INTO CUSTOMERS VALUES (7, 'Muffy', 24, 'Indore', 10000.00 );
-
-** 使用另一个表填充一个表
-您可以通过SELECT语句将数据填充到表中，而另一个表提供另一个表具有一组字段，这是填充第一个表所必需的。 以下是基本语法:
-
-INSERT INTO first_table_name  
-   SELECT column1, column2, ...columnN  
-      FROM second_table_name 
-      [WHERE condition];
-** T-SQL - SELECT语句
-SQL Server SELECT语句用于从以结果表的形式返回从数据库中提取的数据。 这些结果表称为结果集。
-
-SELECT column1, column2, columnN FROM table_name;
-其中，column1，column2 ...是您要获取其值的表的字段。 如果要获取所有可用字段，则可以使用以下语法。
-
-SELECT * FROM table_name;
-** T-SQL - UPDATE语句
-您可以使用WHERE子句与UPDATE查询更新所选行，否则所有行都会受到影响。
-
-UPDATE table_name 
-SET column1 = value1, column2 = value2...., columnN = valueN 
-WHERE [condition];
-
-您可以使用AND或OR运算符组合N个条件。
-
-** T-SQL - DELETE语句
-DELETE FROM table_name 
-WHERE [condition]; 
-
-您可以使用AND或OR运算符组合N个条件。
-
-** T-SQL - WHERE子句
-您可以使用比较或逻辑运算符（如>，<，=，LIKE，NOT等）指定条件。以下示例将介绍此概念。
-** T-SQL - LIKE子句
-MS SQL Server LIKE子句用于使用通配符运算符将值与类似值进行比较。 有两个通配符与LIKE运算符结合使用:
-
-百分号（％）
-下划线（_）
-百分号表示零个，一个或多个字符。 下划线表示单个数字或字符。 符号可以组合使用。
-
-语法
-以下是 '％' 和 '_' 的基本语法。
-
-SELECT *\column-list FROM table_name 
-WHERE column LIKE 'XXXX%' 
- 
-or   
-
-SELECT *\column-list FROM table_name 
-WHERE column LIKE '%XXXX%'  
-
-or  
-
-SELECT *\column-list FROM table_name 
-WHERE column LIKE 'XXXX_'  
-
-or  
-
-SELECT *\column-list FROM table_name 
-WHERE column LIKE '_XXXX'  
-
-or  
-
-SELECT  *\column-list FROM table_name 
-WHERE column LIKE '_XXXX_' 
-您可以使用AND或OR运算符组合N个条件。 XXXX可以是任何数字或字符串值。
-
-WHERE SALARY LIKE'％_00“ 查找在第二和第三位置中具有00的所有值
-WHERE SALARY LIKE'2 _％_％“ 查找以2开头且长度至少为3个字符的所有值
-WHERE SALARY LIKE'％_2 3' 查找在第二个位置有2，并以3结束的所有值
-WHERE SALARY LIKE'2___3“ 查找以2开头并以3结尾的五位数字中的任何值
-
-** T-SQL - ORDER BY子句
-MS SQL Server ORDER BY子句用于根据一个或多个列以升序或降序对数据进行排序。 默认情况下，一些数据库排序查询结果按升序排列。
-
-语法
-以下是ORDER BY子句的基本语法。
-
-SELECT column-list  
-FROM table_name  
-[WHERE condition]  
-[ORDER BY column1, column2, .. columnN] [ASC | DESC];
-您可以在ORDER BY子句中使用多个列。 确保您使用的任何列进行排序，该列应该在列表中。
-
-例
-请参考具有以下记录的CUSTOMERS表:
-
-ID  NAME       AGE       ADDRESS            SALARY 
-1   Ramesh     32        Ahmedabad          2000.00 
-2   Khilan     25        Delhi              1500.00 
-3   kaushik    23        Kota               2000.00 
-4   Chaitali   25        Mumbai             6500.00 
-5   Hardik     27        Bhopal             8500.00 
-6   Komal      22        MP                 4500.00 
-7   Muffy      24        Indore             10000.00 
-以下命令是一个示例，它将按NAME和SALARY的升序对结果进行排序。
-
-SELECT * FROM CUSTOMERS 
-   ORDER BY NAME, SALARY 
-上述命令将产生以下结果集:
-
-ID  NAME       AGE       ADDRESS           SALARY 
-4   Chaitali   25        Mumbai            6500.00 
-5   Hardik     27        Bhopal            8500.00 
-3   kaushik    23        Kota              2000.00 
-2   Khilan     25        Delhi             1500.00 
-6   Komal      22        MP                4500.00 
-7   Muffy      24        Indore            10000.00 
-1   Ramesh     32        Ahmedabad         2000.00 
-以下命令是一个示例，它将按NAME的降序对结果进行排序。
-
-SELECT * FROM CUSTOMERS 
-   ORDER BY NAME DES
-上述命令将产生以下结果集:
-
-ID  NAME       AGE       ADDRESS            SALARY 
-1   Ramesh     32        Ahmedabad          2000.00
-7   Muffy      24        Indore             10000.00  
-6   Komal      22        MP                 4500.00 
-2   Khilan     25        Delhi              1500.00 
-3   kaushik    23        Kota               2000.00
-5   Hardik     27        Bhopal             8500.00
-4   Chaitali   25        Mumbai             6500.00  
-T-SQL - GROUP BY子句
-SQL Server GROUP BY子句与SELECT语句协作使用，以将相同的数据分组。
-
-GROUP BY子句位于SELECT语句中的WHERE子句之后，位于ORDER BY子句之前。
-
-语法
-以下是GROUP BY子句的基本语法，GROUP BY子句必须遵循WHERE子句中的条件，并且必须在使用ORDER BY子句之前。
-
-SELECT column1, column2 
-FROM table_name 
-WHERE [ conditions ] 
-GROUP BY column1, column2 
-ORDER BY column1, column2 
-例
-请参考具有以下记录的CUSTOMERS表:
-
-ID  NAME       AGE       ADDRESS          SALARY 
-1   Ramesh     32        Ahmedabad        2000.00 
-2   Khilan     25        Delhi            1500.00 
-3   kaushik    23        Kota             2000.00 
-4   Chaitali   25        Mumbai           6500.00 
-5   Hardik     27        Bhopal           8500.00 
-6   Komal      22        MP               4500.00 
-7   Muffy      24        Indore           10000.00 
-如果你想知道每个客户的工资总额，那么可以使用以下的GROUP BY查询方式:
-
-SELECT NAME, SUM(SALARY) as [sum of salary] FROM CUSTOMERS 
-   GROUP BY NAME;
-上述命令将产生以下结果集:
-
-NAME        sum of salary 
-Chaitali    6500.00 
-Hardik      8500.00 
-kaushik     2000.00 
-Khilan      1500.00 
-Komal       4500.00 
-Muffy       10000.00 
-Ramesh      2000.00
-现在让我们考虑存在重复名称的情况,请参考具有以下记录的CUSTOMERS表:
-
-ID  NAME       AGE       ADDRESS           SALARY 
-1   Ramesh     32        Ahmedabad         2000.00 
-2   Khilan     25        Delhi             1500.00 
-3   kaushik    23        Kota              2000.00 
-4   Chaitali   25        Mumbai            6500.00 
-5   Hardik     27        Bhopal            8500.00 
-6   Komal      22        MP                4500.00 
-7   Muffy      24        Indore            10000.00 
-如果我们想知道每个客户的工资总额，那么可以使用以下的GROUP BY查询方式:
-
-SELECT NAME, SUM(SALARY) as [sum of salary] FROM CUSTOMERS 
-   GROUP BY NAME 
-上述命令将产生以下结果集:
-
-NAME        sum of salary 
-Hardik      8500.00 
-kaushik     8500.00 
-Komal       4500.00 
-Muffy       10000.00 
-Ramesh      3500.00 
-T-SQL - DISTINCT子句
-MS SQL Server DISTINCT关键字与SELECT语句一起使用，以消除所有重复记录并仅提取唯一记录。
-
-可能存在表中有多个重复记录的情况。 在获取此类记录时，更有意义的是仅提取唯一记录，而不是提取重复记录。
-
-语法
-以下是DISTINCT关键字的基本语法，用于删除重复记录。
-
-SELECT DISTINCT column1, column2,.....columnN  
-FROM table_name 
-WHERE [condition] 
-例
-请参考具有以下记录的CUSTOMERS表:
-
-ID  NAME       AGE       ADDRESS            SALARY 
-1   Ramesh     32        Ahmedabad          2000.00 
-2   Khilan     25        Delhi              1500.00 
-3   kaushik    23        Kota               2000.00 
-4   Chaitali   25        Mumbai             6500.00 
-5   Hardik     27        Bhopal             8500.00 
-6   Komal      22        MP                 4500.00 
-7   Muffy      24        Indore             10000.00 
-让我们先来看下未使用DISTINCT关键字情况下SELECT查询返回的结果集:
-
-SELECT SALARY FROM CUSTOMERS 
-   ORDER BY SALARY 
-其中，工资为2000的记录出现了两次，这是因为CUSTOMERS表中存在两条SALARY为2000的记录。
-
-SALARY 
-1500.00 
-2000.00 
-2000.00 
-4500.00 
-6500.00 
-8500.00 
-10000.00
-现在让我们使用DISTINCT关键字对CUSTOMERS表进行SELECT查询并查看结果:
-
-SELECT DISTINCT SALARY FROM CUSTOMERS 
-   ORDER BY SALARY 
-上述命令将产生以下结果集，我们可以发现，并未出现重复记录
-
-SALARY 
-1500.00 
-2000.00 
-4500.00 
-6500.00 
-8500.00 
-10000.00 
-T-SQL - 连接表
-MS SQL Server Joins子句用于合并数据库中两个或多个表的记录。 JOIN是通过使用每个表共有的值来组合两个表的字段的手段。
-
-请参考具有以下记录的两张表，(a)表CUSTOMERS表记录如下:
-
-ID  NAME       AGE       ADDRESS             SALARY 
-1   Ramesh     32        Ahmedabad           2000.00 
-2   Khilan     25        Delhi               1500.00 
-3   kaushik    23        Kota                2000.00 
-4   Chaitali   25        Mumbai              6500.00 
-5   Hardik     27        Bhopal              8500.00 
-6   Komal      22        MP                  4500.00 
-7   Muffy      24        Indore              10000.00 
-另一张(b)表ORDERS表记录如下:
-
-OID  DATE                       CUSTOMER_ID        AMOUNT 
-100  2009-10-08 00:00:00.000    3                  1500.00 
-101  2009-11-20 00:00:00.000    2                  1560.00 
-102  2009-10-08 00:00:00.000    3                  3000.00 
-103  2008-05-20 00:00:00.000    4                  2060.00 
-让我们在我们的SELECT语句中加入这两个表，如下所示
-
-SELECT ID, NAME, AGE, AMOUNT 
-   FROM CUSTOMERS, ORDERS 
-   WHERE  CUSTOMERS.ID = ORDERS.CUSTOMER_ID 
-OR 
-SELECT A.ID, A.NAME, A.AGE, B.AMOUNT 
-   FROM CUSTOMERS A inner join  ORDERS B on A.ID = B.Customer_ID 
-上述命令将产生以下结果集:
-
-ID   NAME      AGE    AMOUNT 
-2    Khilan    25     1560.00 
-3    kaushik   23     1500.00 
-3    kaushik   23     3000.00 
-4    Chaitali  25     2060.00 
-值得注意的是，连接是在WHERE子句中执行的。 可以使用几个运算符来连接表，例如=，<，>，<>，<=，> =，！=，BETWEEN，LIKE和NOT; 它们都可以用于连接表。 然而，最常见的运算符是等号。
-
-MS SQL Server连接类型:
-
-   在MS SQL Server中有不同类型的连接 --
-
-INNER JOIN -当两个表中都有匹配项时返回行。
-
-LEFT JOIN -返回左侧表中的所有行，即使右表中没有匹配项。
-
-RIGHT JOIN -返回右表中的所有行，即使左表中没有匹配项。
-
-FULL JOIN -在其中一个表中存在匹配项时返回行。
-
-SELF JOIN -这用于将表连接到自身，就像该表是两个表，临时重命名MS SQL Server语句中的至少一个表。
-
-CARTESIAN JOIN -返回两个或多个联接表中的记录集的笛卡尔乘积。
-
-T-SQL - 子查询
-
-子查询或内部查询或嵌套查询是另一个SQL Server查询内的查询，并嵌入在WHERE子句中。 子查询用于返回将在主查询中使用的数据作为进一步限制要检索的数据的条件。
-
-子查询可以与SELECT，INSERT，UPDATE和DELETE语句以及诸如=，<，>，> =，<=，IN，BETWEEN等运算符一起使用。
-
-子查询必须遵循几个规则
-
-子查询语句必须写在括号内。
-
-子查询必须包括SELECT子句和FROM子句。
-
-子查询可以使用WHERE，GROUP BY和HAVING子句。
-
-子查询不能使用COMPUTE或FOR BROWSE子句。
-
-只有在使用了TOP子句时，才能使用ORDER BY子句。
-
-您可以嵌套最多32个级别的子查询。
-
-带SELECT语句的子查询
-语法
-子查询最常用于SELECT语句，以下是基本语法:
-
-SELECT column_name [, column_name ] 
-FROM   table1 [, table2 ] 
-WHERE  column_name OPERATOR 
-   (SELECT column_name [, column_name ] 
-   FROM table1 [, table2 ] 
-   [WHERE]) 
-例
-请参考具有以下记录的CUSTOMERS表:
-
-ID  NAME       AGE       ADDRESS            SALARY 
-1   Ramesh     32        Ahmedabad          2000.00 
-2   Khilan     25        Delhi              1500.00 
-3   kaushik    23        Kota               2000.00 
-4   Chaitali   25        Mumbai             6500.00 
-5   Hardik     27        Bhopal             8500.00 
-6   Komal      22        MP                 4500.00 
-7   Muffy      24        Indore             10000.00 
-让我们使用SELECT语句应用以下子查询:
-
-SELECT *  
-   FROM CUSTOMERS
-   WHERE ID IN (SELECT ID FROM CUSTOMERS WHERE SALARY > 4500)
-上述命令将产生以下结果集:
-
-ID  NAME       AGE       ADDRESS          SALARY 
-4   Chaitali   25        Mumbai           6500.00 
-5   Hardik     27        Bhopal           8500.00 
-7   Muffy      24        Indore           10000.00 
-带有INSERT语句的子查询
-子查询也可以与INSERT语句一起使用。INSERT语句使用从子查询返回的数据插入到另一个表中。可以使用字符，日期或数字函数中的任何一个修改子查询中选定的数据。
-
-语法
-下面是基本的语法。
-
-INSERT INTO table_name [ (column1 [, column2 ]) ] 
-   SELECT [ *|column1 [, column2 ] 
-   FROM table1 [, table2 ] 
-   [ WHERE VALUE OPERATOR ]
-例
-创建一张命名为CUSTOMERS_BKP的表,表结构与CUSTOMERS表相同，并将CUSTOMERS表的数据复制到CUSTOMERS_BKP表中。
-
-以下是将完整的CUSTOMERS表数据复制到CUSTOMERS_BKP的语法:
-
-INSERT INTO CUSTOMERS_BKP 
-   SELECT * FROM CUSTOMERS  
-   WHERE ID IN (SELECT ID FROM CUSTOMERS)
-带有UPDATE语句的子查询
-子查询可以与UPDATE语句结合使用。 当使用带有UPDATE语句的子查询时，可以更新表中的单个或多个列。
-
-语法
-以下是基本语法。
-
-UPDATE table 
-SET column_name = new_value 
-[ WHERE OPERATOR [ VALUE ] 
-   (SELECT COLUMN_NAME 
-   FROM TABLE_NAME) 
-   [ WHERE) ] 
-例
-以下命令对CUSTOMERS表中AGE大于或等于27的所有客户的SALARY乘以0.25。
-
-UPDATE CUSTOMERS 
-   SET SALARY = SALARY * 0.25 
-   WHERE AGE IN (SELECT AGE FROM CUSTOMERS_BKP WHERE AGE >= 27 )
-上述命令将产生以下结果集:
-
-ID  NAME       AGE       ADDRESS             SALARY 
-1   Ramesh     32        Ahmedabad           500.00 
-2   Khilan     25        Delhi               1500.00 
-3   kaushik    23        Kota                2000.00 
-4   Chaitali   25        Mumbai              6500.00 
-5   Hardik     27        Bhopal              2125.00 
-6   Komal      22        MP                  4500.00 
-7   Muffy      24        Indore              10000.00 
-使用DELETE语句的子查询
-子查询可以与DELETE语句一起使用，就像上面提到的任何其他语句一样。
-
-语法
-以下是基本语法。
-
-DELETE FROM TABLE_NAME 
-[ WHERE OPERATOR [ VALUE ] 
-   (SELECT COLUMN_NAME 
-   FROM TABLE_NAME) 
-   [ WHERE) ] 
-例
-以下命令将删除CUSTOMERS表中所有的年龄大于或等于27的客户的记录。
-
-DELETE FROM CUSTOMERS 
-   WHERE AGE IN (SELECT AGE FROM CUSTOMERS_BKP WHERE AGE >=27 )
-上述命令将产生以下结果集:
-
-ID  NAME       AGE       ADDRESS          SALARY 
-2   Khilan     25        Delhi            1500.00 
-3   kaushik    23        Kota             2000.00 
-4   Chaitali   25        Mumbai           6500.00  
-6   Komal      22        MP               4500.00 
-7   Muffy      24        Indore           10000.00 
-T-SQL - 存储过程
-MS SQL Server存储过程用于通过将相同的数据存储在数据库中来节省写入代码的时间，并通过传递参数获得所需的输出。
-
-语法
-以下是存储过程创建的基本语法:
-
+**** 连接类型:
+  INNER JOIN -当两个表中都有匹配项时返回行。
+  LEFT JOIN -返回左侧表中的所有行，即使右表中没有匹配项。
+  RIGHT JOIN -返回右表中的所有行，即使左表中没有匹配项。
+  FULL JOIN -在其中一个表中存在匹配项时返回行。
+  SELF JOIN -这用于将表连接到自身，就像该表是两个表，临时重命名MS SQL Server语句中的至少一个表。
+  CARTESIAN JOIN -返回两个或多个联接表中的记录集的笛卡尔乘积。
+
+*** 子查询
+ #+BEGIN_SRC sql
+   SELECT column_name [, column_name ] 
+   FROM   table1 [, table2 ] 
+   WHERE  column_name OPERATOR 
+      (SELECT column_name [, column_name ] 
+      FROM table1 [, table2 ] 
+      [WHERE]) 
+   
+   SELECT *  
+      FROM CUSTOMERS
+      WHERE ID IN (SELECT ID FROM CUSTOMERS WHERE SALARY > 4500)
+
+
+   INSERT INTO table_name [ (column1 [, column2 ]) ] 
+      SELECT [ *|column1 [, column2 ] 
+      FROM table1 [, table2 ] 
+      [ WHERE VALUE OPERATOR ]
+
+   UPDATE table 
+   SET column_name = new_value 
+   [ WHERE OPERATOR [ VALUE ] 
+      (SELECT COLUMN_NAME 
+      FROM TABLE_NAME) 
+      [ WHERE) ] 
+   
+   DELETE FROM TABLE_NAME 
+   [ WHERE OPERATOR [ VALUE ] 
+      (SELECT COLUMN_NAME 
+      FROM TABLE_NAME) 
+      [ WHERE) ] 
+ #+END_SRC
+** 存储过程
+用于通过将相同的数据存储在数据库中来节省写入代码的时间，并通过传递参数获得所需的输出。
+
+!可以用ALERT 代替 Create
+#+BEGIN_SRC sql
 Create procedure <procedure_Name> 
 As 
 Begin 
 <SQL Statement> 
 End 
 Go
-例
-请参考具有以下记录的CUSTOMERS表:
+#+END_SRC
+#+BEGIN_SRC sql
 
-ID  NAME       AGE       ADDRESS            SALARY 
-1   Ramesh     32        Ahmedabad          2000.00 
-2   Khilan     25        Delhi              1500.00 
-3   kaushik    23        Kota               2000.00 
-4   Chaitali   25        Mumbai             6500.00 
-5   Hardik     27        Bhopal             8500.00 
-6   Komal      22        MP                 4500.00 
-7   Muffy      24        Indore             10000.00 
-以下命令是从Testdb数据库中的CUSTOMERS表中获取所有记录的示例。
-
-CREATE PROCEDURE SelectCustomerstabledata 
-AS 
-SELECT * FROM Testdb.Customers 
-GO
-上述命令将产生以下结果集:
-
-ID  NAME       AGE       ADDRESS           SALARY 
-1   Ramesh     32        Ahmedabad         2000.00 
-2   Khilan     25        Delhi             1500.00 
-3   kaushik    23        Kota              2000.00 
-4   Chaitali   25        Mumbai            6500.00 
-5   Hardik     27        Bhopal            8500.00 
-6   Komal      22        MP                4500.00 
-7   Muffy      24        Indore            10000.00 
-T-SQL - 事务
-
-事务是针对数据库执行的工作单元。 事务是以逻辑顺序完成的单元或工作序列，无论是以用户的手动方式还是以某种数据库程序自动进行。
-
-事务是将一个或多个执行命令发送到数据库。例如，你正在创建记录,修改记录或者从表中删除记录，这些行为都是对表进行事务操作。事务对于确保数据完整性和处理数据库错误是非常重要的。
-
-实际上，你常常会将许多SQL操作分成一组事务一起执行。
-
-事务属性
+    CREATE PROCEDURE SelectCustomerstabledata 
+    AS 
+    SELECT * FROM Testdb.Customers 
+    GO
+#+END_SRC
+** 事务
+   事务是针对数据库执行的工作单元。 事务是以逻辑顺序完成的单元或工作序列，无论是以用户的手动方式还是以某种数据库程序自动进行。
+   实际上，你常常会将许多SQL操作分成一组事务一起执行。
+*** 事务属性
 事务具有以下四个标准属性，通常由首字母缩写ACID简称 -
-
 原子性 -确保工作单元内的所有操作成功完成; 否则，事务在故障点处中止，并且先前的操作被回滚到它们的原先状态。
-
 一致性 -确保数据库在成功提交的事务后正确更改状态。
-
 隔离性 -事务之间是独立运行互不相关的。
-
 持久性 -事务一旦被执行,即使系统故障,其结果依然有效。
+*** 事务控制
+    COMMIT-提交事务。
+    ROLLBACK -回滚事务。
+    SAVEPOINT -创建事务的回滚节点。
+    SET TRANSACTION -设置事务名称。
+    
+    事务控制命令仅与DML命令INSERT，UPDATE和DELETE一起使用。 在创建表或删除它们时，不能使用它们，因为这些操作会在数据库中自动提交。
+    为了在MS SQL Server中使用事务控制命令，我们必须以“begin tran”或begin transaction命令开始事务，否则这些命令将不起作用。
 
-事务控制
-一下命令用于控制事务
-
-COMMIT-提交事务。
-
-ROLLBACK -回滚事务。
-
-SAVEPOINT -创建事务的回滚节点。
-
-SET TRANSACTION -设置事务名称。
-
-事务控制命令仅与DML命令INSERT，UPDATE和DELETE一起使用。 在创建表或删除它们时，不能使用它们，因为这些操作会在数据库中自动提交。
-
-为了在MS SQL Server中使用事务控制命令，我们必须以“begin tran”或begin transaction命令开始事务，否则这些命令将不起作用。
-
-commit命令
-COMMIT命令是用于将事务调用的更改保存到数据库的事务命令。 此命令将自上次COMMIT或ROLLBACK命令以来将所有事务保存到数据库。
-
-语法
-以下是COMMIT命令的语法。
-
-COMMIT; 
-例
-请参考具有以下记录的CUSTOMERS表:
-
-ID  NAME       AGE       ADDRESS           SALARY 
-1   Ramesh     32        Ahmedabad         2000.00 
-2   Khilan     25        Delhi             1500.00 
-3   kaushik    23        Kota              2000.00 
-4   Chaitali   25        Mumbai            6500.00 
-5   Hardik     27        Bhopal            8500.00 
-6   Komal      22        MP                4500.00 
-7   Muffy      24        Indore            10000.00 
-以下命令示例将从删除从CUSTOMERS表中删除所有年龄等于25的用户记录。
-
+**** commit命令
+     COMMIT命令是用于将事务调用的更改保存到数据库的事务命令。 此命令将自上次COMMIT或ROLLBACK命令以来将所有事务保存到数据库。
+     
 Begin Tran 
 DELETE FROM CUSTOMERS 
    WHERE AGE = 25 
 COMMIT 
-上述命令将产生以下结果集:
 
-ID  NAME       AGE       ADDRESS           SALARY 
-1   Ramesh     32        Ahmedabad         2000.00
-3   kaushik    23        Kota              2000.00
-5   Hardik     27        Bhopal            8500.00 
-6   Komal      22        MP                4500.00 
-7   Muffy      24        Indore            10000.00 
-ROLLBACK命令
-ROLLBACK命令是用于撤销尚未保存到数据库的事务的事务性命令。 此命令只能用于在发出最后一个COMMIT或ROLLBACK命令后撤消事务。
+**** ROLLBACK命令
+     ROLLBACK命令是用于撤销尚未保存到数据库的事务的事务性命令。 此命令只能用于在发出最后一个COMMIT或ROLLBACK命令后撤消事务。
 
 语法
 以下是ROLLBACK命令的语法。
@@ -950,16 +606,7 @@ DELETE FROM CUSTOMERS
    WHERE AGE = 25; 
 ROLLBACK
 使用ROLLBACK命令,删除操作不会影响表中的数据,执行后CUSTOMERS表结果集如下:
-
-ID  NAME       AGE       ADDRESS          SALARY 
-1   Ramesh     32        Ahmedabad        2000.00 
-2   Khilan     25        Delhi            1500.00 
-3   kaushik    23        Kota             2000.00 
-4   Chaitali   25        Mumbai           6500.00 
-5   Hardik     27        Bhopal           8500.00 
-6   Komal      22        MP               4500.00 
-7   Muffy      24        Indore           10000.00 
-SAVEPOINT命令
+**** SAVEPOINT命令
 SAVEPOINT命令可以使事务回滚到某个点节点，而不回滚整个事务。
 
 语法
@@ -1022,17 +669,12 @@ SET TRANSACTION命令可用于启动数据库事务。 此命令用于指定随�
 以下是SET TRANSACTION语法。
 
 SET TRANSACTION ISOLATION LEVEL <Isolationlevel_name>
-T-SQL - 索引
+** 索引
+ 数据库中的索引与书本目录的索引方式非常相似
+ 索引加快了SELECT查询和WHERE子句，但它降低了UPDATE和INSERT语句的数据输入速度
 
-索引是数据库搜索引擎用来加速数据检索的特殊查找表。 简单地说，一个索引是一个指向表中数据的指针。 数据库中的索引与书本目录的索引方式非常相似。
-
-例如，如果您要引用一本书中讨论某个主题的所有页面，则可以参考索引，该索引按字母顺序列出所有主题，然后指定了这些主题的页码。
-
-索引加快了SELECT查询和WHERE子句，但它降低了UPDATE和INSERT语句的数据输入速度。创建或删除索引不会对数据有影响。
-
-创建索引涉及CREATE INDEX语句，它允许你对索引进行命名，指定表和要索引的列，并指示索引是按升序还是按降序排列。
-
-索引也可以是唯一的，类似于UNIQUE约束，索引防止在具有索引的列的组合中出现重复条目。
+ 创建索引涉及CREATE INDEX语句，它允许你对索引进行命名，指定表和要索引的列，并指示索引是按升序还是按降序排列。
+ 索引也可以是唯一的，类似于UNIQUE约束，索引防止在具有索引的列的组合中出现重复条目。
 
 CREATE INDEX命令
 以下是CREATE INDEX的基本语法。
@@ -1090,152 +732,81 @@ DROP INDEX tablename.index_name
 
 频繁操作的列不应设置索引。
 
-T-SQL - 函数
-MS SQL Server有许多内置功能上的字符串或数字数据进行处理。下面是所有有用的SQL内置函数列表 -
+** 函数
+*** 内置函数列表
+    计数- COUNT聚合函数用于计算在数据库表中的行数。
+    max- MAX聚合功能可以选择某列的最高（最大）值。
+    MIN- MIN聚合函数允许选择了某列的最低（最小）值。
+    AVG- AVG聚合函数选择对某些表列的平均值。
+    SUM- SUM聚合函数允许选择总让数字列。
+    SQRT-这用于产生一个给定数目的平方根。
+    RAND-这是用于产生使用SQL命令的随机数。
+    concat-这是用来连接多个参数的参数。
+*** 字符串函数
+    ASCII('word') 字符转ascii码 
+    CHAR() 输出Ascii码对应的字符
+    Select CHAR(97)
+    
+    NCHAR（） 输出Unicode值对应的字符
+    Select NCHAR(300)
 
-SQL Server的计数功能 -在SQL Server COUNT聚合函数用于计算在数据库表中的行数。
+    CHARINDEX（） 索引值, 忽略大小写
+    Select CHARINDEX('G', 'KING') 
+    以下查询将给出给定字符串表达式“KING”的“G”字符的起始位置。
 
-SQL Server的max函数 -在SQL Server MAX聚合功能可以选择某列的最高（最大）值。
+    LEFT（） 制定长度的串
+    给定字符串的左边部分，直到指定的字符数作为给定字符串的输出。
+    Select LEFT('WORLD', 4)
 
-SQL Server的MIN功能 -在SQL Server MIN聚合函数允许选择了某列的最低（最小）值。
-
-SQL Server的AVG功能 -在SQL Server AVG聚合函数选择对某些表列的平均值。
-
-SQL Server的SUM函数 -在SQL Server SUM聚合函数允许选择总让数字列。
-
-SQL Server的SQRT功能 -这用于产生一个给定数目的平方根。
-
-SQL Server的RAND函数 -这是用于产生使用SQL命令的随机数。
-
-SQL Server的concat函数 -这是用来连接多个参数的参数。
-
-SQL Server的数值函数 -在SQL处理数字所需的SQL功能的完整列表。
-
-SQL Server的字符串函数 -来操作字符串在SQL需要SQL函数的完整列表。
-
-T-SQL - 字符串函数
-SQLServer字符串函数扫描应用于字符串值，或返回字符串值或数字数据。
-
-下面是带有示例的String函数列表。
-
-ASCII（）
-ASCII代码值将作为字符表达式的输出。
-
-例
-以下查询将给出给定字符的ASCII代码值。
-
-Select ASCII ('word') 
-CHAR（）
-字符将作为给定ASCII代码或整数的输出。
-
-例
-以下查询将给出给定整数的字符。
-
-Select CHAR(97)
-NCHAR（）
-Unicode字符将作为给定整数的输出。
-
-例
-以下查询将给出给定整数的Unicode字符。
-
-Select NCHAR(300)
-CHARINDEX（）
-给定搜索表达式的起始位置将作为给定字符串表达式中的输出。
-
-例
-以下查询将给出给定字符串表达式“KING”的“G”字符的起始位置。
-
-Select CHARINDEX('G', 'KING')
-LEFT（）
-给定字符串的左边部分，直到指定的字符数作为给定字符串的输出。
-
-例
-下面的查询将给出“WORLD”字符串作为字符串给定字符串'WORLD'的4个字符。
-
-Select LEFT('WORLD', 4)
 RIGHT（）
 给定字符串的右边部分，直到指定的字符数作为给定字符串的输出。
-
-例
 下面的查询将给出'DIA'字符串3个给定字符串'INDIA'的字符数。
-
 Select RIGHT('INDIA', 3)
+
 SUBSTRING（）
 基于开始位置值和长度值的字符串的一部分将作为给定字符串的输出。
-
-例
-以下查询将给出分别对于给定字符串“WORLD”提供（1,3），（3,3）和（2,3）作为开始和长度值的“WOR”，“DIA”，“ING” ，'INDIA'和'KING'。
-
 Select SUBSTRING ('WORLD', 1,3) 
-Select SUBSTRING ('INDIA', 3,3) 
-Select SUBSTRING ('KING', 2,3)
+
 LEN（）
 字符数将作为给定字符串表达式的输出。
-
-例
-以下查询将为5提供“HELLO”字符串表达式。
-
 Select LEN('HELLO') 
+
 LOWER（）
 小写字符串将作为给定字符串数据的输出。
 
-例
-以下查询将为'SQL Server'字符数据提供'sql server'。
-
-Select LOWER('SQLServer') 
 UPPER（）
 大写字符串将作为给定字符串数据的输出。
-
-例
-以下查询将为“Sql Server”字符数据提供“SQL SERVER”。
-
 Select UPPER('SqlServer')
+
 LTRIM（）
 字符串表达式将在删除前导空白后作为给定字符串数据的输出。
-
-例
-以下查询将为“WORLD”字符数据提供“WORLD”。
-
 Select LTRIM('   WORLD')
+
 RTRIM（）
 字符串表达式将在删除尾部空格后作为给定字符串数据的输出。
-
-例
-下面的查询将给出'INDIA'字符数据的'INDIA'。
-
 Select RTRIM('INDIA   ') 
+
 REPLACE（）
 在用指定字符替换指定字符的所有出现后，字符串表达式将作为给定字符串数据的输出。
-
-例
-以下查询将为'INDIA'字符串数据提供'KNDKA'字符串。
-
 Select REPLACE('INDIA', 'I', 'K')
+
 REPLICATE（）
 重复字符串表达式将作为指定次数的给定字符串数据的输出。
-
-例
 以下查询将为“WORLD”字符串数据提供“WORLDWORLD”字符串。
-
 Select REPLICATE('WORLD', 2)
+
 REVERSE（）
 反向字符串表达式将作为给定字符串数据的输出。
-
-例
 下面的查询将给出'WORLD'字符串数据的'DLROW'字符串。
-
 Select REVERSE('WORLD')
+
 SOUNDEX（）
 返回四字符（SOUNDEX）代码，以评估两个给定字符串的相似性。
-
-例
 下面的查询将为'Smith'，'Smyth'字符串给出'S530'。
-
 Select SOUNDEX('Smith'), SOUNDEX('Smyth')
+
 DIFFERENCE（）
 整数值将作为给定的两个表达式的输出。
-
-例
 以下查询将给出4个“Smith”，“Smyth”表达式。
 
 Select Difference('Smith','Smyth') 
@@ -1243,8 +814,6 @@ Select Difference('Smith','Smyth')
 
 SPACE（）
 字符串来作为的空格指定数量的输出。
-
-例
 下面的查询将给出'I LOVE INDIA'。
 
 Select 'I'+space(1)+'LOVE'+space(1)+'INDIA'
@@ -1279,43 +848,25 @@ Select QUOTENAME('RAMA','"')
 PATINDEX（）
 需要从指定的“I”位置的给定表达式开始第一个出现的位置。
 
-例
 下面的查询将给出'INDIA'的1。
-
 Select PATINDEX('I%','INDIA') 
+
 FORMAT（）
 给定表达式将作为具有指定格式的输出。
-
-例
 下面的查询将给出'星期一，2015年11月16日'的getdate函数按照指定的格式，'D'表示星期名称。
-
 SELECT FORMAT ( getdate(), 'D') 
+
 CONCAT（）
 单个字符串将作为输出，连接给定的参数值后。
-
-例
 以下查询将给出给定参数的'A，B，C'。
 
 Select CONCAT('A',',','B',',','C') 
-T-SQL - 日期函数
-以下是MS SQL Server中的日期函数列表。
+*** 日期函数
+    GETDATE（）
+    它将返回当前日期和时间。
 
-GETDATE（）
-它将返回当前日期和时间。
-
-语法
-上述函数的语法:
-
-GETDATE()
-例
-以下查询将返回当前日期以及MS SQL Server中的时间。
-
-Select getdate() as currentdatetime
-DATEPART（）
-它将返回日期或时间的一部分。
-
-语法
-上述函数的语法:
+    DATEPART（）
+    它将返回日期或时间的一部分。
 
 DATEPART(datepart, datecolumnname)
 例
@@ -1361,7 +912,7 @@ CONVERT(datatype, expression, style)
 SELECT CONVERT(VARCHAR(19),GETDATE()) 
 SELECT CONVERT(VARCHAR(10),GETDATE(),10) 
 SELECT CONVERT(VARCHAR(10),GETDATE(),110)
-T-SQL - 数值函数
+*** 数值函数
 MS SQL Server数字函数可以应用于数值数据，并返回数值数据。
 
 下面是带有示例的数值函数列表。
@@ -1464,92 +1015,327 @@ Select CEILING(123.25)
 FLOOR（）
 给定值向下舍入(正向无穷小的方向)后输出。
 
-例
-下面的查询将输出123。
-
 Select FLOOR(123.25) 
-LOG（）
-输出给定值的对数。
+下面的查询将输出0。 Select LOG(1) 
+** 语句
+*** return
+命令用于结束当前程序的执行,返回到上一个调用它的程序或其他程序,其语法格式如下:
 
-例
-下面的查询将输出0。
+return   整数值或变量
 
-Select LOG(1) 
+return语句要指定返回值,如果没有指定返回值,SQL Server系统会根据程序执行的结果返回一个内定值,返回值含义如下所示:
 
-* Create and query data
-    The following sections walk you through using sqlcmd to create a new database, add data, and run a simple query.
+返回值                        含义
 
-    Create a new database
-    The following steps create a new database named TestDB.
-    
-    From the sqlcmd command prompt, paste the following Transact-SQL command to create a test database:
+0                                 程序执行成功
 
-#+BEGIN_SRC sql
-CREATE DATABASE TestDB
-#+END_SRC
-On the next line, write a query to return the name of all of the databases on your server:
-#+BEGIN_SRC sql 
-SELECT Name from sys.Databases
-#+END_SRC
+-1                               找不到对象
 
-The previous two commands were not executed immediately. You must type GO on a new line to execute the previous commands:
-#+BEGIN_SRC sql 
-GO
-#+END_SRC
+-2                               数据类型错误
 
-Insert data
-Next create a new table, Inventory, and insert two new rows.
+-3                               死锁
 
-From the sqlcmd command prompt, switch context to the new TestDB database:
-#+BEGIN_SRC sql
-  
-  USE TestDB
-  Create new table named Inventory:
+-4                               违反权限原则
 
-  CREATE TABLE Inventory (id INT, name NVARCHAR(50), quantity INT)
-  Insert data into the new table:
-#+END_SRC
+-5                               语法错误
 
-#+BEGIN_SRC sql
+-6                               用户造成的一般错误
 
-INSERT INTO Inventory VALUES (1, 'banana', 150); INSERT INTO Inventory VALUES (2, 'orange', 154);
-#+END_SRC
+-7                               资源错误
 
-Type GO to execute the previous commands:
+-8                               非致使的内部错误
 
-Select data
-Now, run a query to return data from the Inventory table.
+-9                               已经达到系统的权限
 
-From the sqlcmd command prompt, enter a query that returns rows from the Inventory table where the quantity is greater than 152:
-#+BEGIN_SRC sql
-SELECT * FROM Inventory WHERE quantity > 152;
-#+END_SRC
+-10,-11                      致使的内部不一致错误
 
-To end your sqlcmd session, type QUIT:
-#+BEGIN_SRC sql
-    QUIT
-#+END_SRC
+-12                             表或指针破坏
 
-Connect from Windows
-SQL Server tools on Windows connect to SQL Server instances on Linux in the same way they would connect to any remote SQL Server instance.
+-13                             数据库破坏
 
-If you have a Windows machine that can connect to your Linux machine, try the same steps in this topic from a Windows command-prompt running sqlcmd. Just verify that you use the target Linux machine name or IP address rather than localhost, and make sure that TCP port 1433 is open. If you have any problems connecting from Windows, see connection troubleshooting recommendations.
+-14                             硬件错误
+*** 流程控制
+    BEGIN...END
+    BREAK
+    GOTO
+    CONTINUE
+    IF...ELSE
+    WHILE
+    RETURN
+    WAITFOR
+** 例子
+   #+BEGIN_SRC sql
+       DECLARE @var INT
+          SET @var=5
+          IF (@var>3)
+          PRINT 'var 大于 3'
+          ELSE
+          PRINT 'here'
+          go
+   #+END_SRC
+* oracle
+1、查找表的所有索引（包括索引名，类型，构成列）：
+select t.*,i.index_type from user_ind_columns t,user_indexes i where t.index_name = i.index_name and t.table_name = i.table_name and t.table_name = 要查询的表
+2、查找表的主键（包括名称，构成列）：
 
-For other tools that run on Windows but connect to SQL Server on Linux, see:
+select cu.* from user_cons_columns cu, user_constraints au where cu.constraint_name = au.constraint_name and au.constraint_type = 'P' and au.table_name = 要查询的表
 
-SQL Server Management Studio (SSMS)
-Windows PowerShell
-SQL Server Data Tools (SSDT)
-Additional resources
-For other installation scenarios, see the following resources:
+3、查找表的唯一性约束（包括名称，构成列）：
+select column_name from user_cons_columns cu, user_constraints au where cu.constraint_name = au.constraint_name and au.constraint_type = 'U' and au.table_name = 要查询的表
 
-Upgrade	Learn how to upgrade an existing installation of SQL Server on Linux
-Uninstall	Uninstall SQL Server on Linux
-Unattended install	Learn how to script the installation without prompts
-Offline install	Learn how to manually download the packages for offline installation
-To explore other ways to connect and manage SQL Server, explore the following tools:
+4、查找表的外键（包括名称，引用表的表名和对应的键名，下面是分成多步查询）：
+select * from user_constraints c where c.constraint_type = 'R' and c.table_name = 要查询的表
 
-Visual Studio Code	A cross-platform GUI code editor that run Transact-SQL statements with the mssql extension.
-SQL Server Operations Studio	A cross-platform GUI database management utility.
-mssql-cli	A cross-platform command-line interface for running Transact-SQL commands.
-SQL Server Management Studio	A Windows-based GUI database management utility that can connect to and manage SQL Server instances on Linux.
+查询外键约束的列名：
+select * from user_cons_columns cl where cl.constraint_name = 外键名称
+
+查询引用表的键的列名：
+select * from user_cons_columns cl where cl.constraint_name = 外键引用表的键名
+
+5、查询表的所有列及其属性
+select t.*,c.COMMENTS from user_tab_columns t,user_col_comments c where t.table_name = c.table_name and t.column_name = c.column_name and t.table_name = 要查询的表
+
+6、查询所有表
+select* from tabs
+* T-SQL的一些关键字
+Print  向客户端返回用户信息
+例：　　print '青苹果'         屏幕上就会显示“青苹果三个字“
+Go      用来通知SQL一批语句的结束
+Distinct   去掉重复值
+Declare    用来声明变量(局部变量?????)
+例：　　declare @a int
+Set    为变量赋值
+
+例：　　set @a='青苹果'
+While  在SQL中用来循环(好像在SQL中用来做循环的关键字不多)
+
+复制代码
+语法：　　　　WHILE <条件表达式>
+                 BEGIN
+                    <命令行或程序块>
+                   [BREAK]
+                   [CONTINUE]
+                   [命令行或程序块]
+                 END
+复制代码
+While比较重要，我们来做个例子加深一下对While循环的理解：
+
+复制代码
+declare @a int
+set @a=1
+while @a<5
+begin 
+print '青苹果'
+set @a=@a+1
+end
+
+输出结果：青苹果
+　　　　　青苹果
+　　　　　青苹果
+　　　　　青苹果
+复制代码
+if else    判断语句
+
+判断语句用的还是比较多的我们还是来做个例子说明一下；
+
+求：a、b、c三个数的最大值？
+
+复制代码
+declare  @a int,@b int,@c int,@max  int
+set @a=1 set @b=2 set @c=3 
+if  @a>@b               
+   set  @max=@a
+else
+   set  @max=@b
+if  @max<@c
+   set  @max=@c      
+print   @max
+
+输出结果：3
+
+复制代码
+begin end  用来设定一个程序块，将在BEGIN…END内的所有程序视为一个单元执行。
+
+Exists     判断是否存在
+
+Case   也是用来判断的，和IF语句差不多，它的格式为：
+
+　CASE  <运算式>
+     　　 WHEN <运算式1> THEN  <结果1>
+          … 
+           WHEN<运算式n> THEN   <结果n>
+          [ELSE  <结果n+1>]
+  END
+ Return 　　用于结束当前程序的执行，返回到上一个调用它的程序或其它程序。在括号内可指定一个返回值。
+
+Goto标示符  用来改变程序执行的流程，使程序跳到标有标识符的指定的程序行再继续往下执行。要注意的是作为跳转目标的标识符可为数字与字符的组合，但必须以“：”结尾，如：“1023：” “qingpingguo:”
+
+复制代码
+例子：
+        declare @a int 
+     　　set @a = 1  
+　　　　　qingpignguo:       
+　　　　　print @a       
+     　　set @a = @a + 1 
+     　　while @a < 6   
+  　　　　goto qingpignguo
+
+输出结果：12345
+复制代码
+最后一个给大家看个好玩的：
+
+Waitfor    用来暂停程序执行，直到等待指定时间之后，或所设定的时间已到才继续往下运行程序。
+
+语法：　　waitfor {delay '时间'|time '时间'}
+解释：
+
+（1）‘时间’必须为DATETIME类型数据，且不能包括日期，如‘10:12:05’
+
+（2）DELAY:用来设定等待的时间长短，最多为24小时。(是一个时间间隔)
+
+（3）TIME：用来设定等待结束的时间点（是一个具体的时间)
+
+例子：
+    waitfor  delay '00:00:03'
+ 　　print '你好,我是青苹果'
+ 　　go
+以上就是T-SQL的所有内容了，接下来我们来利用最后的时间画几个图形：
+
+直角三角形：
+
+复制代码
+declare @a int 
+set @a=1
+while(@a<11)
+begin
+print replace(space(@a),' ','*')
+set @a=@a+1
+end
+复制代码
+直角三角形 输出结果：
+
+ 
+
+正方形：
+
+复制代码
+declare @a int
+declare @b int
+declare @c nvarchar(100)
+set @a=1
+set @b=1
+set @c=''
+while (@a<9)
+begin
+   while (@b<15)
+   begin 
+    set @c=@c+'*'
+    set @b=@b+1
+   end
+    print @c 
+set @a=@a+1
+end
+复制代码
+ 
+
+正方形 输出结果：
+
+ 
+
+菱形：
+
+复制代码
+declare @a int,@b int
+set @a=1 set @b=15
+
+if(@b%2!=1)
+print '数字必须都是奇数'
+else
+while(@a<=@b)
+begin
+if(@a%2=1)
+print space((@b-@a)/2)+replace(space(@a),' ','*')+space((@b-@a)/2)
+set @a=@a+1
+end
+set @a=@a-2
+while (@a<=@b)
+begin
+if(@a%2=1)
+print space((@b-@a)/2)+replace(space(@a),' ','*')+space((@b-@a)/2)
+set @a=@a-1    
+if (@a<0)
+break
+end
+复制代码
+菱形 输出结果：
+
+ 
+
+梯形：
+
+复制代码
+declare @a int,@b int
+set @a=7 set @b=21
+if(@a%2=1)
+while(@a<@b)
+begin
+print space((@b-@a)/2)+replace(space(@a),' ','*')+space((@b-@a)/2)
+set @a=@a+2
+end
+复制代码
+梯形 输出结果：
+
+ 
+
+矩形：
+
+复制代码
+declare @a int
+declare @b int
+declare @c nvarchar(100)
+set @a=1
+set @b=1
+set @c=''
+while (@a<9)
+begin
+   while (@b<23)
+   begin 
+    set @c=@c+'*'
+    set @b=@b+1
+   end
+    print @c 
+set @a=@a+1
+end
+复制代码
+矩形 输出结果：
+
+ 
+
+圆形：
+
+复制代码
+declare @a int,@b int
+set @a=9 set @b=13
+
+while (@a<=@b)
+begin
+if(@a%2=1)
+print space((@b-@a)/2)+replace(space(@a),' ','*')+space((@b-@a)/2)
+set @a=@a+1
+end
+set @a=@a-1
+begin
+print space((@b-@a)/2)+replace(space(@a),' ','*')+space((@b-@a)/2)
+end
+while (@a<=@b)
+begin
+if(@a%2=1)
+print space((@b-@a)/2)+replace(space(@a),' ','*')+space((@b-@a)/2)
+set @a=@a-1
+if(@a<10)
+break
+end
+set @a=@a-2
+begin
+print space((@b-@a)/2)+replace(space(@a),' ','*')+space((@b-@a)/2)
+end

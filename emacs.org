@@ -48,38 +48,156 @@
    模式属性　(add-hook 'text-mode-hook 'turn-on-auto-fill)
    按键属性　(define-key global-map "\C-x\C-u" 'undo)
    输入法切换 `c-\' (toggle-input-method')
-  : lisp
-  : package
-  : version control(vc-next-action/vc-diff/vc-print-log/vc-cnacel-version)
-  : Unicode coding-system
+  lisp
+  package
+  version control(vc-next-action/vc-diff/vc-print-log/vc-cnacel-version)
+  Unicode coding-system
   (setq buffer-file-coding-system 'utf-8)  默认buffer编码是utf-8,(写文件)
   (prefer-coding-system 'utf-8)   指定文件编码,此时buffer新建和读取
   (setq read-quoted-char-radix 16) insert-quoted-char 
-  : info
-  : browser
-  : help system/key/variable/mode
-  : bug
-  ^                Matches the beginning of a line.
-  $                Matches the end of a line.
-  .                Matches any single character (like ? in filenames).
-  .*               Matches any group of zero or more characters 
-  \<               Matches the beginning of a word.
-  \>               Matches the end of a word.
-  []               Matches any character specified within the brackets; for example, [a-z]
-  \{n,m\}          表示它前面的单个字符重新的次数
-  \s, \S           \S matches any character except whitespace.
-  \d, \D           Matches any single digit, 0-9; \D matches any character but a digit.
-  \w, \W           Matches any "word" character (upper- and lowercase letters, digits, and the
-** 变窄（narrowing) 
+  info
+  browser
+  help system/key/variable/mode
+  bug
+变窄（narrowing) 
    这个一个 让你关注于缓冲区特定部分的特性 
    变窄 narrowing
    恢复 widen
+*** 最近打开文件
+    (require 'recentf)
+    (recentf-mode 1)
+    (setq recentf-max-menu-item 10)
+    ;; 这个快捷键绑定可以用之后的插件 counsel 代替
+    ;; (global-set-key (kbd "C-x C-r") 'recentf-open-files)
+** 配置
+   Emacs 的配置文件默认保存在 ~/.emacs.d/init.el 文件中。
+   如果希望把配置放在 ~/.emacs.d/init.el 文件中，那么需要手工删除 ~/.emacs 文件。
+   
+   init.el文件 它可以更好将所有 Emacs 相关的文件整合在一个目录内（干净的 HOME ，网盘备份等优点）
+   更好的版本控制
+** Major Mode 与 Minor Mode
+*** 核心功能和多个辅助功能
+   C-h m 显示当前所有开启 的Minor Mode 的信息
+   在每次编辑配置文件后，刚刚做的修改并不会立刻生效。这时你需要重启编辑器或者重新加载配置文件。
+   重新加载配置文件你需要在当前配置文件中使用 M-x load-file 双击两次回车确认默认文件名，
+   或者使用 M-x eval-buffer 去执行当前缓冲区的所有 Lisp 命令。 你也可以使用 C-x C-e 
+   来执行某一行的 Lisp 代码。这些可使刚刚修改的配置文件生效。 当然你也可以将这些函数绑定为快捷键。
+
+*** Major Mode
+    ; 开启全局 Company 补全
+    (global-company-mode 1)
+*** Minor Mode   
+   ;; 关闭工具栏，tool-bar-mode 即为一个 Minor Mode
+   (tool-bar-mode -1)
+
+   ;; 关闭文件滑动控件
+   (scroll-bar-mode -1)
+
+   ;; 显示行号
+   (global-linum-mode 1)
+
+   ;; 更改光标的样式（不能生效，解决方案见第二集）
+   (setq cursor-type 'bar)
+
+   ;; 关闭启动帮助画面
+   (setq inhibit-splash-screen 1)
+
+   ;; 关闭缩进 (第二天中被去除)
+   ;; (electric-indent-mode -1)
+
+   ;; 更改显示字体大小 16pt
+   ;; http://stackoverflow.com/questions/294664/how-to-set-the-font-size-in-emacs
+   (set-face-attribute 'default nil :height 160)
+
+   ;; 快速打开配置文件
+   (defun open-init-file()
+   (interactive)
+   (find-file "~/.emacs.d/init.el"))
+
+   ;; 这一行代码，将函数 open-init-file 绑定到 <f2> 键上
+   (global-set-key (kbd "<f2>") 'open-init-file)
+*** 主模式
+    javascript 默认主模式改为 js2-mode
+    #+BEGIN_SRC lisp
+     (setq auto-mode-alist
+      (append
+       '(("\\.js\\'" . js2-mode))
+       auto-mode-alist))
+    #+END_SRC
+    
+       #+BEGIN_SRC lisp
+        (setq auto-mode-alist
+       (append
+       ;; File name (within directory) starts with a dot.
+       '(("/\\.[^/]*\\'" . fundamental-mode)
+       ;; File name has no dot.
+       ("/[^\\./]*\\'" . fundamental-mode)
+       ;; File name ends in ‘.C’.
+       ("\\.C\\'" . c++-mode))
+       auto-mode-alist))
+       #+END_SRC
+      有点像自增
+
+** 插件
+   你可以直接将下面的代码复制到你的配置文件顶端，从而直接使用 Melpa 作为插件的源。 你可以将你需要的插件名字写在 my/packages 中，
+   Emacs 在启动时会自动下载未被安装 的插件。
+   
+   #+BEGIN_SRC lisp
+     (when (>= emacs-major-version 24)
+         (require 'package)
+         (package-initialize)
+         (setq package-archives '(("gnu"   . "http://elpa.emacs-china.org/gnu/")
+              ("melpa" . "http://elpa.emacs-china.org/melpa/"))))
+   #+END_SRC
+   
+;; 注意 elpa.emacs-china.org 是 Emacs China 中文社区在国内搭建的一个 ELPA 镜像
+
+ ;; cl - Common Lisp Extension
+ (require 'cl)
+
+ ;; Add Packages
+ (defvar my/packages '(
+		;; --- Auto-completion ---
+		company
+		;; --- Better Editor ---
+		hungry-delete
+		swiper
+		counsel
+		smartparens
+		;; --- Major Mode ---
+		js2-mode
+		;; --- Minor Mode ---
+		nodejs-repl
+		exec-path-from-shell
+		;; --- Themes ---
+		monokai-theme
+		;; solarized-theme
+		) "Default packages")
+
+ (setq package-selected-packages my/packages)
+
+ (defun my/packages-installed-p ()
+     (loop for pkg in my/packages
+	   when (not (package-installed-p pkg)) do (return nil)
+	   finally (return t)))
+
+ (unless (my/packages-installed-p)
+     (message "%s" "Refreshing package database...")
+     (package-refresh-contents)
+     (dolist (pkg my/packages)
+       (when (not (package-installed-p pkg))
+	 (package-install pkg))))
+
+ ;; Find Executable Path on OS X
+ (when (memq window-system '(mac ns))
+   (exec-path-from-shell-initialize))
+
+关于上面这段配置代码有几个知识点，首先就是这段配置文件中用到了 loop for ... in ，它来自 cl 即 Common Lisp 扩展。 for , in, collect 均为 cl-loop 中的 保留关键字。下面是一些简单的 cl-loop 的使用示例：
+
 * lisp编程
-  语言组织---列表(列表中有数据，函数，语句, 注释）
-** 列表   
-*** 数据列表     
+** 列表 
+*** 数据列表
     '(a b c)
-    '(a b c (e f)) 列表中的子列表就不要 ' 号 了
 *** 函数列表 (+ 3 3)
 *** 原子
     空格隔断
@@ -252,3 +370,9 @@ C.4   打印整个图形	194
 C.4.1   测试print-graph函数	197
 C.4.2   绘制函数中单词和符号数的图形	198
 C.4.3   打印出来的图形	202         
+* 调试
+  找到(出问题的)快捷键对应的函数；
+  M-x edebug-defun；
+  按(出问题的)快捷键。
+
+  

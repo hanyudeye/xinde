@@ -750,8 +750,20 @@ Tracking an existing debugger process
 Use M-x realgud-track-mode inside an existing shell, or eshell buffer to track an already-running debugger process.
 
 * c 
-** 编译器函数，预处理器指令, 杂行为，用来协助生成程序的
+** 预处理器
    头文件： 先定义，后使用的先后顺序不能变
+#+BEGIN_SRC c
+#ifndef HEADER_FILE
+#define HEADER_FILE
+the entire header file file
+#endif
+#+END_SRC
+多系统
+#+BEGIN_SRC c
+  #define SYSTEM_H "system_1.h"
+  ...
+  #include SYSTEM_H
+#+END_SRC
 ** 数据类型
 *** 定义类型 int i; //声明，也是定义
 *** 定义结构
@@ -817,7 +829,7 @@ Use M-x realgud-track-mode inside an existing shell, or eshell buffer to track a
  int puts(const char *s) 函数把字符串 s 和一个尾随的换行符写入到 stdout。
 **** scanf() 和 printf() 函数
       int scanf(const char *format, ...) 函数从标准输入流 stdin 读取输入，并根据提供的 format 来浏览输入。
- int printf(const char *format, ...) 函数把输出写入到标准输出流 stdout ，并根据提供的格式产生输出。
+      int printf(const char *format, ...) 函数把输出写入到标准输出流 stdout ，并根据提供的格式产生输出。
 *** 内存管理 动态内存分配与管理 <stdlib.h>
 **** void *calloc(int num, int size);该函数分配一个带有 num 个元素的数组，每个元素的大小为 size 字节。
 **** void free(void *address);该函数释放 address 所指向的h内存块。
@@ -836,19 +848,6 @@ Use M-x realgud-track-mode inside an existing shell, or eshell buffer to track a
 ** 控制流程
 *** 分支
 *** 循环
-** 头文件
-#+BEGIN_SRC c
-#ifndef HEADER_FILE
-#define HEADER_FILE
-the entire header file file
-#endif
-#+END_SRC
-*** 多系统
-#+BEGIN_SRC c
- #define SYSTEM_H "system_1.h"
- ...
- #include SYSTEM_H
-#+END_SRC
 ** 错误处理
    : 大多数的 C 或 UNIX 函数调用返回 1 或 NULL，同时会设置一个错误代码 errno，该错误代码是全局变量，表示在函数调用期间发生了错误。您可以在 <error.h> 头文件中找到各种各样的错误代码。
    : 开发人员应该在程序初始化时，把 errno 设置为 0，这是一种良好的编程习惯。0 值表示程序中没有错误。
