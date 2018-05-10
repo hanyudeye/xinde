@@ -1,0 +1,415 @@
+* github pages 服务搭建博客
+#+BEGIN_SRC 
+使用github pages服务搭建博客的好处有：
+全是静态文件，访问速度快；
+免费方便，不用花一分钱就可以搭建一个自由的个人博客，不需要服务器不需要后台；
+可以随意绑定自己的域名，不仔细看的话根本看不出来你的网站是基于github的；
+数据绝对安全，基于github的版本管理，想恢复到哪个历史版本都行；
+博客内容可以轻松打包、转移、发布到其它平台；
+等等；
+#+END_SRC
+* Hexo 
+  创建 hexo new "My New Post"
+  编辑
+  hexo s -g #生成并本地预览
+  hexo d -g #生成并上传
+** 准备环境
+   有一个github账号，没有的话去注册一个；
+   安装了node.js、npm，并了解相关基础知识；
+   安装了git for windows（或者其它git客户端）
+   1.每一个github账户最多只能创建一个这样可以直接使用域名访问的仓库。 创建仓库 username.github.io, 作为github pages 的仓库
+   2.Clone the repository git clone https://github.com/username/username.github.io
+   3.Push it
+   #+BEGIN_SRC shell
+     ~$git add --all
+     ~$git commit -m "Initial commit"
+     ~$git push -u origin master
+   #+END_SRC
+** 绑定域名
+   域名配置最常见有2种方式，CNAME和A记录，CNAME填写域名，A记录填写IP，
+   由于不带www方式只能采用A记录，所以必须先ping一下你的用户名.github.io的IP，
+   然后到你的域名DNS设置页，将A记录指向你ping出来的IP，将CNAME指向你的用户名.github.io，
+   这样可以保证无论是否添加www都可以访问
+1.  [[file:image/cname.png][示例]] 
+2. 然后到你的github项目根目录新建一个名为CNAME的文件（无后缀），里面填写你的域名，加不加www看你自己喜好，因为经测试： 
+** 配置sshkey
+   因为直接用用户名和密码太不安全
+   
+   检查本机存在的ssh秘钥  存在则有 ~/.ssh 
+   生成 ssh-keygen -t rsa -C "邮件地址"
+   公钥 复制到 git .ssh\id_rsa.pub
+   进入个人设置 -> SSH and GPG keys -> New SSH key
+   测试是否成功
+   $ ssh -T git@github.com # 注意邮箱地址不用改
+   
+   此时你还需要配置：
+$ git config --global user.name "liuxianan"// 你的github用户名，非昵称
+$ git config --global user.email  "xxx@qq.com"// 填写你的github注册邮箱
+** 安装 hexo
+   $ npm install -g hexo
+** 初始化
+   $ cd /f/Workspaces/hexo/
+   $ hexo init
+** 生成
+$ hexo g # 生成
+$ hexo s # 启动服务
+$ hexo server -p 5000 设定端口
+** 修改主题
+   下载
+   #+BEGIN_SRC shell
+     $ cd /f/Workspaces/hexo/
+     $ git clone https://github.com/litten/hexo-theme-yilia.git themes/yilia
+   #+END_SRC
+   修改_config.yml中的theme: landscape改为theme: yilia，然后重新执行hexo g来重新生成。
+** 清理
+   如果出现一些莫名其妙的问题，可以先执行hexo clean来清理一下public的内容，然后再来重新生成和发布。
+** 文件含义
+#+BEGIN_SRC 
+node_modules：是依赖包
+public：存放的是生成的页面
+scaffolds：命令生成文章等的模板
+source：用命令创建的各种文章
+themes：主题
+_config.yml：整个博客的配置
+db.json：source解析所得到的
+package.json：项目所需模块项目的配置信息
+#+END_SRC
+** 上传到github
+首先，ssh key肯定要配置好。
+
+其次，配置_config.yml中有关deploy的部分：
+
+正确写法：
+#+BEGIN_SRC yml
+deploy:
+  type: git
+  repository: git@github.com:liuxianan/liuxianan.github.io.git
+  branch: master
+#+END_SRC
+还需要安装一个插件：
+npm install hexo-deployer-git --save
+
+hexo d
+** 保留CNAME、README.md等文件
+   一些非md文件可以把他们放到source文件夹下，这里的所有文件都会原样复制（除了md文件）到public目录的：
+   由于hexo默认会把所有md文件都转换成html，包括README.md，所有需要每次生成之后、上传之前，手动将README.md复制到public目录，并删除README.html。
+   保留CNAME、README.md等文件 这一节，
+   只要在_config.yml做如下配置就好了：
+   skip_render: README.md
+** 常用命令
+常见命令
+
+hexo new "postName" #新建文章
+hexo new page "pageName" #新建页面
+hexo generate #生成静态页面至public目录
+hexo server #开启预览访问端口（默认端口4000，'ctrl + c'关闭server）
+hexo deploy #部署到GitHub
+hexo help  # 查看帮助
+hexo version  #查看Hexo的版本
+缩写：
+
+hexo n == hexo new
+hexo g == hexo generate
+hexo s == hexo server
+hexo d == hexo deploy
+组合命令：
+
+hexo s -g #生成并本地预览
+hexo d -g #生成并上传
+* CNAME 
+  CNAME 被称为规范名字。这种记录允许您将多个名字映射到同一台计算机。 
+  通常用于同时提供WWW和MAIL服务的计算机。例如，有一台计算机名为“r0WSPFSx58.”（A记录）。
+  它同时提供WWW和MAIL服务，为了便于用户访问服务。可以为该计算机设置两个别名（CNAME）：WWW和MAIL。
+  同样的方法可以用于当您拥有多个域名需要指向同一服务器IP，此时您就可以将一个域名做A记录指向服务器IP，
+  然后将其他的域名做别名(即CNAME)到A记录的域名上；那么当您的服务器IP地址变更时，
+  您就可以不必对一个一个域名做更改指向了，只需要更改A记录的那个域名到服务器新IP上，
+  其他做别名（即CNAME）的那些域名的指向将自动更改到新的IP地址上（以上操作均需要在DNS处执行）。
+  上面的主机IP为假设，以便于理解。
+** CNAME 
+blog.nearwo.xyz
+* _config.yml
+#+BEGIN_SRC yaml 
+  # Hexo Configuration
+  ## Docs: http://hexo.io/docs/configuration.html
+  ## Source: https://github.com/hexojs/hexo/
+
+  # Site
+  title: Litten的博客
+  subtitle: 胆小认生，不易相处
+  description: 华中科技大学09级，就职于腾讯SNG。擅长各项前端技能，深入研究移动端开发与前端性能。非专业视觉设计师。此为博客一枚。 
+  author: Litten
+  email: litten225@qq.com
+  keywords: "前端,js,jquery,javascript,html5,开发者,程序猿,程序媛,极客,编程,代码,开源,IT网站,Developer,Programmer,Coder,Geek,html,css,css3,用户体验"
+
+  # URL
+  ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
+  url: //litten.me
+  root: /
+  permalink: :year/:month/:day/:title/
+  tag_dir: tags
+  archive_dir: archives
+  category_dir: categories
+  code_dir: downloads/code
+  permalink_defaults:
+
+    # Directory
+    source_dir: source
+    public_dir: public
+
+    # Writing
+    new_post_name: :title.md # File name of new posts
+    default_layout: post
+    titlecase: false # Transform title into titlecase
+    external_link: true # Open external links in new tab
+    filename_case: 0
+    render_drafts: false
+    post_asset_folder: false
+    relative_link: false
+    highlight:                                                                                                                                                                                                   
+      enable: true                                                                                                                                                                                               
+      auto_detect: true                                                                                                                                                                                          
+      line_number: true                                                                                                                                                                                          
+      tab_replace: ''
+
+      # Category & Tag
+      default_category: uncategorized
+      category_map:
+        tag_map:
+
+          # Archives
+          ## 2: Enable pagination
+          ## 1: Disable pagination
+          ## 0: Fully Disable
+          archive: 1
+          category: 1
+          tag: 1
+
+          # Server
+          ## Hexo uses Connect as a server
+          ## You can customize the logger format as defined in
+          ## http://www.senchalabs.org/connect/logger.html
+          port: 4000
+          server_ip: localhost
+          logger: false
+          logger_format: dev
+
+          # Date / Time format
+          ## Hexo uses Moment.js to parse and display date
+          ## You can customize the date format as defined in
+          ## http://momentjs.com/docs/#/displaying/format/
+          date_format: YYYY-MM-DD
+          time_format: HH:mm:ss
+
+          # Pagination
+          ## Set per_page to 0 to disable pagination
+          per_page: 8
+          pagination_dir: page
+
+          # Disqus
+          disqus_shortname:
+
+            # Extensions
+            ## Plugins: https://github.com/hexojs/hexo/wiki/Plugins
+            ## Themes: https://github.com/hexojs/hexo/wiki/Themes
+            # plugins:
+              #  - hexo-generator-feed
+              #  - hexo-generator-baidu-sitemap
+              #  - hexo-generator-sitemap
+
+              theme: yilia
+              exclude_generator:
+
+                # Deployment
+                ## Docs: http://hexo.io/docs/deployment.html
+                #deploy:
+                  #  type: git
+                  #  repository: git@github.com:litten/litten.github.com.git
+                  #  branch: master
+
+                  deploy:
+                    type: rsync
+                    host: 120.24.181.238
+                    user: root
+                    root: /usr/local/nginx/litten.me/
+                    port: 22
+
+                    sitemap:
+                      path: sitemap.xml
+                      baidusitemap:
+                        path: baidusitemap.xm
+
+                        feed:
+                          type: atom
+                          path: atom.xml
+                          limit: 100
+
+                          jsonContent:
+                            meta: false
+                            pages: false
+                            posts:
+                              title: true
+                              date: true
+                              path: true
+                              text: false
+                              raw: false
+                              content: false
+                              slug: false
+                              updated: false
+                              comments: false
+                              link: false
+                              permalink: false
+                              excerpt: false
+                              categories: false
+                              tags: true
+#+END_SRC
+* 含义
+  # Header
+menu:
+  主页: /
+  随笔: /tags/随笔/
+
+# SubNav
+subnav:
+  github: "#"
+  weibo: "#"
+  rss: "#"
+  zhihu: "#"
+  #qq: "#"
+  #weixin: "#"
+  #jianshu: "#"
+  #douban: "#"
+  #segmentfault: "#"
+  #bilibili: "#"
+  #acfun: "#"
+  #mail: "mailto:litten225@qq.com"
+  #facebook: "#"
+  #google: "#"
+  #twitter: "#"
+  #linkedin: "#"
+
+rss: /atom.xml
+
+# 是否需要修改 root 路径
+# 如果您的网站存放在子目录中，例如 http://yoursite.com/blog，
+# 请将您的 url 设为 http://yoursite.com/blog 并把 root 设为 /blog/。
+root: 
+
+# Content
+
+# 文章太长，截断按钮文字
+excerpt_link: more
+# 文章卡片右下角常驻链接，不需要请设置为false
+show_all_link: '展开全文'
+# 数学公式
+mathjax: false
+# 是否在新窗口打开链接
+open_in_new: false
+
+# 打赏
+# 打赏type设定：0-关闭打赏； 1-文章对应的md文件里有reward:true属性，才有打赏； 2-所有文章均有打赏
+reward_type: 2
+# 打赏wording
+reward_wording: '谢谢你请我吃糖果'
+# 支付宝二维码图片地址，跟你设置头像的方式一样。比如：/assets/img/alipay.jpg
+alipay: 
+# 微信二维码图片地址
+weixin: 
+
+# 目录
+# 目录设定：0-不显示目录； 1-文章对应的md文件里有toc:true属性，才有目录； 2-所有文章均显示目录
+toc: 1
+# 根据自己的习惯来设置，如果你的目录标题习惯有标号，置为true即可隐藏hexo重复的序号；否则置为false
+toc_hide_index: true
+# 目录为空时的提示
+toc_empty_wording: '目录，不存在的…'
+
+# 是否有快速回到顶部的按钮
+top: true
+
+# Miscellaneous
+baidu_analytics: ''
+google_analytics: ''
+favicon: /favicon.png
+
+#你的头像url
+avatar:
+
+#是否开启分享
+share_jia: true
+
+#评论：1、多说；2、网易云跟帖；3、畅言；4、Disqus；5、Gitment
+#不需要使用某项，直接设置值为false，或注释掉
+#具体请参考wiki：https://github.com/litten/hexo-theme-yilia/wiki/
+
+#1、多说
+duoshuo: false
+
+#2、网易云跟帖
+wangyiyun: false
+
+#3、畅言
+changyan_appid: false
+changyan_conf: false
+
+#4、Disqus 在hexo根目录的config里也有disqus_shortname字段，优先使用yilia的
+disqus: false
+
+#5、Gitment
+gitment_owner: false      #你的 GitHub ID
+gitment_repo: ''          #存储评论的 repo
+gitment_oauth:
+  client_id: ''           #client ID
+  client_secret: ''       #client secret
+
+# 样式定制 - 一般不需要修改，除非有很强的定制欲望…
+style:
+  # 头像上面的背景颜色
+  header: '#4d4d4d'
+  # 右滑板块背景
+  slider: 'linear-gradient(200deg,#a0cfe4,#e8c37e)'
+
+# slider的设置
+slider:
+  # 是否默认展开tags板块
+  showTags: false
+
+# 智能菜单
+# 如不需要，将该对应项置为false
+# 比如
+#smart_menu:
+#  friends: false
+smart_menu:
+  innerArchive: '所有文章'
+  friends: '友链'
+  aboutme: '关于我'
+
+friends:
+  友情链接1: http://localhost:4000/
+  友情链接2: http://localhost:4000/
+  友情链接3: http://localhost:4000/
+  友情链接4: http://localhost:4000/
+  友情链接5: http://localhost:4000/
+  友情链接6: http://localhost:4000/
+
+aboutme: 很惭愧<br><br>只做了一点微小的工作<br>谢谢大家
+* 资源文件夹
+资源（Asset）代表 source 文件夹中除了文章以外的所有文件，例如图片、CSS、JS 文件等。比方说，如果你的Hexo项目中只有少量图片，那最简单的方法就是将它们放在 source/images 文件夹中。然后通过类似于 ![](/images/image.jpg) 的方法访问它们。
+文章资源文件夹
+对于那些想要更有规律地提供图片和其他资源以及想要将他们的资源分布在各个文章上的人来说，Hexo也提供了更组织化的方式来管理资源。这个稍微有些复杂但是管理资源非常方便的功能可以通过将 config.yml 文件中的 post_asset_folder 选项设为 true 来打开。
+
+_config.yml
+post_asset_folder: true
+当资源文件管理功能打开后，Hexo将会在你每一次通过 hexo new [layout] <title> 命令创建新文章时自动创建一个文件夹。这个资源文件夹将会有与这个 markdown 文件一样的名字。将所有与你的文章有关的资源放在这个关联文件夹中之后，你可以通过相对路径来引用它们，这样你就得到了一个更简单而且方便得多的工作流。
+
+相对路径引用的标签插件
+通过常规的 markdown 语法和相对路径来引用图片和其它资源可能会导致它们在存档页或者主页上显示不正确。在Hexo 2时代，社区创建了很多插件来解决这个问题。但是，随着Hexo 3 的发布，许多新的标签插件被加入到了核心代码中。这使得你可以更简单地在文章中引用你的资源。
+
+{% asset_path slug %}
+{% asset_img slug [title] %}
+{% asset_link slug [title] %}
+比如说：当你打开文章资源文件夹功能后，你把一个 example.jpg 图片放在了你的资源文件夹中，如果通过使用相对路径的常规 markdown 语法 ![](/example.jpg) ，它将 不会 出现在首页上。（但是它会在文章中按你期待的方式工作）
+
+正确的引用图片方式是使用下列的标签插件而不是 markdown ：
+
+{% asset_img example.jpg This is an example image %}
+通过这种方式，图片将会同时出现在文章和主页以及归档页中。

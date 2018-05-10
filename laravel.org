@@ -1,0 +1,20 @@
+* laravel
+** 安装  
+   1. composer global require "laravel/installer"
+   确保 ~/.composer/vendor/bin 在系统路径中,否则不能在任意路径调用 laravel 命令。那就给PATH 添加路径，我的是在~/.config/composer/vendor/bin 中
+   安装完成后,通过简单的 laravel new 命令即可在当前目录下创建一个新的 Laravel 应用,例如,
+   laravel new blog
+** 配置 
+   Public 目录 , 需要将服务器的 web 根目录指向 public 目录，目录下的index.php 文件作为路口文件
+   所有配置文件都存放在config 目录下
+   访问配置值 
+   #+BEGIN_SRC php 
+   $value = config('app.timezone');
+   #+END_SRC
+** 目录权限
+   storage 和 bootstrap/cache 目录应该是可写的，用安装器就默认配好了
+** 开发环境搭建 Homestead 
+   virtualbox 虚拟机
+   vagrant box add laravel/homestead 
+** 开启服务
+   php artisan serve, 会产生一个虚拟地址，就不用配固定地址了

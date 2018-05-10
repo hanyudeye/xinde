@@ -1,0 +1,69 @@
+* 查找文件 需要文件呀，google 中可以加 filetype:doc
+* 中心服务器和P2P之分 中心服务器如果访问的人多会卡, p2p则正好相反(服务器越多越好啦)
+* 互联网精神？分享(好东西）精神会给你带来知识和财富的获益
+* 最大路径 MTU ping 一下 traceroute
+* Http协议
+客户端发送请求 格式为
+#+BEGIN_SRC conf
+    GET /latest.html HTTP/1.1
+    Host: www.xx.com
+    Content-Type: text/html
+              
+
+  POST /servlet/serv HTTP/1.1
+  Host:www.xx.com
+  Content-Type:application/x-www-form-urlencoded
+  Content-Length:32
+  username=billgates&password=hehe
+  正好32个字符
+#+END_SRC
+
+服务器返回格式 
+#+BEGIN_SRC conf
+  HTTP/1.1 200 OK
+  Connection:keep-alive
+  Content-Encoding:gzip
+  Content-Type:text/html; charset=UTF-8
+  Date:Fri, 05 Jan 2018 11:57:43 GMT
+  Server:nginx/1.10.3 (Ubuntu)
+  Transfer-Encoding:chunked
+#+END_SRC
+* hosts apache2 关系
+  apache 既接收又发送，当他扮演发送角色的时候，他会先判断 发送的人 在hosts 文件中有没指定（高层角色只认人 ^_^), 如果有指定，就发到指定的人，而不用发给DNS
+* web
+** 网络
+*** 网络软件系统
+    网络软件系统 包括C/S和B/S两种体系结构。
+    C/S是Client/Server的缩写，需要下载并安装专用的客户端软件才能运行。并且服务器端也需要特定的软件支持，并采用大型数据库系统。
+    B/S是Brower/Server的缩写，客户机上只需要启动一个浏览器即可，网站服务器则由应用服务器和数据库服务器等组成。
+    Web标准是由万维网联盟W3C（World Wide Web Consortium）制定
+**** 动态网站软件开发所需的Web构件(使用的技术) 
+***** 客户端浏览器 
+***** HTML 
+***** 层叠样式表CSS 
+***** XML和XSLT 
+***** 客户端脚本编程语言 
+***** Web服务器 
+***** 服务器端脚本编程语言 
+***** 数据库管理系统 
+** 网站软件开发平台及工作流程 
+*** 动态网站开发平台 
+    常用的有ASP.NET、J2EE和LAMP三种
+    J2EE开 发架构是UNIX+Tomcat+Oracle+JSP的组合, 不适合快速开发和对成本要求比较低的中小型应用系统
+*** HTTP协议
+ 域名要先连接到域名服务器DNS，解析成真实的IP地址返回来
+ 
+ 一个客户机与服务器创建连接后，发送一个请求给服务器，请求方式的格式为：统一资源标
+ 识符（URL）、协议版本号（HTTP/1.1），后边是MIME信息包括请求修饰符、客户机信息和可能的内容。服务器
+ 接到请求后，给予相应的响应信息，其格式为一个状态行，包括信息的协议版本号、一个成功或错误的代码，后边
+ 是MIME信息包括服务器信息、实体信息和可能的内容。
+
+*** Web的工作原理 
+    在HTTP中，客户端/服务器之间的会话，总是由客户端通过创建连接和发送HTTP请求的方式初始化，服务器不会主
+    动联系客户端或要求与客户端创建连接。
+*** 通用长度单位
+    em（比如font-size：2em）是一个大致与一个字符高度相同的单位。
+    px（font-size：12px）是一个像素的单位。
+    pt（font-size：12pt）是一个磅的单位。
+    %（font-size：80%）是一个百分比。
+    其他单位还包括pc（活字），cm（厘米），mm（毫米）和in（英寸）。

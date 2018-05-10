@@ -1,0 +1,921 @@
+web 服务应用程序 客户端 和服务器端 
+<协议>:<特定协议部分>
+//<用户>:<密码>@<主机>:<端口号>/<路径>
+* Http 协议
+HTTP是一种基于请求/响应的通信协议，客户端对服务器发出一个取得资源的请求，
+服务器将要求的资源响应给客户端，每次的联机只作一次请求/响应，是一种很简单的通信协议，
+没有请求就不会有响应。
+■　基于请求（Request）/响应（Response）模型
+■　无状态（Stateless）通信协议
+
+浏览器在使用HTTP发出请求时，可以有几种请求方法，如GET、POST、HEAD、PUT、DELETE等。对于编写Servlet或JSP而言，
+最常接触的就是GET与POST（绝大多数情况下，只会用到这两个方法）。下面分别介绍GET与POST的
+
+get 请求的参数放在 url中，
+post放在请求标头的后面 , 如 file=servlet&user=cate
+
+■　有些浏览器会依网址来缓存（Cache）数据，如果网址是相同的URL，则会直接从浏览器缓存中取出数据，而不会真正发送请求至服务器上查询最新的数据。如果不希望服务器状态改变了，而浏览器仍从缓存中取得旧的资料，则可
+以改用POST请求（使用GET请求也可以避免缓存，例如在网址上附加时间戳，让每次GET请求的网址都不相同）。
+
+保留字符
+在URI的规范中定义了一些保留字符（Reserved character），如“:”、“/”、“?”、“&”、“=”、“@”、“%”等字符，在URI中都有它的作用。如果要在请求参数上表达URI中的保留字符，必须在%字符之后以十六进制数值
+
+例如，“:”字符真正储存时的八个位为00111010，用十六进制数值来表示则为3A，所以必须使用“%3A”来表示“:”；“/”字符储存时的八个位为00101111，用十六进制表示则为2F，所以必须使用“%2F”来表示“/”字符，所以
+
+http://openhome.cc/addBookmar.do?url=http%3A%2F%2Fopenhome.cc
+java 中 
+String text = URLEncoder.encode（"http://openhome.cc ", "ISO-8859-1"）;
+String text = URLEncoder.encode（"林", "UTF-8"）;
+中文  也要转换, 默认浏览器帮助转化了
+
+* JSP 教程
+** 第一个 JSP 程序
+#+BEGIN_SRC jsp
+<html>
+    <head>
+           <title>第一个 JSP 程序</title>
+    </head>
+    <body>
+           <%
+                  out.println("Hello World！");
+           %>
+    </body>
+</html>
+#+END_SRC
+** JSP 开发环境搭建
+*** 配置Java开发工具（JDK）
+   setenv PATH /usr/local/jdk1.5.0_20/bin:$PATH
+   setenv JAVA_HOME /usr/local/jdk1.5.0_20
+*** 设置Web服务器：Tomcat
+**** 启动 tomcat
+     #+BEGIN_SRC bash
+       $CATALINA_HOME/bin/startup.sh
+       或者
+       /usr/sr/local/apache-tomcat-5.5.29/bin/startup.sh
+       访问http://localhost:8080/
+     #+END_SRC
+**** 停止     
+$CATALINA_HOME/bin/shutdown.sh
+
+**** 设置CLASSPATH环境变量
+由于servlets不是Java SE的一部分，所以您必须标示出servlet类的编译器。
+.profile
+setenv CATALINA=/usr/local/apache-tomcat-5.5.29
+setenv CLASSPATH $CATALINA/common/lib/jsp-api.jar:$CLASSPATH
+* servlet
+  在学习Servlet/JSP时，也有个重要概念：“Web容器（Container）是Servlet/JSP唯一认得的HTTP服务器。”如
+在具体层面，容器说穿了，其实就是一个用Java写的程序，运行于JVM之上，不同类型的容器会负责不同的工作，
+
+如果有多次请求进来，就只是启动多个线程来进行处理，而不是重复启动多次JVM。
+线程就像是进程（Process）中的轻量级流程，由于不用重复启动多个进程，可以大幅减轻性能负担。
+
+Servlet与JSP的关系
+JSP会被Web容器转译为Servlet的“.java”源文件、编译为“.class”文件，然后加载容器之中，所以最
+后提供服务的还是Servlet实例（Instance）
+
+#+BEGIN_SRC java
+  package cc.openhone;
+  import java.io.*;
+  import javax.servlet.*;
+  import javax.servlet.http.*;
+#+END_SRC
+
+Servlet相关包
+--javax.servlet.* ：存放与HTTP 协议无关的一般性Servlet 类。
+--javax.servlet.http.* ：除了继承javax.servlet.* 之外。而且还添加与HTTP协议有关的功能。
+　　全部的Servlet 都必须实现javax.servlet.Servlet 接口(Interface)。
+　　若Servlet程序和HTTP 协议无关。那么必须继承javax.servlet.GenericServlet类；
+　　若Servlet程序和HTTP 协议有关，那么必须继承javax.servlet.http.HttpServlet 类。
+
+--HttpServlet ：提供了一个抽象类用来创建Http Servlet。
+　　public void doGet()方法：用来处理client发出的 GET 请求
+　　public void doPost()方法：用来处理 POST请求
+
+--javax.servlet包的接口：
+　　ServletConfig接口：在初始化的过程中由Servlet容器使用
+　　ServletContext接口：定义Servlet用于获取来自其容器的信息的方法
+　　ServletRequest接口：向server请求信息
+　　ServletResponse接口：响应client请求
+　　Filter接口：
+
+--javax.servlet包的类：
+　　ServletInputStream类：用于从client读取二进制数据
+　　ServletOutputStream类：用于将二进制数据发送到client
+--javax.servlet.http包的接口：
+　　HttpServletRequest接口：提供Http请求信息
+　　HttpServletResponse接口：提供Http响应
+
+Servlet生命周期
+--Servlet生命周期就是指创建Servlet实例后，存在的时间以及何时销毁的整个过程．
+--Servlet生命周期有三个方法
+　　init()方法
+　　service()方法
+　　destroy()方法
+
+--Servlet生命周期的各个阶段
+　　----实例化：Servlet容器创建Servlet实例
+　　----初始化：调用init()方法
+　　----服务：假设有请求。调用service()方法
+　　----销毁：销毁实例前调用destroy()方法
+　　----垃圾收集：销毁实例
+Servlet的基本结构
+
+#+BEGIN_SRC java
+package cn.dragon.servlet;
+//以下是导入对应的包
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+\* 这是第一个Servlet的样例
+\* @author cn.dragon
+*/
+
+public class ServletDemoFirst extends HttpServlet { 　　
+　　//用于处理client发送的GET请求 　　
+　　public void doGet(HttpServletRequest request, HttpServletResponse response) 　　
+　　　　throws ServletException, IOException { 　　
+　　　　　response.setContentType("text/html;charset=GB2312");　//这条语句指明了向client发送的内容格式和採用的字符编码． 　　
+　　　　　PrintWriter out = response.getWriter();　 　　
+　　　　　out.println(" 您好。");　//利用PrintWriter对象的方法将数据发送给client 　　
+　　　　　out.close(); 　　
+　　} 　　
+
+　　//用于处理client发送的POST请求 　　
+　　public void doPost(HttpServletRequest request, HttpServletResponse response) 　　
+　　　　throws ServletException, IOException { 　　
+　　　　doGet(request, response);　//这条语句的作用是。当client发送POST请求时，调用doGet()方法进行处理 　　
+　　}
+}
+#+END_SRC
+
+Servlet的部署
+　　
+#+BEGIN_SRC xml
+  下面截取部分
+  <servlet>
+      <description>随意</description>
+      <display-name>随意</display-name>
+      <servlet-name>ServletDemoFirst</servlet-name>
+      <servlet-class>cn.dragon.servlet.ServletDemoFirst</servlet-class>
+    </servlet>
+
+  　<servlet-mapping>
+      <servlet-name>ServletDemoFirst</servlet-name>
+      <url-pattern>/servlet/ServletDemoFirst</url-pattern>
+    </servlet-mapping>
+  
+    　　①　上面的两个<servlet-name>必须同样
+    　　②　<servlet-class>后面指在相应的类上面．　　技巧：你能够直接在你的servlet类中复制过来，这样能够避免出错！
+    　　③　<url-pattern>　必须是/servlet 再加servlet名字.大家如今就这么记.
+#+END_SRC
+ 
+Servlet实例演示
+#+BEGIN_SRC java
+package cn.dragon.servlet;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class ServletDemoSecond extends HttpServlet {
+ 　　//初始化
+ 　　public void init() throws ServletException {
+  　　　　System.out.println("我是init()方法！用来进行初始化工作");
+ 　　}
+ 　　//处理GET请求
+ 　　public void doGet(HttpServletRequest request, HttpServletResponse response)
+   　　throws ServletException, IOException {
+  　　　　System.out.println("我是doGet()方法！用来处理GET请求");
+  　　　　response.setContentType("text/html;charset=GB2312");
+  　　　　PrintWriter out = response.getWriter();
+  　　　　out.println("<HTML>");
+  　　　　out.println("<BODY>");
+  　　　　out.println("这是Servlet的样例");
+  　　　　out.println("</BODY>");
+  　　　　out.println("</HTML>");
+ 　　}
+ 　　//处理POST请求
+ 　　public void doPost(HttpServletRequest request, HttpServletResponse response)
+   　　throws ServletException, IOException {
+  　　　　doGet(request, response);
+ 　　}
+ 　　//销毁实例
+ 　　public void destroy() {
+  　　　　super.destroy();
+  　　　　System.out.println("我是destroy()方法。用来进行销毁实例的工作");
+ 　　}
+}
+#+END_SRC
+ 
+
+web.xml文件
+#+BEGIN_SRC xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" 
+ 　　xmlns="http://java.sun.com/xml/ns/j2ee" 
+ 　　xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+　　 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
+　　 http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+  <servlet>
+    <servlet-name>ServletDemoSecond</servlet-name>
+    <servlet-class>cn.dragon.servlet.ServletDemoSecond</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>ServletDemoSecond</servlet-name>
+    <url-pattern>/servlet/ServletDemoSecond</url-pattern>
+  </servlet-mapping>
+
+</web-app>
+#+END_SRC
+* servlet
+** 编写你的第一个Servlet
+   编写你的第一个Servlet
+   我们的第一个Servlet是一个只拥有少量代码的简单Servlet，目的是让你只需关注它的行为。
+#+BEGIN_SRC java
+  package com.howtodoinjava.servlets;
+
+  import java.io.IOException;
+  import java.io.PrintWriter;
+
+  import javax.servlet.ServletException;
+  import javax.servlet.http.HttpServlet;
+  import javax.servlet.http.HttpServletRequest;
+  import javax.servlet.http.HttpServletResponse;
+
+  public class MyFirstServlet extends HttpServlet {
+
+      private static final long serialVersionUID = -1915463532411657451L;
+
+      @Override
+      protected void doGet(HttpServletRequest request,
+              HttpServletResponse response) throws ServletException, IOException 
+      {
+          response.setContentType("text/html;charset=UTF-8");
+          PrintWriter out = response.getWriter();
+          try {
+              // Write some content
+              out.println("<html>");
+              out.println("<head>");
+              out.println("<title>MyFirstServlet</title>");
+              out.println("</head>");
+              out.println("<body>");
+              out.println("<h2>Servlet MyFirstServlet at " + request.getContextPath() + "</h2>");
+              out.println("</body>");
+              out.println("</html>");
+          } finally {
+              out.close();
+          }
+      }
+
+      @Override
+      protected void doPost(HttpServletRequest request,
+              HttpServletResponse response) throws ServletException, IOException {
+          //Do some other work
+      }
+
+      @Override
+      public String getServletInfo() {
+          return "MyFirstServlet";
+      }
+  }
+#+END_SRC
+为了在web容器里注册上面的Servlet，你要为你的应用建一个web.xml入口文件。
+#+BEGIN_SRC xml
+<?xml version="1.0"?>
+<web-app     xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+ 
+http://xmlns.jcp.org/xml/ns/javaee/web-app_3_0.xsd"
+ 
+            version="3.0">
+ 
+    <welcome-file-list>
+        <welcome-file>/MyFirstServlet</welcome-file>
+    </welcome-file-list>
+ 
+    <servlet>
+        <servlet-name>MyFirstServlet</servlet-name>
+        <servlet-class>com.howtodoinjava.servlets.MyFirstServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MyFirstServlet</servlet-name>
+        <url-pattern>/MyFirstServlet</url-pattern>
+    </servlet-mapping>
+ 
+</web-app>
+#+END_SRC
+
+上面的Servlet做了一些重要的事情，你可能想了解的。
+MyFirstServlet类继承了HttpServlet。这个继承是必须的，因为所有的Servlet必须是要么继承了 javax.servlet.GenericServlet 的普通Servlet，要么是继承了 javax.servlet.http.HttpServlet 的HTTP Servlet。
+重新 doGet() 和 doPost() 方法。这两个方法都已在 HttpServlet 类里定义了。当一个GET或POST请求到来时，它就会被映射到相应的方法里。例如，如果你向这个servlet发送一个HTTP GET请求，doGet()方法就会被调用。
+这里也有一些其他有用的方法。你可以重写它们来在运行时控制应用。例如getServletInfo()。
+HttpServletRequest 和 HttpServletResponse 是所有doXXX()方法的默认参数。我们会在后面的章节里详细学习这些对象。
+以上所有关于简单Servlet的内容就是你需要知道的内容。
+** Servlet生命周期方法
+init() , service() 和 destroy()。
+1) 在Servlet生命周期的初始化阶段，web容器通过调用init()方法来初始化Servlet实例，
+并且可以传递一个实现 javax.servlet.ServletConfig 接口的对象给它。这个配置对象
+（configuration object）使Servlet能够读取在web应用的web.xml文件里定义的名值
+（name-value）初始参数。这个方法在Servlet实例的生命周期里只调用一次。
+
+init方法定义与这类似：
+#+BEGIN_SRC java
+public void  init() throws ServletException {
+    //custom initialization code
+}
+#+END_SRC
+
+通常，我们不需要重写（override）这个方法。
+#+BEGIN_SRC java
+protected void service(HttpServletRequest req, HttpServletResponse resp)
+    throws ServletException, IOException
+{
+String method = req.getMethod();
+ 
+if (method.equals(METHOD_GET)) {
+    long lastModified = getLastModified(req);
+    if (lastModified == -1) {
+    // servlet doesn't support if-modified-since, no reason
+    // to go through further expensive logic
+    doGet(req, resp);
+    } else {
+    long ifModifiedSince = req.getDateHeader(HEADER_IFMODSINCE);
+    if (ifModifiedSince < (lastModified / 1000 * 1000)) {
+        // If the servlet mod time is later, call doGet()
+                // Round down to the nearest second for a proper compare
+                // A ifModifiedSince of -1 will always be less
+        maybeSetLastModified(resp, lastModified);
+        doGet(req, resp);
+    } else {
+        resp.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+    }
+    }
+ 
+} else if (method.equals(METHOD_HEAD)) {
+    long lastModified = getLastModified(req);
+    maybeSetLastModified(resp, lastModified);
+    doHead(req, resp);
+ 
+} else if (method.equals(METHOD_POST)) {
+    doPost(req, resp);
+ 
+} else if (method.equals(METHOD_PUT)) {
+    doPut(req, resp);   
+ 
+} else if (method.equals(METHOD_DELETE)) {
+    doDelete(req, resp);
+ 
+} else if (method.equals(METHOD_OPTIONS)) {
+    doOptions(req,resp);
+ 
+} else if (method.equals(METHOD_TRACE)) {
+    doTrace(req,resp);
+ 
+} else {
+    //
+    // Note that this means NO servlet supports whatever
+    // method was requested, anywhere on this server.
+    //
+ 
+    String errMsg = lStrings.getString("http.method_not_implemented");
+    Object[] errArgs = new Object[1];
+    errArgs[0] = method;
+    errMsg = MessageFormat.format(errMsg, errArgs);
+ 
+    resp.sendError(HttpServletResponse.SC_NOT_IMPLEMENTED, errMsg);
+}
+}
+#+END_SRC
+
+#+BEGIN_SRC java
+public void destroy() {
+//
+}
+#+END_SRC
+在大多数情况下，你通常不需要在你的Servlet里重写这些方法。
+
+** 使用@WebServlet注解开发Servlet
+ 如果你不喜欢使用xml配置而喜欢注解的话，没关系，Servlets API同样提供了一些注解接口给你。
+你可以像下面的例子一样使用 @WebServlet 注解并且不需要在web.xml里为Servlet注册任何信息。
+容器会自动注册你的Servlet到运行环境，并且像往常一样处理它。
+
+#+BEGIN_SRC java
+package com.howtodoinjava.servlets;
+ 
+import java.io.IOException;
+import java.io.PrintWriter;
+ 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+ 
+@WebServlet(name = "MyFirstServlet", urlPatterns = {"/MyFirstServlet"})
+public class MyFirstServlet extends HttpServlet {
+ 
+    private static final long serialVersionUID = -1915463532411657451L;
+ 
+    @Override
+    protected void doGet(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException, IOException
+    {
+        //Do some work
+    }
+ 
+    @Override
+    protected void doPost(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException, IOException {
+        //Do some other work
+    }
+}
+#+END_SRC
+** 打包和部署Servlet到Tomcat服务器
+如果你在使用IDE（例如eclipse），那么打包和部署你的应用只需要一个简单的步骤。右击项目> Run As > Run As Server。如果还没配置服务器先配置好服务器，然后就可以准备开干了。
+
+如果你没在使用IDE，那么你需要做一些额外的工作。比如，使用命令提示符编译应用，使用ANT去生成war文件等等。但我相信，现在的开发者都在使用IDE来开发。所以我就不在这方面浪费时间了。
+
+当你把我们的第一个Servlet部署到tomcat上并在浏览器输入“http://localhost:8080/servletexamples/MyFirstServlet”，你会得到下面的响应。
+
+** 编写动态的Servlet响应内容
+
+Java Servlets如此有用的原因之一是Servlet能动态显示网页内容。这些内容可以从服务器本身、另外一个网站、或者许多其他网络可以访问的资源里获取。Servlet不是静态网页，它们是动态的。可以说这是它们最大的优势。
+
+让我们来举个Servlet例子，这个Servlet会显示当前日期和时间给用户并且会显示用户名和一些自定义的信息。让我们来为这个功能编写代码吧。
+#+BEGIN_SRC java
+package com.howtodoinjava.servlets;
+ 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+ 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+ 
+@WebServlet(name = "CalendarServlet", urlPatterns = {"/CalendarServlet"})
+public class CalendarServlet extends HttpServlet {
+ 
+    private static final long serialVersionUID = -1915463532411657451L;
+ 
+    @Override
+    protected void doGet(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException, IOException
+    {
+ 
+        Map<String,String> data = getData();
+ 
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        try {
+            // Write some content
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>CalendarServlet</title>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h2>Hello " + data.get("username") + ", " + data.get("message") + "</h2>");
+            out.println("<h2>The time right now is : " + new Date() + "</h2>");
+            out.println("</body>");
+            out.println("</html>");
+        } finally {
+            out.close();
+        }
+    }
+ 
+    //This method will access some external system as database to get user name, and his personalized message
+    private Map<String, String> getData()
+    {
+        Map<String, String> data = new HashMap<String, String>();
+        data.put("username", "Guest");
+        data.put("message",  "Welcome to my world !!");
+        return data;
+    }
+}
+当你在tomcat里运行上面的Servlet并在浏览器里输入“http://localhost:8080/servletexamples/CalendarServlet”，你会得得下面的响应。
+
+
+#+END_SRC
+
+** 处理Servlet请求和响应
+** 监听Servlet容器事件
+** 传递Servlet初始化参数
+** 为特定的URL请求添加Servlet过滤器
+** 使用Servlet下载二进制文件
+** 使用RequestDispatcher.forward()转发请求到另一个Servlet
+** 使用HttpServletResponse.sendRedirect()重定向请求到另一个Servlet
+** 使用Servlets读写Cookie
+
+** 处理Servlet请求和响应
+Servlet可以轻松创建一个基于请求和响应生命周期的web应用。它们能够提供HTTP响应并且可以使用同一段代码来处理业务逻辑。处理业务逻辑的能力使Servlet比标准的HTML代码更强大。
+现实世界里的应用，一个HTML网页表单包含了要发送给Servlet的参数。Servlet会以某种方式来处理这些参数并且 返回一个客户端能够识别的响应。在对象是HttpServlet的情况下，客户端是web浏览器，响应是web页面。<form>的 action属性指定了使用哪个Servlet来处理表单里的参数值。
+为了获取请求参数，需要调用 HttpServletRequest 对象的 getParameter() 方法，并且传递你要获取的输入参数的id给该方法。
+String value1 = req.getParameter("param1");
+String value1 = req.getParameter("param2");
+一旦获取了参数值，它们就会在需要时被处理。对客户端的响应和我们上面部分讨论的一样。我们使用 HttpServletResponse 对象给客户端发送响应。
+request和response处理的基本使用可以是这样的：
+#+BEGIN_SRC java
+@Override
+protected void doGet(HttpServletRequest request,
+        HttpServletResponse response) throws ServletException, IOException
+{
+ 
+    response.setContentType("text/html;charset=UTF-8");
+    PrintWriter out = response.getWriter();
+ 
+    String username = request.getParameter("username");
+    String password = request.getParameter("password");
+ 
+    boolean success = validateUser(username, password);
+ 
+    try {
+        // Write some content
+        out.println("<html>");
+        out.println("<head>");
+        out.println("<title>LoginServlet</title>");
+        out.println("</head>");
+        out.println("<body>");
+ 
+        if(success) {
+            out.println("<h2>Welcome Friend</h2>");
+        }else{
+            out.println("<h2>Validate your self again.</h2>");
+        }
+ 
+        out.println("</body>");
+        out.println("</html>");
+    } finally {
+        out.close();
+    }
+}
+
+#+END_SRC
+为了发送内容给客户端，你需要使用从 HttpServletResponse 里获取的 PrintWriter 对象。任何写到这个对象的内容都会被写进outputstream里，并会把内容发送回给客户端。
+
+** 监听Servlet容器事件
+有时候，知道应用服务器容器（the application server container）里某些事件发生的时间是很有用的。这个概念适用于很多情况，但它通常用在开启应用时初始化应用或者关闭应用时清理应用。可以在应用里 注册一个监听器（listener）来显示应用什么时候开启或者关闭。因此，通过监听这些事件，Servlet可以在一些事件发生时执行相应的动作。
+为了创建一个基于容器事件执行动作的监听器，你必须创建一个实现 ServletContextListener 接口的类。这个类必须实现的方法有 contextInitialized() 和 contextDestroyed()。这两个方法都需要 ServletContextEvent 作为参数，并且在每次初始化或者关闭Servlet容器时都会被自动调用。
+为了在容器注册监听器，你可以使用下面其中一个方法：
+1) 利用 @WebListener 注解。
+2) 在web.xml应用部署文件里注册监听器。
+3) 使用 ServletContext 里定义的 addListener() 方法
+请注意，ServletContextListener 不是Servlet API里唯一的监听器。这里还有一些其他的监听器，比如
+#+BEGIN_SRC java
+javax.servlet.ServletRequestListener
+javax.servlet.ServletRequestAttrbiteListener
+javax.servlet.ServletContextListener
+javax.servlet.ServletContextAttributeListener
+javax.servlet.HttpSessionListener
+javax.servlet.HttpSessionAttributeListener
+#+END_SRC
+根据你要监听的事件选择他们来实现你的监听器类。比如，每当创建或销毁一个用户session时，HttpSessionListener 就会发出通知。
+** 传递Servlet初始化参数
+现在的大多数应用都需要设置一些在应用/控制器（controller）启动时可以传递的配置参数（configuration parameters）。Servlet同样可以接受初始化参数，并在处理第一个请求前来使用它们来构建配置参数。
+显然，你也可以在Servlet里硬编码配置值。但是这样做的话，在Servlet发生改动时你需要再次重新编译整个应用。没有人喜欢这样做。
+#+BEGIN_SRC java
+<web-app>
+    <servlet>
+        <servlet-name>SimpleServlet</servlet-name>
+        <servlet-class>com.howtodoinjava.servlets.SimpleServlet</servlet-class>
+ 
+        <!-- Servlet init param -->
+        <init-param>
+            <param-name>name</param-name>
+            <param-value>value</param-value>
+        </init-param>
+ 
+    </servlet>
+ 
+</web-app>
+
+#+END_SRC
+设置后，你就可以在代码里调用 getServletConfig.getInitializationParameter() 并传递参数名给该方法来使用参数。就像下面展示的代码一样：
+#+BEGIN_SRC java
+
+String value = getServletConfig().getInitParameter("name");
+#+END_SRC
+为特定的URL请求添加Servlet过滤器
+Web过滤器在给定的URL被访问时对请求进行预处理并调用相应的功能是很有用的。相 比于直接调用给定URL请求的Servlet，包含相同URL模式的过滤器（filter）会在Servlet调用前被调用。这在很多情况下是很有用的。 或许最大的用处就是执行日志，验证或者其他不需要与用户交互的后台服务。
+过滤器必须要实现 javax.servlet.Filter 接口。这个接口包含了init()，descriptor()和doFilter()这些方法。init()和destroy()方法会被容器调用。 doFilter()方法用来在过滤器类里实现逻辑任务。如果你想把过滤器组成过滤链（chain filter）或者存在多匹配给定URL模式的个过滤器，它们就会根据web.xml里的配置顺序被调用。
+为了在web.xml里配置过滤器，需要使用<filter>和<filter-mapping> XML元素以及相关的子元素标签。
+#+BEGIN_SRC java
+<filter>
+    <filter-name>LoggingFilter</filter-name>
+    <filter-class>LoggingFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>LogingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+
+#+END_SRC
+如果你要使用注解来为特定的servlet配置过滤器，你可以使用@WebFilter注解。
+** 使用Servlet下载二进制文件
+几乎所有的web应用都必须有下载文件的功能。为了下载一个文件，Servlet必须提供一个和下载文件
+类型匹配的响应类型。同样，必须在响应头里指出该响应包含附件。就像下面的代码。
+#+BEGIN_SRC java
+String mimeType = context.getMimeType( fileToDownload );
+response.setContentType( mimeType != null ? mimeType : "text/plain" );
+response.setHeader( "Content-Disposition", "attachment; filename="" + fileToDownload + """ );
+#+END_SRC
+通过调用 ServletContext.getResourceAsStream() 方法并传递文件路径给该方法，你可以获取要下载的文件（文件保存在文件系统）的引用。这个方法会返回一个输入流（InputStream）对 象，我们可以用这个对象来读取文件内容。当读取文件时，我们创建一个字节缓存区（byte buffer）从文件里获取数据块。最后的工作就是读取文件内容并且把它们复制到输出流。我们使用while循环来完成文件的读取，这个循环直到读取了文 件的所有内容才会跳出循环。我们使用循环来读进数据块并把它写进输出流。把所有数据写进输出流后，ServletOutputStream 对象的flush方法就会被调用并且清空内容和释放资源。
+
+看这段简单的代码：
+#+BEGIN_SRC java
+private void downloadFile(HttpServletRequest request, HttpServletResponse response, String fileToDownload) throws IOException
+    {
+        final int BYTES = 1024;
+        int length = 0;
+ 
+        ServletOutputStream outStream = response.getOutputStream();
+        ServletContext context = getServletConfig().getServletContext();
+ 
+        String mimeType = context.getMimeType( fileToDownload );
+        response.setContentType( mimeType != null ? mimeType : "text/plain" );
+        response.setHeader( "Content-Disposition", "attachment; filename="" + fileToDownload + """ );
+ 
+        InputStream in = context.getResourceAsStream("/" + fileToDownload);
+ 
+        byte[] bbuf = new byte[BYTES];
+ 
+        while ((in != null) && ((length = in.read(bbuf)) != -1)) {
+            outStream.write(bbuf, 0, length);
+        }
+ 
+        outStream.flush();
+        outStream.close();
+    }
+#+END_SRC
+使用RequestDispatcher.forward()转发请求到另一个Servlet
+
+有时候，你的应用需要把一个Servlet要处理的请求转让给另外的Servlet来处理并完成任务。而且，转让请求时不能重定向客户端的URL。即浏览器地址栏上的URL不会改变。
+
+在 ServletContext 里已经内置了实现上面需求的方法。所以，当你获取了 ServletContext 的引用，你就可以简单地调用getRequestDispatcher() 方法去获取用来转发请求的 RequestDispatcher 对象。当调用 getRequestDispatcher() 方法时，需要传递包含servlet名的字符串，这个Servlet就是你用来处理转让请求的Servlet。获取 RequestDispatcher 对象后，通过传递 HttpServletRequest 和HttpServletResponse 对象给它来调用转发方法。转发方法负责对请求进行转发。
+
+RequestDispatcher rd = servletContext.getRequestDispatcher("/NextServlet");
+rd.forward(request, response);
+使用HttpServletResponse.sendRedirect()重定向请求到另一个Servlet
+
+尽管有时候，你不想在Servlet发送重定向时通知用户，就像我们在上面那段看到的一样。但是在某些情况下，我们确实想要通知用户。当应用内的特定URL被访问时，你想把浏览器的URL重定向到另外一个。
+
+要实现这种功能，你需要调用 HttpServletResponse 对象的sendRedirect()方法。
+httpServletResponse.sendRedirect("/anotherURL");
+这个简单的重定向，与servlet链（servlet chaining）相反，不需要传递目标地址的HttpRequest对象。
+
+** 使用Servlet读写Cookie
+
+很多应用都想在客户端机器里保存用户当前的浏览历史。目的是当用户再次使用应用时，他能够从上次离开的地方开始浏览。为了实现这个需求，通常使用cookies。你可以把它看作是保存在客户端机器里的键值对基本数据。当使用浏览器打开应用时，应用可以对这些数据进行读写。
+
+为了创建cookie，需要实例化一个新的 javax.servlet.http.Cookie 对象并且为它分配名称和值。实例化cookie后，可以设置属性来配置cookie。在这个例子里，我们使用 setMaxAge() 和 setHttpOnly() 方法来设置cookie的生命周期和防范客户端脚本。
+
+从Servlet3.0 API开始，已经可以把cookie标记为HTTP only了。这使cookie可以防范客户端脚本的攻击，使cookie更加安全。
+#+BEGIN_SRC 
+Cookie cookie = new Cookie("sessionId","123456789");
+cookie.setHttpOnly(true);
+cookie.setMaxAge(-30);
+response.addCookie(cookie);
+#+END_SRC
+这里的response是传递给doXXX()方法的 HttpServletResponse 实例。
+
+要读取服务端的cookie信息，使用下面代码：
+#+BEGIN_SRC java
+Cookie[] cookies = request.getCookies();
+for(Cookie cookie : cookies)
+{
+    //cookie.getName();
+    //cookie.getValue()
+}
+#+END_SRC
+这就是这篇教程里关于Servlet技术的全部内容了。欢迎评论和回馈。
+web容器 对web应用程序(servlet)要求的目录架构 
+当浏览器请求Http 服务器时，将标头，请求参数、cookie
+就可以专心在Java对象之间的互动来解决问题。
+ JSP 代码被编译成 Servlet 并由 Java 虚拟机解释执行,这种编译操作仅在对 JSP 页
+面的第一次请求时发生。
+* jsp
+** 搭建环境 
+   webapps 下 创建 项目目录，然后 在项目目录下创建 WEB-INF 目录，
+   下面放置 web.xml配置文件
+   
+   #+BEGIN_SRC xml
+     <?xml version="1.0" encoding="UTF-8"?>
+     <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                                  http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+              version="3.1"
+              metadata-complete="true">
+
+       <servlet>
+         <servlet-name>ServletToJsp</servlet-name>
+         <servlet-class>ServletToJsp</servlet-class>
+       </servlet>
+
+       <servlet-mapping>
+         <servlet-name>CompressionFilterTestServlet</servlet-name>
+         <url-pattern>/CompressionTest</url-pattern>
+       </servlet-mapping>
+     </web-app>
+   #+END_SRC
+
+放置 jsp 页面, 重启服务器, 上面的不是必须的
+然后用 xx.jsp 访问
+** 建立自己的 Jsp 工作目录 
+*** 预定义变量包括:request,response,out,session,application,config,pageContext
+    include 指令<jsp:Directive.include file="URL"\>
+    <jsp:Directive.page att="val"\>。
+    合法的属性如下表:
+    import="package.class"
+    contentType="MIME-Type"
+    isThreadSafe="true|false"
+    session="true|false"
+    buffer="size kb|none"
+    autoflush="true|false"
+    extends="package.class"
+    info="message"
+    errorPage="URL"
+    isErrorPage="true|false"
+    language="java"
+    
+ 注释 <%-- comment --%> 
+ jsp:useBean 动作 <jsp:useBean att=val*/> 或者
+<jsp:useBean att=val*> ... </jsp:useBean>
+寻找或实例化一个 Java Bean。 可能的属性包括:
+id="name"
+scope="page|request
+|session|application"
+class="package.class"
+type="package.class"
+beanName="package.class"
+8、jsp:setProperty 动作 <jsp:setProperty att=val*/> 设置 Bean 的属性
+合法的属性包括:
+name="beanName"
+property="propertyName|*"
+param="parameterName"
+value="val"
+9、  jsp:getProperty 动作 <jsp:getProperty name="propertyName" value="val"/> 提取并输出 Bean
+的属性。
+jsp:forward 动作 <jsp:forward page="relative URL"/> 把请求转到另外一个页面。
+jsp:plugin 动作 <jsp:plugin attribute="value"*>
+10、</jsp:plugin> 根据浏览器类型生成 OBJECT 或者 EMBED 标记,以便通过 Java Plugin
+运行 Java Applet。
+<%@ page contentType="text/html;charset=gb2312" %>
+<%@ page import="java.util.*“ %>
+
+
+jsp 页面要可以直接解释
+servlet 要编译
+
+*** JSP 的语法包括,如下所示:
+*** 基本语法
+    指令                                  <%@ 指令%>
+    声明                                  <%! 声明%>
+    表达式                                 <%= 表达式%>
+    代码段/脚本段                             <% 代码段%>
+    注释                                  <%-- 注释--%>
+    page 指令
+    include 指令
+*** JSP 的动作
+         231 jsp:include 动作 
+         232 jsp:useBean 动作 
+         233 jsp:setProperty 动作
+         234 jsp:getProperty 动作 
+         235 jsp: forward 动作 
+         236 jsp: plugin 动作
+         237 注释 
+    24 JSP 9 种基本内置组件 31
+    25 JSP 中 Session 的使用 33
+    26 JSP 中 forward 的使用 35
+    27 JSP 运行时错误处理与应该注意的六个常见问题 36
+    28 JSP 小实例 37
+         281 实例 1(在 JSP 中定义函数)
+         282 实例 2(获取各种 CGI 环境变量) 
+         283 实例 3(JSP 里 request 变量列表) 
+    29 本章小结 43
+第 3 章 JavaBean 组件 43
+    31 什么是 JavaBeans44
+         311 JavaBeans 简介
+         312 JavaBeans 属性
+         313 JavaBeans 的事件 
+    32 在 Jsp 中使用 JavaBeans54
+    33 JavaBeans 的 scope 属性56
+    34 JavaBeans 应用实例58
+         341 实例 1(HelloWord) 58
+         342 实例 2(People) 59
+         343 实例子 3 数组应用 (Example2_3) 59
+         344 实例子 4 运算符、表达式应用 (Example3_1)60
+    35 本章小结 61
+第 4 章 Jsp 与 Servlet 
+    41 什么是 Servlets
+         411 JavaServlet 的解释 
+         412 什么是 Jsp 
+         413 得到一个 Servlets 和 JSP 的运行环境 
+         414 实现第一个 JSP 和 SERVELT 
+    42 Servlet 规范定义的 Servlet 生命周期 69
+    43 JSP/Servlet 的重定向技术综述 71
+         431 RequestDispatcher() 71
+         432 response() 72
+    4.4 理解会话 73
+         4.4.1 会话状态跟踪 API 74
+         4.4.2 在会话对象中保存数据75
+         4.4.3 实例:显示会话信息75
+    4.5 用 Java Servlets 代替 CGI 77
+    4.6 JSP/Servlet 中的汉字编码问题 79
+    4.7 图解 Eclipse+Tomcat 集成开发 Servlet 83
+    4.8 Servlets/JSP 开发技术问答92
+    4.9 Servlet 小实例 96
+         4.5.1 实例 1(输出)97
+         4.5.2 实例 2(获取表单参数)98
+         4.5.3 实例 3(获取 jsp 各种参数) 100
+    4.10 本章小结 102
+第 2 篇 数据库操作102
+第 5 章 全面解析 JDBC 103
+    5.1 JDBC 接口综述 103
+    5.2 JDBC 产品组件 106
+    5.3 如何建立 JDBC 连接? 107
+    5.3 JDBC 驱动管理内幕是怎么样的? 111
+    5.4 如何利用 JDBC 发送 SQL 语句? 112
+    5.5 如何获得 SQL 语句的执行结果? 115
+    5.6 JDBC TM 技术解析 118
+    5.3 JDBC API 122
+          5.3.1 记录集接口122
+          5.3.2 新的 SQL 语句接口(Statement 接口) 128
+          5.3.3 处理新的 SQL 数据类型(ARRAY REF) 132
+    5.4 JDBC API 3.0 简介135
+          5.4.1 获取 ParameterMetaData 接口实例对象的方法 136
+          5.4.2 ParameterMetaData 接口的方法136
+    5.5 本章小结 139
+第 6 章 JDBC 厂商选择性实现包 .............................................................................................. 139
+    6.1 RowSet 包 ....................................................................................................................... 139
+          6.1.1 RowSet 包含的接口 ............................................................................................ 139
+          6.1.2 RowSet 简介 ....................................................................................................... 140
+          6.1.3 RowSetListener 接口 .......................................................................................... 143
+          6.1.4 RowSetEvent 类.................................................................................................. 147
+    6.2 CachedRowSet 包 .......................................................................................................... 147
+          6.2.1 CachedRowSet 包简介 ....................................................................................... 147
+          6.2.2 BaseRowSet 类 ................................................................................................... 148
+          6.2.3 CachedRowSet 类 ............................................................................................... 148
+    6.3 数据库连接缓冲池........................................................................................................ 152
+    6.4 JNDI 和 RowSet ............................................................................................................ 153
+    6.5 RowSet 之实践 ............................................................................................................... 156
+    6.6 本章小结 ....................................................................................................................... 163
+第 7 章 JSP 数据库操作例程 ......................................................................................................... 1
+    7.1 安装 mysql ...................................................................................................................... 164
+          7.1.1 第一步:下载 mysql ........................................................................................... 164
+          7.1.2 第二步:安装、配置 mysql ............................................................................... 164
+          7.1.3 第三步:Mysql 客户端连接 Mysql 服务器 ...................................................... 165
+          7.1.4 第四步:安装 JDBC 驱动: ................................................................................. 166
+          7.1.5 第五步:在 MySQ 中建数据库,数据表 ......................................................... 166
+          7.1.6 第六步:在 JSP 连接 mysql ............................................................................... 169
+    7.2 JSP 连接数据库方法大全.............................................................................................. 170
+    7.3 Jsp 连接 mysql 调用数据源方法 ................................................................................... 175
+          7.3.1 对 mysql 数据库最基本的 DB 操作 .................................................................. 175
+          7.3.2 调用对 DB 操作的方法 ..................................................................................... 182
+    7.4 Jsp 数据分页显示 .......................................................................................................... 183
+    7.5 jsp 编写的留言本 ........................................................................................................... 188
+          7.5.1 在 mysql 中建表 .................................................................................................. 188
+          7.5.2 编写的留言本...................................................................................................... 188
+    7.6 本章小结 ....................................................................................................................... 199
+第 3 篇 案例精讲 ........................................................................................................................ 200
+    第 8 章 学生课绩管理系统................................................................................................. 200
+  8.1 系统概述 ........................................................................................................................ 200
+       8.1.1 学生课绩管理系统的需求................................................................................. 200
+       8.1.2 学生课绩管理系统的概要设计......................................................................... 201
+       8.1.3 学生课绩管理系统的详细设计......................................................................... 202
+  8.2 数据库设计 ................................................................................................................... 207
+       8.2.1 创建数据库......................................................................................................... 207
+       8.2.2 数据表设计......................................................................................................... 208
+  8.3 数据连接 ....................................................................................................................... 213
+       8.3.1 建立数据库连接.................................................................................................. 213
+       8.3.2 安全策略 ............................................................................................................ 214
+   8.4 学生课绩管理系统设计................................................................................................ 214
+       8.4.1 数据库操作公用模块......................................................................................... 214
+       8.4.2 学生模块 ............................................................................................................. 228
+       8.4.3 教师模块 ............................................................................................................. 238
+       8.4.4 管理模块 ............................................................................................................. 253
+       8.4.4.1、管理学生........................................................................................................ 255
+       8.4.4.2 管理教师 .......................................................................................................... 272
+       8.4.4.3 管理课程 .......................................................................................................... 286
+       8.4.4.4 管理班级 .......................................................................................................... 303
+   8.5 学生课绩管理系统的疑难分析.................................................................................... 325
+   8.6 学生课绩管理系统的测试与发布................................................................................. 325
+   8.7 本章小结 ....................................................................................................................... 327
+   附录 1 TOMCAT 完全攻略 ................................................................................................. 327
+   附录 2 java 常用开发工具介绍 ........................................................................................... 332
+   附录 3 图解利用 Eclipse3+Lomboz3+Tomcat 开发 JSP ................................................... 335
+ 

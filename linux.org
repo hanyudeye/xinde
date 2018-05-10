@@ -1,0 +1,1179 @@
+* linux环境
+** 文件
+*** 文件分类 
+   内存文件（内存对象)
+   文件系统文件(对象集合）
+   设备文件(单体文件, IO)
+   符号文件（链接)
+*** 文件属性 
+    大小，类型，权限，主人,名称(区分大小写, 不要用特殊符号, 路径名),  
+** 操作
+*** 文件操作 
+    显示 ls
+    排序 sort
+    切换目录 cd
+    新建 touch
+    复制
+    删除
+    更改属性
+    sudo lsof 显示 打开的文件   lsof -u 用户名
+*** 账号/组操作
+    账号文件(特殊文件)
+    添加账号
+    删除
+*** 帮助文件操作
+    man 
+    info
+*** 进程文件操作
+    STAT 字母  含　　义  
+    R  运行（running）  
+    S  休眠（sleeping）  
+    T  停止（stopped）  
+    Z  僵尸②（zombie） 重启才能关闭  
+    查看 ps
+    终止 kill
+*** 打印文件操作
+*** 归档文件操作
+*** 系统文件操作
+*** 安装软件操作
+*** 网络文件操作
+    查看网络接口 ifconfig （查看存在设备)
+    配置 # ifconfig eth0 192.168.0.125
+    验证接口情况  ping 
+    连接接口->打开设备
+    跟踪数据包在两台主机之间经过的路由 traceroute hostname
+    执行DNS查询 host hostname  或反向
+    
+    查看无线网络接口的状态
+    $ iwconfig wlp3s0
+    配置
+     # iwconfig ath0 mode ad-hoc
+      # iwconfig ath0 essid lincoln enc 646c64586278742a6229742f4c 上
+     面这条命令为无线设备ath0修改了它的ESSID，并用16进制数字设置了它的WEP密钥。只要你愿意，可以一次设置任意多的选项内容。 
+
+     使用DHCP获得新的网络地址
+     dhclient
+
+启动网络连接 在后台默默做工作
+ifup
+关闭网络连接
+ifdown 
+
+显示IP路由表
+route
+*** 网络细分操作
+    ssh
+    sftp
+    非交互式地下载文件 wget 
+    非交互式地下载整个网站 $ wget -E -r -k -p -w 5 –np
+    顺序下载多个文件和因特网资源  $ curl -O http://www.wbez.org/ta/[1-10].rm 
+*** usb设备文件操作
+* linux内核
+** 启动过程
+*** 内核的引导
+    首先读入 /boot 目录下的内核文件
+*** 运行 init
+    配置文件： /etc/inittab, /etc/init/*.conf
+*** 系统初始化
+    在init的配置文件中有这么一行： si::sysinit:/etc/rc.d/rc.sysinit　它调用执行了/etc/rc.d/rc.sysinit
+    l5:5:wait:/etc/rc.d/rc 5
+    这一行表示以5为参数运行/etc/rc.d/rc，/etc/rc.d/rc是一个Shell脚本，它接受5作为参数，去执行/etc/rc.d/rc5.d/目录下的所有的rc启动脚本，/etc/rc.d/rc5.d/目录中的这些
+    启动脚本实际上都是一些连接文件，而不是真正的rc启动脚本，真正的rc启动脚本实际上都是放在/etc/rc.d/init.d/目录下。
+*** 建立终端 
+    1:2345:respawn:/sbin/mingetty tty1
+    2:2345:respawn:/sbin/mingetty tty2
+    3:2345:respawn:/sbin/mingetty tty3
+    4:2345:respawn:/sbin/mingetty tty4
+    5:2345:respawn:/sbin/mingetty tty5
+    6:2345:respawn:/sbin/mingetty tty6
+*** 用户登录系统
+    （1）命令行登录
+    （2）ssh登录
+    （3）图形界面登录
+*** 图形模式与文字模式切换
+ Ctrl + Alt + F1 ~ F6
+*** 关机
+    正确的关机流程为：sync > shutdown > reboot > halt
+    关机指令为：shutdown -h +10 10分钟后
+    最后总结一下，不管是重启系统还是关闭系统，首先要运行 sync 命令，把内存中的数据写到磁盘中。
+** 系统目录
+ /bin：
+ bin是Binary的缩写, 这个目录存放着最经常使用的命令。
+ /boot：
+ 这里存放的是启动Linux时使用的一些核心文件，包括一些连接文件以及镜像文件。
+ /dev ：
+ dev是Device(设备)的缩写, 该目录下存放的是Linux的外部设备，在Linux中访问设备的方式和访问文件的方式是相同的。
+ /etc：
+ 这个目录用来存放所有的系统管理所需要的配置文件和子目录。
+ /home：
+ 用户的主目录，在Linux中，每个用户都有一个自己的目录，一般该目录名是以用户的账号命名的。
+ /lib：
+ 这个目录里存放着系统最基本的动态连接共享库，其作用类似于Windows里的DLL文件。几乎所有的应用程序都需要用到这些共享库。
+ /lost+found：
+ 这个目录一般情况下是空的，当系统非法关机后，这里就存放了一些文件。
+ /media：
+ linux系统会自动识别一些设备，例如U盘、光驱等等，当识别后，linux会把识别的设备挂载到这个目录下。
+ /mnt：
+ 系统提供该目录是为了让用户临时挂载别的文件系统的，我们可以将光驱挂载在/mnt/上，然后进入该目录就可以查看光驱里的内容了。
+ /opt：
+  这是给主机额外安装软件所摆放的目录。比如你安装一个ORACLE数据库则就可以放到这个目录下。默认是空的。
+ /proc：
+ 这个目录是一个虚拟的目录，它是系统内存的映射，我们可以通过直接访问这个目录来获取系统信息。
+ 这个目录的内容不在硬盘上而是在内存里，我们也可以直接修改里面的某些文件，比如可以通过下面的命令来屏蔽主机的ping命令，使别人无法ping你的机器：
+ /root：
+ 该目录为系统管理员，也称作超级权限者的用户主目录。
+ /sbin：
+ s就是Super User的意思，这里存放的是系统管理员使用的系统管理程序。
+ /selinux：
+  这个目录是Redhat/CentOS所特有的目录，Selinux是一个安全机制，类似于windows的防火墙，但是这套机制比较复杂，这个目录就是存放selinux相关的文件的。
+ /srv：
+  该目录存放一些服务启动之后需要提取的数据。
+ /sys：
+  这是linux2.6内核的一个很大的变化。该目录下安装了2.6内核中新出现的一个文件系统 sysfs 。
+ sysfs文件系统集成了下面3种文件系统的信息：针对进程信息的proc文件系统、针对设备的devfs文件系统以及针对伪终端的devpts文件系统。
+ 该文件系统是内核设备树的一个直观反映。
+ 当一个内核对象被创建的时候，对应的文件和目录也在内核对象子系统中被创建。
+ /tmp：
+ 这个目录是用来存放一些临时文件的。
+ /usr：
+  这是一个非常重要的目录，用户的很多应用程序和文件都放在这个目录下，类似与windows下的program files目录。
+ /usr/bin：
+ 系统用户使用的应用程序。
+ /usr/sbin：
+ 超级用户使用的比较高级的管理程序和系统守护程序。
+ /usr/src：内核源代码默认的放置目录。
+ /var：
+ 这个目录中存放着在不断扩充着的东西，我们习惯将那些经常被修改的目录放在这个目录下。包括各种日志文件。
+** 忘记密码
+ 3 秒之内要按一下回车，出现如下界面
+ 然后输入e
+ 在 第二行最后边输入 single，有一个空格。具体方法为按向下尖头移动到第二行，按"e"进入编辑模式
+ 在后边加上single 回车
+ 最后按"b"启动，启动后就进入了单用户模式了
+ 此时已经进入到单用户模式了，你可以更改root密码了。更密码的命令为 passwd
+** linux的配置信息？
+   $ cat /proc/cpuinfo
+   $ cat /proc/meminfo
+   $ cat /proc/net/sockstat
+** 模块 
+    rmmod 从运行的内核中移除指定的内核模块
+    insmod 将给定的模块加载到内核中
+    lsmod 显示已载入系统的模块
+** 套接字
+   服务器
+ 1.服务器创建一个套接字资源，并起个名字
+ 2.客户端连接到这个名字的套接字  
+ 3.服务器接听队列, 处理, 处理时新建一个套接字，释放原套接字给新的连接
+
+ 客户端
+ 1.创建一个未命名套接字，调用connect 与服务器命名套接字连接
+* linux 0.11
+** LINUX 内核体系结构 
+*** LINUX 内核模式 
+**** LINUX 内核系统体系结构 
+**** 目录结构 
+                linux
+             ├─    boot            系统引导汇编程序
+             ├─    fs              文件系统
+             ├─    include    头文件(*.h)
+             │     ├─ asm     与 CPU 体系结构相关的部分
+             │     ├─ linux        Linux 内核专用部分
+             │     └─ sys     系统数据结构部分
+             ├─    init       内核初始化程序
+             ├─    kernel          内核进程调度、信号处理、系统调用等程序
+             │     ├─ blk_drv 块设备驱动程序
+             │     ├─ chr_drv 字符设备驱动程序
+             │     └─ math         数学协处理器仿真处理程序
+             ├─    lib        内核库函数
+             ├─    mm                  内存管理程序
+             └─    tools           生成内核 Image 文件的工具程序
+                              图2.8 Linux 内核源代码目录结构
+ 
+**** LINUX 内核进程控制 
+    2.4 LINUX 内核对内存的使用方法 
+    2.5 LINUX 内核源代码的目录结构 
+    2.6 内核系统与用户程序的关系
+    2.7 LINUX 内核的编译实验环境 
+    2.8 LINUX/MAKEFILE 文件
+    2.9 本章小结 
+   第 3 章 引导启动程序(BOOT)
+    3.1 概述 
+    3.2 总体功能 
+    3.3 BOOTSECT
+    3.4 SETUP.S 程序 
+    3.5 HEAD.S 程序
+    3.6 本章小结 
+   第 4 章 初始化程序(INIT) 
+    4.1 概述 
+    4.2 MAIN.C 程序
+    4.3 本章小结 
+   第 5 章 内核代码(KERNEL)
+    5.1 概述 
+    5.2 MAKEFILE 文件
+    5.3 ASM
+    5.4 TRAPS
+    5.5 SYSTEM_CALL
+    5.6 MKTIME
+    5.9 EXIT
+    5.10 FORK
+    5.11 SYS
+    5.12 VSPRINTF
+    5.13 PRINTK
+    5.14 PANIC
+    5.15 本章小结
+    第 6 章 块设备驱动程序(BLOCK DRIVER)
+    6.1 概述 
+    6.2 总体功能
+    6.3 MAKEFILE 文件
+    6.4 BLK.H 文件
+    6.5 HD.C 程序
+    6.6 LL_RW_BLK
+    6.7 RAMDISK
+    6.8 FLOPPY
+    第 7 章 字符设备驱动程序(CHAR DRIVER) 
+    7.1 概述 
+    7.2 总体功能描述
+    7.3 MAKEFILE 文件
+    7.4 KEYBOARD
+    7.5 CONSOLE
+    7.6 SERIAL
+    7.7 RS_IO
+    7.8 TTY_IO
+    7.9 TTY_IOCTL
+    第 8 章 数学协处理器(MATH)
+    8.1 概述 
+    8.2 MAKEFILE 文件
+    8.3 MATH-EMULATION
+    第 9 章 文件系统(FS) 
+    9.1 概述 
+    9.2 总体功能描述
+    9.3 MAKEFILE 文件
+    9.4 BUFFER
+    9.5 BITMAP
+    9.6 INODE
+    9.7 SUPER
+    9.8 NAMEI
+    9.9 FILE_TABLE
+    9.10 BLOCK_DEV
+    9.11 FILE_DEV
+    9.12 PIPE.C 程序
+    9.13 CHAR_DEV
+    9.14 READ_WRITE
+    9.15 TRUNCATE
+    9.16 OPEN
+    9.17 EXEC
+    9.18 STAT
+    9.19 FCNTL
+    9.20 IOCTL
+    第 10 章 内存管理(MM) 
+    10.1 概述 
+    10.2 总体功能描述 
+    10.3 MAKEFILE 文件
+    10.4 MEMORY
+    10.5 PAGE
+    第 11 章 包含文件(INCLUDE) 
+    11.1 概述 
+    11.2 INCLUDE/目录下的文件 
+    11.3 A.OUT.H 文件
+    11.4 CONST.H 文件 
+    11.5 CTYPE.H 文件 
+    11.6 ERRNO.H 文件 
+    11.7 FCNTL.H 文件 
+    11.8 SIGNAL.H 文件
+    11.9 STDARG.H 文件 
+    11.10 STDDEF.H 文件 
+    11.11 STRING.H 文件 
+    11.12 TERMIOS.H 文件 
+    11.13 TIME.H 文件
+    11.14 UNISTD.H 文件
+    11.15 UTIME.H 文件 
+    11.16 INCLUDE/ASM/目录下的文件 
+    11.17 IO.H 文件
+    11.18 MEMORY.H 文件
+    11.19 SEGMENT.H 文件 
+    11.20 SYSTEM.H 文件
+    11.21 INCLUDE/LINUX/目录下的文件 
+    11.22 CONFIG.H 文件
+    11.23 FDREG.H 头文件 
+    11.24 FS.H 文件
+    11.25 HDREG.H 文件
+    11.26 HEAD.H 文件
+    11.27 KERNEL
+    11.28 MM.H 文件
+    11.29 SCHED.H 文件 
+    11.30 SYS.H 文件
+    11.31 TTY.H 文件
+    11.32 INCLUDE/SYS/目录中的文件
+    11.33 STAT.H 文件 
+    11.34 TIMES.H 文件
+    11.35 TYPES.H 文件
+    11.36 UTSNAME
+    11.37 WAIT.H 文件
+    第 12 章 库文件(LIB)
+    12.1 概述 
+    12.2 MAKEFILE 文件
+    12.3 _EXIT
+    12.4 CLOSE
+    12.5 CTYPE
+    12.6 DUP
+    12.7 ERRNO
+    12.8 EXECVE
+    12.9 MALLOC
+    12.10 OPEN
+    12.11 SETSID
+    12.12 STRING
+    12.13 WAIT
+    12.14 WRITE
+    第 13 章 建造工具(TOOLS) 
+    13.1 概述 
+    13.2 BUILD
+    附录 1 内核主要常数
+    附录 2 内核数据结构
+    附录 3 80X86 保护运行模式 
+* linux 环境下 c 编程
+** C 开发工具
+*** Header Files                                      
+*** Library Files                                     
+    $ gcc -o fred fred.c -lm
+    $ gcc -o x11fred -L/usr/openwin/lib x11fred.c -lX11
+**** Static Libraries                                  
+**** Shared Libraries                                  
+** Linux File Structure                           
+*** Directories                                 
+     文件属性保存在 inode 的结构中, 系统使用的是 节点编号，文件结构是方便人们使用而起的名字, 
+列出的文件其实是 inode 节点的链接指针, 删除文件是删除指针。 访问权限后面的数字表示链接数
+
+*** Files and Devices                           
+**** /dev/console   系统控制台设备, x窗口下是一个特殊的控制台窗口                       
+**** /dev/tty       允许程序直接向用户输出信息 如 ls -R | more                       
+     /dev/console 只有一个，/dev/tty 数不胜数
+**** /dev/null      垃圾堆, 读的化会返回一个文件尾标记
+**** Calls and Device Drivers                
+     内核的核心就是设备驱动, 管理硬件
+**** Library Functions 库函数
+     系统调用开销大，因为要在程序代码和内核代码切换
+     硬件的条条框框多
+     基于以上原因提供了库函数
+**** man 
+     系统调用第二节
+     库函数第三节
+*** 文件操作系统调用 
+     几个标准设备是默认打开的，操作方式是 0, 1, 2几个数字, 在环境中表示了设备
+     对于默认没打开的设备，就要open了
+***** write 系统调用                                      
+***** read  相当于读一行，遇到换行就停止读
+***** open                                        
+      如果是没有文件要自己创建的化 O_CREAT, 可以加上可选项 S_IRUSR|S_IWUSR, 拟定文件属性
+      S_IRWXU  00700 用户有读写执行的权限
+      S_IRUSR  00400 user has read permission                       
+      S_IWUSR  00200 user has write permission                      
+      S_IXUSR  00100 user has execute permission                    
+      S_IRWXG  00070 group has read, write, and execute permission  
+      S_IRGRP  00040 group has read permission                      
+      S_IWGRP  00020 group has write permission                     
+      S_IXGRP  00010 group has execute permission                   
+      S_IRWXO  00007 others have read, write, and execute permission
+      [[file:image/cfileattribute.jpg][文件属性]] 
+    #+BEGIN_SRC c
+      copy.c
+      #include    <unistd.h>
+      #include    <sys/stat.h>
+      #include    <fcntl.h>
+      #include    <stdlib.h>
+      int main()
+      {
+        char c;
+        int in, out;
+        in = open(“file.in”, O_RDONLY);
+        out = open(“file.out”, O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR);
+        while(read(in,&c,1) == 1)
+          write(out,&c,1);
+        exit(0);
+      }
+      //检查用了多少时间, TIMEFORMAT 用于覆盖默认POSIX的方式
+      TIMEFORMAT="" time copy 
+      #include    <unistd.h>
+      #include    <sys/stat.h>
+      #include    <fcntl.h>
+      #include    <stdlib.h>
+          int main()
+      {
+        char block[1024];
+        int in, out;
+        int nread;
+        in = open(“file.in”, O_RDONLY);
+        out = open(“file.out”, O_WRONLY|O_CREAT, S_IRUSR|S_IWUSR);
+        while((nread = read(in,block,sizeof(block))) > 0)
+          write(out,block,nread);
+        exit(0);
+      }
+        //检查这个的性能
+    #+END_SRC
+***** umask                                   
+      八进制数字, 屏蔽文件的某种属性, 如果创建文件时设定了某属性，但umask 把它屏蔽了，最后还是会屏蔽
+***** close 关闭文件                                  
+***** ioctl 控制设备的多功能函数                                  
+***** lseek                                   
+      设置文件偏移
+      ❑     SEEK_SET: offset is an absolute position
+      ❑     SEEK_CUR: offset is relative to the current position
+      ❑     SEEK_END: offset is relative to the end of the file
+***** fstat, stat, and lstat                  
+      int fstat(int fildes, struct stat *buf);
+      int stat(const char *path, struct stat *buf);
+      int lstat(const char *path, struct stat *buf);
+      
+   st_mode                            File permissions and file-type information
+   st_ino                             The inode associated with the file
+   st_dev                             The device the file resides on
+   st_uid                             The user identity of the file owner
+   st_gid                             The group identity of the file owner
+   st_atime                           The time of last access
+   st_ctime                           The time of last change to permissions, owner, group, or content
+   st_mtime                           The time of last modification to contents
+   st_nlink                           The number of hard links to the file
+    ❑     S_IFBLK: Entry is a block special device
+    ❑     S_IFDIR: Entry is a directory
+    ❑     S_IFCHR: Entry is a character special device
+    ❑     S_IFIFO: Entry is a FIFO (named pipe)
+    ❑     S_IFREG: Entry is a regular file
+    ❑     S_IFLNK: Entry is a symbolic link
+   Other mode flags include
+     ❑      S_ISUID: Entry has setUID on execution
+     ❑      S_ISGID: Entry has setGID on execution
+  Masks to interpret the st_mode flags include
+     ❑      S_IFMT: File type
+     ❑      S_IRWXU: User read/write/execute permissions
+     ❑      S_IRWXG: Group read/write/execute permissions
+     ❑      S_IRWXO: Others’ read/write/execute permissions
+  There are some macros defined to help with determining file types. These just compare suitably masked
+  mode flags with a suitable device-type flag. These include
+     ❑      S_ISBLK: Test for block special file
+     ❑      S_ISCHR: Test for character special file
+     ❑      S_ISDIR: Test for directory
+     ❑      S_ISFIFO: Test for FIFO
+     ❑      S_ISREG: Test for regular file
+     ❑      S_ISLNK: Test for symbolic link
+***** dup and dup2 复制文件描述符                           
+*** c库函数调用, 这里文件的概念是流的概念，默认打开的是三个流，stdin, stdout, stderr
+***** fopen                                       
+***** fread                                       
+***** fwrite                                      
+***** fclose                                      
+***** fflush                                      
+***** fseek                                       
+***** fgetc, getc, and getchar                    
+***** fputc, putc, and putchar                    
+***** fgets and gets                              
+***** Formatted Input and Output                     
+***** printf, fprintf, and sprintf                
+***** scanf, fscanf, and sscanf                   
+***** Stream Errors                               
+***** Streams and File Descriptors                
+**** File and Directory Maintenance                 
+***** chmod                                       
+***** chown                                       
+***** unlink, link, and symlink                    
+***** mkdir and rmdir                              
+***** chdir and getcwd                             
+**** Scanning Directories                           
+***** opendir                                      
+***** readdir                                      
+***** telldir                                      
+***** seekdir                                      
+***** closedir                                     
+**** Errors                                         
+     errno.h
+***** strerror                                     
+***** perror                                       
+***** The /proc File System                          
+**** Advanced Topics: fcntl and mmap                
+***** fcntl                                        
+***** mmap                                         
+** The Linux Environment                 
+*** Program Arguments                              
+**** arguments
+**** getopt                                       
+**** getopt_long                                  
+*** Environment Variables                          
+**** Try It Out—getenv and putenv          
+**** Use of Environment Variables                 
+***** The environ Variable                         
+***** Try It Out—environ                    
+*** Time and Date                                  
+***** Try It Out—time                       
+***** Try It Out—gmtime                     
+***** Try It Out—ctime                      
+***** Try It Out—strftime and strptime      
+*** Temporary Files                                
+***** Try It Out—tmpnam and tmpfile         
+***** User Information                               
+***** Try It Out—User Information           
+***** Host Information                               
+***** Try It Out—Host Information           
+*** Contents
+***** Logging                                      
+***** Try It Out—syslog                    
+***** Try It Out—logmask                   
+***** Resources and Limits                         
+***** Try It Out—Resource Limits           
+** Terminals                             
+***** Reading from and Writing to the Terminal     
+***** Try It Out—Menu Routines in C        
+***** Canonical versus Non-Canonical Modes    
+***** Handling Redirected Output              
+***** Try It Out—Checking for Output Redire
+***** Talking to the Terminal                      
+***** Try It Out—Using /dev/tty            
+***** The Terminal Driver and the General Terminal 
+***** Overview                                   
+***** Hardware Model                             
+***** The termios Structure                        
+***** Input Modes                                
+***** Output Modes                               
+***** Control Modes                              
+***** Local Modes                                
+***** Special Control Characters                 
+***** Characters                              
+***** The TIME and MIN Values                 
+***** Accessing Terminal Modes from the Shell 
+***** Setting Terminal Modes from the Command 
+***** Terminal Speed                             
+***** Additional Functions                       
+***** Try It Out—A Password Program with te
+***** Try It Out—Reading Each Character    
+***** Terminal Output                              
+***** Terminal Type                              
+      Identify Your Terminal Type                
+      Using terminfo Capabilities                
+      Try It Out—Total Terminal Control    
+      Detecting Keystrokes                         
+      Try It Out—Your Very Own kbhit       
+      Virtual Consoles                           
+      Pseudo Terminals                           
+      Summary                                      
+      xii
+                                                 
+** Managing Text-Based Screens with curse
+      Compiling with curses                          
+      Concepts                                       
+      Try It Out—A Simple curses Program    
+      Initialization and Termination                 
+      Output to the Screen                           
+      Reading from the Screen                        
+      Clearing the Screen                            
+      Moving the Cursor                              
+      Character Attributes                           
+      Try It Out—Moving, Inserting, and Attr
+      The Keyboard                                   
+      Keyboard Modes                              
+      Keyboard Input                              
+      Try It Out—Keyboard Modes and Input   
+      Windows                                        
+      The WINDOW Structure                        
+      Generalized Functions                       
+      Moving and Updating a Window                
+      Try It Out—Multiple Windows           
+      Optimizing Screen Refreshes                 
+      Subwindows                                     
+      Try It Out—Subwindows                 
+      The Keypad                                     
+      Try It Out—Using the Keypad           
+      Color                                          
+      Try It Out—-Colors                    
+      Redefining Colors                           
+      Pads                                           
+      Try It Out—Using a Pad                
+      The CD Collection Application                  
+      Try It Out—A New CD Collection Applica
+      Try It Out—Looking at main            
+ 
+      Try It Out—The Menu                    
+      Try It Out—Database File Manipulation 
+      Try It Out—Querying the CD Database   
+      Summary                                        
+** Data Management                       
+      Managing Memory                                
+      Simple Memory Allocation                    
+      Try It Out—Simple Memory Allocation   
+                                                 
+      Contents
+      Allocating Lots of Memory                  
+      Try It Out—Asking for All Physical M
+      Try It Out—Available Memory         
+      Abusing Memory                             
+      Try It Out—Abuse Your Memory        
+      The Null Pointer                           
+      Try It Out—Accessing a Null Pointer 
+      Freeing Memory                             
+      Try It Out—Freeing Memory           
+      Other Memory Allocation Functions          
+      File Locking                                  
+      Creating Lock Files                        
+      Try It Out—Creating a Lock File     
+      Try It Out—Cooperative Lock Files   
+      Locking Regions                            
+      The F_GETLK Command                     
+      The F_SETLK Command                     
+      The F_SETLKW Command                    
+      Use of read and write with Locking         
+      Try It Out—Locking a File with fcntl
+      Try It Out—Testing Locks on a File  
+      Competing Locks                            
+      Try It Out—Competing Locks          
+      Other Lock Commands                        
+      Deadlocks                                  
+      Databases                                     
+      The dbm Database                           
+      Introduction to dbm                     
+      Getting dbm                             
+      Troubleshooting and Reinstalling dbm    
+      The dbm Routines                           
+      dbm Access Functions                       
+      dbm_open                                
+      dbm_store                               
+      dbm_fetch                               
+      dbm_close                               
+      Try It Out—A Simple dbm Database    
+      Additional dbm Functions                   
+      dbm_delete                              
+      dbm_error                               
+      xiv
+      Co
+      dbm_clearerr                              
+      dbm_firstkey and dbm_nextkey              
+      Try It Out—Retrieving and Deleting     
+      The CD Application                             
+      Updating the Design                          
+      The CD Database Application Using dbm        
+      Try It Out—cd_data.h                   
+      Try It Out—app_ui.c                    
+      Try It Out—cd_access.c                 
+      Summary                                        
+** MySQL                                 
+      Installation                                   
+      Precompiled Packages                         
+      Post-Install Configuration                   
+      Post-Installation Troubleshooting            
+      MySQL Administration                           
+      Commands                                     
+      myisamchk                                 
+      mysql                                     
+      mysqladmin                                
+      mysqlbug                                  
+      mysqlimport                               
+      mysqlshow                                 
+      Creating Users and Giving Them Permissions   
+      grant                                     
+      revoke                                    
+      Passwords                                    
+      Creating a Database                          
+      Data Types                                   
+      Boolean                                   
+      Character                                 
+      Number                                    
+      Temporal                                  
+      Creating a Table                             
+      Graphical Tools                              
+      Accessing MySQL Data from C                    
+      Connection Routines                          
+      Error Handling                               
+                                                 
+      Contents
+      Executing SQL Statements                     
+      SQL Statements That Return No Data        
+      Discovering What You Inserted             
+      Try It Out                            
+      Try It Out                            
+      Statements That Return Data               
+      Processing Returned Data                  
+      Miscellaneous Functions                      
+      The CD Database Application                    
+      Creating the Tables                          
+      Adding Some Data                             
+      Try It Out                            
+      Accessing the Application Data from C        
+      Interface Definition                      
+      Test Application Interface                
+      Implementing the Interface                
+      Summary                                        
+** Development Tools                     
+      Problems of Multiple Source Files              
+      The make Command and Makefiles                 
+      The Syntax of Makefiles                      
+      Options and Parameters to make               
+      Dependencies                              
+      Rules                                     
+      Try It Out—A Simple Makefile          
+      Comments in a Makefile                       
+      Macros in a Makefile                         
+      Try It Out—A Makefile with Macros     
+      Multiple Targets                             
+      Try It Out—Multiple Targets           
+      Built-in Rules                               
+      Suffix and Pattern Rules                     
+      Managing Libraries with make                 
+      Try It Out—Managing a Library         
+      Advanced Topic: Makefiles and Subdirectories 
+      GNU make and gcc                             
+      Try It Out—gcc -MM                    
+      Source Code Control                            
+      RCS                                          
+      The rcs Command                           
+      The ci Command                            
+      xvi
+      Cont
+      The co Command                            
+      The rlog Command                          
+      The rcsdiff Command                       
+      Identifying Revisions                     
+      Try It Out—GNU make with RCS           
+      The ident Command                         
+      Try It Out—ident                       
+      SCCS                                         
+      Comparing RCS and SCCS                       
+      CVS                                          
+      Using CVS Locally                         
+      Accessing CVS over a Network              
+      gCVS                                         
+      BitKeeper                                    
+      Writing a Manual Page                          
+      Distributing Software                          
+      The patch Program                            
+      Other Distribution Utilities                 
+      RPM Packages                                   
+      Working with RPM Package Files               
+      Installing RPM Packages                      
+      Building RPM Packages                        
+      Gathering the Software                    
+      Creating an RPM Spec File                 
+      Building an RPM Package with rpmbuild     
+      Other Package Formats                          
+      Development Environments                       
+      xwpe                                         
+      C-Forge                                      
+      KDevelop                                     
+      Other Environments                           
+      Summary                                        
+** Debugging                            
+      Types of Errors                                
+      General Debugging Techniques                   
+      A Program with Bugs                          
+      Code Inspection                              
+      Instrumentation                              
+      Try It Out—Debug Information           
+      Debugging without Recompiling             
+      Controlled Execution                         
+                                                 
+      Contents
+      Debugging with gdb                             
+      Starting gdb                               
+      Running a Program                          
+      Stack Trace                                
+      Examining Variables                        
+      Listing the Program                        
+      Setting Breakpoints                        
+      Patching with the Debugger                 
+      Learning More about gdb                    
+      More Debugging Tools                           
+      Lint: Removing the Fluff from Your Programs
+      Function Call Tools                        
+      ctags                                   
+      cxref                                   
+      cflow                                   
+      Execution Profiling with prof/gprof        
+      Assertions                                     
+      Try It Out—assert                   
+      Memory Debugging                               
+      ElectricFence                              
+      Try It Out—ElectricFence            
+      valgrind                                   
+      Try It Out—valgrind                 
+      Summary                                        
+** Processes and Signals                
+      What Is a Process?                             
+      Process Structure                              
+      The Process Table                          
+      Viewing Processes                          
+      System Processes                           
+      Process Scheduling                         
+      Starting New Processes                         
+      Try It Out—system                   
+      Replacing a Process Image               
+      Try It Out—execlp                   
+      Duplicating a Process Image             
+      Try It Out—fork                     
+      Waiting for a Process                      
+      Try It Out—wait                     
+      Zombie Processes                           
+      Try It Out—Zombies                  
+      xviii
+                                                 
+      Input and Output Redirection                 
+      Try It Out—Redirection                 
+      Threads                                      
+      Signals                                        
+      Try It Out—Signal Handling             
+      Sending Signals                              
+      Try It Out—An Alarm Clock              
+      A Robust Signals Interface                
+      Try It Out—sigaction                   
+      Signal Sets                                  
+      sigaction Flags                           
+      Common Signal Reference                   
+      Summary                                        
+** POSIX Threads                        
+      What Is a Thread?                              
+      Advantages and Drawbacks of Threads          
+      A First Threads Program                        
+      Try It Out—A Simple Threaded Program   
+      Simultaneous Execution                         
+      Try It Out—Simultaneous Execution of Tw
+      Synchronization                                
+      Synchronization with Semaphores              
+      Try It Out—A Thread Semaphore          
+      Synchronization with Mutexes                 
+      Try It Out—A Thread Mutex              
+      Thread Attributes                              
+      Try It Out—Setting the Detached State A
+      Thread Attributes—Scheduling              
+      Try It Out—Scheduling                  
+      Canceling a Thread                             
+      Try It Out—Canceling a Thread          
+      Threads in Abundance                           
+      Try It Out—Many Threads                
+      Summary                                        
+** Inter-Process Communication: Pipes   
+      What Is a Pipe?                                
+      Process Pipes                                  
+      popen                                     
+      pclose                                    
+      Try It Out—Reading Output from an Exter
+                                                 
+      Contents
+      Sending Output to popen                       
+      Try It Out—Sending Output to an Exter
+      Passing More Data                           
+      Try It Out—Reading Larger Amounts of 
+      How popen Is Implemented                    
+      Try It Out—popen Starts a Shell      
+      The Pipe Call                                 
+      Try It Out—The pipe Function         
+      Try It Out—Pipes across a fork       
+      Parent and Child Processes                    
+      Try It Out—Pipes and exec            
+      Reading Closed Pipes                        
+      Pipes Used as Standard Input and Output     
+      File Descriptor Manipulation by close and
+      Try It Out—Pipes and dup             
+      Named Pipes: FIFOs                            
+      Try It Out—Creating a Named Pipe     
+      Accessing a FIFO                            
+      Try It Out—Accessing a FIFO File     
+      Opening a FIFO with open                 
+      Try It Out—Opening FIFO Files        
+      O_RDONLY and O_WRONLY with No O_NONBLOCK 
+      O_RDONLY with O_NONBLOCK and O_WRONLY    
+      Reading and Writing FIFOs                
+      Try It Out—Inter-Process Communicatio
+      Advanced Topic: Client/Server Using FIFOs   
+      Try It Out—An Example Client/Server A
+      The CD Database Application                   
+      Aims                                        
+      Implementation                              
+      Try It Out—The Header File, cliserv.h
+      Client Interface Functions                  
+      Try It Out—The Client’s Interpreter 
+      Searching the Database                   
+      Try It Out—Searching                 
+      The Server Interface                        
+      Try It Out—server.c                  
+      The Pipe                                    
+      Try It Out—Pipes Implementation Heade
+      Server-Side Functions                    
+      Try It Out—Server Functions          
+      Try It Out—Plumbing the Pipes        
+      xx
+                                                 
+      Client-Side Functions                     
+      Try It Out—Client Functions            
+      Try It Out—Getting Server Results      
+      Application Summary                          
+      Summary                                        
+** Semaphores, Shared Memory, and Messag
+      Semaphores                                     
+      Semaphore Definition                         
+      A Theoretical Example                        
+      Linux Semaphore Facilities                   
+      semget                                    
+      semop                                     
+      semctl                                    
+      Using Semaphores                             
+      Try It Out—Semaphores                  
+      Shared Memory                                  
+      shmget                                       
+      shmat                                        
+      shmdt                                        
+      shmctl                                       
+      Try It Out—Shared Memory               
+      Message Queues                                 
+      msgget                                       
+      msgsnd                                       
+      msgrcv                                       
+      msgctl                                       
+      Try It Out—Message Queues              
+      The CD Database Application                    
+      Try It Out—Revising the Server Function
+      Try It Out—Revising the Client Function
+      IPC Status Commands                            
+      Semaphores                                   
+      Shared Memory                                
+      Message Queues                               
+      Summary                                        
+** Sockets                              
+      What Is a Socket?                              
+      Socket Connections                             
+      Try It Out—A Simple Local Client       
+      Try It Out—A Simple Local Server       
+                                                 
+      Contents
+      Socket Attributes                           
+      Socket Domains                           
+      Socket Types                             
+      Socket Protocols                         
+      Creating a Socket                           
+      Socket Addresses                            
+      Naming a Socket                             
+      Creating a Socket Queue                     
+      Accepting Connections                       
+      Requesting Connections                      
+      Closing a Socket                            
+      Socket Communications                       
+      Try It Out—Network Client             
+      Try It Out—Network Server             
+      Host and Network Byte Ordering              
+      Network Information                            
+      Try It Out—Network Information        
+      Try It Out—Connecting to a Standard Se
+      The Internet Daemon (inetd)                 
+      Socket Options                              
+      Multiple Clients                               
+      Try It Out—A Server for Multiple Clien
+      select                                      
+      Try It Out—select                     
+      Multiple Clients                            
+      Try It Out—An Improved Multiple Client
+      Datagrams                                      
+      Summary                                        
+** Programming GNOME Using GTK+         
+      Introducing X                                  
+      X Server                                    
+      X Client                                    
+      X Protocol                                  
+      Xlib                                        
+      Toolkits                                    
+      Window Managers                             
+      Other Ways to GUI—Platform-Independent Windo
+      Introducing GTK+                               
+      GLib Type System                            
+      GTK+ Object System                          
+      xxii
+                                                 
+      Introducing GNOME                           
+      Installing the GNOME/GTK+ Development Librar
+      Try it Out—A Plain GtkWindow          
+      Events, Signals, and Callbacks                 
+      Try It Out—A Callback Function        
+      Packing Box Widgets                            
+      Try It Out—Widget Container Layout    
+      GTK+ Widgets                                   
+      GtkWindow                                   
+      GtkEntry                                    
+      Try It Out—Username and Password Entry
+      GtkSpinButton                               
+      Try It Out—GtkSpinButton              
+      GtkButton                                   
+      GtkToggleButton                          
+      GtkCheckButton                           
+      GtkRadioButton                           
+      Try It Out—GtkCheckButton, GtkToggleBu
+      GtkTreeView                                 
+      Try It Out—GtkTreeView                
+      GNOME Widgets                                  
+      Try It Out—A GNOME Window             
+      GNOME Menus                                    
+      Try It Out—GNOME Menus                
+      Try It Out—Menus with GNOME Macros    
+      Dialogs                                        
+      GtkDialog                                   
+      Modal Dialog Box                            
+      Nonmodal Dialogs                            
+      GtkMessageDialog                            
+      CD Database Application                        
+      Try It Out—cdapp_gnome.h              
+      Try It Out—interface.c                
+      Try It Out—callbacks.c                
+      Try It Out—main.c                     
+      Summary                                        
+** Programming KDE Using Qt             
+      Introducing KDE and Qt                         
+      Installing Qt                                  
+      Try It Out—QMainWindow                
+                                                 
+      Contents
+      Signals and Slots                              
+      Try It Out—Signals and Slots          
+      Try It Out—Using QBoxLayout Classes   
+      Qt Widgets                                     
+      QLineEdit                                   
+      Try It Out—QLineEdit                  
+      Qt Buttons                                  
+      QButton—The Button Base Class            
+      QPushButton                              
+      QCheckBox                                
+      QRadioButton                             
+      Try It Out—QButtons                   
+      QComboBox                                   
+      Try It Out—QComboBox                  
+      QListView                                   
+      Try It Out—QListView                  
+      Dialogs                                        
+      QDialog                                     
+      Modal Dialogs                            
+      Nonmodal Dialogs                         
+      Semimodal Dialog                         
+      QMessageBox                                 
+      QInputDialog                                
+      Using qmake to Simplify Writing Makefiles   
+      Menus and Toolbars                             
+      Try It Out—A KDE Application with Menu
+      CD Database Application Using KDE/Qt           
+      Try It Out—MainWindow                 
+      Try It Out—AddCdDialog                
+      Try It Out—LogonDialog                
+      Try It Out—main.cpp                   
+      Summary                                        
+** Device Drivers                       
+      Writing Device Drivers                         
+      Devices                                        
+      Device Classes                              
+      User and Kernel Space                       
+      What Goes Where?                         
+      Building Modules                         
+      Data Types                               
+      Try It Out—A Kernel Module            
+      xxiv
+                                                 
+      Character Devices                                
+      File Operations                                
+      A Sample Driver: schar                           
+      The MSG Macro                               
+      Registering the Device                      
+      Module Usage Count                          
+      Open and Release                            
+      Reading the Device                          
+      The current Task                            
+      Wait Queues                                 
+      Writing to the Device                       
+      Nonblocking Reads                           
+      Seeking                                     
+      ioctl                                       
+      Checking User Rights                        
+      poll                                        
+      Try It Out—Reading and Writing to schar  
+      Try It Out—ioctl                         
+      Module Parameters                           
+      Try It Out—modinfo                       
+      proc File System Interface                  
+      How schar Behaves                              
+      Time and Jiffies                                 
+      Small Delays                                   
+      Timers                                         
+      Try It Out—The Timer Implementation in sc
+      Giving Up the Processor                        
+      Task Queues                                    
+      The Predefined Task Queues                     
+      Memory Management                                
+      Virtual Memory Areas                           
+      Address Space                                  
+      Types of Memory Locations                      
+      Getting Memory in Device Drivers               
+      kmalloc                                     
+      vmalloc                                     
+      Transferring Data between User and Kernel Space
+      Moving More Data                               
+      Simple Memory Mapping                          
+      I/O Memory                                     
+      Assignment of Devices in Iomap                 
+      I/O Memory mmap                                
+      Try It Out—The Iomap Module              
+                                                 
+      Contents
+      I/O Ports                          
+      Interrupt Handling              
+      Allocating an Interrupt      
+      Getting an Appropriate IRQ   
+      The IRQ Handler                 
+      Bottom Halves                   
+      Re-entrancy                     
+      Disabling Single Interrupts     
+      Atomicity                       
+      Protecting Critical Sections    
+      Basic Spin Locks             
+      Reader and Writer Locks      
+      Automated Locking            
+      Block Devices                      
+      radimo—A Simple RAM Disk Module 
+      Size Issues                  
+      Registering a Block Device   
+      Media Change                    
+      ioctl for Block Devices         
+      The request Function            
+      The Buffer Cache                
+      Try It Out—radimo        
+      Going Further                   
+      Debugging                          
+      Oops Tracing                    
+      Debugging Modules               
+      The Magic Key                   
+      Kernel Debugger—kdb             
+      Remote Debugging                
+      General Notes on Debugging      
+      Portability                        
+      Data Types                      
+      Endianess                       
+      Alignment                       
+      Anatomy of the Kernel Source       
+      Summary                            
+** Standards for Linux      
+      The C Programming Language         
+      A Brief History Lesson          
+      The GNU Compiler Collection     
+      gcc Options                                    
+      Compiler Options for Standards Tracking     
+      Define Options for Standard Tracking        
+      Compiler Options for Warnings               
+      Interfaces and the LSB                            
+      LSB Standard Libraries                         
+      A Brief History Lesson                      
+      Using the LSB Standard for Libraries        
+      LSB Users and Groups                           
+      LSB System Initialization                      
+      The Filesystem Hierarchy Standard                 
+      /bin                                           
+      /boot                                          
+      /dev                                           
+      /etc                                           
+      /home                                          
+      /lib                                           
+      /mnt                                           
+      /opt                                           
+      /root                                          
+      /sbin                                          
+      /tmp                                           
+      /usr                                           
+      /var                                           
+      Further Reading about Standards                   
+      Summary                                           
+      Index                                               
+

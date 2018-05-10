@@ -1,0 +1,261 @@
+* ruby-mode
+  该层为Ruby编程语言提供支持
+  启动 1.打开交互模式 inf-ruby
+  2.使用 ruby-send-region
+** 特点：
+*** 版本管理器（rbenv，rvm或chruby）
+*** 与捆绑器集成(bundler)
+*** 测试运行器（ruby-test和rspec）
+*** Rake runner （收集运行器）
+*** Linter（rubocop）代码校验工具
+*** 交互式REPL和代码导航（robe）
+** 安装
+该层支持两种不同的Ruby模式：Emacs的内置Ruby模式和 enh-ruby模式。默认情况下，
+内置的Ruby模式已启用。要切换到 enh-ruby-mode 要设置 ruby-enable-enh-ruby-mode至t：
+#+BEGIN_SRC emacs-lisp
+  (defun dotspacemacs-configuration-layers ()
+     '((ruby :variables ruby-enable-enh-ruby-mode t)))
+#+END_SRC
+
+
+*** 先决条件
+pry 和 pry-doc 用来跳转到定义和代码文档（robe-mode）
+- =ruby_parser= is required for *goto-step_definition* in =feature-mode=
+rubocop 是rubocop集​​成所必需的
+
+您可以将宝石添加到当前项目的上下文中(在Gemfile文件中），例如：
+
+#+BEGIN_SRC ruby
+  gem 'pry'
+#+END_SRC
+: gem 是ruby的 package管理工具
+或者在命令行上（请参考ruby版本管理器的具体文档了解详情和注意事项）：
+#+BEGIN_SRC sh
+  gem install pry
+#+END_SRC
+下面可以把上面的一个个装上, 如
+#+BEGIN_SRC sh
+  gem install pry-doc
+#+END_SRC
+
+*** Ruby版本管理
+    该层支持RVM，Rbenv和Chruby。您可以通过ruby-version-manager在dotfile
+    中设置变量来选择默认的版本管理器，例如：
+#+BEGIN_SRC emacs-lisp
+  (defun dotspacemacs-configuration-layers ()
+     '((ruby :variables ruby-version-manager 'rvm)))
+#+END_SRC
+
+
+当启用版本管理器时，它将使用当前激活的ruby(也就是上面设定的版本工具)，除非.ruby-version文件存在，
+在这种情况下使用该文件的ruby版本工具。 rvm也将尝试寻找一个.rvmrc和gemfile，则先后顺序为
+ .rvmrc，然后.ruby-version再gemfile。
+
+注意：一次只能启用一个版本管理器。
+**** rvm
+     RVM 是一个命令行工具，可以提供一个便捷的多版本 Ruby 环境的管理和切换。
+     https://rvm.io/
+     如果你打算学习 Ruby / Rails, RVM 是必不可少的工具之一。
+
+这里所有的命令都是再用户权限下操作的，任何命令最好都不要用 sudo.
+
+***** RVM 安装
+$ gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+$ \curl -sSL https://get.rvm.io | bash -s stable
+$ source ~/.bashrc
+$ source ~/.bash_profile
+修改 RVM 的 Ruby 安装源到 Ruby China 的 Ruby 镜像服务器，这样能提高安装速度
+
+$ echo "ruby_url=https://cache.ruby-china.org/pub/ruby" > ~/.rvm/user/db
+***** Ruby 的安装与切换
+列出已知的 Ruby 版本
+rvm list known
+
+安装一个 Ruby 版本
+rvm install 2.2.0 --disable-binary
+这里安装了最新的 2.2.0, rvm list known 列表里面的都可以拿来安装。
+
+切换 Ruby 版本
+rvm use 2.2.0
+
+如果想设置为默认版本，这样一来以后新打开的控制台默认的 Ruby 就是这个版本
+rvm use 2.2.0 --default 
+
+查询已经安装的ruby
+rvm list
+
+卸载一个已安装版本
+rvm remove 1.8.7
+***** gemset 的使用
+      RVM 不仅可以提供一个多 Ruby 版本共存的环境，还可以根据项目管理不同的 gemset.
+      gemset 可以理解为是一个独立的虚拟 Gem 环境，每一个 gemset 都是相互独立的。
+      
+      比如你有两个项目，一个是 Rails 2.3 一个是 rails3. gemset 可以帮你便捷的建立两套 Gem 开发环境，并且方便的切换。
+
+gemset 是附加在 Ruby 语言版本下面的，例如你用了 1.9.2, 建立了一个叫 rails3 的 gemset,当切换到 1.8.7 的时候，rails3 这个 gemset 并不存在。
+
+建立 gemset
+rvm use 1.8.7
+rvm gemset create rails23
+然后可以设定已建立的 gemset 做为当前环境
+
+use 可以用来切换语言或者 gemset
+前提是他们已经被安装(或者建立)。并可以在 list 命令中看到。
+
+rvm use 1.8.7
+rvm use 1.8.7@rails23
+然后所有安装的 Gem 都是安装在这个 gemset 之下。
+
+列出当前 Ruby 的 gemset
+rvm gemset list
+清空 gemset 中的 Gem
+如果你想清空一个 gemset 的所有 Gem, 想重新安装所有 Gem，可以这样
+
+rvm gemset empty 1.8.7@rails23
+删除一个 gemset
+rvm gemset delete rails2-3
+项目自动加载 gemset
+RVM 还可以自动加载 gemset。 例如我们有一个 Rails 3.1.3 项目，需要 1.9.3 版本 Ruby，整个流程可以这样。
+
+rvm install 1.9.3
+rvm use 1.9.3
+rvm gemset create rails313
+rvm use 1.9.3@rails313
+下面进入到项目目录，建立一个 .rvmrc 文件。
+
+在这个文件里可以很简单的加一个命令：
+rvm use 1.9.3@rails313
+
+然后无论你当前 Ruby 设置是什么，cd 到这个项目的时候，RVM 会帮你加载 Ruby 1.9.3 和 rails313 gemset.
+
+使用 RVM 快速部署 Nginx + Passenger
+首先安装 Passenger
+gem install passenger
+
+然后使用 passenger-install-nginx-module 来安装 Nginx 和部署。
+因为这一步需要 root 权限（因为要编译 Nginx）可以用 rvmsudo 这个东西（这个东西真是个好东西）。
+
+rvmsudo passenger-install-nginx-module
+
+然后会让你选择是下载 Nginx 源码自动编译安装，还是自己选择 Nginx 源码位置。
+选择 Nginx 手动安装的可以添加别的编译参数，方便自定义编译 Nginx。
+
+然后一路下载安装。默认的安装位置为 /opt/nginx.
+然后看看 nginx.conf，都给你配置好了，只需要加上 root 位置（yourapp/public）就可以了。
+
+当我第一次安装完成了，就惊呼，这也太爽了吧。
+PS: RVM 是个好东西，做的很智能，（大部分）操作失败后会告诉你原因，然后告诉你需要安装哪些Lib等等，非常适合新手老手使用,简直是居家旅行必备良药。
+
+其他选择
+如果你不太喜欢 RVM 的风格，你也可以试试 rbenv, Ruby China 同样有一篇关于它的 Guide: rbenv 实用指南
+*** 测试runner
+该层支持RSpec，ruby-test和minitest测试runners（框架）。默认情况下ruby-test使用，如果要改变到另一个框架
+可以设置图层变量ruby-test-runner。
+
+将测试runner 设置为RSpec：
+#+BEGIN_SRC emacs-lisp
+  (defun dotspacemacs-configuration-layers ()
+     '((ruby :variables ruby-test-runner 'rspec)))
+#+END_SRC
+
+Tip: 您可以使用目录局部变量为不同的项目启用不同的测试运行器。
+
+** 键绑定
+*** Ruby（enh-ruby-mode，robe，inf-ruby，ruby-tools）
+    SPC m '​	切换当前字符串的引号（仅限内置模式）
+    SPC m {	切换当前块的样式（只有内置模式）
+    SPC m g g	转到定义（robe-jump）
+    SPC m h h	在point上显示方法的文档（robe-doc）
+    SPC m s f	发送函数定义
+    SPC m s F	发送函数定义并切换到REPL
+    SPC m s i	启动REPL
+    SPC m s r	发送区域
+    SPC m s R	发送区域并切换到REPL
+    SPC m s s	切换到REPL
+    SPC m x '​	更改符号或“字符串”
+    SPC m x "​	更改符号或“字符串”
+    SPC m x :	将字符串更改为符号
+    SPC m x h	在活动区域​​中切换散列语法
+    %	邪恶的匹配跳跃之间的块
+*** Bundler
+SPC m b c	运行包检查
+SPC m b i	运行软件包安装
+SPC m b s	运行包控制台
+SPC m b u	运行软件包更新
+SPC m b x	运行bundle exec
+SPC m b o	运行包打开
+*** RuboCop(代码校验）
+SPC m r r f	在当前访问的文件上运行RuboCop
+SPC m r r F	在当前访问的文件上运行自动更正
+SPC m r r d	从运行RuboCop的目录中提示
+SPC m r r D	提示要运行自动更正的目录
+SPC m r r p	在整个项目上运行RuboCop
+SPC m r r P	在项目上运行自动更正
+*** 测试
+**** RSpec模式
+当ruby-test-runner等于rspec。
+
+SPC m t a	运行所有规格
+SPC m t b	运行当前的spec文件
+SPC m t c	运行当前的spec文件和后续的
+SPC m t d	在目录中运行测试
+SPC m t e	将示例标记为挂起
+SPC m t f	运行方法
+SPC m t l	运行最后失败的规范
+SPC m t m	运行与当前缓冲区相关的规格
+SPC m t r	重新运行最后的规范
+SPC m t t	在指针运行规范
+SPC m t TAB	在规格和目标的缓冲区之间切换
+SPC m t ~	在规范和目标的缓冲区查找示例之间切换
+**** Ruby测试模式
+当ruby-test-runner等于ruby-test。
+SPC m t b	运行测试文件
+SPC m t t	在指针运行测试
+**** 最小模式
+     当ruby-test-runner等于minitest。
+
+SPC m t a	运行所有测试
+SPC m t b	运行当前文件
+SPC m t r	重复上次的测试命令
+SPC m t s	运行当前文件的测试
+*** Rake 
+SPC m k k	运行耙子
+SPC m k r	重新运行最后的耙子任务
+SPC m k R	重新生成耙子缓存
+SPC m k f	查找耙子任务的定义
+*** 重构
+SPC m r R m	提取到方法
+SPC m r R v	提取局部变量
+SPC m r R c	提取常量
+SPC m r R l	解压让（rspec）
+** 层选项
+变量	默认值	描述
+ruby-enable-enh-ruby-mode	nil	如果不是零，则使用`enh-ruby-mode'包而不是内置的Ruby模式。
+ruby-version-manager	nil	如果不为零，则定义Ruby版本管理器。可能的值是`rbenv'，`rvm'或`chruby'。
+ruby-test-runner	ruby-test	测试跑步者使用。可能的值是`ruby-test'，`minitest'或`rspec'。
+ruby-highlight-debugger-keywords	t	如果不为零，则为调试器关键字启用突出显示。
+* ruby
+** 安装  
+   $ sudo apt-get install ruby-full
+   或用版本管理工具。如 rvm
+** 编程模型
+   纯面向对象的语言
+** 数据类型
+   (1..9).class 区间
+   [1, 3.4, 3] 数组
+   {1=>'one', 2=>'two'} 散列表
+** 判断
+> < ==
+unless(不成立时执行判断)
+if 成立时执行
+while
+and or && ||
+** 函数 1.methods
+   #+BEGIN_SRC ruby
+     def add
+          4+4
+     end
+   #+END_SRC
+** 继承
+   ruby 是单继承，superclass
+  [[file:image/rbjicheng.png][继承关系]] 

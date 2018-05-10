@@ -1,0 +1,37 @@
+* 钉钉入门
+** 术语  
+   企业内部应用：只能用于企业内部
+   第三方应用 第三方企业建立的应用，本企业使用要得到授权
+   AccessToken : 访问钉钉接口的唯一票据, 接口调用需附带AccessToken.通过 CropID 和Crop_secret换取。有效期7200秒，需全局缓存
+   CropID : 企业ID（在开发者后台得到) crop_secret: 企业秘钥，也是后台得到
+   jsapi_ticket: 开发者调用钉钉JS接口的临时授权码，用于生成签名.
+
+** 官方Demo 
+   企业内部应用demo地址https://github.com/ddtalk/HarleyCorp?spm=a219a.7629140.0.0.Jv8hW9
+   demo说明https://bbs.aliyun.com/read/291640.html?spm=a219a.7629140.0.0.Jv8hW9
+** 调试工具
+   移动端JSAPI调试工具：http://wsdebug.dingtalk.com 打开后，在页面上配置jsapi的参数，即传入的参数，点击手机会有相应的反馈
+   服务端企业API调试工具https://debug.dingtalk.com/?spm=a219a.7629140.0.0.l9Pmzq
+   服务端ISVAPI接入调试工具https://debug.dingtalk.com/isv.html
+** SDK
+   java SDK 分为TOP(淘宝开放平台)和OAPI两种，前者是通过restfull方式请求，后者直接使用http请求。
+   TOP SDK地址https://open-doc.dingtalk.com/doc/sdk.htm
+   OAPI SDK 地址https://github.com/ddtalk/client_sdk
+   大部分接口可以直接使用OAPI调用，例如通讯录（人员，部门），获取token,jsapi_ticket等。
+
+   少部分接口，例如审批，角色相关等 ，使用TOP方式调用。
+
+   具体的使用方式官方接口文档均有详细说明，后续会选取几个作为例子。
+   3.客户端开发
+   3.1开始开发
+   微应用
+   企业创建微应用后，在钉钉客户端工作台中会出现相应的应用，点进去，即进入到H5开发环境，可以完成一些业务需求。在H5环境中，可以通过钉钉的相关接口调用原生控件，例如拍照，录音，地图定位等。接口调用步骤
+   页面需要引入js文件 http://g.alicdn.com/dingding/open-develop/1.6.9/dingtalk.js 得到一个全局变量dd
+   需要进行JSAPI权限验证,demo地址https://github.com/injekt/openapi-demo-java/blob/master/WebContent/javascripts/demo.js。
+   调用钉钉接口。
+   JSAPI列表https://open-doc.dingtalk.com/docs/doc.htm?spm=a219a.7629140.0.0.mNdKWw&treeId=171&articleId=106834&docType=1
+   
+   有些API**不需要ddconfig,可以直接在dd.ready里面调用。有些需要**ddconfig，要先鉴权，才能调用成功。
+   3.2JSAPI鉴权
+   调用jsapi之前需要进行dd.config()，所需参数如下，参数一般是从后台计算然后返回到前端页面。注意，timeStamp,nonceStr一定和后端计算签名所用随机数和时间戳是一致的。
+

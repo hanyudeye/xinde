@@ -1,0 +1,313 @@
+* wampserver
+** 默认状态  
+*** 不能访问外网   
+    默认只允许127.0.0.1访问
+   修改 httpd.conf, 大概在第234行，把“Deny from all”删掉，再把“Allow from 127.0.0.1”改成“Allow from all”
+*** 开启URL重写
+    httpd.conf文件，找到#LoadModule rewrite_module modules/mod_rewrite.so，然后把前面的“#”删掉
+*** www 目录, 这个觉得跟Linux一样的
+    httpd.conf，寻找“DocumentRoot”大概在第178行，把后面的值改成我们实际网站需要的路径，
+    再寻找“<Directory "c:/wamp/www/">”，同样把后面的值改成我们网站存放的实际地址，就OK了。
+* apache
+** Apache服务器的配置 
+*** 目录结构 (我家的资源）
+    bin    
+    cgi-bin
+    htdocs  
+    include
+    logs
+    manual
+    Build
+    error
+    icons
+    lib
+    man
+    modules
+*** 全局参数设置 
+    如果让服务器在两个确定的地址端口组合上接受请求，可以这样设置：
+    Listen 192.168.2.2:8080                         #服务器接受192.168.2.2地址的8080端口上的请求
+
+    如果使用IPV6地址，必须用方括号把IPV6地址括起来：
+    Listen [2001:db8::a00:20ff:fea7:ccea]:80        #监听2001:db8::a00:20ff:fea7:ccea地址的80端口上的请求
+
+    仅在使用非标准端口时才需要指定protocol参数。比如在8443端口运行HTTPS协议：
+    Listen 192.170.2.1:8443 https                   #服务器接受192.168.2.1地址的8443端口上的以https协议请求
+    
+    语法：LoadModule  模块名称     模块文件路径全名
+    例如：LoadModule  php5_module  modules/libphp5.so
+
+User指令用于设置实际提供服务的子进程的用户。
+User daemon                     #通过用户名引用用户daemon
+User #-1                        #通过用户编号引用用户，"#"号后面跟一个用户编号1
+
+Group指令指定了用于对客户端请求提供服务的Apache子进程运行时的用户组。
+Group daemon                    #通过名称引用组deamon
+Group #-1                       #通过编号引用组, "#"号后跟一个组编号(GID)
+
+应该被设置为管理Web服务器管理员的邮件地址。当服务器运行出错时，这一地址将被返回给访问者，访问者可以
+向此邮件地址发信和Web服务器管理员联系。
+例如：ServerAdmin  you@example.com
+
+DocumentRoot指令设置Web文档根目录。
+例如：DocumentRoot  "/usr/local/apache2/htdocs"
+
+Timeout 300                                     #服务器在断定请求失败前等待的秒数
+KeepAlive On                                    #启用HTTP持久链接
+MaxKeepAliveRequests 100                        #一个持久链接中允许的最大请求数量
+KeepAliveTimeout 5                              #持久链接中服务器在两次请求之间等待的秒数
+HostnameLookups Off                             #启用对客户端IP的DNS查找
+
+*** 使用配置段（容器） 
+    <Directory> </Directory>                    #封装一组指令，使之仅对文件空间中的某个目录及其子目录生效
+    <Files> </Files>                            #包含作用于匹配指定文件名的指令
+    <Location> </Location>                      #将封装的指令作用于匹配的URL
+    <VirtualHost> </VirtualHost>                        #包含仅作用于指定主机名或IP地址的指令
+
+    <IfDefine>、<IfModule>、<IfVersion>仅在启动和重新启动中起作。如果在启动时指定的条件成立，则其中的指令
+    对所有的请求都有效，否则将被忽略。
+
+
+<IfDefine>容器中的指令只有在httpd命令行中设定了特定的参数后才有效。下例中，只有在服务器用
+httpd-DClosedForNow方式启动时，所有的请求才会被重定向到另一个站点：
+
+<IfDefine ClosedForNow>                                   #判断服务是否用httpd-DClosedForNow方式启动
+          Redirect  /http://otherserver.example.com/    #如果条件成功请求才会被重定向到另一个站点
+</IfDefine>                                               #条件的结束标记
+
+
+
+**** 文件系统容器 
+     <Directory /var/web/dir1>                 #为目录/var/web/dir1设置属性
+          <Files private.html>            #为/var/web/dir1目录及子目录下的private.html文件设置属性
+                  Order allow,deny      #顺序是先允许后被拒绝
+                  Deny from all         #拒绝对文件private.html的访问
+          </Files>                        #结束一个文件的设置
+     </Directory>                              #结束一个目录的设置
+
+
+**** 网络空间容器 
+     <Location>指令与其相应的正则表达式版本（<LocationMatch>）一起作用于网络空间的特定部分。下例中的配置
+会拒绝对任何以“/private”开头的URL路径的访问，比如：http://yoursite.example.com/ private、
+http://yoursite.example.com/private123、http://yoursite.example.com/private/dir/file.html等所有以
+“/private”开头的URL路径。
+
+
+<Location /private>                       #为以/private开头的URL路径设置属性
+          Order Allow,Deny              #顺序是先允许后被拒绝
+          Deny from all                 #拒绝对/private开头的URL路径的访问
+</Location>                               #结束一个网络位置的设置
+
+
+**** 通配符和正则表达式 
+     <Directory>、<Files>、<Location>指令可以使用与C标准库中的fnmatch类似的shell风格的通配符。“*”匹配任
+何字符串，“?”匹配任何单个的字符，“[seq]”匹配seq序列中的任何字符，符号“/”不被任何通配符所匹配，所
+以必须显式地使用。
+
+如果需要更复杂的匹配，这些容器都有一个对应的正则版本：<DirectoryMatch>、<FilesMatch>、
+<LocationMatch>，可以使用与Perl兼容的正则表达式，以提供更复杂的匹配。但是还必须注意下面配置段的合并
+部分关于使用正则表达式会如何作用于配置指令的内容。下例使用非正则表达式的通配符来改变所有用户目录的配
+置：
+
+
+<Directory /home/*/public_html>           #使用非正则表达式的通配符来改变所有用户目录的配置
+          Options Indexes               #允许使用目录索引
+</Directory>                              #结束一个目录的设置
+
+下例使用正则表达式一次性拒绝对多种图形文件的访问：
+
+
+<FilesMatch \.(?i:gif|jpe?g|png)$>        #使用正则表达式一次性拒绝对多种图形文件的访问
+          Order allow,deny              #顺序是先允许后被拒绝
+          Deny from all                 #拒绝对匹配上的图片格式的访问
+</FilesMatch>                             #结束一个文件正则的设置
+
+
+ 4 3.5.4　如何选择使用容器 
+选择使用文件系统容器还是使用网络空间容器其实很简单。当指令应该作用于文件系统时，总是用<Directory>或
+<Files>；而当指令作用于不存在于文件系统的对象时，就用<Location>，比如一个由数据库生成的网页。绝对不要
+试图用<Location>去限制对文件系统中的对象的访问，因为许多不同的网络空间路径可能会映射到同一个文件系统
+目录，从而导致你的访问限制被突破。比如：
+
+
+<Location /dir/>                          #为以/dir/开头的URL路径设置属性
+         Order allow,deny               #顺序是先允许后被拒绝
+          Deny from all                 #拒绝对/dir/开头的URL路径的访问
+</Location>                               #结束一个网络位置的设置
+
+上述配置对http://yoursite.example.com/dir/请求的确起作用。但是设想一下，在一个不区分大小写的文件系统
+中，这个访问限制会被http://yoursite.example.com/DIR/请求轻易突破。而<Directory>指令才会真正作用于对这
+个位置的任何形式的请求。但是有一个例外，就是UNIX文件系统中的符号连接（软连接），符号连接可以使同一个
+目录出现在文件系统中的多个位置。<Directory>指令将不重设路径名而直接追踪符号连接，因此，对于安全要求最
+高的，应该用Options指令禁止对符号连接的追踪。
+
+不要认为使用大小写敏感的文件系统就无所谓了，因为有很多方法可以将不同的网络空间路径映射到同一个文件系
+统路径，所以，应当尽可能使用文件系统容器。但是也有一个例外，就是把访问限制放在<Location/>配置段中可以
+很安全地作用于除了某些特定URL以外的所有URL。
+
+<VirtualHost>容器作用于特定的虚拟主机，为同一个机器上具有不同配置的多个主机提供支持。在后面的章节中将
+详细介绍。
+
+
+ 6 3.6　.htaccess文件和访问限制 
+　.htaccess文件和访问限制
+
+.htaccess文件（或者“分布式配置文件”）提供了针对每个目录改变配置的方法，即在一个特定的目录中放置一个
+包含指令的文件，其中的指令作用于此目录及其所有子目录。任何出现在配置文件中的指令都可能出现
+在.htaccess文件中。该文件在httpd.conf文件的AccessFileName指令中指定，用于进行针对单一目录的配置。在
+服务器配置文件中按以下方法配置：
+
+
+AccessFileName  .htaccess
+
+
+
+                     #在主配置文件中设置访问.htaccess文件
+
+一般情况下，不应该使用.htaccess文件，除非你对主配置文件没有访问权限。有一种很常见的误解，认为用户认证
+只能通过.htaccess文件实现，其实并不是这样，把用户认证写在主配置文件中是完全可行的，而且是一种很好的方
+法。
+
+.htaccess文件应该被用在内容提供者需要针对特定目录改变服务器的配置而又没有root权限的情况下。如果服务器
+管理员不愿意频繁修改配置，则可以允许用户通过.htaccess文件自己修改配置，尤其是ISP在同一个机器上运行了
+多个用户站点，而又希望用户可以自己改变配置的情况下。
+
+虽然如此，一般都应该尽可能地避免使用.htaccess文件。任何希望放在.htaccess文件中的配置，都可以放在主配置
+文件的<Directory>段中，而且更高效。避免使用.htaccess文件有两个主要原因：首先是性能。如果
+AllowOverride启用了.htaccess文件，则Apache需要在每个目录中查找.htaccess文件，因此，无论是否真正用
+到，启用.htaccess都会导致性能的下降。另外，对每一个请求，都需要读取一次.htaccess文件。Apache必须在所
+有上级的目录中查找.htaccess文件，以使所有有效的指令都起作用。其次是安全。这样会允许用户自己修改服务器
+的配置，这可能会导致某些意想不到的修改，所以请认真考虑是否应当给予用户这样的特权。将AllowOverride设置
+为none可以完全禁止使用.htaccess文件：
+
+
+AllowOverride None
+
+
+
+                                    #完全禁止使用.htaccess文件
+
+3.6.1　设置路径别名
+
+在使用.htaccess文件之前，我们使用Alias指令设置一个路径别名。将/var/www/html目录的别名设置为dir，这样
+我们可以在浏览器里通过别名dir去访问/var/www/html目录下面的网页文件了，并且可以使用<Directory>容器指
+令对/var/www/html目录做访问控制。之后在把同样的访问控制改为使用.htaccess文件方式完成。设置路径别名和
+目录权限控制，可以在主配置文件httpd.conf中加入以下指令。具体设置如下：
+
+
+Alias /dir/  "/var/www/html/"                   #使用Alias设置别名
+<Directory "/var/www/html">               #使用<Directory>容器指令设置/var/www/html目录访问权限控制
+        Options Indexes FollowSymLinks          #当访问时可以允许出现目录列表和符号链接
+        AllowOverride None                      #禁止使用.htaccess文件
+        Order allow,deny                        #顺序是先允许后被拒绝
+        allow from all                          #允许所有对这个目录的访问
+</Directory>                              #结束一个目录的设置
+ 
+图3-2　设置别名路径的访问结果
+
+配置文件按上面的设置以后，重新启动Apache服务器。如果服务器所在的主机为yoursite.example.com，则在浏
+览器中通过http:// yoursite.example.com/dir/地址访问服务器中/var/www/html/目录下面的文件。在
+/var/www/html/目录下新建一个test.html和一个demo.html文件，如果直接访问该目录就可以看到目录索引列
+表，如图3-2所示。
+
+在上面的配置中，<Directory>容器指令中使用的指令具体说明如下：
+
+1．Options指令 
+
+Options指令控制了在特定目录中将使用哪些服务器特性。Options可以为None、All或者任何Indexes、Include
+s、FollowSymlinks、ExecCGI或者MultiViews的组合。MultiViews不包含在All中，必须显式指定。这些选项解释
+如表3-3所示。
+
+表3-3　Options指令选项值的解释 
+
+ 选项名  描　述  
+ None  在这种情况下，将不启用任何额外特性  
+ All  除MultiViews之外的所有特性。这是默认设置  
+ Indexes  如果一个映射到目录的URL被请求，而此目录中又没有DirectoryIndex（例如：  
+   index.html），那么服务器会返回由mod_autoindex生成的一个格式化后的目录列表  
+ Includes  允许使用mod_include提供的服务器端包含  
+ FollowSymLinks  服务器允许在此目录中使用符号链接  
+
+符号链接的使用如下：
+
+
+[root@localhost html]# ln –s /var/share/doc  /var/www/html/doc         #在Linux命令行创建软链接
+
+通过上面的链接，我们在浏览器中访问http://yoursite.example.com/dir/doc/，就可以将访问位置链接到
+/var/share/doc目录下面。
+
+注意： 即使服务器会使用符号连接，但它不会改变用于匹配<Directory>段的路径名。 
+
+如果此配置位于<Location>配置段中，则此设置会被忽略。 
+
+2．AllowOverrides指令 
+
+确定允许存在于.htaccess文件中的指令类型。当服务器发现一个.htaccess文件（由AccessFileName指定）时，它
+需要知道在这个文件中声明的哪些指令能覆盖在此之前指定的配置指令。AllowOverride仅在不包含正则表达式的
+<Directory>配置段中才是有效的。在<Location>，<DirectoryMatch>，<Files>配置段中都是无效的。如果此指令
+被设置为None，那么.htaccess文件将被完全忽略。事实上，服务器根本不会读取.htaccess文件。当此指令设置为
+All时，所有具有“.htaccess”作用域的指令都允许出现在.htaccess文件中。
+
+3．Order指令 
+
+Order指令控制默认的访问状态与Allow和Deny指令生效的顺序。表明用户是先设置允许的访问地址还是先设置禁止
+访问的地址。
+
+4．Allow指令 
+
+Allow指令控制哪些主机可以访问服务器的该区域。可以根据主机名、IP地址、IP地址范围或其他环境变量中捕获的
+客户端请求特性进行控制。如指定“Allow from all”，则允许所有主机访问。
+
+5．Deny指令 
+
+这条指令允许基于主机名、IP地址或者环境变量限制对服务器的访问。Deny指令的参数设置和Allow指令完全相
+同。如指定“Deny from all”，则禁止所有主机访问。
+
+3.6.2　在.htaccess文件中设置目录的访问限制
+
+启用并控制使用.htaccess文件，可以在Apache的主配置文件中将AccessFileName指令的参数设置为.htaccess，按
+如下内容修改即可启用.htaccess文件功能。启用.htaccess文件如下：
+
+
+AccessFileName .htaccess                        #某个目录启用分布式配置文件功能
+<FilesMatch "^\.ht">                              #设置文件名称，并且设置客户端无法修改.htaccess文件
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+任何出现在配置文件中的指令都可能出现在.htaccess文件中。通常，.htaccess文件使用的配置语法和主配置文件一
+样。AllowOverride指令按类别决定了.htaccess文件中哪些指令才是有效的。我们将上例别名的设置路径
+/var/www/html的访问限制，重新改写成使用.htaccess文件进行控制。首先在主配置文件httpd.conf中将上例
+<Directory>容器指令中的内容修改写成如下内容：
+
+
+Alias /dir/  "/var/www/html/"                   #使用Alias设置别名
+<Directory "/var/www/html">                       #使用<Directory>容器指令设置/var/www/html目录访问权限控制
+        AllowOverride All                       #将上例参数none改写成all即可以使用.htaccess文件
+</Directory>
+
+上面所示将<Directory>容器指令中的内容除了留下AllowOverride指令，删除了其余三个指令。并将指令
+AllowOverride的值由原来的None改成All，即具有“.htaccess”作用域的指令都允许出现在.htaccess文件中。
+
+在别名设置目录/var/www/html中新建一个.htaccess文件，将删除掉的三个指令写入到这个文件中，这样在
+Apache服务器寻找目录时就可以使用.htaccess文件来对这个目录进行访问限制了。如下所示：
+
+
+[root@localhost html]# vi /var/www/html/.htaccess       //编辑此文件写入下面内容
+Options Indexes FollowSymLinks
+Order allow,deny
+Allow from all
+
+不用重新启动Apache服务器即可以使用.htaccess文件中的目录访问限制，打开浏览器同样输入URL为
+http://yoursite.example.com/dir/，同样可以看到目录列表，表示使用.htaccess文件设置些目录访问限制成功。
+
+
+ 1 3.6.1　设置路径别名 
+ 2 3.6.2　在.htaccess文件中设置目录的访问限制 
+
+ 7 3.7　设置虚拟主机 
+
+ 1 3.7.1　基于IP地址的虚拟主机 
+ 2 3.7.2　基于主机名的虚拟主机 
+
+ 8 3.8　小结 
+ 9 自测题 
