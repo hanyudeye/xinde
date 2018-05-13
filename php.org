@@ -2222,6 +2222,7 @@ array_slice()函数的作用是在数组中根据条件取出一段值并返回�
    然后在php.ini 中激活扩展 ubuntu 中要创建软链接, 包含在文件夹中的, 所以不用修改php.ini文件 
    php-config  php配置信息
 *** Composer 依赖管理器
+    
 **** 安装composer
     curl -sS https://getcomposer.org/installer | php
     mv composer.phar /usr/local/bin/composer
@@ -2370,6 +2371,28 @@ array_slice()函数的作用是在数组中根据条件取出一段值并返回�
   原有项目新添加扩展的，都使用 composer require new/package 这种方式来安装。
   需要加版本的话
   composer require "foo/bar:1.0.0"
+*** Composer  
+ php 依赖管理器
+ 在composer 中国推荐的加速方法就是把默认的国外镜像换成国内的。
+ 具体步骤：
+
+ composer config repo.packagist composer https://packagist.phpcomposer.com
+ 该命令是修改config.json配置
+
+ 然后在自己项目里面的composer.json文件里面添加如下：
+  "repositories": {
+         "packagist": {
+             "type": "composer",
+             "url": "https://packagist.phpcomposer.com"
+         }
+     }
+
+ 测试后，速度是变快了很多。
+
+ 原有项目新添加扩展的，都使用 composer require new/package 这种方式来安装。
+ 需要加版本的话
+ composer require "foo/bar:1.0.0"
+
 * CI 框架
 ** 应用程序流程图
 ***    index.php 文件作为前端控制器，初始化运行 CodeIgniter 所需的基本资源；

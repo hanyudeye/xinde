@@ -2,27 +2,11 @@
 ** 默认状态  
 *** 不能访问外网   
     默认只允许127.0.0.1访问
-   修改 httpd.conf, 大概在第234行，把“Deny from all”删掉，再把“Allow from 127.0.0.1”改成“Allow from all”
+    修改 httpd.conf, 大概在第234行，把“Deny from all”删掉，再把“Allow from 127.0.0.1”改成“Allow from all”
 *** 开启URL重写
     httpd.conf文件，找到#LoadModule rewrite_module modules/mod_rewrite.so，然后把前面的“#”删掉
-*** www 目录, 这个觉得跟Linux一样的
-    httpd.conf，寻找“DocumentRoot”大概在第178行，把后面的值改成我们实际网站需要的路径，
-    再寻找“<Directory "c:/wamp/www/">”，同样把后面的值改成我们网站存放的实际地址，就OK了。
 * apache
-** Apache服务器的配置 
-*** 目录结构 (我家的资源）
-    bin    
-    cgi-bin
-    htdocs  
-    include
-    logs
-    manual
-    Build
-    error
-    icons
-    lib
-    man
-    modules
+** 安装配置 
 *** 全局参数设置 
     如果让服务器在两个确定的地址端口组合上接受请求，可以这样设置：
     Listen 192.168.2.2:8080                         #服务器接受192.168.2.2地址的8080端口上的请求
@@ -73,9 +57,6 @@ httpd-DClosedForNow方式启动时，所有的请求才会被重定向到另一�
 <IfDefine ClosedForNow>                                   #判断服务是否用httpd-DClosedForNow方式启动
           Redirect  /http://otherserver.example.com/    #如果条件成功请求才会被重定向到另一个站点
 </IfDefine>                                               #条件的结束标记
-
-
-
 **** 文件系统容器 
      <Directory /var/web/dir1>                 #为目录/var/web/dir1设置属性
           <Files private.html>            #为/var/web/dir1目录及子目录下的private.html文件设置属性
@@ -83,7 +64,6 @@ httpd-DClosedForNow方式启动时，所有的请求才会被重定向到另一�
                   Deny from all         #拒绝对文件private.html的访问
           </Files>                        #结束一个文件的设置
      </Directory>                              #结束一个目录的设置
-
 
 **** 网络空间容器 
      <Location>指令与其相应的正则表达式版本（<LocationMatch>）一起作用于网络空间的特定部分。下例中的配置
@@ -96,7 +76,6 @@ http://yoursite.example.com/private123、http://yoursite.example.com/private/dir
           Order Allow,Deny              #顺序是先允许后被拒绝
           Deny from all                 #拒绝对/private开头的URL路径的访问
 </Location>                               #结束一个网络位置的设置
-
 
 **** 通配符和正则表达式 
      <Directory>、<Files>、<Location>指令可以使用与C标准库中的fnmatch类似的shell风格的通配符。“*”匹配任
@@ -311,3 +290,11 @@ http://yoursite.example.com/dir/，同样可以看到目录列表，表示使用
 
  8 3.8　小结 
  9 自测题 
+** 功能 
+*** 监听
+   - 监听域名
+   - 监听IP
+   - 监听端口
+*** url重写 
+    mod_rewrite
+*** 传输文件

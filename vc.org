@@ -586,18 +586,12 @@ git 远程仓库管理
  #+end_src
 
 ** 功能
-*** Git-Flow 扩展
- Support requires installation of the git-flow extensions. Please reference their
- [[https://github.com/petervanderdoes/gitflow/wiki][installation page]] for assistance.
-
-*** Org integration
-    See the commentary section of the package [[https://github.com/magit/orgit/blob/master/orgit.el#L28][here]].
 *** 快捷键
 | Key Binding | Description                                         |                                                   |
 |-------------+-----------------------------------------------------+---------------------------------------------------|
 | ~SPC g b~   | open a =magit= blame                                | 打开历史记录                                      |
 | ~SPC g f f~ | view a file at a specific branch or commit          | 打开某个分支的文件                                |
-| ~SPC g f h~ | show file commits history                           | 显示仓库的提交历史                              |
+| ~SPC g f h~ | show file commits history                           | 显示仓库的提交历史                                |
 | ~SPC g H c~ | clear highlights                                    | 清除高亮                                          |
 | ~SPC g H h~ | highlight regions by age of commits                 | 高亮区域                                          |
 | ~SPC g H t~ | highlight regions by last updated time              | 高亮区域                                          |
@@ -663,7 +657,7 @@ Magit状态  快捷键
    - ~l l~ to open =log buffer=
    - ~c a~ on the commit you want to amend
    - ~​,​c~ or ~C-c C-c~ to submit the changes
- - Squash last commit:
+ - Squash(压扁） last commit:
    - ~l l~ to open =log buffer=
    - ~r e~ on the second to last commit, it opens the =rebase buffer=
    - ~j~ to put point on last commit
@@ -683,40 +677,33 @@ Magit状态  快捷键
    - ~F -r C-u F~ and choose =upstream= or the name you gave to it
    - ~P P~ to push the commit to =origin=
 
-** Git-Flow
-[[https://github.com/jtatarik/magit-gitflow][magit-gitflow]] provides git-flow commands in its own magit menu.
+*** 历史明细 Git time machine
+    [[https://github.com/pidu/git-timemachine][git-timemachine]] allows to quickly browse the commits of the current buffer.
 
-| Key Binding | Description             |
-|-------------+-------------------------|
-| ~%~         | open magit-gitflow menu |
+ | Key Binding | Description                                        |
+ |-------------+----------------------------------------------------|
+ | ~SPC g t~   | start git timemachine and initiate transient-state |
+ | ~c~         | show current commit                                |
+ | ~n~         | show next commit                                   |
+ | ~N~         | show previous commit                               |
+ | ~p~         | show previous commit                               |
+ | ~q~         | leave transient-state and git timemachine          |
+ | ~Y~         | copy current commit hash                           |
 
-** Git time machine
-[[https://github.com/pidu/git-timemachine][git-timemachine]] allows to quickly browse the commits of the current buffer.
+*** Git links to web services
+ These key bindings allow to quickly construct URLs pointing to a given commit
+ or lines in a file hosted on Git web services like GitHub, GitLab, Bitbucket...
 
-| Key Binding | Description                                        |
-|-------------+----------------------------------------------------|
-| ~SPC g t~   | start git timemachine and initiate transient-state |
-| ~c~         | show current commit                                |
-| ~n~         | show next commit                                   |
-| ~N~         | show previous commit                               |
-| ~p~         | show previous commit                               |
-| ~q~         | leave transient-state and git timemachine          |
-| ~Y~         | copy current commit hash                           |
+ | Key Binding | Description                                                            |
+ |-------------+------------------------------------------------------------------------|
+ | ~SPC g l c~ | on a commit hash, browse to the current file at this commit            |
+ | ~SPC g l C~ | on a commit hash, create link to the file at this commit and copy it   |
+ | ~SPC g l l~ | on a region, browse to file at current lines position                  |
+ | ~SPC g l L~ | on a region, create a link to the file highlighting the selected lines |
 
-** Git links to web services
-These key bindings allow to quickly construct URLs pointing to a given commit
-or lines in a file hosted on Git web services like GitHub, GitLab, Bitbucket...
-
-| Key Binding | Description                                                            |
-|-------------+------------------------------------------------------------------------|
-| ~SPC g l c~ | on a commit hash, browse to the current file at this commit            |
-| ~SPC g l C~ | on a commit hash, create link to the file at this commit and copy it   |
-| ~SPC g l l~ | on a region, browse to file at current lines position                  |
-| ~SPC g l L~ | on a region, create a link to the file highlighting the selected lines |
-
-*Notes:*
-- You can use the universal argument ~SPC u~ to select a remote repository.
-- When the link is opened, the URL is also copied in the kill ring, you can
-  override this behavior by setting the variable =git-link-open-in-browser= to
-  =nil=.
+ *Notes:*
+ - You can use the universal argument ~SPC u~ to select a remote repository.
+ - When the link is opened, the URL is also copied in the kill ring, you can
+   override this behavior by setting the variable =git-link-open-in-browser= to
+   =nil=.
 

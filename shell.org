@@ -618,92 +618,6 @@ set [+-abCdefhHklmnpPtuvx]
    read
 ** 功能调用 
   要想 一段字符当命令运行， 用 $() 或 `` 
-* shell mode 
-** shell 集成工具
-*** 定义shell 
-    #+BEGIN_SRC lisp 
-      '((shell :variables shell-default-shell 'eshell)))
-    #+END_SRC
-    可选
- - =eshell=
- - =shell=
- - =term=
- - =ansi-term=
- - =multi-term=
-
- 通过 spc ' 可快速访问
-*** 配置 shell
- #+BEGIN_SRC lisp
-    (setq-default dotspacemacs-configuration-layers
-                  '((shell :variables
-                           shell-default-position 'bottom
-                           shell-default-height 30)))
-
-   执行程序   '((shell :variables shell-default-term-shell "/bin/bash"))
-   宽度'((shell :variables shell-default-full-span nil))
-   在 类似命令的字串前面 按 i, 会当命令执行
- #+END_SRC
-*** Key bindings
-  | Key Binding | Description                                                    |
-  |-------------+----------------------------------------------------------------|
-  | ~SPC '​~     | Open, close or go to the default shell                         |
-  | ~SPC p '​~   | Open a shell in the project's root                             |
-  | ~SPC a s e~ | Open, close or go to an =eshell=                               |
-  | ~SPC a s i~ | Open, close or go to a =shell=                                 |
-  | ~SPC a s m~ | Open, close or go to a =multi-term=    , 打开多进程shell       |
-  | ~SPC a s t~ | Open, close or go to a =ansi-term=                             |
-  | ~SPC a s T~ | Open, close or go to a =term=                                  |
-  | ~SPC m H~   | 历史browse history with =helm= (works in =eshell= and =shell=) |
-  | ~C-j~       | next item in history                                           |
-  | ~C-k~       | previous item in history                                       |
-
-  *Note:* You can open multiple shells using a numerical prefix argument,
-  for instance pressing ~2 SPC '​~ will a second default shell, the
-  number of shell is indicated on the mode-line.
-
-  *Note:* Use the universal prefix argument ~SPC u SPC '​~ to open the shell
-  in the current buffer instead of a popup.
-
-**** Multi-term
-
-  | Key Binding | Description                  |
-  |-------------+------------------------------|
-  | ~SPC m c~   | create a new multi-term      |
-  | ~SPC m n~   | go to next multi-term        |
-  | ~SPC m p~   | go to previous multi-term    |
-  | ~SPC p $ t~ | run multi-term shell in root |
-
-**** DONE Eshell
-     CLOSED: [2018-01-19 五 20:23]
-
-  | Key Binding        | Description                                |
-  |--------------------+--------------------------------------------|
-  | ~SPC m H~ or ~M-l~ | shell commands history using a helm buffer |
-** shell-script
-   支持 .sh 和 .fish 脚本
-   fish  the friendly interactive shell
-*** 安装
-    fish
-    #+BEGIN_SRC shell
-      sudo apt-add-repository ppa:fish-shell/release-2
-      sudo apt-get update
-      sudo apt-get install fish
-    #+END_SRC
-    - Auto-completion using [[https://github.com/Alexander-Miller/company-shell][company-shell]]
-    In order to enable =sh= scripts linting, install [[https://www.shellcheck.net/][shellcheck]].
-    In order to enable =sh= scripts style checking, install [[https://github.com/openstack-dev/bashate][bashate]].
-*** 完成后端
-    company-shell offers 3 backends for 3 different sources:
-    company-shell - providing completions for binaries that are found on your $PATH
-    company-fish-shell - providing completions for fish-shell’s functions, both builtin as well as user-defined
-    company-shell-env - providing completions for environment variables based on the env command
-Company: backend (company-shell company-shell-env company-fish-shell) error "Wrong type argument: stringp, nil" with args (candidates ech)
-To find the documentation for a completion candidate c company-shell and company-fish-shell will both first try the output of man c.
- If c does not have a manpage they will then use c --help as a fallback. 
-The latter needs to be enabled manually (see the desciption about company-shell-use-help-arg below).
- The meta doc-string (shown in the minibuffer during completion) is provided by (the first line of) whatis c.
-
-There are no doc- or meta-strings for company-shell-env.
 * Linux 最常用命令汇总
 ** 安装包管理类
    //centos
@@ -1466,3 +1380,87 @@ init
 service
 
 启动、停止、重新启动和关闭系统服务，还可以显示所有系统服务的当前状态。
+* shell mode 
+** shell 集成工具
+*** 定义shell 
+    #+BEGIN_SRC lisp 
+      '((shell :variables shell-default-shell 'eshell)))
+    #+END_SRC
+    可选
+ - =eshell=
+ - =shell=
+ - =term=
+ - =ansi-term=
+ - =multi-term=
+
+ 通过 spc ' 可快速访问
+*** 配置 shell
+ #+BEGIN_SRC lisp
+    (setq-default dotspacemacs-configuration-layers
+                  '((shell :variables
+                           shell-default-position 'bottom
+                           shell-default-height 30)))
+
+   执行程序   '((shell :variables shell-default-term-shell "/bin/bash"))
+   宽度'((shell :variables shell-default-full-span nil))
+   在 类似命令的字串前面 按 i, 会当命令执行
+ #+END_SRC
+*** Key bindings
+  | Key Binding | Description                                                    |
+  |-------------+----------------------------------------------------------------|
+  | ~SPC '​~     | Open, close or go to the default shell                         |
+  | ~SPC p '​~   | Open a shell in the project's root                             |
+  | ~SPC a s e~ | Open, close or go to an =eshell=                               |
+  | ~SPC a s i~ | Open, close or go to a =shell=                                 |
+  | ~SPC a s m~ | Open, close or go to a =multi-term=    , 打开多进程shell       |
+  | ~SPC a s t~ | Open, close or go to a =ansi-term=                             |
+  | ~SPC a s T~ | Open, close or go to a =term=                                  |
+  | ~SPC m H~   | 历史browse history with =helm= (works in =eshell= and =shell=) |
+  | ~C-j~       | next item in history                                           |
+  | ~C-k~       | previous item in history                                       |
+
+  *Note:* You can open multiple shells using a numerical prefix argument,
+  for instance pressing ~2 SPC '​~ will a second default shell, the
+  number of shell is indicated on the mode-line.
+
+  *Note:* Use the universal prefix argument ~SPC u SPC '​~ to open the shell
+  in the current buffer instead of a popup.
+
+**** Multi-term
+
+  | Key Binding | Description                  |
+  |-------------+------------------------------|
+  | ~SPC m c~   | create a new multi-term      |
+  | ~SPC m n~   | go to next multi-term        |
+  | ~SPC m p~   | go to previous multi-term    |
+  | ~SPC p $ t~ | run multi-term shell in root |
+
+  | Key Binding        | Description                                |
+  |--------------------+--------------------------------------------|
+  | ~SPC m H~ or ~M-l~ | shell commands history using a helm buffer |
+** shell-script
+   支持 .sh 和 .fish 脚本
+   fish  the friendly interactive shell
+*** 安装
+    fish
+    #+BEGIN_SRC shell
+      sudo apt-add-repository ppa:fish-shell/release-2
+      sudo apt-get update
+      sudo apt-get install fish
+    #+END_SRC
+    - Auto-completion using [[https://github.com/Alexander-Miller/company-shell][company-shell]]
+    In order to enable =sh= scripts linting, install [[https://www.shellcheck.net/][shellcheck]].
+    In order to enable =sh= scripts style checking, install [[https://github.com/openstack-dev/bashate][bashate]].
+*** 功能
+**** company-shell
+- company-shell offers 3 backends for 3 different sources:
+  -company-shell - 完成$PATH 包含的程序　providing completions for binaries that are found on your $PATH
+  -company-fish-shell - 完成fish 的函数providing completions for fish-shell’s functions, both builtin as well as user-defined
+  -company-shell-env -  完成环境变量providing completions for environment variables based on the env command
+- 报错 Company: backend (company-shell company-shell-env company-fish-shell) error "Wrong type argument: stringp, nil" with args (candidates ech)
+  To find the documentation for a completion candidate(候选) c company-shell and company-fish-shell will both first try the output of man c.
+  If c does not have a manpage they will then use c --help as a fallback. 
+  The latter needs to be enabled manually (see the desciption about company-shell-use-help-arg below).
+  The meta doc-string (shown in the minibuffer during completion) is provided by (the first line of) whatis c.
+
+ There are no doc- or meta-strings for company-shell-env.
