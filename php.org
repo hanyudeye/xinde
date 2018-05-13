@@ -2222,12 +2222,19 @@ array_slice()函数的作用是在数组中根据条件取出一段值并返回�
    然后在php.ini 中激活扩展 ubuntu 中要创建软链接, 包含在文件夹中的, 所以不用修改php.ini文件 
    php-config  php配置信息
 *** Composer 依赖管理器
-    
 **** 安装composer
     curl -sS https://getcomposer.org/installer | php
     mv composer.phar /usr/local/bin/composer
 **** 设置镜像地址(中国的镜像地址 -g参数表示全局配置)
      composer config -g repo.packagist composer https://packagist.phpcomposer.com
+      然后在自己项目里面的composer.json文件里面添加如下：
+  "repositories": {
+         "packagist": {
+             "type": "composer",
+             "url": "https://packagist.phpcomposer.com"
+         }
+     }
+
 **** 声明依赖
   在项目目录下创建一个 composer.json 文件，指明依赖，比如，你的项目依赖 monolog：
   #+BEGIN_SRC json
@@ -2247,7 +2254,6 @@ array_slice()函数的作用是在数组中根据条件取出一段值并返回�
 **** 自动加载
      Composer 提供了自动加载的特性，只需在你的代码的初始化部分中加入下面一行：
      require 'vendor/autoload.php';
-
 **** 模块仓库
      packagist.org 是Composer的仓库，很多著名的 PHP 库都能在其中找到。你也可以提交你自己的作品。
 **** 1. 仅更新单个库
@@ -2371,28 +2377,6 @@ array_slice()函数的作用是在数组中根据条件取出一段值并返回�
   原有项目新添加扩展的，都使用 composer require new/package 这种方式来安装。
   需要加版本的话
   composer require "foo/bar:1.0.0"
-*** Composer  
- php 依赖管理器
- 在composer 中国推荐的加速方法就是把默认的国外镜像换成国内的。
- 具体步骤：
-
- composer config repo.packagist composer https://packagist.phpcomposer.com
- 该命令是修改config.json配置
-
- 然后在自己项目里面的composer.json文件里面添加如下：
-  "repositories": {
-         "packagist": {
-             "type": "composer",
-             "url": "https://packagist.phpcomposer.com"
-         }
-     }
-
- 测试后，速度是变快了很多。
-
- 原有项目新添加扩展的，都使用 composer require new/package 这种方式来安装。
- 需要加版本的话
- composer require "foo/bar:1.0.0"
-
 * CI 框架
 ** 应用程序流程图
 ***    index.php 文件作为前端控制器，初始化运行 CodeIgniter 所需的基本资源；
