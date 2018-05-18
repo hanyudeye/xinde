@@ -280,6 +280,7 @@ I wrote a Python utility that is a drop in replacement for sqlcmd/osql as far as
 *** Code Formating
 
  | ~SPC m = c~ | capitalize SQL keywords in region (if capitalize is enabled) |
+
 * oracle
 1、查找表的所有索引（包括索引名，类型，构成列）：
 select t.*,i.index_type from user_ind_columns t,user_indexes i where t.index_name = i.index_name and t.table_name = i.table_name and t.table_name = 要查询的表
@@ -1348,6 +1349,15 @@ return语句要指定返回值,如果没有指定返回值,SQL Server系统会�
 --set @ThisMonthBeginDay=dateadd(day,27,dateadd(month,-1,DATEADD(mm,  DATEDIFF(mm,0,@Monthid),  0))) --上月28号零点
 --set @ThisMonthEndDay=dateadd(ms,-3,dateadd(day,27,DATEADD(mm,DATEDIFF(mm,0,@Monthid),0)))    --本月27号23点59分59秒
 set @docdate2=DATEADD(ms,-3,DATEADD(mm,1,DATEADD(mm,DATEDIFF(mm,0,@Monthid),0)))  --本月最后一天23点59分59
+**  子查询
+   -- 筛   选
+   #+BEGIN_SRC sql
+       SELECT * from  (
+       SELECT   1  AS ID , 'zs' AS  CustomerName
+       union
+       SELECT   2  AS ID , 'lis' AS  CustomerName
+       )a where ID=1
+   #+END_SRC
 * sqlserver2008快捷键                                                                 功能       
     CTRL       +       SHIFT       +       B                 生成解决方案       
     CTRL       +       F7                                           生成编译       
