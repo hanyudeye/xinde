@@ -113,7 +113,7 @@ file    从给定的文件运行 Python 脚本(参阅后文)
 ***** 类的私有方法
       __private_method：两个下划线开头，声明该方法为私有方法，不能在类地外部调用。在类的内部调用 self.__private_methods 
 **** type 函数
-** 函数(对象功能定义)
+** 功能
 *** 定义 def funname(a="a"): 默认值
 *** 对象属性 
     对象的长度  len(obj), 整数没有长度
@@ -386,6 +386,27 @@ SERVER_SOFTWARE	这个环境变量的值包含了调用CGI程序的HTTP服务器
    pip install hy
  #+END_SRC
 
+** 选择后端Choosing a backend
+To choose a default backend set the layer variable =python-backend=:
+
+#+BEGIN_SRC elisp
+  (python :variables python-backend 'anaconda)
+  #+END_SRC
+
+   Backend can be chosen on a per project basis using directory local variables
+   (files named =.dir-locals.el= at the root of a project), an example to use the
+   =lsp= backend:
+  可以在 .dir-locals.el 文件中单独配置后端
+
+    ,#+BEGIN_SRC elisp
+    ;;; Directory Local Variables
+    ;;; For more information see (info "(emacs) Directory Variables")
+
+    ((python-mode (python-backend . lsp)))
+#+END_SRC
+
+*Note:* you can easily add a directory local variable with ~SPC f v d~.
+
 ** Management of Python versions and virtual environments
 *** Manage virtual environments with pyvenv
  A virtual environment provides isolation of your Python package versions. For a
@@ -561,3 +582,13 @@ SERVER_SOFTWARE	这个环境变量的值包含了调用CGI程序的HTTP服务器
  #+END_SRC
 
  or as a directory-local variable (for per-project settings).
+* python功能模式
+** 自动完成 anaconda-mode 蟒蛇, 绿蟒模式
+** 查找文档 
+   SPC mhd 使用helm-pydoc 查找文档
+** 块间跳转 anaconda-mode-find-definitions
+   SPC mgb 跳回
+** 是抑制未使用的导入 没使用的块，导入了也多余 autoflake(小薄片）
+  pip install autoflake
+** 对输入进行排序 要安装 isort , 通过 pip install isort
+** 运行python脚本 SPC mcc
