@@ -1,47 +1,13 @@
 ﻿* bash shell
-** 变量
-   for file in `ls /etc`
-*** 定义  
-**** declare语句    
-    declare -i a=3
-    -a : 数组
-    -f: function
-    -i: integer
-    -r:readonly
-    -x:通过环境输出变量
-**** 普通方式 
-     your_name="qinjx"
-     只读 readonly myUrl
-*** 删除定义 
-    unset  删除变量或函数，只读变量不受影响
-** 变量类型
-*** 局部变量
-    函数内使用
-    local var="localvar"
-    同名会暂时覆盖函数外的变量
-*** 环境变量
-    declare -x 或 export
-*** shell 变量
-    export 导出的变量成为那个shell 环境下的变量，哪个程序都能访问
-*** 字符串
-    长度 echo ${#string}
-    子字符串 ${string:1:4}
- #+BEGIN_SRC shell
-   查找子字符串
-   查找字符 "i 或 s" 的位置：
-   string="wscxy is a great company"
-   echo `expr index "$string" is`  # 输出 8
-
- #+END_SRC
-*** 数组
-    #+BEGIN_SRC bash
-      array_name=(value0 value1 value2 value3)
-      ${数组名[下标]}
-      length=${#array_name[*]}
-      for str in ${mingnong[*]}
-      do
-      done
-    #+END_SRC
+** 数组
+   #+BEGIN_SRC bash
+     array_name=(value0 value1 value2 value3)
+     ${数组名[下标]}
+     length=${#array_name[*]}
+     for str in ${mingnong[*]}
+     do
+     done
+   #+END_SRC
 ** 参数
    $1 $2 $n
    $0 是文件名
@@ -194,18 +160,6 @@
  或
  source filename
  #+END_SRC
-** 调试 sh [-nvx] scripts
-   -n:查询语法,不执行
-   -v:显示脚本内容,执行
-   -x:将有使用到的脚本显示,跟-v略有不同
-
-** 错误
-   Exit Code                        Description
-   126                              The file was not executable.
-   127                              A command was not found.
-   128 and above                    A signal occurred.
-   0 是成功 ，1 是失败 
-   echo $?
 ** 例子
    整数比较
    -eq 等于,如:if [ "$a" -eq "$b" ]
@@ -650,12 +604,11 @@ set [+-abCdefhHklmnpPtuvx]
 ** 文件管理类
    find 路径 -iname "*.jar" -exec cp {} 目标目录 \;    //find和cp联动操作
 ** 进程\网络查看类
-ps -aux         //查看所有进程
-pgrep cron      //查询应用是否在运行，成功则返回pid
-netstat –apn        //查看所有占用了网络端口的应用
-netstat -tl     //参数“-t”是显示tcp数据包的连接行为，参数“-l”是显示监听状态。如果"netstat -tl"输出结果如上面代码所示，则说明服务器端ssh服务已启动。
-ip addr         //查看ip地址
-
+   ps -aux         //查看所有进程
+   pgrep cron      //查询应用是否在运行，成功则返回pid
+   netstat –apn        //查看所有占用了网络端口的应用
+   netstat -tl     //参数“-t”是显示tcp数据包的连接行为，参数“-l”是显示监听状态。如果"netstat -tl"输出结果如上面代码所示，则说明服务器端ssh服务已启动。
+   ip addr         //查看ip地址
 ** 后台运行
 linux命令行重定向：在shell中，分别用0，1，2分别代表标准输入，标准输出，异常输出。 
 在linux中，有个特殊的文件/dev/null，向其写入数据都会被丢弃。
@@ -724,8 +677,6 @@ IPADDR="192.168.211.144"
 GATEWAY="192.168.211.2" #重要：虚拟机linux设静态ip必须设置Gateway，而且一定指向x.x.x.2那个地址
 ONBOOT="yes" 系统启动时是否设置此网络接口，设置为yes时，系统启动时激活此设备。默认设置为yes
 * Linux企业运维人员最常用150个命令汇总
-命令 功能说明
-
 线上查询及帮助命令(2个) 
 man 查看命令帮助，命令的词典，更复杂的还有info，但不常用。 
 help 查看Linux内置命令的帮助，比如cd命令。

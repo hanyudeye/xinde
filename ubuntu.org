@@ -1052,6 +1052,79 @@ ssh-keygen; ssh-copy-id user@host; ssh user@host
 ssh user@host cat /path/to/some/file | xclip
 你是否使用scp将文件复制到工作用电脑上，以便复制其内容到电子邮件中？xclip可以帮到你，它可以将标准输入复制到X11缓冲区，你需要做的就是点击鼠标中键粘贴缓冲区中的内容。
 
+** softether vpn 客户端
+    Please execute './vpnclient start' to run the SoftEther VPN Client Background Service.
+    And please execute './vpncmd' to run the SoftEther VPN Command-Line Utility to configure SoftEther VPN Client.
+
+  创建连接配置
+  Create your connection setting using your assigned RapidVPN server details. Your file content must be similar to:
+  #+BEGIN_SRC c++
+
+  declare root
+  {
+  bool CheckServerCert false
+  uint64 CreateDateTime 0
+  uint64 LastConnectDateTime 0
+  bool StartupAccount false
+  uint64 UpdateDateTime 0
+  declare ClientAuth
+  {
+  uint AuthType 1
+  string Username rapidvpnusername
+  }
+  declare ClientOption
+  {
+  string AccountName rapidvpn1
+  uint AdditionalConnectionInterval 1
+  uint ConnectionDisconnectSpan 0
+  string DeviceName se
+  bool DisableQoS false
+  bool HalfConnection false
+  bool HideNicInfoWindow false
+  bool HideStatusWindow false
+  string Hostname x.x.x.x
+  string HubName default
+  uint MaxConnection 1
+  bool NoRoutingTracking false
+  bool NoTls1 false
+  bool NoUdpAcceleration false
+  uint NumRetry 4294967295
+  uint Port 443
+  uint PortUDP 0
+  string ProxyName $
+  byte ProxyPassword $
+  uint ProxyPort 0
+  uint ProxyType 0
+  string ProxyUsername $
+  bool RequireBridgeRoutingMode false
+  bool RequireMonitorMode false
+  uint RetryInterval 15
+  bool UseCompress false
+  bool UseEncrypt true
+  }
+  }
+
+  #+END_SRC
+  创建网卡
+  VPN Client>remoteenable
+  VPN Client>niccreate
+
+  导入配置 VPN Client>accountimport
+  配置连接名的密码 AccountUsernameSet rapidvpn1
+  AccountPasswordSet rapidvpn1
+  连接账号  accountconnect wum
+  动态更新地址 #sudo dhclient vpn_se
+  断开连接 accountdisconnect wum
+
+  访问外网，则需要手动增加路由
+  先配置 "/etc/sysctl.conf": #net.ipv4.ip_forward=1
+**** 添加路由
+  显示   route -n
+  添加 sudo route add  -net 192.168.1.0 netmask 255.255.255.0 gw 192.168.20.1 dev vpn_vpn_hua
+  删除 route del -net  -net 192.168.1.0 netmask 255.255.255.0 gw 192.168.20.1 dev vpn_vpn_hua
+
+  ifup {interface}
+  ifdown {interface}
 ** 触摸板和小红点
     关闭:sudo modprobe -r psmouse
     开启:sudo modprobe  psmouse
@@ -1107,6 +1180,637 @@ ssh user@host cat /path/to/some/file | xclip
 ***** 模拟form表单提交文件  --form/-F 模拟form表单提交文件
       curl -F "image=@./index.php"  www.learn.com/phptest/index.php
       "image=@./1.png"     image 相当于<input type='file' name='image'>中name的value   @后面是文件路径
+*** 重启网络 
+  sudo   /etc/init.d/networking restart
+  systemctl status networking.server
+*** 网络
+  1. OSI七层网络模型
+  　　TCP/IP协议毫无疑问是互联网的基础协议，没有它就根本不可能上网，任何和互联网有关的操作都离不开TCP/IP协议。不管是OSI七层模型还是TCP/IP的四层、五层模型，每一层中都要自己的专属协议，
+  完成自己相应的工作以及与上下层级之间进行沟通。由于OSI七层模型为网络的标准层次划分，所以我们以OSI七层模型为例从下向上进行一一介绍。
+  　　1）物理层（Physical Layer）
+  　　激活、维持、关闭通信端点之间的机械特性、电气特性、功能特性以及过程特性。该层为上层协议提供了一个传输数据的可靠的物理媒体。简单的说，物理层确保原始的数据可在各种物理媒体上传输。
+  物理层记住两个重要的设备名称，中继器（Repeater，也叫放大器）和集线器。
+  　　2）数据链路层（Data Link Layer）
+  　　数据链路层在物理层提供的服务的基础上向网络层提供服务，其最基本的服务是将源自网络层来的数据可靠地传输到相邻节点的目标机网络层。为达到这一目的，
+  数据链路必须具备一系列相应的功能，主要有：如何将数据组合成数据块，在数据链路层中称这种数据块为帧（frame），帧是数据链路层的传送单位；
+  如何控制帧在物理信道上的传输，包括如何处理传输差错，如何调节发送速率以使与接收方相匹配；以及在两个网络实体之间提供数据链路通路的建立、
+  维持和释放的管理。数据链路层在不可靠的物理介质上提供可靠的传输。该层的作用包括：物理地址寻址、数据的成帧、流量控制、数据的检错、重发等。
+  　　有关数据链路层的重要知识点：
+  　　1> 数据链路层为网络层提供可靠的数据传输；
+  　　2> 基本数据单位为帧；
+  　　3> 主要的协议：以太网协议；
+  　　4> 两个重要设备名称：网桥和交换机。
+  　　3）网络层（Network Layer）
+  　　网络层的目的是实现两个端系统之间的数据透明传送，具体功能包括寻址和路由选择、连接的建立、保持和终止等。它提供的服务使传输层不需要了解网络中的数据传输和交换技术。
+  如果您想用尽量少的词来记住网络层，那就是“路径选择、路由及逻辑寻址”。
+  　　网络层中涉及众多的协议，其中包括最重要的协议，也是TCP/IP的核心协议——IP协议。IP协议非常简单，仅仅提供不可靠、无连接的传送服务。IP协议的主要功能有：
+  无连接数据报传输、数据报路由选择和差错控制。与IP协议配套使用实现其功能的还有地址解析协议ARP、逆地址解析协议RARP、因特网报文协议ICMP、因特网组管理协议IGMP。
+  具体的协议我们会在接下来的部分进行总结，有关网络层的重点为：
+  　　1> 网络层负责对子网间的数据包进行路由选择。此外，网络层还可以实现拥塞控制、网际互连等功能；
+  　　2> 基本数据单位为IP数据报；
+  　　3> 包含的主要协议：
+  　　IP协议（Internet Protocol，因特网互联协议）;
+  　　ICMP协议（Internet Control Message Protocol，因特网控制报文协议）;
+  　　ARP协议（Address Resolution Protocol，地址解析协议）;
+  　　RARP协议（Reverse Address Resolution Protocol，逆地址解析协议）。
+  　　4> 重要的设备：路由器。
+  　　4）传输层（Transport Layer）
+  　　第一个端到端，即主机到主机的层次。传输层负责将上层数据分段并提供端到端的、可靠的或不可靠的传输。此外，传输层还要处理端到端的差错控制和流量控制问题。
+
+  　　传输层的任务是根据通信子网的特性，最佳的利用网络资源，为两个端系统的会话层之间，提供建立、维护和取消传输连接的功能，负责端到端的可靠数据传输。在这一层，信息传送的协议数据单元称为段或报文。
+  　　网络层只是根据网络地址将源结点发出的数据包传送到目的结点，而传输层则负责将数据可靠地传送到相应的端口。
+  　　有关网络层的重点：
+  　　1> 传输层负责将上层数据分段并提供端到端的、可靠的或不可靠的传输以及端到端的差错控制和流量控制问题；
+  　　2> 包含的主要协议：TCP协议（Transmission Control Protocol，传输控制协议）、UDP协议（User Datagram Protocol，用户数据报协议）；
+  　　3> 重要设备：网关。
+
+  　　5）会话层
+  　　会话层管理主机之间的会话进程，即负责建立、管理、终止进程之间的会话。会话层还利用在数据中插入校验点来实现数据的同步。
+  　　6）表示层
+  　　表示层对上层数据或信息进行变换以保证一个主机应用层信息可以被另一个主机的应用程序理解。表示层的数据转换包括数据的加密、压缩、格式转换等。
+
+  　　7）应用层
+  　　为操作系统或网络应用程序提供访问网络服务的接口。
+  　　会话层、表示层和应用层重点：
+  　　1> 数据传输基本单位为报文；
+  　　2> 包含的主要协议：FTP（文件传送协议）、Telnet（远程登录协议）、DNS（域名解析协议）、SMTP（邮件传送协议），POP3协议（邮局协议），HTTP协议（Hyper Text Transfer Protocol）。
+
+  1. IP地址
+  　　1）网络地址
+
+  　　IP地址由网络号（包括子网号）和主机号组成，网络地址的主机号为全0，网络地址代表着整个网络。
+
+  　　2）广播地址
+
+  　　广播地址通常称为直接广播地址，是为了区分受限广播地址。
+
+  　　广播地址与网络地址的主机号正好相反，广播地址中，主机号为全1。当向某个网络的广播地址发送消息时，该网络内的所有主机都能收到该广播消息。
+
+  　　3）组播地址
+
+  　　D类地址就是组播地址。
+
+  　　先回忆下A，B，C，D类地址吧：
+
+  　　A类地址以0开头，第一个字节作为网络号，地址范围为：0.0.0.0~127.255.255.255；(modified @2016.05.31)
+
+  　　B类地址以10开头，前两个字节作为网络号，地址范围是：128.0.0.0~191.255.255.255;
+
+  　　C类地址以110开头，前三个字节作为网络号，地址范围是：192.0.0.0~223.255.255.255。
+
+  　　D类地址以1110开头，地址范围是224.0.0.0~239.255.255.255，D类地址作为组播地址（一对多的通信）；
+
+  　　E类地址以1111开头，地址范围是240.0.0.0~255.255.255.255，E类地址为保留地址，供以后使用。
+
+  　　注：只有A,B,C有网络号和主机号之分，D类地址和E类地址没有划分网络号和主机号。
+
+  　　4）255.255.255.255
+
+  　　该IP地址指的是受限的广播地址。受限广播地址与一般广播地址（直接广播地址）的区别在于，受限广播地址只能用于本地网络，路由器不会转发以受限广播地址为目的地址的分组；一般广播地址既可在本地广播，也可跨网段广播。例如：主机192.168.1.1/30上的直接广播数据包后，另外一个网段192.168.1.5/30也能收到该数据报；若发送受限广播数据报，则不能收到。
+
+  　　注：一般的广播地址（直接广播地址）能够通过某些路由器（当然不是所有的路由器），而受限的广播地址不能通过路由器。
+
+  　　5）0.0.0.0
+
+  　　常用于寻找自己的IP地址，例如在我们的RARP，BOOTP和DHCP协议中，若某个未知IP地址的无盘机想要知道自己的IP地址，它就以255.255.255.255为目的地址，向本地范围（具体而言是被各个路由器屏蔽的范围内）的服务器发送IP请求分组。
+
+  　　6）回环地址
+
+  　　127.0.0.0/8被用作回环地址，回环地址表示本机的地址，常用于对本机的测试，用的最多的是127.0.0.1。
+
+  　　7）A、B、C类私有地址
+
+  　　私有地址(private address)也叫专用地址，它们不会在全球使用，只具有本地意义。
+
+  　　A类私有地址：10.0.0.0/8，范围是：10.0.0.0~10.255.255.255
+
+  　　B类私有地址：172.16.0.0/12，范围是：172.16.0.0~172.31.255.255
+
+  　　C类私有地址：192.168.0.0/16，范围是：192.168.0.0~192.168.255.255
+
+  1. 子网掩码及网络划分
+  　　随着互连网应用的不断扩大，原先的IPv4的弊端也逐渐暴露出来，即网络号占位太多，而主机号位太少，所以其能提供的主机地址也越来越稀缺，目前除了使用NAT在企业内部利用保留地址自行分配以外，通常都对一个高类别的IP地址进行再划分，以形成多个子网，提供给不同规模的用户群使用。
+
+  　　这里主要是为了在网络分段情况下有效地利用IP地址，通过对主机号的高位部分取作为子网号，从通常的网络位界限中扩展或压缩子网掩码，用来创建某类地址的更多子网。但创建更多的子网时，在每个子网上的可用主机地址数目会比原先减少。
+
+  　　什么是子网掩码？
+
+  　　子网掩码是标志两个IP地址是否同属于一个子网的，也是32位二进制地址，其每一个为1代表该位是网络位，为0代表主机位。它和IP地址一样也是使用点式十进制来表示的。如果两个IP地址在子网掩码的按位与的计算下所得结果相同，即表明它们共属于同一子网中。
+
+  　　在计算子网掩码时，我们要注意IP地址中的保留地址，即“ 0”地址和广播地址，它们是指主机地址或网络地址全为“ 0”或“ 1”时的IP地址，它们代表着本网络地址和广播地址，一般是不能被计算在内的。
+
+  　　子网掩码的计算：
+
+  　　对于无须再划分成子网的IP地址来说，其子网掩码非常简单，即按照其定义即可写出：如某B类IP地址为 10.12.3.0，无须再分割子网，则该IP地址的子网掩码255.255.0.0。如果它是一个C类地址，则其子网掩码为 255.255.255.0。其它类推，不再详述。下面我们关键要介绍的是一个IP地址，还需要将其高位主机位再作为划分出的子网网络号，剩下的是每个子网的主机号，这时该如何进行每个子网的掩码计算。
+
+  　　下面总结一下有关子网掩码和网络划分常见的面试考题：
+
+  　　1）利用子网数来计算
+
+  　　在求子网掩码之前必须先搞清楚要划分的子网数目，以及每个子网内的所需主机数目。
+
+  　　(1) 将子网数目转化为二进制来表示;
+
+  　　如欲将B类IP地址168.195.0.0划分成27个子网：27=11011；
+
+  　　(2) 取得该二进制的位数，为N；
+
+  　　该二进制为五位数，N = 5
+
+  　　(3) 取得该IP地址的类子网掩码，将其主机地址部分的的前N位置1即得出该IP地址划分子网的子网掩码。
+
+  　　将B类地址的子网掩码255.255.0.0的主机地址前5位置 1，得到 255.255.248.0
+
+  　　2）利用主机数来计算
+
+  　　如欲将B类IP地址168.195.0.0划分成若干子网，每个子网内有主机700台：
+
+  　　(1) 将主机数目转化为二进制来表示；
+
+  　　700=1010111100；
+
+  　　(2) 如果主机数小于或等于254（注意去掉保留的两个IP地址），则取得该主机的二进制位数，为N，这里肯定 N<8。如果大于254，则 N>8，这就是说主机地址将占据不止8位；
+
+  　　该二进制为十位数，N=10；
+
+  　　(3) 使用255.255.255.255来将该类IP地址的主机地址位数全部置1，然后从后向前的将N位全部置为 0，即为子网掩码值。
+
+  　　将该B类地址的子网掩码255.255.0.0的主机地址全部置1，得到255.255.255.255，然后再从后向前将后 10位置0,即为：11111111.11111111.11111100.00000000，即255.255.252.0。这就是该欲划分成主机为700台的B类IP地址 168.195.0.0的子网掩码。
+
+  　　3）还有一种题型，要你根据每个网络的主机数量进行子网地址的规划和计算子网掩码。这也可按上述原则进行计算。
+
+  　　比如一个子网有10台主机，那么对于这个子网需要的IP地址是：
+
+  　　10＋1＋1＋1＝13
+
+  　　注意：加的第一个1是指这个网络连接时所需的网关地址，接着的两个1分别是指网络地址和广播地址。
+
+  　　因为13小于16（16等于2的4次方），所以主机位为4位。而256－16＝240，所以该子网掩码为255.255.255.240。
+
+  　　如果一个子网有14台主机，不少人常犯的错误是：依然分配具有16个地址空间的子网，而忘记了给网关分配地址。这样就错误了，因为14＋1＋1＋1＝17，17大于16，所以我们只能分配具有32个地址（32等于2的5次方）空间的子网。这时子网掩码为：255.255.255.224。
+
+  回到顶部
+  5. ARP/RARP协议
+  　　地址解析协议，即ARP（Address Resolution Protocol），是根据IP地址获取物理地址的一个TCP/IP协议。主机发送信息时将包含目标IP地址的ARP请求广播到网络上的所有主机，并接收返回消息，以此确定目标的物理地址；收到返回消息后将该IP地址和物理地址存入本机ARP缓存中并保留一定时间，下次请求时直接查询ARP缓存以节约资源。地址解析协议是建立在网络中各个主机互相信任的基础上的，网络上的主机可以自主发送ARP应答消息，其他主机收到应答报文时不会检测该报文的真实性就会将其记入本机ARP缓存；由此攻击者就可以向某一主机发送伪ARP应答报文，使其发送的信息无法到达预期的主机或到达错误的主机，这就构成了一个ARP欺骗。ARP命令可用于查询本机ARP缓存中IP地址和MAC地址的对应关系、添加或删除静态对应关系等。
+
+  　　ARP工作流程举例：
+
+  　　主机A的IP地址为192.168.1.1，MAC地址为0A-11-22-33-44-01；
+  　　主机B的IP地址为192.168.1.2，MAC地址为0A-11-22-33-44-02；
+  　　当主机A要与主机B通信时，地址解析协议可以将主机B的IP地址（192.168.1.2）解析成主机B的MAC地址，以下为工作流程：
+  　　（1）根据主机A上的路由表内容，IP确定用于访问主机B的转发IP地址是192.168.1.2。然后A主机在自己的本地ARP缓存中检查主机B的匹配MAC地址。
+  　　（2）如果主机A在ARP缓存中没有找到映射，它将询问192.168.1.2的硬件地址，从而将ARP请求帧广播到本地网络上的所有主机。源主机A的IP地址和MAC地址都包括在ARP请求中。本地网络上的每台主机都接收到ARP请求并且检查是否与自己的IP地址匹配。如果主机发现请求的IP地址与自己的IP地址不匹配，它将丢弃ARP请求。
+  　　（3）主机B确定ARP请求中的IP地址与自己的IP地址匹配，则将主机A的IP地址和MAC地址映射添加到本地ARP缓存中。
+  　　（4）主机B将包含其MAC地址的ARP回复消息直接发送回主机A。
+  　　（5）当主机A收到从主机B发来的ARP回复消息时，会用主机B的IP和MAC地址映射更新ARP缓存。本机缓存是有生存期的，生存期结束后，将再次重复上面的过程。主机B的MAC地址一旦确定，主机A就能向主机B发送IP通信了。
+  　　逆地址解析协议，即RARP，功能和ARP协议相对，其将局域网中某个主机的物理地址转换为IP地址，比如局域网中有一台主机只知道物理地址而不知道IP地址，那么可以通过RARP协议发出征求自身IP地址的广播请求，然后由RARP服务器负责回答。
+
+  　　RARP协议工作流程：
+
+  　　（1）给主机发送一个本地的RARP广播，在此广播包中，声明自己的MAC地址并且请求任何收到此请求的RARP服务器分配一个IP地址；
+
+  　　（2）本地网段上的RARP服务器收到此请求后，检查其RARP列表，查找该MAC地址对应的IP地址；
+
+  　　（3）如果存在，RARP服务器就给源主机发送一个响应数据包并将此IP地址提供给对方主机使用；
+  　　（4）如果不存在，RARP服务器对此不做任何的响应；
+  　　（5）源主机收到从RARP服务器的响应信息，就利用得到的IP地址进行通讯；如果一直没有收到RARP服务器的响应信息，表示初始化失败。
+  回到顶部
+  6. 路由选择协议
+  　　常见的路由选择协议有：RIP协议、OSPF协议。
+
+  　　RIP协议 ：底层是贝尔曼福特算法，它选择路由的度量标准（metric)是跳数，最大跳数是15跳，如果大于15跳，它就会丢弃数据包。
+
+  　　OSPF协议 ：Open Shortest Path First开放式最短路径优先，底层是迪杰斯特拉算法，是链路状态路由选择协议，它选择路由的度量标准是带宽，延迟。
+  回到顶部
+  7. TCP/IP协议
+  　　TCP/IP协议是Internet最基本的协议、Internet国际互联网络的基础，由网络层的IP协议和传输层的TCP协议组成。通俗而言：TCP负责发现传输的问题，一有问题就发出信号，要求重新传输，直到所有数据安全正确地传输到目的地。而IP是给因特网的每一台联网设备规定一个地址。
+  　　IP层接收由更低层（网络接口层例如以太网设备驱动程序）发来的数据包，并把该数据包发送到更高层---TCP或UDP层；相反，IP层也把从TCP或UDP层接收来的数据包传送到更低层。IP数据包是不可靠的，因为IP并没有做任何事情来确认数据包是否按顺序发送的或者有没有被破坏，IP数据包中含有发送它的主机的地址（源地址）和接收它的主机的地址（目的地址）。
+   　　TCP是面向连接的通信协议，通过三次握手建立连接，通讯完成时要拆除连接，由于TCP是面向连接的所以只能用于端到端的通讯。TCP提供的是一种可靠的数据流服务，采用“带重传的肯定确认”技术来实现传输的可靠性。TCP还采用一种称为“滑动窗口”的方式进行流量控制，所谓窗口实际表示接收能力，用以限制发送方的发送速度。
+
+  　　TCP报文首部格式：
+
+
+
+  　　TCP协议的三次握手和四次挥手：
+  　　TCP连接建立过程：首先Client端发送连接请求报文，Server段接受连接后回复ACK报文，并为这次连接分配资源。Client端接收到ACK报文后也向Server段发生ACK报文，并分配资源，这样TCP连接就建立了。
+
+  　　TCP连接断开过程：假设Client端发起中断连接请求，也就是发送FIN报文。Server端接到FIN报文后，意思是说"我Client端没有数据要发给你了"，但是如果你还有数据没有发送完成，则不必急着关闭Socket，可以继续发送数据。所以你先发送ACK，"告诉Client端，你的请求我收到了，但是我还没准备好，请继续你等我的消息"。这个时候Client端就进入FIN_WAIT状态，继续等待Server端的FIN报文。当Server端确定数据已发送完成，则向Client端发送FIN报文，"告诉Client端，好了，我这边数据发完了，准备好关闭连接了"。Client端收到FIN报文后，"就知道可以关闭连接了，但是他还是不相信网络，怕Server端不知道要关闭，所以发送ACK后进入TIME_WAIT状态，如果Server端没有收到ACK则可以重传。“，Server端收到ACK后，"就知道可以断开连接了"。Client端等待了2MSL后依然没有收到回复，则证明Server端已正常关闭，那好，我Client端也可以关闭连接了。Ok，TCP连接就这样关闭了！
+
+  　　为什么要三次挥手？
+
+  　　在只有两次“握手”的情形下，假设Client想跟Server建立连接，但是却因为中途连接请求的数据报丢失了，故Client端不得不重新发送一遍；这个时候Server端仅收到一个连接请求，因此可以正常的建立连接。但是，有时候Client端重新发送请求不是因为数据报丢失了，而是有可能数据传输过程因为网络并发量很大在某结点被阻塞了，这种情形下Server端将先后收到2次请求，并持续等待两个Client请求向他发送数据...问题就在这里，Cient端实际上只有一次请求，而Server端却有2个响应，极端的情况可能由于Client端多次重新发送请求数据而导致Server端最后建立了N多个响应在等待，因而造成极大的资源浪费！所以，“三次握手”很有必要！
+
+  　　为什么要四次挥手？
+
+  　　试想一下，假如现在你是客户端你想断开跟Server的所有连接该怎么做？第一步，你自己先停止向Server端发送数据，并等待Server的回复。但事情还没有完，虽然你自身不往Server发送数据了，但是因为你们之前已经建立好平等的连接了，所以此时他也有主动权向你发送数据；故Server端还得终止主动向你发送数据，并等待你的确认。其实，说白了就是保证双方的一个合约的完整执行！
+
+  　　使用TCP的协议：FTP（文件传输协议）、Telnet（远程登录协议）、SMTP（简单邮件传输协议）、POP3（和SMTP相对，用于接收邮件）、HTTP协议等。
+  1. UDP协议　
+  　　UDP用户数据报协议，是面向无连接的通讯协议，UDP数据包括目的端口号和源端口号信息，由于通讯不需要连接，所以可以实现广播发送。UDP通讯时不需要接收方确认，属于不可靠的传输，可能会出现丢包现象，实际应用中要求程序员编程验证。
+  　　UDP与TCP位于同一层，但它不管数据包的顺序、错误或重发。因此，UDP不被应用于那些使用虚电路的面向连接的服务，UDP主要用于那些面向查询---应答的服务，例如NFS。相对于FTP或Telnet，这些服务需要交换的信息量较小。
+  　　每个UDP报文分UDP报头和UDP数据区两部分。报头由四个16位长（2字节）字段组成，分别说明该报文的源端口、目的端口、报文长度以及校验值。UDP报头由4个域组成，其中每个域各占用2个字节，具体如下：
+  　　（1）源端口号；
+  　　（2）目标端口号；
+  　　（3）数据报长度；
+  　　（4）校验值。
+  　　使用UDP协议包括：TFTP（简单文件传输协议）、SNMP（简单网络管理协议）、DNS（域名解析协议）、NFS、BOOTP。
+  　　TCP 与 UDP 的区别：TCP是面向连接的，可靠的字节流服务；UDP是面向无连接的，不可靠的数据报服务。
+  回到顶部
+  9. DNS协议
+  　　DNS是域名系统(DomainNameSystem)的缩写，该系统用于命名组织到域层次结构中的计算机和网络服务，可以简单地理解为将URL转换为IP地址。域名是由圆点分开一串单词或缩写组成的，每一个域名都对应一个惟一的IP地址，在Internet上域名与IP地址之间是一一对应的，DNS就是进行域名解析的服务器。DNS命名用于Internet等TCP/IP网络中，通过用户友好的名称查找计算机和服务。
+  回到顶部
+  10. NAT协议
+  　　NAT网络地址转换(Network Address Translation)属接入广域网(WAN)技术，是一种将私有（保留）地址转化为合法IP地址的转换技术，它被广泛应用于各种类型Internet接入方式和各种类型的网络中。原因很简单，NAT不仅完美地解决了lP地址不足的问题，而且还能够有效地避免来自网络外部的攻击，隐藏并保护网络内部的计算机。
+
+  回到顶部
+  11. DHCP协议
+  　　DHCP动态主机设置协议（Dynamic Host Configuration Protocol）是一个局域网的网络协议，使用UDP协议工作，主要有两个用途：给内部网络或网络服务供应商自动分配IP地址，给用户或者内部网络管理员作为对所有计算机作中央管理的手段。
+
+  回到顶部
+  12. HTTP协议
+  　　超文本传输协议（HTTP，HyperText Transfer Protocol)是互联网上应用最为广泛的一种网络协议。所有的WWW文件都必须遵守这个标准。
+  　　HTTP 协议包括哪些请求？
+
+  　　GET：请求读取由URL所标志的信息。
+
+  　　POST：给服务器添加信息（如注释）。
+
+  　　PUT：在给定的URL下存储一个文档。
+
+  　　DELETE：删除给定的URL所标志的资源。
+
+  　　HTTP 中， POST 与 GET 的区别
+
+  　　1）Get是从服务器上获取数据，Post是向服务器传送数据。
+
+  　　2）Get是把参数数据队列加到提交表单的Action属性所指向的URL中，值和表单内各个字段一一对应，在URL中可以看到。
+
+  　　3）Get传送的数据量小，不能大于2KB；Post传送的数据量较大，一般被默认为不受限制。
+
+  　　4）根据HTTP规范，GET用于信息获取，而且应该是安全的和幂等的。
+
+  　　I. 所谓 安全的 意味着该操作用于获取信息而非修改信息。换句话说，GET请求一般不应产生副作用。就是说，它仅仅是获取资源信息，就像数据库查询一样，不会修改，增加数据，不会影响资源的状态。
+
+  　　II. 幂等 的意味着对同一URL的多个请求应该返回同样的结果。
+
+  回到顶部
+  13. 一个举例
+  　　在浏览器中输入 www.baidu.com  后执行的全部过程
+
+  　　现在假设如果我们在客户端（客户端）浏览器中输入http://www.baidu.com,而baidu.com为要访问的服务器（服务器），下面详细分析客户端为了访问服务器而执行的一系列关于协议的操作：
+
+  　　1）客户端浏览器通过DNS解析到www.baidu.com的IP地址220.181.27.48，通过这个IP地址找到客户端到服务器的路径。客户端浏览器发起一个HTTP会话到220.161.27.48，然后通过TCP进行封装数据包，输入到网络层。
+
+  　　2）在客户端的传输层，把HTTP会话请求分成报文段，添加源和目的端口，如服务器使用80端口监听客户端的请求，客户端由系统随机选择一个端口如5000，与服务器进行交换，服务器把相应的请求返回给客户端的5000端口。然后使用IP层的IP地址查找目的端。
+
+  　　3）客户端的网络层不用关系应用层或者传输层的东西，主要做的是通过查找路由表确定如何到达服务器，期间可能经过多个路由器，这些都是由路由器来完成的工作，不作过多的描述，无非就是通过查找路由表决定通过那个路径到达服务器。
+
+  　　4）客户端的链路层，包通过链路层发送到路由器，通过邻居协议查找给定IP地址的MAC地址，然后发送ARP请求查找目的地址，如果得到回应后就可以使用ARP的请求应答交换的IP数据包现在就可以传输了，然后发送IP数据包到达服务器的地址。
+*** Wget实现整站下载
+**** 下载整站数据，只需一条简单的命令：
+  #下面的命令会在终端所在目录创建一个www.qingsword.com目录，将网站www.qingsword.com上的数据全部下载到这个目录中
+  qing@qingsword.com$ wget -rck -np www.qingsword.com
+  #对应参数解释：
+  #-r，递归下载
+  #-c，断点续传，若网站长时间未响应或中途断开，此参数可以让数据断点续传
+  #-k，转换链接为本地链接
+  #-np，--no-parent不追溯至父级
+**** 仅下载指定后缀的文件
+  #参数-A指定，仅下载png与css后缀的文件，网站中其他类型的文件将不会被下载
+  qing@qingsword.com$ wget -rck -np -A '*.png','*.css' www.qingsword.com
+**** 不下载指定后缀的文件
+  #参数-R指定，除了html以及css后缀的文件外，下载其余所有文件
+  qing@qingsword.com$ wget -rck -np -R '*.html','*.css' www.qingsword.com
+*** server
+    按照man service的说明, service本身是个命令, 这个service命令是用来启动service服务的, 其语法格式为:
+    service SCRIPT COMMAND [OPTIONS]
+    其解释为: service运行一个位于/etc/init.d/下的脚本SCRIPT, 或者是一个位于/etc/init下upstart程序. upstart是ubuntu中用来代替以前的sysvinit的启动程序(笔者猜测可能是由于以前svsvinit中叫做startup, 所以现在较upstart).
+    本文先介绍/etc/init.d下的服务, 说明一下怎么手动的添加一个服务, 并且让它自启动(如果你需要的话). 本文这是简单并且直观的介绍一下service, 并不一定所有概念都准确, 如果读者想要更加准确的概念和更加全面的方法, 可以网上自己搜, 遍地都是.
+**** 手动添加一个服务
+     基于上面的解释, 其实添加一个服务很简单, 只需要添加一个脚本到/etc/init.d/并赋予它可执行权限即可. 如:
+
+  sudo touch /etc/init.d/hello
+  chmod +x /etc/init.d/hello
+  这是ubuntu就认为有个叫hello的服务了. 可以试试键入sudo service hell 再敲TAB键, 这时候应该就可以tab出来hello了, 这说明系统已经识别出来它是一个服务了.
+   如果此时报错: hello.service not found, 则可能需要执行一下:
+
+  sudo update-rc.d hello defaults
+  下面来测试一下, 在hello中加入一行:
+
+  #!/bin/bash
+  echo "hello"
+  第一行的"#!/bin/bash"一定要有, 否则有可能会报错.
+
+  然后运行命令:
+
+  sudo service hello start
+  这时便会打印输出hello(如果没有打印可以尝试用sudo systemctl status sss.service查看). 如果hello中的命令为echo "hello" $1, 则会打印hello start. 可见, 我们平时输入的sudo service xxx start中的start, 也就是man中说的COMMAND, 只不过是service传给xxx服务的第一个参数而已.
+
+  至此, 我们已经有了一个可以简单显示hello的服务, 但是它不会自动启动, 这就如前文所说的, 服务不一定非要随开机自启动的. 后文会介绍如何添加自启动.
+
+  3 service start / stop
+  下面我们介绍如何添加service的start / stop等, 其实很简单, 只需要在上文所建的/etc/init.d/hello加入:
+
+  case "$1" in
+      start)
+          echo start
+          ;;
+      stop)
+          echo stop
+          ;;
+      restart)
+          echo restart
+          ;;
+  esac
+  在对应的case中进行想要的工作即可.
+
+**** 4 控制服务的自启动
+  4.1 说明
+  简单的说, 要让服务的自启动, 只需要在/etc/rc{RUNLEVEL}.d/中加入S12ServiceName的软链接, 指向/etc/init.d中对应的脚本(如本文的hello). 这里先且看说明, 稍后会介绍方法而不用手动一个个的添加:
+
+  说明:
+
+  S12ServiceName中:
+  表示该服务随启动自动启动, 如果是K, 则表示Kill(杀死进程);
+  12表示优先级, 数越小, 越是先执行.
+  ServiceName即服务名, 起始叫什么都行, 真正起作用的是软链接的目标, 不过一般最好与服务同名.
+  其中的RUNLEVEL为系统的运行级别, 一般的linux分8个级别: 0-6和一个'S'级别.
+  0代表关机(halt);
+  6代表重启(restart);
+  1级别是单用户模式(single),
+  2-5各有不同. 但是在userlinux(包括ubuntu)中2-5级别是毫无差别的.
+  'S'级别是一个比较特殊的级别, 他应该是先于其他级别运行的级别(这一点有待考证).
+  这里说明一下, 0-6级别的运行是互斥的, 而不是叠加运行, 也就是说如果进入(move into)4级别, 不是指0-3都要运行, 而只是完成4级别里所规定的服务.
+
+  如果要查看系统当前的运行级别可以使用命令:
+
+  runlevel
+  显示的数字就是当前运行级别, 一般ubuntu桌面版在我们平时使用时进入的应该是level 2.
+
+**** 4.2 使用update-rc.d添加自启动
+  虽然可以按照上文方法来手动添加, 但是更简单的是使用update-rc.d命令来添加. 如:
+
+  sudo update-rc.d hello defaults
+  如果要删除这个服务, 则:
+
+  sudo update-rc.d hello remove
+  可以看到, 运行添加时, 终端会显示:
+
+  update-rc.d: warning: /etc/init.d/hello missing LSB information
+  update-rc.d: see <http://wiki.debian.org/LSBInitScripts>
+   Adding system startup for /etc/init.d/hello ...
+     /etc/rc0.d/K20hello -> ../init.d/hello
+     /etc/rc1.d/K20hello -> ../init.d/hello
+     /etc/rc6.d/K20hello -> ../init.d/hello
+     /etc/rc2.d/S20hello -> ../init.d/hello
+     /etc/rc3.d/S20hello -> ../init.d/hello
+     /etc/rc4.d/S20hello -> ../init.d/hello
+     /etc/rc5.d/S20hello -> ../init.d/hello
+  然后就可以看到在上述列表中的各个级别下, 创建了对应的软链接.
+
+  remove方法如果/etc/init.d/脚本还存在, 则需要使用-f参数:
+
+  sudo update-rc.d -f hello remove
+  这样会删除各个软链接, 但是并不会删除/etc/init.d/下的脚本本身.
+*** samba
+**** samba方式
+  yum install samba-client.x86_64 #安装samba客户端
+  smbclient //192.168.211.1/test_samba    #通过samba打开windows共享目录
+  smbclient //192.168.1.1/smb_share/ -U smb_user  #系统提示输入smb_user_passwd
+  smbclient //192.168.1.1/smb_share/ smb_user_passwd -U smb_user  #不提示输入密码
+  出现提示符： 
+  smb: >
+
+  get下载文件
+
+  put上传文件
+
+  cd 切换windows目录
+
+  lcd 切换本地目录
+
+  help显示帮助
+
+  ? 显示帮助
+
+  ! 表示执行liunx本地的命令，如:!ls显示本地目录下的内容
+
+  smb命令	说明	–
+  ?或help [command]	提供关于帮助或某个命令的帮助	
+  ![shell command]	执行所用的SHELL命令，或让用户进入 SHELL提示符	–
+  cd [目录]	切换到服务器端的指定目录，如未指定，则 smbclient 返回当前本地目录	
+  lcd [目录]	切换到客户端指定的目录	
+  dir 或ls	列出当前目录下的文件；	
+  exit 或quit	退出smbclient	
+  get file1 [file2]	从服务器上下载file1，并以文件名file2存在本地机上；如果不想改名，可以把file2省略	
+  mget file1 file2 file3 filen	从服务器上下载多个文件；	
+  md或mkdir 目录	在服务器上创建目录	
+  rd或rmdir 目录	删除服务器上的目录	
+  put file1 [file2]	向服务器上传一个文件file1,传到服务器上改名为file2；	
+  mput file1 file2 filen	向服务器上传多个文件	
+  –	–	–
+  mount方式
+  yum install cifs-utils #安装cifs工具包 （用于取代被淘汰的smbfs）
+
+  #首先创建被挂载的目录：
+  $ mkdir windows
+
+  #将共享文件夹挂载到windows文件夹：
+  $ sudo mount -t cifs -o username=share,password=share //192.168.66.198/share ./windows
+
+  mkdir /mnt/挂载点名称 #（创建一个挂载点）
+  vi /etc/fstab #添加以下内容让操作系统启动后自动挂载windows机器上的共享文件夹到挂载点
+
+  1
+  //你的windows机器名/共享文件夹名 /mnt/你创建的挂载点 cifs rw,credentials=/etc/.smbpasswd 0 0
+
+  mount -a #（让系统重新挂载所有在/etc/fstab文件里面定义的挂载点）
+  cd /mnt/挂载点名称 #（进入windows机器上的共享文件夹）
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+  10
+  11
+  12
+  13
+  14
+  15
+  16
+  其中几个参数表示含义：
+
+  –	–
+  cifs	Common Internet File System，可以理解为网络文件系统
+  usrname	访问共享文件夹的用户名
+  password	访问密码
+  //192.168.66.198/share	表示网络文件夹的地址，注意这里最后不能加/，如果是//192.168.66.198/share/则会报如下错误：mount: //192.168.66.198/share/ is not a valid block device
+  Tips：使用mount挂载的方法在系统重新启动后就会失效，如果希望开机时自动挂载，将下面设置加入/etc/fstab文件最后面就可以了。
+
+  SSH方式
+  假设A机(有shell环境，linux或win下安装cygwin)想要无密码访问B机（linux），则进行如下步骤 
+  1、在A机用ssh-keygen生成公钥私钥（-t RSA即可） 
+  2、在A机用ssh-copyid将公钥发给B机并完成配置（用ssh-copyid要比手工配置ssh目录方便很多） 
+  3、ssh username@b.ip 测试是否正常 
+  4、scp 开始使用
+
+  FTP方式
+  [待补充]
+**** smb
+***** 安装:
+      sudo apt-get insall samba
+      sudo apt-get install smbfs
+***** 创建共享目录:
+  mkdir /home/phinecos/share
+  sudo chmod 777 /home/phinecos/share
+***** 创建Samba配置文件:
+  保存现有的配置文件
+  sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
+
+  修改现配置文件
+  sudo gedit /etc/samba/smb.conf
+  在smb.conf最后添加
+
+  [share]
+  path = /home/phinecos/share
+  available = yes
+  browsealbe = yes
+  public = yes
+  writable = yes
+***** 创建samba帐户
+    sudo touch /etc/samba/smbpasswd
+    sudo smbpasswd -a phinecos
+  然后会要求你输入samba帐户的密码
+
+   ［如果没有第四步，当你登录时会提示 session setup failed: NT_STATUS_LOGON_FAILURE］
+
+***** 重启samba服务器
+       sudo /etc/init.d/samba restart
+       后来想起来，16.04的服务是使用systemd进行管理了，查了一下相关的资料，发现重启服务的命令如下
+       sudo systemctl restart  smbd.service
+
+   或者
+   Debian and debian-derivatives changed the service name from 'samba' to 'smbd'.
+   Try service smbd restart.
+***** 六. 测试
+       smbclient -L //localhost/share
+    
+   win7 加个 -m SMB2
+   smbclient -L //192.168.1.14/soft -m SMB2
+***** 七，使用
+   可以到windows下输入ip使用了，在文件夹处输入 "\\" + "Ubuntu机器的ip或主机名" + "\\" + "share"
+
+   Linux上 smbclient 
+
+   密码登录改配置
+   主要就是把security改成user guest ok改成no
+***** smbclinet 命令说明  pwd 目录必须是传文件的目录
+   ?或help [command] 提供关于帮助或某个命令的帮助
+   ![shell command] 执行所用的SHELL命令，或让用户进入 SHELL提示符
+   cd [目录] 切换到服务器端的指定目录，如未指定，则 smbclient 返回当前本地目录
+   lcd [目录] 切换到客户端指定的目录；  
+   dir 或ls 列出当前目录下的文件；
+   exit 或quit 退出smbclient
+   get file1 file2 从服务器上下载file1，并以文件名file2存在本地机上；
+   如果不想改名，可以把file2省略
+   mget file1 file2 file3 filen 从服务器上下载多个文件；
+   md或mkdir 目录 在服务器上创建目录
+   rd或rmdir 目录 删除服务器上的目录
+   put file1 [file2] 向服务器上传一个文件file1,传到服务器上改名为file2；
+   put file1 file2 filen 向服务器上传多个文件
+** 日志  
+*** 启动日志
+    /var/log/boot.log 
+**** 硬件
+    - 识别硬盘
+    - 声卡
+    - 挂载 分区 /boot
+    - Mounted /home
+    - set console font and keymap
+    - 开启网络
+** 电源管理
+    立刻关机：
+  sudo halt
+  sudo init 0
+  sudo shutdown -h now
+  sudo shutdown -h 0
+
+  定时/延时关机：
+
+  sudo shutdown -h 19:30
+  sudo shutdown -h +30   ##单位为分钟
+  重启：
+  sudo reboot
+  sudo init 6
+  sudo shutdown -r now
+  休眠：
+
+  sudo pm-hibernate
+
+  echo “disk” > /sys/power/state
+
+  sudo hibernate-disk
+
+  待机(挂起)：
+  sudo pm-suspend
+  sudo pm-suspend-hybrid
+
+  echo “mem” > /sys/power/state
+
+  sudo hibernate-ram
+** 蓝牙连接
+**** 蓝牙上电  
+     [NEW] Controller 74:2F:68:6A:37:44 moon-0 [default] 
+     [NEW] Device 00:07:61:76:8E:78 Logitech diNovo Edge 
+     Agent registered 
+     [bluetooth]# list 
+     Controller 74:2F:68:6A:37:44 moon-0 [default] 
+     [bluetooth]# show 
+     Controller 74:2F:68:6A:37:44 
+     Name: moon 
+     Alias: moon-0 
+     Class: 0x000000 
+     Powered: no 
+     Discoverable: no 
+     Pairable: yes 
+     UUID: PnP Information (00001200-0000-1000-8000-00805f9b34fb) 
+     UUID: Generic Access Profile (00001800-0000-1000-8000-00805f9b34fb) 
+     UUID: Generic Attribute Profile (00001801-0000-1000-8000-00805f9b34fb) 
+     UUID: A/V Remote Control (0000110e-0000-1000-8000-00805f9b34fb) 
+     UUID: A/V Remote Control Target (0000110c-0000-1000-8000-00805f9b34fb) 
+     Modalias: usb:v1D6Bp0246d0509 
+     Discovering: no 
+     [bluetooth]# power on 
+     Failed to set power on: org.bluez.Error.Blocked 
+     [bluetooth]# scan on 
+     Failed to start discovery: org.bluez.Error.NotReady 
+  [bluetooth]# devices 
+  Device 00:07:61:76:8E:78 Logitech diNovo Edge 
+  [bluetooth]# info 00:07:61:76:8E:78 
+  Device 00:07:61:76:8E:78 
+  Name: Logitech diNovo Edge 
+  Alias: Logitech diNovo Edge 
+  Class: 0x002540 
+  Icon: input-keyboard 
+  Paired: yes 
+  Trusted: yes 
+  Blocked: no 
+  Connected: no 
+  LegacyPairing: no 
+  UUID: Human Interface Device… (00001124-0000-1000-8000-00805f9b34fb) 
+  UUID: PnP Information (00001200-0000-1000-8000-00805f9b34fb) 
+  Modalias: usb:v046DpB309d011B 
+  [bluetooth]# connect 00:07:61:76:8E:78 
+  Attempting to connect to 00:07:61:76:8E:78 
+  Failed to connect: org.bluez.Error.Failed 
+  原因及解决办法： 
+  这是由于蓝牙设备没有上电造成的，可通过如下命令解决此问题： 
+  rfkill unblock bluetooth 
+  hciconfig hci0 up
 * 正则 
   foo ——————字符串"foo" 
   ^foo ——————以"foo"开头的字符串 
@@ -1251,1601 +1955,3 @@ file.close()
    最简单的办法是替换emacs的启动文件，就是那个.desktop文件 在/usr/share/applications/下面。
    直接改成
    Exec=env LC_CTYPE=zh_CN.UTF-8 emacs25 %F
-* arch linux
-** install
-*** pre-installation
-    need 800MB of diskspace ;network;
-**** 1.1 verify the boot mode
-     if exist the efivars directory,then UEFI motherboard boot
-     ls /sys/firmware/efi/efivars
-     else the system is booted in BIOS(or CSM) mode
-**** 1.2 set the keyboard layout
-     default console keymap is US.
-     all: ls /usr/share/kbd/keymaps/**/*.map.gz
-     layout changed: loadkeys de-latin1
-     console fonts: /usr/share/kbd/consolefonts/
-     set font: setfont
-**** 1.3 connect the Internet
-     default wired devices: dhcpcd
-     different network: systemd-networkd and netctl;first stop dhcpcd@interface.service
-     无线 wifi-menu
-**** 1.4 update the system clock
-     timedatectl set-ntp true
-     check the service status: timedatectl status
-     timedatectl set-timezone Asia/Shanghai
-**** 1.5 partition the disks
-     fdisk or parted for both MBR and GPT, or
-     gdisk for GPT only
-     display partitions: lsblk or fdisk -l
-     /(root) directory must be available
-     如果要LVM,disk encryption or RAID,现在就做
-**** 1.6 format the partions
-     mkfs,mkswap
-**** 1.7 Mount the file system
-     mount /dev/sda1 /mnt
-     mount /dev/XX /mnt/boot 100MB 够了
-     mount /dev/xxx /mnt/home
-     swapon /dev/xxx
-*** Installation
-**** 2.1 Select the mirrors
-     packages to be installed from the mirror servers,need downloaded.
-     defined in /etc/pacman.d/mirrorlist 
-**** 2.2 Install the base packages
-     base package group: pacstrap /mnt base base-devel
-     ohter packages: append their names to pacstrap or pacman
-*** Configure the system
-**** 3.1 Fstab (-U or -L to define by UUID or labels)
-     genfstab -U /mnt >> /mnt/etc/fstab
-     check the resulting file in /mnt/etc/fstab
-**** 3.2 Chroot
-     arch-chroot /mnt
-**** Time zone
-     list-timezones
-     set: ln -s /usr/share/zoneinfo/zone/subzone /etc/localtime
-     generate /etc/adjtime: hwclock --systohc --utc
-**** Locale
-     uncomment en_US.UTF-8 UTF-8 and other needed localizations in
-     /etc/locale.gen,and generate them with:
-     # locale-gen
-     set the LANG variable 
-     # echo LANG=en_US.UTF-8 > /etc/locale.conf
-     if required,set the console keymap and font in vconsole.conf
-**** Hostname
-     create:
-     # echo myhostname >/etc/hostname
-     add: /etc/hosts
-     127.0.1.1 myhostname.localdomain myhostname
-**** Network configuration
-     For wireless configuration, install the iw,wpa_supplicant,and dialog packages, and firmware packages.
-     systemctl enable dhcpcd@enp2s0.service
-**** Initramfs RAM磁盘
-     create a new initial RAM disk with:
-     # mkinitcpio -p linux
-**** Root password
-     # passwd
-**** Boot loader
-     pacman -S grub
-     grub-install /dev/sda
-     grub-mkconfig -o /boot/grub/grub.cfg
-**** 用户管理
-     useradd -m -g users -G wheel -s /bin/bash ikke
-     passwd ikke
-
-     安装 sudo
-     pacman -S sudo
-     打开 /etc/sudoers 文件，找到 root ALL=(ALL) ALL 并依葫芦画瓢添加 ikke ALL=(ALL) ALL 即可。
-
-*** Reboot
-    # exit 
-    # umount -R /mnt
-    # reboot
-*** Post-installation
-* OpenVPN
-第1步：安装OpenVPN
-第2步：设置CA Directory
-第3步：配置CA变量
-第4步：构建证书颁发机构
-第5步：创建服务器证书，密钥和加密文件
-第6步：生成客户端证书和密钥对
-第7步：配置OpenVPN服务
-第8步：调整服务器网络配置
-第9步：启动并启用OpenVPN服务
-第10步：创建客户端配置基础结构
-第11步：生成客户端配置
-第12步：安装客户端配置
-第13步：测试您的VPN连接
-第14步：撤销客户端证书
-结论
-
-当连接到不可信网络（如酒店或咖啡店的WiFi）时，是否想要从智能手机或笔记本电脑安全且安全地访问互联网？一个虚拟专用网络（VPN）允许，如果你是在专用网络上你私下和安全地穿越不受信任的网络。
-流量从VPN服务器出现并继续前往目的地。
-
-与HTTPS连接结合使用时，此设置可让您保护您的无线登录和交易。您可以规避地理限制和审查制度，并屏蔽您的位置以及来自不可信网络的任何未加密的HTTP通信。
-
-OpenVPN是一个全功能的开源安全套接字层（SSL）VPN解决方案，适用于各种配置。在本教程中，我们将在Droplet上设置一个OpenVPN服务器，然后配置来自Windows，OS X，iOS和Android的对它的访问。
-
-当您准备开始时，请以您的sudo用户身份登录到您的Ubuntu服务器并继续操作。
-
-** 第1步：安装OpenVPN
-首先，我们将OpenVPN安装到我们的服务器上。OpenVPN在Ubuntu的默认存储库中可用，因此我们可以使用它apt进行安装。
-
-我们还将安装该easy-rsa软件包，该软件包将帮助我们建立一个内部CA（证书颁发机构），供我们的VPN使用。
-
-要更新服务器的包索引并安装必要的包，请输入：
-sudo apt-get update
-sudo apt-get install openvpn easy-rsa
-所需的软件现在在服务器上，随时可以进行配置。
-
-** 第2步：设置CA Directory（证书目录)
-OpenVPN是一个TLS / SSL VPN。这意味着它利用证书来加密服务器和客户端之间的流量。为了颁发可信证书，我们需要建立我们自己的简单 证书 颁发机构（CA）。
-
-首先，我们可以easy-rsa使用以下make-cadir命令将模板目录复制到我们的主目录中：
-
-make-cadir ~/openvpn-ca
-进入新创建的目录开始配置CA：
-
-cd ~/openvpn-ca
-** 第3步：配置CA变量
-要配置我们的CA将使用的值，我们需要编辑vars目录中的文件。现在在文本编辑器中打开该文件：
-
-nano vars
-在内部，你会发现一些可以调整的变量来决定你的证书的创建方式。我们只需要担心其中的一些。
-
-在文件底部，找到为新证书设置字段默认值的设置。它应该看起来像这样：
-
-~/openvpn-ca/vars
-. . .
-
-export KEY_COUNTRY="US"
-export KEY_PROVINCE="CA"
-export KEY_CITY="SanFrancisco"
-export KEY_ORG="Fort-Funston"
-export KEY_EMAIL="me@myhost.mydomain"
-export KEY_OU="MyOrganizationalUnit"
-
-. . .
-按红色编辑值，但不要留空。
-
-~/openvpn-ca/vars
-. . .
-
-export KEY_COUNTRY="US"
-export KEY_PROVINCE="NY"
-export KEY_CITY="New York City"
-export KEY_ORG="DigitalOcean"
-export KEY_EMAIL="admin@example.com"
-export KEY_OU="Community"
-
-. . .
-当我们在这里时，我们也会编辑KEY_NAME这个部分下面的值，它填充主题字段。为了简单起见，我们将server在本指南中进行说明：
-
-~/openvpn-ca/vars
-export KEY_NAME="server"
-完成后，保存并关闭文件。
-
-** 第4步：构建证书颁发机构
-现在，我们可以使用我们设置的变量和easy-rsa实用程序来构建我们的认证中心。
-
-确保您位于您的CA目录中，然后输入vars您刚刚编辑的文件：
-
-cd ~/openvpn-ca
-source vars
-如果源代码正确，您应该看到以下内容：
-
-Output
-NOTE: If you run ./clean-all, I will be doing a rm -rf on /home/sammy/openvpn-ca/keys
-
-通过输入以下内容确保我们在干净的环境中运行：
-./clean-all
-
-现在，我们可以通过键入以下命令来构建根CA：
-./build-ca
-
-这将启动创建根证书颁发机构密钥和证书的过程。由于我们填写了vars文件，所有的值都应该自动填充。只需按下ENTER键通过提示确认选择：
-
-Output
-Generating a 2048 bit RSA private key
-..........................................................................................+++
-...............................+++
-writing new private key to 'ca.key'
------
-You are about to be asked to enter information that will be incorporated
-into your certificate request.
-What you are about to enter is what is called a Distinguished Name or a DN.
-There are quite a few fields but you can leave some blank
-For some fields there will be a default value,
-If you enter '.', the field will be left blank.
------
-Country Name (2 letter code) [US]:
-State or Province Name (full name) [NY]:
-Locality Name (eg, city) [New York City]:
-Organization Name (eg, company) [DigitalOcean]:
-Organizational Unit Name (eg, section) [Community]:
-Common Name (eg, your name or your server's hostname) [DigitalOcean CA]:
-Name [server]:
-Email Address [admin@email.com]:
-我们现在有一个CA可以用来创建我们需要的其他文件。
-
-** 第5步：创建服务器证书，密钥和加密文件
-接下来，我们将生成我们的服务器证书和密钥对，以及加密过程中使用的一些其他文件。
-
-**** 首先生成OpenVPN服务器证书和密钥对。我们可以通过输入以下命令来完
-     注意：如果您选择的名称不是server这里，您将不得不调整下面的一些说明。例如，将生成的文件复制到/etc/openvpndirectroy时，必须替换正确的名称。您还必须修改/etc/openvpn/server.conf后的文件以指向正确的.crt和.key文件。
-
-./build-key-server server
-再一次，提示将根据我们刚刚传入的参数（server）和我们提供的vars文件内容来设置默认值。
-按ENTER键可以接受默认值。
-
-
-接下来，我们将生成一些其他项目。通过输入以下命令，我们可以在密钥交换过程中生成强大的Diffie-Hellman密钥：
-
-**** ./build-dh
-     这可能需要几分钟才能完成。
-**** 之后，我们可以生成HMAC签名以加强服务器的TLS完整性验证功能：
-     openvpn --genkey --secret keys/ta.key
-** 第6步：生成客户端证书和密钥对
-   接下来，我们可以生成客户端证书和密钥对。尽管这可以在客户端计算机上完成，然后出于安全目的由服务器/CA进行签名，但对于本指南，为简单起见，我们将在服务器上生成签名密钥。
-   我们将为本指南生成一个客户端密钥/证书，但如果您拥有多个客户端，则可以根据需要多次重复此过程。为每个客户传递一个独特的值给脚本。
-
-   因为您稍后可能会回到此步骤，所以我们将重新提供该vars文件。我们将client1用作本指南的第一份证书/密钥对的值。
-
-*** 要生成没有密码的凭证，为了帮助自动连接，请使用如下所示的build-key命令：
-
-   cd ~/openvpn-ca
-   source vars
-   ./build-key client1
-*** 相反，如果您希望创建一组受密码保护的凭据，请使用以下build-key-pass命令：
-    cd ~/openvpn-ca
-    source vars
-    ./build-key-pass client1
-    
-同样，默认值应该填充，所以你可以按ENTER键继续。将密码保留为空，并确保输入y以询问是否签署和提交证书。
-
-** 第7步：配置OpenVPN服务
-接下来，我们可以使用我们生成的证书和文件开始配置OpenVPN服务。
-
-将文件复制到OpenVPN目录
-
-首先，我们需要将我们需要的文件复制到/etc/openvpn配置目录。
-
-我们可以从我们刚刚生成的所有文件开始。这些被放置在~/openvpn-ca/keys目录中，因为它们被创建。我们需要移动我们的CA证书，我们的服务器证书和密钥，HMAC签名以及Diffie-Hellman文件：
-
-cd ~/openvpn-ca/keys
-sudo cp ca.crt server.crt server.key ta.key dh2048.pem /etc/openvpn
-
-接下来，我们需要将示例OpenVPN配置文件复制并解压到配置目录中，以便我们可以将其用作我们设置的基础：
-gunzip -c /usr/share/doc/openvpn/examples/sample-config-files/server.conf.gz | sudo tee /etc/openvpn/server.conf
-
-调整OpenVPN配置
-现在我们的文件已经存在，我们可以修改服务器配置文件：
-sudo nano /etc/openvpn/server.conf
-
-基本配置
-首先，通过查找tls-auth指令找到HMAC部分。删除“ ; ”以取消注释该tls-auth行。在此之下，将key-direction参数设置为“0”：
-
-/etc/openvpn/server.conf
-tls-auth ta.key 0 # This file is secret
-key-direction 0
-接下来，通过查找注释掉的cipher行来查找加密密码部分。该AES-128-CBC密码提供了加密一个良好的水平，并得到良好支撑。删除“ ; ”以取消注释该cipher AES-128-CBC行：
-
-/etc/openvpn/server.conf
-cipher AES-128-CBC
-在此之下，添加auth一行以选择HMAC消息摘要算法。为此，SHA256是一个不错的选择：
-
-/etc/openvpn/server.conf
-auth SHA256
-最后，找到user并group设置并在开始时删除“ ; ”以取消注释这些行：
-
-/etc/openvpn/server.conf
-user nobody
-group nogroup
-（可选）推送DNS更改以通过VPN重定向所有流量
-上面的设置将创建两台机器之间的VPN连接，但不会强制任何连接使用隧道。如果您希望使用VPN路由所有流量，您可能需要将DNS设置推送到客户端计算机。
-
-您可以这样做，取消注释一些指令，这些指令将配置客户端计算机以通过VPN重定向所有Web流量。找到该redirect-gateway部分并从行的开头删除分号“ ; ” redirect-gateway以取消注释：
-
-/etc/openvpn/server.conf
-push "redirect-gateway def1 bypass-dhcp"
-在此之下，找到该dhcp-option部分。再次，从两条线的前面去掉“ ; ”以取消它们的注释：
-
-/etc/openvpn/server.conf
-push "dhcp-option DNS 208.67.222.222"
-push "dhcp-option DNS 208.67.220.220"
-这应该有助于客户重新配置其DNS设置，以将VPN隧道用作默认网关。
-
-（可选）调整端口和协议
-默认情况下，OpenVPN服务器使用端口1194和UDP协议来接受客户端连接。如果您需要使用其他端口，因为您的客户端可能处于限制性网络环境中，则可以更改该port选项。如果你没有托管Web内容，你的OpenVPN服务器，端口443是一个流行的选择，因为这通常是通过防火墙规则允许的。
-
-/etc/openvpn/server.conf
-# Optional!
-port 443
-通常如果该协议也将被限制在该端口。如果是这样，请proto从UDP 更改为TCP：
-
-/etc/openvpn/server.conf
-# Optional!
-proto tcp
-如果您不需要使用其他端口，最好将这两个设置保留为默认值。
-
-（可选）指向非默认凭证
-如果您在选择了不同的名称./build-key-server指令早，修改cert和key你看到指向适当的行.crt和.key文件。如果您使用默认值server，则应该已经正确设置：
-
-/etc/openvpn/server.conf
-cert server.crt
-key server.key
-完成后，保存并关闭文件。
-
-** 第8步：调整服务器网络配置
-接下来，我们需要调整服务器网络的某些方面，以便OpenVPN能够正确路由流量。
-允许IP转发
-首先，我们需要允许服务器转发流量。这对于我们希望我们的VPN服务器提供的功能来说相当重要。
-
-我们可以通过修改/etc/sysctl.conf文件来调整这个设置：
-
-sudo nano /etc/sysctl.conf
-在里面，寻找设定的线net.ipv4.ip_forward。从行首删除“ ＃ ”字符以取消注释该设置：
-
-/etc/sysctl.conf中
-net.ipv4.ip_forward=1
-完成后保存并关闭文件。
-
-要读取文件并调整当前会话的值，请键入：
-
-sudo sysctl -p
-调整UFW规则以伪装客户端连接
-如果您遵循先决条件中的Ubuntu 16.04初始服务器设置指南，则应该安装UFW防火墙。无论您是否使用防火墙阻止不必要的流量（您几乎总是应该这样做），我们需要本指南中的防火墙来处理进入服务器的一些流量。我们需要修改规则文件来设置伪装，这是一种iptables提供动态NAT以正确路由客户端连接的概念。
-
-在我们打开防火墙配置文件添加伪装之前，我们需要找到我们机器的公共网络接口。为此，请输入：
-
-ip route | grep default
-你的公共接口应该遵循“dev”这个词。例如，该结果显示了名为的接口wlp11s0，该接口在下面突出显示：
-
-Output
-default via 203.0.113.1 dev wlp11s0  proto static  metric 600
-当您将界面与默认路线相关联时，请打开/etc/ufw/before.rules文件以添加相关配置：
-
-sudo nano /etc/ufw/before.rules
-该文件处理在传统UFW规则加载之前应该放置的配置。朝文件顶部添加下面突出显示的行。这将为表中的POSTROUTING链设置默认策略，nat并伪装来自VPN的任何流量：
-注意：请记住用以上命令中找到的界面替换下面wlp11s0的-A POSTROUTING行。
-
-/etc/ufw/before.rules
-#
-# rules.before
-#
-# Rules that should be run before the ufw command line added rules. Custom
-# rules should be added to one of these chains:
-#   ufw-before-input
-#   ufw-before-output
-#   ufw-before-forward
-#
-
-# START OPENVPN RULES
-# NAT table rules
-*nat
-:POSTROUTING ACCEPT [0:0] 
-# Allow traffic from OpenVPN client to wlp11s0 (change to the interface you discovered!)
--A POSTROUTING -s 10.8.0.0/8 -o wlp11s0 -j MASQUERADE
-COMMIT
-# END OPENVPN RULES
-
-# Don't delete these required lines, otherwise there will be errors
-*filter
-. . .
-完成后保存并关闭文件。
-
-我们需要告诉UFW默认允许转发数据包。为此，我们将打开/etc/default/ufw文件：
-
-sudo nano /etc/default/ufw
-在里面找到DEFAULT_FORWARD_POLICY指令。我们将把值从改变DROP为ACCEPT：
-
-在/ etc /默认/ UFW
-DEFAULT_FORWARD_POLICY="ACCEPT"
-完成后保存并关闭文件。
-
-打开OpenVPN端口并启用更改
-接下来，我们将调整防火墙本身以允许流量通过OpenVPN。
-
-如果您没有更改文件中的端口和协议/etc/openvpn/server.conf，则需要打开UDP流量到端口1194.如果您修改了端口和/或协议，请替换您在此处选择的值。
-
-如果您在遵循先决条件教程时忘记添加SSH端口，我们还将添加SSH端口：
-sudo ufw allow 1194/udp
-sudo ufw allow OpenSSH
-现在，我们可以禁用并重新启用UFW来加载我们修改过的所有文件中的更改：
-
-sudo ufw disable
-sudo ufw enable
-我们的服务器现在配置为正确处理OpenVPN流量。
-
-第9步：启动并启用OpenVPN服务
-我们终于准备好在我们的服务器上启动OpenVPN服务了。我们可以使用systemd来做到这一点。
-
-我们需要通过在systemd单元文件名之后指定我们的配置文件名作为实例变量来启动OpenVPN服务器。我们的服务器配置文件被调用，因此调用它时我们将添加到单元文件的末尾：/etc/openvpn/server.conf@server
-sudo systemctl start openvpn@server
-输入以下内容，仔细检查服务是否已成功启动：
-
-sudo systemctl status openvpn@server
-如果一切顺利，你的输出应该看起来像这样：
-
-Output
-● openvpn@server.service - OpenVPN connection to server
-   Loaded: loaded (/lib/systemd/system/openvpn@.service; disabled; vendor preset: enabled)
-   Active: active (running) since Tue 2016-05-03 15:30:05 EDT; 47s ago
-     Docs: man:openvpn(8)
-           https://community.openvpn.net/openvpn/wiki/Openvpn23ManPage
-           https://community.openvpn.net/openvpn/wiki/HOWTO
-  Process: 5852 ExecStart=/usr/sbin/openvpn --daemon ovpn-%i --status /run/openvpn/%i.status 10 --cd /etc/openvpn --script-security 2 --config /etc/openvpn/%i.conf --writepid /run/openvpn/%i.pid (code=exited, sta
- Main PID: 5856 (openvpn)
-    Tasks: 1 (limit: 512)
-   CGroup: /system.slice/system-openvpn.slice/openvpn@server.service
-           └─5856 /usr/sbin/openvpn --daemon ovpn-server --status /run/openvpn/server.status 10 --cd /etc/openvpn --script-security 2 --config /etc/openvpn/server.conf --writepid /run/openvpn/server.pid
-
-May 03 15:30:05 openvpn2 ovpn-server[5856]: /sbin/ip addr add dev tun0 local 10.8.0.1 peer 10.8.0.2
-May 03 15:30:05 openvpn2 ovpn-server[5856]: /sbin/ip route add 10.8.0.0/24 via 10.8.0.2
-May 03 15:30:05 openvpn2 ovpn-server[5856]: GID set to nogroup
-May 03 15:30:05 openvpn2 ovpn-server[5856]: UID set to nobody
-May 03 15:30:05 openvpn2 ovpn-server[5856]: UDPv4 link local (bound): [undef]
-May 03 15:30:05 openvpn2 ovpn-server[5856]: UDPv4 link remote: [undef]
-May 03 15:30:05 openvpn2 ovpn-server[5856]: MULTI: multi_init called, r=256 v=256
-May 03 15:30:05 openvpn2 ovpn-server[5856]: IFCONFIG POOL: base=10.8.0.4 size=62, ipv6=0
-May 03 15:30:05 openvpn2 ovpn-server[5856]: IFCONFIG POOL LIST
-May 03 15:30:05 openvpn2 ovpn-server[5856]: Initialization Sequence Completed
-您还tun0可以通过键入以下命令来检查OpenVPN 界面是否可用：
-
-ip addr show tun0
-你应该看到一个配置的接口：
-
-Output
-4: tun0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN group default qlen 100
-    link/none 
-    inet 10.8.0.1 peer 10.8.0.2/32 scope global tun0
-       valid_lft forever preferred_lft forever
-如果一切顺利，请启用该服务，以便在启动时自动启动：
-
-sudo systemctl enable openvpn@server
-** 第10步：创建客户端配置基础结构
-接下来，我们需要建立一个系统，使我们能够轻松创建客户端配置文件。
-
-创建客户端配置目录结构
-在主目录中创建一个目录结构来存储这些文件：
-
-mkdir -p ~/client-configs/files
-由于我们的客户端配置文件将嵌入客户端密钥，因此我们应该锁定内部目录的权限：
-
-chmod 700 ~/client-configs/files
-创建一个基础配置
-接下来，让我们将示例客户端配置复制到我们的目录中以用作我们的基本配置：
-
-cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf ~/client-configs/base.conf
-在文本编辑器中打开这个新文件：
-
-nano ~/client-configs/base.conf
-在里面，我们需要做一些调整。
-
-首先，找到remote指令。这将客户端指向我们的OpenVPN服务器地址。这应该是您的OpenVPN服务器的公共IP地址。如果您更改了OpenVPN服务器正在侦听1194的端口，请切换到您选择的端口：
-
-nano ~/client-configs/base.conf
-. . .
-# The hostname/IP and port of the server.
-# You can have multiple remote entries
-# to load balance between the servers.
-remote server_IP_address 1194
-. . .
-确保该协议与您在服务器配置中使用的值相匹配：
-
-nano ~/client-configs/base.conf
-
-proto udp
-接下来，通过删除“ ; ” 取消注释user和group指令：
-
-
-nano ~/client-configs/base.conf
-# Downgrade privileges after initialization (non-Windows only)
-user nobody
-group nogroup
-查找设置的指示ca，cert和key。注释掉这些指令，因为我们将在文件本身中添加证书和密钥：
-
-~/client-configs/base.conf
-# SSL/TLS parms.
-# See the server config file for more
-# description.  It's best to use
-# a separate .crt/.key file pair
-# for each client.  A single ca
-# file can be used for all clients.
-#ca ca.crt
-#cert client.crt
-#key client.key
-镜像cipher和auth我们在/etc/openvpn/server.conf文件中设置的设置：
-
-~/client-configs/base.conf
-cipher AES-128-CBC
-auth SHA256
-接下来，key-direction在文件的某处添加指令。这必须设置为“1”才能与服务器一起使用：
-
-~/client-configs/base.conf
-key-direction 1
-最后，添加一些注释掉的行。我们希望在每个配置中都包含这些配置，但是应该只针对随/etc/openvpn/update-resolv-conf文件提供的Linux客户端启用它们。此脚本使用该resolvconf实用程序更新Linux客户端的DNS信息。
-
-~/client-configs/base.conf
-key-direction 1
-# script-security 2
-# up /etc/openvpn/update-resolv-conf
-# down /etc/openvpn/update-resolv-conf
-如果您的客户端运行Linux并且有/etc/openvpn/update-resolv-conf文件，则应从生成的OpenVPN客户端配置文件中取消注释这些行。
-
-完成后保存文件。
-
-创建配置生成脚本
-Next, we will create a simple script to compile our base configuration with the relevant certificate, key, and encryption files. This will place the generated configuration in the ~/client-configs/files directory.
-
-Create and open a file called make_config.sh within the ~/client-configs directory:
-
-nano ~/client-configs/make_config.sh
-Inside, paste the following script:
-
-~/client-configs/make_config.sh
-#!/bin/bash
-
-# First argument: Client identifier
-
-KEY_DIR=~/openvpn-ca/keys
-OUTPUT_DIR=~/client-configs/files
-BASE_CONFIG=~/client-configs/base.conf
-
-cat ${BASE_CONFIG} \
-    <(echo -e '<ca>') \
-    ${KEY_DIR}/ca.crt \
-    <(echo -e '</ca>\n<cert>') \
-    ${KEY_DIR}/${1}.crt \
-    <(echo -e '</cert>\n<key>') \
-    ${KEY_DIR}/${1}.key \
-    <(echo -e '</key>\n<tls-auth>') \
-    ${KEY_DIR}/ta.key \
-    <(echo -e '</tls-auth>') \
-    > ${OUTPUT_DIR}/${1}.ovpn
-Save and close the file when you are finished.
-
-Mark the file as executable by typing:
-
-chmod 700 ~/client-configs/make_config.sh
-** Step 11: Generate Client Configurations
-Now, we can easily generate client configuration files.
-
-If you followed along with the guide, you created a client certificate and key called client1.crt and client1.key respectively by running the ./build-key 
-client1 command in step 6. We can generate a config for these credentials by moving into our ~/client-configs directory and using the script we made:
-
-cd ~/client-configs
-./make_config.sh client1
-
-If everything went well, we should have a client1.ovpn file in our ~/client-configs/files directory:
-
-ls ~/client-configs/files
-Output
-client1.ovpn
-
-Transferring Configuration to Client Devices
-We need to transfer the client configuration file to the relevant device. For instance, this could be your local computer or a mobile device.
-While the exact applications used to accomplish this transfer will depend on your choice and device's operating system, you want the application to use SFTP (SSH file transfer protocol) or SCP (Secure Copy) on the backend.
-This will transport your client's VPN authentication files over an encrypted connection.
-
-Here is an example SFTP command using our client1.ovpn example. 
-This command can be run from your local computer (OS X or Linux). It places the .ovpn file in your home directory:
-
-sftp sammy@openvpn_server_ip:client-configs/files/client1.ovpn ~/
-Here are several tools and tutorials for securely transferring files from the server to a local computer:
-
-WinSCP
-How To Use SFTP to Securely Transfer Files with a Remote Server
-How To Use Filezilla to Transfer and Manage Files Securely on your VPS
-Step 12: Install the Client Configuration
-Now, we'll discuss how to install a client VPN profile on Windows, OS X, iOS, and Android. None of these client instructions are dependent on one another, so feel free to skip to whichever is applicable to you.
-
-The OpenVPN connection will be called whatever you named the .ovpn file. In our example, this means that the connection will be called client1.ovpn for the first client file we generated.
-
-Windows
-Installing
-
-The OpenVPN client application for Windows can be found on OpenVPN's Downloads page. Choose the appropriate installer version for your version of Windows.
-
-Note
-OpenVPN needs administrative privileges to install.
-After installing OpenVPN, copy the .ovpn file to:
-
-C:\Program Files\OpenVPN\config
-When you launch OpenVPN, it will automatically see the profile and makes it available.
-
-OpenVPN must be run as an administrator each time it's used, even by administrative accounts. To do this without having to right-click and select Run as administrator every time you use the VPN, you can preset this, but this must be done from an administrative account. This also means that standard users will need to enter the administrator's password to use OpenVPN. On the other hand, standard users can't properly connect to the server unless the OpenVPN application on the client has admin rights, so the elevated privileges are necessary.
-
-To set the OpenVPN application to always run as an administrator, right-click on its shortcut icon and go to Properties. At the bottom of the Compatibility tab, click the button to Change settings for all users. In the new window, check Run this program as an administrator.
-
-Connecting
-
-Each time you launch the OpenVPN GUI, Windows will ask if you want to allow the program to make changes to your computer. Click Yes. Launching the OpenVPN client application only puts the applet in the system tray so that the VPN can be connected and disconnected as needed; it does not actually make the VPN connection.
-Once OpenVPN is started, initiate a connection by going into the system tray applet and right-clicking on the OpenVPN applet icon. This opens the context menu. Select client1 at the top of the menu (that's our client1.ovpn profile) and choose Connect.
-
-A status window will open showing the log output while the connection is established, and a message will show once the client is connected.
-
-Disconnect from the VPN the same way: Go into the system tray applet, right-click the OpenVPN applet icon, select the client profile and click Disconnect.
-
-OS X
-Installing
-Tunnelblick is a free, open source OpenVPN client for Mac OS X. You can download the latest disk image from the Tunnelblick Downloads page. Double-click the downloaded .dmg file and follow the prompts to install.
-Towards the end of the installation process, Tunnelblick will ask if you have any configuration files. It can be easier to answer No and let Tunnelblick finish. Open a Finder window and double-click client1.ovpn. Tunnelblick will install the client profile. Administrative privileges are required.
-Connecting
-Launch Tunnelblick by double-clicking Tunnelblick in the Applications folder. Once Tunnelblick has been launched, there will be a Tunnelblick icon in the menu bar at the top right of the screen for controlling connections. Click on the icon, and then the Connect menu item to initiate the VPN connection. Select the client1 connection.
-
-Linux
-Installing
-If you are using Linux, there are a variety of tools that you can use depending on your distribution. 
-Your desktop environment or window manager might also include connection utilities.
-The most universal way of connecting, however, is to just use the OpenVPN software.
-On Ubuntu or Debian, you can install it just as you did on the server by typing:
-
-sudo apt-get update
-sudo apt-get install openvpn
-On CentOS you can enable the EPEL repositories and then install it by typing:
-
-sudo yum install epel-release
-sudo yum install openvpn
-Configuring
-Check to see if your distribution includes a /etc/openvpn/update-resolv-conf script:
-
-ls /etc/openvpn
-Output
-update-resolve-conf
-Next, edit the OpenVPN client configuration file you transfered:
-
-nano client1.ovpn
-Uncomment the three lines we placed in to adjust the DNS settings if you were able to find an update-resolv-conf file:
-
-client1.ovpn
-script-security 2
-up /etc/openvpn/update-resolv-conf
-down /etc/openvpn/update-resolv-conf
-If you are using CentOS, change the group from nogroup to nobody to match the distribution's available groups:
-
-client1.ovpn
-group nobody
-Save and close the file.
-
-Now, you can connect to the VPN by just pointing the openvpn command to the client configuration file:
-
-sudo openvpn --config client1.ovpn
-This should connect you to your server.
-
-iOS
-Installing
-
-From the iTunes App Store, search for and install OpenVPN Connect, the official iOS OpenVPN client application. To transfer your iOS client configuration onto the device, connect it directly to a computer.
-
-Completing the transfer with iTunes will be outlined here. Open iTunes on the computer and click on iPhone > apps. Scroll down to the bottom to the File Sharing section and click the OpenVPN app. The blank window to the right, OpenVPN Documents, is for sharing files. Drag the .ovpn file to the OpenVPN Documents window.
-
-iTunes显示可在iPhone上加载的VPN配置文件
-
-Now launch the OpenVPN app on the iPhone. There will be a notification that a new profile is ready to import. Tap the green plus sign to import it.
-
-OpenVPN iOS应用程序显示准备导入的新配置文件
-
-Connecting
-
-OpenVPN is now ready to use with the new profile. Start the connection by sliding the Connect button to the On position. Disconnect by sliding the same button to Off.
-
-Note
-The VPN switch under Settings cannot be used to connect to the VPN. If you try, you will receive a notice to only connect using the OpenVPN app.
-连接到VPN的OpenVPN iOS应用程序
-
-Android
-Installing
-
-Open the Google Play Store. Search for and install Android OpenVPN Connect, the official Android OpenVPN client application.
-
-The .ovpn profile can be transferred by connecting the Android device to your computer by USB and copying the file over. Alternatively, if you have an SD card reader, you can remove the device's SD card, copy the profile onto it and then insert the card back into the Android device.
-
-Start the OpenVPN app and tap the menu to import the profile.
-
-OpenVPN Android应用程序配置文件导入菜单选项
-
-Then navigate to the location of the saved profile (the screenshot uses /sdcard/Download/) and select the file. The app will make a note that the profile was imported.
-
-OpenVPN Android应用程序选择要导入的VPN配置文件
-
-Connecting
-
-To connect, simply tap the Connect button. You'll be asked if you trust the OpenVPN application. Choose OK to initiate the connection. To disconnect from the VPN, go back to the OpenVPN app and choose Disconnect.
-
-准备好连接到VPN的OpenVPN Android应用程序
-
-Step 13: Test Your VPN Connection
-Once everything is installed, a simple check confirms everything is working properly. Without having a VPN connection enabled, open a browser and go to DNSLeakTest.
-
-The site will return the IP address assigned by your internet service provider and as you appear to the rest of the world. To check your DNS settings through the same website, click on Extended Test and it will tell you which DNS servers you are using.
-
-Now connect the OpenVPN client to your Droplet's VPN and refresh the browser. The completely different IP address of your VPN server should now appear. That is now how you appear to the world. Again, DNSLeakTest's Extended Test will check your DNS settings and confirm you are now using the DNS resolvers pushed by your VPN.
-
-Step 14: Revoking Client Certificates
-Occasionally, you may need to revoke a client certificate to prevent further access to the OpenVPN server.
-
-To do so, enter your CA directory and re-source the vars file:
-
-cd ~/openvpn-ca
-source vars
-Next, call the revoke-full command using the client name that you wish to revoke:
-
-./revoke-full client3
-This will show some output, ending in error 23. This is normal and the process should have successfully generated the necessary revocation information, which is stored in a file called crl.pem within the keys subdirectory.
-
-Transfer this file to the /etc/openvpn configuration directory:
-
-sudo cp ~/openvpn-ca/keys/crl.pem /etc/openvpn
-Next, open the OpenVPN server configuration file:
-
-sudo nano /etc/openvpn/server.conf
-At the bottom of the file, add the crl-verify option, so that the OpenVPN server checks the certificate revocation list that we've created each time a connection attempt is made:
-
-/etc/openvpn/server.conf
-crl-verify crl.pem
-Save and close the file.
-
-Finally, restart OpenVPN to implement the certificate revocation:
-
-sudo systemctl restart openvpn@server
-The client should now longer be able to successfully connect to the server using the old credential.
-
-To revoke additional clients, follow this process:
-
-Generate a new certificate revocation list by sourcing the vars file in the ~/openvpn-ca directory and then calling the revoke-full script on the client name.
-Copy the new certificate revocation list to the /etc/openvpn directory to overwrite the old list.
-Restart the OpenVPN service.
-This process can be used to revoke any certificates that you've previously issued for your server.
-
-Conclusion
-Congratulations! You are now securely traversing the internet protecting your identity, location, and traffic from snoopers and censors.
-
-To configure more clients, you only need to follow steps 6, and 11-13 for each additional device. To revoke access to clients, follow step 14.
-
-jellingwood
-Justin Ellingwood
-Upvote193  Subscribe
- Share
-Write about Docker - We'll donate to a tech nonprofit
-Partner with us to publish an article on Docker and we’ll donate up to $300 to a charity of your choice.
-
-LEARN MORE
-Related Tutorials
-How To Create a Point-To-Point VPN with WireGuard on Ubuntu 16.04
-How To Run a Secure MongoDB Server with OpenVPN and Docker on Ubuntu 16.04
-How to Set Up an IKEv2 VPN Server with StrongSwan on Ubuntu 16.04
-Technical Recommendations and Best Practices for DigitalOcean's Tutorials
-How To Encrypt Traffic to Redis with PeerVPN on Ubuntu 16.04
-* server
-  按照man service的说明, service本身是个命令, 这个service命令是用来启动service服务的, 其语法格式为:
-  service SCRIPT COMMAND [OPTIONS]
-  其解释为: service运行一个位于/etc/init.d/下的脚本SCRIPT, 或者是一个位于/etc/init下upstart程序. upstart是ubuntu中用来代替以前的sysvinit的启动程序(笔者猜测可能是由于以前svsvinit中叫做startup, 所以现在较upstart).
-  本文先介绍/etc/init.d下的服务, 说明一下怎么手动的添加一个服务, 并且让它自启动(如果你需要的话). 本文这是简单并且直观的介绍一下service, 并不一定所有概念都准确, 如果读者想要更加准确的概念和更加全面的方法, 可以网上自己搜, 遍地都是.
-** 手动添加一个服务
-   基于上面的解释, 其实添加一个服务很简单, 只需要添加一个脚本到/etc/init.d/并赋予它可执行权限即可. 如:
-
-sudo touch /etc/init.d/hello
-chmod +x /etc/init.d/hello
-这是ubuntu就认为有个叫hello的服务了. 可以试试键入sudo service hell 再敲TAB键, 这时候应该就可以tab出来hello了, 这说明系统已经识别出来它是一个服务了.
- 如果此时报错: hello.service not found, 则可能需要执行一下:
-
-sudo update-rc.d hello defaults
-下面来测试一下, 在hello中加入一行:
-
-#!/bin/bash
-echo "hello"
-第一行的"#!/bin/bash"一定要有, 否则有可能会报错.
-
-然后运行命令:
-
-sudo service hello start
-这时便会打印输出hello(如果没有打印可以尝试用sudo systemctl status sss.service查看). 如果hello中的命令为echo "hello" $1, 则会打印hello start. 可见, 我们平时输入的sudo service xxx start中的start, 也就是man中说的COMMAND, 只不过是service传给xxx服务的第一个参数而已.
-
-至此, 我们已经有了一个可以简单显示hello的服务, 但是它不会自动启动, 这就如前文所说的, 服务不一定非要随开机自启动的. 后文会介绍如何添加自启动.
-
-3 service start / stop
-下面我们介绍如何添加service的start / stop等, 其实很简单, 只需要在上文所建的/etc/init.d/hello加入:
-
-case "$1" in
-    start)
-        echo start
-        ;;
-    stop)
-        echo stop
-        ;;
-    restart)
-        echo restart
-        ;;
-esac
-在对应的case中进行想要的工作即可.
-
-** 4 控制服务的自启动
-4.1 说明
-简单的说, 要让服务的自启动, 只需要在/etc/rc{RUNLEVEL}.d/中加入S12ServiceName的软链接, 指向/etc/init.d中对应的脚本(如本文的hello). 这里先且看说明, 稍后会介绍方法而不用手动一个个的添加:
-
-说明:
-
-S12ServiceName中:
-表示该服务随启动自动启动, 如果是K, 则表示Kill(杀死进程);
-12表示优先级, 数越小, 越是先执行.
-ServiceName即服务名, 起始叫什么都行, 真正起作用的是软链接的目标, 不过一般最好与服务同名.
-其中的RUNLEVEL为系统的运行级别, 一般的linux分8个级别: 0-6和一个'S'级别.
-0代表关机(halt);
-6代表重启(restart);
-1级别是单用户模式(single),
-2-5各有不同. 但是在userlinux(包括ubuntu)中2-5级别是毫无差别的.
-'S'级别是一个比较特殊的级别, 他应该是先于其他级别运行的级别(这一点有待考证).
-这里说明一下, 0-6级别的运行是互斥的, 而不是叠加运行, 也就是说如果进入(move into)4级别, 不是指0-3都要运行, 而只是完成4级别里所规定的服务.
-
-如果要查看系统当前的运行级别可以使用命令:
-
-runlevel
-显示的数字就是当前运行级别, 一般ubuntu桌面版在我们平时使用时进入的应该是level 2.
-
-** 4.2 使用update-rc.d添加自启动
-虽然可以按照上文方法来手动添加, 但是更简单的是使用update-rc.d命令来添加. 如:
-
-sudo update-rc.d hello defaults
-如果要删除这个服务, 则:
-
-sudo update-rc.d hello remove
-可以看到, 运行添加时, 终端会显示:
-
-update-rc.d: warning: /etc/init.d/hello missing LSB information
-update-rc.d: see <http://wiki.debian.org/LSBInitScripts>
- Adding system startup for /etc/init.d/hello ...
-   /etc/rc0.d/K20hello -> ../init.d/hello
-   /etc/rc1.d/K20hello -> ../init.d/hello
-   /etc/rc6.d/K20hello -> ../init.d/hello
-   /etc/rc2.d/S20hello -> ../init.d/hello
-   /etc/rc3.d/S20hello -> ../init.d/hello
-   /etc/rc4.d/S20hello -> ../init.d/hello
-   /etc/rc5.d/S20hello -> ../init.d/hello
-然后就可以看到在上述列表中的各个级别下, 创建了对应的软链接.
-
-remove方法如果/etc/init.d/脚本还存在, 则需要使用-f参数:
-
-sudo update-rc.d -f hello remove
-这样会删除各个软链接, 但是并不会删除/etc/init.d/下的脚本本身.
-* softether vpn 客户端
-  Please execute './vpnclient start' to run the SoftEther VPN Client Background Service.
-  And please execute './vpncmd' to run the SoftEther VPN Command-Line Utility to configure SoftEther VPN Client.
-
-创建连接配置
-Create your connection setting using your assigned RapidVPN server details. Your file content must be similar to:
-#+BEGIN_SRC c++
-
-declare root
-{
-bool CheckServerCert false
-uint64 CreateDateTime 0
-uint64 LastConnectDateTime 0
-bool StartupAccount false
-uint64 UpdateDateTime 0
-declare ClientAuth
-{
-uint AuthType 1
-string Username rapidvpnusername
-}
-declare ClientOption
-{
-string AccountName rapidvpn1
-uint AdditionalConnectionInterval 1
-uint ConnectionDisconnectSpan 0
-string DeviceName se
-bool DisableQoS false
-bool HalfConnection false
-bool HideNicInfoWindow false
-bool HideStatusWindow false
-string Hostname x.x.x.x
-string HubName default
-uint MaxConnection 1
-bool NoRoutingTracking false
-bool NoTls1 false
-bool NoUdpAcceleration false
-uint NumRetry 4294967295
-uint Port 443
-uint PortUDP 0
-string ProxyName $
-byte ProxyPassword $
-uint ProxyPort 0
-uint ProxyType 0
-string ProxyUsername $
-bool RequireBridgeRoutingMode false
-bool RequireMonitorMode false
-uint RetryInterval 15
-bool UseCompress false
-bool UseEncrypt true
-}
-}
-
-#+END_SRC
-创建网卡
-VPN Client>remoteenable
-VPN Client>niccreate
-
-导入配置 VPN Client>accountimport
-配置连接名的密码 AccountUsernameSet rapidvpn1
-AccountPasswordSet rapidvpn1
-连接账号  accountconnect wum
-动态更新地址 #sudo dhclient vpn_se
-断开连接 accountdisconnect wum
-
-访问外网，则需要手动增加路由
-先配置 "/etc/sysctl.conf": #net.ipv4.ip_forward=1
-** 添加路由
-显示   route -n
-添加 sudo route add  -net 192.168.1.0 netmask 255.255.255.0 gw 192.168.20.1 dev vpn_vpn_hua
-删除 route del -net  -net 192.168.1.0 netmask 255.255.255.0 gw 192.168.20.1 dev vpn_vpn_hua
-
-ifup {interface}
-ifdown {interface}
-* 电源管理
-  立刻关机：
-sudo halt
-sudo init 0
-sudo shutdown -h now
-sudo shutdown -h 0
-
-定时/延时关机：
-
-sudo shutdown -h 19:30
-sudo shutdown -h +30   ##单位为分钟
-重启：
-sudo reboot
-sudo init 6
-sudo shutdown -r now
-休眠：
-
-sudo pm-hibernate
-
-echo “disk” > /sys/power/state
-
-sudo hibernate-disk
-
-待机(挂起)：
-sudo pm-suspend
-sudo pm-suspend-hybrid
-
-echo “mem” > /sys/power/state
-
-sudo hibernate-ram
-* 蓝牙连接
-** 蓝牙上电  
-   [NEW] Controller 74:2F:68:6A:37:44 moon-0 [default] 
-   [NEW] Device 00:07:61:76:8E:78 Logitech diNovo Edge 
-   Agent registered 
-   [bluetooth]# list 
-   Controller 74:2F:68:6A:37:44 moon-0 [default] 
-   [bluetooth]# show 
-   Controller 74:2F:68:6A:37:44 
-   Name: moon 
-   Alias: moon-0 
-   Class: 0x000000 
-   Powered: no 
-   Discoverable: no 
-   Pairable: yes 
-   UUID: PnP Information (00001200-0000-1000-8000-00805f9b34fb) 
-   UUID: Generic Access Profile (00001800-0000-1000-8000-00805f9b34fb) 
-   UUID: Generic Attribute Profile (00001801-0000-1000-8000-00805f9b34fb) 
-   UUID: A/V Remote Control (0000110e-0000-1000-8000-00805f9b34fb) 
-   UUID: A/V Remote Control Target (0000110c-0000-1000-8000-00805f9b34fb) 
-   Modalias: usb:v1D6Bp0246d0509 
-   Discovering: no 
-   [bluetooth]# power on 
-   Failed to set power on: org.bluez.Error.Blocked 
-   [bluetooth]# scan on 
-   Failed to start discovery: org.bluez.Error.NotReady 
-[bluetooth]# devices 
-Device 00:07:61:76:8E:78 Logitech diNovo Edge 
-[bluetooth]# info 00:07:61:76:8E:78 
-Device 00:07:61:76:8E:78 
-Name: Logitech diNovo Edge 
-Alias: Logitech diNovo Edge 
-Class: 0x002540 
-Icon: input-keyboard 
-Paired: yes 
-Trusted: yes 
-Blocked: no 
-Connected: no 
-LegacyPairing: no 
-UUID: Human Interface Device… (00001124-0000-1000-8000-00805f9b34fb) 
-UUID: PnP Information (00001200-0000-1000-8000-00805f9b34fb) 
-Modalias: usb:v046DpB309d011B 
-[bluetooth]# connect 00:07:61:76:8E:78 
-Attempting to connect to 00:07:61:76:8E:78 
-Failed to connect: org.bluez.Error.Failed 
-原因及解决办法： 
-这是由于蓝牙设备没有上电造成的，可通过如下命令解决此问题： 
-rfkill unblock bluetooth 
-hciconfig hci0 up
-* Linux使用Wget实现整站下载
-** 下载整站数据，只需一条简单的命令：
-#下面的命令会在终端所在目录创建一个www.qingsword.com目录，将网站www.qingsword.com上的数据全部下载到这个目录中
-qing@qingsword.com$ wget -rck -np www.qingsword.com
-#对应参数解释：
-#-r，递归下载
-#-c，断点续传，若网站长时间未响应或中途断开，此参数可以让数据断点续传
-#-k，转换链接为本地链接
-#-np，--no-parent不追溯至父级
-** 仅下载指定后缀的文件
-#参数-A指定，仅下载png与css后缀的文件，网站中其他类型的文件将不会被下载
-qing@qingsword.com$ wget -rck -np -A '*.png','*.css' www.qingsword.com
-** 不下载指定后缀的文件
-#参数-R指定，除了html以及css后缀的文件外，下载其余所有文件
-qing@qingsword.com$ wget -rck -np -R '*.html','*.css' www.qingsword.com
-* samba
-** samba方式
-yum install samba-client.x86_64 #安装samba客户端
-smbclient //192.168.211.1/test_samba    #通过samba打开windows共享目录
-smbclient //192.168.1.1/smb_share/ -U smb_user  #系统提示输入smb_user_passwd
-smbclient //192.168.1.1/smb_share/ smb_user_passwd -U smb_user  #不提示输入密码
-出现提示符： 
-smb: >
-
-get下载文件
-
-put上传文件
-
-cd 切换windows目录
-
-lcd 切换本地目录
-
-help显示帮助
-
-? 显示帮助
-
-! 表示执行liunx本地的命令，如:!ls显示本地目录下的内容
-
-smb命令	说明	–
-?或help [command]	提供关于帮助或某个命令的帮助	
-![shell command]	执行所用的SHELL命令，或让用户进入 SHELL提示符	–
-cd [目录]	切换到服务器端的指定目录，如未指定，则 smbclient 返回当前本地目录	
-lcd [目录]	切换到客户端指定的目录	
-dir 或ls	列出当前目录下的文件；	
-exit 或quit	退出smbclient	
-get file1 [file2]	从服务器上下载file1，并以文件名file2存在本地机上；如果不想改名，可以把file2省略	
-mget file1 file2 file3 filen	从服务器上下载多个文件；	
-md或mkdir 目录	在服务器上创建目录	
-rd或rmdir 目录	删除服务器上的目录	
-put file1 [file2]	向服务器上传一个文件file1,传到服务器上改名为file2；	
-mput file1 file2 filen	向服务器上传多个文件	
-–	–	–
-mount方式
-yum install cifs-utils #安装cifs工具包 （用于取代被淘汰的smbfs）
-
-#首先创建被挂载的目录：
-$ mkdir windows
-
-#将共享文件夹挂载到windows文件夹：
-$ sudo mount -t cifs -o username=share,password=share //192.168.66.198/share ./windows
-
-mkdir /mnt/挂载点名称 #（创建一个挂载点）
-vi /etc/fstab #添加以下内容让操作系统启动后自动挂载windows机器上的共享文件夹到挂载点
-
-1
-//你的windows机器名/共享文件夹名 /mnt/你创建的挂载点 cifs rw,credentials=/etc/.smbpasswd 0 0
-
-mount -a #（让系统重新挂载所有在/etc/fstab文件里面定义的挂载点）
-cd /mnt/挂载点名称 #（进入windows机器上的共享文件夹）
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-其中几个参数表示含义：
-
-–	–
-cifs	Common Internet File System，可以理解为网络文件系统
-usrname	访问共享文件夹的用户名
-password	访问密码
-//192.168.66.198/share	表示网络文件夹的地址，注意这里最后不能加/，如果是//192.168.66.198/share/则会报如下错误：mount: //192.168.66.198/share/ is not a valid block device
-Tips：使用mount挂载的方法在系统重新启动后就会失效，如果希望开机时自动挂载，将下面设置加入/etc/fstab文件最后面就可以了。
-
-SSH方式
-假设A机(有shell环境，linux或win下安装cygwin)想要无密码访问B机（linux），则进行如下步骤 
-1、在A机用ssh-keygen生成公钥私钥（-t RSA即可） 
-2、在A机用ssh-copyid将公钥发给B机并完成配置（用ssh-copyid要比手工配置ssh目录方便很多） 
-3、ssh username@b.ip 测试是否正常 
-4、scp 开始使用
-
-FTP方式
-[待补充]
-** smb
-*** 安装:
-    sudo apt-get insall samba
-    sudo apt-get install smbfs
-*** 创建共享目录:
-mkdir /home/phinecos/share
-sudo chmod 777 /home/phinecos/share
-*** 创建Samba配置文件:
-保存现有的配置文件
-sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
-
-修改现配置文件
-sudo gedit /etc/samba/smb.conf
-在smb.conf最后添加
-
-[share]
-path = /home/phinecos/share
-available = yes
-browsealbe = yes
-public = yes
-writable = yes
-*** 创建samba帐户
-  sudo touch /etc/samba/smbpasswd
-  sudo smbpasswd -a phinecos
-然后会要求你输入samba帐户的密码
-
- ［如果没有第四步，当你登录时会提示 session setup failed: NT_STATUS_LOGON_FAILURE］
-
-*** 重启samba服务器
-     sudo /etc/init.d/samba restart
-     后来想起来，16.04的服务是使用systemd进行管理了，查了一下相关的资料，发现重启服务的命令如下
-     sudo systemctl restart  smbd.service
-
- 或者
- Debian and debian-derivatives changed the service name from 'samba' to 'smbd'.
- Try service smbd restart.
-*** 六. 测试
-     smbclient -L //localhost/share
-    
- win7 加个 -m SMB2
- smbclient -L //192.168.1.14/soft -m SMB2
-*** 七，使用
- 可以到windows下输入ip使用了，在文件夹处输入 "\\" + "Ubuntu机器的ip或主机名" + "\\" + "share"
-
- Linux上 smbclient 
-
- 密码登录改配置
- 主要就是把security改成user guest ok改成no
-*** smbclinet 命令说明  pwd 目录必须是传文件的目录
- ?或help [command] 提供关于帮助或某个命令的帮助
- ![shell command] 执行所用的SHELL命令，或让用户进入 SHELL提示符
- cd [目录] 切换到服务器端的指定目录，如未指定，则 smbclient 返回当前本地目录
- lcd [目录] 切换到客户端指定的目录；  
- dir 或ls 列出当前目录下的文件；
- exit 或quit 退出smbclient
- get file1 file2 从服务器上下载file1，并以文件名file2存在本地机上；
- 如果不想改名，可以把file2省略
- mget file1 file2 file3 filen 从服务器上下载多个文件；
- md或mkdir 目录 在服务器上创建目录
- rd或rmdir 目录 删除服务器上的目录
- put file1 [file2] 向服务器上传一个文件file1,传到服务器上改名为file2；
- put file1 file2 filen 向服务器上传多个文件
-* Linux比windows 快8小时，是应为Linux还要加一个时区
-  UTC即Universal Time Coordinated，协调世界时（世界统一时间） 加个时区 ，就是当前时间
-  GMT 即Greenwich Mean Time，格林尼治平时
-  下面可以改成不用加时区
-  timedatectl set-local-rtc 1 --adjust-system-clock
-
-  从服务器上同步时间
-
-代码:
-sudo ntpdate ntp.ubuntu.com
-sudo ntpdate time.nist.gov
-
-
-设置电脑的时区为上海
-
-代码:
-sudo cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-
-
-XP 和 Ubuntu 相差了 8 小时的时差 
-
-#关闭UTC，将当前时间写入CMOS。
-
-代码:
-sudo sed -ie 's/UTC=yes/UTC=no/g' /etc/default/rcS
-sudo hwclock --systohc
-* 服务关闭
-sudo sysv-rc-conf
-
-在这个软件里，可以用键盘的方向键移动，用空格选取，也可以直接用鼠标选取，最后用q保存退出，一下列出服务的名称和基本的解释。 
-
-acpi-support 这个是关于电源支持的默认是1,2,3,4,5下启动，我认为你可以把它调整到s级别。 
-acpid acpi的守护程序，默认是2－5开启，我认为可以不用管。 
-alsa alsa声音子系统，应该不用开启它。 
-alsa-utils 这个服务似乎取代了alsa，所以开启这个就可以了，我在S级别开启它。 
-anacron 这是一个用于执行到时间没有执行的程序的服务，我认为它无所谓，所以关了它，这个可以随便。 
-apmd 也是一种电源管理，我认为电脑如果不是很老，它就没有开启的必要了。 
-atd 和anacron类似，我把它关了。 
-bluez-utiles 传说中的蓝牙服务，然后遗憾我没有，所以关了。 
-bootlogd 似乎使用来写log的，安全期间开着他也许比较好。 
-cron 指定时间运行程序的服务，所以开着比较好的。 
-cupsys 打印机服务，所以如果你有，就开启吧。 
-dbus 消息总线系统，非常重要，一定要开。 
-dns-clean 拨号连接用的，如果不用，就关了它。 
-evms 企业卷管理系统，由于我并不明白什么叫做企业卷，所以我关了它。 
-fetchmail 用于邮件守护，我关了它。 
-gdm gnome桌面管理器，我关了它，然后用startx启动gnome。 
-halt 关机用的，不要更改 
-hdparm 这个我刚才有讲，如果没有ide硬盘也就不用开启它了。 
-hotkey-setup 这个是给某些品牌笔记本设计的热键映射，台式机用户请关了它 
-hotplug 这个是用于热插拔的，我已经测试过了，在某些电脑上关闭它会使声卡无效，请在S级别开启它。 
-hplip hp打印机专用的，应该可以关了它。 
-ifrename 网络接口重命名，好像没用，关了。 
-ifupdown 这个使用来打开网络的，开着它。 
-ifupdown-clean 同上。 
-klogd linux守护程序，接受来自内核和发送信息到syslogd的记录，并记录为一个文件，所以请开着它。 
-linux-restricted-modules-common 这个使用来使用受限制的模块的，你可以从/lib/linux-restricted-modules下查看，如果没有什么，你可以关掉它。 
-lvm 逻辑卷管理器，如果你没有请关了它。 
-makedev 用来创建设备到/dev/请不要动他。 
-mdamd 管理raid用，如果你没有请关闭它。 
-module-init-tools 从/etc/modules 加在扩展模块的，这个一般开着。 
-networking 增加网络接口和配置dns用，将它开启。 
-ntp-server 与ubuntu时间服务器进行同步的，关了。 
-pcmcia 激活pcmica设备，遗憾我有生以来都没有见过这样的设备，关了它。 
-powernowd 用于管理cpu的客户端程序，如果有变频功能，比如amd的quite' cool 那么就开启它吧。 
-ppp 拨号用的，我关了它。 
-ppp-dns 一样，也关了。 
-readahead 预加载服务，让我想起了win的预读，当然他们不同，它会使启动变慢3－4妙，所以我关了它。 
-reboot 重启用的，不要动。 
-rmnologin 如果发现nologin，就去除它，在笔记本上不用开启。 
-rsync rsync协议守护，请视情况而定。 
-screen-cleanup 一个清除开机屏幕的脚本，随便。 
-sendsigs 重启和关机时向所有进程发送消息。所以不要管它。 
-single 激活但用户模式，不用管它。 
-stop-bootlogd 从2,3,4,5级别停止bootlogd,不用管它。 
-sudo 这个不用说吧，不用管它。 
-sysklogd 用于记录系统日志信息，不用管它。 
-udev 用户空间dev文件系统，不用管它。 
-udev-mab 同上。 
-umountfs 用来卸载文件卷的，不用管它。 
-urandom 生成随即数的，不知道怎么用，不用管它。 
-usplash 那个漂亮的启动画面，但是我关了它，它也存在，所以想关他需要把内核起动参数中的splash一句删掉。 
-vbesave 显卡bios配置工具，不用管它。 
-xorg-common 设置x服务ice socket。不用管它。
-
-
-redhat下常用的一些服务
-anacron 不考虑系统downtime期间的cron服务
-
-amd 自动安装NFS守候进程
-
-apmd 高级电源管理
-
-arpwatch 记录日志并构建一个在LAN接口上看到的以太网地址和IP地址对数据库
-
-atd 用于at和batch的服务
-
-autofs 自动安装管理进程automount,与NFS相关,依赖于NIS
-
-crond 为Linux下自动安排的进程提供运行服务.
-
-Gpm 提供字符模式下对鼠标的支持.
-
-Keytable 用于装载键盘镜像
-
-Kudzu 硬件探测器
-
-Netfs 安装和卸载NFS、SAMBA和NETWARE网络文件系统
-
-Network 激活已配置网络接口的脚本程序
-
-Nfslock NFS锁定
-
-Pcmcia 安装pcmcia卡（一般用于笔记本电脑）
-
-Sshd OpenSSH服务器
-
-Syslog 一个让系统引导时启动syslog和klogd系统日志守候里程的脚本
-
-Xfs Xwindow字型服务器，为本地和远程X服务器提供字型集
-
-Xinetd 支持多种网络服务的核心守候程序。
-* 网络
-1. OSI七层网络模型
-　　TCP/IP协议毫无疑问是互联网的基础协议，没有它就根本不可能上网，任何和互联网有关的操作都离不开TCP/IP协议。不管是OSI七层模型还是TCP/IP的四层、五层模型，每一层中都要自己的专属协议，完成自己相应的工作以及与上下层级之间进行沟通。由于OSI七层模型为网络的标准层次划分，所以我们以OSI七层模型为例从下向上进行一一介绍。
-　　1）物理层（Physical Layer）
-　　激活、维持、关闭通信端点之间的机械特性、电气特性、功能特性以及过程特性。该层为上层协议提供了一个传输数据的可靠的物理媒体。简单的说，物理层确保原始的数据可在各种物理媒体上传输。物理层记住两个重要的设备名称，中继器（Repeater，也叫放大器）和集线器。
-　　2）数据链路层（Data Link Layer）
-　　数据链路层在物理层提供的服务的基础上向网络层提供服务，其最基本的服务是将源自网络层来的数据可靠地传输到相邻节点的目标机网络层。为达到这一目的，数据链路必须具备一系列相应的功能，主要有：如何将数据组合成数据块，在数据链路层中称这种数据块为帧（frame），帧是数据链路层的传送单位；如何控制帧在物理信道上的传输，包括如何处理传输差错，如何调节发送速率以使与接收方相匹配；以及在两个网络实体之间提供数据链路通路的建立、维持和释放的管理。数据链路层在不可靠的物理介质上提供可靠的传输。该层的作用包括：物理地址寻址、数据的成帧、流量控制、数据的检错、重发等。
-　　有关数据链路层的重要知识点：
-　　1> 数据链路层为网络层提供可靠的数据传输；
-　　2> 基本数据单位为帧；
-　　3> 主要的协议：以太网协议；
-　　4> 两个重要设备名称：网桥和交换机。
-　　3）网络层（Network Layer）
-　　网络层的目的是实现两个端系统之间的数据透明传送，具体功能包括寻址和路由选择、连接的建立、保持和终止等。它提供的服务使传输层不需要了解网络中的数据传输和交换技术。如果您想用尽量少的词来记住网络层，那就是“路径选择、路由及逻辑寻址”。
-　　网络层中涉及众多的协议，其中包括最重要的协议，也是TCP/IP的核心协议——IP协议。IP协议非常简单，仅仅提供不可靠、无连接的传送服务。IP协议的主要功能有：无连接数据报传输、数据报路由选择和差错控制。与IP协议配套使用实现其功能的还有地址解析协议ARP、逆地址解析协议RARP、因特网报文协议ICMP、因特网组管理协议IGMP。具体的协议我们会在接下来的部分进行总结，有关网络层的重点为：
-　　1> 网络层负责对子网间的数据包进行路由选择。此外，网络层还可以实现拥塞控制、网际互连等功能；
-　　2> 基本数据单位为IP数据报；
-　　3> 包含的主要协议：
-　　IP协议（Internet Protocol，因特网互联协议）;
-　　ICMP协议（Internet Control Message Protocol，因特网控制报文协议）;
-　　ARP协议（Address Resolution Protocol，地址解析协议）;
-　　RARP协议（Reverse Address Resolution Protocol，逆地址解析协议）。
-　　4> 重要的设备：路由器。
-　　4）传输层（Transport Layer）
-　　第一个端到端，即主机到主机的层次。传输层负责将上层数据分段并提供端到端的、可靠的或不可靠的传输。此外，传输层还要处理端到端的差错控制和流量控制问题。
-
-　　传输层的任务是根据通信子网的特性，最佳的利用网络资源，为两个端系统的会话层之间，提供建立、维护和取消传输连接的功能，负责端到端的可靠数据传输。在这一层，信息传送的协议数据单元称为段或报文。
-　　网络层只是根据网络地址将源结点发出的数据包传送到目的结点，而传输层则负责将数据可靠地传送到相应的端口。
-　　有关网络层的重点：
-　　1> 传输层负责将上层数据分段并提供端到端的、可靠的或不可靠的传输以及端到端的差错控制和流量控制问题；
-　　2> 包含的主要协议：TCP协议（Transmission Control Protocol，传输控制协议）、UDP协议（User Datagram Protocol，用户数据报协议）；
-　　3> 重要设备：网关。
-　　5）会话层
-
-　　会话层管理主机之间的会话进程，即负责建立、管理、终止进程之间的会话。会话层还利用在数据中插入校验点来实现数据的同步。
-
-　　6）表示层
-
-　　表示层对上层数据或信息进行变换以保证一个主机应用层信息可以被另一个主机的应用程序理解。表示层的数据转换包括数据的加密、压缩、格式转换等。
-
-　　7）应用层
-
-　　为操作系统或网络应用程序提供访问网络服务的接口。
-
-　　会话层、表示层和应用层重点：
-
-　　1> 数据传输基本单位为报文；
-
-　　2> 包含的主要协议：FTP（文件传送协议）、Telnet（远程登录协议）、DNS（域名解析协议）、SMTP（邮件传送协议），POP3协议（邮局协议），HTTP协议（Hyper Text Transfer Protocol）。
-
-回到顶部
-3. IP地址
-　　1）网络地址
-
-　　IP地址由网络号（包括子网号）和主机号组成，网络地址的主机号为全0，网络地址代表着整个网络。
-
-　　2）广播地址
-
-　　广播地址通常称为直接广播地址，是为了区分受限广播地址。
-
-　　广播地址与网络地址的主机号正好相反，广播地址中，主机号为全1。当向某个网络的广播地址发送消息时，该网络内的所有主机都能收到该广播消息。
-
-　　3）组播地址
-
-　　D类地址就是组播地址。
-
-　　先回忆下A，B，C，D类地址吧：
-
-　　A类地址以0开头，第一个字节作为网络号，地址范围为：0.0.0.0~127.255.255.255；(modified @2016.05.31)
-
-　　B类地址以10开头，前两个字节作为网络号，地址范围是：128.0.0.0~191.255.255.255;
-
-　　C类地址以110开头，前三个字节作为网络号，地址范围是：192.0.0.0~223.255.255.255。
-
-　　D类地址以1110开头，地址范围是224.0.0.0~239.255.255.255，D类地址作为组播地址（一对多的通信）；
-
-　　E类地址以1111开头，地址范围是240.0.0.0~255.255.255.255，E类地址为保留地址，供以后使用。
-
-　　注：只有A,B,C有网络号和主机号之分，D类地址和E类地址没有划分网络号和主机号。
-
-　　4）255.255.255.255
-
-　　该IP地址指的是受限的广播地址。受限广播地址与一般广播地址（直接广播地址）的区别在于，受限广播地址只能用于本地网络，路由器不会转发以受限广播地址为目的地址的分组；一般广播地址既可在本地广播，也可跨网段广播。例如：主机192.168.1.1/30上的直接广播数据包后，另外一个网段192.168.1.5/30也能收到该数据报；若发送受限广播数据报，则不能收到。
-
-　　注：一般的广播地址（直接广播地址）能够通过某些路由器（当然不是所有的路由器），而受限的广播地址不能通过路由器。
-
-　　5）0.0.0.0
-
-　　常用于寻找自己的IP地址，例如在我们的RARP，BOOTP和DHCP协议中，若某个未知IP地址的无盘机想要知道自己的IP地址，它就以255.255.255.255为目的地址，向本地范围（具体而言是被各个路由器屏蔽的范围内）的服务器发送IP请求分组。
-
-　　6）回环地址
-
-　　127.0.0.0/8被用作回环地址，回环地址表示本机的地址，常用于对本机的测试，用的最多的是127.0.0.1。
-
-　　7）A、B、C类私有地址
-
-　　私有地址(private address)也叫专用地址，它们不会在全球使用，只具有本地意义。
-
-　　A类私有地址：10.0.0.0/8，范围是：10.0.0.0~10.255.255.255
-
-　　B类私有地址：172.16.0.0/12，范围是：172.16.0.0~172.31.255.255
-
-　　C类私有地址：192.168.0.0/16，范围是：192.168.0.0~192.168.255.255
-
-回到顶部
-4. 子网掩码及网络划分
-　　随着互连网应用的不断扩大，原先的IPv4的弊端也逐渐暴露出来，即网络号占位太多，而主机号位太少，所以其能提供的主机地址也越来越稀缺，目前除了使用NAT在企业内部利用保留地址自行分配以外，通常都对一个高类别的IP地址进行再划分，以形成多个子网，提供给不同规模的用户群使用。
-
-　　这里主要是为了在网络分段情况下有效地利用IP地址，通过对主机号的高位部分取作为子网号，从通常的网络位界限中扩展或压缩子网掩码，用来创建某类地址的更多子网。但创建更多的子网时，在每个子网上的可用主机地址数目会比原先减少。
-
-　　什么是子网掩码？
-
-　　子网掩码是标志两个IP地址是否同属于一个子网的，也是32位二进制地址，其每一个为1代表该位是网络位，为0代表主机位。它和IP地址一样也是使用点式十进制来表示的。如果两个IP地址在子网掩码的按位与的计算下所得结果相同，即表明它们共属于同一子网中。
-
-　　在计算子网掩码时，我们要注意IP地址中的保留地址，即“ 0”地址和广播地址，它们是指主机地址或网络地址全为“ 0”或“ 1”时的IP地址，它们代表着本网络地址和广播地址，一般是不能被计算在内的。
-
-　　子网掩码的计算：
-
-　　对于无须再划分成子网的IP地址来说，其子网掩码非常简单，即按照其定义即可写出：如某B类IP地址为 10.12.3.0，无须再分割子网，则该IP地址的子网掩码255.255.0.0。如果它是一个C类地址，则其子网掩码为 255.255.255.0。其它类推，不再详述。下面我们关键要介绍的是一个IP地址，还需要将其高位主机位再作为划分出的子网网络号，剩下的是每个子网的主机号，这时该如何进行每个子网的掩码计算。
-
-　　下面总结一下有关子网掩码和网络划分常见的面试考题：
-
-　　1）利用子网数来计算
-
-　　在求子网掩码之前必须先搞清楚要划分的子网数目，以及每个子网内的所需主机数目。
-
-　　(1) 将子网数目转化为二进制来表示;
-
-　　如欲将B类IP地址168.195.0.0划分成27个子网：27=11011；
-
-　　(2) 取得该二进制的位数，为N；
-
-　　该二进制为五位数，N = 5
-
-　　(3) 取得该IP地址的类子网掩码，将其主机地址部分的的前N位置1即得出该IP地址划分子网的子网掩码。
-
-　　将B类地址的子网掩码255.255.0.0的主机地址前5位置 1，得到 255.255.248.0
-
-　　2）利用主机数来计算
-
-　　如欲将B类IP地址168.195.0.0划分成若干子网，每个子网内有主机700台：
-
-　　(1) 将主机数目转化为二进制来表示；
-
-　　700=1010111100；
-
-　　(2) 如果主机数小于或等于254（注意去掉保留的两个IP地址），则取得该主机的二进制位数，为N，这里肯定 N<8。如果大于254，则 N>8，这就是说主机地址将占据不止8位；
-
-　　该二进制为十位数，N=10；
-
-　　(3) 使用255.255.255.255来将该类IP地址的主机地址位数全部置1，然后从后向前的将N位全部置为 0，即为子网掩码值。
-
-　　将该B类地址的子网掩码255.255.0.0的主机地址全部置1，得到255.255.255.255，然后再从后向前将后 10位置0,即为：11111111.11111111.11111100.00000000，即255.255.252.0。这就是该欲划分成主机为700台的B类IP地址 168.195.0.0的子网掩码。
-
-　　3）还有一种题型，要你根据每个网络的主机数量进行子网地址的规划和计算子网掩码。这也可按上述原则进行计算。
-
-　　比如一个子网有10台主机，那么对于这个子网需要的IP地址是：
-
-　　10＋1＋1＋1＝13
-
-　　注意：加的第一个1是指这个网络连接时所需的网关地址，接着的两个1分别是指网络地址和广播地址。
-
-　　因为13小于16（16等于2的4次方），所以主机位为4位。而256－16＝240，所以该子网掩码为255.255.255.240。
-
-　　如果一个子网有14台主机，不少人常犯的错误是：依然分配具有16个地址空间的子网，而忘记了给网关分配地址。这样就错误了，因为14＋1＋1＋1＝17，17大于16，所以我们只能分配具有32个地址（32等于2的5次方）空间的子网。这时子网掩码为：255.255.255.224。
-
-回到顶部
-5. ARP/RARP协议
-　　地址解析协议，即ARP（Address Resolution Protocol），是根据IP地址获取物理地址的一个TCP/IP协议。主机发送信息时将包含目标IP地址的ARP请求广播到网络上的所有主机，并接收返回消息，以此确定目标的物理地址；收到返回消息后将该IP地址和物理地址存入本机ARP缓存中并保留一定时间，下次请求时直接查询ARP缓存以节约资源。地址解析协议是建立在网络中各个主机互相信任的基础上的，网络上的主机可以自主发送ARP应答消息，其他主机收到应答报文时不会检测该报文的真实性就会将其记入本机ARP缓存；由此攻击者就可以向某一主机发送伪ARP应答报文，使其发送的信息无法到达预期的主机或到达错误的主机，这就构成了一个ARP欺骗。ARP命令可用于查询本机ARP缓存中IP地址和MAC地址的对应关系、添加或删除静态对应关系等。
-
-　　ARP工作流程举例：
-
-　　主机A的IP地址为192.168.1.1，MAC地址为0A-11-22-33-44-01；
-　　主机B的IP地址为192.168.1.2，MAC地址为0A-11-22-33-44-02；
-　　当主机A要与主机B通信时，地址解析协议可以将主机B的IP地址（192.168.1.2）解析成主机B的MAC地址，以下为工作流程：
-　　（1）根据主机A上的路由表内容，IP确定用于访问主机B的转发IP地址是192.168.1.2。然后A主机在自己的本地ARP缓存中检查主机B的匹配MAC地址。
-　　（2）如果主机A在ARP缓存中没有找到映射，它将询问192.168.1.2的硬件地址，从而将ARP请求帧广播到本地网络上的所有主机。源主机A的IP地址和MAC地址都包括在ARP请求中。本地网络上的每台主机都接收到ARP请求并且检查是否与自己的IP地址匹配。如果主机发现请求的IP地址与自己的IP地址不匹配，它将丢弃ARP请求。
-　　（3）主机B确定ARP请求中的IP地址与自己的IP地址匹配，则将主机A的IP地址和MAC地址映射添加到本地ARP缓存中。
-　　（4）主机B将包含其MAC地址的ARP回复消息直接发送回主机A。
-　　（5）当主机A收到从主机B发来的ARP回复消息时，会用主机B的IP和MAC地址映射更新ARP缓存。本机缓存是有生存期的，生存期结束后，将再次重复上面的过程。主机B的MAC地址一旦确定，主机A就能向主机B发送IP通信了。
-　　逆地址解析协议，即RARP，功能和ARP协议相对，其将局域网中某个主机的物理地址转换为IP地址，比如局域网中有一台主机只知道物理地址而不知道IP地址，那么可以通过RARP协议发出征求自身IP地址的广播请求，然后由RARP服务器负责回答。
-
-　　RARP协议工作流程：
-
-　　（1）给主机发送一个本地的RARP广播，在此广播包中，声明自己的MAC地址并且请求任何收到此请求的RARP服务器分配一个IP地址；
-
-　　（2）本地网段上的RARP服务器收到此请求后，检查其RARP列表，查找该MAC地址对应的IP地址；
-
-　　（3）如果存在，RARP服务器就给源主机发送一个响应数据包并将此IP地址提供给对方主机使用；
-　　（4）如果不存在，RARP服务器对此不做任何的响应；
-　　（5）源主机收到从RARP服务器的响应信息，就利用得到的IP地址进行通讯；如果一直没有收到RARP服务器的响应信息，表示初始化失败。
-回到顶部
-6. 路由选择协议
-　　常见的路由选择协议有：RIP协议、OSPF协议。
-
-　　RIP协议 ：底层是贝尔曼福特算法，它选择路由的度量标准（metric)是跳数，最大跳数是15跳，如果大于15跳，它就会丢弃数据包。
-
-　　OSPF协议 ：Open Shortest Path First开放式最短路径优先，底层是迪杰斯特拉算法，是链路状态路由选择协议，它选择路由的度量标准是带宽，延迟。
-回到顶部
-7. TCP/IP协议
-　　TCP/IP协议是Internet最基本的协议、Internet国际互联网络的基础，由网络层的IP协议和传输层的TCP协议组成。通俗而言：TCP负责发现传输的问题，一有问题就发出信号，要求重新传输，直到所有数据安全正确地传输到目的地。而IP是给因特网的每一台联网设备规定一个地址。
-　　IP层接收由更低层（网络接口层例如以太网设备驱动程序）发来的数据包，并把该数据包发送到更高层---TCP或UDP层；相反，IP层也把从TCP或UDP层接收来的数据包传送到更低层。IP数据包是不可靠的，因为IP并没有做任何事情来确认数据包是否按顺序发送的或者有没有被破坏，IP数据包中含有发送它的主机的地址（源地址）和接收它的主机的地址（目的地址）。
- 　　TCP是面向连接的通信协议，通过三次握手建立连接，通讯完成时要拆除连接，由于TCP是面向连接的所以只能用于端到端的通讯。TCP提供的是一种可靠的数据流服务，采用“带重传的肯定确认”技术来实现传输的可靠性。TCP还采用一种称为“滑动窗口”的方式进行流量控制，所谓窗口实际表示接收能力，用以限制发送方的发送速度。
-
-　　TCP报文首部格式：
-
-
-
-　　TCP协议的三次握手和四次挥手：
-
-
-
- 
-
-　　注：seq:"sequance"序列号；ack:"acknowledge"确认号；SYN:"synchronize"请求同步标志；；ACK:"acknowledge"确认标志"；FIN："Finally"结束标志。
-
-　　TCP连接建立过程：首先Client端发送连接请求报文，Server段接受连接后回复ACK报文，并为这次连接分配资源。Client端接收到ACK报文后也向Server段发生ACK报文，并分配资源，这样TCP连接就建立了。
-
-　　TCP连接断开过程：假设Client端发起中断连接请求，也就是发送FIN报文。Server端接到FIN报文后，意思是说"我Client端没有数据要发给你了"，但是如果你还有数据没有发送完成，则不必急着关闭Socket，可以继续发送数据。所以你先发送ACK，"告诉Client端，你的请求我收到了，但是我还没准备好，请继续你等我的消息"。这个时候Client端就进入FIN_WAIT状态，继续等待Server端的FIN报文。当Server端确定数据已发送完成，则向Client端发送FIN报文，"告诉Client端，好了，我这边数据发完了，准备好关闭连接了"。Client端收到FIN报文后，"就知道可以关闭连接了，但是他还是不相信网络，怕Server端不知道要关闭，所以发送ACK后进入TIME_WAIT状态，如果Server端没有收到ACK则可以重传。“，Server端收到ACK后，"就知道可以断开连接了"。Client端等待了2MSL后依然没有收到回复，则证明Server端已正常关闭，那好，我Client端也可以关闭连接了。Ok，TCP连接就这样关闭了！
-
-　　为什么要三次挥手？
-
-　　在只有两次“握手”的情形下，假设Client想跟Server建立连接，但是却因为中途连接请求的数据报丢失了，故Client端不得不重新发送一遍；这个时候Server端仅收到一个连接请求，因此可以正常的建立连接。但是，有时候Client端重新发送请求不是因为数据报丢失了，而是有可能数据传输过程因为网络并发量很大在某结点被阻塞了，这种情形下Server端将先后收到2次请求，并持续等待两个Client请求向他发送数据...问题就在这里，Cient端实际上只有一次请求，而Server端却有2个响应，极端的情况可能由于Client端多次重新发送请求数据而导致Server端最后建立了N多个响应在等待，因而造成极大的资源浪费！所以，“三次握手”很有必要！
-
-　　为什么要四次挥手？
-
-　　试想一下，假如现在你是客户端你想断开跟Server的所有连接该怎么做？第一步，你自己先停止向Server端发送数据，并等待Server的回复。但事情还没有完，虽然你自身不往Server发送数据了，但是因为你们之前已经建立好平等的连接了，所以此时他也有主动权向你发送数据；故Server端还得终止主动向你发送数据，并等待你的确认。其实，说白了就是保证双方的一个合约的完整执行！
-
-　　使用TCP的协议：FTP（文件传输协议）、Telnet（远程登录协议）、SMTP（简单邮件传输协议）、POP3（和SMTP相对，用于接收邮件）、HTTP协议等。
-
-回到顶部
-8. UDP协议　
-　　UDP用户数据报协议，是面向无连接的通讯协议，UDP数据包括目的端口号和源端口号信息，由于通讯不需要连接，所以可以实现广播发送。UDP通讯时不需要接收方确认，属于不可靠的传输，可能会出现丢包现象，实际应用中要求程序员编程验证。
-　　UDP与TCP位于同一层，但它不管数据包的顺序、错误或重发。因此，UDP不被应用于那些使用虚电路的面向连接的服务，UDP主要用于那些面向查询---应答的服务，例如NFS。相对于FTP或Telnet，这些服务需要交换的信息量较小。
-　　每个UDP报文分UDP报头和UDP数据区两部分。报头由四个16位长（2字节）字段组成，分别说明该报文的源端口、目的端口、报文长度以及校验值。UDP报头由4个域组成，其中每个域各占用2个字节，具体如下：
-　　（1）源端口号；
-　　（2）目标端口号；
-　　（3）数据报长度；
-　　（4）校验值。
-　　使用UDP协议包括：TFTP（简单文件传输协议）、SNMP（简单网络管理协议）、DNS（域名解析协议）、NFS、BOOTP。
-　　TCP 与 UDP 的区别：TCP是面向连接的，可靠的字节流服务；UDP是面向无连接的，不可靠的数据报服务。
-回到顶部
-9. DNS协议
-　　DNS是域名系统(DomainNameSystem)的缩写，该系统用于命名组织到域层次结构中的计算机和网络服务，可以简单地理解为将URL转换为IP地址。域名是由圆点分开一串单词或缩写组成的，每一个域名都对应一个惟一的IP地址，在Internet上域名与IP地址之间是一一对应的，DNS就是进行域名解析的服务器。DNS命名用于Internet等TCP/IP网络中，通过用户友好的名称查找计算机和服务。
-回到顶部
-10. NAT协议
-　　NAT网络地址转换(Network Address Translation)属接入广域网(WAN)技术，是一种将私有（保留）地址转化为合法IP地址的转换技术，它被广泛应用于各种类型Internet接入方式和各种类型的网络中。原因很简单，NAT不仅完美地解决了lP地址不足的问题，而且还能够有效地避免来自网络外部的攻击，隐藏并保护网络内部的计算机。
-
-回到顶部
-11. DHCP协议
-　　DHCP动态主机设置协议（Dynamic Host Configuration Protocol）是一个局域网的网络协议，使用UDP协议工作，主要有两个用途：给内部网络或网络服务供应商自动分配IP地址，给用户或者内部网络管理员作为对所有计算机作中央管理的手段。
-
-回到顶部
-12. HTTP协议
-　　超文本传输协议（HTTP，HyperText Transfer Protocol)是互联网上应用最为广泛的一种网络协议。所有的WWW文件都必须遵守这个标准。
-　　HTTP 协议包括哪些请求？
-
-　　GET：请求读取由URL所标志的信息。
-
-　　POST：给服务器添加信息（如注释）。
-
-　　PUT：在给定的URL下存储一个文档。
-
-　　DELETE：删除给定的URL所标志的资源。
-
-　　HTTP 中， POST 与 GET 的区别
-
-　　1）Get是从服务器上获取数据，Post是向服务器传送数据。
-
-　　2）Get是把参数数据队列加到提交表单的Action属性所指向的URL中，值和表单内各个字段一一对应，在URL中可以看到。
-
-　　3）Get传送的数据量小，不能大于2KB；Post传送的数据量较大，一般被默认为不受限制。
-
-　　4）根据HTTP规范，GET用于信息获取，而且应该是安全的和幂等的。
-
-　　I. 所谓 安全的 意味着该操作用于获取信息而非修改信息。换句话说，GET请求一般不应产生副作用。就是说，它仅仅是获取资源信息，就像数据库查询一样，不会修改，增加数据，不会影响资源的状态。
-
-　　II. 幂等 的意味着对同一URL的多个请求应该返回同样的结果。
-
-回到顶部
-13. 一个举例
-　　在浏览器中输入 www.baidu.com  后执行的全部过程
-
-　　现在假设如果我们在客户端（客户端）浏览器中输入http://www.baidu.com,而baidu.com为要访问的服务器（服务器），下面详细分析客户端为了访问服务器而执行的一系列关于协议的操作：
-
-　　1）客户端浏览器通过DNS解析到www.baidu.com的IP地址220.181.27.48，通过这个IP地址找到客户端到服务器的路径。客户端浏览器发起一个HTTP会话到220.161.27.48，然后通过TCP进行封装数据包，输入到网络层。
-
-　　2）在客户端的传输层，把HTTP会话请求分成报文段，添加源和目的端口，如服务器使用80端口监听客户端的请求，客户端由系统随机选择一个端口如5000，与服务器进行交换，服务器把相应的请求返回给客户端的5000端口。然后使用IP层的IP地址查找目的端。
-
-　　3）客户端的网络层不用关系应用层或者传输层的东西，主要做的是通过查找路由表确定如何到达服务器，期间可能经过多个路由器，这些都是由路由器来完成的工作，不作过多的描述，无非就是通过查找路由表决定通过那个路径到达服务器。
-
-　　4）客户端的链路层，包通过链路层发送到路由器，通过邻居协议查找给定IP地址的MAC地址，然后发送ARP请求查找目的地址，如果得到回应后就可以使用ARP的请求应答交换的IP数据包现在就可以传输了，然后发送IP数据包到达服务器的地址。
-* 启动日志
-  /var/log/boot.log 
-** 硬件
-  - 识别硬盘
-  - 声卡
-  - 挂载 分区 /boot
-  - Mounted /home
-  - set console font and keymap
-  - 开启网络
-* 重启网络 
-sudo   /etc/init.d/networking restart
-systemctl status networking.server

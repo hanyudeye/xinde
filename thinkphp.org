@@ -1,82 +1,25 @@
 * THINKPHP 
-** 结构
-   模块/模块配置文件/控制器目录/模型目录/视图目录
-   公共函数文件/公共配置文件/数据库配置文件/路由配置文件/应用行为扩展定义文件
-   public 应用路口文件/
-   框架系统目录
-   概念：入口文件，index.php/admin.php
-   应用：相当于某个应用程序/有独立配置/打开某个URL 相当于执行某个应用程序
-   模块：分层真多，针对大网站的吧。因为这些概念是定死的
-   控制器：
-   start.php 引导文件（加载系统常量/变量/执行应用）
-** 控制器(服务器啊，我想听歌） 然后 歌的控制器给放歌, 只要在命名空间下，就好
-   #+BEGIN_SRC php
-     namespace app\index\controller;
-     class Ge{
-     }
-   #+END_SRC
-   渲染 use think\View;
-   #+BEGIN_SRC php
-     $view = new View();
-     return $view->fetch('index');  //当前目录,可以定义
-   #+END_SRC
-   或 继承 Controller
-   #+BEGIN_SRC php
-     return $this->fetch('index');
-   #+END_SRC
-   
-控制器初始化？这技术! 还是针对模块的，大软件的。
-#+BEGIN_SRC php
-  public function _initialize(){}
-#+END_SRC
-前置操作 
-这技术 需在控制器中设置 $beforeActionList属性
-#+BEGIN_SRC php
-protected $beforeActionList = [
-'first',
-'second' => ['except'=>'hello'],
-'third'  => ['only'=>'hello,data'],
-];
-#+END_SRC
+** 安装ThinkPHP
+    ThinkPHP5 的环境要求如下:
+     PHP	>=	5.4.0
+     PDO	PHP	Extension
+     MBstring	PHP	Extension
+     CURL	PHP	Extension
+*** 安装
+     composer安装 
+     composer	create-project	topthink/think	tp5		--prefer-dist
+    
+     git 安装
+     应用项目: https://github.com/top-think/think
+     核心框架: https://github.com/top-think/framework
 
-内置页面跳转,功能很弱
-#+BEGIN_SRC php
-  $this->success('成功','URL');
-  $this->error('失败','URL');
-  重定向
-      $this->redirect('http://thinkphp.cn/blog/2',302);
-
-#+END_SRC
-
-给自己赋值
-#+BEGIN_SRC php
-  $this->assign();
-#+END_SRC
-
-空操作:这种设计是为了死链而设计的吧，没设计功能时的跳转。
-#+BEGIN_SRC php
-_empty
-#+END_SRC
-
-** 命令行访问方式 $php index.php index/index/hello/val/value
-** 路由 index/blog/read
-   支持
-   #+BEGIN_SRC 
-   路由到模块/控制器/操作;
-   路由到外部重定向地址;
-   路由到控制器方法;
-   路由到闭包函数;
-   路由到类的方法;
-   #+END_SRC
-** 分发请求
-   支持
-#+BEGIN_SRC 
-模块/控制器/操作
-控制器方法
-外部重定向
-闭包函数
-类的方法
-#+END_SRC
+     更新
+     git	clone	https://github.com/top-think/think	tp5
+     git	pull	https://github.com/top-think/framework
+  
+** 快速测试
+    router.php用于php自带webserver支持,可用于快速测试
+    启动命令:php	-S	localhost:8888	router.php
 ** 响应输出 Response::send 基本要结束了，把返回的数据输出到页面和客户端
    如果配置
 #+BEGIN_SRC php
@@ -97,7 +40,6 @@ _empty
 u6210"}
 #+END_SRC
 
-** 应用结束 写日志
 ** 配置类 \think\Config
    读取 Config::get('arg'); 或config('arg') 所有 dump(config()) 二级配置 config('arg.subarg')
    动态设置参数 config('arg', 'value') 或数组 config(['a'=>'v', 'a2'=>'v2'])
@@ -203,22 +145,6 @@ server()/session()/cookie()/head()
 |f|浮点|
 参数绑定方式:1.按参数名2. 按参数顺序
 定义缓存 Route::get('new/:id','News/read',['cache'=>3600]); //设置3600秒的缓存
-** 应用类库包命名规范
-   
-   #+BEGIN_SRC php
-     namespace	app\index\model;
-     class	User	extends	\think\Model
-     {
-     }
-   位于 application/index/model/User.php
-   #+END_SRC
-   #+BEGIN_SRC php
-     namespace	app\admin\event;
-     class	User	
-     {
-     }
-     其类文件位于	 application/admin/event/User.php 。
-   #+END_SRC
 ** 日志 \think\Log 完成
 *** 初始化
 #+BEGIN_SRC php
@@ -274,9 +200,6 @@ $request->domain(); url/baseFile, root, pathinfo, path, ext, type(资源类型),
 头部信息 $agent	=	Request::instance()->header('user-agent');
 
 #+END_SRC
-** 获取配置 常量    
-use think\Config;
-print_r(Config::get('deviceType'));
 ** 调试模式
 *** 开启调试
 应用配置文件
@@ -317,7 +240,6 @@ dump($var,	$echo=true,	$label=null)
 #+END_SRC
 手动抛出 throw	new	\think\exception\HttpException(404,	'页面不存在');
 或 abort(404,'页面不存在');
-** 异常
 ** 模型
 *** 定义
 #+BEGIN_SRC php
@@ -816,7 +738,6 @@ DEFINE标签用于中模板中定义常量,用法如下:
        {css	href="/static/css/style.css"	/}
 
      #+END_SRC
-** 验证
 ** session
    #+BEGIN_SRC php
    acount:"{$Think.session.account}",
@@ -826,221 +747,10 @@ DEFINE标签用于中模板中定义常量,用法如下:
 ** 多语言 \think\Lang
 * thinkphp
 ** 基础
-*** 安装ThinkPHP
-    ThinkPHP5 的环境要求如下:
-     PHP	>=	5.4.0
-     PDO	PHP	Extension
-     MBstring	PHP	Extension
-     CURL	PHP	Extension
-**** 安装
-     composer安装 
-     composer	create-project	topthink/think	tp5		--prefer-dist
-    
-     git 安装
-     应用项目: https://github.com/top-think/think
-     核心框架: https://github.com/top-think/framework
-
-     更新
-     git	clone	https://github.com/top-think/think	tp5
-     git	pull	https://github.com/top-think/framework
-  
-*** 目录结构
-   #+BEGIN_SRC 
-     project		应用部署目录
-  ├─application											应用目录(可设置)
-  │		├─common													公共模块目录(可更改)
-  │		├─index														模块目录(可更改)
-  │		│		├─config.php						模块配置文件
-  │		│		├─common.php						模块函数文件
-  │		│		├─controller						控制器目录
-  │		│		├─model											模型目录
-  │		│		├─view												视图目录
-  │		│		└─	...												更多类库目录
-  │		├─command.php								命令行工具配置文件
-  │		├─common.php									应用公共(函数)文件
-  │		├─config.php									应用(公共)配置文件
-  │		├─database.php							数据库配置文件
-  │		├─tags.php											应用行为扩展定义文件
-  │		└─route.php										路由配置文件
-  ├─extend																扩展类库目录(可定义)
-  ├─public																WEB	部署目录(对外访问目录)
-  │		├─static													静态资源存放目录(css,js,image)
-  │		├─index.php										应用入口文件
-  │		├─router.php									快速测试文件
-  │		└─.htaccess										用于	apache	的重写
-  ├─runtime															应用的运行时目录(可写,可设置)
-  ├─vendor																第三方类库目录(Composer)
-  ├─thinkphp														框架系统目录
-  │		├─lang															语言包目录
-  │		├─library												框架核心类库目录
-  │		│		├─think											Think	类库包目录
-  │		│		└─traits										系统	Traits	目录
-  │		├─tpl																系统模板目录
-  │		├─.htaccess										用于	apache	的重写
-  │		├─.travis.yml								CI	定义文件
-  │		├─base.php											基础定义文件
-  │		├─composer.json						composer	定义文件
-  │		├─console.php								控制台入口文件
-  │		├─convention.php					惯例配置文件
-  │		├─helper.php									助手函数文件(可选)
-  │		├─LICENSE.txt								授权说明文件
-  │		├─phpunit.xml								单元测试配置文件
-  │		├─README.md										README	文件
-  │		└─start.php										框架引导文件
-  ├─build.php													自动生成定义文件(参考)
-  ├─composer.json									composer	定义文件
-  ├─LICENSE.txt											授权说明文件
-  ├─README.md													README	文件
-  ├─think																	命令行入口文件
-
-   #+END_SRC 
-   部署建议是 public 目录作为web目录访问内容,其它都是web目录之外,当然,你必须要修改public/index.php 中的相关路径
-   
-*** 快速测试
-    router.php用于php自带webserver支持,可用于快速测试
-    启动命令:php	-S	localhost:8888	router.php
 *** 架构
-**** 架构总览
-**** 生命周期
-**** 入口文件
-**** URL访问
-     URL访问受路由决定,如果关闭路由或者没有匹配路由的情况下,则是基于:
-     http://serverName/index.php(或者其它应用入口文件)/模块/控制器/操作/参数/值...
-     http://serverName/index.php/index/index/hello/val/value
-     如果你的环境只能支持普通方式的URL参数访问,那么必须使用
-     http://serverName/index.php?s=/index/index/hello&val=value
-     如果是命令行下面访问入口文件的话,则通过
-     $php	index.php	index/index/hello/val/value...
-     获取到正常的 $_SERVER['PATH_INFO'] 参数后才能继续。
-**** 应用
-     由系统的	 \think\App 类完成,应用通常在入口文件中被调用和执行,具有相同的应用目录( APP_PATH )
-**** 模块设计
-     模块通常都是应用目录下面的一个子目录,每个模块都有自己独立的配置文件、公共文件和类库文件。
-***** 控制器
-每个模块拥有独立的 MVC 类库及配置文件,一个模块下面有多个控制器负责响应请求,而每个控制器其实就
-是一个独立的控制器类。
-控制器主要负责请求的接收,并调用相关的模型处理,并最终通过视图输出。严格来说,控制器不应该过多
-的介入业务逻辑处理。
-***** 模型
-模型类通常完成实际的业务逻辑和数据封装,并返回和格式无关的数据。
-   模型类并不一定要访问数据库,而且在5.0的架构设计中,只有进行实际的数据库查询操作的时候,才会进
-   行数据库的连接,是真正的惰性连接。
-   ThinkPHP的模型层支持多层设计,你可以对模型层进行更细化的设计和分工,例如把模型层分为逻辑层/
-   服务层/事件层等等。
-***** 视图
-控制器调用模型类后返回的数据通过视图组装成不同格式的输出。视图根据不同的需求,来决定调用模板引
-擎进行内容解析后输出还是直接输出。
-视图通常会有一系列的模板文件对应不同的控制器和操作方法,并且支持动态设置模板目录。
-***** 驱动
-系统很多的组件都采用驱动式设计,从而可以更灵活的扩展,驱动类的位置默认是放入核心类库目录下面,
-也可以重新定义驱动类库的命名空间而改变驱动的文件位置。
-***** 行为
-行为(Behavior)是在预先定义好的一个应用位置执行的一些操作。类似于 AOP 编程中的“切面”的概念,给
-某一个切面绑定相关行为就成了一种类 AOP 编程的思想。所以,行为通常是和某个位置相关,行为的执行时
-间依赖于绑定到了哪个位置上。
-
-要执行行为,首先要在应用程序中进行行为侦听,例如:
- //	在app_init位置侦听行为
- \think\Hook::listen('app_init');
-然后对某个位置进行行为绑定:
- //	绑定行为到app_init位置
- \think\Hook::add('app_init','\app\index\behavior\Test');
-一个位置上如果绑定了多个行为的,按照绑定的顺序依次执行,除非遇到中断。
-
-***** 路由检测
-      如果开启了 url_route_on 参数的话,会首先进行URL的路由检测。
-      如果一旦检测到匹配的路由,根据定义的路由地址会注册到相应的URL调度。
-      5.0的路由地址支持如下方式:
-      路由到模块/控制器/操作;
-      路由到外部重定向地址;
-      路由到控制器方法;
-      路由到闭包函数;
-      路由到类的方法;
-      路由地址可能会受域名绑定的影响。
-      如果关闭路由或者路由检测无效则进行默认的模块/控制器/操作的分析识别。
-      如果在应用初始化的时候指定了应用调度方式,那么路由检测是可选的。
-      可以使用	\think\App::dispatch()	进行应用调度,例如:
-      App::dispatch(['type'	=>	'module',	'module'	=>	'index/index']);
-***** 分发请求
-      在完成了URL检测和路由检测之后,路由器会分发请求到对应的路由地址,这也是应用请求的生命周期中最重
-      要的一个环节。
-      在这一步骤中,完成应用的业务逻辑及数据返回。
-      建议统一使用 return 返回数据,而不是 echo 输出,如非必要,请不要使用 exit 或者 die 中断执行。
-      直接 echo 输出的数据将无法进行自动转换响应输出的便利。
-控制器方法
-和前一种方式类似,只是无需判断模块、控制器和操作,直接分发请求到一个指定的控制器类的方法,因此
-没有进行模块的初始化操作。
-外部重定向
-可以直接分发请求到一个外部的重定向地址,支持指定重定向代码,默认为301重定向。
-闭包函数
-路由地址定义的时候可以直接采用闭包函数,完成一些相对简单的逻辑操作和输出。
-类的方法
-除了以上方式外,还支持分发请求到类的方法,包括:
-静态方法:	 'blog/:id'=>'\org\util\Blog::read'
-类的方法: 'blog/:id'=>'\app\index\controller\Blog@read'
-***** 响应输出
-      控制器的所有操作方法都是 return 返回而不是直接输出,系统会调用 Response::send 方法将最终的应
-      用返回的数据输出到页面或者客户端,并自动转换成 default_return_type 参数配置的格式。所以,应
-      用执行的数据输出只需要返回一个正常的PHP数据即可。
-***** 应用结束
-事实上,在应用的数据响应输出之后,应用并没真正的结束,系统会在应用输出或者中断后进行日志保存写入操作。
-系统的日志包括用户调试输出的和系统自动生成的日志,统一会在应用结束的时候进行写入操作。
-而日志的写入操作受日志初始化的影响。
-***** 隐藏入口文件
-在ThinkPHP5.0中,出于优化的URL访问原则,还支持通过URL重写隐藏入口文件,下面以 Apache 为例说明
-隐藏应用入口文件index.php的设置。
-下面是Apache的配置过程,可以参考下:
-#+BEGIN_SRC 
-1、 httpd.conf 配置文件中加载了 mod_rewrite.so 模块
-2、 AllowOverride	None 	将 None 改为	 All
-3、在应用入口文件同级目录添加 .htaccess 文件,内容如下:
-  <IfModule	mod_rewrite.c>
-  Options	+FollowSymlinks	-Multiviews
-  RewriteEngine	on
-  RewriteCond	%{REQUEST_FILENAME}	!-d
-  RewriteCond	%{REQUEST_FILENAME}	!-f
-  RewriteRule	^(.*)$	index.php/$1	[QSA,PT,L]
-  </IfModule>
-#+END_SRC
-**** 配置
-***** 模块和控制器隐藏 
-       define('BIND_MODULE','index');
-       绑定后,我们的URL访问地址则变成:
-       http://serverName/index.php/控制器/操作/[参数名/参数值...]
-       访问的模块是 index 模块。
-       如果你的应用比较简单,模块和控制器都只有一个,那么可以在应用公共文件中绑定模块和控制器,如下:
-       //	绑定当前访问到index模块的index控制器
-       define('BIND_MODULE','index/index');
-       设置后,我们的URL访问地址则变成:
-       http://serverName/index.php/操作/[参数名/参数值...]
-       访问的模块是 index 模块,控制器是 Index 控制器。
-
 **** 命名空间
      命名空间方式定义和自动加载类库文件,有效解决多模块和 Composer 类库之间的命名空间冲突问题,并且实现了更加高效的类库自动加载机制。
      特别注意的是,如果你需要调用PHP内置的类库,或者第三方没有使用命名空间的类库,记得在实例化类库的时候加上	 \ 
-***** 自动加载
-     只需要给类库正确定义所在的命名空间,并且命名空间的路径与类库文件的目录一致,那么就可以实现类的自动加载,从而实现真正的惰性加载。
-     例如, \think\cache\driver\File 类的定义为:
-     namespace	think\cache\driver;
-     class	File	
-     {
-     }
-     如果我们实例化该类的话,应该是:
-     $class	=	new	\think\cache\driver\File();
-     
-     系统会自动加载该类对应路径的类文件,其所在的路径是thinkphp/library/think/cache/driver/File.php 。
-     
-     原则上,可以支持驼峰法命名的目录,只要命名空间定义和目录一致即可,例如:
-     我们实例化
-     $class	=	new	\Think\Cache\Driver\File();
-     系统则会自动加载	 thinkphp/library/Think/Cache/Driver/File.php 文件。
-
-***** 默认命名空间
-      默认think 命名空间,
-      Route::get('hello','index/hello');
-      请自行添加	 use	think\Route 或者使用
-      \think\Route::get('hello','index/hello');
-
 ***** 自动注册
       我们只需要把自己的类库包目录放入 EXTEND_PATH 目录(默认为 extend ,可配置),就可以自动注册对
       应的命名空间,例如:
