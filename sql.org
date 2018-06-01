@@ -278,7 +278,6 @@ I wrote a Python utility that is a drop in replacement for sqlcmd/osql as far as
  | ~SPC m b S~ | save the current connection                                  |
 
 *** Code Formating
-
  | ~SPC m = c~ | capitalize SQL keywords in region (if capitalize is enabled) |
 * oracle
 1、查找表的所有索引（包括索引名，类型，构成列）：
@@ -1431,6 +1430,12 @@ if exists (select 1 where 1<>1)
 	begin
 		select 'hell'
 	end
+  
+select a from atable
+where exists (select * from xx)
+
+any 
+where x< ANY (select Y ...) 读成 “ where , for some Y,  X is less than Y"
 ** 权限管理 ( 保护数据 )
 *** 赋予权限 
     GRANT INSERT
@@ -1477,3 +1482,236 @@ if exists (select 1 where 1<>1)
 select SUBSTRING('Welcome to China!',9,2) as 结果3
 FIBillAmount
 FIBillLackAmount
+=======
+*** 时间常量 
+** 日期时间格式
+   yyyy-mm-dd hh:mm:ss
+* sp_executesql
+  execute相信大家都用的用熟了，简写为exec,除了用来执行存储过程，一般都用来执行动态Sql 
+  sp_executesql，sql2005中引入的新的系统存储过程，也是用来处理动态sql的, 如： 
+  
+  exec sp_executesql @sql, N'@count int out,@id varchar(20)', @cou out ,@id 
+@sql为拼成的动态sql 
+N'@count int out,@id varchar(20)'为拼成的动态sql内的参数列表 
+@cou out,@id为为动态sql内参数列表提供值的外部参数列表 
+
+那么它们之间有什么区别呢？ 
+
+１，它们之间最大的区别是嵌入式的参数，如下面一个语句 
+#+BEGIN_SRC sql
+  declare @sql   nvarchar(2000) 
+  declare @id varchar(20) 
+  set @id='1' 
+  set @sql='select count(*) from emp where id=' + @id 
+  exec @sql 
+#+END_SRC
+我想把得到的count(*)传出来，用传统的exec是不好办到的，但是用sp_executesql则很容易就办到了： 
+#+BEGIN_SRC sql
+  declare @sql nvarchar(2000) 
+  declare @cou int 
+  declare @id varchar(20) 
+  set @id='1' 
+  set @sql='select @count=count(*) from emp where id=@id' 
+  exec sp_executesql @sql, N'@count int out,@id varchar(20)', @cou out ,@id 
+  print @cou 
+#+END_SRC
+
+2.性能 
+可以看到，如果用exec，由于每次传入的@id不一样，所以每次生成的@sql就不一样，这样每执行一次Sql2005就必须重新将要执行的动态Sql重新编译一次 
+但是sp_executesql则不一样，由于将数值参数化，要执行的动态Sql永远不会变化，只是传入的参数的值在变化，那每次执行的时候就秒用重新编译，速度自然快多了哈！ 
+
+注意： 
+１.sp_executesql要求动态Sql和动态Sql参数列表必须是Nvarchar，比如上个例子的@sql,N'@count int out,@id varchar(20)'我记得在sql2005中Varchar也可以的，但是我打了Sp3补丁后就不行了，必须为Nvarchar 
+２.动态Sql的参数列表与外部提供值的参数列表顺序必需一致，如： 
+N'@count int out,@id varchar(20)', @cou out,@id 
+@count 对应 @cou,@id对应@id 
+如果不一致，必须显式标明，如： 
+N'@count int out,@id varchar(20)', @id＝@id, @count=@cou out 
+３.动态SQl的参数列表与外部提供参数的参数列表参数名可以同名
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+语法
+
+ 
+sp_executesql [ @statement = ] statement
+[ 
+    { , [ @params = ] N'@parameter_name data_type [ OUT | OUTPUT ][ ,...n ]' } 
+     { , [ @param1 = ] 'value1' [ ,...n ] }
+]
+参数
+
+[ @statement = ] statement
+包含 Transact-SQL 语句或批处理的 Unicode 字符串。statement 必须是 Unicode 常量或 Unicode 变量。不允许使用更复杂的 Unicode 表达式（例如使用 + 运算符连接两个字符串）。不允许使用字符常量。如果指定了 Unicode 常量，则必须使用N 作为前缀。例如，Unicode 常量 N'sp_who' 是有效的，但是字符常量 'sp_who' 则无效。字符串的大小仅受可用数据库服务器内存限制。在 64 位服务器中，字符串大小限制为 2 GB，即 nvarchar(max) 的最大大小。
+
+注意：
+stmt 可以包含与变量名形式相同的参数，例如：N'SELECT * FROM HumanResources.Employee WHERE EmployeeID = @IDParameter'
+stmt 中包含的每个参数在 @params 参数定义列表和参数值列表中均必须有对应项。
+
+[ @params = ] N'@parameter_name data_type [ ,... n ] '
+包含 stmt 中嵌入的所有参数定义的字符串。字符串必须是 Unicode 常量或 Unicode 变量。每个参数定义由参数名称和数据类型组成。n 是表示附加参数定义的占位符。在statement 中指定的每个参数都必须在 @params 中定义。如果 stmt 中的 Transact-SQL 语句或批处理不包含参数，则不需要 @params。该参数的默认值为 NULL。
+
+[ @param1 = ] 'value1'
+参数字符串中定义的第一个参数的值。该值可以是 Unicode 常量，也可以是 Unicode 变量。必须为 stmt 中包含的每个参数提供参数值。如果stmt 中的 Transact-SQL 语句或批处理没有参数，则不需要这些值。
+
+[ OUT | OUTPUT ]
+指示参数是输出参数。除非是公共语言运行 (CLR) 过程，否则 text、ntext 和image 参数均可用作 OUTPUT 参数。使用 OUTPUT 关键字的输出参数可以为游标占位符，CLR 过程除外。
+
+n
+附加参数值的占位符。这些值只能为常量或变量，不能是很复杂的表达式（例如函数）或使用运算符生成的表达式。
+
+返回代码值
+
+0（成功）或非零（失败）
+
+结果集
+
+从生成 SQL 字符串的所有 SQL 语句返回结果集。
+
+注释
+
+在批处理、名称作用域和数据库上下文方面，sp_executesql 与 EXECUTE 的行为相同。sp_executesql stmt 参数中的 Transact-SQL 语句或批处理在执行 sp_executesql 语句时才编译。随后，将编译stmt 中的内容，并将其作为执行计划运行。该执行计划独立于名为 sp_executesql 的批处理的执行计划。sp_executesql 批处理不能引用调用 sp_executesql 的批处理中声明的变量。sp_executesql 批处理中的本地游标或变量对调用 sp_executesql 的批处理是不可见的。对数据库上下文所做的更改只在 sp_executesql 语句结束前有效。
+
+如果只更改了语句中的参数值，则 sp_executesql 可用来代替存储过程多次执行 Transact-SQL 语句。因为 Transact-SQL 语句本身保持不变，仅参数值发生变化，所以 SQL Server 查询优化器可能重复使用首次执行时所生成的执行计划。
+
+注意：
+若要改善性能，请在语句字符串中使用完全限定对象名。
+sp_executesql 支持独立于 Transact-SQL 字符串设置参数值，如以下示例所示。
+
+ 	 
+DECLARE @IntVariable int;
+DECLARE @SQLString nvarchar(500);
+DECLARE @ParmDefinition nvarchar(500);
+
+/* Build the SQL string one time.*/
+SET @SQLString =
+     N'SELECT BusinessEntityID, NationalIDNumber, JobTitle, LoginID
+       FROM AdventureWorks2008R2.HumanResources.Employee 
+       WHERE BusinessEntityID = @BusinessEntityID';
+SET @ParmDefinition = N'@BusinessEntityID tinyint';
+/* Execute the string with the first parameter value. */
+SET @IntVariable = 197;
+EXECUTE sp_executesql @SQLString, @ParmDefinition,
+                      @BusinessEntityID = @IntVariable;
+/* Execute the same string with the second parameter value. */
+SET @IntVariable = 109;
+EXECUTE sp_executesql @SQLString, @ParmDefinition,
+                      @BusinessEntityID = @IntVariable;
+输出参数也可用于 sp_executesql。以下示例从 AdventureWorks2008R2.HumanResources.Employee 表中检索职务，并在输出参数@max_title 中返回它。
+
+ 	 
+DECLARE @IntVariable int;
+DECLARE @SQLString nvarchar(500);
+DECLARE @ParmDefinition nvarchar(500);
+DECLARE @max_title varchar(30);
+
+SET @IntVariable = 197;
+SET @SQLString = N'SELECT @max_titleOUT = max(JobTitle) 
+   FROM AdventureWorks2008R2.HumanResources.Employee
+   WHERE BusinessEntityID = @level';
+SET @ParmDefinition = N'@level tinyint, @max_titleOUT varchar(30) OUTPUT';
+
+EXECUTE sp_executesql @SQLString, @ParmDefinition, @level = @IntVariable, @max_titleOUT=@max_title OUTPUT;
+SELECT @max_title;
+替换 sp_executesql 中的参数的能力，与使用 EXECUTE 语句执行字符串相比，有下列优点：
+
+因为在 sp_executesql 字符串中，Transact-SQL 语句的实际文本在两次执行之间并未改变，所以查询优化器应该能将第二次执行中的 Transact-SQL 语句与第一次执行时生成的执行计划匹配。因此，SQL Server 不必编译第二条语句。
+
+Transact-SQL 字符串只生成一次。
+
+整数参数按其本身格式指定。不需要转换为 Unicode。
+
+权限
+
+要求具有 public 角色的成员身份。
+
+示例
+
+A. 执行简单的 SELECT 语句
+
+以下示例将创建并执行一个简单的 SELECT 语句，其中包含名为 @level 的嵌入参数。
+
+ 	 
+EXECUTE sp_executesql 
+          N'SELECT * FROM AdventureWorks2008R2.HumanResources.Employee 
+          WHERE BusinessEntityID = @level',
+          N'@level tinyint',
+          @level = 109;
+B. 执行动态生成的字符串
+
+以下示例显示使用 sp_executesql 执行动态生成的字符串。该示例中的存储过程用于向一组表中插入数据，这些表用于划分一年的销售数据。一年中的每个月均有一个表，格式如下：
+
+ 	 
+CREATE TABLE May1998Sales
+    (OrderID int PRIMARY KEY,
+    CustomerID int NOT NULL,
+    OrderDate  datetime NULL
+        CHECK (DATEPART(yy, OrderDate) = 1998),
+    OrderMonth int
+        CHECK (OrderMonth = 5),
+    DeliveryDate datetime  NULL,
+        CHECK (DATEPART(mm, OrderDate) = OrderMonth)
+    )
+此示例存储过程将动态生成并执行 INSERT 语句，以便向正确的表中插入新订单。此示例使用订货日期生成应包含数据的表的名称，然后将此名称并入INSERT 语句中。
+
+注意：
+这是一个简单的 sp_executesql 示例。此示例不包含错误检查以及业务规则检查，例如确保订单号在各个表之间不重复。
+ 	 
+CREATE PROCEDURE InsertSales @PrmOrderID INT, @PrmCustomerID INT,
+                 @PrmOrderDate DATETIME, @PrmDeliveryDate DATETIME
+AS
+DECLARE @InsertString NVARCHAR(500)
+DECLARE @OrderMonth INT
+
+-- Build the INSERT statement.
+SET @InsertString = 'INSERT INTO ' +
+       /* Build the name of the table. */
+       SUBSTRING( DATENAME(mm, @PrmOrderDate), 1, 3) +
+       CAST(DATEPART(yy, @PrmOrderDate) AS CHAR(4) ) +
+       'Sales' +
+       /* Build a VALUES clause. */
+       ' VALUES (@InsOrderID, @InsCustID, @InsOrdDate,' +
+       ' @InsOrdMonth, @InsDelDate)'
+
+/* Set the value to use for the order month because
+   functions are not allowed in the sp_executesql parameter
+   list. */
+SET @OrderMonth = DATEPART(mm, @PrmOrderDate)
+
+EXEC sp_executesql @InsertString,
+     N'@InsOrderID INT, @InsCustID INT, @InsOrdDate DATETIME,
+       @InsOrdMonth INT, @InsDelDate DATETIME',
+     @PrmOrderID, @PrmCustomerID, @PrmOrderDate,
+     @OrderMonth, @PrmDeliveryDate
+
+GO
+在该过程中使用 sp_executesql 比使用 EXECUTE 执行字符串更有效。使用 sp_executesql 时，只生成 12 个版本的 INSERT 字符串，每个月的表对应 1 个字符串。使用 EXECUTE 时，因为参数值不同，每个 INSERT 字符串均是唯一的。尽管两种方法生成的批处理数相同，但因为 sp_executesql 生成的 INSERT 字符串都相似，所以查询优化器更有可能重复使用执行计划。
+
+C. 使用 OUTPUT 参数
+
+以下示例使用 OUTPUT 参数将由 SELECT 语句生成的结果集存储于 @SQLString 参数中。然后将执行两个使用 OUTPUT 参数值的 SELECT 语句。
+
+ 	 
+USE AdventureWorks2008R2;
+GO
+DECLARE @SQLString nvarchar(500);
+DECLARE @ParmDefinition nvarchar(500);
+DECLARE @SalesOrderNumber nvarchar(25);
+DECLARE @IntVariable int;
+SET @SQLString = N'SELECT @SalesOrderOUT = MAX(SalesOrderNumber)
+    FROM Sales.SalesOrderHeader
+    WHERE CustomerID = @CustomerID';
+SET @ParmDefinition = N'@CustomerID int,
+    @SalesOrderOUT nvarchar(25) OUTPUT';
+SET @IntVariable = 22276;
+EXECUTE sp_executesql
+    @SQLString
+    ,@ParmDefinition
+    ,@CustomerID = @IntVariable
+    ,@SalesOrderOUT = @SalesOrderNumber OUTPUT;
+-- This SELECT statement returns the value of the OUTPUT parameter.
+SELECT @SalesOrderNumber;
+-- This SELECT statement uses the value of the OUTPUT parameter in
+-- the WHERE clause.
+SELECT OrderDate, TotalDue
+FROM Sales.SalesOrderHeader
+WHERE SalesOrderNumber = @SalesOrderNumber;

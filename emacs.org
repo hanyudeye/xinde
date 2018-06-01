@@ -8,24 +8,24 @@
   -l<lisp代码文件>：加载指定的lisp代码文件；
   -batch：以批处理模式运行emacs编辑器。
   --DEBUG-init
-** 调试任务
-   gdb –annotate=3 test
-   无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。无论上面的那种情况，都出现了一个现象：程序的输出不能显示，
-   只有在程序退出的时候才显示出来。无论上面的那种情况，都出现了一个现象：程序的输出不能显示，只有在程序退出的时候才显示出来。
-   gdb-many-windows 切换单窗格/多窗格模式
-   gdb-restore-windows 恢复窗格布局	
 ** 功能
-   screen menu bar/echo area/mode line
-   text edit(许多文本，位置属性，单词，行数，列数，数组）transposed(交换)/upcase/lowercase/
+*** 界面设计
+    screens/ menu bar/echo area/mode line
+*** text edit
+    (许多文本，位置属性，单词，行数，列数，数组）transposed(交换)/upcase/lowercase/
    mode SGML/HTML/PICTURE/compilation/sql/java/perl/emacs-lisp/Lisp interaction/auto save/auto-fill/ISO accents(重音）
-   copy/yank 堆栈结构 abc
-   sort行 列
+*** 文本处理 
+    copy/yank堆栈结构 abc
+sort行 列
+*** 搜索
    search and replace (regular expression) vi中也是默认正则, 文件中搜索　grep
    spell-check ispell/flyspell-mode ispell-change-directory
    buffers read-only
    Word Abbreviation (global-abbrev-table)
    (text-mode-abbrev-table) (setq-default abbrev-mode t) (read-abbrev-file "~/.abbrev_defs") (setq save-abbrevs t)
+*** 脚本 
    macro
+*** 功能开发 
    format
    comment
    frame
@@ -69,131 +69,59 @@
     (setq recentf-max-menu-item 10)
     ;; 这个快捷键绑定可以用之后的插件 counsel 代替
     ;; (global-set-key (kbd "C-x C-r") 'recentf-open-files)
+*** 编码
+    ;;;; 设置编辑环境
+;; 设置为中文简体语言环境
+(set-language-environment 'Chinese-GB)
+;; 设置emacs 使用 utf-8
+(setq locale-coding-system 'utf-8)
+;; 设置键盘输入时的字符编码
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+;; 文件默认保存为 utf-8
+(set-buffer-file-coding-system 'utf-8)
+(set-default buffer-file-coding-system 'utf8)
+(set-default-coding-systems 'utf-8)
+;; 解决粘贴中文出现乱码的问题
+(set-clipboard-coding-system 'utf-8)
+;; 终端中文乱码
+(set-terminal-coding-system 'utf-8)
+(modify-coding-system-alist 'process "*" 'utf-8)
+(setq default-process-coding-system '(utf-8 . utf-8))
+;; 解决文件目录的中文名乱码
+(setq-default pathname-coding-system 'utf-8)
+(set-file-name-coding-system 'utf-8)
+;; 解决 Shell Mode(cmd) 下中文乱码问题
+(defun change-shell-mode-coding ()
+  (progn
+    (set-terminal-coding-system 'gbk)
+    (set-keyboard-coding-system 'gbk)
+    (set-selection-coding-system 'gbk)
+    (set-buffer-file-coding-system 'gbk)
+    (set-file-name-coding-system 'gbk)
+    (modify-coding-system-alist 'process "*" 'gbk)
+    (set-buffer-process-coding-system 'gbk 'gbk)
+    (set-file-name-coding-system 'gbk)))
+
+直接在缓冲区修改编码：
+1、打开文件出现乱码时，可以尝试修改字符的编码：
+M-x revert-buffer-with-coding-system RET（回车）
+然后输入对应编码，如：utf-8 或者 chinese-gbk。
+
+2、在保存的时候还可以指定文件的保存编码：
+M-x set-buffer-file-coding-system
+
+3、查看Emacs编码格式
+M-x describe-coding-system
+*** 编码
+**** 方法一：
+只需C-x <RET> r ( M-x revert-buffer-with-coding-system) 来用指定的编码重新读入这个文件即可。一般乱码都是因为emacs下使用latin或者utf8，而打开的文档是gb2312编码。如果不记得编码类型就试一下，基本上gb2312都能解决。询问编码时记得用tab补齐比较方便。或则也可以通过file 文件名或者enca文件名来查看！
 ** 配置
    Emacs 的配置文件默认保存在 ~/.emacs.d/init.el 文件中。
    如果希望把配置放在 ~/.emacs.d/init.el 文件中，那么需要手工删除 ~/.emacs 文件。
    
    init.el文件 它可以更好将所有 Emacs 相关的文件整合在一个目录内（干净的 HOME ，网盘备份等优点）
    更好的版本控制
-** Major Mode 与 Minor Mode
-*** 核心功能和多个辅助功能
-   C-h m 显示当前所有开启 的Minor Mode 的信息
-   在每次编辑配置文件后，刚刚做的修改并不会立刻生效。这时你需要重启编辑器或者重新加载配置文件。
-   重新加载配置文件你需要在当前配置文件中使用 M-x load-file 双击两次回车确认默认文件名，
-   或者使用 M-x eval-buffer 去执行当前缓冲区的所有 Lisp 命令。 你也可以使用 C-x C-e 
-   来执行某一行的 Lisp 代码。这些可使刚刚修改的配置文件生效。 当然你也可以将这些函数绑定为快捷键。
-
-*** Major Mode
-    ; 开启全局 Company 补全
-    (global-company-mode 1)
-*** Minor Mode   
-   ;; 关闭工具栏，tool-bar-mode 即为一个 Minor Mode
-   (tool-bar-mode -1)
-
-   ;; 关闭文件滑动控件
-   (scroll-bar-mode -1)
-
-   ;; 显示行号
-   (global-linum-mode 1)
-
-   ;; 更改光标的样式（不能生效，解决方案见第二集）
-   (setq cursor-type 'bar)
-
-   ;; 关闭启动帮助画面
-   (setq inhibit-splash-screen 1)
-
-   ;; 关闭缩进 (第二天中被去除)
-   ;; (electric-indent-mode -1)
-
-   ;; 更改显示字体大小 16pt
-   ;; http://stackoverflow.com/questions/294664/how-to-set-the-font-size-in-emacs
-   (set-face-attribute 'default nil :height 160)
-
-   ;; 快速打开配置文件
-   (defun open-init-file()
-   (interactive)
-   (find-file "~/.emacs.d/init.el"))
-
-   ;; 这一行代码，将函数 open-init-file 绑定到 <f2> 键上
-   (global-set-key (kbd "<f2>") 'open-init-file)
-*** 主模式
-    javascript 默认主模式改为 js2-mode
-    #+BEGIN_SRC lisp
-     (setq auto-mode-alist
-      (append
-       '(("\\.js\\'" . js2-mode))
-       auto-mode-alist))
-    #+END_SRC
-    
-       #+BEGIN_SRC lisp
-        (setq auto-mode-alist
-       (append
-       ;; File name (within directory) starts with a dot.
-       '(("/\\.[^/]*\\'" . fundamental-mode)
-       ;; File name has no dot.
-       ("/[^\\./]*\\'" . fundamental-mode)
-       ;; File name ends in ‘.C’.
-       ("\\.C\\'" . c++-mode))
-       auto-mode-alist))
-       #+END_SRC
-      有点像自增
-
-** 插件
-   你可以直接将下面的代码复制到你的配置文件顶端，从而直接使用 Melpa 作为插件的源。 你可以将你需要的插件名字写在 my/packages 中，
-   Emacs 在启动时会自动下载未被安装 的插件。
-   
-   #+BEGIN_SRC lisp
-     (when (>= emacs-major-version 24)
-         (require 'package)
-         (package-initialize)
-         (setq package-archives '(("gnu"   . "http://elpa.emacs-china.org/gnu/")
-              ("melpa" . "http://elpa.emacs-china.org/melpa/"))))
-   #+END_SRC
-   
-;; 注意 elpa.emacs-china.org 是 Emacs China 中文社区在国内搭建的一个 ELPA 镜像
-
- ;; cl - Common Lisp Extension
- (require 'cl)
-
- ;; Add Packages
- (defvar my/packages '(
-		;; --- Auto-completion ---
-		company
-		;; --- Better Editor ---
-		hungry-delete
-		swiper
-		counsel
-		smartparens
-		;; --- Major Mode ---
-		js2-mode
-		;; --- Minor Mode ---
-		nodejs-repl
-		exec-path-from-shell
-		;; --- Themes ---
-		monokai-theme
-		;; solarized-theme
-		) "Default packages")
-
- (setq package-selected-packages my/packages)
-
- (defun my/packages-installed-p ()
-     (loop for pkg in my/packages
-	   when (not (package-installed-p pkg)) do (return nil)
-	   finally (return t)))
-
- (unless (my/packages-installed-p)
-     (message "%s" "Refreshing package database...")
-     (package-refresh-contents)
-     (dolist (pkg my/packages)
-       (when (not (package-installed-p pkg))
-	 (package-install pkg))))
-
- ;; Find Executable Path on OS X
- (when (memq window-system '(mac ns))
-   (exec-path-from-shell-initialize))
-
-关于上面这段配置代码有几个知识点，首先就是这段配置文件中用到了 loop for ... in ，它来自 cl 即 Common Lisp 扩展。 for , in, collect 均为 cl-loop 中的 保留关键字。下面是一些简单的 cl-loop 的使用示例：
-
 * lisp编程
 ** 列表 
 *** 数据列表
