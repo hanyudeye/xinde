@@ -1,64 +1,64 @@
-* 安装与配置
-  配置文件/etc/php/7.0/apache2/php.ini
-  命令行配置 /etc/php/7.0/cli/php.ini 
-** 安装
-   ./configure --with-mysql --with-apxs=/www/bin/apxs
-*** apache的支持
-    LoadModule php5_module        libexec/libphp5.so
-    或
-    apt install libapache2-mod-php php-common
-**** 隐藏入口文件
-     index.php 相当于main 函数，apache 默认 会与此文件产生关系。
-     在url 中隐藏此字串的方法是设置
-     1.httpd.conf配置文件中加载了mod_rewrite.so模块 //在APACHE里面去配置
-     #LoadModule rewrite_module modules/mod_rewrite.so把前面的警号去掉
-     2.AllowOverride None 讲None改为 All      //在APACHE里面去配置
-     3、在应用入口文件同级目录添加 .htaccess 文件,内容如下:
-     <IfModule	mod_rewrite.c>
-     Options	+FollowSymlinks	-Multiviews
-     RewriteEngine	on
-     RewriteCond	%{REQUEST_FILENAME}	!-d
-     RewriteCond	%{REQUEST_FILENAME}	!-f
-     RewriteRule	^(.*)$	index.php/$1	[QSA,PT,L]
-     </IfModule>
+* php
+** 安装与配置
+   配置文件/etc/php/7.0/apache2/php.ini
+   命令行配置 /etc/php/7.0/cli/php.ini 
+*** 安装
+    ./configure --with-mysql --with-apxs=/www/bin/apxs
+**** apache的支持
+     LoadModule php5_module        libexec/libphp5.so
+     或
+     apt install libapache2-mod-php php-common
+***** 隐藏入口文件
+      index.php 相当于main 函数，apache 默认 会与此文件产生关系。
+      在url 中隐藏此字串的方法是设置
+      1.httpd.conf配置文件中加载了mod_rewrite.so模块 //在APACHE里面去配置
+      #LoadModule rewrite_module modules/mod_rewrite.so把前面的警号去掉
+      2.AllowOverride None 讲None改为 All      //在APACHE里面去配置
+      3、在应用入口文件同级目录添加 .htaccess 文件,内容如下:
+      <IfModule	mod_rewrite.c>
+      Options	+FollowSymlinks	-Multiviews
+      RewriteEngine	on
+      RewriteCond	%{REQUEST_FILENAME}	!-d
+      RewriteCond	%{REQUEST_FILENAME}	!-f
+      RewriteRule	^(.*)$	index.php/$1	[QSA,PT,L]
+      </IfModule>
 
-*** nginx的支持
-    vim /usr/local/nginx/conf/nginx.conf
-    修改默认的 location 块，使其支持 .php 文件：
+**** nginx的支持
+     vim /usr/local/nginx/conf/nginx.conf
+     修改默认的 location 块，使其支持 .php 文件：
 
-    location / {
-    root   html;
-    index  index.php index.html index.htm;
-    }
-    下一步配置来保证对于 .php 文件的请求将被传送到后端的 PHP-FPM 模块， 取消默认的 PHP 配置块的注释，并修改为下面的内容：
+     location / {
+     root   html;
+     index  index.php index.html index.htm;
+     }
+     下一步配置来保证对于 .php 文件的请求将被传送到后端的 PHP-FPM 模块， 取消默认的 PHP 配置块的注释，并修改为下面的内容：
 
-    location ~* \.php$ {
-    fastcgi_index   index.php;
-    fastcgi_pass    127.0.0.1:9000;
-    include         fastcgi_params;
-    fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
-    fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
-    }
-** 模块安装  
-   apt install php-curl php-mysql
-*** 手动加载模块 
-    1. a2enmod rewrite 加载 rewrite模块
-    2. 创建 到 mods-enabled 的软链接 ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
-    3. 注意 虚拟主机 中 AllowOverride 为 All
-*** 模块安装路径
-    查找扩展路径 php -ini |grep extension
-    extension_dir => /usr/lib/php/20151012
-** php配置  
-*** 调试模式
-  #+BEGIN_SRC php
-    ini_set("display_errors", "On"); 
-    error_reporting(E_ALL); //-1是关闭
-  #+END_SRC
-*** php.ini文件
-  short_open_tag = Off（是否允许使用 PHP 代码开始标志的缩写形式（<? ?> ）。）；
-  memory_limit = 128M（最大使用内存的大小）；
-  upload_max_filesize = 2M（上传附件的最大值），第一个需要改成on，否则的话很多php程序都会运行不了，后面的两项就按照大家的实际需求更改就行了。
-* php教程
+     location ~* \.php$ {
+     fastcgi_index   index.php;
+     fastcgi_pass    127.0.0.1:9000;
+     include         fastcgi_params;
+     fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+     fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
+     }
+*** 模块安装  
+    apt install php-curl php-mysql
+**** 手动加载模块 
+     1. a2enmod rewrite 加载 rewrite模块
+     2. 创建 到 mods-enabled 的软链接 ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
+     3. 注意 虚拟主机 中 AllowOverride 为 All
+**** 模块安装路径
+     查找扩展路径 php -ini |grep extension
+     extension_dir => /usr/lib/php/20151012
+*** php配置  
+**** 调试模式
+   #+BEGIN_SRC php
+     ini_set("display_errors", "On"); 
+     error_reporting(E_ALL); //-1是关闭
+   #+END_SRC
+**** php.ini文件
+   short_open_tag = Off（是否允许使用 PHP 代码开始标志的缩写形式（<? ?> ）。）；
+   memory_limit = 128M（最大使用内存的大小）；
+   upload_max_filesize = 2M（上传附件的最大值），第一个需要改成on，否则的话很多php程序都会运行不了，后面的两项就按照大家的实际需求更改就行了。
 ** 对象分辨
    获取类型 echo gettype($bool);
         
@@ -91,7 +91,7 @@
    E_PARSE  4  解析错误，由程序解析器报告  
    E_NOTICE  8  关键的错误，例如变量末初始化  
    M_PI  3.1415926535898  Π  
-** 方法
+** 功能
 *** 引用我的方法
     使用require语句包含并执行config.php文件
     include_once()和require_once()语句也是在脚本执行期间包括并运行指定文件。
