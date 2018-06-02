@@ -1,28 +1,22 @@
 * emacs 
-** 选项
-  +<行号>：启动emacs编辑器，并将光标移动到制定行号的行；
+** 启动
   -q：启动emacs编辑器，而不加载初始化文件；
   -u<用户>：启动emacs编辑器时，加载指定用户的初始化文件；
-  -t<文件>：启动emacs编辑器时，把指定的文件作为中端，不适用标准输入（stdin）与标准输出（stdout）；
-  -f<函数>：执行指定lisp（广泛应用于人工智能领域的编程语言）函数；
-  -l<lisp代码文件>：加载指定的lisp代码文件；
-  -batch：以批处理模式运行emacs编辑器。
-  --DEBUG-init
-** 功能
+  --debug-init
+** 功能设计
 *** 界面设计
     screens/ menu bar/echo area/mode line
 *** text edit
     (许多文本，位置属性，单词，行数，列数，数组）transposed(交换)/upcase/lowercase/
-   mode SGML/HTML/PICTURE/compilation/sql/java/perl/emacs-lisp/Lisp interaction/auto save/auto-fill/ISO accents(重音）
+    mode SGML/HTML/PICTURE/compilation/sql/java/perl/emacs-lisp/Lisp interaction/auto save/auto-fill/ISO accents(重音）
 *** 文本处理 
-    copy/yank堆栈结构 abc
-sort行 列
+    copy/yank堆栈结构 sort行 列
 *** 搜索
-   search and replace (regular expression) vi中也是默认正则, 文件中搜索　grep
-   spell-check ispell/flyspell-mode ispell-change-directory
-   buffers read-only
-   Word Abbreviation (global-abbrev-table)
-   (text-mode-abbrev-table) (setq-default abbrev-mode t) (read-abbrev-file "~/.abbrev_defs") (setq save-abbrevs t)
+    search and replace (regular expression) vi中也是默认正则, 文件中搜索　grep
+    spell-check ispell/flyspell-mode ispell-change-directory
+    buffers read-only
+    Word Abbreviation (global-abbrev-table)
+    (text-mode-abbrev-table) (setq-default abbrev-mode t) (read-abbrev-file "~/.abbrev_defs") (setq save-abbrevs t)
 *** 脚本 
    macro
 *** 功能开发 
@@ -48,27 +42,1968 @@ sort行 列
    模式属性　(add-hook 'text-mode-hook 'turn-on-auto-fill)
    按键属性　(define-key global-map "\C-x\C-u" 'undo)
    输入法切换 `c-\' (toggle-input-method')
-  lisp
-  package
-  version control(vc-next-action/vc-diff/vc-print-log/vc-cnacel-version)
-  Unicode coding-system
-  (setq buffer-file-coding-system 'utf-8)  默认buffer编码是utf-8,(写文件)
-  (prefer-coding-system 'utf-8)   指定文件编码,此时buffer新建和读取
-  (setq read-quoted-char-radix 16) insert-quoted-char 
-  info
-  browser
-  help system/key/variable/mode
-  bug
-变窄（narrowing) 
+   lisp
+   package
+   version control(vc-next-action/vc-diff/vc-print-log/vc-cnacel-version)
+   Unicode coding-system
+   (setq buffer-file-coding-system 'utf-8)  默认buffer编码是utf-8,(写文件)
+   (prefer-coding-system 'utf-8)   指定文件编码,此时buffer新建和读取
+   (setq read-quoted-char-radix 16) insert-quoted-char 
+   info
+   browser
+   help system/key/variable/mode
+   bug
+   变窄（narrowing) 
    这个一个 让你关注于缓冲区特定部分的特性 
    变窄 narrowing
    恢复 widen
-*** 最近打开文件
-    (require 'recentf)
-    (recentf-mode 1)
-    (setq recentf-max-menu-item 10)
-    ;; 这个快捷键绑定可以用之后的插件 counsel 代替
-    ;; (global-set-key (kbd "C-x C-r") 'recentf-open-files)
+* spacemacs(横线书写本) SPC h SPC
+** 安装
+    git checkout develop
+    git fetch upstream(上游)
+    git merge upstream/develop
+*** 更新插件包
+    configuration-layer/update-packages 或点击主页面　update package
+** 功能开发
+*** 自定义层
+**** layers.el 声明附加图层的位置
+**** packages.el 包的列表及其配置函数（init，post-init等）
+**** funcs.el 在图层中定义所有的函数
+**** config.el 图层配置
+**** keybindings.el 
+**** 层变量
+     config.el 文件打开, 该文件中即定义了该 layer 的变量.
+
+     例如 better-default layer 的变量如下:
+  #+BEGIN_SRC emacs-lisp
+    (defvar better-defaults-move-to-beginning-of-code-first t
+      "when t, first stroke of C-a will move the cursor to the beginning of code.
+    When nil, first stroke will go to the beginning of line.
+    Subsequent strokes will toggle between beginning of line and beginning of code.")
+
+    (defvar better-defaults-move-to-end-of-code-first nil
+      "when t, first stroke of C-e will move the cursor to the end of code (before comments).
+    When nil, first stroke will go to the end of line (after comments).
+    Subsequent strokes will toggle between end of line and end of code.")
+  #+END_SRC
+
+  要配置使用这些变量, 可以在启用 layer 时使用如下的代码:
+
+  #+BEGIN_SRC emacs-lisp
+    (better-defaults :variables
+                     better-defaults-move-to-end-of-code-first t)
+  #+END_SRC
+
+**** 定制 modeline
+  在 dotspacemacs/user-config 中加入如下代码:
+  #+BEGIN_SRC emacs-lisp
+    (setq ns-use-srgb-colorspace nil)
+  #+END_SRC
+
+**** 创建自己的 layer
+     假设我们需要创建一个 layer, 名叫 zilongshanren, 并且在 layer 下包含一个名叫 
+     youdao-dictionary 的 package.
+
+     首先利用 spacemacs 提供的函数创建 layer. 按下 M-x 并且输入 
+     configuration-layer/create-layer, 然后选择路径 ~/.spacemacs.d,
+     确定创建 README, 然后我们就可以看到 layer 创建成功.
+
+  每一个文件的内容描述如下:
+
+  | 文件名          | 用处                                                                                        |
+  |----------------+--------------------------------------------------------------------------------------------------|
+  | layers.el      | 申明一些额外的 layer 依赖 |
+  | packages.el    | 一些 layer 使用到的 package 以及相关配置函数 |
+  | funcs.el       | 定义一些 layer 层次的函数, 即全局函数 |
+  | config.el      | layer 的配置, 此处定义的配置可以在 .spacemacs 中申明 layer 时进行配置, 也可以定义 emacs 的默认配置 |
+  | keybindings.el | 快捷键配置 |
+
+  现在我们可以把 youdao-dictionary 加入到 layer 中, 编辑 packages.el:
+
+  #+BEGIN_SRC emacs-lisp
+
+    ;; 添加 package
+    (defconst zilongshanren-packages
+      '(youdao-dictionary)
+      )
+
+    ;; 初始化 package
+    ;; 可以使用 , d m 快捷键, 然后按下 e 展开宏
+    (defun zilongshanren/init-youdao-dictionary ()
+      (use-package youdao-dictionary
+        :defer t
+        :init
+        (spacemacs/set-leader-keys "oy" 'youdao-dictionary-search-at-point+)
+        )
+      )
+  #+END_SRC
+
+  编辑 config.el 文件:
+
+  #+BEGIN_SRC emacs-lisp
+    ;; 开启行号显示
+    (global-linum-mode t)
+
+    ;; 定义快捷键
+    (global-set-key (kbd "M-s o") 'occur-dwim)
+
+    ;; 将 occur 的 buffer 中的光标移动方式修改为 HJKL
+    (evilified-state-evilify-map occur-mode-map
+      :mode occur-mode)
+  #+END_SRC
+
+  编辑 keybindings.el 文件:
+
+  #+BEGIN_SRC emacs-lisp
+    ;; dwin = do what i mean.
+    (defun occur-dwim ()
+      "Call `occur' with a sane default."
+      (interactive)
+      (push (if (region-active-p)
+                (buffer-substring-no-properties
+                 (region-beginning)
+                 (region-end))
+              (let ((sym (thing-at-point 'symbol)))
+                (when (stringp sym)
+                  (regexp-quote sym))))
+            regexp-history)
+      (call-interactively 'occur))
+  #+END_SRC
+
+  然后将 zilongshanren 加到 *dotspacemacs-configuration-layers* 变量中, 即可让 layer 配置生效.
+
+*** Emacs Lisp layer
+    调试： 1，在函数设断点 SPC mdf 2.到运行处或测试处 后 , ee 执行. s 进入 o 出去
+  | 〜SPC mdt〜 | insert =（debug）=打印堆栈跟踪并重新评估函数 |
+    格式代码 SPC m = b
+** 帮助
+   C-h t 简单帮助
+   C-h k 寻找快捷键的帮助信息
+   C-h v 寻找变量的帮助信息
+   C-h f 寻找函数的帮助信息
+   info
+** 界面开发
+*** 主题设计
+    boolean 注释背景 spacemacs-theme-comment-bg
+    (setq-default dotspacemacs-themes '(spacemacs-light leuven zenburn))
+ 
+    安装主题
+    (add-to-list my/packages 'monokai-theme)
+    加载主题 (load-theme 'monokai 1)
+*** 字体
+  dotspacemacs-default-font 
+ #+BEGIN_SRC emacs-lisp
+ (setq-default dotspacemacs-default-font '("Source Code Pro"
+                                           :size 13
+                                           :weight normal
+                                           :width normal
+                                           :powerline-scale 1.1))
+ #+END_SRC
+*** 模式行
+  #+BEGIN_SRC emacs-lisp
+    (setq-default dotspacemacs-lines-numbers '(:relative nil
+                                               :disabled-for-modes dired-mode
+                                                                   doc-view-mode
+                                                                   markdown-mode
+                                                                   org-mode
+                                                                   pdf-view-mode
+                                                                   text-mode
+                                               :size-limit-kb 1000))
+  #+END_SRC
+*** Frame title
+  Default frame title displays name of current process and hostname of system. You
+  can include more information (like name of current file, name of current project
+  etc) by setting =dotspacemacs-frame-title-format= variable.
+
+  Following format short codes are avialable:
+
+  | Code | Description                                                                  |
+  |------+------------------------------------------------------------------------------|
+  | =%a= | the `abbreviated-file-name', or `buffer-name'                                |
+  | =%t= | `projectile-project-name'                                                    |
+  | =%I= | `invocation-name'                                                            |
+  | =%S= | `system-name'                                                                |
+  | =%U= | contents of $USER                                                            |
+  | =%b= | buffer name                                                                  |
+  | =%f= | visited file name                                                            |
+  | =%F= | frame name                                                                   |
+  | =%s= | process status                                                               |
+  | =%p= | percent of buffer above top of window, or Top, Bot or All                    |
+  | =%P= | percent of buffer above bottom of window, perhaps plus Top, or Bottom or All |
+  | =%m= | mode name                                                                    |
+  | =%n= | Narrow if appropriate                                                        |
+  | =%z= | mnemonics of buffer, terminal, and keyboard coding systems                   |
+  | =%Z= | like %z, but including the end-of-line format"                               |
+
+***** Iconified (tabified) title
+  If you are using tiling window manager with tab support you may want to display
+  different title for inactive tabs with =dotspacemacs-icon-title-format=
+  variable. Short codes are same as for frame title.
+
+  If this variable is set to =nil= (default) its value will be same as
+  =dotspacemacs-frame-title-format=.
+
+*** 透明度调整 ~SPC TT~
+*** 系统监视器显示 ~SPC tms~
+*** 换行 SPC-t-l 开关truncate line
+*** 书签 看小说用的 ~SPC fb~ 
+    | 键绑定 | 说明                             |
+    | 〜Cd〜 | 删除选中的书签                   |
+    | 〜Ce〜 | 编辑所选书签                     |
+    | 〜Cf〜 | 切换文件名位置                   |
+    | 〜Co〜 | 在另一个窗口    中打开选定的书签 |
+    |        |                                  |
+*** 文本的缓冲区显示 可以集中显示选中的文本
+    | 〜SPC nf〜 | 将缓冲区缩小到当前函数   |
+    | 〜SPC np〜 | 将缓冲区缩小到可见页面   |
+    | 〜SPC nr〜 | 将缓冲区缩小到选定的文本 |
+    | 〜SPC nw〜 | 加宽，即显示整个缓冲区   |
+
+*** frame缩放
+    | 键绑定         | 说明                           |
+    | 〜SPC zf +〜   | 放大帧内容并启动帧缩放瞬态     |
+    | 〜SPC zf =〜   | 放大帧内容并启动帧缩放瞬态     |
+    | 〜SPC zf  - 〜 | 缩小帧内容并启动帧缩放瞬态     |
+    | 〜SPC zf 0〜   | 重置帧内容大小并启动​​帧缩放瞬态 |
+    | 〜+〜          | 放大                           |
+    | 〜=〜          | 放大                           |
+    | 〜 - 〜        | 缩小                           |
+    | 〜0〜          | 重置缩放                       |
+    | 任何其他键     | 保留缩放框架的过渡状态         |
+
+*** 文本缩放
+    | 键绑定         | 说明                                     |
+    | 〜SPC zx +〜   | 放大字体并启动字体缩放瞬态               |
+    | 〜SPC zx =〜   | 放大字体并启动字体缩放瞬态               |
+    | 〜SPC zx  - 〜 | 缩小字体并启动字体缩放瞬态               |
+    | 〜SPC zx 0〜   | 重置字体大小（不缩放）并启动字体缩放瞬态 |
+    | 〜+〜          | 增加字体大小                             |
+    | 〜=〜          | 增加字体大小                             |
+    | 〜 - 〜        | 减小字体大小                             |
+    | 〜0〜          | 重置字体大小                             |
+    | 任何其他键     | 保持字体缩放瞬态                         |
+
+  请注意，/只/当前缓冲区的文本被缩放，其他缓冲区，
+   
+*** 移动
+**** 在屏幕中移动光标：
+     vi & vim 命令行模式操作移动光标位置都是指移动到要编辑单词、字母的前面。
+
+     按键                                        操作描述
+     h                                            光标左移一个字符；
+     j                                             光标下移一行；
+     k                                            光标上移一行；
+     l                                             光标右移一个字符；
+
+     数值  +  G                                光标移至“数值”所指行的行首；
+     ^H                                          光标移至当前屏幕显示首行的行首；
+     ^M                                          光标移至当前屏幕显示的中间行的行首；
+     ^L                                           光标移至当前屏幕显示的最后一行的行首；
+
+**** 在文件行内移动光标：
+     vi & vim 命令行模式操作光标行内移动，单词间以空格作为分隔字符，标点符号看作一个单词。
+     
+     按键                                        操作描述
+     0    （数字零）                        光标移动到光标所在行的行首；
+     $                                           光标移动到光标所在行的行末；
+     w                                          光标移动到下一个单词的首字母前；
+     b                                           光标移动到上一个单词的首字母前；
+     e                                           光标移动到当前光标所在单词的最后字符前；
+**** 屏幕滚动：
+     ^F                                            屏幕向下滚动一屏；
+     ^B                                            屏幕向上滚动一屏；
+     ^E                                            屏幕向下滚动一行；
+     ^Y                                            屏幕向上滚动一行；
+     ^D                                            屏幕向下滚动半屏；
+     ^U                                            屏幕向上滚动半屏；
+     z + Enter                                     滚动屏幕，使当前光标所在行处于屏幕第一行；
+     z + .                                         滚动屏幕，使当前光标所在行处于屏幕中间行；
+     z + -                                         滚动屏幕，使当前光标所在行处于屏幕最后一行；
+*** 高亮当前行
+    (global-hl-line-mode 1)
+** 功能设计
+*** 文本   
+**** 显示行号 linum-mode    
+*** 文件
+**** 批量重命名 wdired  执行 wdired 相关的命令就好
+     在目录buff 下 输入 wdired...., 最后提交 C-c C-c
+     退出wdired模式，您需要按C-c ESC
+*** 搜索
+**** 在当前目录中搜索 
+     | ~SPC s s~ | search with the first found tool |
+   | 〜SPC /〜或〜SPC sd〜| 用第一个找到的工具搜索|
+**** 网页
+  | 〜SPC swg〜 | 在emacs中获取Google建议。在浏览器中打开Goog​​le搜索结果。 |
+  | 〜SPC sww〜| 在emacs中获取维基百科建议。在浏览器中打开维基百科页面。|
+   也可以用duck-duck-go
+  
+**** 在一个项目中搜索
+    | 〜SPC /〜或〜SPC sp〜| 搜索第一个找到的工具|
+**** Searching in all open buffers visiting files
+
+| Key Binding | Description                                         |
+|-------------+-----------------------------------------------------|
+| ~SPC s b~   | search with the first found tool                    |
+|  
+ 
+*** agenda(事物处理)
+**** 在事物中切换 C-' 
+*** nov mode 查看epub 文档 
+    describe-mode V       
+    nov-view-content-source [    
+    nov-previous-document]     
+    nov-next-document g      
+    nov-render-document h               
+    describe-mode m 
+    nov-display-metadata n 
+    nov-next-document p             
+    nov-previous-document q  
+    quit-window t         
+    nov-goto-toc   （到顶部) v    
+    nov-view-source  (看源码)
+*** pdf-tools
+**** 搜索   
+  Searching搜索 with =occur= can be done by using =pdf-occur= (~SPC m s s~).
+**** 导航
+     上/下一页 K/J
+     第一页、最后一页 gg /G
+     跳到几页 gt  gl
+     标记 m 跳 '
+**** 大纲
+    链接 o
+    大纲 O
+    刷新 r
+**** 注释
+**** 匹配窗口
+     +/- 放大缩小 重置 zr
+**** 切片 就是一个页面的显示部分，被切的其他不显示
+  鼠标切片 SPC m s m 重置  SPC m s r
+*** Meghanada? 可以方便处理java语言的任务
+    1.打开关闭 任务
+    2.语言内Navigation 
+   | ~SPC m g b~ | Jump back to previous location |
+   | ~SPC m g g~ | Jump to declaration            |
+   |             |                                |
+   3.编译文件、工程
+   | ~SPC m c b~ | Compile file (buffer) |
+   | ~SPC m c c~ | Compile project       |
+   4.测试
+   | ~SPC m t a~ | Run all tests |
+   5.附加功能
+   | ~SPC m =~   | Beautify code                          |
+   | ~SPC m r i~ | Optimize imports                       |
+   | ~SPC m r I~ | Import all                             |
+   | ~SPC m r n~ | Create a new class, interface, or enum |
+   6.执行
+   | ~SPC m x :~ | Run task    |
+**** Meghanada的配置文件？
+   .meghanada.conf 必须在工程根目录 , 配置详情查看 git doc 文件
+   #+BEGIN_SRC conf
+       # Set JAVA_HOME
+       # Type: string
+     java-home = "/usr/lib/jvm/default"
+
+     # Set java version
+     # Type: string
+     #
+     # It is same effect following code.
+     # System.setProperty("java.specification.version", val);
+     java-version = "1.8"
+
+     # Set source compatibility
+     # Type: string
+     compile-source = "1.8"
+
+     # Set target compatibility
+     # Type: string
+     compile-target = "1.8"
+
+     # Set dependencies file list (jar filepath)
+     # Type: string list
+     dependencies = ["/home/user/.m2/repository/org/apache/maven/maven-model/3.3.9/maven-model-3.3.9.jar", "/home/user/.m2/repository/org/codehaus/plexus/plexus-utils/3.0.22/plexus-utils-3.0.22.jar", "/home/user/.m2/repository/org/apache/commons/commons-lang3/3.4/commons-lang3-3.4.jar" ... ]
+
+     # Set test dependencies file list (jar filepath)
+     # Type: string list
+     test-dependencies = ["/home/ma2/.m2/repository/junit/junit/4.12/junit-4.12.jar" ... ]
+
+     # Set source directories
+     # Type: string list
+     #sources = ["src/main/java"]
+
+     # Set resource directories
+     # Type: string list
+     #resources = ["src/main/resources"]
+
+     # Set classes output directory
+     # Type: string
+     output = "."
+
+     # Set test source directories
+     # Type: string list
+     #test-sources = ["src/test/java"]
+
+     # Set testt resource directories
+     # Type: string list
+     #test-resources = ["src/test/resources"]
+
+     # Set test classes output directory
+     # Type: string
+     #test-output = "build/test/classes"
+
+     # Set include file filter
+     # Type: string list
+     #
+     # Filter strings are must regex string.
+     include-file = [".*Parser*." ... ]
+
+     # Set exclude file filter
+     # Type: string list
+     #
+     # Filter strings are must regex string.
+     exclude-file = [".*TEST*." ... ]
+
+   #+END_SRC
+*** w3m推荐配置?
+    #+BEGIN_SRC lisp
+   (defun dotspacemacs/user-config ()
+    (setq w3m-home-page "https://www.google.com")
+    ;; W3M Home Page
+    (setq w3m-default-display-inline-images t)
+    (setq w3m-default-toggle-inline-images t)
+    ;; W3M default display images
+    (setq w3m-command-arguments '("-cookie" "-F"))
+    (setq w3m-use-cookies t)
+    ;; W3M use cookies
+    (setq browse-url-browser-function 'w3m-browse-url)
+    ;; Browse url function use w3m
+    (setq w3m-view-this-url-new-session-in-background t)
+    ;; W3M view url new session in background
+  ) 
+    #+END_SRC
+
+*** emacsclient
+  告诉正在运行的emacs 访问文件, 与emacs服务器一起使用
+  emacsclient [ 选项 ] 文件
+  -c，--create-frame 使用一个新框架而不是在现有框架
+  -d，--display = DISPLAY 告诉服务器在给定的显示器上显示文件。
+  -nw，-t，--tty  在当前终端上打开一个新的Emacs框架
+  最后 ，编辑完缓冲区后，输入“Cx＃”（“server-edit”）
+*** Yasnippet 小片段snippet
+    使用 keyname + M-/  有参数用TAB索引
+    添加 最简单的地方是在~/.emacs.d/private/snippets目录中。
+    在这个目录结构下，你应该创建一个以你的片段的相关模式命名的文件夹，例如markdown-mode。
+    在这个模式文件夹中，创建名称基于您希望的代码段别名的文件。
+    格式：　$0 是最后一个
+  #+BEGIN_SRC snappt
+  #contributor : Jimmy Wu <frozenthrone88@gmail.com>
+  #name :<form method="..." id="..." action="..."></form>
+  # --
+  <form method="$1" id="$2" action="$3">
+    $0
+  </form>
+  #+END_SRC
+
+  现有文本创建　helm-yas-create-snippet-on-region
+  刷新 yas-load-snippet-buffer　
+  测试  yas-tryout-snippet
+  自动完成中显示　snippet 把变量设为：auto-completion-enable-snippets-in-popup为t。
+*** markdown
+**** 预览 默认是内部浏览器，配置    
+   1. (markdown :variables markdown-live-preview-engine 'vmd)
+   2. sudo npm install -g vmd, 感觉都一样 spc m c p
+   4.在chrome 层配置flymd, 可以 Write markdown in Emacs and realtime 
+   show in chrome using [[https://github.com/mola-T/flymd][flymd]]
+**** 生成 大纲
+     ~SPC SPC markdown-toc-generate-toc RET~
+**** Key bindings
+***** Element insertion
+
+   | Key Binding | Description                                                       |
+   |-------------+-------------------------------------------------------------------|
+   | ~SPC m -~   | insert horizontal line                                            |
+   | ~SPC m h i~ | insert header dwim                                                |
+   | ~SPC m h I~ | insert header setext dwim                                         |
+   | ~SPC m h 1~ | insert header atx 1                                               |
+   | ~SPC m h 2~ | insert header atx 2                                               |
+   | ~SPC m h 3~ | insert header atx 3                                               |
+   | ~SPC m h 4~ | insert header atx 4                                               |
+   | ~SPC m h 5~ | insert header atx 5                                               |
+   | ~SPC m h 6~ | insert header atx 6                                               |
+   | ~SPC m h !~ | insert header setext 1                                            |
+   | ~SPC m h @~ | insert header setext 2                                            |
+   | ~SPC m i l~ | insert inline link dwim                                           |
+   | ~SPC m i L~ | insert reference link dwim                                        |
+   | ~SPC m i u~ | insert uri                                                        |
+   | ~SPC m i f~ | insert footnote                                                   |
+   | ~SPC m i w~ | insert wiki link                                                  |
+   | ~SPC m i i~ | insert image                                                      |
+   | ~SPC m i I~ | insert reference image                                            |
+   | ~SPC m i t~ | insert Table of Contents (toc)                                    |
+   | ~SPC m x b~ | make region bold or insert bold                                   |
+   | ~SPC m x i~ | make region italic or insert italic                               |
+   | ~SPC m x c~ | make region code or insert code                                   |
+   | ~SPC m x C~ | make region code or insert code (Github Flavored Markdown format) |
+   | ~SPC m x q~ | make region blockquote or insert blockquote                       |
+   | ~SPC m x Q~ | blockquote region                                                 |
+   | ~SPC m x p~ | make region or insert pre                                         |
+   | ~SPC m x P~ | pre region                                                        |
+
+***** Element removal
+
+   | Key Binding | Description         |
+   |-------------+---------------------|
+   | ~SPC m k~   | kill thing at point |
+
+***** Completion
+
+   | Key Binding | Description |
+   |-------------+-------------|
+   | ~SPC m ]~   | complete    |
+
+***** Following and Jumping
+
+   | Key Binding | Description           |
+   |-------------+-----------------------|
+   | ~SPC m o~   | follow thing at point |
+   | ~SPC m j~   | jump                  |
+
+***** Indentation
+
+   | Key Binding | Description   |
+   |-------------+---------------|
+   | ~SPC m \>~  | indent region |
+   | ~SPC m \<~  | exdent region |
+
+***** Header navigation
+
+   | Key Binding | Description                  |
+   |-------------+------------------------------|
+   | ~gj~        | outline forward same level   |
+   | ~gk~        | outline backward same level  |
+   | ~gh~        | outline up one level         |
+   | ~gl~        | outline next visible heading |
+
+***** Buffer-wide commands
+
+   | Key Binding | Description                                                                          |
+   |-------------+--------------------------------------------------------------------------------------|
+   | ~SPC m c ]~ | complete buffer                                                                      |
+   | ~SPC m c m~ | other window                                                                         |
+   | ~SPC m c p~ | preview                                                                              |
+   | ~SPC m c P~ | live preview using engine defined with layer variable =markdown-live-preview-engine= |
+   | ~SPC m c e~ | export                                                                               |
+   | ~SPC m c v~ | export and preview                                                                   |
+   | ~SPC m c o~ | open                                                                                 |
+   | ~SPC m c w~ | kill ring save                                                                       |
+   | ~SPC m c c~ | check refs                                                                           |
+   | ~SPC m c n~ | cleanup list numbers                                                                 |
+   | ~SPC m c r~ | render buffer                                                                        |
+
+***** List editing
+
+   | Key Binding | Description      |
+   |-------------+------------------|
+   | ~SPC m l i~ | insert list item |
+
+***** Movement
+
+   | Key Binding | Description        |
+   |-------------+--------------------|
+   | ~SPC m {~   | backward paragraph |
+   | ~SPC m }~   | forward paragraph  |
+   | ~SPC m N~   | next link          |
+   | ~SPC m P~   | previous link      |
+
+***** Promotion, Demotion
+
+   | Key Binding | Description        |
+   |-------------+--------------------|
+   | ~M-k~       | markdown-move-up   |
+   | ~M-j~       | markdown-move-down |
+   | ~M-h~       | markdown-promote   |
+   | ~M-l~       | markdown-demote    |
+
+***** Toggles
+
+   | Key Binding | Description          |
+   |-------------+----------------------|
+   | ~SPC m t i~ | toggle inline images |
+   | ~SPC m t l~ | toggle hidden urls   |
+   | ~SPC m t t~ | toggle checkbox      |
+   | ~SPC m t w~ | toggle wiki links    |
+*** chrome 
+    可以和 emacs 交互
+**** 编辑文本 
+     需安装 chrome 插件 edit with emacs
+     edit-server 编辑服务器会自动启动, 来处理来自Chrome的编辑请求
+     Edit text boxes with Emacs using [[https://github.com/stsquad/emacs_chrome][edit-server]]
+     那么，在 网页的文本域中输入时，点击 edit-with-emacs 小图标会自动跳出 emacs
+     看下下面 的配置
+*****  Configuration
+ Use =edit-server-url-major-mode-alist= to choose a major mode initialization
+ function based on =edit-server-url=, or fall back to
+ =edit-server-default-major-mode= that has a current value of =markdown-mode=.
+
+ #+BEGIN_SRC emacs-lisp
+   (defun dotspacemacs/user-config ()
+   ;; Open github text areas as org buffers
+   ;; currently they are opened as markdown
+     (setq edit-server-url-major-mode-alist
+         '(("github\\.com" . org-mode))))
+ #+END_SRC
+
+ To change frame defaults (width, height, etc. use =edit-server-new-frame-alist=)
+
+ #+BEGIN_SRC emacs-lisp
+   (add-to-list 'edit-server-new-frame-alist '(width  . 140))
+   (add-to-list 'edit-server-new-frame-alist '(height . 60))
+ #+END_SRC
+
+ If you want Emacs to switch focus to Chrome after done editing, you can utilize
+ =edit-server-done-hook=.
+
+ Emacs cannot control focus of windows for external apps, so you need to use some
+ sort of command line window manager like =wmctrl=.
+
+ The following example works on OS X:
+
+ #+BEGIN_SRC emacs-lisp
+   (add-hook 'edit-server-done-hook (lambda () (shell-command "open -a \"Google Chrome\"")))
+ #+END_SRC
+
+
+ #+BEGIN_SRC 
+
+ 技巧和窍门
+ 定制
+ 控制调用
+ 与Google Mail集成
+ 更改默认模式
+ 与其他模式集成
+ 技巧和窍门
+ 如果使用代理，则可能需要将“--proxy-bypass-list = 127.0.0.1：9292”参数添加到chrome命令行。
+ 定制
+ 该扩展有许多变量，可以定制各种行为。目前他们是：
+
+ 编辑服务器新帧 - 如果不是零，编辑每个缓冲区在一个新的框架（并提高）
+ edit-server-new-frame-alist - 新帧的帧参数。看‘default-frame-alist’例子。如果为零，则新框架将使用现有的‘default-frame-alist’值。
+ 目前有两个钩子
+
+ edit-server-start-hook - 用当前缓冲区调用准备编辑
+ edit-server-done-hook - 当用户完成编辑并退出编辑缓冲区时调用。例如，在导航离开textarea页面的情况下，使用以下命令来保存textarea的内容：
+     （lambda（）（kill-ring-save（point-min）（point-max）））
+ 控制调用
+ 如果你已经在--daemon模式下运行Emacs的一个实例，那么你可以把代码包装成如下形式：
+
+ （当（和（daemonp）（locate-library “edit-server”））
+    （需要 ' 编辑服务器）
+    （编辑服务器启动））
+ 编辑要在新的缓冲区中打开要编辑的页面，而不是运行Emacs实例的新帧，请执行以下操作：
+
+ （当（定位库“编辑服务器”）
+   （需要 ' 编辑服务器）
+   （setq edit-server-new-frame nil）
+   （编辑服务器启动））
+ 与Google Mail集成
+ Gmail已经切换到一个新的撰写窗口，不幸中断了互动edit-server。但幸运的是，有人已经为此解决了一个问题：https：//github.com/frobtech/edit-server-htmlize
+
+ 要使用，只需确保edit-server-htmlize.el在你的load-path，然后做：
+
+ （autoload'edit-server-maybe-dehtmlize-buffer “edit-server-htmlize”  “edit-server-htmlize” t）
+ （自动加载“edit-server-maybe-htmlize-buffer    ”edit-server-htmlize“  ”edit-server-htmlize“ t）
+ （add-hook'edit-server-start-hook'edit-server-maybe-dehtmlize-buffer）
+ （add-hook'edit-server-done-hook'edit-server-maybe-htmlize-buffer）
+ 更改默认模式
+ 要使编辑服务器以某种其他模式（除了文本模式）工作，请编辑edit-server.el并更改以下行：
+
+    （定义派生模式 编辑服务器文本模式文本模式“编辑服务器文本模式”
+ 像这样的东西：
+
+    （定义派生模式 编辑服务器文本模式降价模式“编辑服务器文本模式”
+ 与其他模式集成
+ TODO：看看整合作为外部...
+
+ 在运行Aquamacs 2.1的OS X上，我将如何强制Aquamacs在Chrome上方添加新的消息框？目前，一个新的框架在Aquamacs之上打开，但在Chrome之下。另外，我认为ALT + E按钮在Chrome 10.0.612.1 dev上不起作用 - 没有引发Aquamacs窗口。
+
+ 在运行Aquamacs（版本3.x开发）的OS X上：强制Aquamacs成为前端应用程序（使所有框架向前，而不仅仅是新的“编辑”框架）：（add- hook'edit -server-start-hook（lambda （）（do-applescript“告诉应用程序”Aquamacs \“激活”）））
+
+ 我已经介绍了如何将编辑服务器与org模式集成，以便将编辑保存到组织模式任务中，并记下花在他们上的时间。
+
+
+ #+END_SRC
+**** 预览 markdown, 现在是失效的
+ | ~SPC a F~ | flymd-flyit |
+ Solution 1: Using other browser for flymd-flyit, like Firefox.
+
+ Add this to your init file.
+ #+BEGIN_SRC lisp
+  (defun my-flymd-browser-function (url)
+    (let ((browse-url-browser-function 'browse-url-firefox))
+      (browse-url url)))
+  (setq flymd-browser-open-function 'my-flymd-browser-function)
+ #+END_SRC
+
+ Solution 2: Still using google chrome. But you need to kill all google chrome process before using flymd-flyit. This is not recommended.
+
+ Add this to your init file.
+ #+BEGIN_SRC lisp
+     (defun my-flymd-browser-function (url)
+       (let ((process-environment (browse-url-process-environment)))
+         (apply 'start-process
+                (concat "google-chrome " url) nil
+                "google-chrome"
+                (list "--new-window" "--allow-file-access-from-files" url))))
+                (setq flymd-browser-open-function 'my-flymd-browser-function)
+
+
+ #+END_SRC
+*** Tramp
+ 编辑远程文件 /ssh:phil@remotehost:records/pizza-toppings.txt
+*** shell
+**** 列出进程 C-c C-s   
+**** 中断子进程 term-interrupt-subjob
+*** eldoc
+    在echo 区域显示 函数定义的插件
+*** iedit 是一个可以同时编辑多个区域的插件
+*** Org-pomodoro 是一个番茄时间工作法的插件 (25分钟)
+*** Occur(直接对显示搜索的东西）
+可以用于显示变量或函数的定义，我们可以通过 popwin 的 customize-group 将定 义显示设置为右边而不是默认的底部（ customize-group > popwin > Popup Window Position 设置为 right），也可以在这里对其宽度进行调节。
+
+Occur 与普通的搜索模式不同的是，它可以使用 Occur-Edit Mode (在弹出的窗口中按 e 进入编辑模式) 对搜索到的结果进行之间的编辑。
+
+优化 occur 与 imenu
+下面的代码用于配置 Occur Mode 使其默认搜索当前被选中的或者在光标下的字符串：
+
+(defun occur-dwim ()
+  "Call `occur' with a sane default."
+  (interactive)
+  (push (if (region-active-p)
+	    (buffer-substring-no-properties
+	     (region-beginning)
+	     (region-end))
+	  (let ((sym (thing-at-point 'symbol)))
+	    (when (stringp sym)
+	      (regexp-quote sym))))
+	regexp-history)
+  (call-interactively 'occur))
+(global-set-key (kbd "M-s o") 'occur-dwim)
+
+*** 批量修改文件名
+    C-x C-q 就可以直接在 Dired Mode 中进行编辑，使用之前学的 iedit-mode 和区域选择 就可以直接对多个文件进行重命名编辑了。
+
+*** 语法检查器（Linter）
+  语法检查器可以在开发动态语言（Interpreted/Dynamic Programming Language）时极大的 提高你的开发效率，它会实时的检查你的代码并将句法错误（Syntax Error）与静态语义 （Static Semantic Error）错误进行高亮与提示。
+  我们在这里使用的例子是 JavaScript 的语法检查器 eslint 它的安装方法可以在这里找到。
+
+  使用下面的代码可以将 flycheck-mode 在特定模式下激活（下面的例子就是只有在打开 JavaScript 时才会激活语法检查器），
+
+  (add-hook 'js2-mode-hook 'flycheck-mode)
+
+  使用 flycheck-verify-setup 可以进行语法检查器的选择。
+
+  eslint 检查器的配置也可以使用项目目录下的 .eslintrc 来进行配置，更多配置方法可 以在这里找到。
+
+*** 代码块
+yasnippet 是一个代码块补全的插件（GitHub 地址）。使用下面的配置文件将其在所有 的编程语言的模式中激活。
+
+(yas-reload-all)
+(add-hook 'prog-mode-hook #'yas-minor-mode)
+
+自定义代码块的方法可以在上面提供的链接中找到。
+
+auto-yasnippet
+auto-yasnippet 也是一个非常好用代码块补全插件。安装并未其设置快捷键，
+
+(global-set-key (kbd "H-w") #'aya-create)
+(global-set-key (kbd "H-y") #'aya-expand)
+
+简单的使用方法就是使用 ~ 来定义模板，然后调用 aya-create 再使用 aya-expand 来使用模板。
+
+*** evil
+  照例我们需要将 Evil 插件添加至我们的插件列表中来完成安装。在重启 Emacs 完成安装 后可以添加下面的代码将其激活。
+
+  (evil-mode 1)
+
+  在激活 Evil 模式后就可以，在 Emacs 中使用 Vim 的快捷键了。有一点需要注意 C-u 在 Emacs 中有特殊的功所（Universal args）以能我们可以通过使用 customize-group 来对 Evil 模式进行修改，将 Evil Want C U Scroll 设置为开启。
+
+  下面的代码可以将 insert state map 中的快捷键清空，使其可以回退（Fallback）到 Emacs State 中，这样我们之前的 Emacs State 里面定义的 C-w 等快捷键就不会被 evil insert minor mode state 所覆盖，
+
+  (setcdr evil-insert-state-map nil)
+  (define-key evil-insert-state-map [escape] 'evil-normal-state)
+
+  这样你就可以使用 Evil 来在 Emacs 中完成百分之八十作用的快捷键操作了。
+
+  完整的 Evil Mode 的 PDF 版本的操作指南可以在这里找到，建议从 Vim 转 Emacs 的用户 多次阅读来完整的掌握这个模式的使用方法。
+
+  Evil 模式插件
+  Leader Key
+  在 Emacs 中使用 Leader Key 可以通过 evil-leader 来实现。你需要做的就是在安装后将其激活即可。
+
+  提示: 根据cofi/evil-leader 的说明，你应该在激活 evil-mode 之前就激活 global-evil-leader-mode，否则 evil-leader 在几个初始缓冲区(scratch, Message,…)上将不生效。
+
+  (global-evil-leader-mode)
+
+  Leader Key 可以通过 customize-group 来进行设置（Evil Leader/Leader）。因为之后我 们会转移至 Spacemacs 所以我们可以将其设置为空格键 SPC 。
+
+  在通过下面的配置来设置简单的结合 Leader Key 快捷键组合（我们使用不同的键讲不同的 功能分组，例如我们使用 f 键来做关于文件的操作，使用 b 键来做关于缓冲区 （Buffer）的操作），
+
+  (evil-leader/set-key
+    "ff" 'find-file
+    "bb" 'switch-to-buffer
+    "0"  'select-window-0
+    "1"  'select-window-1
+    "2"  'select-window-2
+    "3"  'select-window-3
+    "w/" 'split-window-right
+    "w-" 'split-window-below
+    ":"  'counsel-M-x
+    "wM" 'delete-other-windows
+    )
+
+  注意上面窗口跳转相关的设置需要 window-numbering 安装后方可生效。
+
+*** imenu-list (大纲)
+*** 导航
+**** 跳转    
+     | ~SPC j f~ | jump to the definition of an Emacs Lisp function                       |
+     | ~SPC j i~ | jump to a definition in buffer (imenu)                                 |
+     | ~SPC j I~ | jump to a definition in any buffer (imenu)                             |
+     | ~SPC j j~ | jump to one or more characters in the buffer (works as an evil motion) |
+     | ~SPC j k~ | jump to next line and indent it using auto-indent rules                |
+     | ~SPC j l~ | jump to a line with avy (works as an evil motion)                      |
+     | ~SPC j q~ | show the dumb-jump quick look tooltip                                  |
+     | ~SPC j u~ | jump to a URL in the current buffer                                    |
+     | ~SPC j v~ | jump to the definition/declaration of an Emacs Lisp variable           |
+     | ~SPC j w~ | jump to a word in the current buffer (works as an evil motion)         |
+**** buffer
+     切换 spc b .
+**** Files manipulations key bindings
+Files manipulation commands (start with ~f~):
+
+| Key Binding | Description                                                                                            |
+|-------------+--------------------------------------------------------------------------------------------------------|
+| ~SPC f b~   | go to file bookmarks                                                                                   |
+| ~SPC f c~   | copy current file to a different location                                                              |
+| ~SPC f C d~ | convert file from unix to dos encoding                                                                 |
+| ~SPC f C u~ | convert file from dos to unix encoding                                                                 |
+| ~SPC f D~   | delete a file and the associated buffer (ask for confirmation)                                         |
+| ~SPC f E~   | open a file with elevated privileges (sudo edit)                                                       |
+| ~SPC f f~   | open file                                                                                              |
+| ~SPC f F~   | try to open the file under point                                                                       |
+| ~SPC f h~   | open binary file with =hexl= (a hex editor)                                                            |
+| ~SPC f j~   | jump to the current buffer file in dired                                                               |
+| ~SPC f J~   | open a junk file, in mode determined by the file extension provided (defaulting to =fundamental mode=) |
+| ~SPC f l~   | open file literally in =fundamental mode=                                                              |
+| ~SPC f L~   | Locate a file (using =locate=)                                                                         |
+| ~SPC f o~   | open a file using the default external program                                                         |
+| ~SPC f R~   | rename the current file                                                                                |
+| ~SPC f s~   | save a file                                                                                            |
+| ~SPC f S~   | save all files                                                                                         |
+| ~SPC f r~   | open a recent file                                                                                     |
+| ~SPC f t~   | toggle file tree side bar using [[https://github.com/jaypei/emacs-neotree][NeoTree]]                                                                |
+| ~SPC f v d~ | add a directory variable                                                                               |
+| ~SPC f v f~ | add a local variable to the current file                                                               |
+| ~SPC f v p~ | add a local variable to the first line of the current file                                             |
+| ~SPC f y~   | show and copy current file absolute path in the minibuffer                                             |
+
+**** Frame manipulation key bindings
+Frame manipulation commands (start with ~F~):
+
+| Key Binding | Description                                         |
+|-------------+-----------------------------------------------------|
+| ~SPC F f~   | open a file in another frame                        |
+| ~SPC F d~   | delete the current frame (unless it’s the only one) |
+| ~SPC F D~   | delete all other frames                             |
+| ~SPC F b~   | open a buffer in another frame                      |
+| ~SPC F B~   | open a buffer in another frame (but don’t switch)   |
+| ~SPC F o~   | cycle focus between frames                          |
+| ~SPC F O~   | open a dired buffer in another frame                |
+| ~SPC F n~   | create a new frame                                  |
+
+*** 编辑
+****  文本插入
+    密码  
+    | ~SPC i p 1~ | insert simple password                                                |
+    | ~SPC i p 2~ | insert stronger password                                              |
+    | ~SPC i p 3~ | insert password for paranoids                                         |
+    | ~SPC i p p~ | insert a phonetically easy password                                   |
+    | ~SPC i p n~ | insert a numerical password                                           |
+    | ~SPC i u~   | Search for Unicode characters and insert them into the active buffer. |
+    | ~SPC i U 1~ | insert UUIDv1 (use universal argument to insert with CID format)      |
+    | ~SPC i U 4~ | insert UUIDv4 (use universal argument to insert with CID format)      |
+    | ~SPC i U U~ | insert UUIDv4 (use universal argument to insert with CID format)      |
+**** 搜索编辑
+     | ~SPC s e~ | normal or visual                                                                        |
+     | ~TAB~     | toggle current occurrence                                                               |
+     | ~0~       | go to the beginning of the current occurrence                                           |
+     | ~$~       | go to the end of the current occurrence                                                 |
+     | ~#~       | prefix all occurrences with an increasing number (SPC u to choose the starting number). |
+     | ~A~       | go to the end of the current occurrence and switch to =iedit-insert state=              |
+     | ~D~       | delete the occurrences                                                                  |
+     | ~F~       | restrict the scope to the function                                                      |
+     | ~gg~      | go to first occurrence                                                                  |
+     | ~G~       | go to last occurrence                                                                   |
+     | ~I~       | go to the beginning of the current occurrence and switch to =iedit-insert state=        |
+     | ~J~       | increase the editing scope by one line below                                            |
+     | ~K~       | increase the editing scope by one line above                                            |
+     | ~L~       | restrict the scope to the current line                                                  |
+     | ~n~       | go to next occurrence                                                                   |
+     | ~N~       | go to previous occurrence                                                               |
+     | ~p~       | replace occurrences with last yanked (copied) text                                      |
+     | ~S~       | (substitute) delete the occurrences and switch to =iedit-insert state=                  |
+     | ~V~       | toggle visibility of lines with no occurrence                                           |
+     | ~U~       | Up-case the occurrences                                                                 |
+     | ~C-U~     | down-case the occurrences                                                               |
+
+*** 正则
+    | ~SPC x r /~   | Explain the regexp around point with =rx=                                              |
+| ~SPC x r '​~   | Generate strings given by a regexp given this list is finite                           |
+| ~SPC x r t~   | Replace regexp around point by the =rx= form or vice versa                             |
+| ~SPC x r x~   | Convert regexp around point in =rx= form  and display the result in the minibuffer     |
+| ~SPC x r c~   | Convert regexp around point to the other form and display the result in the minibuffer |
+| ~SPC x r e /~ | Explain Emacs Lisp regexp                                                              |
+| ~SPC x r e '​~ | Generate strings from Emacs Lisp regexp                                                |
+| ~SPC x r e p~ | Convert Emacs Lisp regexp to PCRE                                                      |
+| ~SPC x r e t~ | Replace Emacs Lisp regexp by =rx= form or vice versa                                   |
+| ~SPC x r e x~ | Convert Emacs Lisp regexp to =rx= form                                                 |
+| ~SPC x r p /~ | Explain PCRE regexp                                                                    |
+| ~SPC x r p '​~ | Generate strings from PCRE regexp                                                      |
+| ~SPC x r p e~ | Convert PCRE regexp to Emacs Lisp                                                      |
+| ~SPC x r p x~ | Convert PCRE to =rx= form                                                              |
+
+
+*** lisp
+    | Key Binding | Function                                                            |
+|-------------+---------------------------------------------------------------------|
+| ~SPC k %~   | evil jump item                                                      |
+| ~SPC k :~   | ex command                                                          |
+| ~SPC k (~   | insert expression before (same level as current one)                |
+| ~SPC k )~   | insert expression after (same level as current one)                 |
+| ~SPC k $~   | go to the end of current sexp                                       |
+| ~SPC k ` k~ | hybrid version of push sexp (can be used in non lisp dialects)      |
+| ~SPC k ` p~ | hybrid version of push sexp (can be used in non lisp dialects)      |
+| ~SPC k ` s~ | hybrid version of slurp sexp (can be used in non lisp dialects)     |
+| ~SPC k ` t~ | hybrid version of transpose sexp (can be used in non lisp dialects) |
+| ~SPC k 0~   | go to the beginning of current sexp                                 |
+| ~SPC k a~   | absorb expression                                                   |
+| ~SPC k b~   | forward barf expression                                             |
+| ~SPC k B~   | backward barf expression                                            |
+| ~SPC k c~   | convolute expression                                                |
+| ~SPC k ds~  | delete symbol                                                       |
+| ~SPC k Ds~  | backward delete symbol                                              |
+| ~SPC k dw~  | delete word                                                         |
+| ~SPC k Dw~  | backward delete word                                                |
+| ~SPC k dx~  | delete expression                                                   |
+| ~SPC k Dx~  | backward delete expression                                          |
+| ~SPC k e~   | unwrap current expression and kill all symbols after point          |
+| ~SPC k E~   | unwrap current expression and kill all symbols before point         |
+| ~SPC k h~   | previous symbol                                                     |
+| ~SPC k H~   | go to previous sexp                                                 |
+| ~SPC k i~   | switch to =insert state=                                            |
+| ~SPC k I~   | go to beginning of current expression and switch to =insert state=  |
+| ~SPC k j~   | next closing parenthesis                                            |
+| ~SPC k J~   | join expression                                                     |
+| ~SPC k k~   | previous opening parenthesis                                        |
+| ~SPC k l~   | next symbol                                                         |
+| ~SPC k L~   | go to next sexp                                                     |
+| ~SPC k p~   | paste after                                                         |
+| ~SPC k P~   | paste before                                                        |
+| ~SPC k r~   | raise expression (replace parent expression by current one)         |
+| ~SPC k s~   | forward slurp expression                                            |
+| ~SPC k S~   | backward slurp expression                                           |
+| ~SPC k t~   | transpose expression                                                |
+| ~SPC k u~   | undo                                                                |
+| ~SPC k U~   | got to parent sexp backward                                         |
+| ~SPC k C-r~ | redo                                                                |
+| ~SPC k v~   | switch to =visual state=                                            |
+| ~SPC k V~   | switch to =visual line state=                                       |
+| ~SPC k C-v~ | switch to =visual block state=                                      |
+| ~SPC k w~   | wrap expression with parenthesis                                    |
+| ~SPC k W~   | unwrap expression                                                   |
+| ~SPC k y~   | copy expression                                                     |
+
+| Key Binding | Function                                   |
+|-------------+--------------------------------------------|
+| ~SPC m e $~ | go to end of line and evaluate last sexp   |
+| ~SPC m e b~ | evaluate buffer                            |
+| ~SPC m e c~ | evaluate current form (a =def= or a =set=) |
+| ~SPC m e e~ | evaluate last sexp                         |
+| ~SPC m e f~ | evaluate current defun                     |
+| ~SPC m e l~ | go to end of line and evaluate last sexp   |
+| ~SPC m e r~ | evaluate region                            |
+
+| Key Binding | Function                                           |
+|-------------+----------------------------------------------------|
+| ~SPC m g g~ | go to definition                                   |
+| ~SPC m g G~ | go to definition in another window                 |
+| ~SPC m h h~ | describe elisp thing at point (show documentation) |
+| ~SPC m t b~ | execute buffer tests                               |
+| ~SPC m t q~ | ask for test function to execute                   |
+
+** 开发功能设计
+*** flycheck 
+    | Key Binding | Description                                                           |
+    |-------------+-----------------------------------------------------------------------|
+    | ~SPC t s~   | toggle flycheck                                                       |
+    | ~SPC e c~   | clear all errors                                                      |
+    | ~SPC e h~   | describe a flycheck checker                                           |
+    | ~SPC e l~   | toggle the display of the =flycheck= list of errors/warnings          |
+    | ~SPC e n~   | go to the next error                                                  |
+    | ~SPC e p~   | go to the previous error                                              |
+    | ~SPC e v~   | verify flycheck setup (useful to debug 3rd party tools configuration) |
+    | ~SPC e .~   | error transient state                                                 |
+
+*** 注释 SPC ; ;
+    | Key Binding | Description               |
+    |-------------+---------------------------|
+    | ~SPC ;~     | comment operator          |
+    | ~SPC c h~   | hide/show comments        |
+    | ~SPC c l~   | comment lines             |
+    | ~SPC c L~   | invert comment lines      |
+    | ~SPC c p~   | comment paragraphs        |
+    | ~SPC c P~   | invert comment paragraphs |
+    | ~SPC c t~   | comment to line           |
+    | ~SPC c T~   | invert comment to line    |
+    | ~SPC c y~   | comment and yank          |
+    | ~SPC c Y~   | invert comment and yank   |
+
+*** layout, windows, workspace 和 project 相关
+**** Layout 操作
+     1. SPC l L 加载 layout 文件
+     2. SPC l l 在 layout 之间切换
+     3. SPC l s 将 layout 保存到文件
+     4. SPC l <tab> 在当前 layout 和上一个 layout 之间切换
+     5. SPC l o 配置 layout
+     6. SPC l R 重命名 layout
+     7. SPC l ? 显示更多的与 layout 相关的命令
+**** Window 相关操作
+  1. SPC w - 上下拆分窗口
+  2. SPC w / 左右拆分窗口
+  3. SPC w . 显示更多的与 window micro state 的相关的命令
+  4. SPC w 2/3 左右显示 2/3 个窗口
+  5. SPC w = 将窗口均等分
+  6. SPC w b 切换到 minibuffer
+  7. SPC w d 删除当前窗口
+  8. SPC w h/j/k/l 向 左/下/上/右 移动窗口
+  9. SPC w m 最大化显示当前窗口
+  10. SPC W H/J/K/L 将当前窗口向 左/下/上/右 移动
+  11. SPC w u/U 取消/重置上次操作
+  12. SPC w o 切换到其他 frame
+  13. SPC w F 创建一个新的 frame
+  14. SPC w 1/2/3/4 切换到对应的编号的窗口
+  15. SPC w w 依次切换到其他窗口
+  16. SPC w W 使用字母标识需要跳转的窗口, 并按下字母进行跳转
+  17. SPC t g 将当前显示的窗口与其他窗口进行黄金分割显示
+  18. SPC t - 开启/关闭 将光标始终显示在中心行
+**** workspace
+     | ~SPC l w~         | activate the transient state                                |
+**** project 相关操作
+  1. SPC p f 在当前 project 中查找并打开文件
+  2. SPC p b 在当前 project 中查找打开的 buffer
+  3. SPC p p 切换到其他的 project
+  4. SPC p l 切换到其他的 project 并创建一个新的 layout
+  5. find-file-in-project 这是一个插件, 支持全平台. 目前绑定在 SUPER f 快捷键上.
+***** 工程
+      1.目录下创建空的 .projectile
+    2. 在文件/home/wuming/.emacs.d/.cache/projectile-bookmarks.eld中添加目录
+    3. 也可以在变量 project ... file 中添加 后缀文件类型
+*** 使用 ctags 和 company-etags
+    这期视频主要介绍 ctags 和 company-mode 的使用.
+**** 为什么使用 ctags
+     ctags 是一个开源的, 可以方便的对大型代码库进行索引的软件, 在使用 ctags 生成 tag 之后就可以非常方便的在这些 tag 中进行跳转.
+     因为有些编程语言, 例如 javascript 或者 lua, 它们不能进行精确的语义补全, 在有 ctags 进行索引补全的情况下也可以方便编写代码.
+
+     在之前也介绍过 term-mode, 也可以做到一些语义补全. 但是它也有一些缺点:
+  1. 配置方式复杂, 对于比较大的项目的配置比较有难度
+  2. 有些时候不能得到想要的补全结果
+
+  之前作者使用 YCMD 来对 C/C++ 代码进行补全, 但是它不太稳定, 现在已经切换为 ctags 来进行补全, 对于调试和 profile 会使用 IDE 进行操作.
+**** 如何配置 ctags
+     首先新建一个 testJs-ctags 目录, 然后在该目录下新建 a.js 以及 b.js 两个文件:
+
+  #+BEGIN_SRC shell
+    mkdir testJs-ctags
+    cd testJs-ctags
+    touch a.js
+    touch b.js
+  #+END_SRC
+
+  然后编辑 a.js 的内容如下:
+
+  #+BEGIN_SRC javascript
+    var func1 = function () {
+        console.log("func1");
+    };
+
+    var func2 = function () {
+    };
+  #+END_SRC
+
+  然后在 b.js 中的补全中可以显示处 func1 和 func2 的补全提示的. 为了更方便的讲解之后的内容, 我们可以查看使用的补全的后端:
+  输入 M-x, diminish-undo, 选择 company-mode, 这样在 modeline 就可以看到 company-mode 的具体信息.
+  h
+  再次输入 fun 等待弹出补全提示, 在补全选项中上下移动, 可以看到使用的补全后端包括 dabbrev-code 和 etags 等,
+   如果我们关闭 a.js 的 buffer, 就不会出现 func1 和 func2 的补全选项.
+
+  在之前的操作中, 我们并没有生成 ctags, 为什么也能使用 ctags 补全呢? 我们可以使用 SPC h d v, 
+  然后输出 tags-table-list 来查看该变量的值, 当前的值是指向作者 cocos目录下的 TAGS 文件.
+  使用以下代码清空该值:
+
+  #+BEGIN_SRC emacs-lisp
+    (setq-default tags-table-list nil)
+  #+END_SRC
+
+  然后再次尝试补全, 这时就不会使用 ctags 补全了.
+
+  那么如何生成 ctags 补全的文件呢? 使用以下命令即可:
+
+  #+BEGIN_SRC shell
+    cd testJs-ctags
+    ctags -e a.js
+    # 针对目录
+    # ctags -eR foldername
+  #+END_SRC
+
+  company-etags 在进行补全的时候, 会从变量 tags-table-list 值的文件列表中去查找 tags, 而且 tags 是不区分语言的.
+
+  如果需要手动加载 TAGS 文件, 那么可以调用 visit-tags-table 命令. 而在打开一个文件时, ctags 会从文件所在的目录进行查找, 一直到根目录,
+   加载所找到的 TAGS 文件.
+
+**** 如何高效的使用 ctags
+***** 自动重新生成 TAGS 文件
+  在使用 ctags 的过程中, 如果文件的内容被改变, 那么需要重新生成 TAGS 文件, 以便 ctags 的补全结果更精确.
+   作者实现了一个函数来自动加载必须的 TAGS 文件:
+
+  #+BEGIN_SRC emacs-lisp
+    (defun my-setup-develop-environment ()
+      (interactive)
+      (when (my-project-name-contains-substring "guanghui")
+        (cond
+         ((my-project-name-contains-substring "cocos2d-x")
+          ;; C++ project don't need html tags
+          (setq tags-table-list (list (my-create-tags-if-needed "~/cocos2d-x/cocos"))))
+         ((my-project-name-contains-substring "Github/fireball")
+          (message "load tags for fireball engine repo...")
+          ;; html project donot need C++ tags
+          (setq tags-table-list (list (my-create-tags-if-needed "~/Github/fireball/engine/cocos2d")))))))
+  #+END_SRC
+
+  有另外一个工具函数, 当保存文件时会自动的重新生成 TAGS:
+
+  #+BEGIN_SRC emacs-lisp
+    (defun my-auto-update-tags-when-save (prefix)
+      (interactive "P")
+      (cond
+       ((not my-tags-updated-time)
+        (setq my-tags-updated-time (current-time)))
+
+       ((and (not prefix)
+             (< (- (float-time (current-time)) (float-time my-tags-updated-time)) 300))
+        ;; < 300 seconds
+        (message "no need to update the tags")
+        )
+       (t
+        (setq my-tags-updated-time (current-time))
+        (my-update-tags)
+        (message "updated tags after %d seconds." (- (float-time (current-time)) (float-time my-tags-updated-time))))))
+  #+END_SRC
+
+  可以将 my-auto-udpate-tags-when-save 函数加入 after-save-hook 中, 或者绑定到快捷键上.
+
+***** 配置规则来生成更多的 TAGS
+      ctags 自身也有一个配置文件, 可以在该文件中定义规则来更好的生成 TAGS, 一个配置文件的示例如下:
+    
+  #+BEGIN_EXAMPLE
+  --exclude=*.svn*
+  --exclude=*.git*
+  --exclude=*tmp*
+  --exclude=.#*
+  --tag-relative=yes
+  --recurse=yes
+
+  --langdef=js
+
+  --regex-js=/[ \t.]([A-Z][A-Z0-9._$]+)[ \t]*[=:][ \t]*([0-9"'\[\{]|null)/\1/n,constant/
+
+  --langdef=css
+  --langmap=css:.css
+  --regex-css=/^[ \t]*\.([A-Za-z0-9_-]+)/.\1/c,class,classes/
+  #+END_EXAMPLE
+
+  在配置文件中可以使用 --exclude 来忽略文件或路径, 使用 --langdef 来定义哪些文件属于 js 文件, 使用 --regex-js 来定义 TAGS 生成时的匹配规则.
+  这些匹配规则中可以使用正则表达式来提取内容生成 TAGS.
+
+***** 使用 etags-select 来浏览项目
+      在有 TAGS 之后, 可以使用 ctags 来方便的浏览文件内容.
+      例如在某个函数名上点击 [, g], 然后选择 etags-select-find-tag-at-point, 这时会把所有相关的内容列出到 buffer 中, 然后可以选择想要跳转的位置跳转过去.
+
+**** 最后的思考
+  company-etags 不能对所有的 mode 进行补全, 例如在 org-mode 中默认是不使用 company-etags 的.
+  因为在 company-etags.el 文件中有如下的代码:
+
+  #+BEGIN_SRC emacs-lisp
+    (defvar company-etags-modes '(prog-mode c-mode objc-mode c++-mode java-mode
+                                            jde-mode pascal-mode perl-mode python-mode))
+  #+END_SRC
+
+  在该变量中定义了可以使用 company-etags 的 mode, 将 org-mode 加入该变量的值中即可在 org-mode 使用 company-etags 进行补全.
+  ctags 支持上百种语言, 学会使用 ctags 能够提交效率.
+*** Error
+ 下一个错误 SPC e n
+*** 数字增加/减少？
+   对于数字或小数 
+ | 〜SPC n +〜   | 增加指示点下的数量并启动暂态 |
+ | 〜SPC n  - 〜 | 减少指示点下的数量并启动暂态 |
+ 参数（即〜10 SPC n +〜将点数加10）
+*** gtags
+   除了第一次,生成外，以后都是自动生成的
+  =helm-gtags= and =ggtags= are clients for GNU Global. GNU Global is a source
+  code tagging system that allows querying symbol locations in source code, such
+  as definitions or references. Adding the =gtags= layer enables both of these
+  modes.
+
+**** Features:
+  - Select any tag in a project retrieved by gtags
+  - Resume previous helm-gtags session
+  - Jump to a location based on context
+  - Find definitions
+  - Find references
+  - Present tags in current function only
+  - Create a tag database
+  - Jump to definitions in file
+  - Show stack of visited locations
+  - Manually update tag database
+  - Jump to next location in context stack
+  - Jump to previous location in context stack
+  - Jump to a file in tag database
+  - Enables =eldoc= in modes that otherwise might not support it.
+  - Enables =company complete= in modes that otherwise might not support it.
+
+**** Install 安装
+***** GNU Global (gtags)
+   To use gtags, you first have to install [[https://www.gnu.org/software/global/download.html][GNU Global]].
+
+   You can install =global= from the software repository of your OS; however, many
+   OS distributions are out of date, and you will probably be missing support for
+   =pygments= and =exuberant ctags=, and thus support for many languages. We
+   recommend installing from source. If not for example to install on Ubuntu:
+
+   #+begin_src sh
+     sudo apt-get install global
+   #+end_src
+
+****** Install on OSX using Homebrew
+   #+begin_src sh options
+     brew install global --with-pygments --with-ctags
+   #+end_src
+
+****** Install on *nix from source
+******* Install recommended dependencies
+   To take full advantage of global you should install 2 extra packages in
+   addition to global: pygments and ctags (exuberant). You can do this using
+   your normal OS package manager, e.g., on Ubuntu
+
+   #+BEGIN_SRC sh
+     sudo apt-get install exuberant-ctags python-pygments
+   #+END_SRC
+
+
+******* Install with recommended features
+   Download the latest tar.gz archive, then run these commands:
+
+   #+BEGIN_SRC sh
+     tar xvf global-6.5.3.tar.gz
+     cd global-6.5.3
+     ./configure --with-exuberant-ctags=/usr/bin/ctags
+     make
+     sudo make install
+   #+END_SRC
+
+******* Configure your environment to use pygments and ctags
+   To be able to use =pygments= and =ctags=, you need to copy the sample
+   =gtags.conf= either to =/etc/gtags.conf= or =$HOME/.globalrc=. For example:
+
+   #+begin_src sh
+     cp gtags.conf ~/.globalrc
+   #+end_src
+
+   Additionally you should define GTAGSLABEL in your shell startup file e.g.
+   with sh/ksh:
+
+   #+begin_src sh
+     echo export GTAGSLABEL=pygments >> .profile
+   #+end_src
+
+****** Conflict between =ctags= and emacs's =etags= binary
+   If you installed =emacs= from source after =ctags=, your original =ctags= binary
+   is probably replaced by emacs's =etags=. To get around this you will need to
+   configure =emacs= as following before installing:
+
+   #+begin_src sh
+     ./configure --program-transform-name='s/^ctags$/ctags.emacs/'
+   #+end_src
+
+   To check if you have the correct version of =ctags= execute:
+
+   #+begin_src sh
+     ctags --version | grep Exuberant
+   #+end_src
+
+   If yo do not get any output then it means you have the wrong =ctags= and must
+   install it again.
+
+***** Emacs Configuration
+   To use this configuration layer, add it to your =~/.spacemacs=. You
+   will need to add =gtags= to the existing =dotspacemacs-configuration-layers=.
+
+   #+begin_src emacs-lisp
+     (setq dotspacemacs-configuration-layers
+           '( ;; ...
+             gtags
+              ;; ...
+             ))
+   #+end_src
+
+****** Disabling by default
+   If =ggtags-mode= is too intrusive you can disable it by default, by setting the
+   layer variable =gtags-enable-by-default= to =nil=.
+
+   #+BEGIN_SRC emacs-lisp
+     (setq-default dotspacemacs-configuration-layers
+       '((gtags :variables gtags-enable-by-default t)))
+   #+END_SRC
+
+   This variable can also be set as a file-local or directory-local variable for
+   additional control per project.
+
+**** 使用
+   - 首先创建 gtags数据库文件 
+     运行 =helm-gtags-create-tags= ~SPC m g c~.
+     If the language is not directly supported by GNU Global, you
+     can choose =ctags= or =pygments= as a backend to generate tag database.
+     如果 =global= 不支持 此语言，那么可以换工具, 或者在终端执行
+
+   - From inside terminal, runs gtags at your project root in terminal:
+   #+BEGIN_SRC sh
+     cd /path/to/project/root
+     gtags
+   #+END_SRC
+
+     If the language is not directly supported by =gtags=, and you have not set the
+     GTAGSLABEL environment variable, use this command instead:
+
+   #+BEGIN_SRC sh
+     gtags --gtagslabel=pygments
+   #+END_SRC
+
+****** Language Support
+******* Built-in languages
+   If you do not have =ctags= or =pygments= enabled gtags will only produce
+   tags for the following languages:
+
+   - asm
+   - c/c++
+   - java
+   - php
+   - yacc
+
+******* Exuberant ctags languages
+   If you have enabled =exuberant ctags= and use that as the backend (i.e.,
+   =GTAGSLABEL=ctags= or =--gtagslabel=ctags=) the following additional languages
+   will have tags created for them:
+
+   - c#
+   - erlang
+   - javascript
+   - common-lisp
+   - emacs-lisp
+   - lua
+   - ocaml
+   - python
+   - ruby
+   - scheme
+   - vimscript
+   - windows-scripts (.bat .cmd files)
+
+******* Universal ctags languages
+   If instead you installed you the newer/beta =universal ctags= and use that
+   as the backend (i.e., GTAGSLABEL=ctags or --gtagslabel=ctags) the following
+   additional languages will have tags created for them:
+
+   - clojure
+   - d
+   - go
+   - rust
+
+******* Pygments languages (plus symbol and reference tags)
+   In order to look up symbol references for any language not in the built in
+   parser you must use the pygments backend. When this backend is used global
+   actually uses both ctags and pygments to find the definitions and uses of
+   functions and variables as well as "other symbols".
+
+   If you enabled pygments (the best choice) and use that as the backend (i.e.,
+   =GTAGSLABEL=pygments= or =--gtagslabel=pygments=) the following additional
+   languages will have tags created for them:
+
+   - elixir
+   - fsharp
+   - haskell
+   - octave
+   - racket
+   - scala
+   - shell-scripts
+   - tex
+
+***** Eldoc integration
+   This layer also integrates =ggtags= for its Eldoc feature. That means, when
+   writing code, you can look at the minibuffer (at the bottom) and see variable
+   and function definition of the symbol the cursor is on. However, this feature is
+   only activated for programming modes that are not one of these languages:
+
+   - C
+   - C++
+   - Common Lisp
+   - Emacs Lisp
+   - Python
+   - Ruby
+
+   Since these modes have better Eldoc integration already.
+
+   In addition, if output from =compile= (bound to ~SPC c C~), =shell-command=
+   (bound to ~SPC !~ and ~M-!~) or =async-shell-command= (bound to ~M-&~) commands
+   contains symbol in your project, you move cursor on such symbol and use any of
+   the gtags commands.
+**** Key bindings
+   | Key Binding | Description                                                                  |
+   |-------------+------------------------------------------------------------------------------|
+   | ~SPC m g C~ | create a tag database 第一步，创建标记文件                                   |
+   | ~SPC m g f~ | jump to a file in tag database    跳到包含那个tag 的文件                     |
+   | ~SPC m g g~ | jump to a location based on context       这个更精确，调到函数定义           |
+   | ~SPC m g G~ | jump to a location based on context (open another window) 另个窗口           |
+   | ~SPC m g d~ | find definitions                      跟上面没区别                           |
+   | ~SPC m g i~ | present tags in current function only 这个给你选一下tag链表,表示可能它会认错 |
+   | ~SPC m g l~ | jump to definitions in file           如果这个tag是本文件定义的，这个可以用  |
+   | ~SPC m g n~ | jump to next location in context stack                                       |
+   | ~SPC m g p~ | jump to previous location in context stack                                   |
+   | ~SPC m g r~ | find references                         有几个人用了这函数                   |
+   | ~SPC m g R~ | resume previous helm-gtags session       看看tags 文件中有多少tag            |
+   | ~SPC m g s~ | select any tag in a project retrieved by gtags 看看tags 文件中有多少tag      |
+   | ~SPC m g S~ | show stack of visited locations                                              |
+   | ~SPC m g y~ | find symbols   状态栏显示符号                                                |
+   | ~SPC m g u~ | manually update tag database 手动更新tag数据库                               |
+*** 文件比较 ediff
+*** 代码折叠
+    zc      折叠
+    zC     对所在范围内所有嵌套的折叠点进行折叠
+    zo      展开折叠
+    zO     对所在范围内所有嵌套的折叠点展开
+    [z       到当前打开的折叠的开始处。
+    ]z       到当前打开的折叠的末尾处。
+    zj       向下移动。到达下一个折叠的开始处。关闭的折叠也被计入。
+    zk      向上移动到前一折叠的结束处。关闭的折叠也被计入。
+    zf      创建折叠，比如在marker方式下：
+    zd      删除 (delete) 在光标下的折叠。仅当 'foldmethod' 设为 "manual" 或 "marker" 时有效。
+    zD     循环删除 (Delete) 光标下的折叠，即嵌套删除折叠。
+    zE     除去 (Eliminate) 窗口里“所有”的折叠。
+*** projects
+    | Key Binding | Description                                             |
+|-------------+---------------------------------------------------------|
+| ~SPC p '​~   | open a shell in project's root (with the =shell= layer) |
+| ~SPC p !~   | run shell command in project's root                     |
+| ~SPC p &~   | run async shell command in project's root               |
+| ~SPC p %~   | replace a regexp                                        |
+| ~SPC p a~   | toggle between implementation and test                  |
+| ~SPC p b~   | switch to project buffer                                |
+| ~SPC p c~   | compile project using =projectile=                      |
+| ~SPC p d~   | find directory                                          |
+| ~SPC p D~   | open project root in =dired=                            |
+| ~SPC p e~   | edit dir-locals.el                                      |
+| ~SPC p f~   | find file                                               |
+| ~SPC p F~   | find file based on path around point                    |
+| ~SPC p g~   | find tags                                               |
+| ~SPC p G~   | regenerate the project's =etags= / =gtags=              |
+| ~SPC p h~   | find file                                               |
+| ~SPC p I~   | invalidate the projectile cache                         |
+| ~SPC p k~   | kill all project buffers                                |
+| ~SPC p o~   | run =multi-occur=                                       |
+| ~SPC p p~   | switch project                                          |
+| ~SPC p r~   | open a recent file                                      |
+| ~SPC p R~   | replace a string                                        |
+| ~SPC p t~   | open =NeoTree= in =projectile= root                     |
+| ~SPC p T~   | test project                                            |
+| ~SPC p v~   | open project root in =vc-dir= or =magit=                |
+| ~SPC /~     | search in project with the best search tool available   |
+| ~SPC s p~   | see [[#searching-in-a-project][searching in a project]]                              |
+| ~SPC s a p~ | run =ag=                                                |
+| ~SPC s g p~ | run =grep=                                              |
+| ~SPC s k p~ | run =ack=                                               |
+| ~SPC s t p~ | run =pt=                                                |
+| ~SPC s r p~ | run =rg=                                                |
+
+*** Registers
+ Access commands to the various registers start with =r=:
+
+ | Key Binding | Description                        |
+ |-------------+------------------------------------|
+ | ~SPC r e~   | show evil yank and named registers |
+ | ~SPC r m~   | show marks register                |
+ | ~SPC r r~   | show helm register                 |
+ | ~SPC r y~   | show kill ring                     |
+
+*** Errors handling
+ Spacemacs uses [[https://github.com/flycheck/flycheck][Flycheck]] to gives error feedback on the fly. The checks are
+ only performed at save time by default.
+
+ Errors management commands (start with ~e~):
+
+ | Key Binding | Description                                                           |
+ |-------------+-----------------------------------------------------------------------|
+ | ~SPC t s~   | toggle flycheck                                                       |
+ | ~SPC e c~   | clear all errors                                                      |
+ | ~SPC e h~   | describe a flycheck checker                                           |
+ | ~SPC e l~   | toggle the display of the =flycheck= list of errors/warnings          |
+ | ~SPC e n~   | go to the next error                                                  |
+ | ~SPC e p~   | go to the previous error                                              |
+ | ~SPC e v~   | verify flycheck setup (useful to debug 3rd party tools configuration) |
+ | ~SPC e .~   | error transient state                                                 |
+
+ The next/previous error bindings and the error transient state can be used to
+ browse errors from flycheck as well as errors from compilation buffers, and
+ indeed anything that supports Emacs’ =next-error= API. This includes for example
+ search results that have been saved to a separate buffer.
+
+ Custom fringe bitmaps:
+
+ | Symbol                   | Description |
+ |--------------------------+-------------|
+ | [[file:img/dot-error.png]]   | Error       |
+ | [[file:img/dot-warning.png]] | warning     |
+ | [[file:img/dot-info.png]]    | Info        |
+
+*** Compiling
+ Spacemacs binds a few commands to support compiling a project.
+
+    | Key Binding | Description                    |
+    |-------------+--------------------------------|
+    | ~SPC c c~   | use =helm-make= via projectile |
+    | ~SPC c C~   | compile                        |
+    | ~SPC c d~   | close compilation window       |
+    | ~SPC c k~   | kill compilation               |
+    | ~SPC c m~   | =helm-make=                    |
+    | ~SPC c r~   | recompile                      |
+
+** 按键功能开发
+*** 键绑定
+    (evil-leader/set-key "o y" 'copy-to-clipboard)
+    全局绑定 会被模式绑定覆盖
+     (global-set-key (kbd "C-]") 'forward-char)
+     //被下面的覆盖了
+     (define-key evil-insert-state-map (kbd "C-]") 'forward-char)
+     //用前导键
+  #+BEGIN_SRC emacs-lisp
+    (spacemacs/set-leader-keys "C-]" 'forward-char)
+    (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "C-]" 'forward-char)
+  #+END_SRC
+*** 快捷键 
+    主模式相关快捷键 SPC m
+       SPC b . 	   缓冲区微状态。
+       窗口
+       SPC w v 或 :vsplit 	    在右侧打开一个垂直分割。
+       SPC w s 或 :split 	    在下部打开一个水平分割。
+       SPC w h/j/k/l 	    在窗口间导航。
+       SPC w H/J/K/L 	    移动当前窗口。
+       SPC w . 	    窗口微状态。
+
+       文件
+       Spacemacs 中所有文件命令都有 SPC f 前缀。
+       SPC f f 	    打开一个缓冲区搜索当前目录中的文件。
+       SPC f r 	    打开一个缓冲区在最近打开的文件中搜索。
+       SPC f s 或 :w 	    保存当前文件。
+       :x 	    保存当前文件并退出。
+       :e <file> 	    打开<file>
+
+       帮助系统
+       Emacs 具有一个可扩展的帮助系统。所有的快捷键都有SPC h d 前缀，以允许便捷地访问帮助系统。
+       最重要的快捷键是 SPC h d f, SPC h d k, 和 SPC h d v。同样还有 SPC <f1> 允许用户搜索文档。
+       SPC h d f 	    对一个功能提示并显示其文档。
+       SPC h d k 	    对一个快捷键提示并显示其绑定的内容。
+       SPC h d v 	    对一个变量提示并显示其文档和当前值。
+       SPC <f1> 	    搜索一个命令，功能，变量或接口，并显示其文档
+       不论何时，你遇到怪异的行为或想知道是什么东西做的，这些功能是你应该首先查阅的。
+
+       探索
+       SPC f e h 	    列出所有层并允许你浏览层上的文件。
+       SPC ? 	    列出所有快捷键。 helm-descbinds
+
+       .spacemacs  文件
+       SPC f e d 	                打开你的 .spacemacs
+       SPC f e D 	                使用diff 通过默认模版手动更新你的 .spacemacs 
+
+       Emacs Lisp
+       变量
+       设置变量是定制 Spacemacs 行为最常见的方式。语法很简单：
+       (setq variable value) ; Syntax
+       ;; Setting variables example
+       (setq variable1 t; True
+       variable2 nil ; False
+       variable3 '("A" "list" "of" "things"))
+
+       快捷键
+       定义快捷键是几乎每个人都想做的事情，最好的方式就是使用内置的 define-key 函数。
+       (define-key map new-keybinding function) ; Syntax
+       ;; Map H to go to the previous buffer in normal mode
+       (define-key evil-normal-state-map (kbd "H") 'spacemacs/previous-useful-buffer)
+       ;; Mapping keybinding to another keybinding
+       (define-key evil-normal-state-map (kbd "H") (kbd "^")) ; H goes to beginning of the line
+
+       map 是你想要绑定键位到的 keymap。大多数情况下你会使用
+       evil-<state-name>-state-map。其对应不同的 evil-mode 状态。例如，使用 evil-insert-state-map 映射用于插入模式的快捷键。
+
+       使用 evil-leader/set-key 函数来映射 <Leader> 快捷键。
+       (evil-leader/set-key key function) ; Syntax
+       ;; Map killing a buffer to <Leader> b c
+       (evil-leader/set-key "bc" 'kill-this-buffer)
+       ;; Map opening a link to <Leader> o l only in org-mode
+       (evil-leader/set-key-for-mode 'org-mode
+       "ol" 'org-open-at-point)
+  
+       函数
+       你可能偶尔想要定义一个函数做更复杂的定制，语法很简单：
+       (defun func-name (arg1 arg2)
+       "docstring"
+       ;; Body
+       )
+       ;; Calling a function
+       (func-name arg1 arg1)
+       这里有个现实可用的示例函数：
+
+       ;; This snippet allows you to run clang-format before saving
+       ;; given the current file as the correct filetype.
+       ;; This relies on the c-c++ layer being enabled.
+       (defun clang-format-for-filetype ()
+       "Run clang-format if the current file has a file extensions
+       in the filetypes list."
+       (let ((filetypes '("c" "cpp")))
+       (when (member (file-name-extension (buffer-file-name)) filetypes)
+       (clang-format-buffer))))
+       ;; See http://www.gnu.org/software/emacs/manual/html_node/emacs/Hooks.html for
+       ;; what this line means
+       (add-hook 'before-save-hook 'clang-format-for-filetype)
+
+       激活一个层
+       正如上文术语那段所说，层提供一个简单的方式来添加特性。可在 .spacemacs 文件中激活
+       一个层。
+       在文件中找到 dotspacemacs-configuration-layers 变量，默认情况下，它看起来应该是这样的：
+       (defun dotspacemacs/layers ()
+       (setq-default
+       ;; ...
+       dotspacemacs-configuration-layers '(;; auto-completion
+       ;; better-defaults
+       emacs-lisp
+       ;; (git :variables
+       ;;      git-gutter-use-fringe t)
+       ;; markdown
+       ;; org
+       ;; syntax-checking
+       )))
+
+       你可以通过删除分号来取消注释这些建议的层，开箱即用。要添加一个层，就把它的名字添
+       加到列表中并重启
+       Emacs 或按 SPC f e R。使用 SPC f e h 来显示所有的层和他们的文档。
+
+       创建一个层
+       为了将配置分组或当配置与你的 .spacemacs 文件之间不匹配时，你可以创建一个配置层
+       。Spacemacs 提供了一个内建命令用于生成层的样板文件：SPC
+       :configuration-layer/create-layer。
+       这条命令将会生成一个如下的文件夹：
+
+       [layer-name]
+       |__ [local]*
+       | |__ [example-mode-1]
+       | |     ...
+       | |__ [example-mode-n]
+       |__ config.el*
+       |__ funcs.el*
+       |__ keybindings.el*
+       |__ packages.el
+
+       [] = 文件夹
+       \ * = 不是命令生成的文件
+
+       Packages.el 文件包含你可以在 <layer-name>-packages 变量中安装的包的列表。
+       所有 MELPA 仓库中的包都可以添加到这个列表中。还可以使用 :excludedt 特性将包包含
+       在列表中。
+       每个包都需要一个函数来初始化。这个函数必须以这种模式命名：
+       <layer-name>/init-<package-name>。
+       这个函数包含了包的配置。同时还有一个 pre/post-init 函数来在包加载之前或之后运行代码。它看起来想这个样子：
+
+       (setq layer-name-packages '(example-package
+       ;;这个层通过设置:excluded 属性
+       ;;为真(t)来卸载example-package-2
+       (example-package-2 :excluded t)))
+       (defun layer-name/post-init-package ()
+       ;;在这里添加另一个层的包的配置
+       )
+       (defun layer-name/init-example-package ()
+       ;;在这里配置example-package
+       )
+
+       **注意**：只有一个层可以具有一个对于包的 init 函数。如果你想覆盖另一个层对一个包
+       的配置，请使用 use-package hooks 中的 <layer-name>/pre-init 函数。
+       如果 MELPA 中没有你想要的包，你必须是由一个本地包或一个包源。关于此的更多信息可以从层的剖析处获得。
+
+       确保你添加了你的层到你的 .spacemacs 文件中，并重启 spacemacs 以激活。
+       关于层的加载过程和层的工作原理的详细描述可以参考LAYERS.org。
+
+       安装一个单独的包
+       有时创建一个层会有点大材小用了，也许你仅仅想要一个包而不想维持整个层。Spacemacs
+       在 .spacemacs 文件中的 dotspacemacs/layers 函数里提供了一个叫做
+       dotspacemacs-additional-packages 的变量，只要在列表中添加一个包名，它就会在你重
+       启的时候被安装。
+       下一段来说明如何加载这个包。
+       加载包
+       有没有想过 Spacemacs 如何可以在仅仅几秒钟之内加载超过 100 个包呢？
+       如此低的加载时间必须需要某种难以理解的黑魔法吧。还好这不是真的，多亏有了
+       use-package。
+       它是一个可以轻松实现对包进行延迟加载和配置的包。以下是它的基础用法：
+
+       ;; Basic form of use-package declaration. The :defer t tells use-package to
+       ;; try to lazy load the package.
+       (use-package package-name
+       :defer t)
+       ;; The :init section is run before the package loads The :config section is
+       ;; run after the package loads
+       (use-package package-name
+       :defer t
+       :init
+       (progn
+       ;; Change some variables
+       (setq variable1 t variable2 nil)
+       ;; Define a function
+       (defun foo ()
+       (message "%s" "Hello, World!")))
+       :config
+       (progn
+       ;; Calling a function that is defined when the package loads
+       (function-defined-when-package-loads)))
+
+       这只是 use-package 的一个非常基本的概述。它还有许多其他的方式来控制包的加载，就不在这里介绍了。
+       卸载一个包
+
+       Spacemacs 在 .spacemacs 文件中的 dotspacemacs/init 函数里提供了一个叫做
+       dotspacemacs-excluded-packages 的变量。只要在列表中添加一个包名，它就会在你重启的时候被卸载。
+       常见调整
+       本段是为了想要做更多调整的人所写的。除非另有说明，所有这些设置都去你的
+       .spacemacs 文件中的
+       dotspacemacs/user-config 函数里完成。
+
+       变更 escape 键
+       Spacemacs 使用 [[https://github.com/syl20bnr/evil-escape][evil-escape]] 来允许从许多拥有一个快捷键的 major-modes 中跳出。
+       你可以在你的 dotspacemacs/user-config 函数中像这样定制变量：
+       (defun dotspacemacs/user-config ()
+       ;; ...
+       ;; Set escape keybinding to "jk"
+       (setq-default evil-escape-key-sequence "jk"))
+       更多的文档可以在 evil-escape README 中找到。
+
+       变更配色方案
+       .spacemacs 文件的 dotspacemacs/init 函数中有一个 dotspacemacs-themes 变量
+       。这是一个可以用 SPC T n 键循环的主题的列表。列表中的第一个主题是在启动时加载的主题。
+       以下为示例：
+
+       (defun dotspacemacs/init
+       ;; Darktooth theme is the default theme
+       ;; Each theme is automatically installed.
+       ;; Note that we drop the -theme from the package name.
+       ;; Ex. darktooth-theme -> darktooth
+       (setq-default dotspacemacs-themes '(darktooth
+       soothe
+       gotham)))
+
+       可以使用 SPC T h 键列出和选择所有已安装的主题。
+       非高亮搜索
+       Spacemacs 模仿了默认的 vim 行为，会高亮显示搜索结果，尽管你不在它们之间进行导航。
+       你可以使用 SPC s c 或 :nohlsearch 来关闭搜索结果高亮。
+       若再也不需要自动高亮结果，你可以卸载 evil-search-highlight-persist 包。
+
+       会话
+       当你打开 Spacemacs 时，它不会自动恢复窗口和缓冲区。如果你常使用 vim 会话，
+       你可能要在你的 .spacemacs 文件中的 dotspacemacs/user-config 里添加
+       (desktop-save-mode t)，然后你就可以使用 SPC : desktop-read 加载已被保存的会话。
+       桌面文件的位置可以使用 desktop-dirname 变量设置。要自动加载一个会话，就在你的
+       .spacemacs 文件中添加 (desktop-read)。
+
+       使用 visual lines 导航
+       Spacemacs 使用 vim 默认 actual lines 导航，即使它们被包装了。如果你想要让 j 和 k
+       的行为如 g j 和 g k 一般，将一下代码添加到你的 .spacemacs 文件：
+       (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
+       (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+
+*** EScaping 键
+    (setq-default evil-escape-key-sequence "jj"))
+*** 键绑定帮助  
+  | Key Binding | Description                                               |
+  |-------------+-----------------------------------------------------------|
+  | ~SPC h d b~ | describe bindings                                         |
+  | ~SPC h d c~ | describe current character under point                    |
+  | ~SPC h d d~ | describe current expression under point                   |
+  | ~SPC h d f~ | describe a function                                       |
+  | ~SPC h d F~ | describe a face                                           |
+  | ~SPC h d k~ | describe a key                                            |
+  | ~SPC h d K~ | describe a keymap                                         |
+  | ~SPC h d l~ | copy last pressed keys that you can paste in gitter chat  |
+  | ~SPC h d m~ | describe current modes                                    |
+  | ~SPC h d p~ | describe a package (Emacs built-in function)              |
+  | ~SPC h d P~ | describe a package (Spacemacs layer information)          |
+  | ~SPC h d s~ | copy system information that you can paste in gitter chat |
+  | ~SPC h d t~ | describe a theme                                          |
+  | ~SPC h d v~ | describe a variable                                       |
+
+  Other help key bindings:
+
+  | Key Binding | Description                                           |
+  |-------------+-------------------------------------------------------|
+  | ~SPC h SPC~ | discover Spacemacs documentation, layers and packages |
+  | ~SPC h i~   | search in info pages with the symbol at point         |
+  | ~SPC h k~   | show top-level bindings with =which-key=              |
+  | ~SPC h m~   | search available man pages                            |
+  | ~SPC h n~   | browse emacs news                                     |
+
+  Navigation key bindings in =help-mode=:
+
+*** 快速访问 ace-link模式
+    在 help-mode 和 info-mode 中可以 用 o 快速跳转
+*** 通过语义列出符号 SPC s j  
+*** 寄存器
+    | Key Binding | Description                        |
+    |-------------+------------------------------------|
+    | ~SPC r e~   | show evil yank and named registers |
+    | ~SPC r m~   | show marks register                |
+    | ~SPC r r~   | show helm register                 |
+    | ~SPC r y~   | show kill ring                     |
+*** 文件和 Buffer 操作
+**** 不同点
+  - 没有使用官方的 modeline, 而是采用自己定制的
+  - 排除掉了大量的作者认为对他没有作用的 package, 因为这些 package 确实不经常使用, 反而可能导致一些 BUG 或者导致 spacemacs 启动或使用过程中变慢
+
+**** 文件相关操作
+  1. SPC p f
+    在当前的项目中查找文件, 类似于 vim 中的 Ctrl-p. 在作者的配置中, 该快捷键被绑定到了以下函数:
+
+    #+BEGIN_SRC emacs-lisp
+      (defun zilongshanren/open-file-with-projectile-or-counsel-git ()
+        (interactive)
+        (if (zilongshanren/vcs-project-root)
+            (counsel-git)
+          (if (projectile-project-p)
+              (projectile-find-file)
+            (ido-find-file))))
+    #+END_SRC
+
+    该函数会针对不同的项目类型使用不同的查找方式:
+     - 如果是 git 项目, 那么使用 counsel-git 来查找文件, 不使用 projectile 的原因是 counsel-git 更快
+     - 如果是 projectile 项目, 即在项目的根目录中存在 .projectile 文件, 那么使用 projectile-find-file 来查找文件
+     - 否则使用 ido-fine-file 来查找文件
+
+  2. SPC f f
+    从当前目录开始查找文件. 在作者的配置中同时启用了 ivy-layer 和 helm-layer, 默认使用的是 helm 来查找文件.
+  
+  3. SPC f L
+    使用 helm-locate 来在当前系统中查找文件.
+
+  4. SPC f l
+    查找文件并使用 literal(逐字, 只能是ascii 形式， 对于utf 显示形式 '\350\380'） 的方式来打开文件, 使用 literal 方式打开的文件不会附加编码信息, 例如 utf-8 编码中可能存在的 BOM 头信息, 使用 literal 模式即可以看到 BOM头.
+
+  5. SPC f h 查找文件并使用二进制的方式来打开文件, 可以使用 C-c C-c 回到之前的模式.
+
+  6. SPC f o 使用外部程序打开文件.
+
+  7. SPC f E 使用 sudo 来编辑文件, 当某些文件是只读的时候可以采用这种方式来编辑文件.
+
+  8. SPC f D 删除当前的文件和 buffer.
+
+  9. SPC f j 以当前文件的目录打开 dired buffer.
+
+  10. SPC f r 使用 ivy 打开最近文件列表.
+
+  11. SPC f R 重命名当前文件.
+
+  12. SPC f v 
+    添加 local variables, 可以通过这个功能给项目做一些特殊的设置.
+    例如按下 SPC f v, 然后选择 add-dir-local-variable, 选择 org-mode, 再选择org-highlight-links 变量, 此时 emacs 会在当前文件的目录下生成一个 .dir-locals.el 文件, 内容如下:
+
+    #+BEGIN_SRC emacs-lisp
+    ;;; Directory Local Variables
+    ;;; For more information see (info "(emacs) Directory Variables")
+
+    ((org-mode
+      (org-highlight-links)))
+    #+END_SRC
+
+    这个文件中的代码会在当前目录下的所有文件 buffer 中生效.
+
+  13. SPC f y 拷贝当前文件的全路径.
+
+  14. SPC f a d 列出最近访问的目录, 使用命令行工具 fasd 实现.
+
+  15. SPC f C d/u 将当前文件的编码转换为 DOS/UNIX 编码., unix 编码少一个换行, 真的
+  16. SPC f e d 打开 .spacemacs 或 .spacemacs.d/init.el 文件.
+  17. SPC f e i 打开 .emacs 或 .emacs.d/init.el 文件.
+  18. SPC f e l 打开系统中已经安装的 el 文件.
+  19. SPC f c 复制文件.
+  20. SPC f b 打开标签.
+  21. SPC f s/S 保存当前 buffer 或 所有 buffer.
+**** buffer 相关操作
+  1. SPC b . 打开 Buffer Selection Transient State, 在该模式下可以进行更多的操作, 由 hydra 提供.
+  2. SPC b b 切换到已经打开的 buffer.
+  3. SPC b d 关闭一个 buffer.
+
+  4. SPC b f !!!!! 在 finder 中打开当前文件, 只在 Mac系统下生效.
+
+  5. SPC b B/i 以类似 Dired Mode 的形式打开 buffer 列表, 在这个列表中可以执行和 Dired Mode 类似的操作.
+
+  6. SPC b h 进入 \*spacemacs\* buffer.
+  7. SPC b k 使用正则表达式来删除 buffer.
+  8. SPC b N 新建一个 buffer.
+  9. SPC b m 删除除当前 buffer 外的所有 buffer.
+
+  10. SPC b R 使用 emacs 自动备份的文件恢复文件.
+
+  11. SPC b s 跳转到 scratch buffer.
+
+  12. SPC b w 关闭/打开 buffer 的 read-only.
+  13. SPC b Y 复制整个 buffer 的内容.
+  14. SPC b P 将剪切板的内容粘贴到整个 buffer.
+  15. SPC <tab> 在当前 buffer 和上一个打开的 buffer 中进行切换.
+*** 对齐文本
+| 键绑定       | 说明           |
+| 〜SPC xa＆〜 | 在＆  对齐区域 |
+*** 键绑定？ 
+    1.可以使用命令 (global-set-key (kbd "C-f") 'forward-word)
+    2.模式下（define-key evil-insert-state-map（kbd“C-”））'forward-char）
+*** 文本插入
+    | 键绑定| 说明|
+  | ------------- + ----------------------------------- ------------------------------------ |
+  | 〜SPC ill〜| 插入lorem-ipsum列表|
+  | 〜SPC ilp〜| 插入lorem-ipsum段落|
+  | 〜SPC ils〜| 插入lorem-ipsum句子|
+  | 〜SPC ip 1〜| 插入简单的密码|
+  | 〜SPC ip 2〜| 插入更强的密码|
+  | 〜SPC ip 3〜| 为偏执狂|插入密码
+  | 〜SPC ipp〜| 插入发音简单的密码|
+  | 〜SPC ipn〜| 插入数字密码|
+  | 〜SPC iu〜| 搜索Unicode字符并将其插入到活动缓冲区中。|
+  | 〜SPC i U 1〜| 插入UUIDv1（使用通用参数来插入CID格式）|
+  | 〜SPC i U 4〜| 插入UUIDv4（使用通用参数来插入CID格式）|
+  | 〜SPC我UU〜| 插入UUIDv4（使用通用参数来插入CID格式）|
+
+  *提示：*您可以用数字改变插入的密码的长度
+  前缀参数，例如〜SPC U 24 SPC ipp〜将插入一个密码
+  24个字符。
+** 调试
+   找到(出问题的)快捷键对应的函数；
+   M-x edebug-defun；
+   按(出问题的)快捷键。
 *** 编码
     ;;;; 设置编辑环境
 ;; 设置为中文简体语言环境
@@ -117,191 +2052,7 @@ M-x describe-coding-system
 **** 方法一：
 只需C-x <RET> r ( M-x revert-buffer-with-coding-system) 来用指定的编码重新读入这个文件即可。一般乱码都是因为emacs下使用latin或者utf8，而打开的文档是gb2312编码。如果不记得编码类型就试一下，基本上gb2312都能解决。询问编码时记得用tab补齐比较方便。或则也可以通过file 文件名或者enca文件名来查看！
 ** 配置
-   Emacs 的配置文件默认保存在 ~/.emacs.d/init.el 文件中。
    如果希望把配置放在 ~/.emacs.d/init.el 文件中，那么需要手工删除 ~/.emacs 文件。
-   
    init.el文件 它可以更好将所有 Emacs 相关的文件整合在一个目录内（干净的 HOME ，网盘备份等优点）
    更好的版本控制
-* lisp编程
-** 列表 
-*** 数据列表
-    '(a b c)
-*** 函数列表 (+ 3 3)
-*** 原子
-    空格隔断
-    字串 整数 浮点 
-** 程序    
-*** 执行    
-    eval-print-last-sexp
-*** 解释器
-    解释列表
-*** 错误   
-** 语句结构    
- !  变量名和函数名可以同名，不冲突
-*** 变量    
-   setq
-*** 函数   
-**** 定义
-     defun
-可选参数     (defun begin-of-buffer (&optional arg)())
-**** 判断参量的数据类型	
-   integer-or-marker-p 
-   listp
-**** 函数   
-     message
-***** 交互函数   
-      interactive 
-      "B" 缓冲区名字作为参数, 不存在会创建
-      "b" 缓冲区名字 
-      "p" 前缀参数 (prefix-numeric-value arg) 转化
-     "*" 指缓冲区如果只读会报错 
-***** let函数	
-      #+BEGIN_SRC lisp
-        (let (( a 3)(b 4))
-          (body......)
- ;;         (message "nihao%d" (+ a b))
-        )
-      #+END_SRC
-      
-***** if 表
-      #+BEGIN_SRC lisp
-        (if (< 3 2)
-            (message "true")
-          (message "here")
-        )
 
-      #+END_SRC
-***** save-excursion      
-保存point, 标记      
-#+BEGIN_SRC lisp
-(let varlist
-(save-excursion
-
-body...))
-
-#+END_SRC
-***** 表函数
-      cons	 建表
-      car. cdr  分表
-      nthcdr
-      setcar
-      setcdr
-      length
-***** 与缓冲区有关的函数	
-beginning-of-buffer
-make-whole-buffer
-append-to-buffer
-copy-to-buffer
- insert-buffer
-&optional参量
-save-restriction特殊表	
-what-line函数	
-***** 剪切和存储文本	
-  zap-to-char
-  search-forward函数	
-  progn函数	对每个 语句求值，返回值是最后一条语句
-  
-8.1.7   progn表达式主体	73
-8.2   kill-region函数	74
-8.3   delete-region函数：接触C	75
-8.4   用defvar初始化变量	76
-8.5   copy-region-as-kill函数	77
-8.6   回顾	82
-8.7   查找练习	83
-第9章   列表是如何实现的	85
-第10章   找回文本	88
-10.1   kill环总览	88
-10.2   kill-ring-yank-pointer变量	88
-10.3   练习：使用yank函数和nthcdr函数	89
-第11章   循环和递归	90
-11.1   while	90
-11.1.1   while循环和列表	91
-11.1.2   一个例子：print-elements
-      -of-list	92
-11.1.3   使用增量计数器的循环	93
-11.1.4   使用减量计数器的循环	96
-11.2   递归	98
-11.2.1   使用列表的递归函数	99
-11.2.2   用递归算法代替计数器	100
-11.2.3   使用cond的递归例子	102
-11.3   有关循环表达式的练习	102
-第12章   正则表达式查询	104
-12.1   查询sentence-end的正则表达式	104
-12.2   re-search-forward函数	105
-12.3   forward-sentence函数	106
-12.4   forward-paragraph：函数的金矿	109
-12.5   创建自己的“TAGS”文件	115
-12.6   回顾	116
-12.7   练习：使用re-search-forward	117
-第13章   计数：重复和正则表达式	118
-13.1   count-words-region函数	118
-13.2   用递归的方法实现单词计数	123
-13.3   练习：统计标点符号的数量	127
-第14章   统计函数定义中的单词数	128
-14.1   计数什么？	128
-14.2   单词或者符号是由什么构成的？	129
-14.3   count-words-in-defun函数	130
-14.4   在一个文件中统计几个函数定
-          义的单词数	132
-14.5   查找文件	133
-14.6   lengths-list-file函数详解	134
-14.7   在不同文件中统计几个函数定义
-          的单词数	135
-14.8   在不同文件中递归地统计单词数	137
-14.9   为图形显示准备数据	138
-14.9.1   对列表排序	138
-14.9.2   制作一个文件列表	139
-第15章   准备柱型图	144
-15.1   graph-body-print函数	148
-15.2   recursive-graph-body-print
-     函数	150
-15.3   需要打印的坐标轴	151
-15.4   练习	151
-第16章   配置你的“.emacs”文件	152
-16.1   全站点的初始化文件	152
-16.2   为一项任务设置变量	153
-16.3   开始改变“.emacs”文件	153
-16.4   文本和自动填充模式	154
-16.5   邮件别名	156
-16.6   缩排模式	156
-16.7   一些绑定键	156
-16.8   加载文件	157
-16.9   自动加载	158
-16.10   一个简单的功能扩充：
-           line-to-top-of-window	159
-16.11   键图	161
-16.12   X11的颜色	162
-16.13   V19中的小技巧	163
-16.14   修改模式行	163
-***** 数学
-**** 调试	
-17.1   debug	165
-17.2   debug-on-entry	166
-17.3   debug-on-quit和(debug)	168
-17.4   源代码级调试器edebug	168
-17.5   调试练习	170
-第18章   结论	171
-附录A   the-the函数	173
-附录B   kill环的处理	175
-B.1   rotate-yank-pointer函数	175
-B.2   yank函数	180
-B.3   yank-pop函数	182
-附录C   带坐标轴的图	184
-C.1   print-graph函数的变量列表	185
-C.2   print-Y-axis函数	185
-C.2.1   题外话：计算余数	186
-C.2.2   构造一个Y轴元素	188
-C.2.3   创建Y坐标轴	189
-C.2.4   print-Y-axis函数的最后形式	190
-C.3   print-X-axis函数	190
-C.4   打印整个图形	194
-C.4.1   测试print-graph函数	197
-C.4.2   绘制函数中单词和符号数的图形	198
-C.4.3   打印出来的图形	202         
-* 调试
-  找到(出问题的)快捷键对应的函数；
-  M-x edebug-defun；
-  按(出问题的)快捷键。
-
-* 运行shell
-systemctl status networking.service

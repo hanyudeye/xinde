@@ -24,70 +24,70 @@
      列表位于/etc/apt/sources.list
      维护好依赖, 都是 deb文件
      路径  /var/cache/apt/archives
-** 任务放在前、后台
-   fg bg
-   jobs 
-   -l：显示进程号；
-   -p：仅任务对应的显示进程号；
-   -n：显示任务状态的变化；
-   -r：仅输出运行状态（running）的任务；
-   -s：仅输出停止状态（stoped）的任务。
-** 任务
-**** w 登录任务列表
-**** runlevel 运行等级
-**** ps 
-    #+BEGIN_SRC conf
-      -e   显示所有进程 
-      -f    全格式
-      -h   不显示标题
-      -l    长格式
-      -w     宽输出
-      a    显示终端上的所有进程，包括其他用户的进程。
-      r    只显示正在运行的进程。
-      u 　以用户为主的格式来显示程序状况。
-      x     显示所有程序，不以终端机来区分。
+** 任务管理
+*** 任务放在前、后台
+    fg bg
+    jobs 
+    -l：显示进程号；
+    -p：仅任务对应的显示进程号；
+    -n：显示任务状态的变化；
+    -r：仅输出运行状态（running）的任务；
+    -s：仅输出停止状态（stoped）的任务。
+*** w 登录任务列表
+*** runlevel 运行等级
+*** ps 
+   #+BEGIN_SRC conf
+     -e   显示所有进程 
+     -f    全格式
+     -h   不显示标题
+     -l    长格式
+     -w     宽输出
+     a    显示终端上的所有进程，包括其他用户的进程。
+     r    只显示正在运行的进程。
+     u 　以用户为主的格式来显示程序状况。
+     x     显示所有程序，不以终端机来区分。
 
-      ps -ef 显示出的结果：
-          1.UID       用户ID
-          2.PID        进程ID
-          3.PPID      父进程ID
-          4.C           CPU占用率
-          5.STIME     开始时间
-          6.TTY         开始此进程的TTY----终端设备
-          7.TIME       此进程运行的总时间
-          8.CMD       命令名
-    #+END_SRC
+     ps -ef 显示出的结果：
+         1.UID       用户ID
+         2.PID        进程ID
+         3.PPID      父进程ID
+         4.C           CPU占用率
+         5.STIME     开始时间
+         6.TTY         开始此进程的TTY----终端设备
+         7.TIME       此进程运行的总时间
+         8.CMD       命令名
+   #+END_SRC
    
-    init init进程是所有Linux进程的父进程
-**** crontab 周期性执行
-***** 命令
-      crontab [ -u user ] file
-      crontab [ -u user ] [ -i ] { -e | -l | -r } |
-      -e 编辑crontab文件
-      -l　列出crontab文件内容
-      -r 删除crontab文件
-***** 开启日志     
-     修改rsyslog文件，将/etc/rsyslog.d/50-default.conf 文件中的#cron.*前的#删掉；
-     重启rsyslog服务service rsyslog restart；
-     重启cron服务service cron restart；
+   init init进程是所有Linux进程的父进程
+*** crontab 周期性执行
+**** 命令
+     crontab [ -u user ] file
+     crontab [ -u user ] [ -i ] { -e | -l | -r } |
+     -e 编辑crontab文件
+     -l　列出crontab文件内容
+     -r 删除crontab文件
+**** 开启日志     
+    修改rsyslog文件，将/etc/rsyslog.d/50-default.conf 文件中的#cron.*前的#删掉；
+    重启rsyslog服务service rsyslog restart；
+    重启cron服务service cron restart；
 
-     more /var/log/cron.log；
-     就可以查看运行时的日志文件，如果在日志文件中出现：No MTA installed, discarding output
+    more /var/log/cron.log；
+    就可以查看运行时的日志文件，如果在日志文件中出现：No MTA installed, discarding output
 
-     那么就是说，crontab执行脚本时是不会直接错误的信息输出，而是会以邮件的形式发送到你的邮箱里，这时候就需要邮件服务器了，
-     如果你没有安装邮件服务器，它就会报这个错。如果是测试，可以用下面的办法来解决：
+    那么就是说，crontab执行脚本时是不会直接错误的信息输出，而是会以邮件的形式发送到你的邮箱里，这时候就需要邮件服务器了，
+    如果你没有安装邮件服务器，它就会报这个错。如果是测试，可以用下面的办法来解决：
 
-     在每条定时脚本后面加入：
-     ?
-     001
-     >/dev/null 2>&1
-     就可以解决No MTA installed, discarding output的问题
-***** 编辑文件, 其实编辑好后就会自动执行
-     crontab -e  
+    在每条定时脚本后面加入：
+    ?
+    001
+    >/dev/null 2>&1
+    就可以解决No MTA installed, discarding output的问题
+**** 编辑文件, 其实编辑好后就会自动执行
+    crontab -e  
 
-     # m h  dom mon dow   command  
-     */2 * * * * date >> ~/time.log  
-***** 执行     
+    # m h  dom mon dow   command  
+    */2 * * * * date >> ~/time.log  
+**** 执行     
      sudo service cron restart  
 
      对于自己的，只要执行下自己的crontab　文件即可
@@ -104,8 +104,8 @@
 \* * * * *                  # 每隔一分钟执行一次任务  
 0 * * * *                  # 每小时的0点执行一次任务，比如6:00，10:00  
 6,10 * 2 * *            # 每个月2号，每小时的6分和10分执行一次任务  
-**** pkill 可以按照进程名杀死进程
-**** 进程属性
+*** pkill 可以按照进程名杀死进程
+*** 进程属性
     ls /proc/PID 
     
 cwd 进程运行目录
@@ -149,6 +149,8 @@ fd 打开或使用的文件的符号链接
     -r 表示递归所有的子文件夹
     dist.7z 是压缩好后的压缩包名
     /web/source/* 是要压缩的目录，＊是表示该目录下所有的文件
+*** unzip 
+     -l     list archive files (short format)
 ** 编程
 *** gcc 基于C/C++的预处理器和编译器
     -o：指定生成的输出文件,所以编译多个文件是,-o 没有意义；
@@ -1725,13 +1727,6 @@ ssh user@host cat /path/to/some/file | xclip
 ** 日志  
 *** 启动日志
     /var/log/boot.log 
-**** 硬件
-    - 识别硬盘
-    - 声卡
-    - 挂载 分区 /boot
-    - Mounted /home
-    - set console font and keymap
-    - 开启网络
 ** 电源管理
     立刻关机：
   sudo halt

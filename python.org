@@ -1,4 +1,5 @@
-* option
+* Python编译器
+** 编译器功能选项
 -d      提供调试输出
 -O      生成优化的字节码(生成 .pyo 文件)
 -S      不导入 site 模块以在启动时查找 Python 路径
@@ -7,101 +8,112 @@
 -Q opt  除法选项(参阅文档)
 -c cmd  运行以命令行字符串形式提交的 Python 脚本
 file    从给定的文件运行 Python 脚本(参阅后文)
-* python
-** 环境变量
+** 编译器环境变量
    PYTHONPATH	PYTHONPATH是Python搜索路径，默认我们import的模块都会从PYTHONPATH里面寻找。
    PYTHONSTARTUP 	Python启动后，先寻找PYTHONSTARTUP环境变量，然后执行此文件中变量指定的执行代码。
    PYTHONCASEOK 	加入PYTHONCASEOK的环境变量, 就会使python导入模块的时候不区分大小写.
    PYTHONHOME 	另一种模块搜索路径。它通常内嵌于的PYTHONSTARTUP或PYTHONPATH目录中，使得两个模块库更容易切换。
-** 中文编码
+** 书写编码
    # -*- coding: UTF-8 -*- 
    # coding=utf-8
-** 类型
-   1. List（列表）list = [ 'runoob', 786 , 2.23, 'john', 70.2 ] list[1:2]
-   2. 元组 tuple = ( 'runoob', 786 , 2.23, 'john', 70.2 )!元组不让更新
-   3. 字典 tinydict = {'name': 'john','code':6734, 'dept': 'sales'} 
-*** 双精度浮点型
-不精确的，如果想用更加精度的(精度位数多了)，可以导入 decimals, 但其实还是没算对
-设置精度后可能就算对了，没想
-#+BEGIN_SRC python
-设置精度
-  >>> from decimal import *
-  >>> getcontext()
-  Context(prec=28, rounding=ROUND_HALF_EVEN, Emin=-999999999, Emax=999999999,
-          capitals=1, flags=[], traps=[Overflow, DivisionByZero,
-          InvalidOperation])
+* python语言环境
+** 对象
+*** 对象的基类型
+    1. List（列表）list = [ 'runoob', 786 , 2.23, 'john', 70.2 ] list[1:2]
+    2. 元组 tuple = ( 'runoob', 786 , 2.23, 'john', 70.2 )!元组不让更新
+    3. 字典 tinydict = {'name': 'john','code':6734, 'dept': 'sales'} 
+**** 双精度浮点型
+ 不精确的，如果想用更加精度的(精度位数多了)，可以导入 decimals, 但其实还是没算对
+ 设置精度后可能就算对了，没想
+ #+BEGIN_SRC python
+ 设置精度
+   >>> from decimal import *
+   >>> getcontext()
+   Context(prec=28, rounding=ROUND_HALF_EVEN, Emin=-999999999, Emax=999999999,
+           capitals=1, flags=[], traps=[Overflow, DivisionByZero,
+           InvalidOperation])
 
-  >>> getcontext().prec = 7       # Set a new precision
-#+END_SRC
+   >>> getcontext().prec = 7       # Set a new precision
+ #+END_SRC
 
-#+RESULTS:
-
-** 算术运算符
-   **	幂 - 返回x的y次幂	a**b 为10的20次方， 输出结果 100000000000000000000
-   //	取整除 - 返回商的整数部分	9//2 输出结果 4 , 9.0//2.0 输出结果 4.0
-** 流程控制
-   #+BEGIN_SRC python
-     if 判断条件：
-     执行语句……
-     else：
-     执行语句……
-#+END_SRC
-
-while循环
-#+BEGIN_SRC 
-while 判断条件：
-    执行语句……
-#+END_SRC
-for 循环
-#+BEGIN_SRC python
-for iterating_var in sequence:
-   statements(s)
-#+END_SRC
-循环控制
-break
-continue
-assert(3>4) 断言, 产生此种情况会中断
-
-** 帮助
-   help()  函数或类文档字串说明
-   dir() 函数或类的性质
-** pass 语句 空语句 ，替换 为其他语言的占位符 ;
-** 模块, 一个模块几个类
-  !模块名(文件名) 与 类名 相同 
-*** import 语句 导入模块,一个模块只会执行一次,不管插入多少语句
-    import module1[, module2[,... moduleN]
-*** From…import 语句
-: Python的from语句让你从模块中导入一个指定的部分到当前命名空间中
-*** globals()和locals()函数
-: 根据调用地方的不同，globals()和locals()函数可被用来返回全局和局部命名空间里的名字。
-*** reload()函数
-: 当一个模块被导入到一个脚本，模块顶层部分的代码只会被执行一次。
-: 因此，如果你想重新执行模块里顶层部分的代码，可以用reload()函数
-*** 完成模块
-**** 定义用于模块的错误和异常
-    #+BEGIN_SRC python
-      class sendException(Exception):
-            pass
-    #+END_SRC
-**** 定义模块中要输出的项 
-    from module import classname/functionname
-    __all__ 中确定的 或是 除去_ 开头的 是公有的
-**** 编写文档
-    '''items'''
-**** 测试, 写好注释, 执行方法
-**** 提供调用的回退函数
-**** 安装模块     
-     通常在 sys.path 的 site-packages 目录下
-** 包 一个包几个类
-   使用操作系统原有的目录结构、包是一个目录、如 Hello, 然后在里面创建__init__.py 文件，该文件提示该目录是包目录
-   在目录下创建类，类名同文件名要相同，默认只执行 __init__.py 文件，需要在里面 用 from 文件 import 同文件名同的类名
-   就可以在调用的源码中 import 包名 了
+ #+RESULTS:
+*** 数学对象简化操作运算符
+**** 算术运算符
+     **	幂 - 返回x的y次幂	a**b 为10的20次方， 输出结果 100000000000000000000
+     //	取整除 - 返回商的整数部分	9//2 输出结果 4 , 9.0//2.0 输出结果 4.0
+*** 模块(对象包)
+    !模块名(文件名) 与 类名 相同 
+**** import 语句 导入模块,一个模块只会执行一次,不管插入多少语句
+     import module1[, module2[,... moduleN]
+**** From…import 语句
+ : Python的from语句让你从模块中导入一个指定的部分到当前命名空间中
+**** globals()和locals()函数
+ : 根据调用地方的不同，globals()和locals()函数可被用来返回全局和局部命名空间里的名字。
+**** reload()函数
+ : 当一个模块被导入到一个脚本，模块顶层部分的代码只会被执行一次。
+ : 因此，如果你想重新执行模块里顶层部分的代码，可以用reload()函数
+**** 完成模块
+***** 定义用于模块的错误和异常
+     #+BEGIN_SRC python
+       class sendException(Exception):
+             pass
+     #+END_SRC
+***** 定义模块中要输出的项 
+     from module import classname/functionname
+     __all__ 中确定的 或是 除去_ 开头的 是公有的
+***** 编写文档
+     '''items'''
+***** 测试, 写好注释, 执行方法
+***** 提供调用的回退函数
+***** 安装模块     
+      通常在 sys.path 的 site-packages 目录下
+*** 包 一个包几个类
+    使用操作系统原有的目录结构、包是一个目录、如 Hello, 然后在里面创建__init__.py 文件，该文件提示该目录是包目录
+    在目录下创建类，类名同文件名要相同，默认只执行 __init__.py 文件，需要在里面 用 from 文件 import 同文件名同的类名
+    就可以在调用的源码中 import 包名 了
    
-实例化 时 是 包名+类名
-** 测试模块和包
-   if __name== '__main__'
-   __name__是 模块或包名的变量, __main__ 用来测试模块中的方法 
-** 函数
+    实例化 时 是 包名+类名
+*** 测试模块和包
+    if __name== '__main__'
+    __name__是 模块或包名的变量, __main__ 用来测试模块中的方法 
+*** 类
+**** class
+     类中方法定义 必须带 self
+    #+BEGIN_SRC python
+      class wa:
+       def __init__(self, items={}):
+           '''items'''
+           if type(item)!=type({}):
+               raise TypeError("类型错误")
+           self.items=items
+           return
+          def	deposit(self,	amount):
+           self.balance	=	self.balance	+	amount
+           return	self.balance
+          def	withdraw(self,	amount):
+           if	amount	>	self.balance:
+            return	'Insufficient	funds'
+    #+END_SRC
+**** 初始化函数 
+     __init
+**** 类的实例 ，没有new 关键词
+     a = Acc('xx')
+**** 类的继承
+     #+BEGIN_SRC python
+       class Subclass(Parentclass):
+              def __init__(self):
+               Parentclass.__init__
+
+     #+END_SRC
+**** 类属性与方法
+***** 类的私有属性
+      __private_attrs：两个下划线开头，声明该属性为私有，不能在类地外部被使用或直接访问。在类内部的方法中使用时 self.__private_attrs。
+      类的方法
+      在类地内部，使用def关键字可以为类定义一个方法，与一般函数定义不同，类方法必须包含参数self,且为第一个参数
+***** 类的私有方法
+      __private_method：两个下划线开头，声明该方法为私有方法，不能在类地外部调用。在类的内部调用 self.__private_methods 
+**** type 函数
+** 功能
 *** 定义 def funname(a="a"): 默认值
 *** 对象属性 
     对象的长度  len(obj), 整数没有长度
@@ -156,7 +168,38 @@ foostr[::-1]
    operator.__ge__(a, b)
    operator.__gt__(a, b)
 *** functools
-** 异常处理
+** 具体对象
+*** json
+**** encode 	将 Python 对象编码成 JSON 字符串
+**** decode	将已编码的 JSON 字符串解码为 Python 对象
+     pip install --upgrade "jedi>=0.9.0" "json-rpc>=1.8.1" "service_factory>=0.1.5"
+** 流程控制
+   #+BEGIN_SRC python
+     if 判断条件：
+     执行语句……
+     else：
+     执行语句……
+#+END_SRC
+
+while循环
+#+BEGIN_SRC 
+while 判断条件：
+    执行语句……
+#+END_SRC
+for 循环
+#+BEGIN_SRC python
+for iterating_var in sequence:
+   statements(s)
+#+END_SRC
+循环控制
+break
+continue
+assert(3>4) 断言, 产生此种情况会中断
+
+** 帮助
+   help()  函数或类文档字串说明
+   dir() 函数或类的性质
+** 对象监控(异常处理)
 *** 捕捉异常可以使用try/except语句
 #+BEGIN_SRC python
   try:
@@ -170,44 +213,7 @@ foostr[::-1]
 #+END_SRC
 *** 触发异常
 : raise [Exception [, args [, traceback]]]
-** 类
-*** class
-    类中方法定义 必须带 self
-   #+BEGIN_SRC python
-     class wa:
-      def __init__(self, items={}):
-          '''items'''
-          if type(item)!=type({}):
-              raise TypeError("类型错误")
-          self.items=items
-          return
-         def	deposit(self,	amount):
-          self.balance	=	self.balance	+	amount
-          return	self.balance
-         def	withdraw(self,	amount):
-          if	amount	>	self.balance:
-           return	'Insufficient	funds'
-   #+END_SRC
-*** 初始化函数 
-    __init
-*** 类的实例 ，没有new 关键词
-    a = Acc('xx')
-*** 类的继承
-    #+BEGIN_SRC python
-      class Subclass(Parentclass):
-             def __init__(self):
-              Parentclass.__init__
-
-    #+END_SRC
-*** 类属性与方法
-**** 类的私有属性
-     __private_attrs：两个下划线开头，声明该属性为私有，不能在类地外部被使用或直接访问。在类内部的方法中使用时 self.__private_attrs。
-     类的方法
-     在类地内部，使用def关键字可以为类定义一个方法，与一般函数定义不同，类方法必须包含参数self,且为第一个参数
-**** 类的私有方法
-     __private_method：两个下划线开头，声明该方法为私有方法，不能在类地外部调用。在类的内部调用 self.__private_methods 
-*** type 函数
-** CGI编程 引入python cgi库
+** CGI对象
 : CGI程序可以是Python脚本，PERL脚本，SHELL脚本，C或者C++程序等
 *** Web服务器支持及配置
 
@@ -274,16 +280,9 @@ SCRIPT_FILENAME	CGI脚本的完整路径
 SCRIPT_NAME	CGI脚本的的名称
 SERVER_NAME	这是你的 WEB 服务器的主机名、别名或IP地址。
 SERVER_SOFTWARE	这个环境变量的值包含了调用CGI程序的HTTP服务器的名称和版本号。例如，上面的值为Apache/2.2.14(Unix)
-** MySQLdb
-** 网络编程
+** 网络对象
 ***  低级别的网络服务支持基本的 Socket，它提供了标准的 BSD Sockets API，可以访问底层操作系统Socket接口的全部方法。
 ***  高级别的网络服务模块 SocketServer， 它提供了服务器中心类，可以简化网络服务器的开发。
-** 多线程
-** GUI编程(Tkinter)
-** JSON
-*** encode 	将 Python 对象编码成 JSON 字符串
-*** decode	将已编码的 JSON 字符串解码为 Python 对象
-    pip install --upgrade "jedi>=0.9.0" "json-rpc>=1.8.1" "service_factory>=0.1.5"
 * python mode
 ** Features:
 - Auto-completion using [[https://github.com/proofit404/anaconda-mode][anaconda-mode]]
@@ -386,6 +385,27 @@ SERVER_SOFTWARE	这个环境变量的值包含了调用CGI程序的HTTP服务器
  #+BEGIN_SRC sh
    pip install hy
  #+END_SRC
+
+** 选择后端Choosing a backend
+To choose a default backend set the layer variable =python-backend=:
+
+#+BEGIN_SRC elisp
+  (python :variables python-backend 'anaconda)
+  #+END_SRC
+
+   Backend can be chosen on a per project basis using directory local variables
+   (files named =.dir-locals.el= at the root of a project), an example to use the
+   =lsp= backend:
+  可以在 .dir-locals.el 文件中单独配置后端
+
+    ,#+BEGIN_SRC elisp
+    ;;; Directory Local Variables
+    ;;; For more information see (info "(emacs) Directory Variables")
+
+    ((python-mode (python-backend . lsp)))
+#+END_SRC
+
+*Note:* you can easily add a directory local variable with ~SPC f v d~.
 
 ** Management of Python versions and virtual environments
 *** Manage virtual environments with pyvenv
@@ -562,3 +582,13 @@ SERVER_SOFTWARE	这个环境变量的值包含了调用CGI程序的HTTP服务器
  #+END_SRC
 
  or as a directory-local variable (for per-project settings).
+* python功能模式
+** 自动完成 anaconda-mode 蟒蛇, 绿蟒模式
+** 查找文档 
+   SPC mhd 使用helm-pydoc 查找文档
+** 块间跳转 anaconda-mode-find-definitions
+   SPC mgb 跳回
+** 是抑制未使用的导入 没使用的块，导入了也多余 autoflake(小薄片）
+  pip install autoflake
+** 对输入进行排序 要安装 isort , 通过 pip install isort
+** 运行python脚本 SPC mcc
