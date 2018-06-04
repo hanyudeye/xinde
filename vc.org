@@ -1,134 +1,5 @@
 * git
-  Git的分布式
-  当我在没有网络的情况下面我也可以在本地提交代码，这是svn无法做到的
   {本地}  {暂存} {仓库} {远程}
-** 流程
-    git init
-    git add README.md
-    git commit -m "first commit"
-    git remote add origin https://github.com/hanyudeye/test.git 添加远程源 如果多个呢?
-    git push -u origin master
-** 暂存
-*** 修改存入暂存区
-    git add <modified files>/git add .
-    新文件或修改的文件
-*** 暂存区删除文件
-    git rm --cached <file>
-*** 取消已暂存的内容
-    和暂存区删除文件差别不大, 删除会把索引也删除
-    git reset HEAD <file>
-    git rm --cached 
-    是从stage（index，暂存区） 里面删除文件，当你提交（commit）之后文件就会删除了。
-    
-    git reset HEAD --file 
-    : 回退暂存区里的文件（还原为HEAD commit里面该文件的状态），会撤销从上一次提交（commit） 之后的一些操作。
-    如果是对于新增文件，这两个操作时等效的。
-*** 删除工作区和暂存区文件
-    git rm <file> 好像要强制删除，一般本地删除，提交就好了
-*** 重命名
-    git mv 命令做得所有事情就是 git rm --cached 命令的操作，重命
-    名磁盘上的文件，然后再执行 git add 把新文件添加到缓存区。
-*** 抛弃工作区修改, 不提交都能恢复
-    git checkout . # 抛弃工作区修改
-    git checkout <file>
-** 本地仓库
-*** 初始化   
-    git init
-    git clone git://git.kernel.org/pub/scm/git/git.git <directory>
-*** 提交到本地版本库
-    git commit -m "msg"
-    也可以将git add与git commit用一个指令完成
-    git commit -a -m "msg"
-*** 用别的分支的文件替换同名文件
-    用 HEAD 指向的 master(默认主分支) 分支中的全部或者部分文件替换
-    git checkout HEAD .
-    git checkout HEAD <file>
-*** 分支
-**** 创建分支
-     git branch (branchname)
-**** 切换分支
-     git checkout (branchname)
-     当你切换分支的时候，Git 会用该分支的最后提交的快照替换你的工作目录的内容，所以多个分支不需要多个目录。
-**** 合并分支, 然后可以删除分支
-     git merge test 
-     把 test 分支合并到当前分支
-**** 删除分支
-    git branch -d (branchname)
-**** 隐藏
-     git stash
-     git pull
-     git stash pop
-     接下来diff一下此文件看看自动合并的情况，并作出相应修改。
-
-     git stash: 备份当前的工作区的内容，从最近的一次提交中读取相关内容，让工作区保证和上次提交的内容一致。同时，将当前的工作区内容保存到Git栈中。
-     git stash pop: 从Git栈中读取最近一次保存的内容，恢复工作区的相关内容。由于可能存在多个Stash的内容，所以用栈来管理，pop会从最近的一个stash中读取内容并恢复。
-     git stash list: 显示Git栈内的所有备份，可以利用这个列表来决定从那个地方恢复。
-     git stash clear: 清空Git栈。此时使用gitg等图形化工具会发现，原来stash的哪些节点都消失了。
-     
-     2.放弃本地修改，直接覆盖之
-     git reset --hard
-     git pull
-
-**** 忘了切分支
-     可以先用git stash save xxx来保存工作区的内容，然后新建 一个分支并调用git stash pop
-*** bisect
-*** tag
-*** 还原
-    此次操作之前和之后的commit和history都会保留，并且把这次撤销作为一次最新的提交
-    git revert HEAD                  撤销前一次 commit
-    git revert HEAD^               撤销前前一次 commit
-    git revert commit-id （比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进行保存。
-    git revert是提交一个新的版本，将需要revert的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。
-** 远程仓库
-*** 克隆远程到本地
-    git clone RESP
-    git clone --depth=1 RESP 只克隆最新的
-*** 远程同步
-    git push
-*** 更新本地
-    git pull/git pull git://github.com/tom/test.git
-*** 查看远程分支
-    git branch -r # 查看远程branch
-    git checkout -b bug_fix_local bug_fix_remote #把本地端切换为远程的bug_fix_remote branch并命名为bug_fix_local
-** 日志
-*** 状态status   
-   git status
-   git status -s 简短信息
-   git remote -v 列出服务器地址
-   git diff   尚未缓存的改动：
-   git diff --cached   查看已缓存的改动：
-   git diff HEAD  查看已缓存的与未缓存的所有改动：
-   
-   Git diff branch1 branch2 --stat   //显示出所有有差异的文件列表
-   Git diff branch1 branch2 文件名(带路径)   //显示指定文件的详细差异
-   Git diff branch1 branch2                   //显示出所有有差异的文件的详细差异
-
-   git diff --stat   显示摘要而非整个diff
-   A: 你本地新增的文件（服务器上没有）.
-   C: 文件的一个新拷贝.
-   D: 你本地删除的文件（服务器上还在）.
-   M: 文件的内容或者mode被修改了.
-   R: 文件名被修改了。
-   T: 文件的类型被修改了。
-   U: 文件没有被合并(你需要完成合并才能进行提交)。
-   X: 未知状态(很可能是遇到git的bug了，你可以向git提交bug report)。
-   在man git diff-files中可以查到这些标志的说明
-*** Git 查看提交历史
-    git log
-    git log --oneline 简洁--graph 拓扑图 '--reverse'逆向显示
-    --author 指定用户日志
-    如果你要指定日期，可以执行几个选项：--since 和 --before，但
-    是你也可以用 --until 和 --after。
-*** 某次提交的内容 
-   git show # 显示某次提交的内容 git show $id
-** .gitignore
-　　以斜杠“/”开头表示目录； 
-　　以星号“*”通配多个字符；
-　　以问号“?”通配单个字符
-　　以方括号“[]”包含单个字符的匹配列表；
-　　以叹号“!”表示不忽略(跟踪)匹配到的文件或目录；
-   规则：/fd1/*
-   说明：忽略根目录下的 /fd1/ 目录的全部内容；根目录指项目的的根目录
 ** 配置
    git config [--system,--global]
    /etc/gitconfig | ~/.gitconfig
@@ -141,13 +12,124 @@
 # Title 可以随便命名，Key 的内容拷贝自 ~/.ssh/id_rsa.pub 中的内容，完成后，
 可以再使用 ssh -v git@github.com 进行测试。
 测试是否能够连接ssh -T git@github.com
-** 托管平台 
-   github 码云和Coding
+** 功能 
+*** 初始化 
+    init
+*** 暂存功能   
+**** 加入暂存 git add <modified files>/git add .
+**** 删除 git rm --cached <file>
+**** 取消已暂存的内容
+    和暂存区删除文件差别不大, 删除会把索引也删除
+    git reset HEAD <file>
+    git rm --cached 
+    是从stage（index，暂存区） 里面删除文件，当你提交（commit）之后文件就会删除了。
+    
+    git reset HEAD --file 
+    : 回退暂存区里的文件（还原为HEAD commit里面该文件的状态），会撤销从上一次提交（commit） 之后的一些操作。
+    如果是对于新增文件，这两个操作时等效的。
+**** 抛弃工作区修改, 不提交都能恢复
+    git checkout . # 抛弃工作区修改
+    git checkout <file>
+**** 用别的分支的文件替换同名文件
+     用 HEAD 指向的 master(默认主分支) 分支中的全部或者部分文件替换
+     git checkout HEAD .
+     git checkout HEAD <file>
+**** 还原
+     此次操作之前和之后的commit和history都会保留，并且把这次撤销作为一次最新的提交
+     git revert HEAD                  撤销前一次 commit
+     git revert HEAD^               撤销前前一次 commit
+     git revert commit-id （比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进行保存。
+     git revert是提交一个新的版本，将需要revert的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。
+*** 仓库功能
+**** 保存到版本库
+     git commit -m "msg"
+     也可以将git add与git commit用一个指令完成
+     git commit -a -m "msg"
+**** 版本库分库
+***** 创建分支
+      git branch (branchname)
+***** 切换分支
+      git checkout (branchname)
+      当你切换分支的时候，Git 会用该分支的最后提交的快照替换你的工作目录的内容，所以多个分支不需要多个目录。
+***** 合并分支, 然后可以删除分支
+      git merge test 
+      把 test 分支合并到当前分支
+***** 删除分支
+     git branch -d (branchname)
+***** 隐藏
+      git stash
+      git pull
+      git stash pop
+      接下来diff一下此文件看看自动合并的情况，并作出相应修改。
+
+      git stash: 备份当前的工作区的内容，从最近的一次提交中读取相关内容，让工作区保证和上次提交的内容一致。同时，将当前的工作区内容保存到Git栈中。
+      git stash pop: 从Git栈中读取最近一次保存的内容，恢复工作区的相关内容。由于可能存在多个Stash的内容，所以用栈来管理，pop会从最近的一个stash中读取内容并恢复。
+      git stash list: 显示Git栈内的所有备份，可以利用这个列表来决定从那个地方恢复。
+      git stash clear: 清空Git栈。此时使用gitg等图形化工具会发现，原来stash的哪些节点都消失了。
+     
+      2.放弃本地修改，直接覆盖之
+      git reset --hard
+      git pull
+
+***** 忘了切分支
+      可以先用git stash save xxx来保存工作区的内容，然后新建 一个分支并调用git stash pop
+*** 远程仓库
+**** 克隆远程到本地
+     git clone RESP
+     git clone --depth=1 RESP 只克隆最新的
+**** 添加源
+    git remote add origin https://github.com/hanyudeye/test.git 添加远程源 
+**** 远程同步
+    git push -u origin master
+**** 更新本地
+     git pull/git pull git://github.com/tom/test.git
+**** 查看远程分支
+     git branch -r # 查看远程branch
+     git checkout -b bug_fix_local bug_fix_remote #把本地端切换为远程的bug_fix_remote branch并命名为bug_fix_local
+*** 日志
+**** 状态status   
+    git status
+    git status -s 简短信息
+    git remote -v 列出服务器地址
+    git diff   尚未缓存的改动：
+    git diff --cached   查看已缓存的改动：
+    git diff HEAD  查看已缓存的与未缓存的所有改动：
+   
+    Git diff branch1 branch2 --stat   //显示出所有有差异的文件列表
+    Git diff branch1 branch2 文件名(带路径)   //显示指定文件的详细差异
+    Git diff branch1 branch2                   //显示出所有有差异的文件的详细差异
+
+    git diff --stat   显示摘要而非整个diff
+    A: 你本地新增的文件（服务器上没有）.
+    C: 文件的一个新拷贝.
+    D: 你本地删除的文件（服务器上还在）.
+    M: 文件的内容或者mode被修改了.
+    R: 文件名被修改了。
+    T: 文件的类型被修改了。
+    U: 文件没有被合并(你需要完成合并才能进行提交)。
+    X: 未知状态(很可能是遇到git的bug了，你可以向git提交bug report)。
+    在man git diff-files中可以查到这些标志的说明
+**** Git 查看提交历史
+     git log
+     git log --oneline 简洁--graph 拓扑图 '--reverse'逆向显示
+     --author 指定用户日志
+     如果你要指定日期，可以执行几个选项：--since 和 --before，但
+     是你也可以用 --until 和 --after。
+**** 某次提交的内容 
+    git show # 显示某次提交的内容 git show $id
+** .gitignore
+　　以斜杠“/”开头表示目录； 
+　　以星号“*”通配多个字符；
+　　以问号“?”通配单个字符
+　　以方括号“[]”包含单个字符的匹配列表；
+　　以叹号“!”表示不忽略(跟踪)匹配到的文件或目录；
+   规则：/fd1/*
+   说明：忽略根目录下的 /fd1/ 目录的全部内容；根目录指项目的的根目录
 * svn
 ** svn 重新验证证书 ->会在用户名和密码错误的情况下重新验证 
-Error:  “Server certificate verification failed: issuer is not trusted”
-使用终端执行如下命令： svn list https://your.repository.url 接下来选择对应的（临时）/（永久）即可。
-** help
+   Error:  “Server certificate verification failed: issuer is not trusted”
+   使用终端执行如下命令： svn list https://your.repository.url 接下来选择对应的（临时）/（永久）即可。
+** 功能
    查看修改的文件记录
    svn cat -- 显示特定版本的某文件内容。
    svn list -- 显示一个目录或某一版本存在的文件列表。
@@ -369,9 +351,9 @@ git branch --set-upstream develop origin/develop
    git pull
 ** 修改远程仓库 
 *** 1.修改命令
-git remote origin set-url [url]
-!!!!!!现在是
-git remote  set-url origin [url]
+    git remote origin set-url [url]
+    !!!!!!现在是
+    git remote  set-url origin [url]
 *** 2.先删后加
 git remote rm origin
 git remote add origin [url]
@@ -563,9 +545,8 @@ git 远程仓库管理
 　　$ git remote
 
 　　origin
-** 
 * git mode
-** 安装配置  
+** 配置  
 *** 全屏显示
  #+BEGIN_SRC emacs-lisp
    (defun dotspacemacs/user-init ()
