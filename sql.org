@@ -1718,3 +1718,41 @@ SELECT @SalesOrderNumber;
 SELECT OrderDate, TotalDue
 FROM Sales.SalesOrderHeader
 WHERE SalesOrderNumber = @SalesOrderNumber;
+* 游标
+  #+BEGIN_SRC sql
+         use database1
+         declare my_cursor cursor scroll dynamic
+     /**//*scroll表示可随意移动游标指针（否则只能向前），dynamic表示可以读写游标（否则游标只读）*/
+    for
+    select productname from  product
+    open my_cursor
+    declare @pname sysname
+    fetch next from my_cursor into @pname
+    while(@@fetch_status=0)
+      begin
+        print 'Product Name: ' + @pname
+        fetch next from my_cursor into @pname
+      end
+--    fetch first from my_cursor into @pname -- 获取第一个
+ --   print @pname
+    /**//*update product set productname='zzg' where current of my_cursor */
+    /**//*delete from product where current of my_cursor */
+    close my_cursor
+    deallocate my_cursor
+  #+END_SRC
+
+  
+
+
+					----更新已开发票数量和未开发票数量
+					UPDATE CP_ProductOutSub
+					SET FIBillLackAmount =Outqty -ISNULL(FIBillAmount,0) - @BillAmount,
+					FIBillAmount =ISNULL(FIBillAmount,0) + @BillAmount				
+					WHERE (ID = @CP_ProductOutSub_ID)
+
+					IF @@ROWCOUNT<>1 OR @@error<>0
+						BEGIN
+							ROLLBACK TRAN
+							RAISERROR('更新成品已开发票数量和未开发票数量出错，请核实!',16,1) WITH SETERROR
+							RETURN
+						END
