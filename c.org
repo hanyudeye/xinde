@@ -1,53 +1,46 @@
 * c-c++mode
-** 语法检查 通过 flycheck  当前有
-** 反汇编 disaster        当前有
-** 代码格式化 clang-format 当前有
-** 底部定义提示 semantic   当前有
+** 语法检查 flycheck
+** 反汇编 disaster
+** gtags
+** 代码格式化 clang-format 
+** 底部定义提示 semantic  
 ** 导航 cscope    还没用到
 ** 自动完成    当前有
 1. c-c++-enable-clang-support 打开
 2.ycmd 层打开
 ** 调试 realgud 还没用到
 ** 支持CMake 脚本构建
-   CMake 是一个跨平台的，开源的构建系统（BuildSystem）。CMake 可以通过 CMakeLists.txt 文件来产生特定平台的标准的构建文件，例如：为 Unix 平台生成makefiles文件（使用GCC编译），为 Windows MSVC 生成 projects/workspaces（使用VS IDE编译）或Makefile文件（使用nmake编译）。
-CMake Hello World
-
-首先编写一个简单的程序（hello.cpp）：
-#include <stdio.h>
-int main()
-{
+   CMake 是一个跨平台的，开源的构建系统（BuildSystem）。CMake 可以通过 CMakeLists.txt 文件来产生特定平台的标准的构建文件，
+   例如：为 Unix 平台生成makefiles文件（使用GCC编译），为 Windows MSVC 生成 projects/workspaces（使用VS IDE编译）或Makefile文件（使用nmake编译）。
+   CMake Hello World
+   
+   首先编写一个简单的程序（hello.cpp）：
+   #include <stdio.h>
+   int main()
+   {
    printf("Hello World");
    return 0;
-}
-编写CMakeLists.txt，并与hello.cpp放在同一个目录。
-project(hello)
-cmake_minimum_required(VERSION 2.8)
-aux_source_directory(. DIR_SRCS)
-add_executable(hello ${DIR_SRCS})
-在 CMakeLists.txt 所在的目录下创建一个build目录，进入该目录执行 CMake 命令生成构建文件：
-打开Visual Studio 2008命令行提示窗口，它会执行加载一些VS的环境变量。
-mkdir build
-cd build
-cmake -G "NMake Makefiles" ../
--- The C compiler identification is MSVC 15.0.30729.1
--- The CXX compiler identification is MSVC15.0.30729.1
-….
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Configuring done
--- Generating done
--- Build files have been written to:I:/cmake-hello/build
-这里使用的平台为 Windows 并且安装了 VS2008，CMake 为我们生成了 VS2008的构建文件Makefile，我们可以使用nmake来构建应用程序，执行：
-nmake
- 
-Microsoft (R) Program Maintenance UtilityVersion 9.00.30729.01
-Copyright (C) Microsoft Corporation.  All rights reserved.
- 
-Scanning dependencies of target hello
-[100%] Building CXX objectCMakeFiles/hello.dir/hello.cpp.obj
-hello.cpp
-Linking CXX executable hello.exe
-[100%] Built target hello
+   }
+   编写CMakeLists.txt，并与hello.cpp放在同一个目录。
+   project(hello)
+   cmake_minimum_required(VERSION 2.8)
+   aux_source_directory(. DIR_SRCS)
+   add_executable(hello ${DIR_SRCS})
+   在 CMakeLists.txt 所在的目录下创建一个build目录，进入该目录执行 CMake 命令生成构建文件：
+   打开Visual Studio 2008命令行提示窗口，它会执行加载一些VS的环境变量。
+   mkdir build
+   cd build
+   cmake -G "NMake Makefiles" ../
+   -- The C compiler identification is MSVC 15.0.30729.1
+   -- The CXX compiler identification is MSVC15.0.30729.1
+   ….
+   -- Detecting CXX compiler ABI info
+   -- Detecting CXX compiler ABI info - done
+   -- Configuring done
+   -- Generating done
+   -- Build files have been written to:I:/cmake-hello/build
+   这里使用的平台为 Windows 并且安装了 VS2008，CMake 为我们生成了 VS2008的构建文件Makefile，我们可以使用nmake来构建应用程序，执行：
+   nmake
 编译成功完成后，会当前目录下生成hello应用程序。
 CMake基本语法
 
@@ -415,7 +408,6 @@ target_link_libraries(Main Lib)
 进入 build 目录并进行外部构建 CMake ..（语法为 CMake <CMakeLists.txt 的路径>，这里使用 CMake.. 表明了 CMakeLists.txt 在 Build 目录的父目录中）。这样 CMake 将在 Build 目录下生成文件。
 ** cmake
 ####cmake中一些预定义变量
-
 PROJECT_SOURCE_DIR 工程的根目录
 PROJECT_BINARY_DIR 运行cmake命令的目录,通常是${PROJECT_SOURCE_DIR}/build
 CMAKE_INCLUDE_PATH 环境变量,非cmake变量
@@ -636,7 +628,8 @@ make as CMake backend you can use =helm-make= to select required build target.
 Here is a sample configuration. This configuration forces =cmake-ide= to use the
 local directory and pass that directory to =helm-make=. Such config allows to
 build your project with ~SPC c c~ key binding.
-
+配置工程
+创建 .dir-locals.el 文件
 #+BEGIN_SRC emacs-lisp
 ((nil .
       ((cmake-ide-project-dir . "~/Project")
@@ -648,16 +641,11 @@ build your project with ~SPC c c~ key binding.
 创建 CMakeLists.txt 文件
 #+BEGIN_SRC cmakelist
 PROJECT (LEARN)
-
 #SET(SRC_LIST main.cpp)
 SET(SRC_LIST learn.c)
-
 MESSAGE(STATUS "This is BINARY dir " ${HELLO_BINARY_DIR})
-
 MESSAGE(STATUS "This is SOURCE dir "${HELLO_SOURCE_DIR})
-
 ADD_EXECUTABLE(learn ${SRC_LIST})
-
 #+END_SRC
 ** Key Bindings
 
@@ -749,6 +737,8 @@ j	Jump to current line ⚙
 Tracking an existing debugger process
 Use M-x realgud-track-mode inside an existing shell, or eshell buffer to track an already-running debugger process.
 
+* cmake mode 现在cmake转到cmake层了, 层放在 c-c++ 下面
+  构建 SPC m c c
 * c 
 ** 预处理器
    头文件： 先定义，后使用的先后顺序不能变
@@ -860,6 +850,9 @@ the entire header file file
 *** 归档、合并库
   ar crv libfoo.a a.o b.o
   $ gcc –o program program.o –L. –lfoo
+** 帮助
+离线 man   
+在线 google
 * gcc 
 基于C/C++的预处理器和编译器
   -o：指定生成的输出文件,所以编译多个文件是,-o 没有意义；

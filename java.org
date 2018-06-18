@@ -1,4 +1,42 @@
 * java-mode
+** java集成环境 ensime   
+   1.在工程下执行 sbt ensimeConfig 生成项目
+   2.emacs 打开服务并连接服务 ensime 就可以了, 多连接几次，可能在下载依赖
+   下面这个可以放在第一个
+   3.如要要用build 功能, 需配置，可以创建一个project/build.properties
+   #+BEGIN_SRC scala
+   sbt.version=1.1.6  
+   #+END_SRC
+   查看版本，可以在 sbt 命令行下，执行 sbtVersion
+   这样就可以 build , 和执行了
+** 交互式构建工具 sbt 
+   scala 写的 
+   echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+   sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
+   sudo apt-get update
+   sudo apt-get install sbt
+   sbt repositories
+** maven 中国镜像
+** 选择后端
+   我选的是 ensime, 此工具可以管理好多类工程
+*** sbt工程 
+安装 sbt
+   #+BEGIN_SRC shell
+     nix-env --install sbt
+#+END_SRC
+*** gradle工程
+    Refer to the [[https://ensime.org/build_tools/gradle/][Ensime installation instructions]] to install the =ensime-gradle=
+*** 配置
+    Follow [[https://ensime.github.io/build_tools/sbt/][the ENSIME configuration instructions]]. Spacemacs uses
+*** 使用
+    ~SPC SPC spacemacs/ensime-gen-and-restart~ or ~SPC m D r~ generates a new config
+for a project and starts the server. Afterwards ~SPC SPC ensime~ or ~SPC m D s~
+will suffice do the trick.
+*** 注意
+    ENSIME is originally built for Scala, so support for java is not complete, in
+    particular refactoring doesn't work.
+    ensime 原来是为 scala 语言服务的，Java不完善
+
 ** Ensime key bindings
 *** Search
  | Key Binding | Description                                         |
@@ -125,45 +163,7 @@
  | ~SPC m s i~ | start or switch to the REPL inferior process                        |
  | ~SPC m s r~ | send region to the REPL                                             |
  | ~SPC m s R~ | send region to the REPL and focus the REPL buffer in =insert state= |
-** ensime java集成环境  
-   1.在工程下执行 sbt ensimeConfig 生成项目
-   2.emacs 打开服务并连接服务 ensime 就可以了, 多连接几次，可能在下载依赖
-   3.如要要用build 功能, 需配置，可以创建一个project/build.properties
-   #+BEGIN_SRC scala
-   sbt.version=1.0.4  
-   #+END_SRC
-   查看版本，可以在 sbt 命令行下，执行 sbtVersion
-  
-   这样就可以 build , 和执行了
-*** 什么是错误？ error 里面有 
-** sbt scala 写的 交互式构建工具
-   echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
-   sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
-   sudo apt-get update
-   sudo apt-get install sbt
-   sbt repositories
-** maven 中国镜像
-** 选择后端
-   我选的是 ensime, 此工具可以管理好多类工程
-*** sbt工程 
-安装 sbt
-   #+BEGIN_SRC shell
-     nix-env --install sbt
-#+END_SRC
-*** gradle工程
-    Refer to the [[https://ensime.org/build_tools/gradle/][Ensime installation instructions]] to install the =ensime-gradle=
-*** 配置
-    Follow [[https://ensime.github.io/build_tools/sbt/][the ENSIME configuration instructions]]. Spacemacs uses
-*** 使用
-    ~SPC SPC spacemacs/ensime-gen-and-restart~ or ~SPC m D r~ generates a new config
-for a project and starts the server. Afterwards ~SPC SPC ensime~ or ~SPC m D s~
-will suffice do the trick.
-*** 注意
-    ENSIME is originally built for Scala, so support for java is not complete, in
-    particular refactoring doesn't work.
-    ensime 原来是为 scala 语言服务的，Java不完善
-
-* java工具
+* java编译器
 ** 编译 javac 
    -classpath Path
    -d Dir   指定编译后的类存放路径
@@ -299,11 +299,11 @@ $jar cmf pp.jar manifest bin/*.class
 ** 流程控制 
    for(String str: args)
 ** 类、包
-java 类库中有几个重要的包
-java.lang
-java.awt
-java.net
-java.io
+   java 类库中有几个重要的包
+   java.lang
+   java.awt
+   java.net
+   java.io
 java.util
 
 类库被组织成几个包, 每个包含几个类
@@ -350,7 +350,7 @@ Wed Jan 10 12:37:55 CST 2018
     5 2.5　实践与练习 
 
 *** 第3章　Java语言基础 
-  1 3.1　Java主类结构 
+    1 3.1　Java主类结构 
   2 3.2　基本数据类型 
   3 3.3　变量与常量 
   4 3.4　运算符 
