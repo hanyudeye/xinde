@@ -21,27 +21,27 @@
 select * from emp;  #注释
 ** 进入
 mysql -h 主机地址 -u 用户名 －p 用户密码 
-** MySql用户管理
+** MySql 用户管理
 mysql -uroot -p databasename;
 
 ** 增加用户
 #格式:grant 权限 on 数据库.* to 用户名@登录主机 identified by '密码'
 /*
-如，增加一个用户user1密码为password1，让其可以在本机上登录， 并对所有数据库有查询、插入、修改、删除的权限。首先用以root用户连入mysql，然后键入以下命令： 
+如，增加一个用户 user1 密码为 password1，让其可以在本机上登录， 并对所有数据库有查询、插入、修改、删除的权限。首先用以 root 用户连入 mysql，然后键入以下命令： 
 grant select,insert,update,delete on *.* to user1@localhost Identified by "password1"; 
-如果希望该用户能够在任何机器上登陆mysql，则将localhost改为"%"。 
-如果你不想user1有密码，可以再打一个命令将密码去掉。 
+如果希望该用户能够在任何机器上登陆 mysql，则将 localhost 改为"%"。 
+如果你不想 user1 有密码，可以再打一个命令将密码去掉。 
 grant select,insert,update,delete on mydb.* to user1@localhost identified by ""; 
 */
 
 grant all privileges on wpj1105.* to sunxiao@localhost identified by '123';   #all privileges 所有权限
 
 #----------------------------
-** MySql数据库操作基础
+** MySql 数据库操作基础
 *** #显示数据库
     show databases;
 
-*** #判断是否存在数据库wpj1105,有的话先删除
+*** #判断是否存在数据库 wpj1105,有的话先删除
     drop database if exists wpj1105;
 
 *** #创建数据库
@@ -72,7 +72,7 @@ content varchar(100)
 drop table student;
 
 *** #查看表的结构
-describe student;  #可以简写为desc student;
+describe student;  #可以简写为 desc student;
 
 *** #插入数据
 insert into student values(null,'aa','男','1988-10-2','......');
@@ -114,19 +114,19 @@ select avg(id) as '求平均' from student;
 
 select count(*) from student;   #统计表中总数
 
-select count(sex) from student;   #统计表中性别总数  若有一条数据中sex为空的话,就不予以统计~
+select count(sex) from student;   #统计表中性别总数  若有一条数据中 sex 为空的话,就不予以统计~
 
 select sum(id) from student;
 
-#查询第i条以后到第j条的数据(不包括第i条)
-select * from student limit 2,5;  #显示3-5条数据
+#查询第 i 条以后到第 j 条的数据(不包括第 i 条)
+select * from student limit 2,5;  #显示 3-5 条数据
 
 *** #巩固练习
 create table c(
  id int primary key auto_increment,
  name varchar(10) not null,
  sex varchar(50) ,  #DEFAULT '男' ,
- age int unsigned, #不能为负值(如为负值 则默认为0)
+ age int unsigned, #不能为负值(如为负值 则默认为 0)
  sno int unique    #不可重复
 );
 
@@ -151,7 +151,7 @@ select * from c where age>40 and age<60;  #and
 select * from c where age<40 or age<60;  #or
 select * from c where age between 40 and 60 #between
 select * from c where age in (30,48,68,99);     #in 查询指定集合内的数据
-select * from c order by age desc;      #order by （asc升序 des降序）
+select * from c order by age desc;      #order by（asc 升序 des 降序）
 
 #分组查询
 select name,max(age) from c group by sex;  #按性别分组查年龄最大值
@@ -189,26 +189,26 @@ alter table test change name uname varchar(50);
 
 select * from test;
 
-#表position 增加列test
+#表 position 增加列 test
 alter table position add(test char(10));
-#表position 修改列test
+#表 position 修改列 test
 alter table position modify test char(20) not null;
-#表position 修改列test 默认值
+#表 position 修改列 test 默认值
 alter table position alter test set default 'system';
-#表position 去掉test 默认值
+#表 position 去掉 test 默认值
 alter table position alter test drop default;
-#表position 去掉列test
+#表 position 去掉列 test
 alter table position drop column test;
-#表depart_pos 删除主键
+#表 depart_pos 删除主键
 alter table depart_pos drop primary key;
-#表depart_pos 增加主键
+#表 depart_pos 增加主键
 alter table depart_pos add primary key PK_depart_pos
 (department_id,position_id);
 
-#用文本方式将数据装入数据库表中（例如D:/mysql.txt）
+#用文本方式将数据装入数据库表中（例如 D:/mysql.txt）
 load data local infile "D:/mysql.txt" into table MYTABLE;
 
-*** #导入.sql文件命令（例如D:/mysql.sql）
+*** #导入.sql 文件命令（例如 D:/mysql.sql）
 source d:/mysql.sql;  #或者  /. d:/mysql.sql;
 * sqlmode
 ** 特性  
@@ -303,7 +303,7 @@ select t.*,c.COMMENTS from user_tab_columns t,user_col_comments c where t.table_
 
 6、查询所有表
 select* from tabs
-* sqlserver2008快捷键                                                                 
+* sqlserver2008 快捷键                                                                 
     CTRL       +       SHIFT       +       B                 生成解决方案       
     CTRL       +       F7                                           生成编译       
     CTRL       +       O                                            打开文件       
@@ -331,7 +331,7 @@ select* from tabs
     CTRL       +       SHIFT       +       F6       
     CTRL       +       SHIFT       +       TAB           上一个文档窗口       
     ALT       +       F6                                       下一个面板窗口       
-    CTRL       +       K,       CTRL       +       L      取消remark       
+    CTRL       +       K,       CTRL       +       L      取消 remark       
     CTRL       +       K,       CTRL       +       C     注释选择的代码       
     CTRL       +       K,       CTRL       +       U     取消对选择代码的注释       
     CTRL       +       M,       CTRL       +       O      折叠代码定义       
@@ -353,7 +353,7 @@ select* from tabs
     CTRL       +       SHIFT       +       PAGE       DOWN　　　　选择至本页后面       
     CTRL       +       END　　　　　　　　　　　　　　　　　　　　文档定位到最后       
     CTRL       +       HOME　　　　　　　　　　　　　　　　　　　文档定位到最前       
-    CTRL       +       G转到…       
+    CTRL       +       G 转到…       
     CTRL       +       K,       CTRL       +       P　　　　　　　　　　　上一个标签       
     CTRL       +       K,       CTRL       +       N　　　　　　　　　　　　下一个标签       
     ALT       +       F10　　　　　　　　　　　　　　　　　　　　调试-ApplyCodeChanges           
@@ -371,17 +371,17 @@ select* from tabs
     CTRL       +       SHIFT       +       T　　　　　　　　　　　　格式-文字缩进   
 
 怀仁怀朴，唯真唯实。
-* T-SQL的一些关键字
-Print  向客户端返回用户信息
+* T-SQL 的一些关键字
+  Print  向客户端返回用户信息
 例：　　print '青苹果'         屏幕上就会显示“青苹果三个字“
-Go      用来通知SQL一批语句的结束
+Go      用来通知 SQL 一批语句的结束
 Distinct   去掉重复值
 Declare    用来声明变量(局部变量?????)
 例：　　declare @a int
 Set    为变量赋值
 
 例：　　set @a='青苹果'
-While  在SQL中用来循环(好像在SQL中用来做循环的关键字不多)
+While  在 SQL 中用来循环(好像在 SQL 中用来做循环的关键字不多)
 
 复制代码
 语法：　　　　WHILE <条件表达式>
@@ -392,7 +392,7 @@ While  在SQL中用来循环(好像在SQL中用来做循环的关键字不多)
                    [命令行或程序块]
                  END
 复制代码
-While比较重要，我们来做个例子加深一下对While循环的理解：
+While 比较重要，我们来做个例子加深一下对 While 循环的理解：
 
 复制代码
 declare @a int
@@ -412,7 +412,7 @@ if else    判断语句
 
 判断语句用的还是比较多的我们还是来做个例子说明一下；
 
-求：a、b、c三个数的最大值？
+求：a、b、c 三个数的最大值？
 
 复制代码
 declare  @a int,@b int,@c int,@max  int
@@ -428,21 +428,21 @@ print   @max
 输出结果：3
 
 复制代码
-begin end  用来设定一个程序块，将在BEGIN…END内的所有程序视为一个单元执行。
+begin end  用来设定一个程序块，将在 BEGIN…END 内的所有程序视为一个单元执行。
 
 Exists     判断是否存在
 
-Case   也是用来判断的，和IF语句差不多，它的格式为：
+Case   也是用来判断的，和 IF 语句差不多，它的格式为：
 
 　CASE  <运算式>
-     　　 WHEN <运算式1> THEN  <结果1>
+     　　 WHEN <运算式 1> THEN  <结果 1>
           … 
-           WHEN<运算式n> THEN   <结果n>
-          [ELSE  <结果n+1>]
+           WHEN<运算式 n> THEN   <结果 n>
+          [ELSE  <结果 n+1>]
   END
  Return 　　用于结束当前程序的执行，返回到上一个调用它的程序或其它程序。在括号内可指定一个返回值。
 
-Goto标示符  用来改变程序执行的流程，使程序跳到标有标识符的指定的程序行再继续往下执行。要注意的是作为跳转目标的标识符可为数字与字符的组合，但必须以“：”结尾，如：“1023：” “qingpingguo:”
+Goto 标示符  用来改变程序执行的流程，使程序跳到标有标识符的指定的程序行再继续往下执行。要注意的是作为跳转目标的标识符可为数字与字符的组合，但必须以“：”结尾，如：“1023：” “qingpingguo:”
 
 复制代码
 例子：
@@ -463,9 +463,9 @@ Waitfor    用来暂停程序执行，直到等待指定时间之后，或所设
 语法：　　waitfor {delay '时间'|time '时间'}
 解释：
 
-（1）‘时间’必须为DATETIME类型数据，且不能包括日期，如‘10:12:05’
+（1）‘时间’必须为 DATETIME 类型数据，且不能包括日期，如‘10:12:05’
 
-（2）DELAY:用来设定等待的时间长短，最多为24小时。(是一个时间间隔)
+（2）DELAY:用来设定等待的时间长短，最多为 24 小时。(是一个时间间隔)
 
 （3）TIME：用来设定等待结束的时间点（是一个具体的时间)
 
@@ -473,7 +473,7 @@ Waitfor    用来暂停程序执行，直到等待指定时间之后，或所设
     waitfor  delay '00:00:03'
  　　print '你好,我是青苹果'
  　　go
-以上就是T-SQL的所有内容了，接下来我们来利用最后的时间画几个图形：
+以上就是 T-SQL 的所有内容了，接下来我们来利用最后的时间画几个图形：
 
 直角三角形：
 
@@ -626,11 +626,11 @@ end
 **** 安装
      sudo apt-get update
      sudo apt-get install -y mssql-server
-**** 设置sa 的密码
+**** 设置 sa 的密码
      sudo /opt/mssql/bin/mssql-conf setup
 **** 是否运行
      systemctl status mssql-server
-**** 远程连接, 防火墙打开 1433端口
+**** 远程连接, 防火墙打开 1433 端口
 **** 命令行工具
 ***** Import the public repository GPG keys:
       wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
@@ -654,7 +654,7 @@ end
     sqlcmd -S localhost -U SA -P '<YourPassword>'
     tsql -S 127.0.0.1 -U sa -P Wuming123  
     If you later decide to connect remotely, specify the machine name or IP address for the -S parameter, and make sure port 1433 is open on your firewall.
-    远程连接 确保端口1433打开
+    远程连接 确保端口 1433 打开
 ** 数据类型
 *** 精确数值类型
     bigint	-9,223,372,036,854,775,808	9,223,372,036,854,775,807
@@ -662,8 +662,8 @@ end
     smallint	-32,768	32,767
     tinyint	0	255
     bit	0	1
-    decimal	-10 ^ 38加1	10 ^ 38 -1
-    numeric	-10 ^ 38加1	10 ^ 38 -1
+    decimal	-10 ^ 38 加 1	10 ^ 38 -1
+    numeric	-10 ^ 38 加 1	10 ^ 38 -1
     money	-922,337,203,685,477.5808	+922,337,203,685,477.5807
     smallmoney	-214,748.3648	+214,748.3647
     数字和小数是固定精度和标度数据类型，在功能上等效。
@@ -672,50 +672,50 @@ end
     Float	-1.79E + 308	1.79E + 308
     Real	-3.40E + 38	3.40E + 38
 *** 日期和时间类型
-    datetime (3.33毫秒精度)
-    1753年1月1日	9999年12月31日
+    datetime (3.33 毫秒精度)
+    1753 年 1 月 1 日	9999 年 12 月 31 日
     
-    smalldatetime(1分钟精度)
-    1900年1月1日	2079年6月6日
+    smalldatetime(1 分钟精度)
+    1900 年 1 月 1 日	2079 年 6 月 6 日
     
-    date(1天的精度。在SQL Server 2008中引入)
-    0001年1月1日	9999年12月31日
+    date(1 天的精度。在 SQL Server 2008 中引入)
+    0001 年 1 月 1 日	9999 年 12 月 31 日
     
-    datetimeoffset(100纳秒的精度。在SQL Server 2008中引入)
-    0001年1月1日
-    9999年12月31日
+    datetimeoffset(100 纳秒的精度。在 SQL Server 2008 中引入)
+    0001 年 1 月 1 日
+    9999 年 12 月 31 日
     
-    datetime2(100纳秒的精度。在SQL Server 2008中引入)
-    0001年1月1日	9999年12月31日
+    datetime2(100 纳秒的精度。在 SQL Server 2008 中引入)
+    0001 年 1 月 1 日	9999 年 12 月 31 日
     
-    time(100纳秒的精度。在SQL Server 2008中引入)
+    time(100 纳秒的精度。在 SQL Server 2008 中引入)
     00：00：00.0000000	23：59：59.9999999
 *** 字符型
-     char 固定长度的非Unicode字符数据，最大长度为8,000个字符。
-     varchar 最大长度为8,000个字符的可变长度非Unicode数据。
-     Varchar (max) 可变长度的非Unicode数据，最大长度为231个字符（在SQL Server 2005中引入）。
-     text 可变长度非Unicode数据，最大长度为2,147,483,647个字符。
+     char 固定长度的非 Unicode 字符数据，最大长度为 8,000 个字符。
+     varchar 最大长度为 8,000 个字符的可变长度非 Unicode 数据。
+     Varchar (max) 可变长度的非 Unicode 数据，最大长度为 231 个字符（在 SQL Server 2005 中引入）。
+     text 可变长度非 Unicode 数据，最大长度为 2,147,483,647 个字符。
 
 *** Unicode
-    nchar 固定长度的Unicode数据，最大长度为4,000个字符。
-    nvarchar 最大长度为4,000个字符的可变长度Unicode数据。
-    Nvarchar (max) 最大长度为230个字符的可变长度Unicode数据（在SQL Server 2005中引入）。
-    ntext 最大长度为1,073,741,823个字符的可变长度Unicode数据。
+    nchar 固定长度的 Unicode 数据，最大长度为 4,000 个字符。
+    nvarchar 最大长度为 4,000 个字符的可变长度 Unicode 数据。
+    Nvarchar (max) 最大长度为 230 个字符的可变长度 Unicode 数据（在 SQL Server 2005 中引入）。
+    ntext 最大长度为 1,073,741,823 个字符的可变长度 Unicode 数据。
 
 *** 二进制字符串
- binary 固定长度二进制数据，最大长度为8,000字节。
- varbinary 最大长度为8,000字节的可变长度二进制数据。
- varbinary(max) 最大长度为231字节的可变长度二进制数据（在SQL Server 2005中引入）。
- image 最大长度为2,147,483,647字节的可变长度二进制数据。
+ binary 固定长度二进制数据，最大长度为 8,000 字节。
+ varbinary 最大长度为 8,000 字节的可变长度二进制数据。
+ varbinary(max) 最大长度为 231 字节的可变长度二进制数据（在 SQL Server 2005 中引入）。
+ image 最大长度为 2,147,483,647 字节的可变长度二进制数据。
 
 *** 其他数据类型
-    SQL_VARIANT -存储各种SQL Server支持的数据类型的值，text，ntext和timestamp除外。
-    TIMESTAMP -时间戳是指格林威治时间1970年01月01日00时00分00秒(北京时间1970年01月01日08时00分00秒)起至现在的总秒数。
+    SQL_VARIANT -存储各种 SQL Server 支持的数据类型的值，text，ntext 和 timestamp 除外。
+    TIMESTAMP -时间戳是指格林威治时间 1970 年 01 月 01 日 00 时 00 分 00 秒(北京时间 1970 年 01 月 01 日 08 时 00 分 00 秒)起至现在的总秒数。
     UNIQUEIDENTIFIER  -存储全局唯一标识符（GUID）。
-    XML -存储XML数据。 您可以将XML实例存储在列或变量中（在SQL Server 2005中引入）。
+    XML -存储 XML 数据。 您可以将 XML 实例存储在列或变量中（在 SQL Server 2005 中引入）。
     CURSOR -对游标的引用。
     TABLE -存储结果集以供稍后处理。
-    HIERARCHYID -用于表示层次结构中位置的可变长度的系统数据类型（在SQL Server 2008中引入）。
+    HIERARCHYID -用于表示层次结构中位置的可变长度的系统数据类型（在 SQL Server 2008 中引入）。
 
 ** 运算符
 *** 比较
@@ -772,7 +772,7 @@ end
                      [WHERE condition];
      #+END_SRC
 **** 查询
-     SELECT语句用于从以结果表的形式返回从数据库中提取的数据。 这些结果表称为结果集。
+     SELECT 语句用于从以结果表的形式返回从数据库中提取的数据。 这些结果表称为结果集。
      SELECT column1, column2, columnN FROM table_name;
 **** 查几条
      SELECT TOP $N * FROM $tablename
@@ -783,22 +783,22 @@ end
          WHERE [condition];
      #+END_SRC
 
-  您可以使用AND或OR运算符组合N个条件。
+  您可以使用 AND 或 OR 运算符组合 N 个条件。
 
 **** 删除（DELETE)
      #+BEGIN_SRC sql
      DELETE FROM table_name 
      WHERE [condition]; 
      #+END_SRC
-**** 排序ORDER BY
+**** 排序 ORDER BY
      #+BEGIN_SRC sql
           SELECT column-list  
        FROM table_name  
        [WHERE condition]  
        [ORDER BY column1, column2, .. columnN] [ASC | DESC];
-       您可以在ORDER BY子句中使用多个列。 确保您使用的任何列进行排序，该列应该在列表中。
+       您可以在 ORDER BY 子句中使用多个列。 确保您使用的任何列进行排序，该列应该在列表中。
      #+END_SRC
-**** 分组GROUP BY
+**** 分组 GROUP BY
   #+BEGIN_SRC sql
   SELECT column1, column2 
   FROM table_name 
@@ -835,7 +835,7 @@ end
    LEFT JOIN -返回左侧表中的所有行，即使右表中没有匹配项。
    RIGHT JOIN -返回右表中的所有行，即使左表中没有匹配项。
    FULL JOIN -在其中一个表中存在匹配项时返回行。
-   SELF JOIN -这用于将表连接到自身，就像该表是两个表，临时重命名MS SQL Server语句中的至少一个表。
+   SELF JOIN -这用于将表连接到自身，就像该表是两个表，临时重命名 MS SQL Server 语句中的至少一个表。
    CARTESIAN JOIN -返回两个或多个联接表中的记录集的笛卡尔乘积。
 
 **** 子查询
@@ -877,7 +877,7 @@ end
 ** 存储过程
 用于通过将相同的数据存储在数据库中来节省写入代码的时间，并通过传递参数获得所需的输出。
 
-!可以用ALERT 代替 Create
+!可以用 ALERT 代替 Create
 #+BEGIN_SRC sql
 Create procedure <procedure_Name> 
 As 
@@ -895,9 +895,9 @@ Go
 #+END_SRC
 ** 事务
    事务是针对数据库执行的工作单元。 事务是以逻辑顺序完成的单元或工作序列，无论是以用户的手动方式还是以某种数据库程序自动进行。
-   实际上，你常常会将许多SQL操作分成一组事务一起执行。
+   实际上，你常常会将许多 SQL 操作分成一组事务一起执行。
 *** 事务属性
-事务具有以下四个标准属性，通常由首字母缩写ACID简称 -
+事务具有以下四个标准属性，通常由首字母缩写 ACID 简称 -
 原子性 -确保工作单元内的所有操作成功完成; 否则，事务在故障点处中止，并且先前的操作被回滚到它们的原先状态。
 一致性 -确保数据库在成功提交的事务后正确更改状态。
 隔离性 -事务之间是独立运行互不相关的。
@@ -908,26 +908,26 @@ Go
     SAVEPOINT -创建事务的回滚节点。
     SET TRANSACTION -设置事务名称。
     
-    事务控制命令仅与DML命令INSERT，UPDATE和DELETE一起使用。 在创建表或删除它们时，不能使用它们，因为这些操作会在数据库中自动提交。
-    为了在MS SQL Server中使用事务控制命令，我们必须以“begin tran”或begin transaction命令开始事务，否则这些命令将不起作用。
+    事务控制命令仅与 DML 命令 INSERT，UPDATE 和 DELETE 一起使用。 在创建表或删除它们时，不能使用它们，因为这些操作会在数据库中自动提交。
+    为了在 MS SQL Server 中使用事务控制命令，我们必须以“begin tran”或 begin transaction 命令开始事务，否则这些命令将不起作用。
 
-**** commit命令
-     COMMIT命令是用于将事务调用的更改保存到数据库的事务命令。 此命令将自上次COMMIT或ROLLBACK命令以来将所有事务保存到数据库。
+**** commit 命令
+     COMMIT 命令是用于将事务调用的更改保存到数据库的事务命令。 此命令将自上次 COMMIT 或 ROLLBACK 命令以来将所有事务保存到数据库。
      
 Begin Tran 
 DELETE FROM CUSTOMERS 
    WHERE AGE = 25 
 COMMIT 
 
-**** ROLLBACK命令
-     ROLLBACK命令是用于撤销尚未保存到数据库的事务的事务性命令。 此命令只能用于在发出最后一个COMMIT或ROLLBACK命令后撤消事务。
+**** ROLLBACK 命令
+     ROLLBACK 命令是用于撤销尚未保存到数据库的事务的事务性命令。 此命令只能用于在发出最后一个 COMMIT 或 ROLLBACK 命令后撤消事务。
 
 语法
-以下是ROLLBACK命令的语法。
+以下是 ROLLBACK 命令的语法。
 
 ROLLBACK
 例
-请参考具有以下记录的CUSTOMERS表:
+请参考具有以下记录的 CUSTOMERS 表:
 
 ID  NAME       AGE       ADDRESS            SALARY 
 1   Ramesh     32        Ahmedabad          2000.00 
@@ -937,29 +937,29 @@ ID  NAME       AGE       ADDRESS            SALARY
 5   Hardik     27        Bhopal             8500.00 
 6   Komal      22        MP                 4500.00 
 7   Muffy      24        Indore             10000.00 
-下面的命令将从CUSTOMERS表中删除年龄等于25的用户记录，然后使用ROLLBACK命令,回滚数据。
+下面的命令将从 CUSTOMERS 表中删除年龄等于 25 的用户记录，然后使用 ROLLBACK 命令,回滚数据。
 
 Begin Tran 
 DELETE FROM CUSTOMERS 
    WHERE AGE = 25; 
 ROLLBACK
-使用ROLLBACK命令,删除操作不会影响表中的数据,执行后CUSTOMERS表结果集如下:
-**** SAVEPOINT命令
-SAVEPOINT命令可以使事务回滚到某个点节点，而不回滚整个事务。
+使用 ROLLBACK 命令,删除操作不会影响表中的数据,执行后 CUSTOMERS 表结果集如下:
+**** SAVEPOINT 命令
+SAVEPOINT 命令可以使事务回滚到某个点节点，而不回滚整个事务。
 
 语法
-以下是SAVEPOINT命令的语法。
+以下是 SAVEPOINT 命令的语法。
 
 SAVE TRANSACTION SAVEPOINT_NAME
-此命令仅用于在事务语句之间创建SAVEPOINT。 ROLLBACK命令用于撤消一组事务。
+此命令仅用于在事务语句之间创建 SAVEPOINT。ROLLBACK 命令用于撤消一组事务。
 
 以下是回滚到一个事务节点的语法。
 
 ROLLBACK TO SAVEPOINT_NAME
-在下面的示例中，我们将从CUSTOMERS表中删除三个不同的记录。 我们将在每次删除之前创建一个SAVEPOINT，以便我们可以随时将ROLLBACK任何SAVEPOINT返回到其原始状态的相应数据。
+在下面的示例中，我们将从 CUSTOMERS 表中删除三个不同的记录。 我们将在每次删除之前创建一个 SAVEPOINT，以便我们可以随时将 ROLLBACK 任何 SAVEPOINT 返回到其原始状态的相应数据。
 
 例
-请参考具有以下记录的CUSTOMERS表:
+请参考具有以下记录的 CUSTOMERS 表:
 
 ID  NAME       AGE       ADDRESS          SALARY 
 1   Ramesh     32        Ahmedabad        2000.00 
@@ -984,14 +984,14 @@ SAVE Transaction SP3
 Savepoint created. 
 DELETE FROM CUSTOMERS WHERE ID = 3 
 1 row deleted.
-三个删除已经发生，但是，我们改变了主意，决定ROLLBACK到SAVEPOINT，我们确定为SP2。 因为SP2是在第一次删除后创建的，所以最后两个删除被撤消
+三个删除已经发生，但是，我们改变了主意，决定 ROLLBACK 到 SAVEPOINT，我们确定为 SP2。 因为 SP2 是在第一次删除后创建的，所以最后两个删除被撤消
 
 ROLLBACK Transaction SP2 
 Rollback complete. 
-请注意，我们回滚到SP2后，相当于只发生了第一次删除。
+请注意，我们回滚到 SP2 后，相当于只发生了第一次删除。
 
 SELECT * FROM CUSTOMERS 
-查询后的结果为6条记录:
+查询后的结果为 6 条记录:
 
 ID  NAME       AGE       ADDRESS          SALARY 
 2   Khilan     25        Ahmedabad        1500.00 
@@ -1000,22 +1000,22 @@ ID  NAME       AGE       ADDRESS          SALARY
 5   Hardik     27        Bhopal           8500.00 
 6   Komal      22        MP               4500.00 
 7   Muffy      24        Indore           10000.00 
-SET TRANSACTION命令
-SET TRANSACTION命令可用于启动数据库事务。 此命令用于指定随后事务的特性。
+SET TRANSACTION 命令
+SET TRANSACTION 命令可用于启动数据库事务。 此命令用于指定随后事务的特性。
 
 语法
-以下是SET TRANSACTION语法。
+以下是 SET TRANSACTION 语法。
 
 SET TRANSACTION ISOLATION LEVEL <Isolationlevel_name>
 ** 索引
  数据库中的索引与书本目录的索引方式非常相似
- 索引加快了SELECT查询和WHERE子句，但它降低了UPDATE和INSERT语句的数据输入速度
+ 索引加快了 SELECT 查询和 WHERE 子句，但它降低了 UPDATE 和 INSERT 语句的数据输入速度
 
- 创建索引涉及CREATE INDEX语句，它允许你对索引进行命名，指定表和要索引的列，并指示索引是按升序还是按降序排列。
- 索引也可以是唯一的，类似于UNIQUE约束，索引防止在具有索引的列的组合中出现重复条目。
+ 创建索引涉及 CREATE INDEX 语句，它允许你对索引进行命名，指定表和要索引的列，并指示索引是按升序还是按降序排列。
+ 索引也可以是唯一的，类似于 UNIQUE 约束，索引防止在具有索引的列的组合中出现重复条目。
 
-CREATE INDEX命令
-以下是CREATE INDEX的基本语法。
+CREATE INDEX 命令
+以下是 CREATE INDEX 的基本语法。
 
 语法
 CREATE INDEX index_name ON table_name
@@ -1045,15 +1045,15 @@ CREATE INDEX index_name on table_name (column1, column2)
 例
 CREATE INDEX compositeindex 
 on customers (NAME, ID)
-无论是创建单列索引还是复合索引，请考虑您可能在查询的WHERE子句中频繁使用的列作为过滤条件。
+无论是创建单列索引还是复合索引，请考虑您可能在查询的 WHERE 子句中频繁使用的列作为过滤条件。
 
-如果只使用一列，则应该选择单列索引。 如果在WHERE子句中经常使用两个或多个列作为过滤器，则复合索引将是最佳选择。
+如果只使用一列，则应该选择单列索引。 如果在 WHERE 子句中经常使用两个或多个列作为过滤器，则复合索引将是最佳选择。
 
 隐式索引
 隐式索引是在创建对象时由数据库服务器自动创建的索引。 一般情况下数据库会将自动为主键约束和唯一约束创建索引。
 
-DROP INDEX命令
-可以使用MS SQL SERVER DROP命令删除索引。 丢弃索引时应小心，因为性能可能会减慢，也可能得到改善。
+DROP INDEX 命令
+可以使用 MS SQL SERVER DROP 命令删除索引。 丢弃索引时应小心，因为性能可能会减慢，也可能得到改善。
 
 语法
 下面是基本的语法。
@@ -1066,26 +1066,26 @@ DROP INDEX tablename.index_name
 
 经常进行大批量更新或插入操作的表不应设置索引。
 
-不应在可能含大量NULL值的列上使用索引。
+不应在可能含大量 NULL 值的列上使用索引。
 
 频繁操作的列不应设置索引。
 
 ** 函数
 *** 内置函数列表
-    计数- COUNT聚合函数用于计算在数据库表中的行数。
-    max- MAX聚合功能可以选择某列的最高（最大）值。
-    MIN- MIN聚合函数允许选择了某列的最低（最小）值。
-    AVG- AVG聚合函数选择对某些表列的平均值。
-    SUM- SUM聚合函数允许选择总让数字列。
+    计数- COUNT 聚合函数用于计算在数据库表中的行数。
+    max- MAX 聚合功能可以选择某列的最高（最大）值。
+    MIN- MIN 聚合函数允许选择了某列的最低（最小）值。
+    AVG- AVG 聚合函数选择对某些表列的平均值。
+    SUM- SUM 聚合函数允许选择总让数字列。
     SQRT-这用于产生一个给定数目的平方根。
-    RAND-这是用于产生使用SQL命令的随机数。
+    RAND-这是用于产生使用 SQL 命令的随机数。
     concat-这是用来连接多个参数的参数。
 *** 字符串函数
-    ASCII('word') 字符转ascii码 
-    CHAR() 输出Ascii码对应的字符
+    ASCII('word') 字符转 ascii 码 
+    CHAR() 输出 Ascii 码对应的字符
     Select CHAR(97)
     
-    NCHAR（） 输出Unicode值对应的字符
+    NCHAR（） 输出 Unicode 值对应的字符
     Select NCHAR(300)
 
     CHARINDEX（） 索引值, 忽略大小写
@@ -1098,7 +1098,7 @@ DROP INDEX tablename.index_name
 
 RIGHT（）
 给定字符串的右边部分，直到指定的字符数作为给定字符串的输出。
-下面的查询将给出'DIA'字符串3个给定字符串'INDIA'的字符数。
+下面的查询将给出'DIA'字符串 3 个给定字符串'INDIA'的字符数。
 Select RIGHT('INDIA', 3)
 
 SUBSTRING（）
@@ -1145,10 +1145,10 @@ Select SOUNDEX('Smith'), SOUNDEX('Smyth')
 
 DIFFERENCE（）
 整数值将作为给定的两个表达式的输出。
-以下查询将给出4个“Smith”，“Smyth”表达式。
+以下查询将给出 4 个“Smith”，“Smyth”表达式。
 
 Select Difference('Smith','Smyth') 
-注 -如果输出值为0，表示给定2个表达式之间的相似度较弱或没有相似性。
+注 -如果输出值为 0，表示给定 2 个表达式之间的相似度较弱或没有相似性。
 
 SPACE（）
 字符串来作为的空格指定数量的输出。
@@ -1159,21 +1159,21 @@ STUFF（）
 字符串表达式将作为给定字符串数据的输出，在从起始字符替换为指定字符的指定长度之后。
 
 例
-下面的查询将给出'ABCDEFGH'字符串数据的'AIJKFGH'字符串作为给定的起始字符和长度分别为2和4，'IJK'作为指定的目标字符串。
+下面的查询将给出'ABCDEFGH'字符串数据的'AIJKFGH'字符串作为给定的起始字符和长度分别为 2 和 4，'IJK'作为指定的目标字符串。
 
 Select STUFF('ABCDEFGH', 2,4,'IJK') 
 STR（）
 字符数据将作为给定数字数据的输出。
 
 例
-以下查询将给定187.37的187.37，基于指定的长度为6和十进制为2。
+以下查询将给定 187.37 的 187.37，基于指定的长度为 6 和十进制为 2。
 
 Select STR(187.369,6,2) 
 UNICODE（）
 整数值将作为给定表达式的第一个字符的输出。
 
 例
-以下查询将为82提供“RAMA”表达式。
+以下查询将为 82 提供“RAMA”表达式。
 
 Select UNICODE('RAMA') 
 QUOTENAME（）
@@ -1186,12 +1186,12 @@ Select QUOTENAME('RAMA','"')
 PATINDEX（）
 需要从指定的“I”位置的给定表达式开始第一个出现的位置。
 
-下面的查询将给出'INDIA'的1。
+下面的查询将给出'INDIA'的 1。
 Select PATINDEX('I%','INDIA') 
 
 FORMAT（）
 给定表达式将作为具有指定格式的输出。
-下面的查询将给出'星期一，2015年11月16日'的getdate函数按照指定的格式，'D'表示星期名称。
+下面的查询将给出'星期一，2015 年 11 月 16 日'的 getdate 函数按照指定的格式，'D'表示星期名称。
 SELECT FORMAT ( getdate(), 'D') 
 
 CONCAT（）
@@ -1208,10 +1208,10 @@ Select CONCAT('A',',','B',',','C')
 
 DATEPART(datepart, datecolumnname)
 例
-示例1 -以下查询将返回MS SQL Server中当前日期的一部分。
+示例 1 -以下查询将返回 MS SQL Server 中当前日期的一部分。
 
 Select datepart(day, getdate()) as currentdate
-示例2 -以下查询将返回当前月份在MS SQL Server中的部分。
+示例 2 -以下查询将返回当前月份在 MS SQL Server 中的部分。
 
 Select datepart(month, getdate()) as currentmonth
 DATEADD（）
@@ -1222,7 +1222,7 @@ DATEADD（）
 
 DATEADD(datepart, number, datecolumnname)
 例
-以下查询将返回MS SQL Server中当前日期和时间之后10天的日期和时间。
+以下查询将返回 MS SQL Server 中当前日期和时间之后 10 天的日期和时间。
 
 Select dateadd(day, 10, getdate()) as after10daysdatetimefromcurrentdatetime 
 DATEDIFF（）
@@ -1233,7 +1233,7 @@ DATEDIFF（）
 
 DATEDIFF(datepart, startdate, enddate)
 例
-以下查询将返回MS SQL Server中2015-11-16和2015-11-11之间的时间差异。
+以下查询将返回 MS SQL Server 中 2015-11-16 和 2015-11-11 之间的时间差异。
 
 Select datediff(hour, 2015-11-16, 2015-11-11) as 
 differencehoursbetween20151116and20151111 
@@ -1245,13 +1245,13 @@ CONVERT（）
 
 CONVERT(datatype, expression, style)
 例
-以下查询将以不同格式在MS SQL Server中返回日期和时间。
+以下查询将以不同格式在 MS SQL Server 中返回日期和时间。
 
 SELECT CONVERT(VARCHAR(19),GETDATE()) 
 SELECT CONVERT(VARCHAR(10),GETDATE(),10) 
 SELECT CONVERT(VARCHAR(10),GETDATE(),110)
 *** 数值函数
-MS SQL Server数字函数可以应用于数值数据，并返回数值数据。
+MS SQL Server 数字函数可以应用于数值数据，并返回数值数据。
 
 下面是带有示例的数值函数列表。
 
@@ -1259,28 +1259,28 @@ ABS（）
 输出给定值的绝对值。
 
 例
-以下查询将输出-22的绝对值:22。
+以下查询将输出-22 的绝对值:22。
 
 Select ABS(-22)
 ACOS（）
 输出给定值的反余弦值。
 
 例
-以下查询将输出0的反余弦值:1.5707963267948966。
+以下查询将输出 0 的反余弦值:1.5707963267948966。
 
 Select ACOS(0)
 ASIN（）
 输出给定值的正弦值。
 
 例
-以下查询将输出0的正弦值:0。
+以下查询将输出 0 的正弦值:0。
 
 Select ASIN(0)
 ATAN（）
 输出给定值的反正切值。
 
 例
-以下查询将输出0的反正切值:0。
+以下查询将输出 0 的反正切值:0。
 
 Select ATAN(0)
 ATN2（）
@@ -1290,7 +1290,7 @@ ATN2（）
 以下查询将输出(0,-1)的方位角:0。
 
 Select ATN2(0, -1)
-请参考具有以下记录的CUSTOMERS表:
+请参考具有以下记录的 CUSTOMERS 表:
 
 ID  NAME       AGE       ADDRESS             SALARY 
 1   Ramesh     32        Ahmedabad           2000.00 
@@ -1304,7 +1304,7 @@ BETWEEN（）
 输出给定的两个表达式之间的值。
 
 例
-以下实例将输出薪水区间在2000到8500之间的所有薪水值:
+以下实例将输出薪水区间在 2000 到 8500 之间的所有薪水值:
 
 SELECT salary from customers where salary between 2000 and 8500
 上述命令将产生以下结果集:
@@ -1319,49 +1319,49 @@ MIN（）
 输出给定参数的最小值。
 
 例
-以下查询将给出customers表中'salary'最低值'1500.00'。
+以下查询将给出 customers 表中'salary'最低值'1500.00'。
 
 Select MIN(salary)from CUSTOMERS
 MAX（）
 输出给定参数的最大值。
 
 例
-以下查询将给出customers表中'salary'最大值'10000.00'。
+以下查询将给出 customers 表中'salary'最大值'10000.00'。
 
 Select MAX(salary)from CUSTOMERS
 SQRT（）
 输出给定值的平方根。
 
 例
-以下查询将输出4的平方根:2。
+以下查询将输出 4 的平方根:2。
 
 Select SQRT(4)
 PI（）
-该函数会输出PI(Π)的值。
+该函数会输出 PI(Π)的值。
 
 例
-下面的查询将输出3.14159265358979
+下面的查询将输出 3.14159265358979
 
 Select PI()
 CEILING（）
 给定值向上舍入(正向无穷大的方向)后输出。
 
 例
-下面的查询将输出124。
+下面的查询将输出 124。
 
 Select CEILING(123.25)
 FLOOR（）
 给定值向下舍入(正向无穷小的方向)后输出。
 
 Select FLOOR(123.25) 
-下面的查询将输出0。 Select LOG(1) 
+下面的查询将输出 0。Select LOG(1) 
 ** 语句
 *** return
 命令用于结束当前程序的执行,返回到上一个调用它的程序或其他程序,其语法格式如下:
 
 return   整数值或变量
 
-return语句要指定返回值,如果没有指定返回值,SQL Server系统会根据程序执行的结果返回一个内定值,返回值含义如下所示:
+return 语句要指定返回值,如果没有指定返回值,SQL Server 系统会根据程序执行的结果返回一个内定值,返回值含义如下所示:
 
 返回值                        含义
 
@@ -1412,9 +1412,9 @@ return语句要指定返回值,如果没有指定返回值,SQL Server系统会�
           go
    #+END_SRC
 ** set @docdate1=DATEADD(mm,  DATEDIFF(mm,0,@Monthid),  0)   --本月第一天
---set @ThisMonthBeginDay=dateadd(day,27,dateadd(month,-1,DATEADD(mm,  DATEDIFF(mm,0,@Monthid),  0))) --上月28号零点
---set @ThisMonthEndDay=dateadd(ms,-3,dateadd(day,27,DATEADD(mm,DATEDIFF(mm,0,@Monthid),0)))    --本月27号23点59分59秒
-set @docdate2=DATEADD(ms,-3,DATEADD(mm,1,DATEADD(mm,DATEDIFF(mm,0,@Monthid),0)))  --本月最后一天23点59分59
+--set @ThisMonthBeginDay=dateadd(day,27,dateadd(month,-1,DATEADD(mm,  DATEDIFF(mm,0,@Monthid),  0))) --上月 28 号零点
+--set @ThisMonthEndDay=dateadd(ms,-3,dateadd(day,27,DATEADD(mm,DATEDIFF(mm,0,@Monthid),0)))    --本月 27 号 23 点 59 分 59 秒
+set @docdate2=DATEADD(ms,-3,DATEADD(mm,1,DATEADD(mm,DATEDIFF(mm,0,@Monthid),0)))  --本月最后一天 23 点 59 分 59
 **  子查询
    -- 筛   选
    #+BEGIN_SRC sql
@@ -1442,7 +1442,7 @@ where x< ANY (select Y ...) 读成 “ where , for some Y,  X is less than Y"
       ON customers
       TO mary
       
-给mary 对表 customers 插入的权限
+给 mary 对表 customers 插入的权限
 ** 检索数据
 ** 修改
 *** 修改表结构 
@@ -1463,7 +1463,7 @@ where x< ANY (select Y ...) 读成 “ where , for some Y,  X is less than Y"
     commit
     rollback
     set transaction
-*** 编程sql
+*** 编程 sql
     declare 定义查询游标
     explain
     open 
@@ -1474,12 +1474,12 @@ where x< ANY (select Y ...) 读成 “ where , for some Y,  X is less than Y"
 ** 常量 
    DAYS 天
 ** 字符串函数
-   --截取字符串左边3个字符--
-   select LEFT('Welcome to China!',7) as 结果1
-   --截取字符串右边4个字符--
-   select RIGHT('Welcome to China!',6) as 结果2
---截取字符串中间6个字符（第二个从哪个字符下标开始）
-select SUBSTRING('Welcome to China!',9,2) as 结果3
+   --截取字符串左边 3 个字符--
+   select LEFT('Welcome to China!',7) as 结果 1
+   --截取字符串右边 4 个字符--
+   select RIGHT('Welcome to China!',6) as 结果 2
+--截取字符串中间 6 个字符（第二个从哪个字符下标开始）
+select SUBSTRING('Welcome to China!',9,2) as 结果 3
 FIBillAmount
 FIBillLackAmount
 =======
@@ -1490,13 +1490,13 @@ FIBillLackAmount
  fabs(f1-f2)
  if( fabs(f1-f2) < 预先指定的精度）
 * sp_executesql
-  execute相信大家都用的用熟了，简写为exec,除了用来执行存储过程，一般都用来执行动态Sql 
-  sp_executesql，sql2005中引入的新的系统存储过程，也是用来处理动态sql的, 如： 
+  execute 相信大家都用的用熟了，简写为 exec,除了用来执行存储过程，一般都用来执行动态 Sql 
+  sp_executesql，sql2005 中引入的新的系统存储过程，也是用来处理动态 sql 的, 如： 
   
   exec sp_executesql @sql, N'@count int out,@id varchar(20)', @cou out ,@id 
-@sql为拼成的动态sql 
-N'@count int out,@id varchar(20)'为拼成的动态sql内的参数列表 
-@cou out,@id为为动态sql内参数列表提供值的外部参数列表 
+@sql 为拼成的动态 sql 
+N'@count int out,@id varchar(20)'为拼成的动态 sql 内的参数列表 
+@cou out,@id 为为动态 sql 内参数列表提供值的外部参数列表 
 
 那么它们之间有什么区别呢？ 
 
@@ -1508,7 +1508,7 @@ N'@count int out,@id varchar(20)'为拼成的动态sql内的参数列表
   set @sql='select count(*) from emp where id=' + @id 
   exec @sql 
 #+END_SRC
-我想把得到的count(*)传出来，用传统的exec是不好办到的，但是用sp_executesql则很容易就办到了： 
+我想把得到的 count(*)传出来，用传统的 exec 是不好办到的，但是用 sp_executesql 则很容易就办到了： 
 #+BEGIN_SRC sql
   declare @sql nvarchar(2000) 
   declare @cou int 
@@ -1520,17 +1520,17 @@ N'@count int out,@id varchar(20)'为拼成的动态sql内的参数列表
 #+END_SRC
 
 2.性能 
-可以看到，如果用exec，由于每次传入的@id不一样，所以每次生成的@sql就不一样，这样每执行一次Sql2005就必须重新将要执行的动态Sql重新编译一次 
-但是sp_executesql则不一样，由于将数值参数化，要执行的动态Sql永远不会变化，只是传入的参数的值在变化，那每次执行的时候就秒用重新编译，速度自然快多了哈！ 
+可以看到，如果用 exec，由于每次传入的@id 不一样，所以每次生成的@sql 就不一样，这样每执行一次 Sql2005 就必须重新将要执行的动态 Sql 重新编译一次 
+但是 sp_executesql 则不一样，由于将数值参数化，要执行的动态 Sql 永远不会变化，只是传入的参数的值在变化，那每次执行的时候就秒用重新编译，速度自然快多了哈！ 
 
 注意： 
-１.sp_executesql要求动态Sql和动态Sql参数列表必须是Nvarchar，比如上个例子的@sql,N'@count int out,@id varchar(20)'我记得在sql2005中Varchar也可以的，但是我打了Sp3补丁后就不行了，必须为Nvarchar 
-２.动态Sql的参数列表与外部提供值的参数列表顺序必需一致，如： 
+１.sp_executesql 要求动态 Sql 和动态 Sql 参数列表必须是 Nvarchar，比如上个例子的@sql,N'@count int out,@id varchar(20)'我记得在 sql2005 中 Varchar 也可以的，但是我打了 Sp3 补丁后就不行了，必须为 Nvarchar 
+２.动态 Sql 的参数列表与外部提供值的参数列表顺序必需一致，如： 
 N'@count int out,@id varchar(20)', @cou out,@id 
-@count 对应 @cou,@id对应@id 
+@count 对应 @cou,@id 对应@id 
 如果不一致，必须显式标明，如： 
 N'@count int out,@id varchar(20)', @id＝@id, @count=@cou out 
-３.动态SQl的参数列表与外部提供参数的参数列表参数名可以同名
+３.动态 SQl 的参数列表与外部提供参数的参数列表参数名可以同名
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 语法
@@ -1544,20 +1544,20 @@ sp_executesql [ @statement = ] statement
 参数
 
 [ @statement = ] statement
-包含 Transact-SQL 语句或批处理的 Unicode 字符串。statement 必须是 Unicode 常量或 Unicode 变量。不允许使用更复杂的 Unicode 表达式（例如使用 + 运算符连接两个字符串）。不允许使用字符常量。如果指定了 Unicode 常量，则必须使用N 作为前缀。例如，Unicode 常量 N'sp_who' 是有效的，但是字符常量 'sp_who' 则无效。字符串的大小仅受可用数据库服务器内存限制。在 64 位服务器中，字符串大小限制为 2 GB，即 nvarchar(max) 的最大大小。
+包含 Transact-SQL 语句或批处理的 Unicode 字符串。statement 必须是 Unicode 常量或 Unicode 变量。不允许使用更复杂的 Unicode 表达式（例如使用 + 运算符连接两个字符串）。不允许使用字符常量。如果指定了 Unicode 常量，则必须使用 N 作为前缀。例如，Unicode 常量 N'sp_who' 是有效的，但是字符常量 'sp_who' 则无效。字符串的大小仅受可用数据库服务器内存限制。在 64 位服务器中，字符串大小限制为 2 GB，即 nvarchar(max) 的最大大小。
 
 注意：
 stmt 可以包含与变量名形式相同的参数，例如：N'SELECT * FROM HumanResources.Employee WHERE EmployeeID = @IDParameter'
 stmt 中包含的每个参数在 @params 参数定义列表和参数值列表中均必须有对应项。
 
 [ @params = ] N'@parameter_name data_type [ ,... n ] '
-包含 stmt 中嵌入的所有参数定义的字符串。字符串必须是 Unicode 常量或 Unicode 变量。每个参数定义由参数名称和数据类型组成。n 是表示附加参数定义的占位符。在statement 中指定的每个参数都必须在 @params 中定义。如果 stmt 中的 Transact-SQL 语句或批处理不包含参数，则不需要 @params。该参数的默认值为 NULL。
+包含 stmt 中嵌入的所有参数定义的字符串。字符串必须是 Unicode 常量或 Unicode 变量。每个参数定义由参数名称和数据类型组成。n 是表示附加参数定义的占位符。在 statement 中指定的每个参数都必须在 @params 中定义。如果 stmt 中的 Transact-SQL 语句或批处理不包含参数，则不需要 @params。该参数的默认值为 NULL。
 
 [ @param1 = ] 'value1'
-参数字符串中定义的第一个参数的值。该值可以是 Unicode 常量，也可以是 Unicode 变量。必须为 stmt 中包含的每个参数提供参数值。如果stmt 中的 Transact-SQL 语句或批处理没有参数，则不需要这些值。
+参数字符串中定义的第一个参数的值。该值可以是 Unicode 常量，也可以是 Unicode 变量。必须为 stmt 中包含的每个参数提供参数值。如果 stmt 中的 Transact-SQL 语句或批处理没有参数，则不需要这些值。
 
 [ OUT | OUTPUT ]
-指示参数是输出参数。除非是公共语言运行 (CLR) 过程，否则 text、ntext 和image 参数均可用作 OUTPUT 参数。使用 OUTPUT 关键字的输出参数可以为游标占位符，CLR 过程除外。
+指示参数是输出参数。除非是公共语言运行 (CLR) 过程，否则 text、ntext 和 image 参数均可用作 OUTPUT 参数。使用 OUTPUT 关键字的输出参数可以为游标占位符，CLR 过程除外。
 
 n
 附加参数值的占位符。这些值只能为常量或变量，不能是很复杂的表达式（例如函数）或使用运算符生成的表达式。
@@ -1572,7 +1572,7 @@ n
 
 注释
 
-在批处理、名称作用域和数据库上下文方面，sp_executesql 与 EXECUTE 的行为相同。sp_executesql stmt 参数中的 Transact-SQL 语句或批处理在执行 sp_executesql 语句时才编译。随后，将编译stmt 中的内容，并将其作为执行计划运行。该执行计划独立于名为 sp_executesql 的批处理的执行计划。sp_executesql 批处理不能引用调用 sp_executesql 的批处理中声明的变量。sp_executesql 批处理中的本地游标或变量对调用 sp_executesql 的批处理是不可见的。对数据库上下文所做的更改只在 sp_executesql 语句结束前有效。
+在批处理、名称作用域和数据库上下文方面，sp_executesql 与 EXECUTE 的行为相同。sp_executesql stmt 参数中的 Transact-SQL 语句或批处理在执行 sp_executesql 语句时才编译。随后，将编译 stmt 中的内容，并将其作为执行计划运行。该执行计划独立于名为 sp_executesql 的批处理的执行计划。sp_executesql 批处理不能引用调用 sp_executesql 的批处理中声明的变量。sp_executesql 批处理中的本地游标或变量对调用 sp_executesql 的批处理是不可见的。对数据库上下文所做的更改只在 sp_executesql 语句结束前有效。
 
 如果只更改了语句中的参数值，则 sp_executesql 可用来代替存储过程多次执行 Transact-SQL 语句。因为 Transact-SQL 语句本身保持不变，仅参数值发生变化，所以 SQL Server 查询优化器可能重复使用首次执行时所生成的执行计划。
 
@@ -1654,7 +1654,7 @@ CREATE TABLE May1998Sales
     DeliveryDate datetime  NULL,
         CHECK (DATEPART(mm, OrderDate) = OrderMonth)
     )
-此示例存储过程将动态生成并执行 INSERT 语句，以便向正确的表中插入新订单。此示例使用订货日期生成应包含数据的表的名称，然后将此名称并入INSERT 语句中。
+此示例存储过程将动态生成并执行 INSERT 语句，以便向正确的表中插入新订单。此示例使用订货日期生成应包含数据的表的名称，然后将此名称并入 INSERT 语句中。
 
 注意：
 这是一个简单的 sp_executesql 示例。此示例不包含错误检查以及业务规则检查，例如确保订单号在各个表之间不重复。
@@ -1722,7 +1722,7 @@ WHERE SalesOrderNumber = @SalesOrderNumber;
   #+BEGIN_SRC sql
          use database1
          declare my_cursor cursor scroll dynamic
-     /**//*scroll表示可随意移动游标指针（否则只能向前），dynamic表示可以读写游标（否则游标只读）*/
+     /**//*scroll 表示可随意移动游标指针（否则只能向前），dynamic 表示可以读写游标（否则游标只读）*/
     for
     select productname from  product
     open my_cursor
@@ -1756,3 +1756,471 @@ WHERE SalesOrderNumber = @SalesOrderNumber;
 							RAISERROR('更新成品已开发票数量和未开发票数量出错，请核实!',16,1) WITH SETERROR
 							RETURN
 						END
+* left join(左联接) 返回包括左表中的所有记录和右表中联结字段相等的记录 
+　　right join(右联接) 返回包括右表中的所有记录和左表中联结字段相等的记录
+　　inner join(等值连接) 只返回两个表中联结字段相等的行
+* sqlserver 日期与字符串之间的转换
+1、日期时间转字符串
+
+Select CONVERT(varchar(100), GETDATE(), 0): 05 16 2006  10:57AM
+Select CONVERT(varchar(100), GETDATE(), 1): 05/16/06
+Select  CONVERT(varchar(100), GETDATE(), 2): 06.05.16
+Select CONVERT(varchar(100),  GETDATE(), 3): 16/05/06
+Select CONVERT(varchar(100), GETDATE(), 4):  16.05.06
+Select CONVERT(varchar(100), GETDATE(), 5): 16-05-06
+Select  CONVERT(varchar(100), GETDATE(), 6): 16 05 06
+Select CONVERT(varchar(100),  GETDATE(), 7): 05 16, 06
+Select CONVERT(varchar(100), GETDATE(), 8):  10:57:46
+Select CONVERT(varchar(100), GETDATE(), 9): 05 16 2006  10:57:46:827AM
+Select CONVERT(varchar(100), GETDATE(), 10):  05-16-06
+Select CONVERT(varchar(100), GETDATE(), 11): 06/05/16
+Select  CONVERT(varchar(100), GETDATE(), 12): 060516
+Select CONVERT(varchar(100),  GETDATE(), 13): 16 05 2006 10:57:46:937
+Select CONVERT(varchar(100),  GETDATE(), 14): 10:57:46:967
+Select CONVERT(varchar(100), GETDATE(), 20):  2006-05-16 10:57:47
+Select CONVERT(varchar(100), GETDATE(), 21): 2006-05-16  10:57:47.157
+Select CONVERT(varchar(100), GETDATE(), 22): 05/16/06 10:57:47  AM
+Select CONVERT(varchar(100), GETDATE(), 23): 2006-05-16
+Select  CONVERT(varchar(100), GETDATE(), 24): 10:57:47
+Select CONVERT(varchar(100),  GETDATE(), 25): 2006-05-16 10:57:47.250
+Select CONVERT(varchar(100),  GETDATE(), 100): 05 16 2006 10:57AM
+Select CONVERT(varchar(100), GETDATE(),  101): 05/16/2006
+Select CONVERT(varchar(100), GETDATE(), 102):  2006.05.16
+Select CONVERT(varchar(100), GETDATE(), 103): 16/05/2006
+Select  CONVERT(varchar(100), GETDATE(), 104): 16.05.2006
+Select  CONVERT(varchar(100), GETDATE(), 105): 16-05-2006
+Select  CONVERT(varchar(100), GETDATE(), 106): 16 05 2006
+Select  CONVERT(varchar(100), GETDATE(), 107): 05 16, 2006
+Select  CONVERT(varchar(100), GETDATE(), 108): 10:57:49
+Select CONVERT(varchar(100),  GETDATE(), 109): 05 16 2006 10:57:49:437AM
+Select CONVERT(varchar(100),  GETDATE(), 110): 05-16-2006
+Select CONVERT(varchar(100), GETDATE(), 111):  2006/05/16
+Select CONVERT(varchar(100), GETDATE(), 112): 20060516
+Select  CONVERT(varchar(100), GETDATE(), 113): 16 05 2006 10:57:49:513
+Select  CONVERT(varchar(100), GETDATE(), 114): 10:57:49:547
+Select  CONVERT(varchar(100), GETDATE(), 120): 2006-05-16 10:57:49
+Select  CONVERT(varchar(100), GETDATE(), 121): 2006-05-16 10:57:49.700
+Select  CONVERT(varchar(100), GETDATE(), 126): 2006-05-16T10:57:49.827
+Select  CONVERT(varchar(100), GETDATE(), 130): 18 ???? ?????? 1427  10:57:49:907AM
+Select CONVERT(varchar(100), GETDATE(), 131): 18/04/1427  10:57:49:920AM
+
+2、Sql Server 日期与时间函数
+
+1.  当前系统日期、时间
+
+select getdate()
+
+2. dateadd  在向指定日期加上一段时间的基础上，返回新的 datetime 值
+
+例如：向日期加上 2 天
+
+select dateadd(day,2,'2004-10-15')  --返回：2004-10-17 00:00:00.000
+
+3. datediff 返回跨两个指定日期的日期和时间边界数。
+
+select datediff(day,'2004-09-01','2004-09-18')   --返回：17
+
+4. datepart 返回代表指定日期的指定日期部分的整数。
+
+SELECT DATEPART(month, '2004-10-15')  --返回 10
+
+5. datename 返回代表指定日期的指定日期部分的字符串
+
+SELECT datename(weekday, '2004-10-15')  --返回：星期五
+
+6. day(), month(),year() --可以与 datepart 对照一下
+
+select 当前日期=convert(varchar(10),getdate(),120) ,当前时间=convert(varchar(8),getdate(),114)
+
+select datename(dw,'2004-10-15')
+
+select 本年第多少周=datename(week,'2004-10-15'),今天是周几=datename(weekday,'2004-10-15')
+
+3、SQL Server 日期函数     参数/功能
+
+GetDate( )    返回系统目前的日期与时间
+
+DateDiff (interval,date1,date2)   以 interval 指定的方式，返回 date2 与 date1 两个日期之间的差值 date2-date1
+
+DateAdd (interval,number,date)   以 interval 指定的方式，加上 number 之后的日期
+
+DatePart (interval,date)    返回日期 date 中，interval 指定部分所对应的整数值
+
+DateName (interval,date)   返回日期 date 中，interval 指定部分所对应的字符串名称
+
+参数 interval 的设定值如下：
+
+值缩写（Sql Server） (Access 和 ASP) 说明
+
+Year Yy yyyy 年 1753 ~ 9999
+
+Quarter Qq q   季 1 ~ 4
+
+Month Mm m   月 1 ~ 12
+
+Day of year Dy y  一年的日数,一年中的第几日 1-366
+
+Day Dd d   日，1-31
+
+Weekday Dw w 一周的日数，一周中的第几日 1-7
+
+Week Wk ww  周，一年中的第几周 0 ~ 51
+
+Hour Hh h   时 0 ~ 23
+
+Minute Mi n  分钟 0 ~ 59
+
+Second Ss s 秒 0 ~ 59
+
+Millisecond Ms - 毫秒 0 ~ 999
+
+Access 和 Asp 中用 date()和 now()取得系统日期时间；其中 DateDiff,DateAdd,DatePart 也同是能用于 Access 和 asp 中，这些函数的用法也类似。
+
+4、SQL Server 日期函数举例
+
+1.GetDate() 用于 sql server :select GetDate()
+
+2.DateDiff('s','2005-07-20','2005-7-25 22:56:32')返回值为 514592 秒
+
+DateDiff('d','2005-07-20','2005-7-25 22:56:32')返回值为 5 天
+
+3.DatePart('w','2005-7-25 22:56:32')返回值为 2 即星期一(周日为 1，周六为 7)
+
+DatePart('d','2005-7-25 22:56:32')返回值为 25 即 25 号
+
+DatePart('y','2005-7-25 22:56:32')返回值为 206 即这一年中第 206 天
+
+DatePart('yyyy','2005-7-25 22:56:32')返回值为 2005 即 2005 年
+* 字符转换为日期时,Style 的使用
+
+--1. Style=101 时,表示日期字符串为:mm/dd/yyyy 格式
+SELECT CONVERT(datetime,'11/1/2003',101)
+--结果:2003-11-01 00:00:00.000
+
+--2. Style=101 时,表示日期字符串为:dd/mm/yyyy 格式
+SELECT CONVERT(datetime,'11/1/2003',103)
+--结果:2003-01-11 00:00:00.000
+
+ 
+
+/*== 日期转换为字符串 ==*/
+DECLARE @dt datetime
+SET @dt='2003-1-11'
+
+--1. Style=101 时,表示将日期转换为:mm/dd/yyyy 格式
+SELECT CONVERT(varchar,@dt,101)
+--结果:01/11/2003
+
+--2. Style=103 时,表示将日期转换为:dd/mm/yyyy 格式
+SELECT CONVERT(varchar,@dt,103)
+--结果:11/01/2003
+
+
+/*== 这是很多人经常犯的错误,对非日期型转换使用日期的 style 样式 ==*/
+SELECT CONVERT(varchar,'2003-1-11',101)
+--结果:2003-1-11
+
+--1.
+/*--说明
+SET DATEFORMAT 设置对使用 CONVERT 把字符型日期转换为日期的处理也具有影响
+但不影响明确指定了 style 的 CONVERT 处理。
+--*/
+
+--示例 ，在下面的示例中，第一个 CONVERT 转换未指定 style，转换的结果受 SET DATAFORMAT 的影响，第二个 CONVERT 转换指定了 style，转换结果受 style 的影响。
+--设置输入日期顺序为 日/月/年
+SET DATEFORMAT DMY
+
+--不指定 Style 参数的 CONVERT 转换将受到 SET DATEFORMAT 的影响
+SELECT CONVERT(datetime,'2-1-2005')
+--结果: 2005-01-02 00:00:00.000
+
+--指定 Style 参数的 CONVERT 转换不受 SET DATEFORMAT 的影响
+SELECT CONVERT(datetime,'2-1-2005',101)
+--结果: 2005-02-01 00:00:00.000
+GO
+
+--2.
+/*--说明
+
+如果输入的日期包含了世纪部分，则对日期进行解释处理时
+年份的解释不受 SET DATEFORMAT 设置的影响。
+--*/
+
+--示例，在下面的代码中，同样的 SET DATEFORMAT 设置，输入日期的世纪部分与不输入日期的世纪部分，解释的日期结果不同。
+DECLARE @dt datetime
+
+--设置 SET DATEFORMAT 为:月日年
+SET DATEFORMAT MDY
+
+--输入的日期中指定世纪部分
+SET @dt='01-2002-03'
+SELECT @dt
+--结果: 2002-01-03 00:00:00.000
+
+--输入的日期中不指定世纪部分
+SET @dt='01-02-03'
+SELECT @dt
+--结果: 2003-01-02 00:00:00.000
+GO
+
+--3.
+/*--说明
+
+如果输入的日期不包含日期分隔符，那么 SQL Server 在对日期进行解释时
+将忽略 SET DATEFORMAT 的设置。
+--*/
+
+--示例，在下面的代码中，不包含日期分隔符的字符日期，在不同的 SET DATEFORMAT 设置下，其解释的结果是一样的。
+DECLARE @dt datetime
+
+--设置 SET DATEFORMAT 为:月日年
+SET DATEFORMAT MDY
+SET @dt='010203'
+SELECT @dt
+--结果: 2001-02-03 00:00:00.000
+
+--设置 SET DATEFORMAT 为:日月年
+SET DATEFORMAT DMY
+SET @dt='010203'
+SELECT @dt
+--结果: 2001-02-03 00:00:00.000
+
+--输入的日期中包含日期分隔符
+SET @dt='01-02-03'
+SELECT @dt
+--结果: 2003-02-01 00:00:00.000
+
+--以下示例演示了在不同的语言环境(SET LANGUAGE)下，DATENAME 与 CONVERT 函数的不同结果。
+USE master
+
+--设置会话的语言环境为: English
+SET LANGUAGE N'English'
+SELECT 
+DATENAME(Month,GETDATE()) AS [Month],
+DATENAME(Weekday,GETDATE()) AS [Weekday],
+CONVERT(varchar,GETDATE(),109) AS [CONVERT]
+/*--结果:
+Month    Weekday   CONVERT
+------------- -------------- -------------------------------
+March    Tuesday   Mar 15 2005 8:59PM
+--*/
+
+--设置会话的语言环境为: 简体中文
+SET LANGUAGE N'简体中文'
+SELECT 
+DATENAME(Month,GETDATE()) AS [Month],
+DATENAME(Weekday,GETDATE()) AS [Weekday],
+CONVERT(varchar,GETDATE(),109) AS [CONVERT]
+/*--结果
+* 字符串转日期时间：
+convert(datetime,'2017-12-12 00:00:01', 20)
+
+日期时间转字符串：
+
+Select CONVERT(varchar(100), GETDATE(), 0): 05 16 2006 10:57AM   
+Select CONVERT(varchar(100), GETDATE(), 1): 05/16/06   
+Select CONVERT(varchar(100), GETDATE(), 2): 06.05.16   
+Select CONVERT(varchar(100), GETDATE(), 3): 16/05/06   
+Select CONVERT(varchar(100), GETDATE(), 4): 16.05.06   
+Select CONVERT(varchar(100), GETDATE(), 5): 16-05-06   
+Select CONVERT(varchar(100), GETDATE(), 6): 16 05 06   
+Select CONVERT(varchar(100), GETDATE(), 7): 05 16, 06   
+Select CONVERT(varchar(100), GETDATE(), 8): 10:57:46   
+Select CONVERT(varchar(100), GETDATE(), 9): 05 16 2006 10:57:46:827AM   
+Select CONVERT(varchar(100), GETDATE(), 10): 05-16-06   
+Select CONVERT(varchar(100), GETDATE(), 11): 06/05/16   
+Select CONVERT(varchar(100), GETDATE(), 12): 060516   
+Select CONVERT(varchar(100), GETDATE(), 13): 16 05 2006 10:57:46:937   
+Select CONVERT(varchar(100), GETDATE(), 14): 10:57:46:967   
+Select CONVERT(varchar(100), GETDATE(), 20): 2006-05-16 10:57:47   
+Select CONVERT(varchar(100), GETDATE(), 21): 2006-05-16 10:57:47.157   
+Select CONVERT(varchar(100), GETDATE(), 22): 05/16/06 10:57:47 AM   
+Select CONVERT(varchar(100), GETDATE(), 23): 2006-05-16   
+Select CONVERT(varchar(100), GETDATE(), 24): 10:57:47   
+Select CONVERT(varchar(100), GETDATE(), 25): 2006-05-16 10:57:47.250   
+Select CONVERT(varchar(100), GETDATE(), 100): 05 16 2006 10:57AM   
+Select CONVERT(varchar(100), GETDATE(), 101): 05/16/2006   
+Select CONVERT(varchar(100), GETDATE(), 102): 2006.05.16   
+Select CONVERT(varchar(100), GETDATE(), 103): 16/05/2006   
+Select CONVERT(varchar(100), GETDATE(), 104): 16.05.2006   
+Select CONVERT(varchar(100), GETDATE(), 105): 16-05-2006   
+Select CONVERT(varchar(100), GETDATE(), 106): 16 05 2006   
+Select CONVERT(varchar(100), GETDATE(), 107): 05 16, 2006   
+Select CONVERT(varchar(100), GETDATE(), 108): 10:57:49   
+Select CONVERT(varchar(100), GETDATE(), 109): 05 16 2006 10:57:49:437AM   
+Select CONVERT(varchar(100), GETDATE(), 110): 05-16-2006   
+Select CONVERT(varchar(100), GETDATE(), 111): 2006/05/16   
+Select CONVERT(varchar(100), GETDATE(), 112): 20060516   
+Select CONVERT(varchar(100), GETDATE(), 113): 16 05 2006 10:57:49:513   
+Select CONVERT(varchar(100), GETDATE(), 114): 10:57:49:547   
+Select CONVERT(varchar(100), GETDATE(), 120): 2006-05-16 10:57:49   
+Select CONVERT(varchar(100), GETDATE(), 121): 2006-05-16 10:57:49.700   
+Select CONVERT(varchar(100), GETDATE(), 126): 2006-05-16T10:57:49.827   
+Select CONVERT(varchar(100), GETDATE(), 130): 18 ???? ?????? 1427 10:57:49:907AM  
+在 SQL 数据库中，有一类函数是不得不提的，那就是 SQL Server 日期时间函数，这是 SQL Server 处理日期和时间最常用的函数，下面就将为介绍这类函数。
+
+
+Sql Server 日期与时间函数:
+
+1.  当前系统日期、时间 
+
+select getdate() 
+1. dateadd  在向指定日期加上一段时间的基础上，返回新的 datetime 值
+例如：向日期加上 2 天 
+select dateadd(day,2,'2004-10-15')  --返回：2004-10-17 00:00:00.000
+1. datediff 返回跨两个指定日期的日期和时间边界数。
+select datediff(day,'2004-09-01','2004-09-18')   --返回：17
+1. datepart 返回代表指定日期的指定日期部分的整数。
+SELECT DATEPART(month, '2004-10-15')  --返回 10
+1. datename 返回代表指定日期的指定日期部分的字符串
+SELECT datename(weekday, '2004-10-15')  --返回：星期五
+1. day(), month(),year() --可以与 datepart 对照一下
+select 当前日期=convert(varchar(10),getdate(),120) ,当前时间=convert(varchar(8),getdate(),114)
+select datename(dw,'2004-10-15')
+select 本年第多少周=datename(week,'2004-10-15'),今天是周几=datename(weekday,'2004-10-15')
+
+
+SQL Server 日期函数     参数/功能
+
+
+GetDate( )    返回系统目前的日期与时间
+
+
+DateDiff (interval,date1,date2)   以 interval 指定的方式，返回 date2 与 date1 两个日期之间的差值 date2-date1
+
+
+DateAdd (interval,number,date)   以 interval 指定的方式，加上 number 之后的日期
+
+
+DatePart (interval,date)    返回日期 date 中，interval 指定部分所对应的整数值
+
+
+DateName (interval,date)   返回日期 date 中，interval 指定部分所对应的字符串名称
+
+
+参数 interval 的设定值如下：
+
+
+值缩写（Sql Server） (Access 和 ASP) 说明
+
+
+Year Yy yyyy 年 1753 ~ 9999
+
+
+Quarter Qq q   季 1 ~ 4
+
+
+Month Mm m   月 1 ~ 12
+
+
+Day of year Dy y  一年的日数,一年中的第几日 1-366
+
+
+Day Dd d   日，1-31
+
+
+Weekday Dw w 一周的日数，一周中的第几日 1-7
+
+
+Week Wk ww  周，一年中的第几周 0 ~ 51
+
+
+Hour Hh h   时 0 ~ 23
+
+
+Minute Mi n  分钟 0 ~ 59
+
+
+Second Ss s 秒 0 ~ 59
+
+
+Millisecond Ms - 毫秒 0 ~ 999
+
+
+Access 和 Asp 中用 date()和 now()取得系统日期时间；其中 DateDiff,DateAdd,DatePart 也同是能用于 Access 和 asp 中，这些函数的用法也类似。
+
+
+SQL Server 日期函数举例：
+
+
+1.GetDate() 用于 sql server :select GetDate()
+
+
+2.DateDiff('s','2005-07-20','2005-7-25 22:56:32')返回值为 514592 秒
+
+
+DateDiff('d','2005-07-20','2005-7-25 22:56:32')返回值为 5 天
+
+
+3.DatePart('w','2005-7-25 22:56:32')返回值为 2 即星期一(周日为 1，周六为 7)
+
+
+DatePart('d','2005-7-25 22:56:32')返回值为 25 即 25 号
+
+
+DatePart('y','2005-7-25 22:56:32')返回值为 206 即这一年中第 206 天
+
+
+DatePart('yyyy','2005-7-25 22:56:32')返回值为 2005 即 2005 年
+* commit transcation :SQL 多步操作之后，提交事务，此时数据才真正保存到数据库
+rollback transcation:SQL 多步操作发生错误，调用此语句，数据回滚到最初始状态。
+* 以下是出现错误的 SQL 部分语句：
+
+BEGIN TRAN
+--进行判断，不符合条件就回滚，不执行其他操作
+IF NOT EXISTS(SELECT [ID] FROM [TestTable] WHERE NO='123')
+BEGIN
+ROLLBACK TRAN;
+END
+
+--这里执行其他 SQL 操作语句。
+UPDATE TestTable SET NO='312' WHERE NO='122'
+
+--如果有错误就回滚，没错误就提交
+IF(@@ERROR<>0)
+BEGIN  
+     ROLLBACK TRAN;
+END
+ELSE
+BEGIN
+     COMMIT TRAN;
+END
+此错误的原因是由于一个事务只能对应一个操作，要么回滚要么提交，所以执行了 ROLLBACK TRAN 语句后一定不能再执行
+COMMIT TRAN 语句！！！而无论是回滚事务还是提交事务，都是不会中断 SQL 处理流程的，要想中断流程就需要使用 RETURN 语句。
+
+上面范例中的语句先执行了 ROLLBACK TRAN 回滚操作（这里造成事务已经处理完成），但是并没有中断流程，
+所以后面的语句依然会继续执行。执行过程中由于没有任何异常错误，最终导致重复执行了底部的 COMMIT TRAN 事务提交操作，
+最后一次事务操作没有找到相匹配的事务声明，就会提示"COMMIT TRANSACTION(事务提交) 请求没有对应的 BEGIN TRANSACTION(事务声明)"这个错误。
+
+所以要跳出事务，在进行回滚 ROLLBACK 操作后，还必须马上使用 RETURN 语句跳出执行流程。以下为修改后的语句：
+
+BEGIN TRAN
+--进行判断，不符合条件就回滚，不执行其他操作
+IF NOT EXISTS(SELECT [ID] FROM [TestTable] WHERE NO='123')
+BEGIN
+     ROLLBACK TRAN;
+     --------------------------------
+     --这里需要添加 RETURN，中断处理流程，防止重复执行事务提交！
+     RETURN;
+     --------------------------------
+END
+
+--这里执行其他 SQL 操作语句。
+UPDATE TestTable SET NO='312' WHERE NO='122'
+
+--如果有错误就回滚，没错误就提交
+IF(@@ERROR<>0)
+BEGIN
+     ROLLBACK TRAN;
+END
+
+ELSE
+BEGIN  
+     COMMIT TRAN;
+END
+
+这里在做一个简单测试，有助于理解所谓的一个事务只能对应一个事务操作的意思，在 SQL 中输入下图的三行代码并执行：
+
+简单测试还原错误
+
+事务的语法只能一一对应，我们只有一个事务声明但是却有两个事务操作，最后一个事务操作无法找到匹配的事务声明，自然就出错。

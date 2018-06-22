@@ -1,89 +1,89 @@
 * wampserver
 ** 默认状态  
 *** 不能访问外网   
-    默认只允许127.0.0.1访问
-    修改 httpd.conf, 大概在第234行，把“Deny from all”删掉，再把“Allow from 127.0.0.1”改成“Allow from all”
-*** 开启URL重写
-    httpd.conf文件，找到#LoadModule rewrite_module modules/mod_rewrite.so，然后把前面的“#”删掉
+    默认只允许 127.0.0.1 访问
+    修改 httpd.conf, 大概在第 234 行，把“Deny from all”删掉，再把“Allow from 127.0.0.1”改成“Allow from all”
+*** 开启 URL 重写
+    httpd.conf 文件，找到#LoadModule rewrite_module modules/mod_rewrite.so，然后把前面的“#”删掉
 * apache
 ** 安装配置 
 *** 全局参数设置 
     如果让服务器在两个确定的地址端口组合上接受请求，可以这样设置：
-    Listen 192.168.2.2:8080                         #服务器接受192.168.2.2地址的8080端口上的请求
+    Listen 192.168.2.2:8080                         #服务器接受 192.168.2.2 地址的 8080 端口上的请求
 
-    如果使用IPV6地址，必须用方括号把IPV6地址括起来：
-    Listen [2001:db8::a00:20ff:fea7:ccea]:80        #监听2001:db8::a00:20ff:fea7:ccea地址的80端口上的请求
+    如果使用 IPV6 地址，必须用方括号把 IPV6 地址括起来：
+    Listen [2001:db8::a00:20ff:fea7:ccea]:80        #监听 2001:db8::a00:20ff:fea7:ccea 地址的 80 端口上的请求
 
-    仅在使用非标准端口时才需要指定protocol参数。比如在8443端口运行HTTPS协议：
-    Listen 192.170.2.1:8443 https                   #服务器接受192.168.2.1地址的8443端口上的以https协议请求
+    仅在使用非标准端口时才需要指定 protocol 参数。比如在 8443 端口运行 HTTPS 协议：
+    Listen 192.170.2.1:8443 https                   #服务器接受 192.168.2.1 地址的 8443 端口上的以 https 协议请求
     
     语法：LoadModule  模块名称     模块文件路径全名
     例如：LoadModule  php5_module  modules/libphp5.so
 
-User指令用于设置实际提供服务的子进程的用户。
-User daemon                     #通过用户名引用用户daemon
-User #-1                        #通过用户编号引用用户，"#"号后面跟一个用户编号1
+User 指令用于设置实际提供服务的子进程的用户。
+User daemon                     #通过用户名引用用户 daemon
+User #-1                        #通过用户编号引用用户，"#"号后面跟一个用户编号 1
 
-Group指令指定了用于对客户端请求提供服务的Apache子进程运行时的用户组。
-Group daemon                    #通过名称引用组deamon
+Group 指令指定了用于对客户端请求提供服务的 Apache 子进程运行时的用户组。
+Group daemon                    #通过名称引用组 deamon
 Group #-1                       #通过编号引用组, "#"号后跟一个组编号(GID)
 
-应该被设置为管理Web服务器管理员的邮件地址。当服务器运行出错时，这一地址将被返回给访问者，访问者可以
-向此邮件地址发信和Web服务器管理员联系。
+应该被设置为管理 Web 服务器管理员的邮件地址。当服务器运行出错时，这一地址将被返回给访问者，访问者可以
+向此邮件地址发信和 Web 服务器管理员联系。
 例如：ServerAdmin  you@example.com
 
-DocumentRoot指令设置Web文档根目录。
+DocumentRoot 指令设置 Web 文档根目录。
 例如：DocumentRoot  "/usr/local/apache2/htdocs"
 
 Timeout 300                                     #服务器在断定请求失败前等待的秒数
-KeepAlive On                                    #启用HTTP持久链接
+KeepAlive On                                    #启用 HTTP 持久链接
 MaxKeepAliveRequests 100                        #一个持久链接中允许的最大请求数量
 KeepAliveTimeout 5                              #持久链接中服务器在两次请求之间等待的秒数
-HostnameLookups Off                             #启用对客户端IP的DNS查找
+HostnameLookups Off                             #启用对客户端 IP 的 DNS 查找
 
 *** 使用配置段（容器） 
     <Directory> </Directory>                    #封装一组指令，使之仅对文件空间中的某个目录及其子目录生效
     <Files> </Files>                            #包含作用于匹配指定文件名的指令
-    <Location> </Location>                      #将封装的指令作用于匹配的URL
-    <VirtualHost> </VirtualHost>                        #包含仅作用于指定主机名或IP地址的指令
+    <Location> </Location>                      #将封装的指令作用于匹配的 URL
+    <VirtualHost> </VirtualHost>                        #包含仅作用于指定主机名或 IP 地址的指令
 
     <IfDefine>、<IfModule>、<IfVersion>仅在启动和重新启动中起作。如果在启动时指定的条件成立，则其中的指令
     对所有的请求都有效，否则将被忽略。
 
 
-<IfDefine>容器中的指令只有在httpd命令行中设定了特定的参数后才有效。下例中，只有在服务器用
-httpd-DClosedForNow方式启动时，所有的请求才会被重定向到另一个站点：
+<IfDefine>容器中的指令只有在 httpd 命令行中设定了特定的参数后才有效。下例中，只有在服务器用
+httpd-DClosedForNow 方式启动时，所有的请求才会被重定向到另一个站点：
 
-<IfDefine ClosedForNow>                                   #判断服务是否用httpd-DClosedForNow方式启动
+<IfDefine ClosedForNow>                                   #判断服务是否用 httpd-DClosedForNow 方式启动
           Redirect  /http://otherserver.example.com/    #如果条件成功请求才会被重定向到另一个站点
 </IfDefine>                                               #条件的结束标记
 **** 文件系统容器 
-     <Directory /var/web/dir1>                 #为目录/var/web/dir1设置属性
-          <Files private.html>            #为/var/web/dir1目录及子目录下的private.html文件设置属性
+     <Directory /var/web/dir1>                 #为目录/var/web/dir1 设置属性
+          <Files private.html>            #为/var/web/dir1 目录及子目录下的 private.html 文件设置属性
                   Order allow,deny      #顺序是先允许后被拒绝
-                  Deny from all         #拒绝对文件private.html的访问
+                  Deny from all         #拒绝对文件 private.html 的访问
           </Files>                        #结束一个文件的设置
      </Directory>                              #结束一个目录的设置
 
 **** 网络空间容器 
      <Location>指令与其相应的正则表达式版本（<LocationMatch>）一起作用于网络空间的特定部分。下例中的配置
-会拒绝对任何以“/private”开头的URL路径的访问，比如：http://yoursite.example.com/ private、
-http://yoursite.example.com/private123、http://yoursite.example.com/private/dir/file.html等所有以
-“/private”开头的URL路径。
+会拒绝对任何以“/private”开头的 URL 路径的访问，比如：http://yoursite.example.com/ private、
+http://yoursite.example.com/private123、http://yoursite.example.com/private/dir/file.html 等所有以
+“/private”开头的 URL 路径。
 
 
-<Location /private>                       #为以/private开头的URL路径设置属性
+<Location /private>                       #为以/private 开头的 URL 路径设置属性
           Order Allow,Deny              #顺序是先允许后被拒绝
-          Deny from all                 #拒绝对/private开头的URL路径的访问
+          Deny from all                 #拒绝对/private 开头的 URL 路径的访问
 </Location>                               #结束一个网络位置的设置
 
 **** 通配符和正则表达式 
-     <Directory>、<Files>、<Location>指令可以使用与C标准库中的fnmatch类似的shell风格的通配符。“*”匹配任
-何字符串，“?”匹配任何单个的字符，“[seq]”匹配seq序列中的任何字符，符号“/”不被任何通配符所匹配，所
+     <Directory>、<Files>、<Location>指令可以使用与 C 标准库中的 fnmatch 类似的 shell 风格的通配符。“*”匹配任
+何字符串，“?”匹配任何单个的字符，“[seq]”匹配 seq 序列中的任何字符，符号“/”不被任何通配符所匹配，所
 以必须显式地使用。
 
 如果需要更复杂的匹配，这些容器都有一个对应的正则版本：<DirectoryMatch>、<FilesMatch>、
-<LocationMatch>，可以使用与Perl兼容的正则表达式，以提供更复杂的匹配。但是还必须注意下面配置段的合并
+<LocationMatch>，可以使用与 Perl 兼容的正则表达式，以提供更复杂的匹配。但是还必须注意下面配置段的合并
 部分关于使用正则表达式会如何作用于配置指令的内容。下例使用非正则表达式的通配符来改变所有用户目录的配
 置：
 
@@ -108,31 +108,31 @@ http://yoursite.example.com/private123、http://yoursite.example.com/private/dir
 目录，从而导致你的访问限制被突破。比如：
 
 
-<Location /dir/>                          #为以/dir/开头的URL路径设置属性
+<Location /dir/>                          #为以/dir/开头的 URL 路径设置属性
          Order allow,deny               #顺序是先允许后被拒绝
-          Deny from all                 #拒绝对/dir/开头的URL路径的访问
+          Deny from all                 #拒绝对/dir/开头的 URL 路径的访问
 </Location>                               #结束一个网络位置的设置
 
-上述配置对http://yoursite.example.com/dir/请求的确起作用。但是设想一下，在一个不区分大小写的文件系统
-中，这个访问限制会被http://yoursite.example.com/DIR/请求轻易突破。而<Directory>指令才会真正作用于对这
-个位置的任何形式的请求。但是有一个例外，就是UNIX文件系统中的符号连接（软连接），符号连接可以使同一个
+上述配置对 http://yoursite.example.com/dir/请求的确起作用。但是设想一下，在一个不区分大小写的文件系统
+中，这个访问限制会被 http://yoursite.example.com/DIR/请求轻易突破。而<Directory>指令才会真正作用于对这
+个位置的任何形式的请求。但是有一个例外，就是 UNIX 文件系统中的符号连接（软连接），符号连接可以使同一个
 目录出现在文件系统中的多个位置。<Directory>指令将不重设路径名而直接追踪符号连接，因此，对于安全要求最
-高的，应该用Options指令禁止对符号连接的追踪。
+高的，应该用 Options 指令禁止对符号连接的追踪。
 
 不要认为使用大小写敏感的文件系统就无所谓了，因为有很多方法可以将不同的网络空间路径映射到同一个文件系
 统路径，所以，应当尽可能使用文件系统容器。但是也有一个例外，就是把访问限制放在<Location/>配置段中可以
-很安全地作用于除了某些特定URL以外的所有URL。
+很安全地作用于除了某些特定 URL 以外的所有 URL。
 
 <VirtualHost>容器作用于特定的虚拟主机，为同一个机器上具有不同配置的多个主机提供支持。在后面的章节中将
 详细介绍。
 
 
- 6 3.6　.htaccess文件和访问限制 
-　.htaccess文件和访问限制
+ 6 3.6　.htaccess 文件和访问限制 
+　.htaccess 文件和访问限制
 
-.htaccess文件（或者“分布式配置文件”）提供了针对每个目录改变配置的方法，即在一个特定的目录中放置一个
+.htaccess 文件（或者“分布式配置文件”）提供了针对每个目录改变配置的方法，即在一个特定的目录中放置一个
 包含指令的文件，其中的指令作用于此目录及其所有子目录。任何出现在配置文件中的指令都可能出现
-在.htaccess文件中。该文件在httpd.conf文件的AccessFileName指令中指定，用于进行针对单一目录的配置。在
+在.htaccess 文件中。该文件在 httpd.conf 文件的 AccessFileName 指令中指定，用于进行针对单一目录的配置。在
 服务器配置文件中按以下方法配置：
 
 
@@ -140,135 +140,135 @@ AccessFileName  .htaccess
 
 
 
-                     #在主配置文件中设置访问.htaccess文件
+                     #在主配置文件中设置访问.htaccess 文件
 
-一般情况下，不应该使用.htaccess文件，除非你对主配置文件没有访问权限。有一种很常见的误解，认为用户认证
-只能通过.htaccess文件实现，其实并不是这样，把用户认证写在主配置文件中是完全可行的，而且是一种很好的方
+一般情况下，不应该使用.htaccess 文件，除非你对主配置文件没有访问权限。有一种很常见的误解，认为用户认证
+只能通过.htaccess 文件实现，其实并不是这样，把用户认证写在主配置文件中是完全可行的，而且是一种很好的方
 法。
 
-.htaccess文件应该被用在内容提供者需要针对特定目录改变服务器的配置而又没有root权限的情况下。如果服务器
-管理员不愿意频繁修改配置，则可以允许用户通过.htaccess文件自己修改配置，尤其是ISP在同一个机器上运行了
+.htaccess 文件应该被用在内容提供者需要针对特定目录改变服务器的配置而又没有 root 权限的情况下。如果服务器
+管理员不愿意频繁修改配置，则可以允许用户通过.htaccess 文件自己修改配置，尤其是 ISP 在同一个机器上运行了
 多个用户站点，而又希望用户可以自己改变配置的情况下。
 
-虽然如此，一般都应该尽可能地避免使用.htaccess文件。任何希望放在.htaccess文件中的配置，都可以放在主配置
-文件的<Directory>段中，而且更高效。避免使用.htaccess文件有两个主要原因：首先是性能。如果
-AllowOverride启用了.htaccess文件，则Apache需要在每个目录中查找.htaccess文件，因此，无论是否真正用
-到，启用.htaccess都会导致性能的下降。另外，对每一个请求，都需要读取一次.htaccess文件。Apache必须在所
-有上级的目录中查找.htaccess文件，以使所有有效的指令都起作用。其次是安全。这样会允许用户自己修改服务器
-的配置，这可能会导致某些意想不到的修改，所以请认真考虑是否应当给予用户这样的特权。将AllowOverride设置
-为none可以完全禁止使用.htaccess文件：
+虽然如此，一般都应该尽可能地避免使用.htaccess 文件。任何希望放在.htaccess 文件中的配置，都可以放在主配置
+文件的<Directory>段中，而且更高效。避免使用.htaccess 文件有两个主要原因：首先是性能。如果
+AllowOverride 启用了.htaccess 文件，则 Apache 需要在每个目录中查找.htaccess 文件，因此，无论是否真正用
+到，启用.htaccess 都会导致性能的下降。另外，对每一个请求，都需要读取一次.htaccess 文件。Apache 必须在所
+有上级的目录中查找.htaccess 文件，以使所有有效的指令都起作用。其次是安全。这样会允许用户自己修改服务器
+的配置，这可能会导致某些意想不到的修改，所以请认真考虑是否应当给予用户这样的特权。将 AllowOverride 设置
+为 none 可以完全禁止使用.htaccess 文件：
 
 
 AllowOverride None
 
 
 
-                                    #完全禁止使用.htaccess文件
+                                    #完全禁止使用.htaccess 文件
 
 3.6.1　设置路径别名
 
-在使用.htaccess文件之前，我们使用Alias指令设置一个路径别名。将/var/www/html目录的别名设置为dir，这样
-我们可以在浏览器里通过别名dir去访问/var/www/html目录下面的网页文件了，并且可以使用<Directory>容器指
-令对/var/www/html目录做访问控制。之后在把同样的访问控制改为使用.htaccess文件方式完成。设置路径别名和
-目录权限控制，可以在主配置文件httpd.conf中加入以下指令。具体设置如下：
+在使用.htaccess 文件之前，我们使用 Alias 指令设置一个路径别名。将/var/www/html 目录的别名设置为 dir，这样
+我们可以在浏览器里通过别名 dir 去访问/var/www/html 目录下面的网页文件了，并且可以使用<Directory>容器指
+令对/var/www/html 目录做访问控制。之后在把同样的访问控制改为使用.htaccess 文件方式完成。设置路径别名和
+目录权限控制，可以在主配置文件 httpd.conf 中加入以下指令。具体设置如下：
 
 
-Alias /dir/  "/var/www/html/"                   #使用Alias设置别名
-<Directory "/var/www/html">               #使用<Directory>容器指令设置/var/www/html目录访问权限控制
+Alias /dir/  "/var/www/html/"                   #使用 Alias 设置别名
+<Directory "/var/www/html">               #使用<Directory>容器指令设置/var/www/html 目录访问权限控制
         Options Indexes FollowSymLinks          #当访问时可以允许出现目录列表和符号链接
-        AllowOverride None                      #禁止使用.htaccess文件
+        AllowOverride None                      #禁止使用.htaccess 文件
         Order allow,deny                        #顺序是先允许后被拒绝
         allow from all                          #允许所有对这个目录的访问
 </Directory>                              #结束一个目录的设置
  
-图3-2　设置别名路径的访问结果
+图 3-2　设置别名路径的访问结果
 
-配置文件按上面的设置以后，重新启动Apache服务器。如果服务器所在的主机为yoursite.example.com，则在浏
-览器中通过http:// yoursite.example.com/dir/地址访问服务器中/var/www/html/目录下面的文件。在
-/var/www/html/目录下新建一个test.html和一个demo.html文件，如果直接访问该目录就可以看到目录索引列
-表，如图3-2所示。
+配置文件按上面的设置以后，重新启动 Apache 服务器。如果服务器所在的主机为 yoursite.example.com，则在浏
+览器中通过 http:// yoursite.example.com/dir/地址访问服务器中/var/www/html/目录下面的文件。在
+/var/www/html/目录下新建一个 test.html 和一个 demo.html 文件，如果直接访问该目录就可以看到目录索引列
+表，如图 3-2 所示。
 
 在上面的配置中，<Directory>容器指令中使用的指令具体说明如下：
 
-1．Options指令 
+1．Options 指令 
 
-Options指令控制了在特定目录中将使用哪些服务器特性。Options可以为None、All或者任何Indexes、Include
-s、FollowSymlinks、ExecCGI或者MultiViews的组合。MultiViews不包含在All中，必须显式指定。这些选项解释
-如表3-3所示。
+Options 指令控制了在特定目录中将使用哪些服务器特性。Options 可以为 None、All 或者任何 Indexes、Include
+s、FollowSymlinks、ExecCGI 或者 MultiViews 的组合。MultiViews 不包含在 All 中，必须显式指定。这些选项解释
+如表 3-3 所示。
 
-表3-3　Options指令选项值的解释 
+表 3-3　Options 指令选项值的解释 
 
  选项名  描　述  
  None  在这种情况下，将不启用任何额外特性  
- All  除MultiViews之外的所有特性。这是默认设置  
- Indexes  如果一个映射到目录的URL被请求，而此目录中又没有DirectoryIndex（例如：  
-   index.html），那么服务器会返回由mod_autoindex生成的一个格式化后的目录列表  
- Includes  允许使用mod_include提供的服务器端包含  
+ All  除 MultiViews 之外的所有特性。这是默认设置  
+ Indexes  如果一个映射到目录的 URL 被请求，而此目录中又没有 DirectoryIndex（例如：  
+   index.html），那么服务器会返回由 mod_autoindex 生成的一个格式化后的目录列表  
+ Includes  允许使用 mod_include 提供的服务器端包含  
  FollowSymLinks  服务器允许在此目录中使用符号链接  
 
 符号链接的使用如下：
 
 
-[root@localhost html]# ln –s /var/share/doc  /var/www/html/doc         #在Linux命令行创建软链接
+[root@localhost html]# ln –s /var/share/doc  /var/www/html/doc         #在 Linux 命令行创建软链接
 
-通过上面的链接，我们在浏览器中访问http://yoursite.example.com/dir/doc/，就可以将访问位置链接到
-/var/share/doc目录下面。
+通过上面的链接，我们在浏览器中访问 http://yoursite.example.com/dir/doc/，就可以将访问位置链接到
+/var/share/doc 目录下面。
 
 注意： 即使服务器会使用符号连接，但它不会改变用于匹配<Directory>段的路径名。 
 
 如果此配置位于<Location>配置段中，则此设置会被忽略。 
 
-2．AllowOverrides指令 
+2．AllowOverrides 指令 
 
-确定允许存在于.htaccess文件中的指令类型。当服务器发现一个.htaccess文件（由AccessFileName指定）时，它
-需要知道在这个文件中声明的哪些指令能覆盖在此之前指定的配置指令。AllowOverride仅在不包含正则表达式的
+确定允许存在于.htaccess 文件中的指令类型。当服务器发现一个.htaccess 文件（由 AccessFileName 指定）时，它
+需要知道在这个文件中声明的哪些指令能覆盖在此之前指定的配置指令。AllowOverride 仅在不包含正则表达式的
 <Directory>配置段中才是有效的。在<Location>，<DirectoryMatch>，<Files>配置段中都是无效的。如果此指令
-被设置为None，那么.htaccess文件将被完全忽略。事实上，服务器根本不会读取.htaccess文件。当此指令设置为
-All时，所有具有“.htaccess”作用域的指令都允许出现在.htaccess文件中。
+被设置为 None，那么.htaccess 文件将被完全忽略。事实上，服务器根本不会读取.htaccess 文件。当此指令设置为
+All 时，所有具有“.htaccess”作用域的指令都允许出现在.htaccess 文件中。
 
-3．Order指令 
+3．Order 指令 
 
-Order指令控制默认的访问状态与Allow和Deny指令生效的顺序。表明用户是先设置允许的访问地址还是先设置禁止
+Order 指令控制默认的访问状态与 Allow 和 Deny 指令生效的顺序。表明用户是先设置允许的访问地址还是先设置禁止
 访问的地址。
 
-4．Allow指令 
+4．Allow 指令 
 
-Allow指令控制哪些主机可以访问服务器的该区域。可以根据主机名、IP地址、IP地址范围或其他环境变量中捕获的
+Allow 指令控制哪些主机可以访问服务器的该区域。可以根据主机名、IP 地址、IP 地址范围或其他环境变量中捕获的
 客户端请求特性进行控制。如指定“Allow from all”，则允许所有主机访问。
 
-5．Deny指令 
+5．Deny 指令 
 
-这条指令允许基于主机名、IP地址或者环境变量限制对服务器的访问。Deny指令的参数设置和Allow指令完全相
+这条指令允许基于主机名、IP 地址或者环境变量限制对服务器的访问。Deny 指令的参数设置和 Allow 指令完全相
 同。如指定“Deny from all”，则禁止所有主机访问。
 
-3.6.2　在.htaccess文件中设置目录的访问限制
+3.6.2　在.htaccess 文件中设置目录的访问限制
 
-启用并控制使用.htaccess文件，可以在Apache的主配置文件中将AccessFileName指令的参数设置为.htaccess，按
-如下内容修改即可启用.htaccess文件功能。启用.htaccess文件如下：
+启用并控制使用.htaccess 文件，可以在 Apache 的主配置文件中将 AccessFileName 指令的参数设置为.htaccess，按
+如下内容修改即可启用.htaccess 文件功能。启用.htaccess 文件如下：
 
 
 AccessFileName .htaccess                        #某个目录启用分布式配置文件功能
-<FilesMatch "^\.ht">                              #设置文件名称，并且设置客户端无法修改.htaccess文件
+<FilesMatch "^\.ht">                              #设置文件名称，并且设置客户端无法修改.htaccess 文件
     Order allow,deny
     Deny from all
 </FilesMatch>
 
-任何出现在配置文件中的指令都可能出现在.htaccess文件中。通常，.htaccess文件使用的配置语法和主配置文件一
-样。AllowOverride指令按类别决定了.htaccess文件中哪些指令才是有效的。我们将上例别名的设置路径
-/var/www/html的访问限制，重新改写成使用.htaccess文件进行控制。首先在主配置文件httpd.conf中将上例
+任何出现在配置文件中的指令都可能出现在.htaccess 文件中。通常，.htaccess 文件使用的配置语法和主配置文件一
+样。AllowOverride 指令按类别决定了.htaccess 文件中哪些指令才是有效的。我们将上例别名的设置路径
+/var/www/html 的访问限制，重新改写成使用.htaccess 文件进行控制。首先在主配置文件 httpd.conf 中将上例
 <Directory>容器指令中的内容修改写成如下内容：
 
 
-Alias /dir/  "/var/www/html/"                   #使用Alias设置别名
-<Directory "/var/www/html">                       #使用<Directory>容器指令设置/var/www/html目录访问权限控制
-        AllowOverride All                       #将上例参数none改写成all即可以使用.htaccess文件
+Alias /dir/  "/var/www/html/"                   #使用 Alias 设置别名
+<Directory "/var/www/html">                       #使用<Directory>容器指令设置/var/www/html 目录访问权限控制
+        AllowOverride All                       #将上例参数 none 改写成 all 即可以使用.htaccess 文件
 </Directory>
 
-上面所示将<Directory>容器指令中的内容除了留下AllowOverride指令，删除了其余三个指令。并将指令
-AllowOverride的值由原来的None改成All，即具有“.htaccess”作用域的指令都允许出现在.htaccess文件中。
+上面所示将<Directory>容器指令中的内容除了留下 AllowOverride 指令，删除了其余三个指令。并将指令
+AllowOverride 的值由原来的 None 改成 All，即具有“.htaccess”作用域的指令都允许出现在.htaccess 文件中。
 
-在别名设置目录/var/www/html中新建一个.htaccess文件，将删除掉的三个指令写入到这个文件中，这样在
-Apache服务器寻找目录时就可以使用.htaccess文件来对这个目录进行访问限制了。如下所示：
+在别名设置目录/var/www/html 中新建一个.htaccess 文件，将删除掉的三个指令写入到这个文件中，这样在
+Apache 服务器寻找目录时就可以使用.htaccess 文件来对这个目录进行访问限制了。如下所示：
 
 
 [root@localhost html]# vi /var/www/html/.htaccess       //编辑此文件写入下面内容
@@ -276,16 +276,16 @@ Options Indexes FollowSymLinks
 Order allow,deny
 Allow from all
 
-不用重新启动Apache服务器即可以使用.htaccess文件中的目录访问限制，打开浏览器同样输入URL为
-http://yoursite.example.com/dir/，同样可以看到目录列表，表示使用.htaccess文件设置些目录访问限制成功。
+不用重新启动 Apache 服务器即可以使用.htaccess 文件中的目录访问限制，打开浏览器同样输入 URL 为
+http://yoursite.example.com/dir/，同样可以看到目录列表，表示使用.htaccess 文件设置些目录访问限制成功。
 
 
  1 3.6.1　设置路径别名 
- 2 3.6.2　在.htaccess文件中设置目录的访问限制 
+ 2 3.6.2　在.htaccess 文件中设置目录的访问限制 
 
  7 3.7　设置虚拟主机 
 
- 1 3.7.1　基于IP地址的虚拟主机 
+ 1 3.7.1　基于 IP 地址的虚拟主机 
  2 3.7.2　基于主机名的虚拟主机 
 
  8 3.8　小结 
@@ -293,8 +293,100 @@ http://yoursite.example.com/dir/，同样可以看到目录列表，表示使用
 ** 功能 
 *** 监听
    - 监听域名
-   - 监听IP
+   - 监听 IP
    - 监听端口
-*** url重写 
+*** url 重写 
     mod_rewrite
 *** 传输文件
+* cygwin
+** 测试语法 httpd.exe -t
+** 安装成 windows 服务 httpd.exe -k install
+D:\Apache24\bin>httpd.exe -k install
+Installing the Apache2.4 service
+The Apache2.4 service is successfully installed.
+Testing httpd.conf....
+Errors reported here must be corrected before the service can be started.
+ 
+** 启动服务 httpd.exe -k start
+  -D name            : define a name for use in <IfDefine name> directives
+  -d directory       : specify an alternate initial ServerRoot
+  -f file            : specify an alternate ServerConfigFile
+  -C "directive"     : process directive before reading config files
+  -c "directive"     : process directive after reading config files
+  -e level           : show startup errors of level (see LogLevel)
+  -E file            : log startup errors to file
+  -v                 : show version number
+  -V                 : show compile settings
+  -h                 : list available command line options (this page)
+  -l                 : list compiled in modules
+  -L                 : list available configuration directives
+  -t -D DUMP_VHOSTS  : show parsed vhost settings
+  -t -D DUMP_RUN_CFG : show parsed run settings
+  -S                 : a synonym for -t -D DUMP_VHOSTS -D DUMP_RUN_CFG
+  -t -D DUMP_MODULES : show all loaded modules
+  -M                 : a synonym for -t -D DUMP_MODULES
+  -t -D DUMP_INCLUDES: show all included configuration files
+  -t                 : run syntax check for config files
+  -T                 : start without DocumentRoot(s) check
+  -X                 : debug mode (only one worker, do not detach)
+* window php 开发环境
+  Windows 下安装 PHP 开发环境
+一、Apache
+      因为 Apache 官网只提供源代码，如果要使用必须得自己编译，这里我选择第三方安装包 Apache Lounge。
+进入 Apachelounge 官方下载地址：http://www.apachelounge.com/download/
+首先下载并安装 vc redist，这是 Apache 运行必需的一个组件。
+下载 Apache 解压版，将解压后的文件夹放在你想要安装的路径下。
+修改配置文件：
+               Apache 默认存在路径：“c:\Apache24” 下（版本号可能不同）。如果跟你的安装路径不同，你需要打开 Apach\conf\httpd.conf 配置文件，将其中所有前面没有被"#"注释的"c:\Apache24"、"c:\Apache24\htdocs"和"c:\Apache24\cgi-bin\"改成对应的路径。
+               指定 IP 和端口：在 httpd.conf 找到"ServerName www.example.com:80"，将前面的注释去掉，将"www.example.com"修改为"localhost"。如果你要修改端口，将这里"80”和前面“Listen：80”中的 80 一起修改。
+
+（可选）添加系统变量：将"Apache 的安装路径\bin"添加到 Path 中。
+验证安装是否成功：运行 Apache 的启动 httpd.exe。在浏览器上输入 localhost:80，如果不是无法访问那么 Apache 的配置便完成了。
+二、PHP
+安装配置 PHP
+ 　　　    进入 PHP 下载地址 http://windows.php.net/download 下载最新线程安全版 PHP zip 压缩包，解压缩后放在想要安装的路径下。注意：下载的 PHP VC 版本不能比前面安装的 vc redist 版高。
+
+　　　　 进入 PHP 安装目录，复制一份 php.ini-development 改名为 php.ini 放到安装路径下，打开找到"extension_dir"，去掉注释符，将值改为"PHP 安装路径\ext"
+
+在 Apache 中加载 PHP
+　　　　  打开 Apache 的配置文件 conf\httpd.conf，找到 LoadModule 区域，在其后加入：
+
+                LoadModule php7_module "PHP 安装路径\php7apache2_4.dll"  # 在 Apache 中以 module 的方式加载 PHP，“php7_module”中的“7”要和 PHP 的版本对应；此外，不同的 PHP 版本“php7apache2_4.dll”可能不同。
+                PHPIniDir "PHP 安装路径" #告诉 Apache PHP 的安装路径
+定义执行 PHP 模块的文件
+　　　　  查找 AddType application/x-gzip .gz .tgz，在其下一行添加代码：AddType application/x-httpd-php .php .html：声明.php 和.html 的文件能执行 PHP 程序。
+
+测试：在 Apache 安装路径\htdocs 下新建文件：test.php，里面编辑：<?php  phpinfo(); ?>， 启动 Apache， 在浏览器输入：localhost:80/test.php。
+三、MySQL
+ 安装：在 https://dev.mysql.com/downloads/下载相应安装版本，根据自己的需求安装。
+在 PHP 中加载连接 MySQL 的程序集：在 php.ini extension 板块中增加一行 extension=php_mysqli.dll。
+　　　　  说明：不同的 PHP 版本可能提供不同的连接 mysq 的程序集，去 ext 文件夹下看看 PHP 提供的是什么这里就写什么。不同的程序集可能在连接数据库的时候使用的函数也不一样。
+
+测试：在 test.php 中编辑：<?php  $mysqli = mysqli_connect("localhost","root","pwd") or die("cannt connet"); ?>，启动数据库，重启 Apache，在浏览器端查看，如果没有错误信息便配置正确了。
+*  httpd.exe
+** 通用帮助 httpd -h
+** 开始 httpd 服务器  httpd -k start 
+** 关闭，重启  httpd -k restart/shutdown/stop   
+** 安装 httpd 服务  httpd -k install/uninstall/config  
+  Press Enter. If there are any errors it will tell you. 
+  Warnings will not stop Apache from working, they do need to be addressed none the less. 
+  If there are no errors the cursor will sit and blink on the next line. 
+  
+  You can test your installation by opening up your Browser and typing in the address:
+  
+     http://localhost
+  
+  You can shut down Apache by pressing Ctrl+C (It may take a few seconds)
+  
+  To install as a service. Open command prompt as Administrator and type:
+  
+    >httpd.exe -k install
+  
+  ApacheMonitor:
+  
+  Double click ApacheMonitor.exe, or put it in your Startup folder.
+  
+  
+  To see all Command line options:
+  
+    >http -h
