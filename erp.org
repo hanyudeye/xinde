@@ -221,75 +221,83 @@
    数据类型要保证正确 
 *** 刷新数据
   CallSysFunc(RefreshData) @NoStatus
-** 
-** 
-*** 
-** 
-*** 
-** 
-** 颜色
-    rad 红   orange 橙   yellow 黄  
- green 绿   blue 蓝   purple 紫   pink 粉   white 白   black 黑   brown 棕   grey 灰
-beige 米色 
-black 黑色 
-brown 咖啡色 
-cream 雪白 
-khaki 卡其色 
-grey 灰色 
-navy 丈青色 
-offwhite 灰白色 
-palegoldenrod 苍麒麟色 
-palegreen 苍绿色 
-paleturquoise 苍绿色 
-palevioletred 苍紫罗蓝色 
-pansy 紫罗兰色 
-papayawhip 番木色 
-peachpuff 桃色 
-peru 秘鲁色 
-pink 粉红 
-plum 杨李色 
-powderblue 粉蓝色 
-purple 紫色 
-red 红色 
-rosybrown 褐玫瑰红 
-royalblue 宝蓝色 
-rubine 宝石红 
-saddlebrown 重褐色 
-salmon 鲜肉色 
-salmon pink 橙红色 
-sandy beige 浅褐色 
-sandybrown 沙褐色 
-sapphire 宝石蓝 
-scarlet 猩红色 
-seagreen 海绿色 
-seashell 海贝色 
-shocking pink 鲜粉红色 
-sienna 赭色 
-silver 银白色 
-skyblue 天蓝色 
-slateblue 石蓝色 
-slategray 灰石色 
-smoky gray 烟灰色 
-snow 雪白色 
-springgreen 春绿色 
-steelblue 钢蓝色 
-stone 石色 
-tan 茶色 
-teal 水鸭色 
-thistle 蓟色 
-tomato 番茄色 
-turquoise 青绿色 
-turquoise blue 翠蓝色 
-violet 紫色 
-wheat 浅黄色 
-white 白色 
-wheat 土黄色 
-whitesmoke 烟白色 
-winered 葡萄酒红 
-yellow 黄色 
-yellowgreen 黄绿色
+*** 网格显示标题  可以在布局类型中 把顶级容器改成 下级容器 
+*** 颜色
+     rad 红   orange 橙   yellow 黄  
+  green 绿   blue 蓝   purple 紫   pink 粉   white 白   black 黑   brown 棕   grey 灰
+ beige 米色 
+ black 黑色 
+ brown 咖啡色 
+ cream 雪白 
+ khaki 卡其色 
+ grey 灰色 
+ navy 丈青色 
+ offwhite 灰白色 
+ palegoldenrod 苍麒麟色 
+ palegreen 苍绿色 
+ paleturquoise 苍绿色 
+ palevioletred 苍紫罗蓝色 
+ pansy 紫罗兰色 
+ papayawhip 番木色 
+ peachpuff 桃色 
+ peru 秘鲁色 
+ pink 粉红 
+ plum 杨李色 
+ powderblue 粉蓝色 
+ purple 紫色 
+ red 红色 
+ rosybrown 褐玫瑰红 
+ royalblue 宝蓝色 
+ rubine 宝石红 
+ saddlebrown 重褐色 
+ salmon 鲜肉色 
+ salmon pink 橙红色 
+ sandy beige 浅褐色 
+ sandybrown 沙褐色 
+ sapphire 宝石蓝 
+ scarlet 猩红色 
+ seagreen 海绿色 
+ seashell 海贝色 
+ shocking pink 鲜粉红色 
+ sienna 赭色 
+ silver 银白色 
+ skyblue 天蓝色 
+ slateblue 石蓝色 
+ slategray 灰石色 
+ smoky gray 烟灰色 
+ snow 雪白色 
+ springgreen 春绿色 
+ steelblue 钢蓝色 
+ stone 石色 
+ tan 茶色 
+ teal 水鸭色 
+ thistle 蓟色 
+ tomato 番茄色 
+ turquoise 青绿色 
+ turquoise blue 翠蓝色 
+ violet 紫色 
+ wheat 浅黄色 
+ white 白色 
+ wheat 土黄色 
+ whitesmoke 烟白色 
+ winered 葡萄酒红 
+ yellow 黄色 
+ yellowgreen 黄绿色
 *** 弹出查询
-* erp 存储过程可以声明变量
+*** 没有声明标量变量 Fn            是否掩码勾上
+***  ID 不能为空  是否掩码勾上 
+*** 审核
+     select 0 as CheckResult, as CheckMsg
+     select 0 as CheckResult,'目前只有生产计划员有权限审核生产计划信息，如有疑问请联系信息部开发人员！' as CheckMsg
+     from PP_WorkOrder
+     where @SysHand not  in ( select ID from PM_Employee where lan1_name IN ('汪洋','白兵'))  and Status<>'30' and MS_OrderWorkLocation_ID='40be03d4-77ab-4f3d-804b-050e3a5eb7e1'
+     and ID=@Fn(Main.ID)
 
-  fielt
-** 
+ select 0 as CheckResult,'目前只有质量人员有审核权限，如有疑问请联系信息部开发人员！' as CheckMsg
+  where @SysHand not in (select ID from PM_Employee
+ where lan1_Name IN ('缪亚芬','赵丽英','梁正玉','文霞'))
+*** 数据为空、ID 不能为空 
+    看看主表是不是有两个，只能有一个主表
+* erp 存储过程可以声明变量
+* 钉钉管理员密码 
+HelloWorld123  

@@ -15,12 +15,12 @@
        $#	传递到脚本的参数个数
        $*	以一个单字符串显示所有向脚本传递的参数。
        如"$*"用「"」括起来的情况、以"$1 $2 … $n"的形式输出所有参数。
-     $$	脚本运行的当前进程ID号
-     $!	后台运行的最后一个进程的ID号
+     $$	脚本运行的当前进程 ID 号
+     $!	后台运行的最后一个进程的 ID 号
      $@	与$*相同，但是使用时加引号，并在引号中返回每个参数。
      如"$@"用「"」括起来的情况、以"$1" "$2" … "$n" 的形式输出所有参数。
-       $-	显示Shell使用的当前选项，与set命令功能相同。
-       $?	显示最后命令的退出状态。0表示没有错误，其他任何值表明有错误。
+       $-	显示 Shell 使用的当前选项，与 set 命令功能相同。
+       $?	显示最后命令的退出状态。0 表示没有错误，其他任何值表明有错误。
    #+END_SRC
 ** 运算符
 *** 基本运算符
@@ -42,8 +42,8 @@
   #+BEGIN_SRC shell
   =	检测两个字符串是否相等，相等返回 true。	[ $a = $b ] 返回 false。
   !=	检测两个字符串是否相等，不相等返回 true。	[ $a != $b ] 返回 true。
-  -z	检测字符串长度是否为0，为0返回 true。	[ -z $a ] 返回 false。
-  -n	检测字符串长度是否为0，不为0返回 true。	[ -n $a ] 返回 true。
+  -z	检测字符串长度是否为 0，为 0 返回 true。	[ -z $a ] 返回 false。
+  -n	检测字符串长度是否为 0，不为 0 返回 true。	[ -n $a ] 返回 true。
   str	检测字符串是否为空，不为空返回 true。	[ $a ] 返回 true。
   #+END_SRC
 *** 逻辑运算
@@ -54,12 +54,12 @@
  | 文件目录 | -f       | 文件是否存在                |
  |          | -d       | 目录                        |
  |          | -b       | block                       |
- |          | -c       | character文件               |
+ |          | -c       | character 文件               |
  |          | -S       | socket                      |
  |          | -L       | 符号链接                    |
  |          | -e       | 某个东西                    |
  |----------+----------+-----------------------------|
- | 程序     | -G       | 是否由GID所执行的程序所拥有 |
+ | 程序     | -G       | 是否由 GID 所执行的程序所拥有 |
  |          | -O       | UID                         |
  |          | -p       | name pipe or FIFO           |
  |----------+----------+-----------------------------|
@@ -67,14 +67,14 @@
  |          | -w       | 写                          |
  |          | -x       | 执行                        |
  |          | -s       | 非空白                      |
- |          | -u       | SUID属性                    |
+ |          | -u       | SUID 属性                    |
  |          | -g       | SGID                        |
  |----------+----------+-----------------------------|
  | 文件间   | -nt      | 第一个比第二个新            |
  |          | -ot      | 旧                          |
- |          | -ef      | 同一文件(link之类)          |
+ |          | -ef      | 同一文件(link 之类)          |
  |----------+----------+-----------------------------|
- | 逻辑     | &&       | AND的意思                   |
+ | 逻辑     | &&       | AND 的意思                   |
  |          | 两竖     | OR                          |
  |----------+----------+-----------------------------|
  : 条件判断
@@ -113,13 +113,13 @@
        command
    done
    case 值 in
-    模式1)
+    模式 1)
         command1
         command2
         ...
         commandN
         ;;
-    模式2）
+    模式 2）
         command1
         command2
         ...
@@ -139,7 +139,7 @@
 
      }
    调用
- 函数名 参数1 参数2 ...
+ 函数名 参数 1 参数 2 ...
    #+END_SRC
 ** 重定向
    #+BEGIN_SRC shell
@@ -178,69 +178,69 @@
 == 等于,如:if [ "$a" == "$b" ],与=等价
 注意:==的功能在[[]]和[]中的行为是不同的,如下:
 
-1 [[ $a == z* ]] # 如果$a以"z"开头(模式匹配)那么将为true
-2 [[ $a == "z*" ]] # 如果$a等于z*(字符匹配),那么结果为true
+1 [[ $a == z* ]] # 如果$a 以"z"开头(模式匹配)那么将为 true
+2 [[ $a == "z*" ]] # 如果$a 等于 z*(字符匹配),那么结果为 true
 3
-4 [ $a == z* ] # File globbing 和word splitting将会发生
-5 [ "$a" == "z*" ] # 如果$a等于z*(字符匹配),那么结果为true
+4 [ $a == z* ] # File globbing 和 word splitting 将会发生
+5 [ "$a" == "z*" ] # 如果$a 等于 z*(字符匹配),那么结果为 true
 
-一点解释,关于File globbing是一种关于文件的速记法,比如"*.c"就是,再如~也是.
-但是file globbing并不是严格的正则表达式,虽然绝大多数情况下结构比较像.
+一点解释,关于 File globbing 是一种关于文件的速记法,比如"*.c"就是,再如~也是.
+但是 file globbing 并不是严格的正则表达式,虽然绝大多数情况下结构比较像.
 
 != 不等于,如:if [ "$a" != "$b" ]
 这个操作符将在[[]]结构中使用模式匹配.
-< 小于,在ASCII字母顺序下.如:
+< 小于,在 ASCII 字母顺序下.如:
 if [[ "$a" < "$b" ]]
 if [ "$a" \< "$b" ]
 注意:在[]结构中"<"需要被转义.
-> 大于,在ASCII字母顺序下.如:
+> 大于,在 ASCII 字母顺序下.如:
 if [[ "$a" > "$b" ]]
 if [ "$a" \> "$b" ]
 注意:在[]结构中">"需要被转义.
-具体参考Example 26-11来查看这个操作符应用的例子.
--z 字符串为"null".就是长度为0.
+具体参考 Example 26-11 来查看这个操作符应用的例子.
+-z 字符串为"null".就是长度为 0.
 -n 字符串不为"null"
 
 注意:
 
-使用-n在[]结构中测试必须要用""把变量引起来.使用一个未被""的字符串来使用! -z
+使用-n 在[]结构中测试必须要用""把变量引起来.使用一个未被""的字符串来使用! -z
 或者就是未用""引用的字符串本身,放到[]结构中。虽然一般情况下可
 以工作,但这是不安全的.习惯于使用""来测试字符串是一种好习惯.
 
 awk '{print $2}' class.txt | grep '^[0-9.]' > res
 
-SHELL下的数字比较及计算
+SHELL 下的数字比较及计算
 
 比较：
 
-方法一： if [ ${A} -lt ${B} ]; then ...
-这是最基本的比较方法，使用lt(小于),gt(大于),le(小于等于),ge(大于等于)，优点：还没发现；缺点：只能比较整数，使用lt,gt等不直
+方法一：if [ ${A} -lt ${B} ]; then ...
+这是最基本的比较方法，使用 lt(小于),gt(大于),le(小于等于),ge(大于等于)，优点：还没发现；缺点：只能比较整数，使用 lt,gt 等不直
 观
 
-方法二： if ((${A} < ${B})) then ...
-这是CShell风格比较，优点：不用使用lt,gt等难记的字符串；缺点：还是只能比较整数
+方法二：if ((${A} < ${B})) then ...
+这是 CShell 风格比较，优点：不用使用 lt,gt 等难记的字符串；缺点：还是只能比较整数
 
-方法三： if (echo ${A} ${B} | awk '!($1>$2){exit 1}') then ...
-这是使用awk比较，优点：可以比较小数；缺点：表达式太复杂，难记
+方法三：if (echo ${A} ${B} | awk '!($1>$2){exit 1}') then ...
+这是使用 awk 比较，优点：可以比较小数；缺点：表达式太复杂，难记
 
-方法四： if (echo ${A} - ${B} | bc -q | grep -q "^-"); then ...
-这是使用bc计算比较，优点：可以比较小数；缺点：表达式更复杂，难记
+方法四：if (echo ${A} - ${B} | bc -q | grep -q "^-"); then ...
+这是使用 bc 计算比较，优点：可以比较小数；缺点：表达式更复杂，难记
 
 计算：
 方法一：typeset C=$(expr ${A} + ${B});
-SHELL中的基本工具，优点：方便检测变量是否为数字；缺点：只能计算整数，且只能计算加减法，不能计算乘除法
+SHELL 中的基本工具，优点：方便检测变量是否为数字；缺点：只能计算整数，且只能计算加减法，不能计算乘除法
 
 方法二：let "C=${A}+${B}"; 或 let "C=A+B"
 内嵌命令计算，优点：能计算乘除法及位运算等；缺点：只能计算整数
 
 方法三：typeset C=$((A+B))
-CShell风格的计算，优点：能计算乘除法及位运算等，简介，编写方便；缺点：不能计算小数
+CShell 风格的计算，优点：能计算乘除法及位运算等，简介，编写方便；缺点：不能计算小数
 
 方法四：typeset C=${echo ${A} ${B} | awk '{print $1+$2}')
-使用awk计算，优点：能计算小数，可以实现多种计算方式，计算灵活；缺点：表达式太复杂
+使用 awk 计算，优点：能计算小数，可以实现多种计算方式，计算灵活；缺点：表达式太复杂
 
 方法五：typeset C=${echo ${A} + ${B} | bc -q)
-使用awk计算，优点：能计算小数，计算方式比awk还多，计算灵活；缺点：表达式太复杂，小数点后面的位数必须使用scale=N来设置，否
+使用 awk 计算，优点：能计算小数，计算方式比 awk 还多，计算灵活；缺点：表达式太复杂，小数点后面的位数必须使用 scale=N 来设置，否
 则可能会将结果截断为整数
 
 特殊字符
@@ -251,12 +251,12 @@ CShell风格的计算，优点：能计算乘除法及位运算等，简介，�
 ? 任一个字符
 [abc] 列表项之一
 [^abc] 对于列表取非也可以使用范围 [a-z] [0-9] [A-Z](所有字符和数字)
-{} 循环列表时用 touch_{1,2,3}时就会建立touch_1,touch_2,touch_3循环出这三个文件，也会用 echo ${ab}c
-~ home目录cd ~ （普通通话进入的是/home目录下用户自己的家目录）
+{} 循环列表时用 touch_{1,2,3}时就会建立 touch_1,touch_2,touch_3 循环出这三个文件，也会用 echo ${ab}c
+~ home 目录 cd ~ （普通通话进入的是/home 目录下用户自己的家目录）
 $ 提取变量值
-`` $() 命令替换touch `date +%F_\`date +%T\`` touch $(date +%F_$(date +%T))
-$[] 整数计算 echo $[2+3] - * / % 浮点数用 echo "scale=3; 10/3" | bc -l (bc用于计算的)
-\ 转义后面的字符串 echo \\ 输出\ 转义特殊字符，为防止被SHELL解释bash中的特殊字符
+`` $() 命令替换 touch `date +%F_\`date +%T\`` touch $(date +%F_$(date +%T))
+$[] 整数计算 echo $[2+3] - * / % 浮点数用 echo "scale=3; 10/3" | bc -l (bc 用于计算的)
+\ 转义后面的字符串 echo \\ 输出\ 转义特殊字符，为防止被 SHELL 解释 bash 中的特殊字符
 "" '' 带空格串将空格视为串的一部分 echo "abc xyz" echo 'abc xyz'
 `` 命令替换取命令的执行结果
 $() 同上，但它弥补了``的嵌套缺陷
@@ -265,18 +265,18 @@ $() 同上，但它弥补了``的嵌套缺陷
 $ 变量取值
 $() 命令替换
 ${} 变量名的范围
-% 杀后台经常jobs号，取模运算(大家对取模应该并不陌生)
+% 杀后台经常 jobs 号，取模运算(大家对取模应该并不陌生)
 ^ 取非和！雷同
 & 用进程后台处理， &&用于逻辑与
 \* 匹配任意字符串；计算乘法
 () 子进程执行
-- 减号，区间，cd - 回到上层目录，杀掉当前jobs
+- 减号，区间，cd - 回到上层目录，杀掉当前 jobs
 
 _ （下划线）无特殊含义
-+ 加号；杀掉当前jobs（进程）
++ 加号；杀掉当前 jobs（进程）
 = 赋值
 | 管道，|| 逻辑或
-\ 转义当一些特殊符号如$是一个变量需要转义才不被bash解析
+\ 转义当一些特殊符号如$是一个变量需要转义才不被 bash 解析
 {} 命令列表 {ls;cd /;}
 [] 字符通配符，[]也是用于测试命令
 ：空命令真值
@@ -284,17 +284,17 @@ _ （下划线）无特殊含义
 "" 软引 '' 硬引
 < 输入重定向
 > 输出重定向
->& 合并2和1输出
+>& 合并 2 和 1 输出
 , 枚举分隔符
 . 当前目录
 / 目录分隔符
 ? 单个字符
 回车命令执行
 
-这篇文章主要介绍了Linux Shell中的特殊符号和含义简明总结,本文汇总了包含了绝大部份的Shell特殊符号,对每一个符号的作用做了总
+这篇文章主要介绍了 Linux Shell 中的特殊符号和含义简明总结,本文汇总了包含了绝大部份的 Shell 特殊符号,对每一个符号的作用做了总
 结,需要的朋友可以参考下
 
-在Linux Shell中有很多的特殊符号，这对于我们写Shell脚本时要特别留意：一方面要知道这些特殊符号的用法，这些符号用好了可以达到
+在 Linux Shell 中有很多的特殊符号，这对于我们写 Shell 脚本时要特别留意：一方面要知道这些特殊符号的用法，这些符号用好了可以达到
 事半功倍的效果；但另一方面要避免这些特殊符号的过度使用而导致脚本难以调试、难以阅读。
 
 这些特殊符号罗列出来大致如下：
@@ -363,7 +363,7 @@ cd /etc/rc.dcd ../..cd /
 let “num1 = ((a = 10 / 2, b = 25 / 5))”
 
 \ 倒斜线 (escape)
-在交互模式下的escape 字元，有几个作用；放在指令前，有取消 aliases 的作用；放在特殊符号前，则该特殊符号的作用消失；放在指令
+在交互模式下的 escape 字元，有几个作用；放在指令前，有取消 aliases 的作用；放在特殊符号前，则该特殊符号的作用消失；放在指令
 的最末端，表示指令连接下一行。
 # type rm
 rm is aliased to `rm -i'
@@ -384,7 +384,7 @@ who | wc -l
 if [ "$?" != 0 ]thenecho “Executes error”exit 1fi
 在规则表达式中她担任 “反逻辑” 的角色
 ls a[!0-9]
-上例，代表显示除了a0, a1 …. a9 这几个文件的其他文件。
+上例，代表显示除了 a0, a1 …. a9 这几个文件的其他文件。
 
 : 冒号
 在 bash 中，这是一个内建指令：”什么事都不干”，但返回状态值 0。
@@ -398,7 +398,7 @@ echo $? # 回应为 0
 法，基本上也可以处理，但都比不上上例的简洁与效率。
 除了上述之外，还有一个地方必须使用冒号
 PATH=$PATH:$HOME/fbin:$HOME/fperl:/usr/local/mozilla
-在使用者自己的HOME 目录下的 .bash_profile 或任何功能相似的档案中，设定关于”路径”的场合中，我们都使用冒号，来做区隔。
+在使用者自己的 HOME 目录下的 .bash_profile 或任何功能相似的档案中，设定关于”路径”的场合中，我们都使用冒号，来做区隔。
 
 ? 问号 (wild card)
 在文件名扩展(Filename expansion)上扮演的角色是匹配一个任意的字元，但不包含 null 字元。
@@ -410,7 +410,7 @@ PATH=$PATH:$HOME/fbin:$HOME/fperl:/usr/local/mozilla
 # ls a*a a1 access_log
 在运算时，它则代表 “乘法”。
 let “fmult=2*3″
-除了内建指令 let，还有一个关于运算的指令 expr，星号在这里也担任”乘法”的角色。不过在使用上得小心，他的前面必须加上escape 字
+除了内建指令 let，还有一个关于运算的指令 expr，星号在这里也担任”乘法”的角色。不过在使用上得小心，他的前面必须加上 escape 字
 元。
 
 \** 次方运算
@@ -428,7 +428,7 @@ ${parameter:-word} ${parameter:=word} ${parameter:?word} ${parameter:+word} ${pa
 ${!prefix*} ${#parameter} ${parameter#word} ${parameter##word} ${parameter%word} ${parameter%%word} ${parameter/pattern/
 string} ${parameter//pattern/string}
 
-$*引用script 的执行引用变量，引用参数的算法与一般指令相同，指令本身为0，其后为1，然后依此类推。引用变量的代表方式如下：
+$*引用 script 的执行引用变量，引用参数的算法与一般指令相同，指令本身为 0，其后为 1，然后依此类推。引用变量的代表方式如下：
 $0, $1, $2, $3, $4, $5, $6, $7, $8, $9, ${10}, ${11}…..
 个位数的，可直接使用数字，但两位数以上，则必须使用 {} 符号来括住。
 $* 则是代表所有引用变量的符号。使用时，得视情况加上双引号。
@@ -443,22 +443,22 @@ $#
 echo “$#”
 
 $? 状态值 (status variable)
-一般来说，UNIX(linux) 系统的进程以执行系统调用exit() 来结束的。这个回传值就是status值。回传给父进程，用来检查子进程的执行
+一般来说，UNIX(linux) 系统的进程以执行系统调用 exit() 来结束的。这个回传值就是 status 值。回传给父进程，用来检查子进程的执行
 状态。
 一般指令程序倘若执行成功，其回传值为 0；失败为 1。
 tar cvfz dfbackup.tar.gz /home/user > /dev/nullecho “$?”$$
-由于进程的ID是唯一的，所以在同一个时间，不可能有重复性的 PID。有时，script 会需要产生临时文件，用来存放必要的资料。而此
+由于进程的 ID 是唯一的，所以在同一个时间，不可能有重复性的 PID。有时，script 会需要产生临时文件，用来存放必要的资料。而此
 script 亦有可能在同一时间被使用者们使用。在这种情况下，固定文件名在写法上就显的不可靠。唯有产生动态文件名，才能符合需要。
-符号$$ 或许可以符合这种需求。它代表当前shell 的 PID。
+符号$$ 或许可以符合这种需求。它代表当前 shell 的 PID。
 echo “$HOSTNAME, $USER, $MAIL” > ftmp.$$
 使用它来作为文件名的一部份，可以避免在同一时间，产生相同文件名的覆盖现象。
 ps: 基本上，系统会回收执行完毕的 PID，然后再次依需要分配使用。所以 script 即使临时文件是使用动态档名的写法，如果 script 执
 行完毕后仍不加以清除，会产生其他问题。
 () 指令群组 (command group)
 用括号将一串连续指令括起来，这种用法对 shell 来说，称为指令群组。如下面的例子：(cd ~ ; vcgh=`pwd` ; echo $vcgh)，指令群组
-有一个特性，shell会以产生 subshell 来执行这组指令。因此，在其中所定义的变数，仅作用于指令群组本身。我们来看个例子
+有一个特性，shell 会以产生 subshell 来执行这组指令。因此，在其中所定义的变数，仅作用于指令群组本身。我们来看个例子
 # cat ftmp-01#!/bin/basha=fsh(a=incg ; echo -e “/n $a /n”)echo $a# ./ftmp-01incgfsh
-除了上述的指令群组，括号也用在 array 变数的定义上；另外也应用在其他可能需要加上escape 字元才能使用的场合，如运算式。
+除了上述的指令群组，括号也用在 array 变数的定义上；另外也应用在其他可能需要加上 escape 字元才能使用的场合，如运算式。
 
 (())
 这组符号的作用与 let 指令相似，用在算数运算上，是 bash 的内建功能。所以，在执行效率上会比使用 let 指令要好许多。
@@ -488,7 +488,7 @@ rm -r 200[1234]
 [[]]
 这组符号与先前的 [] 符号，基本上作用相同，但她允许在其中直接使用 || 与 && 逻辑等符号。
 #!/bin/bashread akif [[ $ak > 5 || $ak < 9 ]]thenecho $akfi || 逻辑符号这个会时常看到，代表 or 逻辑的符号。 && 逻辑符号这
-个也会常看到，代表 and 逻辑的符号。 & 后台工作单一个& 符号，且放在完整指令列的最后端，即表示将该指令列放入后台中工作。 tar
+个也会常看到，代表 and 逻辑的符号。 & 后台工作单一个& 符号，且放在完整指令列的最后端，即表示将该指令列放入后台中工作。tar
 cvfz data.tar.gz data > /dev/null &
 / 单字边界
 这组符号在规则表达式中，被定义为”边界”的意思。譬如，当我们想找寻 the 这个单字时，如果我们用
@@ -530,8 +530,8 @@ ${parameter%word}${parameter%%word}
      exit 0
 
    #+END_SRC
-    set命令用于设置shell。
-    set指令能设置所使用shell的执行方式，可依照不同的需求来做设置。
+    set 命令用于设置 shell。
+    set 指令能设置所使用 shell 的执行方式，可依照不同的需求来做设置。
 
 语法
 set [+-abCdefhHklmnpPtuvx]
@@ -540,22 +540,22 @@ set [+-abCdefhHklmnpPtuvx]
 -a 　标示已修改的变量，以供输出至环境变量。
 -b 　使被中止的后台程序立刻回报执行状态。
 -C 　转向所产生的文件无法覆盖已存在的文件。
--d 　Shell预设会用杂凑表记忆使用过的指令，以加速指令的执行。使用-d参数可取消。
--e 　若指令传回值不等于0，则立即退出shell。
+-d 　Shell 预设会用杂凑表记忆使用过的指令，以加速指令的执行。使用-d 参数可取消。
+-e 　若指令传回值不等于 0，则立即退出 shell。
 -f　 　取消使用通配符。
 -h 　自动记录函数的所在位置。
--H Shell 　可利用"!"加<指令编号>的方式来执行history中记录的指令。
+-H Shell 　可利用"!"加<指令编号>的方式来执行 history 中记录的指令。
 -k 　指令所给的参数都会被视为此指令的环境变量。
--l 　记录for循环的变量名称。
+-l 　记录 for 循环的变量名称。
 -m 　使用监视模式。
 -n 　只读取指令，而不实际执行。
 -p 　启动优先顺序模式。
--P 　启动-P参数后，执行指令时，会以实际的文件或目录来取代符号连接。
--t 　执行完随后的指令，即退出shell。
+-P 　启动-P 参数后，执行指令时，会以实际的文件或目录来取代符号连接。
+-t 　执行完随后的指令，即退出 shell。
 -u 　当执行时使用到未定义过的变量，则显示错误信息。
--v 　显示shell所读取的输入值。
+-v 　显示 shell 所读取的输入值。
 -x 　执行指令后，会先显示该指令及所下的参数。
-+<参数> 　取消某个set曾启动的参数。
++<参数> 　取消某个 set 曾启动的参数。
 ** 库
 *** shift 把参数左移一位
 *** trap 一般是收到信号，进行收尾工作
@@ -579,9 +579,9 @@ set [+-abCdefhHklmnpPtuvx]
    yum search python       //查找与指定关键词相关的包
    yum info python         //查看指定包的信息
    yum list python         //查看指定包的简要信息
-   yum install net-tools       //安装指定的包(net-tools包含netstat和ifconfig命令)
+   yum install net-tools       //安装指定的包(net-tools 包含 netstat 和 ifconfig 命令)
    yum remove libevent     //删除指定的包
-   rpm -ivh xxxx.rpm --test    //安装指定的rpm包，加上--test代表只是测试
+   rpm -ivh xxxx.rpm --test    //安装指定的 rpm 包，加上--test 代表只是测试
    rpm -e --nodeps openjavasdk //强行删除指定的包
    rpm -q python           //查询是否安装了该包
    rpm -ql python          //查询包安装涉及的目录
@@ -589,61 +589,61 @@ set [+-abCdefhHklmnpPtuvx]
 
    //ubuntu
    apt-cache show package  //获取包的相关信息，如说明、大小、版本等   
-   apt-cache search package    //搜索软件包，同yum search
+   apt-cache search package    //搜索软件包，同 yum search
    apt-cache showpkg package_name  //显示软件包的依赖关系信息
    apt-cache depends package_name  //显示指定软件包所依赖的软件包。
-   sudo dpkg -I iptux.deb#查看iptux.deb软件包的详细信息，包括软件名称、版本以及大小等（其中-I等价于--info）
-   sudo dpkg -c iptux.deb#查看iptux.deb软件包中包含的文件结构（其中-c等价于--contents）
-   sudo dpkg -i iptux.deb#安装iptux.deb软件包（其中-i等价于--install）
-   sudo dpkg -l iptux#查看iptux软件包的信息（软件名称可通过dpkg -I命令查看，其中-l等价于--list）
-   sudo dpkg -L iptux#查看iptux软件包安装的所有文件（软件名称可通过dpkg -I命令查看，其中-L等价于--listfiles）
-   sudo dpkg -s iptux#查看iptux软件包的详细信息（软件名称可通过dpkg -I命令查看，其中-s等价于--status）
-   sudo dpkg -r iptux#卸载iptux软件包（软件名称可通过dpkg -I命令查看，其中-r等价于--remove）
-   注：dpkg命令无法自动解决依赖关系。如果安装的deb包存在依赖包，则应避免使用此命令，或者按照依赖关系顺序安装依赖包。
+   sudo dpkg -I iptux.deb#查看 iptux.deb 软件包的详细信息，包括软件名称、版本以及大小等（其中-I 等价于--info）
+   sudo dpkg -c iptux.deb#查看 iptux.deb 软件包中包含的文件结构（其中-c 等价于--contents）
+   sudo dpkg -i iptux.deb#安装 iptux.deb 软件包（其中-i 等价于--install）
+   sudo dpkg -l iptux#查看 iptux 软件包的信息（软件名称可通过 dpkg -I 命令查看，其中-l 等价于--list）
+   sudo dpkg -L iptux#查看 iptux 软件包安装的所有文件（软件名称可通过 dpkg -I 命令查看，其中-L 等价于--listfiles）
+   sudo dpkg -s iptux#查看 iptux 软件包的详细信息（软件名称可通过 dpkg -I 命令查看，其中-s 等价于--status）
+   sudo dpkg -r iptux#卸载 iptux 软件包（软件名称可通过 dpkg -I 命令查看，其中-r 等价于--remove）
+   注：dpkg 命令无法自动解决依赖关系。如果安装的 deb 包存在依赖包，则应避免使用此命令，或者按照依赖关系顺序安装依赖包。
 
 ** 文件管理类
-   find 路径 -iname "*.jar" -exec cp {} 目标目录 \;    //find和cp联动操作
+   find 路径 -iname "*.jar" -exec cp {} 目标目录 \;    //find 和 cp 联动操作
 ** 进程\网络查看类
    ps -aux         //查看所有进程
-   pgrep cron      //查询应用是否在运行，成功则返回pid
+   pgrep cron      //查询应用是否在运行，成功则返回 pid
    netstat –apn        //查看所有占用了网络端口的应用
-   netstat -tl     //参数“-t”是显示tcp数据包的连接行为，参数“-l”是显示监听状态。如果"netstat -tl"输出结果如上面代码所示，则说明服务器端ssh服务已启动。
-   ip addr         //查看ip地址
+   netstat -tl     //参数“-t”是显示 tcp 数据包的连接行为，参数“-l”是显示监听状态。如果"netstat -tl"输出结果如上面代码所示，则说明服务器端 ssh 服务已启动。
+   ip addr         //查看 ip 地址
 ** 后台运行
-linux命令行重定向：在shell中，分别用0，1，2分别代表标准输入，标准输出，异常输出。 
-在linux中，有个特殊的文件/dev/null，向其写入数据都会被丢弃。
+linux 命令行重定向：在 shell 中，分别用 0，1，2 分别代表标准输入，标准输出，异常输出。 
+在 linux 中，有个特殊的文件/dev/null，向其写入数据都会被丢弃。
 
- nohup ./startWebLogic.sh &  //让程序在后台运行，输出文件为nohup.out
- nohup command > myout.file 2>&1 &   //输出文件重定向为myout.file
+ nohup ./startWebLogic.sh &  //让程序在后台运行，输出文件为 nohup.out
+ nohup command > myout.file 2>&1 &   //输出文件重定向为 myout.file
  nohup command >/dev/null 2>$1 &    //×××忽略所有输出，重要×××
- jobs -l               //查看当前正在运行的job
- fg %s                 //关闭指定的job
+ jobs -l               //查看当前正在运行的 job
+ fg %s                 //关闭指定的 job
 ** 定时运行
-cron是linux中用于处理定时任务的工具，关键信息格式：分时日月周
+cron 是 linux 中用于处理定时任务的工具，关键信息格式：分时日月周
 
 分钟　（0-59） 
 小时　（0-23） 
 日期　（1-31） 
 月份　（1-12） 
-星期　（0-7）//0 7代表星期天 #周月日不可同时存在，否则语法错误。
+星期　（0-7）//0 7 代表星期天 #周月日不可同时存在，否则语法错误。
 
-*/3 * * * *    ls       #   每三分钟执行一次ls
+*/3 * * * *    ls       #   每三分钟执行一次 ls
 
-crontab -e      //编辑当前用户的cron任务
-crontab -l      //列出当前用户的cron任务
-crontab -r      //删除当前任务的cron任务
+crontab -e      //编辑当前用户的 cron 任务
+crontab -l      //列出当前用户的 cron 任务
+crontab -r      //删除当前任务的 cron 任务
 
-service crond start|stop|restart|reload //对cron服务进行控制
+service crond start|stop|restart|reload //对 cron 服务进行控制
 
 系统定时任务配置
 
 目录位置	描述
-/etc/cron.hourly	目录下的脚本会每个小时让执行一次，在每小时的17分钟时运行；
-/etc/cron.daily	目录下的脚本会每天让执行一次，在每天的6点25分时运行；
-/etc/cron.weekly	目录下的脚本会每周让执行一次，在每周第七天的6点47分时运行；
-/etc/cron.mouthly	目录下的脚本会每月让执行一次，在每月1号的6点52分时运行；
+/etc/cron.hourly	目录下的脚本会每个小时让执行一次，在每小时的 17 分钟时运行；
+/etc/cron.daily	目录下的脚本会每天让执行一次，在每天的 6 点 25 分时运行；
+/etc/cron.weekly	目录下的脚本会每周让执行一次，在每周第七天的 6 点 47 分时运行；
+/etc/cron.mouthly	目录下的脚本会每月让执行一次，在每月 1 号的 6 点 52 分时运行；
 ** 创建快捷方式
-linux的快捷方式都存放于 /usr/share/applications，后缀名为.desktop,范例如下：
+linux 的快捷方式都存放于 /usr/share/applications，后缀名为.desktop,范例如下：
 
 [Desktop Entry]
 Name=eclipse
@@ -655,8 +655,8 @@ Type=Application
 Categories=Application;Development;
 StartupNotify=true
 
-** 清理boot 内核
-ubuntu使用时间长了后，积累了不少已经过期的内核，导致boot区不够用。
+** 清理 boot 内核
+ubuntu 使用时间长了后，积累了不少已经过期的内核，导致 boot 区不够用。
 
 #查询
 dpkg --get-selections |grep linux-image
@@ -667,286 +667,100 @@ sudo apt-get purge linux-image-3.5.0-17-generic
 #也可以使用自动删除(比较安全，定期执行下即可)
 sudo apt-get autoremove
 
-** 修改ip地址
-ip addr #查看当前的ip地址
-cat /etc/resolv.conf    #查看dns网络地址
+** 修改 ip 地址
+ip addr #查看当前的 ip 地址
+cat /etc/resolv.conf    #查看 dns 网络地址
 vim /etc/sysconfig/network-scripts/ifcfg-exxx   #编辑网卡配置文件
 
-BOOTPROTO="static" 网卡获得ip地址的方式，static（静态 ip地址）dhcp（通过dhcp协议获取ip）
+BOOTPROTO="static" 网卡获得 ip 地址的方式，static（静态 ip 地址）dhcp（通过 dhcp 协议获取 ip）
 IPADDR="192.168.211.144"
-GATEWAY="192.168.211.2" #重要：虚拟机linux设静态ip必须设置Gateway，而且一定指向x.x.x.2那个地址
-ONBOOT="yes" 系统启动时是否设置此网络接口，设置为yes时，系统启动时激活此设备。默认设置为yes
-* Linux企业运维人员最常用150个命令汇总
-线上查询及帮助命令(2个) 
-man 查看命令帮助，命令的词典，更复杂的还有info，但不常用。 
-help 查看Linux内置命令的帮助，比如cd命令。
-
-文件和目录操作命令(18个)
-
-ls 全拼list，功能是列出目录的内容及其内容属性信息。
-cd 全拼change directory，功能是从当前工作目录切换到指定的工作目录。
-cp 全拼copy，其功能为复制文件或目录。
+GATEWAY="192.168.211.2" #重要：虚拟机 linux 设静态 ip 必须设置 Gateway，而且一定指向 x.x.x.2 那个地址
+ONBOOT="yes" 系统启动时是否设置此网络接口，设置为 yes 时，系统启动时激活此设备。默认设置为 yes
+* Linux 企业运维人员最常用 150 个命令汇总
+** 线上查询及帮助命令(2 个) 
+man 查看命令帮助，命令的词典，更复杂的还有 info，但不常用。 
+help 查看 Linux 内置命令的帮助，比如 cd 命令。
+** 文件和目录操作命令(18 个)
+ls 全拼 list，功能是列出目录的内容及其内容属性信息。
+cd 全拼 change directory，功能是从当前工作目录切换到指定的工作目录。
+cp 全拼 copy，其功能为复制文件或目录。
 find 查找的意思，用于查找目录及目录下的文件。
-mkdir 全拼make directories，其功能是创建目录。
-mv 全拼move，其功能是移动或重命名文件。
-pwd 全拼print working directory，其功能是显示当前工作目录的绝对路径。
+mkdir 全拼 make directories，其功能是创建目录。
+mv 全拼 move，其功能是移动或重命名文件。
+pwd 全拼 print working directory，其功能是显示当前工作目录的绝对路径。
 rename 用于重命名文件。
-rm 全拼remove，其功能是删除一个或多个文件或目录。
-rmdir 全拼remove empty directories，功能是删除空目录。
+rm 全拼 remove，其功能是删除一个或多个文件或目录。
+rmdir 全拼 remove empty directories，功能是删除空目录。
 touch 创建新的空文件，改变已有文件的时间戳属性。
 tree 功能是以树形结构显示目录下的内容。
-
-basename
-
-显示文件名或目录名。
-
-dirname
-
-显示文件或目录路径。
-
-chattr
-
-改变文件的扩展属性。
-
-lsattr
-
-查看文件扩展属性。
-
-file
-
-显示文件的类型。
-
-md5sum
-
-计算和校验文件的MD5值。
-
-查看文件及内容处理命令（21个）
-
-cat
-
-全拼concatenate，功能是用于连接多个文件并且打印到屏幕输出或重定向到指定文件中。
-
-tac
-
-tac是cat的反向拼写，因此命令的功能为反向显示文件内容。
-
-more
-
-分页显示文件内容。
-
-less
-
-分页显示文件内容，more命令的相反用法。
-
-head
-
-显示文件内容的头部。
-
-tail
-
-显示文件内容的尾部。
-
-cut
-
-将文件的每一行按指定分隔符分割并输出。
-
-split
-
-分割文件为不同的小片段。
-
-paste
-
-按行合并文件内容。
-
-sort
-
-对文件的文本内容排序。
-
-uniq
-
-去除重复行。oldboy
-
-wc
-
-统计文件的行数、单词数或字节数。
-
-iconv
-
-转换文件的编码格式。
-
-dos2unix
-
-将DOS格式文件转换成UNIX格式。
-
-diff
-
-全拼difference，比较文件的差异，常用于文本文件。
-
-vimdiff
-
-命令行可视化文件比较工具，常用于文本文件。
-
-rev
-
-反向输出文件内容。
-
-grep/egrep
-
-过滤字符串，三剑客老三。
-
-join
-
-按两个文件的相同字段合并。
-
-tr
-
-替换或删除字符。
-
-vi/vim
-
-命令行文本编辑器。
-
-文件压缩及解压缩命令（4个）
-
-tar
-
-打包压缩。oldboy
-
-unzip
-
-解压文件。
-
-gzip
-
-gzip压缩工具。
-
-zip
-
-压缩工具。
-
-信息显示命令（11个）
-
-uname
-
-显示操作系统相关信息的命令。
-
-hostname
-
-显示或者设置当前系统的主机名。
-
-dmesg
-
-显示开机信息，用于诊断系统故障。
-
-uptime
-
-显示系统运行时间及负载。
-
-stat
-
-显示文件或文件系统的状态。
-
-du
-
-计算磁盘空间使用情况。
-
-df
-
-报告文件系统磁盘空间的使用情况。
-
-top
-
-实时显示系统资源使用情况。
-
-free
-
-查看系统内存。
-
-date
-
-显示与设置系统时间。
-
-cal
-
-查看日历等时间信息。
-
-搜索文件命令（4个）
-
-which
-
-查找二进制命令，按环境变量PATH路径查找。
-
-find
-
-从磁盘遍历查找文件或目录。
-
-whereis
-
-查找二进制命令，按环境变量PATH路径查找。
-
-locate
-
-从数据库 (/var/lib/mlocate/mlocate.db) 查找命令，使用updatedb更新库。
-
-用户管理命令（10个）
-
-useradd
-
-添加用户。
-
-usermod
-
-修改系统已经存在的用户属性。
-
-userdel
-
-删除用户。
-
-groupadd
-
-添加用户组。
-
-passwd
-
-修改用户密码。
-
-chage
-
-修改用户密码有效期限。
-
-id
-
-查看用户的uid,gid及归属的用户组。
-
-su
-
-切换用户身份。
-
-visudo
-
-编辑/etc/sudoers文件的专属命令。
-
-sudo
-
-以另外一个用户身份（默认root用户）执行事先在sudoers文件允许的命令。
-
-基础网络操作命令（11个）
-
-telnet
-
-使用TELNET协议远程登录。
-
-ssh
-
-使用SSH加密协议远程登录。
-
-scp
-
-全拼secure copy，用于不同主机之间复制文件。
-
-wget
-
-命令行下载文件。
+basename 显示文件名或目录名。
+dirname 显示文件或目录路径。
+chattr 改变文件的扩展属性。
+lsattr 查看文件扩展属性。
+file 显示文件的类型。
+md5sum 计算和校验文件的 MD5 值。
+** 查看文件及内容处理命令（21 个） 
+cat 全拼 concatenate，功能是用于连接多个文件并且打印到屏幕输出或重定向到指定文件中。
+tac tac 是 cat 的反向拼写，因此命令的功能为反向显示文件内容。
+more 分页显示文件内容。
+less 分页显示文件内容，more 命令的相反用法。
+head 显示文件内容的头部。
+tail 显示文件内容的尾部。
+cut 将文件的每一行按指定分隔符分割并输出。
+split 分割文件为不同的小片段。
+paste 按行合并文件内容。
+sort 对文件的文本内容排序。
+uniq 去除重复行。oldboy
+wc 统计文件的行数、单词数或字节数。
+iconv 转换文件的编码格式。
+dos2unix 将 DOS 格式文件转换成 UNIX 格式。
+diff 全拼 difference，比较文件的差异，常用于文本文件。
+vimdiff 命令行可视化文件比较工具，常用于文本文件。
+rev 反向输出文件内容。
+grep/egrep 过滤字符串，三剑客老三。
+join 按两个文件的相同字段合并。
+tr 替换或删除字符。
+vi/vim 命令行文本编辑器。
+** 文件压缩及解压缩命令（4 个）
+tar 打包压缩。oldboy
+unzip 解压文件。
+gzip gzip 压缩工具。
+zip 压缩工具。
+
+** 信息显示命令（11 个）
+uname 显示操作系统相关信息的命令。
+hostname 显示或者设置当前系统的主机名。
+dmesg 显示开机信息，用于诊断系统故障。
+uptime 显示系统运行时间及负载。
+stat 显示文件或文件系统的状态。
+du 计算磁盘空间使用情况。
+df 报告文件系统磁盘空间的使用情况。
+top 实时显示系统资源使用情况。
+free 查看系统内存。
+date 显示与设置系统时间。
+cal 查看日历等时间信息。
+** 搜索文件命令（4 个） 
+which 查找二进制命令，按环境变量 PATH 路径查找。
+find 从磁盘遍历查找文件或目录。
+whereis 查找二进制命令，按环境变量 PATH 路径查找。
+locate 从数据库 (/var/lib/mlocate/mlocate.db) 查找命令，使用 updatedb 更新库。
+** 用户管理命令（10 个） 
+useradd 添加用户。 
+usermod 修改系统已经存在的用户属性。
+userdel 删除用户。 
+groupadd 添加用户组。
+passwd 修改用户密码。
+chage 修改用户密码有效期限。
+id 查看用户的 uid,gid 及归属的用户组。
+su 切换用户身份。
+visudo 编辑/etc/sudoers 文件的专属命令。
+sudo 以另外一个用户身份（默认 root 用户）执行事先在 sudoers 文件允许的命令。
+
+** 基础网络操作命令（11 个）
+telnet 使用 TELNET 协议远程登录。
+ssh 使用 SSH 加密协议远程登录。
+scp 全拼 secure copy，用于不同主机之间复制文件。
+wget 命令行下载文件。
 
 ping
 
@@ -954,7 +768,7 @@ ping
 
 route
 
-显示和设置linux系统的路由表。
+显示和设置 linux 系统的路由表。
 
 ifconfig
 
@@ -976,7 +790,7 @@ ss
 
 查看网络状态。
 
-深入网络操作命令（9个）
+深入网络操作命令（9 个）
 
 nmap
 
@@ -984,7 +798,7 @@ nmap
 
 lsof
 
-全名list open files，也就是列举系统中已经被打开的文件。
+全名 list open files，也就是列举系统中已经被打开的文件。
 
 mail
 
@@ -996,15 +810,15 @@ mutt
 
 nslookup
 
-交互式查询互联网DNS服务器的命令。
+交互式查询互联网 DNS 服务器的命令。
 
 dig
 
-查找DNS解析过程。
+查找 DNS 解析过程。
 
 host
 
-查询DNS的命令。
+查询 DNS 的命令。
 
 traceroute
 
@@ -1014,7 +828,7 @@ tcpdump
 
 命令行的抓包工具。
 
-有关磁盘与文件系统的命令（16个）
+有关磁盘与文件系统的命令（16 个）
 
 mount
 
@@ -1026,7 +840,7 @@ umount
 
 fsck
 
-检查并修复Linux文件系统。
+检查并修复 Linux 文件系统。
 
 dd
 
@@ -1034,23 +848,23 @@ dd
 
 dumpe2fs
 
-导出ext2/ext3/ext4文件系统信息。
+导出 ext2/ext3/ext4 文件系统信息。
 
 dump
 
-ext2/3/4文件系统备份工具。
+ext2/3/4 文件系统备份工具。
 
 fdisk
 
-磁盘分区命令，适用于2TB以下磁盘分区。
+磁盘分区命令，适用于 2TB 以下磁盘分区。
 
 parted
 
-磁盘分区命令，没有磁盘大小限制，常用于2TB以下磁盘分区。
+磁盘分区命令，没有磁盘大小限制，常用于 2TB 以下磁盘分区。
 
 mkfs
 
-格式化创建Linux文件系统。
+格式化创建 Linux 文件系统。
 
 partprobe
 
@@ -1058,11 +872,11 @@ partprobe
 
 e2fsck
 
-检查ext2/ext3/ext4类型文件系统。
+检查 ext2/ext3/ext4 类型文件系统。
 
 mkswap
 
-创建Linux交换分区。
+创建 Linux 交换分区。
 
 swapon
 
@@ -1078,9 +892,9 @@ sync
 
 resize2fs
 
-调整ext2/ext3/ext4文件系统大小。
+调整 ext2/ext3/ext4 文件系统大小。
 
-系统权限及用户授权相关命令（4个）
+系统权限及用户授权相关命令（4 个）
 
 chmod
 
@@ -1098,11 +912,11 @@ umask
 
 显示或设置权限掩码。
 
-查看系统用户登陆信息的命令（7个）
+查看系统用户登陆信息的命令（7 个）
 
 whoami
 
-显示当前有效的用户名称，相当于执行id -un命令。
+显示当前有效的用户名称，相当于执行 id -un 命令。
 
 who
 
@@ -1128,7 +942,7 @@ finger
 
 查找并显示用户信息。
 
-内置命令及其它（19个）
+内置命令及其它（19 个）
 
 echo
 
@@ -1140,11 +954,11 @@ printf
 
 rpm
 
-管理rpm包的命令。
+管理 rpm 包的命令。
 
 yum
 
-自动化简单化地管理rpm包的命令。
+自动化简单化地管理 rpm 包的命令。
 
 watch
 
@@ -1206,11 +1020,11 @@ bc
 
 命令行科学计算器
 
-系统管理与性能监视命令(9个)
+系统管理与性能监视命令(9 个)
 
 chkconfig
 
-管理Linux系统开机启动项。
+管理 Linux 系统开机启动项。
 
 vmstat
 
@@ -1218,19 +1032,19 @@ vmstat
 
 mpstat
 
-显示各个可用CPU的状态统计。
+显示各个可用 CPU 的状态统计。
 
 iostat
 
-统计系统IO。
+统计系统 IO。
 
 sar
 
-全面地获取系统的CPU、运行队列、磁盘 I/O、分页（交换区）、内存、 CPU中断和网络等性能数据。
+全面地获取系统的 CPU、运行队列、磁盘 I/O、分页（交换区）、内存、CPU 中断和网络等性能数据。
 
 ipcs
 
-用于报告Linux中进程间通信设施的状态，显示的信息包括消息列表、共享内存和信号量的信息。
+用于报告 Linux 中进程间通信设施的状态，显示的信息包括消息列表、共享内存和信号量的信息。
 
 ipcrm
 
@@ -1238,13 +1052,13 @@ ipcrm
 
 strace
 
-用于诊断、调试Linux用户空间跟踪器。我们用它来监控用户空间进程和内核的交互，比如系统调用、信号传递、进程状态变更等。
+用于诊断、调试 Linux 用户空间跟踪器。我们用它来监控用户空间进程和内核的交互，比如系统调用、信号传递、进程状态变更等。
 
 ltrace
 
 命令会跟踪进程的库函数调用,它会显现出哪个库函数被调用。
 
-关机/重启/注销和查看系统信息的命令（6个）
+关机/重启/注销和查看系统信息的命令（6 个）
 
 shutdown
 
@@ -1260,17 +1074,17 @@ poweroff
 
 logout
 
-退出当前登录的Shell。
+退出当前登录的 Shell。
 
 exit
 
-退出当前登录的Shell。
+退出当前登录的 Shell。
 
 Ctrl+d
 
-退出当前登录的Shell的快捷键。
+退出当前登录的 Shell 的快捷键。
 
-进程管理相关命令（15个）
+进程管理相关命令（15 个）
 
 bg
 
@@ -1333,7 +1147,7 @@ service
 启动、停止、重新启动和关闭系统服务，还可以显示所有系统服务的当前状态。
 * shell mode 
 ** shell 集成工具
-*** 定义shell 
+*** 定义 shell 
     #+BEGIN_SRC lisp 
       '((shell :variables shell-default-shell 'eshell)))
     #+END_SRC
@@ -1363,10 +1177,10 @@ service
   | ~SPC p '​~   | Open a shell in the project's root                             |
   | ~SPC a s e~ | Open, close or go to an =eshell=                               |
   | ~SPC a s i~ | Open, close or go to a =shell=                                 |
-  | ~SPC a s m~ | Open, close or go to a =multi-term=    , 打开多进程shell       |
+  | ~SPC a s m~ | Open, close or go to a =multi-term=    , 打开多进程 shell       |
   | ~SPC a s t~ | Open, close or go to a =ansi-term=                             |
   | ~SPC a s T~ | Open, close or go to a =term=                                  |
-  | ~SPC m H~   | 历史browse history with =helm= (works in =eshell= and =shell=) |
+  | ~SPC m H~   | 历史 browse history with =helm= (works in =eshell= and =shell=) |
   | ~C-j~       | next item in history                                           |
   | ~C-k~       | previous item in history                                       |
 
@@ -1406,8 +1220,8 @@ service
 **** company-shell
 - company-shell offers 3 backends for 3 different sources:
   -company-shell - 完成$PATH 包含的程序　providing completions for binaries that are found on your $PATH
-  -company-fish-shell - 完成fish 的函数providing completions for fish-shell’s functions, both builtin as well as user-defined
-  -company-shell-env -  完成环境变量providing completions for environment variables based on the env command
+  -company-fish-shell - 完成 fish 的函数 providing completions for fish-shell’s functions, both builtin as well as user-defined
+  -company-shell-env -  完成环境变量 providing completions for environment variables based on the env command
 - 报错 Company: backend (company-shell company-shell-env company-fish-shell) error "Wrong type argument: stringp, nil" with args (candidates ech)
   To find the documentation for a completion candidate(候选) c company-shell and company-fish-shell will both first try the output of man c.
   If c does not have a manpage they will then use c --help as a fallback. 
@@ -1415,5 +1229,5 @@ service
   The meta doc-string (shown in the minibuffer during completion) is provided by (the first line of) whatis c.
 
  There are no doc- or meta-strings for company-shell-env.
-* 运行shell
+* 运行 shell
   systemctl status networking.service
