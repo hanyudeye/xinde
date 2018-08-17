@@ -39,110 +39,76 @@
 ** 第二十五章:二分查找实现(Jon Bentley:90%程序员无法正确实现) 
 ** 第二十六章:基于给定的文档生成倒排索引的编码与实践 
 ** 第二十七章:不改变正负数之间相对顺序重新排列数组
-* 左旋转字符串
-  #+BEGIN_SRC c
-    char * invert(char *start, char *end)
+* 向左旋转字符串
+  #+BEGIN_SRC cpp
+    #include <string.h>
+    #include <iostream>
+    using namespace std;
+            
+    void Swap(char* a,char* b)      //特此把交换函数,独立抽取出来。当然,不排除会 有人认为,此为多此一举。
     {
-      char tmp, *ptmp = start;
-      *end = tmp;
-       start ++;
-       end --;
+      char temp =*a;
+      ,*a = *b;
+      ,*b = temp;
+    }
+             
+    // Reverse the string between pStart and pEnd
+    void ReverseString(char* pStart, char* pEnd)
+    {
+      if(*pStart != '/0' && *pEnd != '/0')
+        //这句也可以是:if(pStart != NULL && pEnd != NULL)。
+        {
+          while(pStart <= pEnd)
+            {
+              Swap(pStart,pEnd);      //交换
+             
+              pStart++;
+              pEnd--;
+            }
         }
-    return ptmp;
+    }
+         
+    // Move the first n chars in a string to its end
+    char* LeftRotateString(char* pStr, unsigned int n)
+    {
+      if(pStr != NULL)
+        {
+          int nLength = static_cast<int>(strlen(pStr));
+          if(nLength >0 && n != 0 && n<nLength)    //n 可以=0,也可以说不该 =0。
+            //nLength 是整个字符串的长度,n 是左边的一部分,所以应该是
+            n<nLength。
+              //之前上传的答案(代码),就错在这里,最初的为 n>nLength,当然, 就是错的了。July、k,updated。
+              {
+                char* pFirstStart = pStr;
+                char* pFirstEnd = pStr + n - 1;
+                char* pSecondStart = pStr + n;
+                char* pSecondEnd = pStr + nLength - 1;
+
+                // reverse the first part of the string
+                ReverseString(pFirstStart, pFirstEnd);
+                // reverse the second part of the strint
+                ReverseString(pSecondStart, pSecondEnd);
+                // reverse the whole string
+                ReverseString(pFirstStart, pSecondEnd);
+              }
+        }
+      return pStr;
     }
 
-    char *left(char *s, int pos)   //pos 为要旋转的字符个数,或长度,下面主函数测试中,
-    pos=3。
+    int main()
     {
-     int len = strlen(s);
-     invert(s, s + (pos - 1));  //如上,X->X^T,即 abc->cba
-     invert(s + pos, s + (len - 1)); //如上,Y->Y^T,即 def->fed
-     invert(s, s + (len - 1));  //如上,整个翻转,(X^TY^T)^T=YX,
-    //   即 cbafed->defabc。
-     return s;
-     }
-
-     int main()
-     {
-     char s[] = "abcdefghij";
-     puts(left(s, 3));
-     return 0;
-     }
-
-  #+END_SRC
-  #+BEGIN_SRC c
+      char a[11]="hello July";    //2、修正,以一个数组实现存储整个字符串
+      char *ps=a;
+      LeftRotateString(ps, 6);
+      for(;*ps!='/0';ps++)
+        cout<<*ps;
+      cout<<endl;
+      ps=NULL;    //代码规范
+      return 0;
+    }
   
   #+END_SRC
-          1. #include <string.h>
-             1. #include <iostream>
-             2. using namespace std;
-             3. 
-             4. void Swap(char* a,char* b)      //特此把交换函数,独立抽取出来。当然,不排除会
-                 有人认为,此为多此一举。
-             5. {
-             6. char temp =*a;
-             7. *a = *b;
-             8. *b = temp;
-             9. }
-             10. 
-             11. // Reverse the string between pStart and pEnd
-             12. void ReverseString(char* pStart, char* pEnd)
-             13. {
-             14. if(*pStart != '/0' && *pEnd != '/0')
-             15. //这句也可以是:if(pStart != NULL && pEnd != NULL)。
-             16. {
-             17. while(pStart <= pEnd)
-             18. {
-             19. Swap(pStart,pEnd);      //交换
-             20. 
-             21. pStart++;
-             22. pEnd--;
-                                                          10
-          2. }
-          3. }
-          4. }
-          5. 
-          6. // Move the first n chars in a string to its end
-          7. char* LeftRotateString(char* pStr, unsigned int n)
-          8. {
-          9. if(pStr != NULL)
-          10. {
-          11. int nLength = static_cast<int>(strlen(pStr));
-          12. if(nLength >0 && n != 0 && n<nLength)    //n 可以=0,也可以说不该
-    =0。
-39.              //nLength 是整个字符串的长度,n 是左边的一部分,所以应该是
-    n<nLength。
-40.              //之前上传的答案(代码),就错在这里,最初的为 n>nLength,当然,
-    就是错的了。July、k,updated。
-41.         {
-42.              char* pFirstStart = pStr;
-43.              char* pFirstEnd = pStr + n - 1;
-44.              char* pSecondStart = pStr + n;
-45.              char* pSecondEnd = pStr + nLength - 1;
-46.
-47.              // reverse the first part of the string
-48.              ReverseString(pFirstStart, pFirstEnd);
-49.              // reverse the second part of the strint
-50.              ReverseString(pSecondStart, pSecondEnd);
-51.              // reverse the whole string
-52.              ReverseString(pFirstStart, pSecondEnd);
-53.         }
-54.     }
-55.     return pStr;
-56. }
-57.
-58. int main()
-59. {
-60.     char a[11]="hello July";    //2、修正,以一个数组实现存储整个字符串
-61.     char *ps=a;
-62.     LeftRotateString(ps, 6);
-63.     for(;*ps!='/0';ps++)
-64.         cout<<*ps;
-65.     cout<<endl;
-66.     ps=NULL;    //代码规范
-67.     return 0;
-68. }
-                                                                   11
+
 上述,修正的俩处错误,如下所示:
 1、如上注释中所述:
 if(nLength >0 && n<nLength)
@@ -12484,3 +12450,12 @@ July、2012.04.03。
   }
 #+END_SRC
 
+* 交换函数
+  #+BEGIN_SRC c
+     void Swap(char* a,char* b)     
+    {
+      char temp =*a;
+      *a = *b;
+      *b = temp;
+    }
+  #+END_SRC
