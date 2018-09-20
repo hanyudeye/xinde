@@ -4,16 +4,16 @@
    命令行配置 /etc/php/7.0/cli/php.ini 
 *** 安装
     ./configure --with-mysql --with-apxs=/www/bin/apxs
-**** apache的支持
+**** apache 的支持
      LoadModule php5_module        libexec/libphp5.so
      或
      apt install libapache2-mod-php php-common
 ***** 隐藏入口文件
-      index.php 相当于main 函数，apache 默认 会与此文件产生关系。
-      在url 中隐藏此字串的方法是设置
-      1.httpd.conf配置文件中加载了mod_rewrite.so模块 //在APACHE里面去配置
-      #LoadModule rewrite_module modules/mod_rewrite.so把前面的警号去掉
-      2.AllowOverride None 讲None改为 All      //在APACHE里面去配置
+      index.php 相当于 main 函数，apache 默认 会与此文件产生关系。
+      在 url 中隐藏此字串的方法是设置
+      1.httpd.conf 配置文件中加载了 mod_rewrite.so 模块 //在 APACHE 里面去配置
+      #LoadModule rewrite_module modules/mod_rewrite.so 把前面的警号去掉
+      2.AllowOverride None 讲 None 改为 All      //在 APACHE 里面去配置
       3、在应用入口文件同级目录添加 .htaccess 文件,内容如下:
       <IfModule	mod_rewrite.c>
       Options	+FollowSymlinks	-Multiviews
@@ -23,7 +23,7 @@
       RewriteRule	^(.*)$	index.php/$1	[QSA,PT,L]
       </IfModule>
 
-**** nginx的支持
+**** nginx 的支持
      vim /usr/local/nginx/conf/nginx.conf
      修改默认的 location 块，使其支持 .php 文件：
 
@@ -43,28 +43,28 @@
 *** 模块安装  
     apt install php-curl php-mysql
 **** 手动加载模块 
-     1. a2enmod rewrite 加载 rewrite模块
+     1. a2enmod rewrite 加载 rewrite 模块
      2. 创建 到 mods-enabled 的软链接 ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
      3. 注意 虚拟主机 中 AllowOverride 为 All
 **** 模块安装路径
      查找扩展路径 php -ini |grep extension
      extension_dir => /usr/lib/php/20151012
-*** php配置  
+*** php 配置  
 **** 调试模式
    #+BEGIN_SRC php
      ini_set("display_errors", "On"); 
-     error_reporting(E_ALL); //-1是关闭
+     error_reporting(E_ALL); //-1 是关闭
    #+END_SRC
-**** php.ini文件
+**** php.ini 文件
    short_open_tag = Off（是否允许使用 PHP 代码开始标志的缩写形式（<? ?> ）。）；
    memory_limit = 128M（最大使用内存的大小）；
-   upload_max_filesize = 2M（上传附件的最大值），第一个需要改成on，否则的话很多php程序都会运行不了，后面的两项就按照大家的实际需求更改就行了。
+   upload_max_filesize = 2M（上传附件的最大值），第一个需要改成 on，否则的话很多 php 程序都会运行不了，后面的两项就按照大家的实际需求更改就行了。
 ** 对象分辨
    获取类型 echo gettype($bool);
         
    is_bool()：判断是否是布尔型。
-   is_int()、is_integer()和is_long()：判断是否是整型。
-   is_float()、is_double()和is_real()：判断是否是浮点数。
+   is_int()、is_integer()和 is_long()：判断是否是整型。
+   is_float()、is_double()和 is_real()：判断是否是浮点数。
    is_string()：判断是否是字符串。
    is_array()：判断是否是数组。
    is_object()：判断是否是对象。
@@ -79,82 +79,82 @@
    __FUNCTION__  当前的函数名  在哪个函数中使用，就代表哪个函数名  
    __CLASS__  当前的类名  在哪个类中使用，就代表哪个类的类名  
    __METHOD__  当前对象的方法名  在对象中的哪个方法中使用，就代表这个方法名  
-   PHP_OS  UNIX或WINNT等  执行PHP解析的操作系统名称  
-   PHP_VERSION  5.2.6等  当前PHP服务器的版本  
+   PHP_OS  UNIX 或 WINNT 等  执行 PHP 解析的操作系统名称  
+   PHP_VERSION  5.2.6 等  当前 PHP 服务器的版本  
    TRUE  TRUE  代表布尔值，真  
    FALSE  FALSE  代表布尔值，假  
    NULL  NULL  代表空值  
    DIRECTORY_SEPARATOR  \或/  根据操作系统决定目录的分隔符  
    PATH_SEPARATOR  ；或：  根据操作系统决定环境变量的目录列表分隔符  
-   E_ERROR  1  错误，导致PHP脚本运行终止  
-   E_WARNING  2  警告，不会导致PHP脚本运行终止  
+   E_ERROR  1  错误，导致 PHP 脚本运行终止  
+   E_WARNING  2  警告，不会导致 PHP 脚本运行终止  
    E_PARSE  4  解析错误，由程序解析器报告  
    E_NOTICE  8  关键的错误，例如变量末初始化  
    M_PI  3.1415926535898  Π  
 ** 功能
 *** 引用我的方法
-    使用require语句包含并执行config.php文件
-    include_once()和require_once()语句也是在脚本执行期间包括并运行指定文件。
+    使用 require 语句包含并执行 config.php 文件
+    include_once()和 require_once()语句也是在脚本执行期间包括并运行指定文件。
 *** 数组处理
 **** 数组的键/值操作函数 
 ***** array_values() 返回数组中所有元素的值
 ***** array_keys() 返回数组中所有的键名
       array  array_keys ( array input [, mixed search_value [, bool strict]] )
       
-      如果指定了可选参数search_value，则只返回指定该值的键名，否则input数组中的所有键名都会被返回。
+      如果指定了可选参数 search_value，则只返回指定该值的键名，否则 input 数组中的所有键名都会被返回。
      #+BEGIN_SRC php
        $lamp=array("a"=>"Linux","b"=>"Apache","c"=>"MySQL","d"=>"PHP");  //只使第一个必需的参数
-       $a=array(10,20,30,"10");                //声明一个数组，其中元素的值有整数10和字符串”10”
+       $a=array(10,20,30,"10");                //声明一个数组，其中元素的值有整数 10 和字符串”10”
        print_r(array_keys($a,"10",false));     //使用第三个参数 (false)输出：Array ( [0] => 0 [1] => 3 )
 
-       $a=array(10,20,30,"10");                //声明一个数组，其中元素的值有整数10和字符串”10”
+       $a=array(10,20,30,"10");                //声明一个数组，其中元素的值有整数 10 和字符串”10”
        print_r(array_keys($a,"10",true));      //使用第三个参数 (true)输出：Array ( [0] => 3) 
      #+END_SRC 
 ***** in_array()函数的作用是检查数组中是否存在某个值，即在数组中搜索给定的值。本函数中有三个参数，前两个参数
  bool  in_array ( mixed needle, array haystack [, bool strict] )
- 如果needle参数是字符串， 且strict参数设置为TRUE，则搜索区分大小写。函数array_keys()使用的代码如下所示：
+ 如果 needle 参数是字符串， 且 strict 参数设置为 TRUE，则搜索区分大小写。函数 array_keys()使用的代码如下所示：
 ***** array_flip()的作用是交换数组中的键和值。
 ***** array_reverse()作用是将原数组中的元素顺序翻转，创建新的数组并返回。
-      第二个参数是可选项，如果指定为TRUE，则元素的键名保持不变，否则键名将丢失。
+      第二个参数是可选项，如果指定为 TRUE，则元素的键名保持不变，否则键名将丢失。
       
 **** 统计数组元素的个数和唯一性 
 ***** int count ( mixed var [, int mode] )
-      第二个参数是可选的，规定函数的模式是否递归地计算多维数组中的数组的元素个数。可能的值是0和1，0为默认值，不检测多维数组，1则检测多维数组。
+      第二个参数是可选的，规定函数的模式是否递归地计算多维数组中的数组的元素个数。可能的值是 0 和 1，0 为默认值，不检测多维数组，1 则检测多维数组。
 ***** array_count_values()函数用于统计数组中所有值出现的次数
 ***** array_unique()函数用于删除数组中重复的值，并返回没有重复值的新数组
 **** 使用回调函数处理数组的函数 
 ***** array_fileter()函数用回调函数过滤数组中的元素，返回按用户自定义函数过滤后的新数组
        array array_filter ( array input [, callback callback] )
  该函数的第一个参数是必选项，要求输入一个被过滤的数组。第二个参数是可选项，将用户自定义的函数名以字符
- 串形式传入。如果自定义过滤函数返回true，则被操作的数组的当前值就会被包含在返回的结果数组中，并将结果
- 组成一个新的数组。如果原数组是一个关联数组，键名保持不变。函数array_filter()使用的代码如下所示：
+ 串形式传入。如果自定义过滤函数返回 true，则被操作的数组的当前值就会被包含在返回的结果数组中，并将结果
+ 组成一个新的数组。如果原数组是一个关联数组，键名保持不变。函数 array_filter()使用的代码如下所示：
 
-         function myFun($var){                                           //自定义函数myFun，如果参数能被2整除则返回真
+         function myFun($var){                                           //自定义函数 myFun，如果参数能被 2 整除则返回真
                  if($var % 2 == 0)
                          return true;
          }
 
          $array = array("a"=>1, "b"=>2, "c"=>3, "d"=>4, "e"=>5);          //声明值为整数序列的数组
-      //使用函数array_filter()将自定义的函数名以字符串的形式传给第二个参数
-         print_r(array_filter($array, "myFun"));                         //过滤后的结果输出Array ( [b] => 2 [d] => 4 )
+      //使用函数 array_filter()将自定义的函数名以字符串的形式传给第二个参数
+         print_r(array_filter($array, "myFun"));                         //过滤后的结果输出 Array ( [b] => 2 [d] => 4 )
  ?>
 
- 在上面的代码中，array_filter()函数依次将$array数组中的每个值传递到myFun()函数中，如果myFun()函数返回
- TRUE，则$array数组的当前值会被包含在返回的结果数组中，并将结果组成一个新的数组返回。
+ 在上面的代码中，array_filter()函数依次将$array 数组中的每个值传递到 myFun()函数中，如果 myFun()函数返回
+ TRUE，则$array 数组的当前值会被包含在返回的结果数组中，并将结果组成一个新的数组返回。
 
 
-***** array_walk()函数对数组中的每个元素应用回调函数处理。如果成功则返回TRUE，否则返回FALSE。该函数有三个
+***** array_walk()函数对数组中的每个元素应用回调函数处理。如果成功则返回 TRUE，否则返回 FALSE。该函数有三个
        bool array_walk ( array &array, callback funcname [, mixed userdata] )
 
  该函数的第一个参数是必选项，要求输入一个被指定的回调函数处理的数组。第二个参数也是必选项，传入用户定
  义的回调函数，用于操作传入第一个参数的数组。array_walk()函数依次将第一个参数的数组中的每个值传递到这
  个自定义的函数中。自定义的这个回调函数中应该接收两个参数，依次传入进来元素的值作为第一个参数，键名作
- 为第二个参数。如果在array_walk()函数中提供可选的第三个参数，也将被作为回调函数的第三个参数接收。
+ 为第二个参数。如果在 array_walk()函数中提供可选的第三个参数，也将被作为回调函数的第三个参数接收。
 
- 如果自定义的回调函数需要的参数比给出得多，则每次array_walk()调用回调函数时都会产生一个E_WARNING级的
- 错误。这些警告可以通过在array_walk()调用前加上PHP的错误操作符@来抑制，或者用error_reporting()。
+ 如果自定义的回调函数需要的参数比给出得多，则每次 array_walk()调用回调函数时都会产生一个 E_WARNING 级的
+ 错误。这些警告可以通过在 array_walk()调用前加上 PHP 的错误操作符@来抑制，或者用 error_reporting()。
 
- 如果回调函数需要直接作用于数组中的值，可以将回调函数的第一个参数指定为引用：&$value。函数array_walk
+ 如果回调函数需要直接作用于数组中的值，可以将回调函数的第一个参数指定为引用：&$value。函数 array_walk
  ()使用的代码如下所示：
 
 
@@ -164,7 +164,7 @@
          }
 
          $lamp=array("a"=>"Linux","b"=>"Apache","c"=>"Mysql","d"=>"PHP");    //定义一个数组$lamp
-         array_walk($lamp,"myFun1");                     //使用array_walk函数传入一个数组和一个回调函数
+         array_walk($lamp,"myFun1");                     //使用 array_walk 函数传入一个数组和一个回调函数
          /*  执行后输出如下结果：
              The key a has the value Linux
              The key b has the value Apache
@@ -175,25 +175,25 @@
                  echo "$key $p $value <br>";             //将三个参数连接后输出
          }
         
-         array_walk($lamp,"myFun2","has the value");     //使用array_walk函数传入三个参数
+         array_walk($lamp,"myFun2","has the value");     //使用 array_walk 函数传入三个参数
          /*执行后输出如下结果：
            a has the value Linux
            b has the value Apache
            c has the value MySQL
         d has the value PHP     */
 
-         function myFun3(&$value,$key) {                     //改变量组元素的值（请注意 &$value传入引用）
+         function myFun3(&$value,$key) {                     //改变量组元素的值（请注意 &$value 传入引用）
                  $value="Web";                           //将改变原数组中每个元素的值
          }
 
-         array_walk($lamp,"myFun3");                     //使用array_walk函数传入两个参数，其中第一个参数为引用
+         array_walk($lamp,"myFun3");                     //使用 array_walk 函数传入两个参数，其中第一个参数为引用
          print_r($lamp);                                 //输出：Array ( [a] => Web [b] => Web [c] => Web [d] => Web )
  ?>
 
-***** 函数array_map() 
- 与上一个array_walk()函数相比，array_map()函数将更加灵活，并且可以处理多个数组。将回调函数作用到给定数
+***** 函数 array_map() 
+ 与上一个 array_walk()函数相比，array_map()函数将更加灵活，并且可以处理多个数组。将回调函数作用到给定数
  组的元素上，返回用户自定义函数作用后的数组。array_map()是任意参数列表函数，回调函数接受的参数数目应该
- 和传递给array_map()函数的数组数目一致。其函数的原型如下：
+ 和传递给 array_map()函数的数组数目一致。其函数的原型如下：
 **** 数组的排序函数 
 *****      sort()  按由小到大的升序对给定数组的值排序  
         ( array &array [, int sort_flags] )
@@ -204,7 +204,7 @@
         SORT_REGULAR–是默认值，将自动识别数组元素的类型进行排序。
   SORT_NUMERIC–用于数字符素的排序。
   SORT_STRING–用于字符串元素的排序。
-  SORT_LOCALE_STRING-根据当前的locale设置来把元素当做字符串比较。
+  SORT_LOCALE_STRING-根据当前的 locale 设置来把元素当做字符串比较。
  
   rsort  对数组的元素按照键值进行由大到小的逆向排序  
   usort()  使用用户自定义的回调函数对数组排序  
@@ -214,10 +214,10 @@
  uasort()  使用用户自定义的比较回调函数对数组中的值进行排序并保持索引关联  
       $data = array("l"=>"Linux", "a"=>"Apache","m"=>"MySQL","p"=>"PHP");
         
-        asort($data);           //使用asort()函数将数组$data按元素的值升序排序，并保留原有的键名和值
+        asort($data);           //使用 asort()函数将数组$data 按元素的值升序排序，并保留原有的键名和值
         print_r($data);         //输出：Array ( [a] => Apache [l] => Linux [m] => MySQL [p] => PHP )
 
-        arsort($data);          //使用arsort()函数将数组$data按元素的值降序排序，并保留原有的键名和值
+        arsort($data);          //使用 arsort()函数将数组$data 按元素的值降序排序，并保留原有的键名和值
         print_r($data);         //输出：Array ( [p] => PHP [m] => MySQL [l] => Linux [a] => Apache )
     
 ***** 根据键名对数组排序 
@@ -239,8 +239,8 @@
 
 ***** 根据用户自定的规则对数组排序 
 
- PHP也能让你定义自己的排序算法，以进行更复杂的排序操作。提供了可以通过创建你自己的比较函数作为回调函
- 数的数组排序函数，包括usort()、uasort()和uksort等函数。它们的使用格式一样，并具有相同的参数列表，区别
+ PHP 也能让你定义自己的排序算法，以进行更复杂的排序操作。提供了可以通过创建你自己的比较函数作为回调函
+ 数的数组排序函数，包括 usort()、uasort()和 uksort 等函数。它们的使用格式一样，并具有相同的参数列表，区别
  在于对键还是值进行排序。其函数的原型分别如下：
 
 
@@ -250,13 +250,13 @@
  #+BEGIN_SRC php
          $lamp = array("Linux", "Apache", "MySQL", "PHP");       //声明一个数组，其中元素值的长度不相同
 
-         usort($lamp, "sortByLen");              //使用usort()函数传入用户自定义的回调函数进行数组排序
+         usort($lamp, "sortByLen");              //使用 usort()函数传入用户自定义的回调函数进行数组排序
          print_r($lamp);         // 排序后输出：Array ( [0] => PHP [1] => MySQL [2] => Linux [3] => Apache )
         
-         function sortByLen($one, $two) {           //自定义的函数作为回调用函数提供给usort()函数使用
-                 if (strlen($one) == strlen($two))  //如果两个参数长度相等返回0，在数组中的位置不变
+         function sortByLen($one, $two) {           //自定义的函数作为回调用函数提供给 usort()函数使用
+                 if (strlen($one) == strlen($two))  //如果两个参数长度相等返回 0，在数组中的位置不变
                          return 0;
-                 else            //第一个参数大于第二个参数返回大于0的数，否则返回小于0的数
+                 else            //第一个参数大于第二个参数返回大于 0 的数，否则返回小于 0 的数
                          return (strlen($one) > strlen($two)) ? 1 : -1;
          }
  ?>
@@ -266,37 +266,37 @@
 
 ***** 多维数组的排序 
   array_multisort()  对多个数组或多维数组进行排序  
-  PHP也允许在多维数组上执行一些比较复杂的排序。例如，首先对一个嵌套数组使用一个普通的键值进行排序，然
- 后再根据另一个键值进行排序。这与使用SQL的ORDER BY语句对多个字段进行排序非常相似。可以使用
+  PHP 也允许在多维数组上执行一些比较复杂的排序。例如，首先对一个嵌套数组使用一个普通的键值进行排序，然
+ 后再根据另一个键值进行排序。这与使用 SQL 的 ORDER BY 语句对多个字段进行排序非常相似。可以使用
  array_multisort()函数对多个数组或多维数组进行排序，或者根据某一维或多维对多维数组进行排序。其函数的原
  型分别如下：
 
 
  bool array_multisort ( array ar1 [, mixed arg [, mixed ... [, array ...]]] )
 
- 该函数如果成功则返回TRUE，失败则返回FALSE。第一个参数是要排序的主要数组。数组中的值比较为相同的话，
- 就按照下一个输入数组中相应值的大小来排序，依此类推。函数array_multisort()使用的代码如下所示：
+ 该函数如果成功则返回 TRUE，失败则返回 FALSE。第一个参数是要排序的主要数组。数组中的值比较为相同的话，
+ 就按照下一个输入数组中相应值的大小来排序，依此类推。函数 array_multisort()使用的代码如下所示：
 
 
  <?php
-         $data = array(                          //声明一个$data数组，仿真了一个行和列数组
+         $data = array(                          //声明一个$data 数组，仿真了一个行和列数组
                          array("id" => 1, "soft" => "Linux", "rating" => 3),
                          array("id" => 2, "soft" => "Apache", "rating" => 1),
                          array("id" => 3, "soft" => "MySQL", "rating" => 4),
                          array("id" => 4, "soft" => "PHP", "rating" => 2),
                  );
-         //使用foreach遍历创建两个数组作为array_multisort的参数
+         //使用 foreach 遍历创建两个数组作为 array_multisort 的参数
          foreach ($data as $key => $value) {
-                 $soft[$key] = $value["soft"];     //将$data中的每个数组元素中键值为soft的值形成数组$soft
-                 $rating[$key] = $value["rating"]; //将每个数组元素中键值为rating的值形成数组$rating
+                 $soft[$key] = $value["soft"];     //将$data 中的每个数组元素中键值为 soft 的值形成数组$soft
+                 $rating[$key] = $value["rating"]; //将每个数组元素中键值为 rating 的值形成数组$rating
          }
 
-         array_multisort($rating, $soft, $data);  //使用array_multisort()函数传入三个数组进行排序
+         array_multisort($rating, $soft, $data);  //使用 array_multisort()函数传入三个数组进行排序
          print_r($data);                          //输出排序后的二维数组
  ?>
 
 **** 拆分、合并、分解和接合数组 
-***** 函数array_slice() 
+***** 函数 array_slice() 
       array_slice()函数的作用是在数组中根据条件取出一段值并返回。如果数组有字符串键，所返回的数组将保留键名。
       该函数可以设置四个参数，其函数的原型如下：
 *** array 
@@ -314,7 +314,7 @@
 	  is_array() - 检测变量是否是数组
 	  array_count_values() 返回一个数组，统计的是每个值的数量，相等，数量加１
 	  array_unique(array) 删除数组中重复的值,返回新数组
-	  array array_filter ( array $array [, callable $callback [, int $flag = 0 ]] )  过滤器,把每个值传给callback函数,如果返回值为真，就返回过来
+	  array array_filter ( array $array [, callable $callback [, int $flag = 0 ]] )  过滤器,把每个值传给 callback 函数,如果返回值为真，就返回过来
 	  usort()	使用用户自定义的比较函数对数组进行排序。
 	  array_slice(array,start,length,preserve) 函数在数组中根据条件取出一段值，并返回。
 	  array()	创建数组。
@@ -383,7 +383,7 @@
 	  key()	从关联数组中取得键名。
 	  krsort()	对数组按照键名逆向排序。
 	  ksort()	对数组按照键名排序。
-**** list()	把数组中的值赋给一些变量。 list($a, $b, $c)=['a', 'b', 'c'];
+**** list()	把数组中的值赋给一些变量。list($a, $b, $c)=['a', 'b', 'c'];
 	  natcasesort()	用“自然排序”算法对数组进行不区分大小写字母的排序。
 	  natsort()	用“自然排序”算法对数组排序。
 	  next()	将数组中的内部指针向前移动一位。
@@ -400,8 +400,8 @@
       
     : print_r(array_filter($array1, "odd"));
 *** date
-	  date(Y年m月d日l星期/M英文月,而不是数字)
-	  ((int)date('h')+8)时间,东八区要加8小时
+	  date(Y 年 m 月 d 日 l 星期/M 英文月,而不是数字)
+	  ((int)date('h')+8)时间,东八区要加 8 小时
 	  h - 带有首位零的 12 小时小时格式
 	  i - 带有首位零的分钟 (minute)
 	  s - 带有首位零的秒（00 -59）(second)
@@ -497,16 +497,16 @@
 	  chmod() 	改变文件模式。 
 	  chown() 	改变文件所有者。 	
 	  clearstatcache() 	清除文件状态缓存。 	
-	  fopen() 可以通过http路径打开,可以在php.ini 中配置allow_url_fopen   //unix中要注意文件的访问权限
+	  fopen() 可以通过 http 路径打开,可以在 php.ini 中配置 allow_url_fopen   //unix 中要注意文件的访问权限
 	  copy() 	复制文件。
 	  fread(filepoint,length)	读取打开的文件。
 	  fwrite(file,string,length)   
 	  file_get_contents(filepath) 函数把整个文件读入一个字符串中。
-	  file_put_contents(filepath,filecontent) 在ftp中要用到flags和context标志
+	  file_put_contents(filepath,filecontent) 在 ftp 中要用到 flags 和 context 标志
 	  basename()
 	  is_readable()
 	  fgets()
-	  fgetss() 去掉文件中的html格式
+	  fgetss() 去掉文件中的 html 格式
 	  readfile(filename) 输出到浏览器
 	  file(file) 返回值是文件内容
 	  fgetc()
@@ -536,7 +536,7 @@
 	  filegroup() 	返回文件的组 ID。 	
 	  fileinode() 	返回文件的 inode 编号。 
 	  filemtime() 	返回文件的上次修改时间。
-	  fileowner() 	文件的 user ID （所有者）。
+	  fileowner() 	文件的 user ID（所有者）。
 	  fileperms() 	返回文件的权限。 	
 	  filesize() 	返回文件大小。 	
 	  filetype() 	返回文件类型。 	
@@ -588,7 +588,7 @@
 
 	  isset(varname)判断变量是否已经配置，就是变量存不存在值
 	  unset(varname)取消配置；
-	  empty(varname) 对于值是0的数返回true，这里要当心
+	  empty(varname) 对于值是 0 的数返回 true，这里要当心
 
 *** Directory 函数
 	  chdir()	改变当前的目录。
@@ -666,7 +666,7 @@
 	  tanh() 	双曲正切。
 *** string	
     mb_substr(strip_tags( $list["content"]),0,20) 截取字符串 对中文的支持
-    ucfirst(string)->string第一个字大写
+    ucfirst(string)->string 第一个字大写
     addcslashes — 以 C 语言风格使用反斜线转义字符串中的字符
     addslashes — 使用反斜线引用字符串
     bin2hex — 函数把包含数据的二进制字符串转换为十六进制值
@@ -771,14 +771,14 @@
     vsprintf — 返回格式化字符串
     wordwrap — 打断字符串为指定数量的字串
 *** 网络 函数
-    checkdnsrr — 给指定的主机（域名）或者IP地址做DNS通信检查
+    checkdnsrr — 给指定的主机（域名）或者 IP 地址做 DNS 通信检查
     closelog — 关闭系统日志链接
     define_syslog_variables — Initializes all syslog related variables
     dns_check_record — 别名 checkdnsrr
     dns_get_mx — 别名 getmxrr
-    dns_get_record — 获取指定主机的DNS记录
-    fsockopen — 打开一个网络连接或者一个Unix套接字连接
-    gethostbyaddr — 获取指定的IP地址对应的主机名  //这个只能查到本机的主机名,可能跟域名反向解析有关,不能反向解析,只能解析host文件里面的
+    dns_get_record — 获取指定主机的 DNS 记录
+    fsockopen — 打开一个网络连接或者一个 Unix 套接字连接
+    gethostbyaddr — 获取指定的 IP 地址对应的主机名  //这个只能查到本机的主机名,可能跟域名反向解析有关,不能反向解析,只能解析 host 文件里面的
     gethostbyname — Get the IPv4 address corresponding to a given Internet host name
     gethostbynamel — Get a list of IPv4 addresses corresponding to a given Internet host name
     gethostname — Gets the host name
@@ -795,10 +795,10 @@
     http_response_code — Get or Set the HTTP response code
     inet_ntop — Converts a packed internet address to a human readable representation
     inet_pton — Converts a human readable IP address to its packed in_addr representation
-    ip2long — 将一个IPV4的字符串互联网协议转换成数字格式
+    ip2long — 将一个 IPV4 的字符串互联网协议转换成数字格式
     long2ip — Converts an long integer address into a string in (IPv4) Internet standard dotted format
     openlog — Open connection to system logger
-    pfsockopen — 打开一个持久的网络连接或者Unix套接字连接。
+    pfsockopen — 打开一个持久的网络连接或者 Unix 套接字连接。
     setcookie — Send a cookie
     setrawcookie — Send a cookie without urlencoding the cookie value
     socket_get_status — 别名 stream_get_meta_data
@@ -872,7 +872,7 @@
 	  if(!(/^1[34578]\d{9}$/.test(phone))) 测试手机号
     preg_filter — 执行一个正则表达式搜索和替换
     preg_grep — 返回匹配模式的数组条目
-    preg_last_error — 返回最后一个PCRE正则执行产生的错误代码
+    preg_last_error — 返回最后一个 PCRE 正则执行产生的错误代码
     preg_match_all — 执行一个全局正则表达式匹配
     preg_match — 执行一个正则表达式匹配
     preg_quote — 转义正则表达式字符
@@ -928,7 +928,7 @@
     socket_last_error — Returns the last error on the socket
     socket_listen — Listens for a connection on a socket
     socket_read — Reads a maximum of length bytes from a socket
-    socket_recv — 从已连接的socket接收数据
+    socket_recv — 从已连接的 socket 接收数据
     socket_recvfrom — Receives data from a socket whether or not it is connection-oriented
     socket_recvmsg — Read a message
     socket_select — Runs the select() system call on the given arrays of sockets with a specified timeout
@@ -995,9 +995,9 @@
 *** 属性重载
     __get()，__set()，__isset() 和 __unset()
 *** 对象序列化
-    所有php里面的值都可以使用函数serialize()来返回一个包含字节流的字符串来表示。unserialize()函数能够重新把字符串变回php原来的值。 序列化一个对象将会保存对象的所有变量，但是不会保存对象的方法，只会保存类的名字。
+    所有 php 里面的值都可以使用函数 serialize()来返回一个包含字节流的字符串来表示。unserialize()函数能够重新把字符串变回 php 原来的值。 序列化一个对象将会保存对象的所有变量，但是不会保存对象的方法，只会保存类的名字。
 *** 命名空间
-    使用命名空间的关键字 use 同require功能一样 , 不用重复使用
+    使用命名空间的关键字 use 同 require 功能一样 , 不用重复使用
     命名空间 namespace my\name; 引用 $a= new my\name::class(); use
     命名空间 namespace my\name; 引用 $a= new my\name\class(); use
     当前命名空间常量 __NAMESPACE__
@@ -1006,7 +1006,7 @@
 
     在声明命名空间之前唯一合法的代码是用于定义源文件编码方式的 declare 语句。
     另外，所有非 PHP 代码包括空白符都不能出现在命名空间的声明之前：
-    另外，与PHP其它的语言特征不同，同一个命名空间可以定义在多个文件中，即允许将同
+    另外，与 PHP 其它的语言特征不同，同一个命名空间可以定义在多个文件中，即允许将同
     一个命名空间的内容分割存放在不同的文件中。
     Import and Alias
     函数
@@ -1057,7 +1057,7 @@
       }
 
     #+END_SRC
-*** 调用外部工具  执行shell shell_exec()
+*** 调用外部工具  执行 shell shell_exec()
 *** 错误输出 die($msg)
     Exception::__construct — 异常构造函数
     Exception::getMessage — 获取异常消息内容
@@ -1078,7 +1078,7 @@
 **** Phar 上下文（context）选项 — Phar 上下文（context）选项列表
 **** MongoDB context options — MongoDB context option listing
 *** 支持的协议和封装协议
-    PHP 带有很多内置 URL 风格的封装协议，可用于类似 fopen()、 copy()、 file_exists() 和 filesize() 的文件系统函数。 除了这些封装协议，还能通过 stream_wrapper_register() 来注册自定义的封装协议。
+    PHP 带有很多内置 URL 风格的封装协议，可用于类似 fopen()、copy()、file_exists() 和 filesize() 的文件系统函数。 除了这些封装协议，还能通过 stream_wrapper_register() 来注册自定义的封装协议。
     file:// — 访问本地文件系统
     http:// — 访问 HTTP(s) 网址
     ftp:// — 访问 FTP(s) URLs
@@ -1103,10 +1103,10 @@
 **** 数据库连接
 *** 命令行模式
 **** 内置 webserver
-     启动Web服务器
+     启动 Web 服务器
      $ cd ~/public_html
      $ php -S localhost:8000
-** PHP扩展
+** PHP 扩展
 *** 压缩  
 **** zip
      Windows 用户需要在 php.ini 里使 php_zip.dll 可用，以便使用这些函数。
@@ -1116,20 +1116,20 @@
 **** Rar
 **** ZipArchive
 *** excel
-    最近因项目需要，需要开发一个模块，把系统中的一些数据导出成Excel，修改后再导回系统。就趁机对这个研究了一番，下面进行一些总结。
+    最近因项目需要，需要开发一个模块，把系统中的一些数据导出成 Excel，修改后再导回系统。就趁机对这个研究了一番，下面进行一些总结。
     基本上导出的文件分为两种：
-    1：类Excel格式，这个其实不是传统意义上的Excel文件，只是因为Excel的兼容能力强，能够正确打开而已。修改这种文件后再保存，通常会提示你是否要转换成Excel文件。
+    1：类 Excel 格式，这个其实不是传统意义上的 Excel 文件，只是因为 Excel 的兼容能力强，能够正确打开而已。修改这种文件后再保存，通常会提示你是否要转换成 Excel 文件。
     优点：简单。
     缺点：难以生成格式，如果用来导入需要自己分别编写相应的程序。
-    2：Excel格式，与类Excel相对应，这种方法生成的文件更接近于真正的Excel格式。
+    2：Excel 格式，与类 Excel 相对应，这种方法生成的文件更接近于真正的 Excel 格式。
 
-    如果导出中文时出现乱码，可以尝试将字符串转换成gb2312，例如下面就把$yourStr从utf-8转换成了gb2312:
+    如果导出中文时出现乱码，可以尝试将字符串转换成 gb2312，例如下面就把$yourStr 从 utf-8 转换成了 gb2312:
     $yourStr = mb_convert_encoding(”gb2312″, “UTF-8″, $yourStr);
 
     下面详细列举几种方法。
-    一、PHP导出Excel
-    1：第一推荐无比风骚的PHPExcel，官方网站： http://www.codeplex.com/PHPExcel
-    导入导出都成，可以导出office2007格式，同时兼容2003。
+    一、PHP 导出 Excel
+    1：第一推荐无比风骚的 PHPExcel，官方网站：http://www.codeplex.com/PHPExcel
+    导入导出都成，可以导出 office2007 格式，同时兼容 2003。
     下载下来的包中有文档和例子，大家可以自行研究。
     抄段例子出来：
     #+BEGIN_SRC php
@@ -1162,10 +1162,10 @@
     #+END_SRC
  
 
-    2、使用pear的Spreadsheet_Excel_Writer类
-    下载地址： http://pear.php.net/package/Spreadsheet_Excel_Writer
-    此类依赖于OLE,下载地址：http://pear.php.net/package/OLE
-    需要注意的是导出的Excel文件格式比较老，修改后保存会提示是否转换成更新的格式。
+    2、使用 pear 的 Spreadsheet_Excel_Writer 类
+    下载地址：http://pear.php.net/package/Spreadsheet_Excel_Writer
+    此类依赖于 OLE,下载地址：http://pear.php.net/package/OLE
+    需要注意的是导出的 Excel 文件格式比较老，修改后保存会提示是否转换成更新的格式。
     不过可以设定格式，很强大。
  #+BEGIN_SRC php
     <?php   
@@ -1195,17 +1195,17 @@
     ?>  
  #+END_SRC
 
-    3:利用smarty，生成符合Excel规范的XML或HTML文件
-    支持格式，非常完美的导出方案。不过导出来的的本质上还是XML文件，如果用来导入就需要另外处理了。
-    详细内容请见rardge大侠的帖子：http://bbs.chinaunix.net/viewthread.php?tid=745757
+    3:利用 smarty，生成符合 Excel 规范的 XML 或 HTML 文件
+    支持格式，非常完美的导出方案。不过导出来的的本质上还是 XML 文件，如果用来导入就需要另外处理了。
+    详细内容请见 rardge 大侠的帖子：http://bbs.chinaunix.net/viewthread.php?tid=745757
 
     需要注意的是如果导出的表格行数不确定时，最好在模板中把”ss:ExpandedColumnCount=”5″ ss:ExpandedRowCount=”21″”之类的东西删掉。
 
-    4、利用pack函数打印出模拟Excel格式的断句符号，这种更接近于Excel标准格式，用office2003修改后保存，还不会弹出提示，推荐用这种方法。
+    4、利用 pack 函数打印出模拟 Excel 格式的断句符号，这种更接近于 Excel 标准格式，用 office2003 修改后保存，还不会弹出提示，推荐用这种方法。
     缺点是无格式。
 
 
-    PHP代码
+    PHP 代码
     <?php   
     // Send Header   
     header(”Pragma: public”);   
@@ -1245,7 +1245,7 @@
     return;   
     }   
     ?>   
-    不过笔者在64位linux系统中使用时失败了，断句符号全部变成了乱码。   
+    不过笔者在 64 位 linux 系统中使用时失败了，断句符号全部变成了乱码。   
    
     5、使用制表符、换行符的方法   
     制表符”\t”用户分割同一行中的列，换行符”\t\n”可以开启下一行。   
@@ -1266,11 +1266,11 @@
     ?>  
 
 
-    6、使用com
-    如果你的PHP可以开启com模块，就可以用它来导出Excel文件
+    6、使用 com
+    如果你的 PHP 可以开启 com 模块，就可以用它来导出 Excel 文件
 
 
-    PHP代码
+    PHP 代码
     <?PHP   
     $filename = “c:/spreadhseet/test.xls”;   
     $sheet1 = 1;   
@@ -1300,17 +1300,17 @@
     unset($excel_app);   
     ?>  
 
-    一个更好的例子： http://blog.chinaunix.net/u/16928/showart_387171.html
+    一个更好的例子：http://blog.chinaunix.net/u/16928/showart_387171.html
 
-    一、PHP导入Excel
+    一、PHP 导入 Excel
 
-    1：还是用PHPExcel，官方网站： http://www.codeplex.com/PHPExcel。
+    1：还是用 PHPExcel，官方网站：http://www.codeplex.com/PHPExcel。
 
-    2：使用PHP-ExcelReader,下载地址: http://sourceforge.net/projects/phpexcelreader
+    2：使用 PHP-ExcelReader,下载地址: http://sourceforge.net/projects/phpexcelreader
     举例：
 
 
-    PHP代码
+    PHP 代码
     <?php   
     require_once ‘Excel/reader.php’;   
    
@@ -1333,7 +1333,7 @@
    
     ?>  
 *** mPDF
-    支持 html标签, 样式的导出(不是全部样式, 如floating只能部分)
+    支持 html 标签, 样式的导出(不是全部样式, 如 floating 只能部分)
     使用了很多代码, 有荣誉的人很多
 **** install
      在/ttfontdata/ /tmp/ /graph_cache/文件夹中有写权限
@@ -1342,12 +1342,12 @@
 *** 音频 ID3
 *** 图像
 **** 二维码 phpqrcode
-    phpqrcode.php提供了一个关键的png()方法，其中
-    参数$text表示生成二位的的信息文本；
-    参数$outfile表示是否输出二维码图片 文件，默认否；
-    参数$level表示容错率，也就是有被覆盖的区域还能识别，分别是 L（QR_ECLEVEL_L，7%），M（QR_ECLEVEL_M，15%），Q（QR_ECLEVEL_Q，25%），H（QR_ECLEVEL_H，30%）； 
-    参数$size表示生成图片大小，默认是3；参数$margin表示二维码周围边框空白区域间距值；
-    参数$saveandprint表示是否保存二维码并显示。
+    phpqrcode.php 提供了一个关键的 png()方法，其中
+    参数$text 表示生成二位的的信息文本；
+    参数$outfile 表示是否输出二维码图片 文件，默认否；
+    参数$level 表示容错率，也就是有被覆盖的区域还能识别，分别是 L（QR_ECLEVEL_L，7%），M（QR_ECLEVEL_M，15%），Q（QR_ECLEVEL_Q，25%），H（QR_ECLEVEL_H，30%）； 
+    参数$size 表示生成图片大小，默认是 3；参数$margin 表示二维码周围边框空白区域间距值；
+    参数$saveandprint 表示是否保存二维码并显示。
 
     . 代码如下:
     #+BEGIN_SRC php
@@ -1358,7 +1358,7 @@
                     }
     #+END_SRC
   
-    调用PHP QR Code非常简单，如下代码即可生成一张内容为"http://www.cnblogs.com/txw1958/"的二维码.
+    调用 PHP QR Code 非常简单，如下代码即可生成一张内容为"http://www.cnblogs.com/txw1958/"的二维码.
 
     #+BEGIN_SRC php
       include 'phpqrcode.php'; 
@@ -1367,7 +1367,7 @@
     #+END_SRC
 
 
-    那么实际应用中，我们会在二维码的中间加上自己的LOGO，已增强宣传效果。那如何生成含有logo的二维码呢？其实原理很简单，先使用PHP QR Code生成一张二维码图片，然后再利用php的image相关函数，将事先准备好的logo图片加入到刚生成的原始二维码图片中间，然后重新生成一张新 的二维码图片。
+    那么实际应用中，我们会在二维码的中间加上自己的 LOGO，已增强宣传效果。那如何生成含有 logo 的二维码呢？其实原理很简单，先使用 PHP QR Code 生成一张二维码图片，然后再利用 php 的 image 相关函数，将事先准备好的 logo 图片加入到刚生成的原始二维码图片中间，然后重新生成一张新 的二维码图片。
     . 代码如下:
     #+BEGIN_SRC php
       include 'phpqrcode.php';    
@@ -1376,7 +1376,7 @@
       $matrixPointSize = 6;//生成图片大小   
       //生成二维码图片   
       QRcode::png($value, 'qrcode.png', $errorCorrectionLevel, $matrixPointSize, 2);   
-      $logo = 'logo.png';//准备好的logo图片   
+      $logo = 'logo.png';//准备好的 logo 图片   
       $QR = 'qrcode.png';//已经生成的原始二维码图   
 
       if ($logo !== FALSE) {   
@@ -1384,8 +1384,8 @@
         $logo = imagecreatefromstring(file_get_contents($logo));   
         $QR_width = imagesx($QR);//二维码图片宽度   
         $QR_height = imagesy($QR);//二维码图片高度   
-        $logo_width = imagesx($logo);//logo图片宽度   
-        $logo_height = imagesy($logo);//logo图片高度   
+        $logo_width = imagesx($logo);//logo 图片宽度   
+        $logo_height = imagesy($logo);//logo 图片高度   
         $logo_qr_width = $QR_width / 5;   
         $scale = $logo_width/$logo_qr_width;   
         $logo_qr_height = $logo_height/$scale;   
@@ -1407,7 +1407,7 @@
     $matrixPointSize = 6;//生成图片大小   
     //生成二维码图片   
     QRcode::png($value, 'qrcode.png', $errorCorrectionLevel, $matrixPointSize, 2);   
-    $logo = 'logo.png';//准备好的logo图片   
+    $logo = 'logo.png';//准备好的 logo 图片   
     $QR = 'qrcode.png';//已经生成的原始二维码图   
 
     if ($logo !== FALSE) {   
@@ -1415,8 +1415,8 @@
     $logo = imagecreatefromstring(file_get_contents($logo));   
     $QR_width = imagesx($QR);//二维码图片宽度   
     $QR_height = imagesy($QR);//二维码图片高度   
-    $logo_width = imagesx($logo);//logo图片宽度   
-    $logo_height = imagesy($logo);//logo图片高度   
+    $logo_width = imagesx($logo);//logo 图片宽度   
+    $logo_height = imagesy($logo);//logo 图片高度   
     $logo_qr_width = $QR_width / 5;   
     $scale = $logo_width/$logo_qr_width;   
     $logo_qr_height = $logo_height/$scale;   
@@ -1429,21 +1429,21 @@
     imagepng($QR, 'helloweixin.png');   
     echo '<img src="helloweixin.png">';   
     复制代码
-    由于二维码允许有一定的容错性，一般的二维码即使在遮住部分但仍然能够解码，经常我们扫描二维码的时候扫描到甚至不到一半时就能解码扫描结果，这是因为生成器会将部分信息重复表示来提高其容错度，这就是为什么我们在二维码中间加个LOGO图片并不影响解码结果的原因。
+    由于二维码允许有一定的容错性，一般的二维码即使在遮住部分但仍然能够解码，经常我们扫描二维码的时候扫描到甚至不到一半时就能解码扫描结果，这是因为生成器会将部分信息重复表示来提高其容错度，这就是为什么我们在二维码中间加个 LOGO 图片并不影响解码结果的原因。
 *** 扩展管理器
 **** pecl
     下载: pecl install extname
     这里可以指定版本   extname-0.1
-    或者svn: $ svn checkout http://svn.php.net/repository/pecl/extname/trunk extname
-    然后在php.ini 中激活扩展 ubuntu 中要创建软链接, 包含在文件夹中的, 所以不用修改php.ini文件 
-    php-config  php配置信息
+    或者 svn: $ svn checkout http://svn.php.net/repository/pecl/extname/trunk extname
+    然后在 php.ini 中激活扩展 ubuntu 中要创建软链接, 包含在文件夹中的, 所以不用修改 php.ini 文件 
+    php-config  php 配置信息
 **** Composer 依赖管理器
-***** 安装composer
+***** 安装 composer
      curl -sS https://getcomposer.org/installer | php
      mv composer.phar /usr/local/bin/composer
-***** 设置镜像地址(中国的镜像地址 -g参数表示全局配置)
+***** 设置镜像地址(中国的镜像地址 -g 参数表示全局配置)
       composer config -g repo.packagist composer https://packagist.phpcomposer.com
-       然后在自己项目里面的composer.json文件里面添加如下：
+       然后在自己项目里面的 composer.json 文件里面添加如下：
    "repositories": {
           "packagist": {
               "type": "composer",
@@ -1471,7 +1471,7 @@
       Composer 提供了自动加载的特性，只需在你的代码的初始化部分中加入下面一行：
       require 'vendor/autoload.php';
 ***** 模块仓库
-      packagist.org 是Composer的仓库，很多著名的 PHP 库都能在其中找到。你也可以提交你自己的作品。
+      packagist.org 是 Composer 的仓库，很多著名的 PHP 库都能在其中找到。你也可以提交你自己的作品。
 ***** 1. 仅更新单个库
    只想更新某个特定的库，不想更新它的所有依赖，很简单：
 
@@ -1479,9 +1479,9 @@
    此外，这个技巧还可以用来解决“警告信息问题”。你一定见过这样的警告信息：
 
    Warning: The lock file is not up to date with the latest changes in composer.json, you may be getting outdated dependencies, run update to update them.
-   擦，哪里出问题了？别惊慌！如果你编辑了composer.json，你应该会看到这样的信息。比如，如果你增加或更新了细节信息，比如库的描述、作者、更多参数，甚至仅仅增加了一个空格，都会改变文件的md5sum。然后Composer就会警告你哈希值和composer.lock中记载的不同。
+   擦，哪里出问题了？别惊慌！如果你编辑了 composer.json，你应该会看到这样的信息。比如，如果你增加或更新了细节信息，比如库的描述、作者、更多参数，甚至仅仅增加了一个空格，都会改变文件的 md5sum。然后 Composer 就会警告你哈希值和 composer.lock 中记载的不同。
 
-   那么我们该怎么办呢？update命令可以更新lock文件，但是如果仅仅增加了一些描述，应该是不打算更新任何库。这种情况下，只需update nothing：
+   那么我们该怎么办呢？update 命令可以更新 lock 文件，但是如果仅仅增加了一些描述，应该是不打算更新任何库。这种情况下，只需 update nothing：
 
    $ composer update nothing
    Loading composer repositories with package information
@@ -1489,16 +1489,16 @@
    Nothing to install or update
    Writing lock file
    Generating autoload files
-   这样一来，Composer不会更新库，但是会更新composer.lock。注意nothing并不是update命令的关键字。只是没有nothing 这个包导致的结果。如果你输入foobar，结果也一样。
+   这样一来，Composer 不会更新库，但是会更新 composer.lock。注意 nothing 并不是 update 命令的关键字。只是没有 nothing 这个包导致的结果。如果你输入 foobar，结果也一样。
 
-   如果你用的Composer版本足够新，那么你可以直接使用--lock选项：
+   如果你用的 Composer 版本足够新，那么你可以直接使用--lock 选项：
 
    composer update --lock
-***** 2. 不编辑composer.json的情况下安装库
-   你可能会觉得每安装一个库都需要修改composer.json太麻烦，那么你可以直接使用require命令。
+***** 2. 不编辑 composer.json 的情况下安装库
+   你可能会觉得每安装一个库都需要修改 composer.json 太麻烦，那么你可以直接使用 require 命令。
 
    composer require "foo/bar:1.0.0"
-   这个方法也可以用来快速地新开一个项目。init命令有--require选项，可以自动编写composer.json：（注意我们使用-n，这样就不用回答问题）
+   这个方法也可以用来快速地新开一个项目。init 命令有--require 选项，可以自动编写 composer.json：（注意我们使用-n，这样就不用回答问题）
 
    $ composer init --require=foo/bar:1.0.0 -n
    $ cat composer.json
@@ -1508,17 +1508,17 @@
        }
    }
 ***** 3. 派生很容易
-   初始化的时候，你试过create-project命令么？
+   初始化的时候，你试过 create-project 命令么？
 
    composer create-project doctrine/orm path 2.2.0
-   这会自动克隆仓库，并检出指定的版本。克隆库的时候用这个命令很方便，不需要搜寻原始的URI了。
+   这会自动克隆仓库，并检出指定的版本。克隆库的时候用这个命令很方便，不需要搜寻原始的 URI 了。
 
-***** 4. 考虑缓存，dist包优先
-   最近一年以来的Composer会自动存档你下载的dist包。默认设置下，dist包用于加了tag的版本，例如"symfony/symfony": "v2.1.4"，或者是通配符或版本区间，"2.1.*"或">=2.2,<2.3-dev"（如果你使用stable作为你的minimum-stability）。
+***** 4. 考虑缓存，dist 包优先
+   最近一年以来的 Composer 会自动存档你下载的 dist 包。默认设置下，dist 包用于加了 tag 的版本，例如"symfony/symfony": "v2.1.4"，或者是通配符或版本区间，"2.1.*"或">=2.2,<2.3-dev"（如果你使用 stable 作为你的 minimum-stability）。
 
-   dist包也可以用于诸如dev-master之类的分支，Github允许你下载某个git引用的压缩包。为了强制使用压缩包，而不是克隆源代码，你可以使用install和update的--prefer-dist选项。
+   dist 包也可以用于诸如 dev-master 之类的分支，Github 允许你下载某个 git 引用的压缩包。为了强制使用压缩包，而不是克隆源代码，你可以使用 install 和 update 的--prefer-dist 选项。
 
-   下面是一个例子（我使用了--profile选项来显示执行时间）：
+   下面是一个例子（我使用了--profile 选项来显示执行时间）：
 
    $ composer init --require="twig/twig:1.*" -n --profile
    Memory usage: 3.94MB (peak: 4.08MB), time: 0s
@@ -1543,10 +1543,10 @@
 
    Generating autoload files
    Memory usage: 4.96MB (peak: 5.57MB), time: 0.45s
-   这里，twig/twig:1.12.2的压缩包被保存在~/.composer/cache/files/twig/twig/1.12.2.0-v1.12.2.zip。重新安装包时直接使用。
+   这里，twig/twig:1.12.2 的压缩包被保存在~/.composer/cache/files/twig/twig/1.12.2.0-v1.12.2.zip。重新安装包时直接使用。
 
 ***** 5. 若要修改，源代码优先
-   当你需要修改库的时候，克隆源代码就比下载包方便了。你可以使用--prefer-source来强制选择克隆源代码。
+   当你需要修改库的时候，克隆源代码就比下载包方便了。你可以使用--prefer-source 来强制选择克隆源代码。
 
    composer update symfony/yaml --prefer-source
    接下来你可以修改文件：
@@ -1555,7 +1555,7 @@
    You have changes in the following dependencies:
    /path/to/app/vendor/symfony/yaml/Symfony/Component/Yaml:
        M Dumper.php
-   当你试图更新一个修改过的库的时候，Composer会提醒你，询问是否放弃修改：
+   当你试图更新一个修改过的库的时候，Composer 会提醒你，询问是否放弃修改：
 
    $ composer update
    Loading composer repositories with package information
@@ -1568,19 +1568,19 @@
    最后提醒一下，在部署代码到生产环境的时候，别忘了优化一下自动加载：
 
    composer dump-autoload --optimize
-   安装包的时候可以同样使用--optimize-autoloader。不加这一选项，你可能会发现20%到25%的性能损失。
+   安装包的时候可以同样使用--optimize-autoloader。不加这一选项，你可能会发现 20%到 25%的性能损失。
 
-   如果你需要帮助，或者想要了解某个命令的细节，你可以阅读官方文档或者中文文档，也可以查看JoliCode做的这个交互式备忘单。
+   如果你需要帮助，或者想要了解某个命令的细节，你可以阅读官方文档或者中文文档，也可以查看 JoliCode 做的这个交互式备忘单。
 
-***** 简单说下composer update和composer install区别：
+***** 简单说下 composer update 和 composer install 区别：
      这里说下 composer 的机制, 当 `composer.lock` 文件存在的时候, 执行 `composer install` 命令时, composer 会更新按照 `composer.lock` 里的 package 指定版本进行安装, 如果是执行 `composer update` 的话, 会更新 `package` 版本, 并更新 `composer.lock` 文件（没明白到底有啥区别，参考知乎）.
 
-     在composer 中国推荐的加速方法就是把默认的国外镜像换成国内的。
+     在 composer 中国推荐的加速方法就是把默认的国外镜像换成国内的。
      具体步骤：
      composer config repo.packagist composer https://packagist.phpcomposer.com
-     该命令是修改config.json配置
+     该命令是修改 config.json 配置
 
-   然后在自己项目里面的composer.json文件里面添加如下：
+   然后在自己项目里面的 composer.json 文件里面添加如下：
     "repositories": {
            "packagist": {
                "type": "composer",
@@ -1611,7 +1611,7 @@
    3:  使用文本编辑器打开 application/config/config.php 文件设置你网站的根 URL，如果你想使用加密或会话，在这里设置上你的加密密钥；
    4:  如果你打算使用数据库，打开 application/config/database.php 文件设置数据库参数。
 ** 请求流程
-*** 1.弄到URL http://example.com/news/latest/10
+*** 1.弄到 URL http://example.com/news/latest/10
 *** 2.分析,路由  routes.php //路由的作用是分析成类和方法调用,路由条目中没有,就不分析了
     $route['default_controller']='pages/view'; 控制器路径
     $route['(:any)'] = 'pages/view/$1';  通配规则
@@ -1632,7 +1632,7 @@
        KEY slug (slug)
        );
      #+END_SRC
-****    2.在application/models/目录
+****    2.在 application/models/目录
      #+BEGIN_SRC php
        class News_model extends CI_Model{
 
@@ -1653,7 +1653,7 @@
                 }
        }
      #+END_SRC
-*** 5.控制器中使用model
+*** 5.控制器中使用 model
     #+BEGIN_SRC php
       class News externs CI_controller{
         public function __construct(){
@@ -1697,7 +1697,7 @@ $route['news/(:any)'] = 'news/view/$1';
 $route['news'] = 'news';
 #+END_SRC
 ** 创建数据 
-*** 1.表单或jquery
+*** 1.表单或 jquery
 *** 2.控制器验证并插入数据
 #+BEGIN_SRC php
 class News extends CI_Controller{
@@ -1725,7 +1725,7 @@ return $this->db->insert('news',$data);
 #+END_SRC
 ** 常规主题
 *** CodeIgniter URL
-**** (默认) URI分段方式 : example.com/class/function/ID
+**** (默认) URI 分段方式 : example.com/class/function/ID
 **** 查询字符串格式 : index.php?c=controller&m=method
 *** 配置文件 config/config.php
 **** 后缀 .html
@@ -1756,7 +1756,7 @@ public function _output($output)
 *** 视图
 **** 加载视图$this->load->view('view_name');
 **** 将视图作为数据返回
-: 如果你将该参数设置为 TRUE ， 该方法返回字符串，默认情况下为 FALSE ，视图将显示到浏览器。
+: 如果你将该参数设置为 TRUE， 该方法返回字符串，默认情况下为 FALSE，视图将显示到浏览器。
 : $string = $this->load->view('myfile', '', TRUE);
 *** 模型  
 模型是专门用来和数据库打交道的 PHP 类
@@ -1779,7 +1779,7 @@ $this->output->delete_cache('/foo/bar');
 *** 处理环境
 : ENVIRONMENT 常量
 : define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
-*** URI安全
+*** URI 安全
 : CodeIgniter 严格限制 URI 中允许出现的字符，以此来减少恶意数据传到你的应用程序的可能性。
 * php-mode
   执行区域  php-send-region
@@ -1795,12 +1795,12 @@ $this->output->delete_cache('/foo/bar');
     cd /root/of/project
     touch .ac-php-conf.json
   #+END_SRC
-2.在spacemacs
+2.在 spacemacs
   = ac-php-remake-tags-all =
 
 * 例子
 ** 简单文件上传 
-  注意路径都是相对路径，绝对路径 必须是/home/wuming这种的，要么用常量 ROOT这种
+  注意路径都是相对路径，绝对路径 必须是/home/wuming 这种的，要么用常量 ROOT 这种
    PHP 文件上传
  通过 PHP，可以把文件上传到服务器。
  本章节实例在 test 项目下完成，目录结构为：
@@ -1940,7 +1940,7 @@ $this->output->delete_cache('/foo/bar');
  文件上传演示操作如下所示：
 ** 日志记录
  error_log("出现大麻烦了!", 1, ". mydomain.com");   //发送到管理员邮箱中   
- error_log("搞砸了!",   2,   "localhost:5000");     //发送到本机对应5000端口的服务器中   
+ error_log("搞砸了!",   2,   "localhost:5000");     //发送到本机对应 5000 端口的服务器中   
  error_log("搞砸了!\n",   3,   "/usr/local/errors.log");  //追加到指定的文件中   
  #+BEGIN_SRC php
   <?php
@@ -1963,3 +1963,20 @@ $this->output->delete_cache('/foo/bar');
 ** 临时域名
      ./natapp -authtoken=e5eb817e91aeee83 
 
+* window 下配置
+** hosts 目录 C:\Windows\System32\drivers\etc
+** apache2 配置
+   #+BEGIN_SRC conf
+   <VirtualHost _default_:80>
+ServerName hello.com
+DocumentRoot "D:\phpStudy\PHPTutorial\WWW\hello"
+  <Directory "D:\phpStudy\PHPTutorial\WWW\hello">
+    Options -Indexes -FollowSymLinks +ExecCGI
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+    Require all granted
+  </Directory>
+</VirtualHost>
+   #+END_SRC
+Proportion
