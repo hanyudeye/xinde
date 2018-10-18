@@ -1024,7 +1024,7 @@ M-x describe-coding-system
 只需 C-x <RET> r ( M-x revert-buffer-with-coding-system) 来用指定的编码重新读入这个文件即可。一般乱码都是因为 emacs 下使用 latin 或者 utf8，而打开的文档是 gb2312 编码。如果不记得编码类型就试一下，基本上 gb2312 都能解决。询问编码时记得用 tab 补齐比较方便。或则也可以通过 file 文件名或者 enca 文件名来查看！
 ** 配置（即配即用，有配置说明文档）
    如果希望把配置放在 ~/.emacs.d/init.el 文件中，那么需要手工删除 ~/.emacs 文件。
-   init.el文件 它可以更好将所有 Emacs 相关的文件整合在一个目录内（干净的 HOME，网盘备份等优点）
+   init.el 文件 它可以更好将所有 Emacs 相关的文件整合在一个目录内（干净的 HOME，网盘备份等优点）
    更好的版本控制
 ** unicode 
     以某编码打开： M-x revert-buffer-with-coding-system RET（回车）
@@ -3449,3 +3449,178 @@ To ensure that packages are correctly compiled for the new Emacs version you
 installed, be sure to run the interactive command =spacemacs/recompile-elpa=
 with ~SPC SPC spacemacs/recompile-elpa~.
 
+=======
+* lisp-mode
+** 执行 ，e f
+** 调试  
+，d f 设置断点
+,  e e 进入调试
+s 步进
+ Press ~i~ to go into the =subroutine= where you can press ~s~ to step in
+function or press ~o~ to go out of it.
+
+ Press ~a~ to stop debugging.
+
+** Format code
+The [[https://github.com/syl20bnr/spacemacs/blob/develop/layers/%2Bemacs/semantic/README.org][semantic]] layer should be installed for these key bindings to become active.
+
+| Key Binding | Description             |
+|-------------+-------------------------|
+| ~SPC m = b~ | format current buffer   |
+| ~SPC m = f~ | format current function |
+| ~SPC m = o~ | format all on one line  |
+| ~SPC m = s~ | format current sexp     |
+
+** Debugging
+To start debugging:
+
+| Key Binding | Description                                                            |
+|-------------+------------------------------------------------------------------------|
+| ~SPC m d f~ | on a =defun= symbol toggle on the instrumentalisation of the function  |
+| ~SPC m d F~ | on a =defun= symbol toggle off the instrumentalisation of the function |
+| ~SPC m d t~ | insert =(debug)= to print the stack trace and re-evaluate the function |
+
+In =edebug-mode= (=*Debugging*= is displayed in the minor modes segment of the
+mode line)
+
+TODO
+
+In =debugger-mode= (=Debugger= is displayed in major mode segment of the mode
+line)
+
+TODO
+* elisp
+** 功能
+*** 显示功能   
+    print 
+    insert 插入字符串
+*** 全局变量赋值
+    set setq
+*** 使函数成为交互函数
+    就是 M-x 找的到的
+    #+BEGIN_SRC elisp
+      (defun fun()
+        " 说明"
+        (interactive "p") ;;添加这一段
+        (message "xxx")
+        )  
+    #+END_SRC
+**** 交互方式
+     (interactive "r")  会将点位所在区域的开始值和结束值作为参量 要选择一个区域，不然取同一个值
+     (interactive "BAppend to buffer:") 提示输入缓冲区名字, 得到的值是缓冲区名
+*** 字节编译
+    byte-compile-file
+*** 输入输出
+    message 输出到 mini 框
+*** 编辑器内部
+    buffer-name
+    buffer-file-name
+    switch-to-buffer
+    point
+    point-min
+    point-max
+    buffer-size
+   goto-char 
+   push-mark
+   beginning-of-buffer
+   mark-whole-buffer
+   append-to-buffer
+   copy-to-buffer
+*** 按键
+
+*** 保存流程
+    save-excursion
+*** 数据操作
+**** 算术操作
+     1+
+     1-
+     + - * / % mod(允许浮点数）
+    floor  ffloor 区别是一个返回整数，一个返回.0 的小数 
+    fceiling
+    fround
+    sin
+    cos
+    tan
+    asin
+    acos
+    random 随机数
+***** 位操作 
+      lsh 左移
+      ash 符号位  如果是负数移位，就有区别
+      logand 逻辑与
+      logior 逻辑或
+      logxor 异或
+      lognot 非
+**** 字串操作
+  string-or-null-p
+  char-or-string-p
+  make-string count character  从字符创造字串
+  (make-string 5 ?x) "xxxxx"
+  (string ?a ?b ?c) 拼接 
+  substring
+  split-string
+  char-equal
+  string=
+  number-to-string number
+  string-to-number
+  char-to-string
+  format string &rest object
+  format-message string &rest objects
+  downcase
+**** 列表操作
+     consp object
+     atom  判断是不是基本元素
+     listp
+     null
+     访问元素
+  car
+  cdr
+  car-safe
+  pop 后面只能变量
+  nth n list
+  nthcdr n list 
+  last list n   
+  safe-length list
+
+  构建
+  (cons 1 '(2))
+  append
+
+  修改
+  push element listname
+
+  关联列表
+       ((pine . cones)
+        (oak . acorns)
+        (maple . seeds))
+
+  属性列表
+**** 列表扩展操作
+     sequenceq 是否是序列
+     length
+     elt sequence index  返回第几个元素, 从 0 开始
+     copy-sequence
+     reverse sequence
+     数组 [ 23 2 3]
+     arrayp object 是否数组
+     向量 数据类型不同的数组
+** 流程
+*** 一段程序        
+   #+BEGIN_SRC lisp
+     (progn (print "The first form")
+            (print "The second form")
+            (print "The third form"))
+   #+END_SRC 
+  prog2, prog3 的含义就是 返回的参数是哪一个 
+*** if
+    #+BEGIN_SRC lisp
+      (if nil
+          (print 'true)
+        'very-false)
+ #+END_SRC
+=======
+** emacs 输入 unicode ::: Ctrl-x 8 Enter 3bb Enter
+  $ 
+ ＄ 
+ 央行网页选用了半角字符 U+00A5 (¥)。另见：人民币符号是「U+FFE5」还是「U+00A5」？
+ ￥
