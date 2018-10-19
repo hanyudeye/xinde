@@ -1090,6 +1090,7 @@ function createNewDoc()
       文本 	3
       注释 	8
 文档 	9
+兄弟
       #+END_SRC
       : 通过使用一个元素节点的 parentNode、firstChild 以及 lastChild 属性
 **** 修改
@@ -1965,25 +1966,7 @@ function ppt(){
  \* 自定义(customing)
  \* 布局(layouts)
  \* 响应式设计(responsive design)
- abc璇
- abc璇
- abc璇
-
- 璇
- 璇
- 璇
- 璇
- jjjk璇
- 璇
- 璇
- 璇
- 璇
- abc璇
- abc璇
- abc璇
- abc璇
- 璇
-** echarts
+ ** echarts
    ECharts，缩写来自Enterprise Charts，商业级数据图表，一个纯Javascript的图表库，可以流畅的运行在PC和移动设备上，兼容当前绝大部分浏览器（IE6/7/8/9/10/11，chrome，firefox，Safari等），
    底层依赖轻量级的Canvas类库ZRender，提供直观，生动，可交互，可高度个性化定制的数据可视化图表。创新的拖拽重计算、数据视图、值域漫游等特性大大增强了用户体验，赋予了用户对数据进行挖掘、整合的能力。
    支持折线图（区域图）、柱状图（条状图）、散点图（气泡图）、K线图、饼图（环形图）、雷达图（填充雷达图）、和弦图、力导向布局图、地图、仪表盘、漏斗图、事件河流图等12类图表，同时提供标题，详情气泡、图例、值域、数据区域、时间轴、工具箱等7个可交互组件，支持多图表、组件的联动和混搭展现。
@@ -5730,11 +5713,6 @@ $("#chk2").prop("checked") == true
 
 $("#chk1").attr("checked") == undefined
 $("#chk2").attr("checked") == "checked"
-1
-2
-3
-4
-5
 Dom漫游
 名称	功能
 $.parent(expr)	找父元素
@@ -5758,9 +5736,6 @@ jQuery.filter(expr)	从初始的jQuery对象集合中筛选出一部分
 $("#main").on("click.test",function(){
     this;//指向当前的Dom元素
 });
-1
-2
-3
 灵活运用事件委托，利用时间冒泡机制，将事件绑定到祖先元素
 
 $("#parent").on("click.test",function(event){
@@ -5773,16 +5748,7 @@ $("#parent").on("click.test",function(event){
     }
     return false;//=event.stopPropagation();event.preventDefault();
 });
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
+
 使用命名函数代替匿名函数可以解决事件重复绑定问题，因为同一个命名函数绑定同一个事件只会绑定一次。
 
 动态创建元素
@@ -5792,12 +5758,7 @@ $('<input />',{
              val:"1",
              checked:"checked"
          }).appendTo("body");
-1
-2
-3
-4
-5
-6
+
 jquery的遍历
 $.each(data,function(index,item){})
 $.each(data,function(k,v,object){})
@@ -5821,23 +5782,6 @@ $.ajax({//使用jquery发送数据
     processData:false,//告诉jquery不要处理待发送的数据
     contentType:false//告诉jquery不要设置Content-Type请求头，默认为“application/x-www-form-urlencoded”
 });
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
 Promise defer的高级用法
 Promise标准：想要改变promise对象的状态，只要在then的参数回调中返回相应的值
 
@@ -6192,3 +6136,933 @@ throw	不会改变promise的状态，而是直接throw出去
   Contact: wytabc@126.com
 
   声明: 本站如有侵权行为请及时通知至以上邮箱
+* 同级元素 不要有空格，有空格就下级了 
+  同级属性
+  $('.moneyRadio[value=2]').prop("checked", true);
+* 触发事件
+  $('#btn').trigger("click");
+* 原
+JS获取子节点、父节点和兄弟节点的若干种方式
+2017年07月22日 16:50:49
+阅读数：58937
+一、js获取子节点的方式
+1.通过获取dom方式直接获取子节点
+其中test的父标签id的值，div为标签的名字。getElementsByTagName是一个方法。返回的是一个数组。在访问的时候要按数组的形式访问。
+
+var a = document.getElementById("test").getElementsByTagName("div");
+1
+2
+2.通过childNodes获取子节点
+使用childNodes获取子节点的时候，childNodes返回的是子节点的集合，是一个数组的格式。他会把换行和空格也当成是节点信息。
+
+var b =document.getElementById("test").childNodes;
+1
+2
+为了不显示不必须的换行的空格，我们如果要使用childNodes就必须进行必要的过滤。通过正则表达式式取掉不必要的信息。下面是过滤掉
+
+//去掉换行的空格
+for(var i=0; i<b.length;i++){
+    if(b[i].nodeName == "#text" && !/\s/.test(b.nodeValue)){
+        document.getElementById("test").removeChild(b[i]);
+    }
+}
+//打印测试
+for(var i=0;i<b.length;i++){
+    console.log(i+"---------")
+    console.log(b[i]);
+}
+//补充 document.getElementById("test").childElementCount;  可以直接获取长度 同length
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+4.通过children来获取子节点
+利用children来获取子元素是最方便的，他也会返回出一个数组。对其获取子元素的访问只需按数组的访问形式即可。
+
+var getFirstChild = document.getElementById("test").children[0];
+1
+2
+5.获取第一个子节点
+firstChild来获取第一个子元素，但是在有些情况下我们打印的时候会显示undefined，这是什么情况呢？？其实firstChild和childNodes是一样的，在浏览器解析的时候会把他当换行和空格一起解析，其实你获取的是第一个子节点，只是这个子节点是一个换行或者是一个空格而已。那么不要忘记和childNodes一样处理呀。
+
+var getFirstChild = document.getElementById("test").firstChild;
+1
+2
+6.firstElementChild获取第一个子节点
+使用firstElementChild来获取第一个子元素的时候，这就没有firstChild的那种情况了。会获取到父元素第一个子元素的节点 这样就能直接显示出来文本信息了。他并不会匹配换行和空格信息。
+
+var getFirstChild = document.getElementById("test").firstElementChild;
+1
+2
+7.获取最后一个子节点
+lastChild获取最后一个子节点的方式其实和firstChild是类似的。同样的lastElementChild和firstElementChild也是一样的。不再赘余。
+
+ var getLastChildA = document.getElementById("test").lastChild;
+ var getLastChildB = document.getElementById("test").lastElementChild;
+1
+2
+3
+二、js获取父节点的方式
+1.parentNode获取父节点
+获取的是当前元素的直接父元素。parentNode是w3c的标准。
+
+var p  = document.getElementById("test").parentNode;
+1
+2
+2.parentElement获取父节点
+parentElement和parentNode一样，只是parentElement是ie的标准。
+
+var p1 = document.getElementById("test").parentElement;
+1
+2
+3.offsetParent获取所有父节点
+一看offset我们就知道是偏移量 其实这个是于位置有关的上下级 ，直接能够获取到所有父亲节点， 这个对应的值是body下的所有节点信息。
+
+var p2 = document.getElementById("test").offsetParent;
+1
+2
+三、js获取兄弟节点的方式
+1.通过获取父亲节点再获取子节点来获取兄弟节点
+var brother1 = document.getElementById("test").parentNode.children[1];
+1
+2
+2.获取上一个兄弟节点
+在获取前一个兄弟节点的时候可以使用previousSibling和previousElementSibling。他们的区别是previousSibling会匹配字符，包括换行和空格，而不是节点。previousElementSibling则直接匹配节点。
+
+var brother2 = document.getElementById("test").previousElementSibling;
+var brother3 = document.getElementById("test").previousSibling;
+1
+3.获取下一个兄弟节点
+同previousSibling和previousElementSibling，nextSibling和nextElementSibling也是类似的。
+
+var brother4 = document.getElementById("test").nextElementSibling;
+var brother5 = document.getElementById("test").nextSibling;
+* 60个很实用的jQuery代码开发技巧收集
+偶然在网上看到这些不错的jQuery代码开发技巧。原文收集了30个，另外查找的时候发现了还有20个。加上另外十个实用的jQuery代码片段，共60个代码技巧，收集在一起分享给大家。
+
+这些jQuery代码实用性比较强，有些忘了的地方可以现学现用。现在暂时没有用到以后应该会用到，觉得不错可以收藏一下。当然，觉得还不过瘾的可以去看看：
+
+1. 创建一个嵌套的过滤器
+
+1
+2
+<span class="pun">.filter(":not(:has(.selected))") //去掉所有不包含class为.selected的元素
+</span>
+2. 重用你的元素查询
+
+1
+2
+3
+    var allItems = $("div.item");  
+    var keepList = $("div#container1 div.item");
+    $(formToLookAt + " input:checked").each(function() {     keepListkeepList = keepList.filter("." + $(this).attr("name")); });
+3. 使用has()来判断一个元素是否包含特定的class或者元素
+
+1
+$("input").has(".email").addClass("email_icon");
+4. 使用jQuery切换样式
+
+1
+2
+    //Look for the media-type you wish to switch then set the href to your new style sheet  
+    $('link[media='screen']').attr('href', 'Alternative.css');
+5. 限制选择的区域
+
+1
+2
+3
+4
+5
+6
+        //Where possible, pre-fix your class names with a tag name  
+    //so that jQuery doesn't have to spend more time searching  
+    //for the element you're after. Also remember that anything  
+    //you can do to be more specific about where the element is  
+    //on your page will cut down on execution/search times  
+    var in_stock = $('#shopping_cart_items input.is_in_stock');
+1
+2
+3
+4
+5
+6
+7
+8
+    <ul id="shopping_cart_items">  
+    <li>  
+    <input value="Item-X" name="item" class="is_in_stock" type="radio"> Item X</li>  
+    <li>  
+    <input value="Item-Y" name="item" class="3-5_days" type="radio"> Item Y</li>  
+    <li>  
+    <input value="Item-Z" name="item" class="unknown" type="radio"> Item Z</li>  
+    </ul>
+6. 如何正确使用ToggleClass
+
+1
+2
+3
+4
+5
+6
+        //Toggle class allows you to add or remove a class  
+    //from an element depending on the presence of that  
+    //class. Where some developers would use:  
+    a.hasClass('blueButton') ? a.removeClass('blueButton') : a.addClass('blueButton');  
+    //toggleClass allows you to easily do this using  
+    a.toggleClass('blueButton');
+7. 设置IE指定的功能
+
+1
+        if ($.browser.msie) { // Internet Explorer is a sadist. }
+8. 使用jQuery来替换一个元素
+
+1
+       $('#thatdiv').replaceWith('fnuh');
+9. 验证一个元素是否为空
+
+1
+       if ($('#keks').html()) { //Nothing found ;}
+10. 在无序的set中查找一个元素的索引
+
+1
+2
+3
+          $("ul > li").click(function () {  
+        var index = $(this).prevAll().length;  
+    });
+11. 绑定一个函数到一个事件
+
+1
+2
+3
+$('#foo').bind('click', function() {
+  alert('User clicked on "foo."'); 
+});
+12. 添加HTML到一个元素
+
+1
+$('#lal').append('sometext');
+13. 创建元素时使用对象来定义属性
+
+1
+var e = $("", { href: "#", class: "a-class another-class", title: "..." });
+14. 使用过滤器过滤多属性
+
+1
+2
+3
+//This precision-based approached can be useful when you use  
+//lots of similar input elements which have different types  
+var elements = $('#someid input[type=sometype][value=somevalue]').get();
+15. 使用jQuery预加载图片
+
+1
+2
+jQuery.preloadImages = function() { for(var i = 0; i').attr('src', arguments[i]); } };  
+// Usage $.preloadImages('image1.gif', '/path/to/image2.png', 'some/image3.jpg');
+16. 设置任何匹配一个选择器的事件处理程序
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+    $('button.someClass').live('click', someFunction);
+      //Note that in jQuery 1.4.2, the delegate and undelegate options have been
+      //introduced to replace live as they offer better support for context
+        //For example, in terms of a table where before you would use..
+      // .live()
+      $("table").each(function(){
+        $("td", this).live("hover", function(){
+        $(this).toggleClass("hover");
+        });
+      });
+      //Now use..
+      $("table").delegate("td", "hover", function(){
+      $(this).toggleClass("hover");
+    });
+17. 找到被选择到的选项(option)元素
+
+1
+$('#someElement').find('option:selected');
+18. 隐藏包含特定值的元素
+
+1
+$("p.value:contains('thetextvalue')").hide();
+19. 自动的滚动到页面特定区域
+
+1
+2
+3
+4
+5
+6
+7
+8
+    jQuery.fn.autoscroll = function(selector) {
+      $('html,body').animate(
+        {scrollTop: $(selector).offset().top},
+        500
+      );
+    }
+    //Then to scroll to the class/area you wish to get to like this:
+    $('.area_name').autoscroll();
+20. 检测各种浏览器
+
+1
+2
+3
+4
+    Detect Safari (if( $.browser.safari)),
+    Detect IE6 and over (if ($.browser.msie && $.browser.version > 6 )),
+    Detect IE6 and below (if ($.browser.msie && $.browser.version <= 6 )),
+    Detect FireFox 2 and above (if ($.browser.mozilla && $.browser.version >= '1.8' ))
+21. 替换字符串中的单词
+
+1
+2
+    var el = $('#id');
+    el.html(el.html().replace(/word/ig, ''));
+22. 关闭右键的菜单
+
+1
+ $(document).bind('contextmenu',function(e){ return false; });
+23. 定义一个定制的选择器
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+    $.expr[':'].mycustomselector = function(element, index, meta, stack){
+    // element- is a DOM element
+    // index - the current loop index in stack
+    // meta - meta data about your selector
+    // stack - stack of all elements to loop
+    // Return true to include current element
+    // Return false to explude current element
+    };
+    // Custom Selector usage:
+    $('.someClasses:test').doSomething();
+24. 判断一个元素是否存在
+
+1
+if ($('#someDiv').length) {//hooray!!! it exists...}
+25. 使用jQuery判断鼠标的左右键点击
+
+1
+2
+3
+4
+5
+6
+7
+    $("#someelement").live('click', function(e) {
+        if( (!$.browser.msie && e.button == 0) || ($.browser.msie && e.button == 1) ) {
+            alert("Left Mouse Button Clicked");
+        }
+        else if(e.button == 2)
+            alert("Right Mouse Button Clicked");
+    });
+26. 显示或者删除输入框的缺省值
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+    //This snippet will show you how to keep a default value
+    //in a text input field for when a user hasn't entered in
+    //a value to replace it
+    swap_val = [];
+    $(".swap").each(function(i){
+        swap_val[i] = $(this).val();
+        $(this).focusin(function(){
+            if ($(this).val() == swap_val[i]) {
+                $(this).val("");
+            }
+        }).focusout(function(){
+            if ($.trim($(this).val()) == "") {
+                $(this).val(swap_val[i]);
+            }
+        });
+    });
+1
+ <input class="swap" type="text" value="Enter Username here.." />
+27. 指定时间后自动隐藏或者关闭元素(1.4支持）
+
+1
+2
+3
+4
+5
+6
+    //Here's how we used to do it in 1.3.2 using setTimeout
+    setTimeout(function() {
+      $('.mydiv').hide('blind', {}, 500)
+    }, 5000);
+    //And here's how you can do it with 1.4 using the delay() feature (this is a lot like sleep)
+    $(".mydiv").delay(5000).hide('blind', {}, 500);
+28. 动态创建元素到DOM
+
+1
+2
+    var newgbin1Div = $('');
+    newgbin1Div.attr('id','gbin1.com').appendTo('body');
+29. 限制textarea的字符数量
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+    jQuery.fn.maxLength = function(max){
+      this.each(function(){
+        var type = this.tagName.toLowerCase();
+        var inputType = this.type? this.type.toLowerCase() : null;
+        if(type == "input" && inputType == "text" || inputType == "password"){
+          //Apply the standard maxLength
+          this.maxLength = max;
+        }
+        else if(type == "textarea"){
+          this.onkeypress = function(e){
+            var ob = e || event;
+            var keyCode = ob.keyCode;
+            var hasSelection = document.selection? document.selection.createRange().text.length > 0 : this.selectionStart != this.selectionEnd;
+            return !(this.value.length >= max && (keyCode > 50 || keyCode == 32 || keyCode == 0 || keyCode == 13) && !ob.ctrlKey && !ob.altKey && !hasSelection);
+          };
+          this.onkeyup = function(){
+            if(this.value.length > max){
+              this.value = this.value.substring(0,max);
+            }
+          };
+        }
+      });
+    };
+    //Usage:
+    $('#gbin1textarea').maxLength(500);
+30. 为函数创建一个基本测试用例
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+    //Separate tests into modules.
+    module("Module B");
+    test("some other gbin1.com test", function() {
+      //Specify how many assertions are expected to run within a test.
+      expect(2);
+      //A comparison assertion, equivalent to JUnit's assertEquals.
+      equals( true, false, "failing test" );
+      equals( true, true, "passing test" );
+    });
+31. 使用jQuery克隆元素
+
+1
+var cloned = $('#gbin1div').clone();
+32. 测试一个元素在jQuery中是否可见
+
+1
+if($(element).is(':visible') == 'true') { //The element is Visible }
+33. 元素屏幕居中
+
+1
+2
+3
+4
+5
+6
+    jQuery.fn.center = function () {
+      this.css('position','absolute');
+      this.css('top', ( $(window).height() - this.height() ) / +$(window).scrollTop() + 'px');
+      this.css('left', ( $(window).width() - this.width() ) / 2+$(window).scrollLeft() + 'px');return this;
+    }
+    //Use the above function as: $('#gbin1div').center();
+34. 使用特定名字的元素对应的值生成一个数组
+
+1
+2
+3
+4
+    var arrInputValues = new Array();
+    $("input[name='table[]']").each(function(){
+         arrInputValues.push($(this).val());
+    });
+35. 剔除元素中的HTML
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+    (function($) {
+        $.fn.stripHtml = function() {
+            var regexp = /<("[^"]*"|'[^']*'|[^'">])*>/gi;
+            this.each(function() {
+                $(this).html(
+                    $(this).html().replace(regexp,"")
+                );
+            });
+            return $(this);
+        }
+    })(jQuery);
+    //usage:
+    $('p').stripHtml();
+36. 使用closest来得到父元素
+
+1
+$('#searchBox').closest('div');
+37. 使用firebug来记录jQuery事件
+
+1
+2
+3
+4
+5
+6
+7
+8
+    // Allows chainable logging
+    // Usage: $('#someDiv').hide().log('div hidden').addClass('someClass');
+    jQuery.log = jQuery.fn.log = function (msg) {
+          if (console){
+             console.log("%s: %o", msg, this);
+          }
+          return this;
+    };
+38. 点击链接强制弹出新窗口
+
+1
+2
+3
+4
+5
+    jQuery('a.popup').live('click', function(){
+      newwindow=window.open($(this).attr('href'),'','height=200,width=150');
+      if (window.focus) {newwindow.focus()}
+      return false;
+    });
+39. 点击链接强制打开新标签页
+
+1
+2
+3
+4
+5
+    jQuery('a.newTab').live('click', function(){
+      newwindow=window.open($(this).href);
+      jQuery(this).target = "_blank";
+      return false;
+    });
+40. 使用siblings()来处理同类元素
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+    // Rather than doing this
+    $('#nav li').click(function(){
+        $('#nav li').removeClass('active');
+        $(this).addClass('active');
+    });
+    // Do this instead
+    $('#nav li').click(function(){
+        $(this).addClass('active').siblings().removeClass('active');
+    });
+41. 选择或者不选页面上全部复选框
+
+1
+2
+3
+4
+5
+    var tog = false; // or true if they are checked on load
+    $('a').click(function() {
+        $("input[type=checkbox]").attr("checked",!tog);
+        tog = !tog;
+    });
+42. 基于输入文字过滤页面元素
+
+1
+2
+3
+4
+5
+    //If the value of the element matches that of the entered text
+    //it will be returned
+    $('.gbin1Class').filter(function() {
+        return $(this).attr('value') == $('input#gbin1Id').val() ;
+     })
+43. 取得鼠标的X和Y坐标
+
+1
+2
+3
+4
+5
+6
+    $(document).mousemove(function(e){
+    $(document).ready(function() {
+    $().mousemove(function(e){
+    $('#XY').html("Gbin1 X Axis : " + e.pageX + " | Gbin1 Y Axis " + e.pageY);
+    });
+    });
+44. 使得整个列表元素(LI)可点击
+
+1
+2
+3
+    $("ul li").click(function(){
+      window.location=$(this).find("a").attr("href"); return false;
+    });
+GBin1 Link 1
+ 
+
+GBin1 Link 2
+ 
+
+ 
+
+GBin1 Link 3
+ 
+
+ 
+
+GBin1 Link 4
+ 
+
+ 
+
+45. 使用jQuery来解析XML
+
+1
+2
+3
+4
+5
+6
+7
+    function parseXml(xml) {
+      //find every Tutorial and print the author
+      $(xml).find("Tutorial").each(function()
+      {
+      $("#output").append($(this).attr("author") + "");
+      });
+    }
+46. 判断一个图片是否加载完全
+
+1
+2
+3
+    $('#theGBin1Image').attr('src', 'image.jpg').load(function() {
+    alert('This Image Has Been Loaded');
+    });
+47. 使用jQuery命名事件
+
+1
+2
+3
+4
+5
+6
+    //Events can be namespaced like this
+    $('input').bind('blur.validation', function(e){
+        // ...
+    });
+    //The data method also accept namespaces
+    $('input').data('validation.isValid', true);
+48. 判断cookie是否激活或者关闭
+
+1
+2
+3
+4
+5
+6
+7
+8
+    var dt = new Date();
+    dt.setSeconds(dt.getSeconds() + 60);
+    document.cookie = "cookietest=1; expires=" + dt.toGMTString();
+    var cookiesEnabled = document.cookie.indexOf("cookietest=") != -1;
+    if(!cookiesEnabled)
+    {
+      //cookies have not been enabled
+    }
+49. 强制过期cookie
+
+1
+2
+3
+    var date = new Date();
+    date.setTime(date.getTime() + (x * 60 * 1000));
+    $.cookie('example', 'foo', { expires: date });
+50. 使用一个可点击的链接替换页面中所有URL
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+$.fn.replaceUrl = function() {
+        var regexp = /((ftp|http|https)://(w+:{0,1}w*@)?(S+)(:[0-9]+)?(/|/([w#!:.?+=&%@!-/]))?)/gi;
+        this.each(function() {
+            $(this).html(
+                $(this).html().replace(regexp,'<a href="$1">$1</a>')
+            );
+        });
+        return $(this);
+    }
+//usage
+$('#GBin1div').replaceUrl();
+51: 在表单中禁用“回车键”
+
+大家可能在表单的操作中需要防止用户意外的提交表单，那么下面这段代码肯定非常有帮助：
+
+1
+2
+3
+4
+5
+    $("#form").keypress(function(e) {
+      if (e.which == 13) {
+        return false;
+      }
+    });
+52: 清除所有的表单数据
+
+可能针对不同的表单形式，你需要调用不同类型的清楚方法，不过使用下面这个现成方法，绝对能让你省不少功夫。
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+    function clearForm(form) {
+      // iterate over all of the inputs for the form
+      // element that was passed in
+      $(':input', form).each(function() {
+        var type = this.type;
+        var tag = this.tagName.toLowerCase(); // normalize case
+        // it's ok to reset the value attr of text inputs,
+        // password inputs, and textareas
+        if (type == 'text' || type == 'password' || tag == 'textarea')
+          this.value = "";
+        // checkboxes and radios need to have their checked state cleared
+        // but should *not* have their 'value' changed
+        else if (type == 'checkbox' || type == 'radio')
+          this.checked = false;
+        // select elements need to have their 'selectedIndex' property set to -1
+        // (this works for both single and multiple select elements)
+        else if (tag == 'select')
+          this.selectedIndex = -1;
+      });
+    };
+53: 将表单中的按钮禁用
+
+下面的代码对于ajax操作非常有用，你可以有效的避免用户多次提交数据，个人也经常使用：
+
+1
+ $("#somebutton").attr("disabled", true);//禁用按钮
+1
+    $("#submit-button").removeAttr("disabled");//启动按钮
+可能大家往往会使用.attr(‘disabled’,false);，不过这是不正确的调用。
+
+54: 输入内容后启用递交按钮
+这个代码和上面类似，都属于帮助用户控制表单递交按钮。使用这段代码后，递交按钮只有在用户输入指定内容后才可以启动。
+
+1
+2
+3
+    $('#username').keyup(function() {
+        $('#submit').attr('disabled', !$('#username').val()); 
+    });
+55: 禁止多次递交表单
+多次递交表单对于web应用来说是个比较头疼的问题，下面的代码能够很好的帮助你解决这个问题：
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+    $(document).ready(function() {
+      $('form').submit(function() {
+        if(typeof jQuery.data(this, "disabledOnSubmit") == 'undefined') {
+          jQuery.data(this, "disabledOnSubmit", { submited: true });
+          $('input[type=submit], input[type=button]', this).each(function() {
+            $(this).attr("disabled", "disabled");
+          });
+          return true;
+        }
+        else
+        {
+          return false;
+        }
+      });
+    });
+56: 高亮显示目前聚焦的输入框标示
+有时候你需要提示用户目前操作的输入框，你可以使用下面代码高亮显示标示：
+
+1
+2
+3
+4
+5
+    $("form :input").focus(function() {
+      $("label[for='" + this.id + "']").addClass("labelfocus");
+    }).blur(function() {
+      $("label").removeClass("labelfocus");
+    });
+57: 动态方式添加表单元素
+这个方法可以帮助你动态的添加表单中的元素，比如，input等：
+
+1
+2
+3
+4
+5
+    //change event on password1 field to prompt new input
+    $('#password1').change(function() {
+            //dynamically create new input and insert after password1
+            $("#password1").append("<input id="password2" name="password2" type="text" />");
+    });
+58: 自动将数据导入selectbox中
+
+下面代码能够使用ajax数据自动生成选择框的内容
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+    $(function(){
+      $("select#ctlJob").change(function(){
+        $.getJSON("/select.php",{id: $(this).val(), ajax: 'true'}, function(j){
+          var options = '';
+          for (var i = 0; i < j.length; i++) {
+            options += '' + j[i].optionDisplay + '';
+          }
+          $("select#ctlPerson").html(options);
+        })
+      })
+    })
+59: 判断一个复选框是否被选中
+
+1
+$('#checkBox').attr('checked');
+60: 使用代码来递交表单
+
+1
+$("#myform").submit();
+希望大家觉得这些jQuery代码会对你的开发有帮助，如果你也有类似的jQuery代码或者jQuery插件，欢迎一起分享！
+
+注：部分代码原文应该是英文的。但是看见转的几个链接已经打不开了。所以就这样吧。
