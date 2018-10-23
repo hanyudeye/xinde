@@ -24,8 +24,7 @@
    #+END_SRC
 ** 运算符
 *** 基本运算符
- 不支持，但可以用其他命令实现 如 awk 和 expr$(())，expr 最常用
-    [[file:image/expr][expr]] 
+    不支持，但可以用其他命令实现 如 awk 和 expr$(())，expr 最常用
    
     val=`expr 2 + 2` 被下面的替代了, 不过很有用
     $((3+4))
@@ -40,43 +39,43 @@
 
 *** 字符串运算符
   #+BEGIN_SRC shell
-  =	检测两个字符串是否相等，相等返回 true。	[ $a = $b ] 返回 false。
-  !=	检测两个字符串是否相等，不相等返回 true。	[ $a != $b ] 返回 true。
-  -z	检测字符串长度是否为 0，为 0 返回 true。	[ -z $a ] 返回 false。
-  -n	检测字符串长度是否为 0，不为 0 返回 true。	[ -n $a ] 返回 true。
-  str	检测字符串是否为空，不为空返回 true。	[ $a ] 返回 true。
+    =	检测两个字符串是否相等，相等返回 true。	[ $a = $b ] 返回 false。
+    !=	检测两个字符串是否相等，不相等返回 true。	[ $a != $b ] 返回 true。
+    -z	检测字符串长度是否为 0，为 0 返回 true。	[ -z $a ] 返回 false。
+    -n	检测字符串长度是否为 0，不为 0 返回 true。	[ -n $a ] 返回 true。
+    str	检测字符串是否为空，不为空返回 true。	[ $a ] 返回 true。
   #+END_SRC
 *** 逻辑运算
     : 逻辑判断
- # TITLE shell 的逻辑判断式
- | 功能     | 逻辑标识 | 表示意思                    |
- |----------+----------+-----------------------------|
- | 文件目录 | -f       | 文件是否存在                |
- |          | -d       | 目录                        |
- |          | -b       | block                       |
- |          | -c       | character 文件               |
- |          | -S       | socket                      |
- |          | -L       | 符号链接                    |
- |          | -e       | 某个东西                    |
- |----------+----------+-----------------------------|
+    # TITLE shell 的逻辑判断式
+ | 功能     | 逻辑标识 | 表示意思                      |
+ |----------+----------+-------------------------------|
+ | 文件目录 | -f       | 文件是否存在                  |
+ |          | -d       | 目录                          |
+ |          | -b       | block                         |
+ |          | -c       | character 文件                |
+ |          | -S       | socket                        |
+ |          | -L       | 符号链接                      |
+ |          | -e       | 某个东西                      |
+ |----------+----------+-------------------------------|
  | 程序     | -G       | 是否由 GID 所执行的程序所拥有 |
- |          | -O       | UID                         |
- |          | -p       | name pipe or FIFO           |
- |----------+----------+-----------------------------|
- | 文件属性 | -r       | 可读                        |
- |          | -w       | 写                          |
- |          | -x       | 执行                        |
- |          | -s       | 非空白                      |
- |          | -u       | SUID 属性                    |
- |          | -g       | SGID                        |
- |----------+----------+-----------------------------|
- | 文件间   | -nt      | 第一个比第二个新            |
- |          | -ot      | 旧                          |
- |          | -ef      | 同一文件(link 之类)          |
- |----------+----------+-----------------------------|
- | 逻辑     | &&       | AND 的意思                   |
- |          | 两竖     | OR                          |
- |----------+----------+-----------------------------|
+ |          | -O       | UID                           |
+ |          | -p       | name pipe or FIFO             |
+ |----------+----------+-------------------------------|
+ | 文件属性 | -r       | 可读                          |
+ |          | -w       | 写                            |
+ |          | -x       | 执行                          |
+ |          | -s       | 非空白                        |
+ |          | -u       | SUID 属性                     |
+ |          | -g       | SGID                          |
+ |----------+----------+-------------------------------|
+ | 文件间   | -nt      | 第一个比第二个新              |
+ |          | -ot      | 旧                            |
+ |          | -ef      | 同一文件(link 之类)           |
+ |----------+----------+-------------------------------|
+ | 逻辑     | &&       | AND 的意思                    |
+ |          | 两竖     | OR                            |
+ |----------+----------+-------------------------------|
  : 条件判断
  #+BEGIN_SRC bash
  if [[ one && two ]];then
@@ -130,13 +129,9 @@
 ** 函数
    #+BEGIN_SRC shell
        [ function ] funname [()]
-
        {
-
          action;
-
          [return int;]
-
      }
    调用
  函数名 参数 1 参数 2 ...
@@ -173,10 +168,10 @@
    > 大于(需要双括号),如:(("$a" > "$b"))
    >= 大于等于(需要双括号),如:(("$a" >= "$b"))
 
-字符串比较
-= 等于,如:if [ "$a" = "$b" ]
-== 等于,如:if [ "$a" == "$b" ],与=等价
-注意:==的功能在[[]]和[]中的行为是不同的,如下:
+   字符串比较
+   = 等于,如:if [ "$a" = "$b" ]
+   == 等于,如:if [ "$a" == "$b" ],与=等价
+   注意:==的功能在[[]]和[]中的行为是不同的,如下:
 
 1 [[ $a == z* ]] # 如果$a 以"z"开头(模式匹配)那么将为 true
 2 [[ $a == "z*" ]] # 如果$a 等于 z*(字符匹配),那么结果为 true
@@ -573,7 +568,7 @@ set [+-abCdefhHklmnpPtuvx]
 ** 功能调用 
   要想 一段字符当命令运行， 用 $() 或 `` 
 =======
-* Linux 最常用命令汇总
+* 常用命令
 ** 安装包管理类
    //centos
    yum provides */libgcc_s.so.1    //根据文件名检查所属的包 
@@ -677,10 +672,10 @@ BOOTPROTO="static" 网卡获得 ip 地址的方式，static（静态 ip 地址�
 IPADDR="192.168.211.144"
 GATEWAY="192.168.211.2" #重要：虚拟机 linux 设静态 ip 必须设置 Gateway，而且一定指向 x.x.x.2 那个地址
 ONBOOT="yes" 系统启动时是否设置此网络接口，设置为 yes 时，系统启动时激活此设备。默认设置为 yes
-* Linux 企业运维人员最常用 150 个命令汇总
+* 企业运维命令
 ** 线上查询及帮助命令(2 个) 
-man 查看命令帮助，命令的词典，更复杂的还有 info，但不常用。 
-help 查看 Linux 内置命令的帮助，比如 cd 命令。
+   man 查看命令帮助，命令的词典，更复杂的还有 info，但不常用。 
+   help 查看 Linux 内置命令的帮助，比如 cd 命令。
 ** 文件和目录操作命令(18 个)
 ls 全拼 list，功能是列出目录的内容及其内容属性信息。
 cd 全拼 change directory，功能是从当前工作目录切换到指定的工作目录。
@@ -1147,108 +1142,3 @@ service
 
 启动、停止、重新启动和关闭系统服务，还可以显示所有系统服务的当前状态。
 >>>>>>> b78813fb51481d8d9e0e2178a5c96fdc0c31ef5a
-* shell mode 
-** shell 集成工具
-*** 定义 shell 
-    #+BEGIN_SRC lisp 
-      '((shell :variables shell-default-shell 'eshell)))
-    #+END_SRC
-    可选
- - =eshell=
- - =shell=
- - =term=
- - =ansi-term=
- - =multi-term=
- 通过 spc ' 可快速访问
-*** 配置 shell
- #+BEGIN_SRC lisp
-    (setq-default dotspacemacs-configuration-layers
-                  '((shell :variables
-                           shell-default-position 'bottom
-                           shell-default-height 30)))
-
-   执行程序   '((shell :variables shell-default-term-shell "/bin/bash"))
-   宽度'((shell :variables shell-default-full-span nil))
-   在 类似命令的字串前面 按 i, 会当命令执行
- #+END_SRC
-*** Key bindings
-  | Key Binding | Description                                                    |
-  |-------------+----------------------------------------------------------------|
-  | ~SPC '​~     | Open, close or go to the default shell                         |
-  | ~SPC p '​~   | Open a shell in the project's root                             |
-  | ~SPC a s e~ | Open, close or go to an =eshell=                               |
-  | ~SPC a s i~ | Open, close or go to a =shell=                                 |
-  | ~SPC a s m~ | Open, close or go to a =multi-term=    , 打开多进程 shell       |
-  | ~SPC a s t~ | Open, close or go to a =ansi-term=                             |
-  | ~SPC a s T~ | Open, close or go to a =term=                                  |
-  | ~SPC m H~   | 历史 browse history with =helm= (works in =eshell= and =shell=) |
-  | ~C-j~       | next item in history                                           |
-  | ~C-k~       | previous item in history                                       |
-
-  *Note:* You can open multiple shells using a numerical prefix argument,
-  for instance pressing ~2 SPC '​~ will a second default shell, the
-  number of shell is indicated on the mode-line.
-
-  *Note:* Use the universal prefix argument ~SPC u SPC '​~ to open the shell
-  in the current buffer instead of a popup.
-
-**** Multi-term
-
-  | Key Binding | Description                  |
-  |-------------+------------------------------|
-  | ~SPC m c~   | create a new multi-term      |
-  | ~SPC m n~   | go to next multi-term        |
-  | ~SPC m p~   | go to previous multi-term    |
-  | ~SPC p $ t~ | run multi-term shell in root |
-
-  | Key Binding        | Description                                |
-  |--------------------+--------------------------------------------|
-  | ~SPC m H~ or ~M-l~ | shell commands history using a helm buffer |
-** shell-script
-   支持 .sh 和 .fish 脚本
-   fish  the friendly interactive shell
-*** 安装
-    fish
-    #+BEGIN_SRC shell
-      sudo apt-add-repository ppa:fish-shell/release-2
-      sudo apt-get update
-      sudo apt-get install fish
-    #+END_SRC
-    - Auto-completion using [[https://github.com/Alexander-Miller/company-shell][company-shell]]
-    In order to enable =sh= scripts linting, install [[https://www.shellcheck.net/][shellcheck]].
-    In order to enable =sh= scripts style checking, install [[https://github.com/openstack-dev/bashate][bashate]].
-*** 功能
-**** company-shell
-- company-shell offers 3 backends for 3 different sources:
-  -company-shell - 完成$PATH 包含的程序　providing completions for binaries that are found on your $PATH
-  -company-fish-shell - 完成 fish 的函数 providing completions for fish-shell’s functions, both builtin as well as user-defined
-  -company-shell-env -  完成环境变量 providing completions for environment variables based on the env command
-- 报错 Company: backend (company-shell company-shell-env company-fish-shell) error "Wrong type argument: stringp, nil" with args (candidates ech)
-  To find the documentation for a completion candidate(候选) c company-shell and company-fish-shell will both first try the output of man c.
-  If c does not have a manpage they will then use c --help as a fallback. 
-  The latter needs to be enabled manually (see the desciption about company-shell-use-help-arg below).
-  The meta doc-string (shown in the minibuffer during completion) is provided by (the first line of) whatis c.
-* 机器创造对象 ，编程语言创造对象
-* shell
-  特殊字符
-  变量和参数
-  变量替换赋值
-  退出状态 
-
-  test 结构
-  操作字符串
-  指定类型变量
-  循环分支
-  
-  作业控制
-  
-  外部命令
-  时间、日期命令
-  文本处理命令
-  终端控制命令
-
-<<<<<<< HEAD
-=======
- There are no doc- or meta-strings for company-shell-env.
-* 运行 shell
-  systemctl status networking.service
