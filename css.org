@@ -587,3 +587,312 @@ LESSCSS也可以不经编译，直接在浏览器端使用。
 引入了一种“严格单位模式”（strictUnits:true或者strict-units=on），这将强制让lessc验证单位的合法性。例如4px/2px结果为2，而不是2px，而4em/2px将报错。目前没有将这个选项默认打开的计划，但它可能在排查bug的时候有用。
 单位的运算功能已完成，所以(4px * 3em) / 4px以前结果是3px，但现在是3em。但是，我们没有取消有单位数字向无单位数字转换的功能，除非“严格单位模式”被开启。
 你可以现在就将选择器中插入变量、运算、单位的涉及到的变化应用到代码中去，这些变化能很好地与less 1.3.3兼容。
+* css初始化代码方案
+　　为了消除各浏览器对css默认的设置，保持网页在各浏览器中的外观保持一致，初始化css就显得非常必要了！很多时候出现的样式不兼容问题，都可以通过css初始化代码来解决。下面列举常用的一些方案：
+
+1.最耗资源的，最简单的
+
+\* { padding: 0; margin: 0; border: 0; } 
+2.选择性初始化举例（综合）
+
+复制代码
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,legend,button
+form,fieldset,input,textarea,p,blockquote,th,td {   
+　　padding: 0;   
+　　margin: 0;   
+}
+/* 酌情修改 */
+body {
+    background:#fff;color:#333;font-size:12px; margin-top:5px;font-family:"SimSun","宋体","Arial Narrow";
+}
+
+/* 短引用的内容可取值：''或"" */
+q:before,q:after {content:”;}  
+
+/* 缩写，图片等无边框 */
+fieldset,img,abbr,acronym {border: 0 none;}
+abbr,acronym {font-variant: normal;}
+legend {color:#000;}
+
+/* 清除特殊标记的字体和字号 */
+address,caption,cite,code,dfn,em,strong,th,var {   
+　　font-weight: normal;   
+　　font-style: normal;   
+}
+
+/* 上下标 */
+sup {vertical-align: text-top;}
+sub {vertical-align: text-bottom;}
+
+/* 设置表格的边框被合并为一个单一的边框, 指定分隔边框模型中单元格边界之间的距离为0*/
+table {   
+　　border-collapse: collapse;   
+　　border-spacing: 0;   
+}   
+
+/* 表格标题及内容居左显示 */
+caption,th {text-align: left;}
+input,img,select {vertical-align:middle;}
+
+/* 清除列表样式 */
+ol,ul {list-style: none;}  
+
+/* 输入控件字体 */
+input,button,textarea,select,optgroup,option {
+    font-family:inherit;
+    font-size:inherit;
+    font-style:inherit;
+    font-weight:inherit;
+}
+
+/* 标题元素样式清除 */ 
+h1,h2,h3,h4,h5,h6 {   
+　　font-weight: normal;   
+　　font-size: 100%;   
+}   
+
+/* 链接样式，颜色可酌情修改 */
+del,ins,a {text-decoration:none;}
+a:link {color:#009;}
+a:visited {color:#800080;}
+a:hover,a:active,a:focus {color:#c00; text-decoration:underline;} 
+
+/* 鼠标样式 */
+input[type="submit"] {cursor: pointer;}
+button {cursor: pointer;}
+input::-moz-focus-inner { border: 0; padding: 0;}
+
+.clear {clear:both;}
+复制代码
+3.sina的
+
+复制代码
+/* 全局样式 */
+body,ul,ol,li,p,h1,h2,h3,h4,h5,h6,form,fieldset,table,td,img,div{
+    margin:0;padding:0;border:0;
+}
+body{
+    background:#fff;color:#333;font-size:12px; margin-top:5px;font-family:"SimSun","宋体","Arial Narrow";
+}
+ul,ol{
+    list-style-type:none;
+}
+select,input,img,select{
+    vertical-align:middle;
+}
+a{text-decoration:none;}
+a:link{color:#009;}
+a:visited{color:#800080;}
+a:hover,a:active,a:focus{color:#c00;text-decoration:underline;} 
+复制代码
+4.yahoo的
+
+复制代码
+html {
+    background: none repeat scroll 0 0 #FFFFFF;
+    color: #000000;
+}
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td {
+    margin: 0;
+    padding: 0;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+fieldset, img {
+    border: 0 none;
+}
+address, caption, cite, code, dfn, em, strong, th, var {
+    font-style: normal;
+    font-weight: normal;
+}
+li {
+    list-style: none outside none;
+}
+caption, th {
+    text-align: left;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-size: 100%;
+    font-weight: normal;
+}
+q:before, q:after {
+    content: "";
+}
+abbr, acronym {
+    border: 0 none;
+    font-variant: normal;
+}
+sup {
+    vertical-align: text-top;
+}
+sub {
+    vertical-align: text-bottom;
+}
+input, textarea, select {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+}
+input, textarea, select {
+}
+legend {
+    color: #000000;
+}
+body {
+    font: 13px/1.231 arial,helvetica,clean,sans-serif;
+}
+select, input, button, textarea {
+    font: 99% arial,helvetica,clean,sans-serif;
+}
+table {
+    font-size: inherit;
+}
+pre, code, kbd, samp, tt {
+    font-family: monospace;
+    line-height: 100%;
+}
+a {
+    text-decoration: none;
+}
+a:hover, a:focus {
+    text-decoration: underline;
+}
+strong {
+    font-weight: bold;
+}
+input[type="submit"] {
+    cursor: pointer;
+}
+button {
+    cursor: pointer;
+}
+复制代码
+5.博客园的
+
+ 
+
+复制代码
+/*version: 2.7.0*/
+html,body{color:#000;background:#FFF;}
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,p,blockquote,th,td{
+    margin:0;padding:0;
+}
+table{border-collapse:collapse;border-spacing:0;}
+fieldset,img{border:0;}
+address,caption,cite,code,dfn,em,strong,th,var,optgroup{
+    font-style:inherit;font-weight:inherit;
+}
+del,ins{text-decoration:none;}
+li{list-style:none;}
+caption,th{text-align:left;}
+h1,h2,h3,h4,h5,h6{    font-size:100%;font-weight:normal;}
+q:before,q:after{content:'';}
+abbr,acronym{border:0;font-variant:normal;}
+sup{vertical-align:baseline;}
+sub{vertical-align:baseline;}
+legend{color:#000;}
+input,button,textarea,select,optgroup,option{
+    font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;
+}
+input,button,textarea,select{*font-size:100%;}
+.clear{clear:both;}
+input::-moz-focus-inner{ border: 0;padding: 0;}
+
+/*added*/
+input[type=button],input[type=submit] {-webkit-appearance: button;}
+* web移动开发最佳实践之css篇
+一、css概述
+
+　　css即层叠样式表（Cascading Style Sheets），它的作用主要是控制页面元素的样式，包括布局、颜色、字体、字号、空白、边框、属性等等。css的出现使得html的内容和样式分离，极大的提高了工作效率。
+
+　　目前最新的标准是css3，下面几节将介绍在使用css过程中应遵循的最佳实践方案。
+
+二、使用高效的css选择器
+
+　　欲创建一个高效的web应用，你要了解浏览器是如何读取你的web页面并呈现出来的。当浏览器读取你的html文档时，它首先对html文档进行语法分析，然后把相应元素填充到一个文档树中；然后从css样式表中匹配相应的样式到各个元素中。浏览器读取样式表是从右到左的，即从最右边的选择符（key selector）开始，然后依次向左移动，直到匹配到元素结束。为了使这个匹配过程高效些，就要减少匹配元素样式的过程。举例来说：
+
+#home a {color: blue;}
+我们希望id是home下的所有a标签，使用蓝色字体。但是这样声明并不高效，浏览器首先会查找每一个a标签，然后查看它的父元素是否含有home的id，直到文档的结尾。更高效的方式是避免使用子选择器，使用class属性：
+
+.home-anchor {color: blue;}
+使用特定的样式规则就可以减少匹配的时间（但是要在可维护性性之间找到一个平衡点），可能的形式为：
+
+复制代码
+#main-navigation {   }      /* ID (Fastest) */
+body.home #page-wrap {   }  /* ID */
+.main-navigation {   }      /* Class */
+ul li a.current {   }       /* Class *
+ul {   }                    /* Tag */
+ul li a {  }                /* Tag */
+\* {   }                     /* Universal (Slowest) */
+#content [title='home']     /* Universal */
+复制代码
+有四种类型的选择器，其中id和class比元素选择器和通配符更快：
+
+#chapter1 {text-align: center; }
+.chapter1 { font-weight: bold; }
+h1 { font-family: sans-serif; }
+\* {font-family: Arial; }
+三、声明图片的尺寸
+
+　　为了提高页面渲染的速度，声明图片的尺寸是很好的办法：
+
+<img src="img/logo.png" style="width: 100px; height: 100px;">
+因为浏览器是分开下载各个图片的，声明了尺寸就可以提前确定排版，否则等到图片下载完成后才知道图片的尺寸信息，渲染过程就明显变慢了。
+
+还有就是，声明图片尺寸的时候，应该是实际的尺寸。例如：一个图片实际尺寸是50*50，但是你希望它小一点，把尺寸声明为20*20，那么调整图片尺寸的过程就会耗费CPU资源、内存资源等，使渲染速度变慢。其次，这还会避免下载一个不必要的较大的图片，手机流量是有限的，这也是为用户节约资源。
+
+声明图片尺寸的方式有3种（html，内联css，外联css）：
+
+<img id="logo" src="logo.jpg" alt="Company logo" height="100" width="100" /> 
+<img id="logo" src="logo.jpg" style="width: 100px; height: 100px;">
+#logo { width: 100px; height: 100px; }
+四、使用css精灵（sprites）
+
+　　css精灵即把多个小图片放到一个大图片中，这样就可以减少http请求的数量。使用时，就进行相应的裁剪，这在各大网站中常被用到。放在一个大图片中，也更容易对图片进行统一管理，这对于按钮、导航图标等非常合适。
+
+
+
+复制代码
+#navcontainer li {
+    background-image: url('spritebg.jpg'); /* single image */
+}
+#navcontainer ul li:nth-child(1) {
+    background-position: -130px -700px; /* position = xpos ypos */
+}
+#navcontainer ul li:nth-child(2) {
+    background-position: -130px -718px;
+}
+#navcontainer a {
+    width: 250px; /* size */
+    height: 18px;
+}
+复制代码
+五、启用硬件加速
+
+　　如果你的应用中含有动画，那么就可以启用硬件加速功能来提升用户体验。默认情况下，大多数浏览器是没有开硬件加速的，使用该功能的典型情况是WebGL组件、3D动画等。但是，如果你希望某个特定的元素使用硬件加速，可以手动触发：
+
+... {
+    -webkit-transform: <transform function>;
+}
+transform属性会把2D或3D转换应用到一个元素中，可以使用这个属性来进行旋转、缩放等操作。例如：
+
+复制代码
+img.rotate3d {
+    -webkit-transition: -webkit-transform 1s ease-in-out;
+    -webkit-transform: rotate3d(0, 0, 1, 0deg);
+}
+       
+img.rotate3d:hover {
+    -webkit-transform: rotate3d(0, 0, 1, 15deg);
+}
+复制代码
+以上代码对图片进行15度的旋转
+
+
+
+但是开启硬件加速并不会加速其他元素的执行，它只是加速了动画的转换（使用GPU）。最后，硬件的资源是很宝贵的，有必要的时候才考虑使用。
+
+

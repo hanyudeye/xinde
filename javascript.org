@@ -1,16 +1,8 @@
-* javascript
-** 解释器
+* Javascript
+** 执行
    nodejs js.js 
    浏览器 
-** 输出
-   window.alert()
-   document.write()
-   innerHTML
-   console.log
-** 对象
-   Document, Element, Function, Array ,Boolean ,Date , String  , Number
-   Math , Object, RegExp
-** 对象构造器
+** 对象构造
    #+BEGIN_SRC javascript
      function person(firstname,lastname,age,eyecolor)
      {
@@ -26,7 +18,7 @@
   数组 concat() join() sort() Array()
   RegExp 对象有 3 个方法：test()、exec() 以及 compile()。
   #+END_SRC
-** 事件
+** 事件(交互对象才用事件)
    document.getElementById("btnTest").onclick=thisTest; //给button的onclick事件注册一个函数
 *** 事件类型
  #+BEGIN_SRC 
@@ -500,343 +492,320 @@ return prev + cur;
 },10);
 console.log(sum); //25
 * javascript学习笔记
-1 js数据类型:
-原始类型(primitive): 数字, 字符串, 布尔值
-特殊原始值: null和undefined, 它们不是数字, 字符串和布尔值.
-对象类型(object): 除primitive与null及undefined之外的.
-函数也是一种特殊的对象(它具有与之关联的可执行代码). 但是typeof为function.
-数组也是对象.
-语言核心的另外几种对象: Date, RegExp, Error
-null的typeof得到的也是object.
-1.1 原始数据包装对象:
-字符串, 数字和布尔值可以使用各自的方法, 但是字符串(数字, 布尔)变量并不是字 符串(数字, 布尔)对象, 而是在使用方法的时候, 通过创建临时的对象来实现的.
+** 获取日期与时间
+   var myDate = new Date();
+   myDate.getYear();               //获取当前年份(2位)
+   myDate.getFullYear();           //获取完整的年份(4位,1970-????)
+   myDate.getMonth();              //获取当前月份(0-11,0代表1月)
+   myDate.getDate();               //获取当前日(1-31)
+   myDate.getDay();                //获取当前星期X(0-6,0代表星期天)
+   myDate.getTime();               //获取当前时间(从1970.1.1开始的毫秒数)
+   myDate.getHours();              //获取当前小时数(0-23)
+   myDate.getMinutes();            //获取当前分钟数(0-59)
+   myDate.getSeconds();            //获取当前秒数(0-59)
+   myDate.getMilliseconds();       //获取当前毫秒数(0-999)
+   myDate.toLocaleDateString();    //获取当前日期
+   myDate.toLocaleTimeString();    //获取当前时间
+   myDate.toLocaleString( );       //获取日期与时间
+ 日期时间脚本库方法列表:
 
-    var s = "test";
-    s.len = 4;
-    console.log("s.len:", s.len);   // 得到undefined
-    console.log("type s:", typeof s);   // 得到string, 而不是如下面s2的object
+ Date.prototype.isLeapYear       判断闰年
+ Date.prototype.Format           日期格式化
+ Date.prototype.DateAdd          日期计算
+ Date.prototype.DateDiff         比较日期差
+ Date.prototype.toString         日期转字符串
+ Date.prototype.toArray          日期分割为数组
+ Date.prototype.DatePart         取日期的部分信息
+ Date.prototype.MaxDayOfDate     取日期所在月的最大天数
+ Date.prototype.WeekNumOfYear    判断日期所在年的第几周
+ StringToDate                    字符串转日期型
+ IsValidDate                     验证日期有效性
+ CheckDateTime                   完整日期时间检查
+ daysBetween                     日期天数差
+ 2.1 Date Format:
+ // (new Date()).Format("yyyy-MM-dd hh:mm:ss.S") ==> 2006-07-02 08:09:04.423
+ // (new Date()).Format("yyyy-M-d h:m:s.S")      ==> 2006-7-2 8:9:4.18
 
-    var s2 = new String("test");
-    console.log("type s2:", typeof s2);   // 得到object
+     Date.prototype.Format = function(fmt)   {
+         var o = {
+             "M+" : this.getMonth()+1,                 //月份
+             "d+" : this.getDate(),                    //日
+             "h+" : this.getHours(),                   //小时
+             "m+" : this.getMinutes(),                 //分
+             "s+" : this.getSeconds(),                 //秒
+             "q+" : Math.floor((this.getMonth()+3)/3), //季度
+             "S"  : this.getMilliseconds()             //毫秒
+         };
+         if(/(y+)/.test(fmt)) {
+             fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+         }
+         for(var k in o) {
+             if(new RegExp("("+ k +")").test(fmt)) {
+                 fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+             }
+         }
+         return fmt;
+     }
 
-    var s3 = "hello world";
-    console.log("replace:", s3.replace("llo", " ^_^"));
-    console.log("hello:", s3); // 这里仍然是hello world
-2 获取日期与时间
-var myDate = new Date();
-myDate.getYear();               //获取当前年份(2位)
-myDate.getFullYear();           //获取完整的年份(4位,1970-????)
-myDate.getMonth();              //获取当前月份(0-11,0代表1月)
-myDate.getDate();               //获取当前日(1-31)
-myDate.getDay();                //获取当前星期X(0-6,0代表星期天)
-myDate.getTime();               //获取当前时间(从1970.1.1开始的毫秒数)
-myDate.getHours();              //获取当前小时数(0-23)
-myDate.getMinutes();            //获取当前分钟数(0-59)
-myDate.getSeconds();            //获取当前秒数(0-59)
-myDate.getMilliseconds();       //获取当前毫秒数(0-999)
-myDate.toLocaleDateString();    //获取当前日期
-myDate.toLocaleTimeString();    //获取当前时间
-myDate.toLocaleString( );       //获取日期与时间
-日期时间脚本库方法列表:
+     var d = new Date();
+     console.log("date:", d.toISOString());
+     console.log("Format:", d.Format("yyyy-MM-dd hh:mm:ss.S"));
+** 对象
+   简单定义对象:
 
-Date.prototype.isLeapYear       判断闰年
-Date.prototype.Format           日期格式化
-Date.prototype.DateAdd          日期计算
-Date.prototype.DateDiff         比较日期差
-Date.prototype.toString         日期转字符串
-Date.prototype.toArray          日期分割为数组
-Date.prototype.DatePart         取日期的部分信息
-Date.prototype.MaxDayOfDate     取日期所在月的最大天数
-Date.prototype.WeekNumOfYear    判断日期所在年的第几周
-StringToDate                    字符串转日期型
-IsValidDate                     验证日期有效性
-CheckDateTime                   完整日期时间检查
-daysBetween                     日期天数差
-2.1 Date Format:
-// (new Date()).Format("yyyy-MM-dd hh:mm:ss.S") ==> 2006-07-02 08:09:04.423
-// (new Date()).Format("yyyy-M-d h:m:s.S")      ==> 2006-7-2 8:9:4.18
+ var o = {
+     a:'aa',
+     b:'b'
+ };
+ 遍历对象:
 
-    Date.prototype.Format = function(fmt)   {
-        var o = {
-            "M+" : this.getMonth()+1,                 //月份
-            "d+" : this.getDate(),                    //日
-            "h+" : this.getHours(),                   //小时
-            "m+" : this.getMinutes(),                 //分
-            "s+" : this.getSeconds(),                 //秒
-            "q+" : Math.floor((this.getMonth()+3)/3), //季度
-            "S"  : this.getMilliseconds()             //毫秒
-        };
-        if(/(y+)/.test(fmt)) {
-            fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
-        }
-        for(var k in o) {
-            if(new RegExp("("+ k +")").test(fmt)) {
-                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
-            }
-        }
-        return fmt;
-    }
+ for(var i in o) {
+     alert(o[i]);
+ }
+ for in 可以遍历到对象的普通属性与方法, 但是遍历不到setter/getter.
 
-    var d = new Date();
-    console.log("date:", d.toISOString());
-    console.log("Format:", d.Format("yyyy-MM-dd hh:mm:ss.S"));
-3 对象
-简单定义对象:
+ var v = "mm";
+ alert("undefined"!=typeof(o[v])) //判断这个下标是否存在
+*** 浏览器对象
+  浏览器中最外层this为window. 以下3个都是输出window对象
 
-var o = {
-    a:'aa',
-    b:'b'
-};
-遍历对象:
+  console.log("this:", this);
+  console.log("this.top:", this.top);
+  console.log("self:", self);
+*** js内置全局对象
+   全局属性: undefined, Infinity, NaN
+   全局函数: isNaN(), parseInt(), eval()
+   全局构造: Date(), RegExp(), String(), Object(), Array()
+   全局对象: Math, JSON
+*** setter/getter用法:
+   对象中:
 
-for(var i in o) {
-    alert(o[i]);
-}
-for in 可以遍历到对象的普通属性与方法, 但是遍历不到setter/getter.
+   var o4 = {
+       get aa() {
+           return this._aa;
+       },
+       set aa(value) {
+           this._aa = value;
+       }
+   }
+   构造函数中(ES5):
 
-var v = "mm";
-alert("undefined"!=typeof(o[v])) //判断这个下标是否存在
-3.1 浏览器对象
-浏览器中最外层this为window. 以下3个都是输出window对象
+   Object.defineProperties(this, {
+       "c3_aa": {
+            "get": function() { return this._c3_aa },
+            "set": function(v) { this._c3_aa = v }
+       }
+   });
+   3.4 attribute's property
+   普通属性4个特性:
 
-console.log("this:", this);
-console.log("this.top:", this.top);
-console.log("self:", self);
-3.2 js内置全局对象
-全局属性: undefined, Infinity, NaN
-全局函数: isNaN(), parseInt(), eval()
-全局构造: Date(), RegExp(), String(), Object(), Array()
-全局对象: Math, JSON
-3.3 setter/getter用法:
-对象中:
+   value
+   writable
+   enumerable
+   configurable
+   存取器setter/getter4个特性:
 
-var o4 = {
-    get aa() {
-        return this._aa;
-    },
-    set aa(value) {
-        this._aa = value;
-    }
-}
-构造函数中(ES5):
+   get
+   set
+   enumerable
+   configurable
+*** 原型(prototype)
+   原型中添加属性, 会影响到其继承对象. 假如对象o1是o2的prototype, 当o2创建后, o1中增加/删除的属性, 也会被o2继承. 如:
 
-Object.defineProperties(this, {
-    "c3_aa": {
-         "get": function() { return this._c3_aa },
-         "set": function(v) { this._c3_aa = v }
-    }
-});
-3.4 attribute's property
-普通属性4个特性:
+   var o1 = {a1:1}; var o2 = Object.create(o1); console.log("o2", o2); for (a in o2) { console.log(" ", a, o2[a]); // 此时只有a1 };
 
-value
-writable
-enumerable
-configurable
-存取器setter/getter4个特性:
+   console.log("o2", o2); o1.a1Later = 11; for (a in o2) { console.log(" ", a, o2[a]); // 此时只有a1和a1Later. };
 
-get
-set
-enumerable
-configurable
-3.5 原型(prototype)
-原型中添加属性, 会影响到其继承对象. 假如对象o1是o2的prototype, 当o2创建后, o1中增加/删除的属性, 也会被o2继承. 如:
+   但是如果o2自己已经对同名属性进行了赋值, 则不会发生上述情况.
 
-var o1 = {a1:1}; var o2 = Object.create(o1); console.log("o2", o2); for (a in o2) { console.log(" ", a, o2[a]); // 此时只有a1 };
+   原型链中的属性特性, 同样会被继承.
+*** 对象序列化
+   var s = '{ "name":"hello", "hehe":"abc" }'
+   var o = JSON.parse(s)
+   console.log("o:", o);
+   var s2 = JSON.stringify(o)
+   console.log("s2:", s2);
+   序列化支持对象, 数组, 字符串, 无穷大, true, false, null.
+   NaN, Infinity, -Infinity序列化结果为null.
+   日期对象序列化结果是ISO格式的字符串, 但是不能反序列化.
+   函数, RegExp, Error对象和undefined值不能序列化和反序列化.
+*** 对象常用方法
+   Object.create
 
-console.log("o2", o2); o1.a1Later = 11; for (a in o2) { console.log(" ", a, o2[a]); // 此时只有a1和a1Later. };
+   var o1 = {a1:1}; var o2 = Object.create( o1, { a2: { value:2, writable: true, configurable: true, enumerable: true } } );
 
-但是如果o2自己已经对同名属性进行了赋值, 则不会发生上述情况.
+   属性:
 
-原型链中的属性特性, 同样会被继承.
-3.6 对象序列化
-var s = '{ "name":"hello", "hehe":"abc" }'
-var o = JSON.parse(s)
-console.log("o:", o);
-var s2 = JSON.stringify(o)
-console.log("s2:", s2);
-序列化支持对象, 数组, 字符串, 无穷大, true, false, null.
-NaN, Infinity, -Infinity序列化结果为null.
-日期对象序列化结果是ISO格式的字符串, 但是不能反序列化.
-函数, RegExp, Error对象和undefined值不能序列化和反序列化.
-3.7 对象常用方法
-Object.create
+   o.hasOwnProperty: 对象的hasOwnProperty(prop)方法, 对象自有属性为true, 继承的为false.
+   o.propertyIsEnumerable(prop): 自有且可枚举的为true. 继承的为false但是却可以被for in遍历到.
+   Object.getOwnPropertyNames(): 返回对象的所有自有属性的名称(组成的数组).
+   Object.keys(): 返回对象的所有"可枚举的"自有属性的名称(组成的数组).
 
-var o1 = {a1:1}; var o2 = Object.create( o1, { a2: { value:2, writable: true, configurable: true, enumerable: true } } );
+   Object.defineProperty(o, attrName, {des...}): 设置属性的特性.
+   Object.defineProperties(): 一次设置多个属性的特性.
 
-属性:
+   属性特性:
 
-o.hasOwnProperty: 对象的hasOwnProperty(prop)方法, 对象自有属性为true, 继承的为false.
-o.propertyIsEnumerable(prop): 自有且可枚举的为true. 继承的为false但是却可以被for in遍历到.
-Object.getOwnPropertyNames(): 返回对象的所有自有属性的名称(组成的数组).
-Object.keys(): 返回对象的所有"可枚举的"自有属性的名称(组成的数组).
+   Object.getOwnPropertyDescriptor(o, attrName): 获取指定属性的属性描述符(property descriptor).
+   原型(prototype):
 
-Object.defineProperty(o, attrName, {des...}): 设置属性的特性.
-Object.defineProperties(): 一次设置多个属性的特性.
+   Object.getPrototypeOf(o): 获取对象的原型.
+   o1.isPrototypeOf(o2): 判断是否是原型(即使是间接的原型也返回true).
+   可扩展性:
 
-属性特性:
+   Object.preventExtensions(o): 禁止可扩展, 便不能再添加新属性. 但是该函数不影响对象的原型对象的可扩展性, 如果原型对象扩展了, 还是会被继承.
+   Object.isExtensible(o): 判断是否可扩展.
 
-Object.getOwnPropertyDescriptor(o, attrName): 获取指定属性的属性描述符(property descriptor).
-原型(prototype):
+   Object.seal(o): 除了禁止可扩展外, 还将对象的自有属性设置为不可配置.
+   Object.isSealed(o): 来检测是否seal过.
 
-Object.getPrototypeOf(o): 获取对象的原型.
-o1.isPrototypeOf(o2): 判断是否是原型(即使是间接的原型也返回true).
-可扩展性:
+   Object.freeze(o): 不可扩展, 自有属性不可配置, 自有属性只读(不影响setter效果).
+   Object.isFrozen(o): 检测是否freeze过.
+** 数组
+   4.1 创建
+   var arr = [];
+   var arr = [1, 2, 3];
+   4.2 添加
+   arr.push(4); // 尾部(最大index处)添加元素, 改变原数组, 返回新的length.
+   arr.pop()    // pop出尾部元素, 数组-1.
+   arr.shift()  // 类似pop, 但是从index 0处弹出, 同样数组-1.
+   4.3 删除
+   delete arr[2]; // 删除后会留下空洞
+   4.4 遍历
+   for index: 会遍历空元素, 不遍历继承属性,
+   for in: 不遍历空元素, 会遍历继承属性,
+   arr.forEach(function(v, i, arr){...}) // 配合throw异常中断遍历.
+   4.5 排列
+   arr.reverse(); // 逆序排列数组, 会改变原数组.
+   arr.sort(func); // 排序, 同样会改变原数组.
+   4.6 组合
+   数组的拼接不能直接用"+"来进行, 否则会得到由两个数组的打印字符串相加得到的新字符串.
 
-Object.preventExtensions(o): 禁止可扩展, 便不能再添加新属性. 但是该函数不影响对象的原型对象的可扩展性, 如果原型对象扩展了, 还是会被继承.
-Object.isExtensible(o): 判断是否可扩展.
+   arr.concat(); // 返回新数组, 不会修改原数组.
+   1
+   2
+   3
+   4
+   5
+   var a = [1, 2, 3];
+   arr.concat(4, 5);
+   arr.concat([4, 5]);
+   arr.concat([4, 5], [6, 7]);  // 返回[1, 2, 3, 4, 5, 6, 7]
+   arr.concat(4, [5, [6, 7]]);  // 返回[1, 2, 3, 4, 5, [6, 7]]
+   4.7 切片
+   arr.slice();
+   也就是说, 参数为一维数组会展开, 二维数组只展开其中外层.
 
-Object.seal(o): 除了禁止可扩展外, 还将对象的自有属性设置为不可配置.
-Object.isSealed(o): 来检测是否seal过.
+   4.8 ES5函数式方法
+   forEach()
+   map(): 返回由回调函数的返回值组成的数组, 不改变稀疏性. 不修改原数组.
+   filter(): 返回由回调函数范围会'真'的 "原数组元素" 组成的数组. 返回的是稠密数组.
+   every(): 当所有被调用的函数都返回true, every才返回true.
+   some(): 与every相反, 它是或的关系, 只要有一个返回true, 它就返回true.
+   arr.reduce/reduceRight(function(last, v) {return last + v}); // last即上次调用回调函数的返回值.
+   4.9 其他
+   arr.join(str); // 以str连接数组元素组成字符串. 如:
+       console.log("new Array(80).join('='):", new Array(80).join("="));
 
-Object.freeze(o): 不可扩展, 自有属性不可配置, 自有属性只读(不影响setter效果).
-Object.isFrozen(o): 检测是否freeze过.
+   arr.indexOf/indexOfRight(); // 查找指定值的index. 找不到返回-1.
+   Array.isArray(arr);
+   5 Other
+   // 下面两行第一行true, 第二行false
 
-4 数组
-4.1 创建
-var arr = [];
-var arr = [1, 2, 3];
-4.2 添加
-arr.push(4); // 尾部(最大index处)添加元素, 改变原数组, 返回新的length.
-arr.pop()    // pop出尾部元素, 数组-1.
-arr.shift()  // 类似pop, 但是从index 0处弹出, 同样数组-1.
-4.3 删除
-delete arr[2]; // 删除后会留下空洞
-4.4 遍历
-for index: 会遍历空元素, 不遍历继承属性,
-for in: 不遍历空元素, 会遍历继承属性,
-arr.forEach(function(v, i, arr){...}) // 配合throw异常中断遍历.
-4.5 排列
-arr.reverse(); // 逆序排列数组, 会改变原数组.
-arr.sort(func); // 排序, 同样会改变原数组.
-4.6 组合
-数组的拼接不能直接用"+"来进行, 否则会得到由两个数组的打印字符串相加得到的新字符串.
+       console.log(null == undefined);
+       console.log(null === undefined);
 
-arr.concat(); // 返回新数组, 不会修改原数组.
-1
-2
-3
-4
-5
-var a = [1, 2, 3];
-arr.concat(4, 5);
-arr.concat([4, 5]);
-arr.concat([4, 5], [6, 7]);  // 返回[1, 2, 3, 4, 5, 6, 7]
-arr.concat(4, [5, [6, 7]]);  // 返回[1, 2, 3, 4, 5, [6, 7]]
-4.7 切片
-arr.slice();
-也就是说, 参数为一维数组会展开, 二维数组只展开其中外层.
+   // 类型转换
 
-4.8 ES5函数式方法
-forEach()
-map(): 返回由回调函数的返回值组成的数组, 不改变稀疏性. 不修改原数组.
-filter(): 返回由回调函数范围会'真'的 "原数组元素" 组成的数组. 返回的是稠密数组.
-every(): 当所有被调用的函数都返回true, every才返回true.
-some(): 与every相反, 它是或的关系, 只要有一个返回true, 它就返回true.
-arr.reduce/reduceRight(function(last, v) {return last + v}); // last即上次调用回调函数的返回值.
-4.9 其他
-arr.join(str); // 以str连接数组元素组成字符串. 如:
-    console.log("new Array(80).join('='):", new Array(80).join("="));
+       null == undefined   // true
+       "0" == 0            // true, 比较之前字符串转成数字
+       0 == false          // true, 比较之前布尔转成数字
+       "0" == false        // true, 比较之前字符串和布尔转成数字
 
-arr.indexOf/indexOfRight(); // 查找指定值的index. 找不到返回-1.
-Array.isArray(arr);
-5 Other
-// 下面两行第一行true, 第二行false
-
-    console.log(null == undefined);
-    console.log(null === undefined);
-
-// 类型转换
-
-    null == undefined   // true
-    "0" == 0            // true, 比较之前字符串转成数字
-    0 == false          // true, 比较之前布尔转成数字
-    "0" == false        // true, 比较之前字符串和布尔转成数字
-
-// 以上几个如果用'==='恒等来判断, 是false, 因为恒等不做类型转换.
+   // 以上几个如果用'==='恒等来判断, 是false, 因为恒等不做类型转换.
 
 
-// 函数作用域与声明提前
-//
-//    js变量的作用域为函数作用域而非块作用域. 也就是说, 函数里面的变量, 在声明的
-//    代码行之前, 就已经存在了. 此特性当想要在函数中使用同名全局变量的时候, 体现
-//    尤为突出.
+   // 函数作用域与声明提前
+   //
+   //    js变量的作用域为函数作用域而非块作用域. 也就是说, 函数里面的变量, 在声明的
+   //    代码行之前, 就已经存在了. 此特性当想要在函数中使用同名全局变量的时候, 体现
+   //    尤为突出.
 
-// 作用域链(定义了此段代码"作用域中"的变量):
-//     * 非嵌套函数, 链中包括2个对象:
-//         |- {参数 与 局部变量}
-//         `- {全局变量}
-//     * 嵌套函数, 链中至少包括3个对象:
-//         |- {本身参数 与 局部变量}
-//         |- {外层参数 与 局部变量} * n
-//         `- {全局变量}
-//
+   // 作用域链(定义了此段代码"作用域中"的变量):
+   //     * 非嵌套函数, 链中包括2个对象:
+   //         |- {参数 与 局部变量}
+   //         `- {全局变量}
+   //     * 嵌套函数, 链中至少包括3个对象:
+   //         |- {本身参数 与 局部变量}
+   //         |- {外层参数 与 局部变量} * n
+   //         `- {全局变量}
+   //
 
-// 加号+运算符的结合性: 由于从左到右的结合, 所以:
+   // 加号+运算符的结合性: 由于从左到右的结合, 所以:
 
-        1 + 2 + "hello"  // 得到: "3hello"
-        "hello" + 1 + 2  // 得到: "hello12"
+           1 + 2 + "hello"  // 得到: "3hello"
+           "hello" + 1 + 2  // 得到: "hello12"
 
-// js的左值可以是: 变量, 对象, 数组元素.
+   // js的左值可以是: 变量, 对象, 数组元素.
 
-// delete可以删除数组元素, 但是会留下一个洞, 数组总长度没变.
-// delete删除对象属性, 则是真的删除了, 对象中便没有该属性.
-// 一些内置核心和客户端属性不能删除.
-// var声明的变量不能删除.
-// 通过function语句定义的函数与函数参数也不能删除.
+   // delete可以删除数组元素, 但是会留下一个洞, 数组总长度没变.
+   // delete删除对象属性, 则是真的删除了, 对象中便没有该属性.
+   // 一些内置核心和客户端属性不能删除.
+   // var声明的变量不能删除.
+   // 通过function语句定义的函数与函数参数也不能删除.
 
 
-//判断手机横竖屏状态：
-function getOrientation() {
-    if(window.orientation==180||window.orientation==0){
-        alert("竖屏状态！");
-    }
-    if(window.orientation==90||window.orientation==-90){
-        alert("横屏状态！");
-    }
-}
-window.addEventListener("onorientationchange" in window ?
-        "orientationchange" :
-        "resize", getOrientation, false);
+   //判断手机横竖屏状态：
+   function getOrientation() {
+       if(window.orientation==180||window.orientation==0){
+           alert("竖屏状态！");
+       }
+       if(window.orientation==90||window.orientation==-90){
+           alert("横屏状态！");
+       }
+   }
+   window.addEventListener("onorientationchange" in window ?
+           "orientationchange" :
+           "resize", getOrientation, false);
 
-getOrientation();
-6 小技巧
-6.1 利用加号'+'转换字符串为数字
-被转换的字符串内必须为纯数字字符, 例如:
+   getOrientation();
+** 小技巧
+   6.1 利用加号'+'转换字符串为数字
+   被转换的字符串内必须为纯数字字符, 例如:
 
-var a = +'123'          // 得到数字123
-var a = +'n123'         // 得到NaN
-var a = +'123hello'     // 同样得到NaN. 此种情况用parseInt('123hello')则得到123
-var a = +'n123' || 0    // 得到0. 用于解析错误则赋0的情况.
-6.2 利用!!来将变量转化成布尔值
-let myMoney = 10000000000;  // ^_^
-let iHaveMoney = !!myMoney; // true
-7 webpack + ES6 快速配置
-7.1 安装
-npm install --save-dev webpack babel-loader babel-core babel-preset-es2015
-其中webpack是将多个模块打包的, babel是将ES6语法转为当前(2017-01-20) 多数浏览器能支持的ES5语法.
+   var a = +'123'          // 得到数字123
+   var a = +'n123'         // 得到NaN
+   var a = +'123hello'     // 同样得到NaN. 此种情况用parseInt('123hello')则得到123
+   var a = +'n123' || 0    // 得到0. 用于解析错误则赋0的情况.
+   6.2 利用!!来将变量转化成布尔值
+   let myMoney = 10000000000;  // ^_^
+   let iHaveMoney = !!myMoney; // true
+** webpack + ES6 快速配置
+   7.1 安装
+   npm install --save-dev webpack babel-loader babel-core babel-preset-es2015
+   其中webpack是将多个模块打包的, babel是将ES6语法转为当前(2017-01-20) 多数浏览器能支持的ES5语法.
 
-也可以全局安装:
+   也可以全局安装:
 
-sudo npm install -g webpack babel-loader babel-core babel-preset-es2015
-7.2 webpack基本配置
-module.exports = {
-    entry:{
-        bundle : __dirname + '/src/main.js' // 入口
-    },
-    output:{
-        path: __dirname + '/dist',
-        filename: '[name].js' // 生成目标
-    },
-    module:{
-        loaders:[{
-            test: /\.js$/,
-            exclude: /node_modules/, // 不检查本地安装的npm包
-            loader: 'babel?presets=es2015'
-        }]
-    }
-}
-* DOM
+   sudo npm install -g webpack babel-loader babel-core babel-preset-es2015
+   7.2 webpack基本配置
+   module.exports = {
+       entry:{
+           bundle : __dirname + '/src/main.js' // 入口
+       },
+       output:{
+           path: __dirname + '/dist',
+           filename: '[name].js' // 生成目标
+       },
+       module:{
+           loaders:[{
+               test: /\.js$/,
+               exclude: /node_modules/, // 不检查本地安装的npm包
+               loader: 'babel?presets=es2015'
+           }]
+       }
+   }
+* DOM（浏览器对象）
 *** window
 **** 属性
 ***** closed 	      返回窗口是否已被关闭
@@ -1133,508 +1102,16 @@ function createNewDoc()
       onabort
       onplay
 ***** onmousedown、onmouseup 以及 onclick 事件
-* source code 
-  #+BEGIN_SRC javascript
-    var a=35;
-    var b=53;
-    var c=a+b; 
-    var str='a,b,c';
-    var myarr = ['a', 'b', 'c'];
-
-    var mutou="mutou";
-    var zuozi={
-        'color':'black',  
-        'cailiao':mutou,  
-        'chang':123  
-    };
-
-    var d='2017-8-8';
-    var e='2017-8-7';
-    var timestamp = Date.parse(new Date(d));
-    var timestamp2 = Date.parse(new Date(e));
-
-    var diannao = new Object();
-    diannao.display='led';
-    diannao.keyboard='leven';
-    var copydian=diannao;
-    copydian.display='eld';
-
-    function f(arg){
-        arg.name='bbb'; 
-    }
-
-    var arg= new Object();
-
-    arg.name='cc';
-    f(arg);
-
-    function addTen(num){
-        num +=10;
-        return num;
-    }
-
-    var nul=null;
-    var stri="este";
-    var num=23.1234;
-
-    //console.log(typeof(stri));
-    //console.log(typeof(num));
-
-    var o= new Object();
-    //console.log(o instanceof Object);
-
-    var person={
-        name:"wuming",
-        age: 30
-    };
-    function niaoyuhuaxiang(bird){
-        var output="";
-        if(typeof bird.name == "string"){
-            output+='bird name is '+bird.name;
-        }
-
-        if(typeof bird.age=="number"){
-            output+='bird age is '+bird.age;
-        }
-        return output;
-    }
-    //console.log(person.age);
-
-    var birdinstance={
-        "name":"xiaoniao"
-    };
-
-    var arr=['a', 'b'];
-
-    //console.log(arr.join('||'));
-    ////console.log(Array.isArray(arr));
-    //console.log( arr instanceof Array);
-    //console.log(niaoyuhuaxiang(birdinstance));
-    // console.log(arr.valueOf());
-
-
-    var person1={
-        name:"wuming", 
-        toLocaleString: function(){
-            return "wuming";
-        }, 
-
-        toString: function(){
-            return "wuming";
-        }
-    };
-
-
-    var person2={
-        toLocaleString: function(){
-            return "xiaoming";
-        }, 
-
-        toString: function(){
-            return "xm";
-        }
-    };
-
-    var people=[person1, person2];
-    //console.log(people.toString());
-    //console.log(people.toLocaleString());
-
-    var colors= new Array();
-    var count=colors.push('red', 'blue', 'green');
-    var result=colors.every(function(item, index, array){
-
-        return index;
-    });
-    //console.log(result);
-    //var index=colors.indexOf("reda")==-1;
-    //console.log(index);
-    //console.log(colors);
-    //colors.reverse();
-    //console.log(colors);
-
-    //var color1=colors.slice(1, 2);
-
-    //console.log(color1);
-
-    //var col1=colors.splice(0, 2);
-    var col1=colors.splice(2, 0, "Green", "yellow", 'black' );
-    //console.log(col1);
-    //console.log(colors);
-    //插入，可以向指定位置插入任意数量的项，只需提供3个参数：启示位置、0（要删除的项数）和要插入的项。如果要插入多个项，可以再传入第四、第五、以至任意多个项。
-    //splice 始终返回一个数组，如果没有删除的项，则返回一个空数组
-
-    var number=[1, 2,3, 4, 5, 6];
-    var sum=number.reduce(function(prev, cur, index, array){
-        return prev+cur;
-    });
-    //console.log(sum);
-    //console.log(number);
-
-
-    var everyResult = number.some(function(item, index, array){
-        return item>6;
-    });
-
-    number.forEach(function(item, index){
-    });
-
-    var result = number.map(function(item){
-        return item*2;
-    });
-
-
-    var now1 = new Date(Date.now());
-
-
-    var text="hell bge lo age world";
-    var pattern1=/[ab]ge/g;
-    var t=pattern1.exec(text);
-    //console.log(pattern1.lastIndex);
-    //input 最近一次要匹配的字符串。
-    //lastMatch 最近一次的匹配项。
-    // var text = "this has been a short summer";
-    // var pattern = /(.)hort/g;
-    // if(pattern.text(text)){
-    //alert(RegExp.$_);
-    //alert(RegExp["$`"]);
-    //}
-
-    //但相对于perl所支持的高级正则表达式。  匹配字符串开始和结尾的|A和\Z 锚点 , 但支持^ 和$符号表示开头和结尾
-    //lookahead 向后查找jjJKJJKJj
-
-    var xiaoqing = function(arg1, arg2){
-        return arg1+arg2;
-    };
-
-    //最后一种定义函数的方式是使用Function构造函数。最后一个参数被看作是函数体
-    //var sum = new Function("num1", "num2", "return num1+num2");
-    //函数申明 解析器n 函数的名字仅仅是 脱缰的野马，伴随着疼痛，驶入远方的田野。 这个属性中保存着调用当前函数的函数的引用 caller 如果没有删除的项
-    //是在全局作用域
-
-    function outer(){
-        inner();
-    }
-
-    function inner(){
-        console.log("inner");
-        console.log(arguments.callee.caller);
-    }
-
-    function sayName(name){
-        console.log(name); 
-    }
-
-    //console.log(sayName.length);
-
-    //prototype 是保存他们所有实例方法的真正所在。诸如toString() 和valueOf() 等的方法实际上都保存在prototype, prototype属性
-    //是不可枚举的，因此使用for in 无法发现
-    //apply() 和call(). 一个是在其中运行函数的作用域，另一个是参数数组。其中，第二个参数可以是Array的实例，也可以是arguments 对象。j
-
-    function sum1(num1, num2){
-        return num1+num2;
-    }
-
-    function callSum1(num1, num2){
-        return sum1.apply(this, arguments);
-    }
-    //console.log(callSum1(3, 4));
-
-    var stringValue="ahello world";
-    //console.log(stringValue.charCodeAt(0));
-    //console.log(stringValue.localeCompare("ahello world"));
-    //localCompare, 最好判断小于0 determine
-    //使用这种结构，就可以确保自己的代码在任何实现中都可以正确地运行了。 fromCharCode().这个方法的任务是接收一或者多个字符编码，然后将他们转换成一个字符串。
-    //charCodeAt相反的过程。
-    var strs=String.fromCharCode(97, 98, 99);
-    //console.log(strs);
-    //
-    //Global 和Math
-    //global 对象可以说是最特别的一个对象了，因为不管你从什么角度，这个对象都是不存在的。Ecmascript 中的Global 对象在某种意义上说是作为一个终极的“兜底儿对象”。
-    //isNaN(), isFinite parseInt parseFloat
-    //enableURI 不会对本身属于URI 的特殊字符进行编码，例如冒号，正斜杠, 而encodeURIComponent()则会对它发现的任何非标准字符进行编码。
-
-    var uri="http://www.wrox.com/illegal value.html#start";
-    //console.log(encodeURI(uri));
-    //console.log(encodeURIComponent(uri));
-    //对应的是decodeURI 和decodeURIComponent
-    //eval().只接受一个参数
-    //eval("console.log('a')");
-    //console.log(Math.E);
-    //console.log(Math.PI);
-    //console.log(Math.LN10);
-
-    var afloat=2.12;
-    //console.log(Math.ceil(afloat));
-    ///console.log(Math.floor(afloat));
-    //console.log(Math.round(afloat));
-    //console.log(Math.floor(Math.random()*100));
-
-    //理解对象
-    //创建自定义对象的最简单方式就是创建一个Object实例，然后再为它添加属性和方法，
-    var person = new Object();
-    person.name="wuming";
-    person.age=23;
-    person.job = "Software Engineer";
-
-    person.sayName=function(){
-        //console.log("my name is wuming");
-        console.log("my name is "+this.name);
-    };
-
-
-    //person.sayName();
-
-
-    var book = {
-        _year:2017,
-        edition:1
-    };
-
-
-
-    Object.defineProperty(book, "year", {
-        get:function(){
-            return this._year;
-        }, 
-        set:function(newValue){
-            if(newValue> 2017){
-                this._year = newValue;
-                this.edition += newValue - 2017;
-            } 
-        }
-    });
-
-
-    book.year = 2019;
-    //console.log(book);
-
-
-    //工厂模式，这种模式抽象了创建具体对象的过程。
-    function createPerson(name, age, job){
-        var o= new Object();
-        o.name=name;
-        o.age= age;
-        o.job= job;
-
-        o.sayName=function(){
-            console.log("myname is "+ this.name);
-        };
-
-        return o;
-    }
-
-    var p1=createPerson("wuming", 30, "shiye");
-    var p2=createPerson("mingming", 30, "shiye");
-    //console.log(p1);
-    //p1.sayName();
-    //函数createPerson()能够根据接受的参数来构建一个包含所有必要信息的Person对象。可以无数次地调用这个汉素，而每次它都会返回一个包含三个属性的一个方法
-    //的对象, 这就是工厂模式，相当于类的概念。工厂模式虽然解决了创建多个相似对象的问题，但却没有解决识别的问题（即怎样知道一个对象的类别）。随着JavaScript
-    //的发展，又一个新模式出现了。
-    //构造函数模式
-    //
-
-    function Person2(name, age, job){
-        this.name = name; 
-        this.age = age;
-        this.job = job;
-
-        this.sayName = function(){
-            console.log(this.name);
-        };
-    }
-
-
-    var pp1=new Person2("wm", 39, "shiye");
-    //console.log(pp1.constructor == Person2);
-    //在这个例子中，person2()函数取代了createPerson函数，不同是没有显示创建对象;直接将属性和方法赋给了this对象。没有return 语句。
-    //按照惯例，构造函数始终都应该以一个大写字母开头，区别于其他函数。这又是一个语法糖吧。
-    //1.创建一个新对象;
-    //2.将构造函数的作用域付给新对象。
-    //3.执行构造函数中的代码
-    //4.返回新对象。
-
-    //原型模式
-    //我们创建的每一个函数都有一个prototype属性，这个属性是一个指针。指向一个对象。而这个对象的用途是包含可以由特定类型的所有实例共享的属性和方法。
-    //如果按照字面意思来理解，那么prototype就是通过调用构造函数而创建的那个对象实例的原型对象。使用原型对象的好处是可以让所有实例共享他所包含的属性
-    //和方法。换句话说，不必在构造函数中定义对象实例的信息，而是将这些信息直接添加到原型对象中，
-    function Person(){
-
-    }
-
-
-    Person.prototype.name= "wuming1";
-    Person.prototype.age = 30;
-    Person.prototype.job = "shiye";
-
-    Person.prototype.sayName= function(){
-        console.log(this.name);
-    };
-
-    var per1=new Person();
-    //per1.sayName();
-
-    //递归
-    function jiechen(num){
-        if(num<=1){
-            return 1;
-        }else{
-            return num*jiechen(num-1);
-        }
-    }
-
-
-    //console.log(jiechen(3));
-
-    //命名函数
-    var factorial = (function f(num){
-        if(num<=1)
-            return 1;
-        else{
-            return num*f(num-1);
-        }
-
-    });
-
-    //console.log(factorial(4));
-
-    //BOM 的核心是window, 表示浏览器的一个实例。在浏览器中，window 对象有双重角色，他既是通过javascript 访问浏览器窗口的一个接口，又是ecmascript 规定的global对象。
-    //这意味着在网页中定义的任何一个对象、变量和函数，都以window 作为根对象。
-    //console.log(window);
-
-    //如果页面中包含框架，则每个框架都拥有自己的window对象，并且保存在frames集合中。在frames 集合中，可以通过数值索引（从0开始，从左至右，从上到下）
-    //或者框架名称来访问相应的window对象。每个window 对象都有一个name属性
-    //<html>,</html> 
-    //以上代码创建了一个框架集，其中一个框架居上，两个框架居下。可以通过window.frames[0] 来引用上方的框架.最好通过top.frames[0]引用
-    //以上好像失效了。
-
-    //window.open()方法可以导航窗口。
-    //如果是浏览器扩展或其他程序阻止弹出窗口，那么window.open()通常会抛出一个错误。
-    var blocked=false;
-    try{
-        var winstate= window.open("www.baidu.com", "_blank");
-        if(winstate === null){
-            blocked=true;
-        }
-    }
-    catch(ex){
-        blocked=true;
-    }
-    if(blocked){
-    //    console.log("the popup was blocked");
-    }
-
-    //间歇调用和超时调用 setTimeout , setInterval
-
-    // setInterval(function(){
-    //     console.log("a");
-    // }, 1000);
-    //取消间歇调用 clearInterval(intervalId);
-
-
-    //客户端检测
-    //私有标准导致的。补救措施
-    //能力检测，识别浏览器的能力，
-    // if(object.nengli){
-    //     ....
-    // return 
-    // }
-
-    function getElement(id){
-        if(document.getElementById){
-            return document.getElementById(id);
-        }else if(document.all){
-            return docuemnt.all[id];
-        }else{
-            throw new Error("No way to retrieve elements");
-        }
-
-    }
-
-
-    //DOM(文档对象模型)是针对HTML 和XML文档的一个API。
-    //Document
-    //Element html
-    // Element  head  ->Element title ->Text  title中包含的页面标题字符串
-    // Element body
-    // someNode.nodeType == Node.Element_node , 或者1是元素Node
-
-    //事件
-    //javascript 与 html之间的交互是通过事件实现的。事件，就是文档或浏览器窗口中发生的一些特定
-    //的交互瞬间。可以使用侦听器来预订事件，以便事件发生时执行相应代码。支持页面的行为和页面外观之间的松散耦合。
-    //一般使用事件冒泡流而不是捕获流（两者正好相反）
-
-    //<input type="button" onclick="alert('hh')">
-
-    //    <form method="post">
-    //   <input type="text" name="username" value="">
-    //  <input type="button" value="Echo Username" onclick="alert(username.value)">
-    //  </form>
-    //添加事件的方式
-    //var btn=document.getElementById("myBtn");
-    //btn.onclick=function(){};
-    //btn.addEventListener("click", function(){}, false);
-
-    //手机触摸事件
-    //touchstart：当手指触摸屏幕时触发；即使已经有一个手指放在了屏幕上也会触发。
-    //touchmove：当手指在屏幕上滑动时连续地触发。在这个事件发生期间，调用preventDefault()可以阻止滚动。
-    //touchend：当手指从屏幕上移开时触发。
-    //touchcancel：当系统停止跟踪触摸时触发。关于此事件的确切触发时间，文档中没有明确说明。
-
-
-    //事件委托，可以封装在一个 switch 　中而不是一个一个添加click  事件, 产用父的子事件
-    //var list= document.getElementById("myLinks");
-    //EventUtil.addHandler(list, "click", function(event){
-    //   event = EventUtil.getTarget(event); 
-    //});
-
-    //移除元素时最好将他绑定的事件处理程序移除　btn.onclick= null;
-
-
-    //json, 与javascript不同的是, 属性必须加双引号，json的字符串必须是双引号。其次，没有末尾分号。因为不是语句　
-    //与xml相比，解析数据特别简单，你想想html解析数据方式。
-    //books[2].title
-    //doc.getElementsByTagName("book")[2].getAttribute("title")
-    // 看看两者的比较
-    //json对象有两个方法
-    //stringify
-    //parse
-
-
-    var booka = {
-        title:"xiaoming", 
-        age:32,  
-        job:"shiye"
-    };
-
-    var stjson=' {"title":"xiaoming","age":32,"job":"shiye"}';
-    //var jsonText=JSON.stringify(booka);
-    var jsonText=JSON.parse(stjson);
-
-
-    //console.log(jsonText);
-
-    //stringify 后面加参数起到过滤作用
-    ///var jsonText = JSON.stringify(book, ["title", "edition"]);
-
-    //或者
-
-    // var jsonText = JSON.stringify(book, function(key, value){
-    //     switch(key){
-    //     case "authors":
-    //         return value.join(",");
-    // case "year":
-    //     return 5000;
-    //     case "edition":
-    //         return undefined;
-    //     default:
-    //         return value;
-    //     }
-    // });
-
-    //Ajax技术, 核心是XMLHttpRequest
-
-  #+END_SRC
-* js-mode
+* javascript layer
+  命令 , s r 
+** 特点  
+   - 多个后端可供选择 ： tern 和 LSP
+   - 智能代码折叠
+   - 反射 ：用 js2-refactor
+   - 自动完成，帮助文档
+   - 可交互的 用过 skewer-mode 和 livid-mode
+   - 美化 web-beautify
+   - 代码检查 
 ** 代码折叠
 [, z e]
 | Key Binding | Description              |
@@ -1649,7 +1126,7 @@ function createNewDoc()
 ** 反射
    Spc m r 开头
 ** 自动完成
-auto-completion and documention: tern
+   auto-completion and documention: tern
 *** document
    | Key Binding   | Description                           |
    |---------------+---------------------------------------|
@@ -1670,9 +1147,18 @@ auto-completion and documention: tern
 ** coffeescript support
 ** 代码美化
    formatting with web-beautify
-| ~SPC m =~   | beautify code in js2-mode, json-mode, web-mode, and css-mode |
+| ~SPC m =~ | beautify code in js2-mode, json-mode, web-mode, and css-mode |
 ** Get the path to a JSON value with [[https://github.com/Sterlingg/json-snatcher][json-snatcher]]
 ** REPL(代码交互） 
+   To use the available JS repl, you need a running httpd server and a page loaded
+   with skewer. If a blank page serves your needs, just use the run-skewer command
+   in your javascript buffer. If you want to inject it in your own page, follow
+   [[https://github.com/skeeto/skewer-mode#skewering-with-cors][these instructions]] (install the Greasemonkey script and then click the triangle
+   in the top-right corner - if it turns green, you’re good to go).
+
+   空白页 run-skewer   
+   注入自己的页面 Greasemonkey 
+
    通过 [[https://github.com/skeeto/skewer-mode][skewer-mode]] 和 [[https://github.com/pandeiro/livid-mode][livid-mode (输出　skewer.log)]]
    会打开两个交互，一个是控制台，一个是浏览器，都可以交互
    控制台：　skewer.log
@@ -1752,3939 +1238,141 @@ function ppt(){
     clearInterval(set);
     ......
 }
-* 库
-** MUI
-*** 下拉刷新
- 为实现下拉刷新功能，大多H5框架都是通过DIV模拟下拉回弹动画，在低端android手机上，DIV动画经常出现卡顿现象（特别是图文列表的情况）；
-  mui通过双webview解决这个DIV的拖动流畅度问题；拖动时，拖动的不是div，而是一个完整的webview（子webview），回弹动画使用原生动画；
- 在iOS平台，H5的动画已经比较流畅，故依然使用H5方案。两个平台实现虽有差异，但mui经过封装，可使用一套代码实现下拉刷新。
-
- 主页面内容比较简单，只需要创建子页面即可：
- mui.init({
-     subpages:[{
-       url:pullrefresh-subpage-url,//下拉刷新内容页面地址
-       id:pullrefresh-subpage-id,//内容页面标志
-       styles:{
-         top:subpage-top-position,//内容页面顶部位置,需根据实际页面布局计算，若使用标准mui导航，顶部默认为48px；
-         .....//其它参数定义
-       }
-     }]
-   });
-
- iOS平台的下拉刷新，使用的是mui封装的区域滚动组件， 为保证两个平台的DOM结构一致，内容页面需统一按照如下DOM结构构建：
-
- <!--下拉刷新容器-->
- <div id="refreshContainer" class="mui-content mui-scroll-wrapper">
-   <div class="mui-scroll">
-     <!--数据列表-->
-     <ul class="mui-table-view mui-table-view-chevron">
-      
-     </ul>
-   </div>
- </div>
-
- 其次，通过mui.init方法中pullRefresh参数配置下拉刷新各项参数，如下：
-
- mui.init({
-   pullRefresh : {
-     container:"#refreshContainer",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
-     down : {
-       height:50,//可选,默认50.触发下拉刷新拖动距离,
-       auto: true,//可选,默认false.自动下拉刷新一次
-       contentdown : "下拉可以刷新",//可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
-       contentover : "释放立即刷新",//可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
-       contentrefresh : "正在刷新...",//可选，正在刷新状态时，下拉刷新控件上显示的标题内容
-       callback :pullfresh-function //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-     }
-   }
- });
-
- 下拉刷新是mui框架的一个插件，该插件目前有下拉刷新结束、滚动到特定位置两个方法；
- 下拉刷新结束
-
- 在下拉刷新过程中，当获取新数据后，需要执行endPulldownToRefresh方法， 该方法的作用是关闭“正在刷新”的雪花进度提示，内容区域回滚顶部位置，如下：。
-
- function pullfresh-function() {
-      //业务逻辑代码，比如通过ajax从服务器获取新数据；
-      ......
-      //注意，加载完新数据后，必须执行如下代码，注意：若为ajax请求，则需将如下代码放置在处理完ajax响应数据之后
-      mui('#refreshContainer').pullRefresh().endPulldownToRefresh();
- }
-
- 滚动到特定位置
-
- 下拉刷新组件滚动到特定位置的方法类似区域滚动组件
-
-     scrollTo( xpos , ypos [, duration] )
-         xpos
-         Type: Integer
-         要在窗口文档显示区左上角显示的文档的 x 坐标
-         ypos
-         Type: Integer
-         要在窗口文档显示区左上角显示的文档的 y 坐标
-         duration
-         Type: Integer
-         滚动时间周期，单位是毫秒
-
- 示例：在hello mui下拉刷新示例中，实现了双击标题栏，让列表快速回滚到顶部的功能；代码如下：
-
- var contentWebview = null;
- //监听标题栏的双击事件
- document.querySelector('header').addEventListener('doubletap',function () {
-	 if(contentWebview==null){
-		 contentWebview = plus.webview.currentWebview().children()[0];
-	 }
-	 //内容区滚动到顶部
-	 contentWebview.evalJS("mui('#pullrefresh').pullRefresh().scrollTo(0,0,100)");
- });
-
- 更改下拉刷新文字位置
-
- *可以解决修改下拉刷新子页面默认top值后,下拉刷新提示框位置异常问题
-
- 根据实际需求在父页面给mui-content设置top属性
-
- .mui-bar-nav ~ .mui-content .mui-pull-top-pocket{
-   top: 180px !important;
- }
-
- 扩展阅读
-
- 问答社区话题讨论： 下拉刷新
- 代码块激活字符:    mpull(DOM结构)
- minitpull(初始化组件)
- mmpull(组件方法)
-
- mui遵循 MIT License
-
-     最新版本 v3.5.0 · 问答社区 · Issues · Releases · 
-
-*** 上拉加载
- mui的上拉加载和下拉刷新类似，都属于pullRefresh插件，使用过程如下：
-     1、页面滚动到底，显示“正在加载...”提示（mui框架提供）
-     2、执行加载业务数据逻辑（开发者提供）
-     3、加载完毕，隐藏"正在加载"提示（mui框架提供）
- 开发者只需关心业务逻辑，实现加载更多数据即可。
-
- 初始化
- 初始化方法类似下拉刷新，通过mui.init方法中pullRefresh参数配置上拉加载各项参数，如下：
-
- mui.init({
-   pullRefresh : {
-     container:refreshContainer,//待刷新区域标识，querySelector能定位的css选择器均可，比如：id、.class等
-     up : {
-       height:50,//可选.默认50.触发上拉加载拖动距离
-       auto:true,//可选,默认false.自动上拉加载一次
-       contentrefresh : "正在加载...",//可选，正在加载状态时，上拉加载控件上显示的标题内容
-       contentnomore:'没有更多数据了',//可选，请求完毕若没有更多数据时显示的提醒内容；
-       callback :pullfresh-function //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-     }
-   }
- });
-
- 结束上拉加载
-
- 加载完新数据后，需要执行endPullupToRefresh()方法，结束转雪花进度条的“正在加载...”过程
-
-     .endPullupToRefresh( nomore )
-         nomore
-         Type: Boolean
-         是否还有更多数据；若还有更多数据，则传入false; 否则传入true，之后滚动条滚动到底时，将不再显示“上拉显示更多”的提示语，而显示“没有更多数据了”的提示语；
-
- 示例：
-
- function pullfresh-function() {
-      //业务逻辑代码，比如通过ajax从服务器获取新数据；
-      ......
-      //注意：
-      //1、加载完新数据后，必须执行如下代码，true表示没有更多数据了：
-      //2、若为ajax请求，则需将如下代码放置在处理完ajax响应数据之后
-      this.endPullupToRefresh(true|false);
- }
-
- 重置上拉加载
-
- 若部分业务中，有重新触发上拉加载的需求（比如当前类别已无更多数据，但切换到另外一个类别后，应支持继续上拉加载），此时调用.refresh(true)方法，可重置上拉加载控件，如下代码：
-
- //pullup-container为在mui.init方法中配置的pullRefresh节点中的container参数；
- //注意：refresh()中需传入true
- mui('#pullup-container').pullRefresh().refresh(true);
-
- 禁用上拉刷新
-
- 在部分场景下希望禁用上拉加载，比如在列表数据过少时，不想显示“上拉显示更多”、“没有更多数据”的提示语，开发者可以通过调用disablePullupToRefresh()方法实现类似需求，代码如下：
-
- //pullup-container为在mui.init方法中配置的pullRefresh节点中的container参数；
- mui('#pullup-container').pullRefresh().disablePullupToRefresh();
-
- 启用上拉刷新
-
- 使用disablePullupToRefresh()方法禁用上拉加载后，可通过enablePullupToRefresh()方法再次启用上拉加载，代码如下：
-
- //pullup-container为在mui.init方法中配置的pullRefresh节点中的container参数；
- mui('#pullup-container').pullRefresh().enablePullupToRefresh();
-
- 扩展阅读
-
-     1、上拉加载时，怎么隐藏底部的“没有更多数据了”?
-     2、问答社区话题讨论：上拉加载
-
- mui遵循 MIT License
-
-     最新版本 v3.5.0 · 问答社区 · Issues · Releases · 
-** bootstrap css
-*** 移动设备优先
-    适应设备<meta name="viewport" content="width=device-width,initial-scale=1.0">
-    禁用缩放 user-scalable=no  maximum-scale=1.0
-** bootstrap
-   bootstrap 建立了一个响应式的12列格网布局系统，它引入了fixed(固定) and fluid-with(浮动)的两种布局方式. 
-   我们从全局样式(global style),格网系统（grid system），流式格网（fluid grid system）,自定义（customing）,
-   布局（layouts）,响应式设计（responsive design ）这 六个方面讲解 scaffolding
-   \* global style
-   bootstrip 要求 html5 的文件类型，so <!DOCTYPE html>
-   同时，它通过bootstrap.less 文件来设置 全局排版和链接显示风格，其中去掉了 body的margin,使用
-   @baseFontFamily,@baseFontSize,@linkColor 等变量来控制基本排版
-   \* 栅格系统（grid system）
-   默认的bootstrap格网系统提供了一个宽达940像素的12列的格网。这意味着你页面的默认宽度是940px
-   最小的单元要素宽度是940/12px.
-   bootstrap 内置了一套响应式、移动设备优先的流式栅格系统。随着屏幕设备或视口（viewport）尺寸的增加，系统会自动分为最多12列
-   就是通过一系列的行（row）与列（column）的组合创建页面布局，然后你的内容就可以放入到你创建好的布局当中。
-   行（row）必须包含在.container中，以便为其赋予合适的排列(alignment)和内补(padding).
-   使用行（row）在水平方向创建一组列(column).
-   你的内容应当放置于列（column）内，而且,只有列（column)可以作为行（row）的直接子元素。
-   类似Predefined grid classes like .row and .col-xs-4 这些预订义的栅格class可以用来快速创建 栅格布局。
-   bootstrap 源码中定义的mixin也可以用来创建语义化的布局。
-   通过设置padding 从而创建列(column)之间的间隔（gutter)。然后通过为第一和最后一列设置负值的margin从而抵消掉padding的影响。
-   栅格系统中的列是通过指定1到12的值来表示其跨越的范围。例如，三个等宽的列可以使用三个.col-xs-4来创建。
-   sm md lg xl 和默认
-   offset push pull 设定偏移
-*** 栅格选项
- |           | 手机（<768px) | 平板(>768px) | 桌面（>992px) |          |
- | class前缀 | .col-xs-      | .col-sm-     | .col-md-      | .col-lg- |
- | 列数      | 12            |              |               |          |
- \* 流式系统 (fluid grid system)
- \* 自定义(customing)
- \* 布局(layouts)
- \* 响应式设计(responsive design)
- ** echarts
-   ECharts，缩写来自Enterprise Charts，商业级数据图表，一个纯Javascript的图表库，可以流畅的运行在PC和移动设备上，兼容当前绝大部分浏览器（IE6/7/8/9/10/11，chrome，firefox，Safari等），
-   底层依赖轻量级的Canvas类库ZRender，提供直观，生动，可交互，可高度个性化定制的数据可视化图表。创新的拖拽重计算、数据视图、值域漫游等特性大大增强了用户体验，赋予了用户对数据进行挖掘、整合的能力。
-   支持折线图（区域图）、柱状图（条状图）、散点图（气泡图）、K线图、饼图（环形图）、雷达图（填充雷达图）、和弦图、力导向布局图、地图、仪表盘、漏斗图、事件河流图等12类图表，同时提供标题，详情气泡、图例、值域、数据区域、时间轴、工具箱等7个可交互组件，支持多图表、组件的联动和混搭展现。
-* highcharts
-** 基础教程   
-*** Highcharts 基本组成 
-    [[file:image/hc-anatomy.png][概览]]
-*** 图表主要组成
-    一般情况下，Highcharts 包含 标题 （Title）、坐标轴（Axis）、数据列（Series）、数据提示框（Tooltip）、图例（Legend）、版权标签（Credits）等，
-    另外还可以包括导出功能按钮（Exporting）、标示线（PlotLines）、标示区域（PlotBands）、数据标签（dataLabels）等。
-
-    Highcharts 基本组成部分如下图所示
-
-[[file:image/hdcbfq.png][基本组成]]
-
-**** 标题（Title）
-     图表标题，包含标题和副标题（subTitle），副标题可以省略。
-
-**** 坐标轴（Axis）
-     坐标轴包含x轴（xAxis）和y轴（yAxis）。通常，x轴显示在图表的底部，y轴显示在图表的左侧。多个数据列可以共同使用同一个坐标轴，为了对比或区分数据，Highcharts提供了多轴的支持。(多个坐标轴)
-
-**** 数据列（Series）
-     数据列即图表上一个或多个数据系列，比如 曲线图 中的一条 曲线，柱状图 中的一个 柱形。
-
-**** 数据提示框（Tooltip）
-     当鼠标悬停在某点上时，以框的形式提示该点的数据，比如该点的值、数据单位等。数据提示框内提示的信息完全可以通过格式化函数动态指定。
-
-5. 图例（Legend）
-图例是图表中用不同形状、颜色、文字等 标示不同数据列，通过点击标示可以显示或隐藏该数据列。
-
-6. 版权标签（Credits）
-显示在图表右下方的包含链接的文字，默认是Highcharts官网地址。通过指定credits.enabled=false即可不显示该信息。
-
-7. 导出功能（Exporting）
-通过引入 exporting.js即可增加图表导出为常见文件功能。
-
-8. 标示线（PlotLines）
-可以在图表上增加一条标示线，比如平均值线，最高值线等。
-
-9. 标示区（PlotBands）
-可以在图表添加不同颜色的区域带，标示出明显的范围区域。
-*** 图表配置
-    本节主要讲解图表配置，对应的 API 位置为 chart，主要内容包括图表全局样式、绘图区、图表事件、等相关内容。
-**** 图表容器
-     Highcharts 实例化中绑定容器的方式有很多种方式，这里列举三种：
-***** 通过构造函数
-      #+BEGIN_SRC javascript
-       var charts = Highcharts.chart('container', {
-      // Highcharts 配置
-      });
-      #+END_SRC
-***** 或者通过 chart.renderTo 来指定
-      #+BEGIN_SRC javascript
-        var charts = Highcharts.chart({
-            // Highcharts 配置
-            chart : {
-                renderTo : 'container'  // 或 document.getElementById('container')
-            }
-        }); 
-      #+END_SRC
-***** 3、如果你的页面已经引入了 jQuery，那么还可以 jQuery 插件的形式调用
-      #+BEGIN_SRC javascript
-        $("#container").highcharts({
-            // Highcharts 配置  
-        }); 
-      #+END_SRC
-**** 图表样式
-***** 宽度、高度
-      Highcharts 图表的高度和宽度是根据 DIV 容器的宽高来设定的，即
-#+BEGIN_SRC html
-  <div id="container" style="width:400px;height:400px"></div>
+** 代码检查
+   通过这两个工具
+#+BEGIN_SRC sh
+  $ npm install -g eslint
+  # or
+  $ npm install -g jshint
 #+END_SRC
-如果容器没有设定宽高，默认是 宽 400px， 高 400px，另外设置容器的 min-width 属性可以让 highcharts 自适应宽度，实例：
-#+BEGIN_SRC html
-<div id="container" style="min-width:400px;height:400px"></div>
-#+END_SRC
-
-特别说明：饼图中可以通过设置宽高来让图形填充满整个容器
-***** 图表样式
-      图表样式属性包括 border、backgroundColor、margin、spacing、style等
-
-      边框：包括 borderColor、borderRadius、borderWidth
-      背景：包括 backgroundColor
-      外边距：包括 margin、marginTop、marginRight、marginBottom、marginLeft
-      内边距：包括 spacing、spacingTop、spacingRight、spacingBottom、spacingLeft
-      其他样式：其他属性例如字体等属性，实例代码
-      示例代码：
-#+BEGIN_SRC javascript
-  chart: {
-      style: {
-          fontFamily: "",
-          fontSize: '12px',
-          fontWeight: 'bold',
-          color: '#006cee', 
-      }, 
-      border:{
-          borderColor:'#000000', 
-          borderWidth:'5px', 
-      }
-  }
-
-#+END_SRC
-
-另外还可以通过 chart.className 来绑定 CSS 类并给定 CSS 样式。
-
-***** 图表绘图区
-      图表绘图区的可配置属性有：
-      plotBackgroundColor ： 绘图区背景颜色
-      plotBackgroundImage ： 绘图区背景图片
-      plotBorderColor ： 绘图区边框颜色
-      plotBorderWidth ： 绘图区边框宽度
-      plotShadow ： 绘图投影
-**** 事件
-***** click ：图表点击事件，效果见 在线演示
-      #+BEGIN_SRC javascript
-      $(function () {
-    // create the chart
-    $('#container').highcharts({
-        chart: {
-            events: {
-                click: function (event) {
-                    var label = this.renderer.label(
-                        'x: ' + Highcharts.numberFormat(event.xAxis[0].value, 2) + ', y: ' + Highcharts.numberFormat(event.yAxis[0].value, 2),
-                        event.xAxis[0].axis.toPixels(event.xAxis[0].value),
-                        event.yAxis[0].axis.toPixels(event.yAxis[0].value)
-                    )
-                    .attr({
-                        fill: Highcharts.getOptions().colors[0],
-                        padding: 10,
-                        r: 5,
-                        zIndex: 8
-                    })
-                    .css({
-                        color: '#FFFFFF'
-                    })
-                    .add();
-                    setTimeout(function () {
-                        label.fadeOut();
-                    }, 1000);
-                }
-            }
-        },
-        series: [{
-            data: [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
-        }]
-    });
-});
-      #+END_SRC
-***** load ：图表加载完后事件，效果见 在线演示
-***** addSeries ：图表增加序列事件，效果见 在线演示
-***** drilldown ：图表下钻事件，效果见 在线演示
-***** drillup ： 图表上钻事件，效果见 在线演示
-***** redraw ：图表重绘事件，效果见 在线演示
-***** selection ： 图表范围选择事件，效果见 在线演示
-***** beforePrint ： 图表打印前事件，效果见 在线演示
-***** afterPrint ： 图表打印后事件,效果见 在线演示
-**** 其他配置
-***** 图表类型
-      通过 chart.type 来指定图表类型，表示如果默认图表类型，即如果 series 中没有指定 type， 那么图表的类型就由该属性来确定。
-      highcharts 支持的所有图表类型见 plotOptions。
-***** 图表缩放
-      图表缩放包括缩放（zoom）和平移（pan），对应的属性有：
-      
-      zoomType ： 缩放类型，值可以是 “x”、“y”、“xy”，分别表示水平缩放、竖直缩放、平面缩放
-      缩放恢复按钮：可以指定按钮的样式、位置等，见 resetZoomButton，按钮的文字可以通过 lang 中的属性来指定
-      selectionMarkerFill ：选中背景色，详细参考 API 文档
-      panKey：平移键，默认是 “Shift”，即在启用平移后，按住指定的按键即可对图表进行平移操作，在线试一试
-      panning ： 是否启用平移，启用平移后，按住平移键，然后就可以用鼠标对图表进行平移操作（即平移操作是平移键加鼠标拖动）
-***** 3D 属性
-      Highcharts 4.0 开始支持 3D 图表类型，目前支持 3D 柱形图、3D 饼图、3D 散点图。
-      3D 相关属性见：chart.options3d ，关于 3D 图形的详细教程将以单独文章形式给出。
-**** 4、其他
-图表反转 ： 图表反转指的是将图表的 x轴和 y轴进行对调操作，对应的只需要设置 chart.inverted = true 即可。
-图表动画 ：chart.animation 可以设置图表的全局动画效果，这里的动画指的是图表更新时的动画效果，而图表初始化的动画是在 plotOptions.series.animation 中启用和关闭的。
-图表自适应 ：前面说过通过设置图表容器的 min-width 可以让图表自适应，这个开关对应的属性是 chart.reflow，另外，还可以通过 API 接口 Chart.reflow 在外部对图表进行自适应操作，在线试一试
-*** 标题
-     标题
-最后修改时间：2017-11-06 20:10
-
-标题默认显示在图表的顶部，包括标题和副标题（subTitle），其中副标题是非必须的。设置标题和副标题的示例代码如下：
-
-title: {
-    text: '我是标题'
-},
-subtitle: {
-    text: '我是副标题'
-}
-一、标题的常用属性
-标题只有一些文字信息，所以标题的配置无非是一些定位、字体大小、颜色等的配置，常见属性如下表所示：
-
-属性名
-描述
-默认值
-text
-标题的文字
-"Chart title"
-align
-文字水平对齐方式，有left、center、right可选
-"center"
-verticalAlign
-文字垂直对齐方式，有top、middle、bottom可选
-""
-useHTML
-是否解析html标签，设置解析后，可以使用例如a等html标签
-false
-floating
-是否浮动，设置浮动后，标题将不占用图表区位置
-false
-margin
-标题和图表区的间隔，当有副标题时，表示标题和副标题之间的间隔
-15
-style
-文字样式，可以设置文字颜色、字体、字号，注意和css有略微的不同，例如font-size用fontSize、font-family用fontFamily表示
-{
-  color: '#3E576F',
-  fontSize: '16px'
-}
-x
-相对于水平对齐的偏移量，可以是负数，单位是px
-0
-y
-相对于垂直对齐的偏移量，可以使负数，单位是px
-0
-更多关于标题的属性请参考API文档：title
-
-二、动态设置和获取标题
-1、获取标题内容
-可以通过Highcharts对象获取标题内容，实例代码如下
-
-var chart = Highcharts.chart(el, options);    // Highcharts构造函数
-var title  = chart.title.textStr;             // 通过chart对象获取标题内容
-2、动态设置标题
-Highcharts 提供了 setTitle() 函数供动态设置标题用
-
-setTitle (Object title, object subtitle, Boolean redraw)
-参数说明：
-
-title : 标题对象
-subtitle: 副标题对象
-redraw：是否重绘，即设置标题后是否重新绘制图表，默认是false
-实例说明：
-
-var title = {
-    text:"我是新标题",
-    style:{
-        color:"#ff0000"
-    }
-};
-
-chart.setTitle(title);
-上述方法不仅仅是设置标题的文字，有的时候我们可能只需要更改标题的样式，例如颜色、字号的，也可以通过该函数实现，示例代码如下
-
-var subtitle = {
-    style:{
-        color:"#000",
-        fontWeight:"bold"
-    }
-};
-
-chart.setTitle(null, subtitle);     //设置副标题，第一个参数设置为null
-在线试一试
-
-另外还可以通过标题对象的 update 方法来对其进行更新操作，该函数的基本用法和 setTitle 类似，更多详情参考 API 文档
-
-三、常见问题
-1、如何在标题中添加链接
-实现方法：
-
-设置 useHTML为 true，然后在标题文字中加入 a 标签
-
-实例：
-
-title :{
-    useHTML:true,
-    text: "Highcharts中文网 | <a href='https://www.hcharts.cn' target='_blank'>中文教程</a>" 
-}
-2、如何隐藏（不显示）标题
-实现方法：
-
-设置标题文字为空即可
-
-实例：
-
-title: {
-    text: null
-}
-*** 坐标轴
-    笛卡尔图表（普通的二维数据图）都有X轴和Y轴，默认情况下，x轴显示在图表的底部，y轴显示在左侧
-    （多个y轴时可以是显示在左右两侧），通过设置chart.inverted = true 可以让x，y轴显示位置对调。下图为图表中坐标轴组成部分
-    图1： [[file:image/basic_axis1.jpg][图表坐标轴组成部分]]
-**** 坐标轴组成部分
-***** 坐标轴标题
-      坐标轴标题。默认情况下，x轴为null（也就是没有title），y轴为'Value'，设置坐标轴标题的代码如下：
-#+BEGIN_SRC javascript
-  xAxis:{
-     title:{
-         text:'x轴标题'
-     }
-  }
-  yAxis:{
-     title:{
-         text:'y轴标题'
-     }
-  }
-#+END_SRC
-更多关于Axis Title属性请查看API文档相关内容 xAxis.title、yAxis.title。
-
-***** 坐标轴刻度标签
-      坐标轴标签（分类）。Labels常用属性有enabled、formatter、step、staggerLines
-****** enabled
-是否启用Labels。x，y轴默认值都是true，如果想禁用（或不显示）Labels，设置该属性为false即可。
-
-****** Formatter
-标签格式化函数。默认实现是：
-#+BEGIN_SRC javascript
-formatter:function(){
-    return this.value;
-}
-
-#+END_SRC
-this.value代码坐标轴上当前点的值（也就是x轴当前点的x值，y轴上当前点的y值），除了value变量外，还有axis、chart、isFirst、isLast可用。例如调用this.isFirst的结果如下图所示
-[[file:image/basic_axis2.jpg]]
-图2：自定义坐标轴标签格式化 1
-另外一个例子，实现更高级的自定义格式化函数，截图如下：
-
-[[file:image/basic_axis3.jpg][自定义]]
-图3：自定义坐标轴标签格式化 2
-实现代码如下：
-#+BEGIN_SRC javascript
-yAxis: {        
-  labels: {
-    formatter:function(){
-      if(this.value <=100) { 
-        return "第一等级("+this.value+")";
-      }else if(this.value >100 && this.value <=200) { 
-        return "第二等级("+this.value+")"; 
-      }else { 
-        return "第三等级("+this.value+")";
-      }
-    }
-  }
-}
-
-#+END_SRC
-****** Step
-       Labels显示间隔，数据类型为number（或int）。下图说明了step的用法和作用
-       [[file:image/basic_axis4.jpg][步进]]
-       图4：Y轴坐标轴标签步进
-****** staggerLines
-       水平轴 Labels 显示行数。（该属性只对水平轴有效）当 Lables 内容过多时，可以通过该属性控制显示的行数。和该属性相关的还有maxStaggerLines属性。
-       更多关于 Lables 的属性请查看API文档 xAxis.labels、yAxis.labels
-***** 坐标轴刻度
-Tick为坐标轴刻度。默认情况下x轴刻度高(tickLength属性)为5px，宽为1px；y轴宽为0px(也就是不显示刻度)。Tick相关的属性主要有tickLength、tickWidth、tickColor、tickInterval、tickmarkPlacement。
-****** 1）tickLength、tickWidth、tickColor
-分别代表刻度线的长度、宽度、颜色。
-
-****** 2）tickInterval
-刻度间隔。其作用和Lables.step类似，就是不显示过多的x轴标签内容，不同的是，tickInterval是真正意义上的调整刻度，而Lables.step只是调整Labels显示间隔。所以在实际应用中，tickInterval用的多。
-
-针对不同数据类型的坐标轴有不同的默认值。对于线性数据和Datetime类型数据，其默认值是tickPixelInterval值，对于Categorty表示间隔一个category。
-
-****** 3）tickmarkPlacement
-刻度线对齐方式，有between和on可选，默认是between。设置为on后的变化如下图：
-
-[[file:image/basic_axis5.jpg][刻度位置]]
-图5：坐标轴刻度放置位置
-更多关于Tick的属性请查看API文档。
-
-***** 坐标轴网格线
-坐标轴网格线。默认情况下，x轴网格线宽度为0,y轴网格线宽度为1px。网格线共有三个属性可设置，分别是: gridLineWidth、gridLineColor、gridLineDashStyle
-
-****** 1）gridLineWidth
-网格线宽度。x轴默认为0，y轴默认为1px。
-
-****** 2）gridLineColor
-网格线颜色。默认为：#C0C0C0。
-
-****** 3）gridLineDashStyle
-网格线线条样式。和Css border-style类似，常用的有：Solid、Dot、Dash。
-下图为自定义x和y轴的gridLines效果图
-
-[[file:image/basic_axis6.jpg][自定义网格]]
-
-图6：自定义网格线
-***** 多轴
-多个轴。在Highcharts中， 坐标可以是多个，最常见的是多个y轴。多轴存在时，Axis是一个数组，而在赋值时，通过Axis数组的下标与数据关联。如下图所示：
-
-[[file:image/basic_axis7.jpg][多坐标轴]]
-图7：多坐标轴
-总结如下：
-
-Series中设置每个轴值时，用轴数组下标关联（注意下标是从 0 开始的）
-设置opposite: true表示该轴位置反转，即为y轴时显示在右侧，为x轴时显示在顶部（和正常情况下x轴在下，y轴左构成反转）。
-在Series中可以设置该轴的类型，多个轴不同的类型（例如：type:'spline'），就构成了多种图表并存的混合图。
-更多关于多轴、混合图请查看在线演示平台的 两个(Y)轴的混合图、多个(Y)轴的混合图。
-
-**** 坐标轴类型
-坐标轴中，可以通过Type指定坐标轴类型，有linear、logarithmic、datetime、category可选，默认是：linear。指定类型的实例代码如下：
-
-// The types are 'linear', 'logarithmic' and 'datetime'
-yAxis: {
-    type: 'linear',
-}
-
-// Categories are set by using an array
-xAxis: {
-    categories: ['Apples', 'Bananas', 'Oranges']
-}
-***** 线性轴
-线性轴。默认类型，x轴按照 Axis.tickInterval 值增长，y轴默认是自适应。
-
-***** 对数轴
-对数轴。按照数学中的对数增长，例如1,2,4,8… 用的不多，主要用于对数图表，实例请查看在线演示平台的 对数直线图。
-
-***** 时间轴
-时间轴。时间使用和Javascript 日期对象一样，即用一个距1970年1月1日0时0分0秒的毫秒数表示时间，也就是时间戳。更多Javascript 日期对象请阅读 W3C school 相关内容。
-
-Highcharts有很多时间格式化函数，列举如下：
-
-****** Date.getTime()
-获取当前时间戳。实例用法如下：
-
-time = Date.getTime();   //time = 1384442746960 (ms)  当前时间为 2013-11-14 23:25:46
-****** Date.UTC(year,month,day,hours,minutes,seconds,millisec)
-通过UTC方式获取指定时间的毫秒数，例如获取 2013-11-14 00:00:00的毫秒数代码如下：
-
-time = Date.UTC(2013,11,14,0,0,0,0);  // time = 1386979200000 (ms);
-****** Highcharts.dateFormat(String format)
-Highcharts时间格式化函数，同 PHP格式化函数。具体用法参考API文档 Highcharts.dateFormat() ，当然，在本教程的《函数使用》章节中具体讲解。
-
-***** category
-      数组轴。用的最多也最简单，这里就不多说，更多请查看 在线演示平台 例子。
-
-**** 动态更新及其他相关属性
-***** 动态更新
-坐标轴可以通过函数实现动态更新，在图表绘制完毕后，你可以任意的对你更改而不需要重绘。所有相关函数都在 Axis 中，本教程将在《函数使用》章节具体讲解。
-
-***** 其他相关属性
-出了Axis中的属性可以对坐标轴有影响外，还有其他属性也可以对其起作用。列举如下：
-
-****** inverted
-图表反转，即 Chart.inverted，当其值设置为true时，x轴和y轴显示的位置对调。
-在线试一试
-
-****** reversed
-轴反转。和 inverted 不同的是，轴反转是将坐标轴刻度反转而不是 x、y轴对调。例如 y 轴反转的结果是 y 轴是从最大的值开始的，最小值反而在最下方。
-
-在线试一试
-
-****** opposite
-轴倒置。主要控制坐标轴左右或上下显示。
-
-在线试一试
-
-****** allowDecimals
-控制数轴是否显示小数。
-
-****** min、max
-控制数轴的最小值和最大值。
-
-注意：控制allowDecimals、min、max 属性你可以轻松控制数轴的显示范围等（这也是很常见的问题）
-
-****** plotLines
-标示线，详见：标示线教程
-
-****** plotBands
-标示区域，详见：标示区域教程
-*** 数据列
-    数据列配置是 Highcharts 最复杂也是最灵活的配置，如果说 Highcharts 是灵活多变，细节可定制的话，那么数据列配置就是这个重要特性的核心
-
-**** 什么是数据列
-数据列是一组数据集合，例如一条线，一组柱形等。图表中所有点的数据都来自数据列对象，数据列的基本构造是：
-
-#+BEGIN_SRC javascript
-series : [{
-    name : '',
-    data : []
-}] 
-
-#+END_SRC
-
-提示：数据列配置是个数组，也就是数据配置可以包含多个数据列。
-
-数据列中的 name 代表数据列的名字，并且会显示在数据提示框（Tooltip）及图例（Legend）中。
-
-**** 数据列中的数据
-在数据列的 data 属性中，我们可以定义图表的数据数组，通常有三种定义方式：
-
-***** 数值数组。在这种情况下，配置数组中的数值代表 Y 值，X 值则根据 X 轴的配置，要么自动计算，要么从 0 起自增，
-      或者是根据 pointStart 及 pointInterval 自增；在分类轴中， X 值就是 categoies 配置，数值数组配置实例如下：
-      
-      data : [1, 4, 6, 9, 10] 
-      在线试一试
-#+BEGIN_SRC javascript
-var chart = Highcharts.chart('container', {
-    title: {
-        text: '2010 ~ 2016 年太阳能行业就业人员发展情况'
-    },
-    subtitle: {
-        text: '数据来源：thesolarfoundation.com'
-    },
-    yAxis: {
-        title: {
-            text: '就业人数
-        }
-    },
-    legend: {
-        layout: 'vertical',
-        align: 'right',
-        verticalAlign: 'middle'
-    },
-    plotOptions: {
-        series: {
-            label: {
-                connectorAllowed: false
-            },
-            pointStart: 2010
-        }
-    },
-    series: [{
-        name: '安装，实施人员',
-        data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
-    }, {
-        name: '工人',
-        data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434]
-    }, {
-        name: '销售',
-        data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
-    }, {
-        name: '项目开发',
-        data: [null, null, 7988, 12169, 15112, 22452, 34400, 34227]
-    }, {
-        name: '其他',
-        data: [12908, 5948, 8105, 11248, 8989, 11816, 18274, 18111]
-    }],
-    responsive: {
-        rules: [{
-            condition: {
-                maxWidth: 500
-            },
-            chartOptions: {
-                legend: {
-                    layout: 'horizontal',
-                    align: 'center',
-                    verticalAlign: 'bottom'
-                }
-            }
-        }]
-    }
-});
-
-#+END_SRC
-***** 包含两个值的数组集合。在这种情况下，集合中数组的第一个值代表 X， 第二个值代表 Y；
-      如果第一个值是字符串，则代表该点的名字，并且 X 值会如 1 中所说的情况决定。数组集合的实例：
-      
-      data ： [ [5, 2], [6,3], [8,2] ]
-      在线试一试 （注意例子是 x y 轴对调的）
-***** 数据点对象集合。在这种情况下，集合中元素都是数据点对象，对象中可以配置数据见 plotOptions.series 或 
-      plotOptions.{图表类型} 所列。配置实例：
-      
-      树状图
-      
-#+BEGIN_SRC javascript
-  data : [{
-      name : "point 1",
-      color : "#00ff00",
-      y : 0
-  }, {
-      name : "Point 2",
-      color : "#ff00ff",
-      y : 5
-  }] 
-#+END_SRC
-在线试一试
-
-另外，通过这种方式还可以增加额外变量，详见例子：增加额外变量
-
-**** 数据点及标记
-      在直角坐标图（即常规的包含X、Y轴的图表）中，数据点相当于图表中的一个 （x,y）点。数据点的配置可以在数据列中是数据数组里指定。对于其他类型的图表
-      （非直角坐标图），数据点不仅仅表示 X，Y值，例如在范围图中，数据点包含 x，low， high值；在 OHLC 
-      （蜡烛柱状图）中，数据点包含 x，open ， high， low， close；在饼图或仪表图中，数据点只表示一个值。
-      
-      数据点配置适用所有图表，下面的例子说明了如何指定某个点的颜色：
-#+BEGIN_SRC javascript
-  series : [{
-      data : [ 29,9, 71.5, 106.4, 
-      {
-          y : 200,
-          color : "#BF0B23"
-      }, 194.1 , 20 ]
-  }]
-#+END_SRC
-
-在 直线图、曲线图、面积图及面积范围图中可以为数据点指定标记，可以是某种形状， 图片等，实例：
-#+BEGIN_SRC javascript
-series : [{
-    data: [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6,148.5,
-    {
-      y: 216.4, 
-      marker: { 
-          fillColor: '#BF0B23',
-          radius: 10 
-      }
-    }, 194.1, 95.6, 54.4]
-}]
-
-#+END_SRC
-更多关于数据点标记见API文档：plotOptions.series.marker
-**** 数据列配置
-      数据列共有三个级别的配置，权重从低到高依次如下：
-      
-配置在 plotOptions.series 中
-对应的 API 为：plotOptions.series 中，针对所有类型图表有效，一般是通用配置。
-
-配置在 plotOptions.{图表类型} 中
-对应的 API 为 ： plotOptions 下的指定图表类型，针对当前类型图表有效，一般是某一种图表的通用配置。
-
-配置在 series 中
-对应的 API 为：series， 针对当前数据列有效
-
-以上三中方式自上往下权重依次递增的，也就是配置在 series 中的属性会覆盖 plotOptions 中的配置。 Highcharts API 的这种层级关系体现了 API 设计的继承性和灵活性。
-
-相关内容：论坛帖子
-
-下面列举数据列的一些常用属性
-
-***** 动画（Animation）
-Highcharts 图表默认是以动画的形式展现图形加载过程的，可以通过 series.animation 或 plotOptions.series.animation 来指定动画相关配置（是否启用动画，动画效果等）。
-
-***** 颜色（Color）
-可以通过 series.color 来指定数据列的颜色，通过 plotOptions.{图表类型}.color 来给某一种类型的图表设定颜色。
-
-***** 点的选择（Selection）
-
-通过设置 allowPointSelect = true 可以使数据点可选择
-#+BEGIN_SRC javascript
-plotOptions: {
-  series: {
-    allowPointSelect: true
-  }
-}
-#+END_SRC
-
-对应的获取选中的点是通过 chart.getSelectedPoints() 函数来实现的
-
-var selectedPoints = chart.getSelectedPoints();
-在线试一试
-
-提示：按住 CTRL 或 SHIFT 键可以多选
-
-***** 线条宽度（lineWidth）
-可以通过 lineWidth 来指定线条宽度
-#+BEGIN_SRC javascript
-series: [{
-  data: [216.4, 194.1, 95.6],
-  lineWidth: 5
-}]
-
-#+END_SRC
-在线试一试
-
-***** 鼠标形状（cursor）
-cursor 属性可以指定鼠标形状，即指定当鼠标悬停在数据列上时对应的鼠标样式（当配置了数据列点击事件时）。
-
-***** 数据标签（dataLables）
-
-数据标签指的是在数据点上显示一些数据信息标签，对应的 API 为 series.data.dataLabels
-#+BEGIN_SRC javascript
-plotOptions: {
-    line: {
-        dataLabels: {
-            enabled: true
-        }
-    }
-}
-#+END_SRC
-
-数据标签默认显示当前数据点的点值，可以通过 formatter 函数或 format 来对其格式化。
-#+BEGIN_SRC javascript
-plotOptions: {
-    line: {
-        dataLabels: {
-            enabled: true,
-            formatter: function() {
-                return this.x + "   " + this.y;
-            },
-            // format: "{x}      {y}"
-        }
-    }
-}
-#+END_SRC
-
-在线试一试
-
-***** 线条样式（Dash Style）
-dashStyle 可以指定线条的样式 （这里有 Highcharts 支持的所有 线条样式）
-#+BEGIN_SRC javascript
-series: [{
-    data: [1, 3, 2, 4, 5, 4, 6, 2, 3, 5, 6],
-    dashStyle: 'longdash'
-}]
-
-#+END_SRC
-在线试一试
-
-***** 数据列分区（zones）
-我们经常会遇到这样的需求：用不同颜色标识出不同范围的值，例如 90-100 用绿色表示，60-80 用蓝色表示，小于 60用红色表示。在 Highcharts 4.1 之前，我们可以通过 plotBands 来标识出不同范围值对应的背景（效果见 实例），或者用 plotLine 画一条标识线（见 教程），还可以用不同颜色标记出点的颜色，这些解决方案都有自己的用途，但在某些情景下并不是最优方案。
-
-Highcharts 4.1 增加了一个非常牛逼的新特性：Zones，先来看个例子：
-对应的代码也很简单：
-#+BEGIN_SRC javascript
-$(function() {
-    $('#container').highcharts({
-        series: [{
-            data: [-10, -5, 0, 5, 10, 15, 10, 10, 5, 0, -5],
-            zones: [{
-                value: 0,
-                color: '#f7a35c',
-                dashStyle: 'dot'
-            }, {
-                value: 10,
-                color: '#7cb5ec'
-            }, {
-                color: '#90ed7d'
-            }]
-        }]
-    });
-});
-
-#+END_SRC
-在线试一试
-
-可以看到 Zones 是个数组，常见的属性有 value，color，dashStyle
-
-value 表示对小于这个值的区域有效（或区域上界）
-color 对当前范围设置颜色
-dashStyle 对当前范围设置线条样式
-fillColor 对当前范围设置填充颜色（针对面积图）
-zones 默认的是针对 Y 轴，可以通过 zoneAxis = x 来指定当前配置是针对 x 轴，实例：
-#+BEGIN_SRC javascript
-var chart = Highcharts.chart('container', {
-  title: {
-      text: 'Zone with dash style'
-  },
-  subtitle: {
-      text: 'Dotted line typically signifies prognosis'
-  },
-  xAxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  },
-  series: [{
-      data: [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
-      zoneAxis: 'x',
-      zones: [{
-          value: 8
-      }, {
-          dashStyle: 'dot'
-      }]
-  }]
-});
-
-#+END_SRC
-在线试一试
-
-提示：
-
-1、对于 x 轴的 zones 的 value 值表示的是 x 轴下标
-2、zones 数组里的每个对象具有继承性，相同的属性会覆盖前一个配置
-
-在 Highcharts 中，数据列的配置是个非常重要的配置，同时又由于可配置的属性非常多，配置的灵活性非常高，需要大家自己自己体会和理解，关于数据列的详细配置将会在【图表类型章节详细说明】
-*** 名词解释
-**** lang：语言文字对象，所有Highcharts文字相关的设置，【查看教程】
-**** chart：图表区、图形区和通用图表配置选项，【查看教程】
-**** colors：图表数据列颜色配置，是一个颜色数组，【查看教程】
-**** credits: 版权信息，Highcharts在图表的右下方放置的版权信息及链，【查看教程】
-**** drilldown：钻取，向下钻取数据，深入到其中的具体数据，【查看教程】
-**** exporting：导出模块，导出功能配置，导出即将图表下载为图片或打印图表
-**** legend：图例，用不同形状、颜色、文字等 标示不同数据列，通过点击标示可以显示或隐藏该数据列，【查看教程】
-**** loading：加载中，加载选项控制覆盖绘图区的加载屏的外观和文字
-**** navigation：导航，导出模块按钮和菜单配置选项组
-**** noData：没有数据，没有数据时显示的内容
-**** pane：分块，针对仪表图和雷达图专用的配置，主要设置弧度及背景色
-**** plotOptions：针对不同类型图表的配置
-**** series：数据列，图表上一个或多个数据系列，比如图表中的一条曲线，一个柱形，【查看教程】
-**** title：标题，包括即标题和副标题，其中副标题为非必须的，【查看教程】
-**** tooltip：数据点提示框，当鼠标滑过某点时，以框的形式提示改点的数据，比如该点的值，数据单位等，【查看教程】
-**** Axis：坐标轴，包括x轴和y轴。多个不同的数据列可共用同一个X轴或Y轴，当然，还可以有两个X轴或Y轴，分别显示在图表的上下或左右，【查看教程】
-*** 图表类型
-**** line：直线图，【查看教程】
-**** spline：曲线图，【查看教程】
-**** area：面积图，【查看教程】
-**** areaspline：曲线面积图，【查看教程】
-**** arearange：面积范围图，【查看教程】
-**** areasplinerange：曲线面积范围图，【查看教程】
-**** column：柱状图，【查看教程】
-**** columnrange：柱状范围图，【查看教程】
-**** bar：条形图，【查看教程】
-**** pie：饼图，【查看教程】
-**** scatter：散点图，【查看教程】
-**** boxplot：箱线图，【查看教程】
-**** bubble：气泡图，【查看教程】
-**** errorbar：误差线图，【查看教程】
-**** funnel：漏斗图，【查看教程】
-**** gauge：仪表图
-**** waterfall：瀑布图，【查看教程】
-**** polar：雷达图，【查看教程】
-**** pyramid：金字塔，【查看教程】
-*** 教程
-**** HighCharts开发说明：
-     HighCharts开发实际上配置HighCharts每个部分，比如配置标题（title），副标题（subtitle）等，
-     其中每个部分又有更细的参数配置，比如标题下有对齐方式（align），标题文字（text）等。下图为整个图表的每个部分位置说明（请对照下面HighCharts整体结构）
-**** HighCharts整体结构：
-     通过查看API文档我们知道HighCharts结构如下：（API文档在文章后面提供下载）
-     
-    #+BEGIN_SRC javascript
-
-      var chart = new Highcharts.Chart({
-             chart: {…}              // 配置chart图表区
-             colors: [{...}]    // 配置主体显示颜色（多个线条和柱体的颜色顺序的）
-             credits: {…}     // 配置右下角版权链接
-             exporting: {…}  // 配置导出及打印
-             global: {…}      // Highcharts.SetOptions方法调用
-             labels: {…}        // HTML标签，可以放置在绘图的任何位置
-             lang: {…}        // 语言对象属性配置
-             legend: {…}         // 配置图例选项
-             loading: {…}    // 配置图表加载选项
-             navigation: {…} // 配置导出按钮属性
-             pane: {…}        // 仅适用于极性图表和角仪表
-             plotOptions: {…}          // 配置数据点选项
-             series: [{...}]               // 配置数据列选项
-             subtitle: {…}   // 配置副标题
-             title: {…}                  // 配置标题
-             tooltip: {…}               // 配置数据点提示框
-             xAxis: {…}              // 配置x轴选项
-             yAxis: {…}              // 配置y轴选项
-      })
-    #+END_SRC 
-    
-    上面红色部分是图标完整性及美观必须自己配置的选项，其他选项无特殊需要默认就行，也就是不用配置，所以开发HighCharts是不是很简单，只需要配置简单的几个选项就行，下面详细讲解每个选项的配置。
-**** HighCharts每部分详细配置：
-     1、chart ：图表区选项
-              主要设置图表的类型，图表装载容器名，背景，高度，宽度等图表的整体属性。
-
-参数	描述	默认值
-backgroundColor	设置图表区背景色	#FFFFFF
-borderWidth	设置图表边框宽度	0
-borderRadius	设置图表边框圆角角度	5
-renderTo	图表放置的容器，一般在html中放置一个DIV，获取DIV的id属性值	null
-defaultSeriesType	默认图表类型line, spline, area, areaspline,
-column, bar, pie , scatter	0
-width	图表宽度，默认根据图表容器自适应宽度	null
-height	图表高度，默认根据图表容器自适应高度	null
-margin	设置图表与其他元素之间的间距，数组，如[0,0,0,0]	[null]
-plotBackgroundColor	主图表区背景色，即X轴与Y轴围成的区域的背景色	null
-plotBorderColor	主图表区边框的颜色，即X轴与Y轴围成的区域的边框颜色	null
-plotBorderWidth	主图表区边框的宽度	0
-shadow	是否设置阴影，需要设置背景色backgroundColor	false
-reflow	是否自使用图表区域高度和宽度，如果没有设置width和height时，会自适应大小	true
-zoomType	拖动鼠标进行缩放，沿x轴或y轴进行缩放，可以设置为：‘x’,'y’,'xy’	”
-events	事件回调，支持addSeries方法，click方法，load方法，selection方法等的回调函数	 
- 
-
-、
-
-2、colors ：数据列颜色选项
-
-    主要是数据列颜色设置，比如多条线条中的每个线条颜色。
-
-参数	描述	默认
-color	用于展示图表，折线/柱状/饼状等图的颜色，数组形式。	
-一组html颜色代码
-
-        
-
-colors: [
-                 '#058DC7',
-                 '#50B432',
-                 '#ED561B',
-                  '#DDDF00',
-                 '#24CBE5', 
-                 '#64E572',
-                 '#FF9655',
-                 '#FFF263',
-                 '#6AF9C4'
-    ]	
-说明：1、颜色代码为html标准，可通过DW等复制想要的代码
-
-2、默认是从第一个数据列起调用第一个颜色代码，有多少个数
-
-据列调用相应数量的颜色
-
-3、当数据列大于默认颜色数量时，重复从第一个颜色看是调用
-
- 
-
-3、credits ：版权链接选项
-
-参数	描述	默认值
-enabled	是否显示版权及链接，布尔型，默认为显示	true
-position	位置。可用align调整对齐方式，x，y设置距离。	position: {
-align: ‘right’,x: -10,
-         verticalAlign: ‘bottom’,y: -5 }
-href	链接地址。String型，默认是highCharts官网	www.highcharts.com
-style	名片CSS模式	
-itemStyle : {
-
-cursor: ‘pointer’,color: ‘#909090′,
-
-fontSize: ’10px’ }
-
-text	显示名字。	highcharts.com
- 
-
- 
-
-4、exporting ：导出及打印选项
-
-参数	描述	默认值
-buttons	打印和导出按钮设置。其中两个按钮中又有很多样式等设置，如有需要可详细查看API文档	默认按钮样式
-enableImages	在导出的图片中添加logo水印。布尔型，默认是false	false
-enabled	是否显示按钮（也就是启用打印导出功能），布尔型，默认显示	true
-filename	导出图片文件名，String型	chart
-type	导出图片的格式，有jpg和png可选，String型	jpg/png
-url	转换图片的服务器url，默认是用highcharts服务器	http://export.highcharts.com
-width	图片大小，数字型	800
-5、global ：Highcharts.SetOptions方法调用
-
-    全局选项,并不适用于每一个图表。这些选项,如lang选项,必须设置使用Highcharts.setOptions方法。一般用不到，详情请查看API文档。
-
-6、labels ：HTML标签（可放置在图表的任意地方）
-
-参数	描述	默认值
-items	包含两个选项html和style，分别代表html语句及样式	iteml :{
- 
-
- 
-
- 
-
- 
-
-    html : “”,
-
-    style {
-            left: ’100px’,top: ’100px’}
-
-  }
-
-style	css样式	
-style:{ color : ‘#3E576F’}
-
-7、lang ：语言配置选项，主要配置符号、导出时显示的语句、时间显示语言等。和上面的global参数有关，即调用Highcharts.SetOptions方法。下表列举常用的选项注意：lang选项其实就是配置一些显示语言，API中都有详细说明。
-
-参数	描述	默认值
-decimalPoint	小数点	.
-downloadJPEG	导出显示的文字，下面还有downloadPDF等，都一样	Download JPEG image等
-months	月份，字符串数组形式	
-['January' 'February', 'March', 'April', 'May', 'June', 'July',
-
-'August', 'September', 'October', 'November', 'December']
-
-numericSymbols	数值单位，比如1000为1k	['k', 'M', 'G', 'T', 'P', 'E']
-8、legend ：图例选项，即数据类标示。
-
-参数	描述	默认值
-layout	显示形式，支持水平horizontal和垂直vertical	horizontal
-align	对齐方式	center
-backgroundColor	背景颜色	nulll
-borderColor	图例边框颜色	#909090
-borderRadius	图例边框角度	5
-enabled	是否显示图例	true
-floating	是否可以浮动，配合x，y属性	false
-shadow	是否显示阴影	false
-style	图例样式	详见API文档
-9、loading: 图表加载选项
-
-参数	描述	默认值
-hideDuration	淡出效果持续时间，以毫秒为单位	100
-labelStyle	标签样式，css形式	详见API文档
-showDuration	淡入效果持续时间，以毫秒为单位	100
-style	图表加载样式	详见API文档
-10、navigation ： 导出按钮选项，配置导出按钮及打印样式等，详见API文档。
-
-11、pane ：极性图表和角仪表选项配置（这两种表是在新版本2.0.1新增加的选项）
-
-12、plotOptions ：数据点选项。分不同图表类型配置不同，下面就常用的选项及spline选项列表如下
-
-参数	描述	默认值
-enable	是否在数据点上直接显示数据	false
-allowPointSelect	是否允许使用鼠标选中数据点	false
-formatter	回调函数，格式化数据显示内容	formatter: function()  { return this.y; }
-marker	对某个点标记，多种样式可选	 
-13、series ：数据列选项
-
-参数	描述	默认值
-data	显示在图表中的数据列，可以为数组或者JSON格式的数据。如：data:[0, 5, 3, 5]，或
-data: [{name: 'Point 1',y: 0}, {name: 'Point 2',y: 5}]	‘’
-name	数据列名称	‘’
-type	数据列类型，支持 area, areaspline, bar, column, line, pie, scatter、spline	line
-14、subtitle ： 副标题选项。和title配置一样，在title中详细讲解
-
-15、title ： 标题选项
-
-参数	描述	默认值
-text	标题文本内容	Chart title
-align	水平对齐方式	center
-verticalAlign	垂直对齐方式	top
-margin	标题与副标题之间或者主图表区间的间距	15
-floating	是否浮动，如果为true，则标题可以偏离主图表区，可配合x,y属性使用	false
-style	css样式	
-{ color: ‘#3E576F’, 
-          fontSize: ’16px’}
-
-x	按照水平对齐方式的距离	0
-y	按照垂直对齐方式的距离	15
-16、tooltip ：数据点提示框选项
-
-参数	描述	默认值
-enable	是否显示提示框	true
-backgroundColor	设置提示框的背景色	rgba(255, 255, 255, .85)
-borderColor	提示框边框颜色，默认自动匹配数据列的	auto
-borderRadius	提示框圆角度	5
-shadow	设置提示框内容样式，如字体颜色等	color:’#333′
-formatter	
-回调函数，用于格式化输出提示框的显示内容。
-
-返回的内容支持html标签如：<b>, <strong>,<br/>
-
- 
-
-17、xAxis ：x轴选项
-
-参数	描述	默认
-categories	
-设置X轴分类名称，数组，例如：
-
-categories: ['Apples', 'Bananas', 'Oranges']
-
-[]
-
-title	
-X轴名称，支持text、enabled、align、rotation、style等属性
-
- 
-
- 
-
-labels	
-设置X轴各分类名称的样式style，格式formatter，角度rotation等
-
- 
-
-max	
-X轴最大值(categories为空时)，如果为null，
-
-则最大值会根据X轴数据自动匹配一个最大值
-
- 
-
-null
-
-min	
-X轴最小值(categories为空时)，如果为null，
-
-则最小值会根据X轴数据自动匹配一个最小值
-
- 
-
-null
-
-gridLineColor	
-网格（竖线）颜色
-
- 
-
-#C0C0C0
-
-gridLineWidth	
-网格(竖线)宽度
-
-1
-
-lineColor	
-基线颜色
-
-#C0D0E0
-
-lineWidth	
-基线宽度
-
-0
-
-18、yAxis ：y轴选项
-
-      和x轴配置相同或类似。
-
- 
-
-        注意：1、以上所有参数如果没特殊要求，及为默认是，可不用再代码中配置
-
-                2、API中还有更多的配置选项，可通过阅读API了解详细
-
-                3、红色部分为主要配置内容
-**** 实例说明HighCharts开发步骤
-***** 要求
-      1. 绘制一个显示本站2012/9/22日访问统计，包括浏览量（pv），IP数的折线图。
-      2. x轴按每小时统计，y轴显示对应的数量
-      3. 折线图上x轴对应的点显示数量，当鼠标经过改点时，用提示框形式显相关信息
-      4. 要有图例显示每条折现代表什么数据信息
-      5. 图表右下角加上“我爱物联网”字样并链接到www.52wulian.org
-      6. 要有主标题和副标题
-      7. 要能实现图表打印及导出常见格式的图片功能
-***** 开发步骤
-      1）新建一个文件夹名为“HighCharts”，并在该文件夹内新建一个名为“js”的文件夹，将所需的
-      “highcharts.js”和“exporting.js”拷贝至“js”文件夹。
-
-      2）在“HighCharts”文件夹里新建一个html文件，随意命名，用文本编辑器写入如下内容：
-      （html代码，相信大家都看的懂)
-#+BEGIN_SRC html javascript
-  <!-- 加载jquery -->
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-
-  <!-- javascript代码  -->
-  <script type="text/javascript">
-  #+BEGIN_SRC 
-  
+** 选择后端
+     (javascript :variables javascript-backend 'tern)
+     如果想自定义后端，可以在项目的根目录文件 =.dir-locals.el= 下定义本地变量
+    如：
+    #+BEGIN_SRC elisp
+      ;;; 定义本地变量，选择项目的后端 
+      ((js2-mode (javascript-backend . lsp)))
+    #+END_SRC
+** 选择格式化工具
+   添加 web-beautify层
+  (javascript :variables javascript-fmt-tool 'web-beautify)
+
+  也可以自定义项目自身的格式化工具
+  #+BEGIN_SRC elisp
+    ;;;定义格式化工具 
+    ((js2-mode (javascript-fmt-tool . prettier)))
   #+END_SRC
-    $(function () {
-    var chart;
-    $(document).ready(function() {
+** 后端工具
+*** tern 
+    安装
+#+BEGIN_SRC sh
+  $ npm install -g tern
+#+END_SRC
+并且 =~/.spacemacs= 加入配置 tern
 
-    //定义一个HighCharts
-    chart = new Highcharts.Chart({
+如果想每个对话都使用当前服务, 需如下配置
+#+BEGIN_SRC emacs-lisp
+  (tern :variables tern-disable-port-files nil)
+#+END_SRC
+**** 键盘绑定
 
-    });
-    });
-    });
-  </script>
-
-  <!-- 加载 highC主js文件 ，-->
-  <script src="js/highcharts.js"></script>
-
-  <!-- 加载 exporting ，是highCharts实现打印，下载图片必须的js文件，如果不需要该功能，可不用-->
-  <script src="js/exporting.js"></script>
-
-  <!-- 新建一个容器，存放在head部分定义的Chart内容 。这里的id一定是chart : {...}内的renderTo的值-->
-  <div id="highcharts1" style="min-width:400px;height:400px;margin:0 auto;">
-
-  </div>
-
+| Key Binding   | Description                                                                              |
+|---------------+------------------------------------------------------------------------------------------|
+| ~SPC m C-g~   | brings you back to last place you were when you pressed M-..                             |
+| ~SPC m g g~   | jump to the definition of the thing under the cursor                                     |
+| ~SPC m g G~   | jump to definition for the given name                                                    |
+| ~SPC m h d~   | find docs of the thing under the cursor. Press again to open the associated URL (if any) |
+| ~SPC m h t~   | find the type of the thing under the cursor                                              |
+| ~SPC m r r V~ | rename variable under the cursor using tern                                              |
+*** 安装语言服务协议
+    #+BEGIN_SRC sh
+  npm i -g typescript javascript-typescript-langserver
 #+END_SRC
 
-***** 配置chart中每个选项的属性，代码如下
-#+BEGIN_SRC html
-  <!-- 加载jquery -->
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+** Key Bindings
+*** js2-mode
+
+ | Key Binding | Description                          |
+ |-------------+--------------------------------------|
+ | ~SPC m w~   | toggle js2-mode warnings and errors  |
+ | ~%~         | jump between blockswith [[https://github.com/redguardtoo/evil-matchit][evil-matchit]] |
+
+*** Folding (js2-mode)
+
+ | Key Binding | Description              |
+ |-------------+--------------------------|
+ | ~SPC m z c~ | hide element             |
+ | ~SPC m z o~ | show element             |
+ | ~SPC m z r~ | show all element         |
+ | ~SPC m z e~ | toggle hide/show element |
+ | ~SPC m z F~ | toggle hide functions    |
+ | ~SPC m z C~ | toggle hide comments     |
+
+*** Refactoring (js2-refactor)
+ Bindings should match the plain emacs assignments.
+
+ | Key Binding   | Description                                                                                                    |
+ |---------------+----------------------------------------------------------------------------------------------------------------|
+ | ~SPC m k~     | deletes to the end of the line, but does not cross semantic boundaries                                         |
+ | ~SPC m r 3 i~ | converts ternary operator to if-statement                                                                      |
+ | ~SPC m r a g~ | creates a =/* global */= annotation if it is missing, and adds var to point to it                              |
+ | ~SPC m r a o~ | replaces arguments to a function call with an object literal of named arguments                                |
+ | ~SPC m r b a~ | moves the last child out of current function, if-statement, for-loop or while-loop                             |
+ | ~SPC m r c a~ | converts a multiline array to one line                                                                         |
+ | ~SPC m r c o~ | converts a multiline object literal to one line                                                                |
+ | ~SPC m r c u~ | converts a multiline function to one line (expecting semicolons as statement delimiters)                       |
+ | ~SPC m r e a~ | converts a one line array to multiline                                                                         |
+ | ~SPC m r e f~ | extracts the marked expressions into a new named function                                                      |
+ | ~SPC m r e m~ | extracts the marked expressions out into a new method in an object literal                                     |
+ | ~SPC m r e o~ | converts a one line object literal to multiline                                                                |
+ | ~SPC m r e u~ | converts a one line function to multiline (expecting semicolons as statement delimiters)                       |
+ | ~SPC m r e v~ | takes a marked expression and replaces it with a var                                                           |
+ | ~SPC m r i g~ | creates a shortcut for a marked global by injecting it in the wrapping immediately invoked function expression |
+ | ~SPC m r i p~ | changes the marked expression to a parameter in a local function                                               |
+ | ~SPC m r i v~ | replaces all instances of a variable with its initial value                                                    |
+ | ~SPC m r l p~ | changes a parameter to a local var in a local function                                                         |
+ | ~SPC m r l t~ | adds a console.log statement for what is at point (or region)                                                  |
+ | ~SPC m r r v~ | renames the variable on point and all occurrences in its lexical scope                                         |
+ | ~SPC m r s l~ | moves the next statement into current function, if-statement, for-loop, while-loop                             |
+ | ~SPC m r s s~ | splits a =String=                                                                                              |
+ | ~SPC m r s v~ | splits a =var= with multiple vars declared into several =var= statements                                       |
+ | ~SPC m r t f~ | toggle between function declaration and function expression                                                    |
+ | ~SPC m r u w~ | replaces the parent statement with the selected region                                                         |
+ | ~SPC m r v t~ | changes local =var a= to be =this.a= instead                                                                   |
+ | ~SPC m r w i~ | wraps the entire buffer in an immediately invoked function expression                                          |
+ | ~SPC m r w l~ | wraps the region in a for-loop                                                                                 |
+ | ~SPC m x m j~ | move line down, while keeping commas correctly placed                                                          |
+ | ~SPC m x m k~ | move line up, while keeping commas correctly placed                                                            |
+
+**** Documentation (js-doc)
+ You can check more [[https://github.com/mooz/js-doc/][here]]
+
+ | Key Binding   | Description                           |
+ |---------------+---------------------------------------|
+ | ~SPC m r d b~ | insert JSDoc comment for current file |
+ | ~SPC m r d f~ | insert JSDoc comment for function     |
+ | ~SPC m r d t~ | insert tag to comment                 |
+ | ~SPC m r d h~ | show list of available jsdoc tags     |
+
+*** REPL (skewer-mode)
+
+ | Key Binding | Description                                                      |
+ |-------------+------------------------------------------------------------------|
+ | ~SPC m e e~ | evaluates the last expression                                    |
+ | ~SPC m e E~ | evaluates and inserts the result of the last expression at point |
+
+ | Key Binding | Description                                                                        |
+ |-------------+------------------------------------------------------------------------------------|
+ | ~SPC m s a~ | Toggle live evaluation of whole buffer in REPL on buffer changes                   |
+ | ~SPC m s b~ | send current buffer contents to the skewer REPL                                    |
+ | ~SPC m s B~ | send current buffer contents to the skewer REPL and switch to it in insert state   |
+ | ~SPC m s f~ | send current function at point to the skewer REPL                                  |
+ | ~SPC m s F~ | send current function at point to the skewer REPL and switch to it in insert state |
+ | ~SPC m s i~ | starts/switch to the skewer REPL                                                   |
+ | ~SPC m s r~ | send current region to the skewer REPL                                             |
+ | ~SPC m s R~ | send current region to the skewer REPL and switch to it in insert state            |
+ | ~SPC m s s~ | switch to REPL                                                                     |
 
-  <!-- javascript代码  里面的js在下面 -->
-  <script type="text/javascript">
-  </script>
-
-  <!-- 加载 highC主js文件 ，-->
-  <script src="js/highcharts.js"></script>
-
-  <!-- 加载 exporting ，是highCharts实现打印，下载图片必须的js文件，如果不需要该功能，可不用-->
-  <script src="js/exporting.js"></script>
-
-  <!-- 新建一个容器，存放在head部分定义的Chart内容 。这里的id一定是chart : {...}内的renderTo的值-->
-
-      <div id="highcharts1" style="min-width:400px;height:400px;margin:0 auto;">
-#+END_SRC
-#+BEGIN_SRC javascript
-  $(function () {
-      var chart;
-      $(document).ready(function() {
-          //定义一个HighCharts
-          chart = new Highcharts.Chart({
-
-              //配置chart选项
-              chart: {
-                  renderTo: 'highcharts1',  //容器名，和body部分的div id要一致
-                  type: 'spline'                        //图表类型，这里选择折线图
-              },
-
-              //配置链接及名称选项
-              credits:
-              {
-                  enabled : true,
-                  href : "http://www.52wulian.org",
-                  text : "浏览总理：291，IP总数：74  -- 我爱物联网"
-              },
-
-              //配置标题
-              title:
-              {
-                  text: '我爱物联网 2012/09/22 访问统计',
-                  y:10  //默认对齐是顶部，所以这里代表距离顶部10px
-              },
-
-              //配置副标题
-              subtitle:
-              {
-                  text: '数据来源：百度统计',
-                  y:30
-              },
-
-
-              //配置x轴
-              xAxis:
-              {
-                  categories: ['0', '1', '2', '3', '4', '5','6', '7', '8', '9', '10', '11','12',
-                               '13','14','15','16','17','18','19','20','21','22','23/点']
-              },
-
-              // 配置y轴
-              yAxis:
-              {
-                  title:
-                  {
-                      text: '次数（次）'
-                  },
-
-
-                  labels:
-                  {  
-                      formatter:
-                      function()
-                      {
-                          return this.value +'次' 
-                      }
-                  }
-              },
-
-              //配置数据点提示框
-              tooltip:
-              {
-                  crosshairs: true,
-                  shared: true
-              },
-
-              //配置数据使其点显示信息
-              plotOptions:
-              {
-                     spline : {
-                         dataLabels:
-                         {
-                          enabled: true
-                         },
-                         enableMouseTracking: true
-                  }
-              },
-
-
-              //配置数据列
-              series:
-              [{
-                  name: '浏览次数（PV）',
-                  marker:
-                  {
-                      symbol: 'square'
-                  },
-                  data: [16,10, 8, 0, 0, 0, 2, 1, 5,10,25,34,
-                         8,12,38,22,13,14,11, 8, 8, 5, 8,33
-                        ]},
-               {
-                  name: 'IP数',
-                  marker:
-                   {
-                      symbol: 'diamond'
-                  },
-                   data: [7, 2, 1, 0, 0, 0, 1, 1, 3, 5, 4, 2, 5,
-                          5, 2, 1, 5, 3, 1, 4, 4, 4, 5, 9
-                         ] 
-               }]
-          });
-      });
-  });
-
-#+END_SRC
-***** 实例
-      本例演示地址：http://www.52wulian.org/test/HighCharts/HighCharts.html
-      本例源文件下载：http://pan.baidu.com/share/link?shareid=66439&uk=3087605183
-      本站统一解压密码：www.52wulian.org
-*** 配置选项
-**** 全局配置
-     Highcharts.setOptions({
-***** global: {全局参数}
-     Date: 时间类
-     VMLRadialGradientURL: VML 渐变图片
-     canvasToolsURL: Canvas 工具路径
-     getTimezoneOffset:
-timezone: undefined
-timezone: undefined
-timezoneOffset: 0
-useUTC
-***** lang: {语言文字}
-     contextButtonTitle: 导出按钮文字
-     decimalPoint: 小数点
-     downloadJPEG: 导出 JPEG
-     downloadPDF: 导出 PDF
-     downloadPNG: 导出 PNG
-     downloadSVG: 导出 SVG
-     drillUpText: 上钻
-     invalidDate: 无效的时间
-     loading: 加载中
-     months: 月份
-     noData: 没有数据
-     numericSymbolMagnitude: 国际单位符基数
-numericSymbols: 国际单位符
-printChart: 打印图表
-resetZoom: 重置缩放比例
-resetZoomTitle: 重置缩放标题
-shortMonths: 月份缩写
-shortWeekdays: 星期缩写
-thousandsSep: 千分号
-weekdays: 星期
-**** 主配置
-     Highcharts.chart('container', {
-***** accessibility: {
-describeSingleSeries: false
-enabled: true
-keyboardNavigation: {…}
-onTableAnchorClick: undefined
-pointDateFormat: undefined
-pointDateFormatter: undefined
-pointDescriptionFormatter: undefined
-pointDescriptionThreshold: 30
-screenReaderSectionFormatter: undefined
-seriesDescriptionFormatter: undefined
-}
-***** chart: {
-alignTicks: 刻度对齐
-animation: 动画效果
-backgroundColor: 背景色
-borderColor: 边框颜色
-borderRadius: 边框圆角
-borderWidth: 边框宽度
-className: 样式类
-colorCount: 颜色数量
-defaultSeriesType: 数据列默认类型
-description: 描述
-events: {事件}
-height: 高度
-ignoreHiddenSeries: 忽略隐藏系列
-inverted: 反转坐标轴
-margin: 外边距
-marginBottom: 底边距
-marginLeft: 左边距
-marginRight: 右边距
-marginTop: 上边距
-options3d: {3D}
-panKey: 平移键
-panning: 平移
-pinchType: 缩放类型
-plotBackgroundColor: 绘图区背景色
-plotBackgroundImage: 绘图区背景图
-plotBorderColor: 绘图区边框色
-plotBorderWidth: 绘图区边框宽度
-plotShadow: 绘图区阴影
-polar: 极地图
-reflow: 重新适应
-renderTo: 渲染容器
-resetZoomButton: {重置缩放按钮}
-selectionMarkerFill: 选中背景色
-shadow: 阴影
-showAxes: 显示坐标轴
-spacing: 内边距
-spacingBottom: 下内边距
-spacingLeft: 左内边距
-spacingRight: 右内边距
-spacingTop: 上内边距
-style: 样式
-type: 类型
-typeDescription: 类型描述
-width: 宽度
-zoomType: 缩放方式
-}
-***** colors: [颜色集合]
-***** credits: {版权信息}
-      enabled: 启用
-      href: 链接
-      position: {位置}
-      style: 样式
-      text: 内容
-      }
-***** data: {
-columns: 列数据
-complete: 完成回调函数
-csv: CSV 数据
-dateFormat: 日期格式化
-decimalPoint: 小数点符号
-endColumn: 结束列
-endRow: 结束行
-firstRowAsNames: 第一行作为数据列名字
-googleSpreadsheetKey: GoogleSpreadsheet 的 key
-googleSpreadsheetWorksheet: 工作表名
-itemDelimiter: 列分隔符
-lineDelimiter: 行分隔符
-parseDate: 时间解析函数
-parsed: 解析回调函数
-rows: 行数据
-seriesMapping: 数据列关联
-startColumn: 开始列
-startRow: 开始行
-switchRowsAndColumns: 行列对调
-table: HTML 表格
-}
-***** drilldown: {
-activeAxisLabelStyle: 可钻取坐标轴标签样式
-activeDataLabelStyle: 可下钻数据点标签样式
-allowPointDrilldown: 是否运行点下钻
-animation: 动画
-drillUpButton: {上钻按钮}
-series: 数据列
-}
-***** exporting: {
-allowHTML: 允许生成HTML标签
-buttons: {按钮}
-chartOptions: 图表选项
-enabled: 启用
-error: 错误
-fallbackToExportServer: 回调到导出服务器
-filename: 文件名
-formAttributes: 表单属性
-libURL: 依赖库的URL地址
-printMaxWidth: 打印的最大宽度
-scale: 缩放比例
-sourceHeight: 原高度
-sourceWidth: 原宽度
-type: 类型
-url: 导出服务器地址
-width: 宽度
-}
-***** labels: {
-items: [{
-html: HTML
-style: CSS样式
-}]
-style: CSS样式
-}
-***** legend: {
-align: 水平对齐
-backgroundColor: 背景色
-borderColor: 边框颜色
-borderRadius: 边框圆角
-borderWidth: 边框宽度
-enabled: 图例开关
-floating: 浮动
-itemDistance: 图例项间距
-itemHiddenStyle: 数据列隐藏时图例项样式
-itemHoverStyle: 图例项悬停样式
-itemMarginBottom: 图例项底部外边距
-itemMarginTop: 图例项顶部外边距
-itemStyle: 图例项样式
-itemWidth: 图例项宽度
-labelFormat: 标签格式话字符串
-labelFormatter: 图例项标签格式回调函数
-layout: 图例布局
-lineHeight: 图例项行高
-margin: 边距
-maxHeight: 最大高度
-navigation: {导航条}
-padding: 内边距
-reversed: 逆序排列
-rtl: 左右交换
-shadow: 阴影
-squareSymbol: 正方图例标志
-style: undefined
-symbolHeight: 标志高度
-symbolPadding: 标志后距
-symbolRadius: 图标圆角
-symbolWidth: 图标宽度
-title: {标题}
-useHTML: HTML模式渲染
-verticalAlign: 垂直对齐
-width: 宽度
-x: 水平偏移
-y: 竖直偏移
-}
-***** loading: {加载}
-      hideDuration: 淡出效果持续时间
-labelStyle: 标签样式
-showDuration: 显示时间
-style: 加载图形区域的样式
-}
-***** navigation: {导航}
-      buttonOptions: {按钮选项}
-menuItemHoverStyle: 菜单项鼠标划过状态样式
-menuItemStyle: 菜单项样式
-menuStyle: 菜单风格
-}
-***** noData: {没有数据}
-      attr: 属性
-position: {定位}
-style: 样式
-useHTML
-***** pane: {…}
-      background: [{背景}]
-center: 中心
-endAngle: 结束角度
-size: 大小
-startAngle: 开始角度
-}
-***** plotOptions: {数据列配置}
-****** area: {
-allowPointSelect: 是否允许选中点
-animation: 动画
-animationLimit: 动画限制
-className: 类名
-color: 颜色
-colorIndex:
-connectEnds: 首尾相连
-connectNulls: 连接空值点
-cropThreshold: 300
-cursor: 光标形状
-dashStyle: 线条样式
-dataLabels: {数据标签}
-description: undefined
-enableMouseTracking: 鼠标跟踪
-events: {事件}
-fillColor: undefined
-fillOpacity: 0.75
-findNearestPointBy: 最近点查找方式
-getExtremesFromAll: 极值计算范围
-keys: 数据关联
-lineColor: undefined
-lineWidth: 线条宽度
-linecap: "round"
-linkedTo: 关联
-marker: {…}
-negativeColor: 负值颜色
-negativeFillColor: undefined
-point: {数据点}
-pointInterval: 数据点间隔
-pointIntervalUnit: 间隔单位
-pointPlacement: undefined
-pointStart: 数据起点
-selected: 选中状态
-shadow: 阴影
-showCheckbox: 显示图例复选框
-showInLegend: 是否在图例中
-softThreshold: false
-stacking: 堆叠
-states: {…}
-step: 阶梯形
-stickyTracking: true
-threshold: 阈值
-tooltip: {提示框}
-trackByArea: false
-turboThreshold: 1000
-visible: 显示状态
-zoneAxis: 分区轴
-zones: [{分区}]
-}
-****** arearange: {面积范围图}
-****** areaspline: {面积曲线图}
-****** areasplinerange: {面积曲线范围图}
-****** bar: {条形图}
-****** boxplot: {箱线图}
-****** bubble: {气泡图}
-****** column: {柱状图}
-****** columnrange: {柱状范围图}
-****** errorbar: {误差线图}
-****** funnel: {漏斗图}
-****** gauge: {仪表图}
-****** heatmap: {热力图}
-****** line: {直线图}
-****** pie: {饼图}
-****** polygon: {多边形图}
-****** pyramid: {金字塔图}
-****** scatter: {散点图}
-****** series: {通用数据列}
-****** solidgauge: {…}
-****** spline: {曲线图}
-****** treemap: {树状图}
-****** waterfall: {瀑布图}
-***** responsive: {响应式}
-***** series: [{数据列}]
-      {type: "area", …}]
-{type: "arearange", …}]
-{type: "areaspline", …}]
-{type: "areasplinerange", …}]
-{type: "bar", …}]
-{type: "boxplot", …}]
-{type: "bubble", …}]
-{type: "column", …}]
-{type: "columnrange", …}]
-{type: "errorbar", …}]
-{type: "funnel", …}]
-{type: "gauge", …}]
-{type: "heatmap", …}]
-{type: "line", …}]
-{type: "pie", …}]
-{type: "polygon", …}]
-{type: "pyramid", …}]
-{type: "scatter", …}]
-{type: "solidgauge", …}]
-{type: "spline", …}]
-{type: "treemap", …}]
-{type: "waterfall", …}]
-
-***** subtitle: {副标题}
-      align: 对齐方式
-floating: 是否浮动
-style: 文字样式
-text: 文字
-useHTML: 是否使用HTML渲染
-verticalAlign: 文字垂直对齐方式
-widthAdjust: -44
-x: 水平偏移
-y
-***** title: {标题}
-      align: 图表标题水平对齐方式
-      floating: 标题是否浮动
-      margin: 边距
-      style: 标题样式
-      text: 文字
-      useHTML: 标题是否使用HTML渲染
-      verticalAlign: 垂直对齐
-      widthAdjust: -44
-      x: 水平偏移
-      y: 竖直方向偏移
-      }
-***** tooltip: {数据提示框}
-animation: 是否启用动画
-backgroundColor: 背景色
-borderColor: 边框颜色
-borderRadius: 圆角半径
-borderWidth: 边框宽度
-crosshairs: 十字准线
-dateTimeLabelFormats: 时间格式化字符串
-enabled: 是否启用
-followPointer: 跟随鼠标
-followTouchMove: 是否跟随手指移动
-footerFormat: 尾部格式化字符串
-formatter: 格式化回调函数
-headerFormat: 标题格式
-hideDelay: 提示框隐藏延时
-padding: 8
-pointFormat: 数据点格式化字符串
-pointFormatter: 数据点格式化回调函数
-positioner: 数据点定位回调函数
-shadow: 是否启用提示框的阴影
-shape: 数据点提示框的形状
-shared: 是否共享
-snap: undefined
-split: 分开显示
-style: CSS样式
-useHTML: 是否使用HTML渲染
-valueDecimals: 保留小数位数
-valuePrefix: 数值前缀
-valueSuffix: 数值后缀
-xDateFormat: 时间轴格式化
-}
-***** xAxis: [{
-      #+BEGIN_SRC 
-      X 轴（或分类轴）。默认情况下，x轴显示在图表的底部，y轴显示在左侧（多个y轴时可以是显示在左右两侧），通过设置chart.inverted = true 可以让x，y轴显示位置对调。
-在多轴中，xAxis 可以配置成数组的形式。
-X 轴可以通过 坐标轴对象 来进行动态更新或进行其他操作。
-教程地址：https://www.hcharts.cn/docs/basic-axis
-是否在坐标轴标签中显示小数。当图表展示的数据和整数相关时，例如页面的访问量、访问人数等，坐标轴标签是不能显示整数的。 默认是：true.
-在线实例： 刻度值可以为小数，刻度值不可以是小数
-相关的属性： minTickInterval
-alternateGridColor: Color  翻译人：群大大
-当指定该参数时，相邻刻度线之间会用对应的颜色来绘制颜色分辨带。
-在线实例： 隔行显示淡黄色背景
-breaks: Array  翻译人：群大大Since 4.1.0
-坐标轴中断（或断裂，例如不显示 10~ 100 部分的数据），在中断内的点将会被删除，该功能依赖功能模块 http://cdn.hcharts.cn/highcharts/modules/broken-axis.js
-在线实例： 坐标轴中断，通过回调函数定义坐标轴中断
-categories: Array<String>  翻译人：群大大
-分类坐标轴中的分类。从 Highcharts 3.0 起，坐标的类别还可以通过指定数据点的 name 来生效（只针对 Axis.type = 'category' 有效） 。需要注意的是，在多数据列图表中，最佳实践是在 categories 数组中定义类别。
-
-实例代码：
-
-categories: ['Apples', 'Bananas', 'Oranges']
-默认是： null
-在线实例： 普通轴，类别轴，通过数据点的 name 指定类别
-ceiling: Number  翻译人：群大大Since 4.0
-自动计算坐标轴极值的上限。
-在线实例： 坐标轴的极端值设置
-相关的属性： floor
-className: StringSince 5.0.0
-A class name that opens for styling the axis by CSS, especially in Highcharts styled mode. The class name is applied to group elements for the grid, axis elements and labels.
-在线实例： Multiple axes with separate styling.
-crosshair: Boolean|Object  翻译人：群大大Since 4.1
-配置跟随鼠标或鼠标滑过点时的十字准星线
-
-在 CSS 样式模式 中，十字准星线的样式可以通过 .highcharts-crosshair、.highcharts-crosshair-thin 或 .highcharts-xaxis-category 类来控制。
-
-默认是：false.
-在线实例： 十字准星线
-dateTimeLabelFormats: Object  翻译人：简数科技
-时间轴标签的格式化字符串。
-
-坐标轴会根据当前间隔的最小值来取对应的配置，例如当前坐标轴标签间隔为一天是，那么坐标轴标签会取该配置里的 day 配置；当对坐标轴缩放时，坐标轴也会自适应当前的间隔来取对应的值，所以在坐标轴可以缩放的情况下，应该配置所有可能的间隔值。
-
-该参数可以自适应坐标轴的间隔，作用是灵活的控制不同情况下的坐标轴标签显示，例如当间隔为天时，显示到天即可，当间隔为小时或分时，可以显示到对应的粒度，通过该参数可以很简单的做到灵活控制；如果只需要显示固定格式的时间，可以在格式化函数里进行固定的时间格式化。
-
-关于时间格式化符请参考 时间格式化函数。
-
-默认是：
-
-{
-	millisecond: '%H:%M:%S.%L',
-	second: '%H:%M:%S',
-	minute: '%H:%M',
-	hour: '%H:%M',
-	day: '%e. %b',
-	week: '%e. %b',
-	month: '%b \'%y',
-	year: '%Y'
-}
-在线实例： 设置日期标签格式
-description: String  翻译人：简数科技Since 5.0.0
-该参数依赖无障碍设计功能模块，是给使用屏幕阅读器的用户展示 x 轴描述信息。
-
-默认是：undefined.
-在线实例： 无障碍设计-线图
-endOnTick: Boolean  翻译人：群大大Since 1.2.0
-是否强制将坐标轴结束于刻度线，可以通过本属性及 maxPadding 来控制坐标轴的结束位置。 默认是：false.
-在线实例： 强制结束于标线，不强制结束于标线
-events  翻译人：群大大
-坐标轴相关的事件。
-floor: Number  翻译人：群大大Since 4.0
-自动计算坐标轴极值的下限。 默认是：null.
-在线实例： 极端值设置
-相关的属性： ceiling
-gridLineColor: Color  翻译人：群大大
-坐标轴的网格线颜色
-
-在 CSS 样式模式 中，网格线可以通过.highcharts-grid-line 类来控制。
-
-默认是：#e6e6e6.
-在线实例： 设置绿色网格线，样式模式中设置网格线
-gridLineDashStyle: String  翻译人：群大大Since 1.2
-网格线线条样式，所有可用的线条样式参考：Highcharts线条样式。 默认是：Solid.
-在线实例： 设置长破折号风格网格线
-gridLineWidth: Number  翻译人：群大大
-网格线线条宽度，当设置为 0 时则不显示网格线。
-
-在 CSS 样式模式 中，网格线是通过 .highcharts-grid-line 类来控制的。
-
-默认是：0.
-在线实例： 设置2px宽的网格线，样式模式中设置网格线
-gridZIndex: Number  翻译人：群大大
-网格线的层叠值（zIndex） 默认是：1.
-在线实例： 网格线覆盖在图形上方
-id: String  翻译人：群大大Since 1.2.0
-坐标轴的编号。可以通过 chart.get(id) 的形式来获取坐标轴对象。
-在线实例： 通过 id 获得轴对象
-labels  翻译人：群大大
-坐标轴标签，即在刻度位置显示对应的数值、名字或格式化后的内容。
-lineColor: Color  翻译人：群大大
-坐标轴轴线的颜色值。
-
-在 CSS 样式模式 中，坐标轴轴线可以通过样式类 .highcharts-axis-line 或 .highcharts-xaxis-line 来控制
-
-默认是：#ccd6eb.
-在线实例： 设置Y轴轴线为红色，样式模式中设置轴线样式
-lineWidth: Number  翻译人：群大大
-坐标轴轴线的宽度。
-
-在 CSS 样式模式 中，坐标轴轴线是通过 .highcharts-axis-line 或 .highcharts-xaxis-line 类来控制。
-
-默认是：1.
-在线实例： 设置Y轴轴线宽度为1px，样式模式中设置轴线样式
-linkedTo: Number  翻译人：群大大Since 2.0.2
-关联的坐标轴下标，即可以下标将此坐标轴与对应下标的坐标轴进行关联。这对于显示坐标轴额外信息、缩放时更好的查看坐标轴非常有用。
-在线实例： 设置不同的标签格式，设置两个Y轴对立
-max: Number  翻译人：群大大
-坐标轴的最大值。当设置为 null 时，最大值将会自动计算。当 endOnTick 参数值为 true 时，max 值将会向上取整。
-
-当设置了 tickAmount，坐标轴的最大值可能会刻度的最大值覆盖，同样的在多坐标轴中， 刻度对齐也有可能导致 chart.alignTicks 这种情况发生（因为在多坐标轴对齐中，内部会设置 tickAmount 值）。
-
-在线实例： 设置Y轴的max值，设置对数轴的max值
-maxPadding: NumberSince 1.2.0
-Padding of the max value relative to the length of the axis. A padding of 0.05 will make a 100px axis 5px longer. This is useful when you don't want the highest data value to appear on the edge of the plot area. When the axis' max option is set or a max extreme is set using axis.setExtremes(), the maxPadding will be ignored. 默认是：0.01.
-在线实例： Max padding of 0.25 on y axis
-maxZoom: Number
-已废弃
-
-  翻译人：群大大
-已废弃。在 Highcharts 2.2 中改名为 minRange。
-min: Number  翻译人：群大大
-坐标轴的最小值，当为 null 是最小值将自动计算。如果设置了 startOnTick 为 true 时，最小值可能会进行向下取整。
-在线实例： 在不强制以刻度线开始的情况下设置Y轴的最，在强制以刻度线开始的情况下设置Y轴的最小
-minPadding: NumberSince 1.2.0
-Padding of the min value relative to the length of the axis. A padding of 0.05 will make a 100px axis 5px longer. This is useful when you don't want the lowest data value to appear on the edge of the plot area. When the axis' min option is set or a min extreme is set using axis.setExtremes(), the minPadding will be ignored. 默认是：0.01.
-在线实例： Min padding of 0.2
-minRange: Number  翻译人：群大大
-坐标轴展示的最小范围，整个坐标轴展示的范围将不会小于这个值。例如在时间轴中（时间轴单位是毫秒），如果本参数设置为 3600000，那么在缩放操作时，最小的缩放范围值 1小时（即小于 1小时的缩放范围将不会被允许）。
-
-默认值是任意点之间间距的最小值的 5 倍。
-
-在对数坐标轴中，该参数表示对数的权值，所以 1 表示该坐标轴可以缩放的比例是：10-100、100-1000、1000-10000 等
-
-注意：同 minRange 一样，minPadding、maxPadding、startOnTick 、 endOnTick 等设置也可以影响坐标轴极值的计算。
-
-在线实例： 设置显示X轴的最小范围
-minTickInterval: Number  翻译人：群大大Since 2.3.0
-坐标轴允许的最小间隔值。例如在以天为单位的图表中，可以通过设置此参数来防止在缩放时展示小时单位。默认是坐标轴上任意两个点之间的距离的最小值。
-minorGridLineColor: Color  翻译人：群大大
-次网格线的颜色。
-
-在 CSS 样式模式 中，次网格线的样式是可以通过 .highcharts-minor-grid-line 样式类来控制的。
-
-默认是：#f2f2f2.
-在线实例： 设置Y轴次级网格线的颜色，样式模式中设置网格线
-minorGridLineDashStyle: String  翻译人：群大大Since 1.2
-次网格线线条样式。 默认是：Solid.
-在线实例： 设置Y轴次级网格线的风格为长破折号
-minorGridLineWidth: Number  翻译人：群大大
-次网格线的线条宽度
-
-默认是：1.
-在线实例： 设置Y轴次级网格线的宽度，样式模式中设置网格线
-minorTickColor: Color  翻译人：群大大
-坐标轴次刻度线颜色。 默认是：#999999.
-在线实例： 设置黑色的Y轴次级刻度线
-minorTickInterval: String|Number
-Tick interval in scale units for the minor ticks. On a linear axis, if "auto", the minor tick interval is calculated as a fifth of the tickInterval. If null, minor ticks are not shown.
-
-On logarithmic axes, the unit is the power of the value. For example, setting the minorTickInterval to 1 puts one tick on each of 0.1, 1, 10, 100 etc. Setting the minorTickInterval to 0.1 produces 9 ticks between 1 and 10, 10 and 100 etc. A minorTickInterval of "auto" on a log axis results in a best guess, attempting to enter approximately 5 minor ticks between each major tick.
-
-If user settings dictate minor ticks to become too dense, they don't make sense, and will be ignored to prevent performance problems.
-
-On axes using categories, minor ticks are not supported.
-
-在线实例： Null by default, "auto" on linear Y axis, 5 units on linear Y axis, "auto" on logarithmic Y axis, 0.1 on logarithmic Y axis.
-minorTickLength: Number  翻译人：群大大
-坐标轴的次刻度线的线条长度。 默认是：2.
-在线实例： 设置Y轴次级刻度线长度为10px
-minorTickPosition: String  翻译人：群大大
-次刻度线相对于坐标轴轴线的位置。可用的值有 inside 及 outside。 默认是：outside.
-在线实例： 设置Y轴次级刻度线位于相对轴线的外部，设置Y轴次级刻度线位于相对轴线的内部
-minorTickWidth: Number  翻译人：群大大
-坐标轴次刻度线的线条宽度。（次刻度线是相对于主刻度线 tick 的） 默认是：0.
-在线实例： 设置Y轴的次级刻度线宽度为3px
-offset: Number  翻译人：群大大
-坐标轴距离绘图区的像素值（以轴线为基准）。该参数将会将整个坐标轴进行偏移。在多个轴展示在同一侧的情况下非常有用，可以一次排列多个坐标轴。在没有明确给定此参数的情况下，为了避免多坐标轴相互冲突（覆盖、重叠等），该参数会进行自动计算。 默认是：0.
-在线实例： 坐标轴偏移设置为 70，坐标轴在绘图区居中显示
-opposite: Boolean  翻译人：群大大
-是否将坐标轴显示在对立面，默认情况下 x 轴是在图表的下方显示，y 轴是在左方，坐标轴显示在对立面后，x 轴是在上方显示，y 轴是在右方显示（即坐标轴会显示在对立面）。该配置一般是用于多坐标轴区分展示，另外在 Highstock 中，y 轴默认是在对立面显示的。 默认是：false.
-在线实例： 在对立面显示第二个Y轴
-plotBands: Array<Object>  翻译人：简数科技
-坐标轴标识区相关配置，该配置是数组的形式，即坐标轴标识区可以是多个。
-
-在 CSS 样式模式 中，标识区的样式由样式类 .highcharts-plot-band 及定义在 className 中的样式类来控制。
-
-plotLines: Array<Object>  翻译人：群大大
-标示线是用来标记坐标轴上特殊值的一条直线，在绘图区内绘制一条自定义的线。标示线是个数组，即可以配置多个标示线。
-
-教程地址：https://www.hcharts.cn/docs/basic-plotLines
-
-在 CSS 样式模式 中，标示线的样式是由样式类 .highcharts-plot-line 及配置在标示线参数 className 来控制的。
-
-reversed: Boolean  翻译人：群大大
-是否反转图表，反转后从原点开始值越小（即坐标轴刻度是从大到小）。当图表设置为反转（chart.inverted = true）时， x 轴默认是反转的（参考条形图，条形图其实就是柱状图进行反转操作）。 默认是：false.
-在线实例： 设置Y轴逆转
-showEmpty: Boolean  翻译人：群大大Since 1.1
-当坐标轴没有数据时，是否显示坐标轴（包括轴线及坐标轴标题）。 默认是：true.
-在线实例： 当坐标轴没有数据时是不显示轴线和标题
-showFirstLabel: Boolean  翻译人：群大大
-是否显示坐标轴的第一个标签 默认是：true.
-在线实例： 不显示第一个标签
-showLastLabel: Boolean  翻译人：群大大
-是否显示坐标轴的最后一个标签。 默认是：true.
-在线实例： 显示最后一个标签
-softMax: Number  翻译人：群大大Since 5.0.1
-坐标轴的柔和最大值（soft max），如果坐标轴对应数据列的最大值小于这个值，那么坐标轴的最大值将保持不变，如果数据列最大值大于这个值，那么坐标轴将改变最大值并保证展示所有数据。（和 max 不同的时，数据列中的数据超过 max 值将不会被展示，而 softMax 则可以，也就是 softMax 是可变的，max 是硬性的最大值）
-在线实例： 柔和的坐标轴最大值和最小值
-softMin: Number  翻译人：群大大Since 5.0.1
-坐标轴的柔和最小值。如果数据列的最小值大于这个值，那么坐标轴的最小值保持不变，如果数据列的数据的最小值小于这个值，那么坐标轴的最小值将会被调整以保证所有的数据都会被展示。
-在线实例： 柔和的坐标轴最大值和最小值
-startOfWeek: Number  翻译人：群大大
-只针对时间轴，该参数决定了周的刻度选择，值为 0 表示从一周是从星期天开始，1表示一周从星期一开始。 默认是：1.
-在线实例： 将星期一作为一周的开始，将星期日作为一周的开始
-startOnTick: BooleanSince 1.2.0
-Whether to force the axis to start on a tick. Use this option with the minPadding option to control the axis start. 默认是：false.
-在线实例： False by default, true on X axis
-tickAmount: Number  翻译人：群大大Since 4.1.0
-规定坐标轴上的刻度总数， 一般是用于在多轴或多表盘（仪表图）中对齐刻度，另外该配置会覆盖 tickPixelInterval 参数。
-
-该参数只对线性轴有效，对时间轴、对数轴、分类轴无效。
-
-在线实例： 指定 Y 轴刻度总数
-tickColor: Color  翻译人：群大大
-坐标轴刻度线的颜色。
-
-在 CSS 样式模式 中，刻度线的样式是由 CSS 样式类.highcharts-tick 来控制的。
-
-默认是：#ccd6eb.
-在线实例： 设置红色的刻度线，样式模式中设置网格线
-tickInterval: Number
-The interval of the tick marks in axis units. When null, the tick interval is computed to approximately follow the tickPixelInterval on linear and datetime axes. On categorized axes, a null tickInterval will default to 1, one category. Note that datetime axes are based on milliseconds, so for example an interval of one day is expressed as 24 * 3600 * 1000.
-
-On logarithmic axes, the tickInterval is based on powers, so a tickInterval of 1 means one tick on each of 0.1, 1, 10, 100 etc. A tickInterval of 2 means a tick of 0.1, 10, 1000 etc. A tickInterval of 0.2 puts a tick on 0.1, 0.2, 0.4, 0.6, 0.8, 1, 2, 4, 6, 8, 10, 20, 40 etc.
-
-If the tickInterval is too dense for labels to be drawn, Highcharts may remove ticks.
-
-If the chart has multiple axes, the alignTicks option may interfere with the tickInterval setting.
-
-在线实例： Tick interval of 5 on a linear axis
-相关的属性： tickPixelInterval, tickPositions, tickPositioner
-tickLength: Number  翻译人：群大大
-坐标轴刻度线的长度。 默认是：10.
-在线实例： 设置刻度线的长为20px
-tickPixelInterval: Number  翻译人：群大大
-如果刻度间隔（tickInterval）为 null ，那么此参数决定了刻度之间间隔的像素值。该参数对分类坐标轴无效。对于 Y 轴，其默认值是72，X 轴则是 100
-在线实例： 设置刻度间隔为 50px
-相关的属性： tickInterval, tickPositioner, tickPositions-
-tickPosition: String  翻译人：群大大
-刻度线相对于轴线的位置，可用的值有 inside 和 outside，分别表示在轴线的内部和外部。 默认是：outside.
-在线实例： 设置刻度线位于相对于轴线的内部，设置刻度线位于相对于轴线的外部
-tickPositioner: Function  翻译人：群大大
-坐标轴刻度计算回调函数，该函数返回值是包含刻度位置的数组，即 tickPositions。
-
-该回调函数会覆盖 tickPixelInterval 及 tickInterval 对刻度的影响。
-
-在该回调函数中，this 关键字表示坐标轴对象，另外可以通过 this.tickPositions 来获取自动计算生成的刻度数组。
-
-在线实例： 定义刻度线在坐标轴上分布的数组的回调函数
-相关的属性： tickPositions
-tickPositions: Array<Number>  翻译人：群大大
-刻度位置数组。该参数会覆盖 tickPixelInterval 及 tickInterval 对刻度的影响。
-在线实例： 定义刻度线在坐标轴上的分布的数组
-相关的属性： tickPositioner
-tickWidth: Number  翻译人：群大大
-坐标轴刻度线的宽度，设置为 0 时则不显示刻度线
-
-在 CSS 样式模式 中，刻度线的样式是在样式类 .highcharts-tick 中控制的。
-
-默认是：1.
-在线实例： 设置10px的刻度线宽度，样式模式中设置网格线
-tickmarkPlacement: String  翻译人：群大大
-本参数只对分类轴有效。 当值为 on 时刻度线将在分类上方显示；当值为 between 时，刻度线将在两个分类中间显示。当 tickInterval 为 1 时，默认是 between，其他情况默认是 on。 默认是：null.
-在线实例： 设置刻度线位于类别名称之间，设置刻度线位于在类别名称的中心
-title  翻译人：群大大
-坐标轴标题，一般是显示在坐标轴轴线的旁边。
-type: String  翻译人：群大大
-坐标轴类型。可以是 "linear", "logarithmic", "datetime" 或者 "category"之一，分别表示 “线性轴”、“对数轴”、“时间轴”、“分类轴”。
-
-在时间轴中，坐标轴值是以毫秒为单位的数字（时间戳），坐标轴标签显示的则是对应间隔（年、月、日、小时等）的格式化字符串（都可以自定义），也就是说在时间轴中，x 值是时间戳，至于想要显示什么，完全可以根据需求进行格式化。
-
-在分类坐标轴中，如果有没有指定分类 categories 数组，那么分类将使用数据列中的数据点的名字（数据点的 names 属性）。
-
-默认是：linear.
-在线实例： 线性图表，等间隔时间轴，不等间隔时间轴，有次级栅格线的对数轴，X、Y轴都是对数轴
-uniqueNames: Boolean  翻译人：群大大Since 4.2.7
-只针对分类坐标轴有效，当 nameToX 为 true 时，数据点将根据其名字（name 属性）来在坐标轴中放置，即不同的数据列中的相同名字的数据点的 X 值相同，当此参数为 false 时，数据点将递增的形式展现在坐标轴中（不合并相同的名字），即坐标轴的分类是每个数据点的名字。 默认是：true.
-在线实例： 分类轴合并相同的名字，分类轴不合并相同的名字
-units: Array
-Datetime axis only. An array determining what time intervals the ticks are allowed to fall on. Each array item is an array where the first value is the time unit and the second value another array of allowed multiples. Defaults to:
-units: [[
-	'millisecond', // unit name
-	[1, 2, 5, 10, 20, 25, 50, 100, 200, 500] // allowed multiples
-], [
-	'second',
-	[1, 2, 5, 10, 15, 30]
-], [
-	'minute',
-	[1, 2, 5, 10, 15, 30]
-], [
-	'hour',
-	[1, 2, 3, 4, 6, 8, 12]
-], [
-	'day',
-	[1]
-], [
-	'week',
-	[1]
-], [
-	'month',
-	[1, 3, 6]
-], [
-	'year',
-	null
-]]
-visible: Boolean  翻译人：群大大Since 4.1.9
-
-是否显示坐标轴，包含坐标轴、坐标轴标题、坐标轴轴线、坐标轴标签等。 默认是：true.
-在线实例： 切换坐标轴显示与否
-© 2017 Highcharts 中文官网，由 简数科技 提供服务，浙ICP备16004892号，浙公网安备33011002011664号
-
-      #+END_SRC
-allowDecimals: 是否允许小数
-alternateGridColor: 间隔网格背景
-breaks: [{中断}]
-categories: 分类
-ceiling: 上限
-className:
-crosshair: {十字准星线}
-dateTimeLabelFormats: 时间标签格式化字符
-description: 描述
-endOnTick: 结束于刻度线
-events: {事件}
-floor: 下限
-gridLineColor: 网格线颜色
-gridLineDashStyle: 网格线线条样式
-gridLineWidth: 网格线宽度
-gridZIndex: 网格线层叠
-id: 编号
-labels: {轴标签}
-lineColor: 轴线颜色
-lineWidth: 轴线宽度
-linkedTo: 关联
-max: 最大值
-maxPadding: 0.01
-maxZoom: 最大缩放值
-min: 最小值
-minPadding: 0.01
-minRange: 最小范围
-minTickInterval: 最小间隔
-minorGridLineColor: 次网格线颜色
-minorGridLineDashStyle: 次网格线条样式
-minorGridLineWidth: 次网格线宽度
-minorTickColor: 次刻度线颜色
-minorTickInterval: undefined
-minorTickLength: 次刻度线长度
-minorTickPosition: 次刻度线位置
-minorTickWidth: 次刻度线宽度
-offset: 偏移
-opposite: 对面显示
-plotBands: [{标识区}]
-plotLines: [{标示线}]
-reversed: 反转
-showEmpty: 是否显示空轴
-showFirstLabel: 是否显示第一个轴标签
-showLastLabel: 是否显示最后一个轴标签
-softMax: 柔和的最大值
-softMin: 柔和的最小值
-startOfWeek: 一周的开始
-startOnTick: false
-tickAmount: 刻度总数
-tickColor: 刻度线颜色
-tickInterval: undefined
-tickLength: 刻度线长度
-tickPixelInterval: 像素间隔
-tickPosition: 刻度位置
-tickPositioner: 刻度计算函数
-tickPositions: 刻度数组
-tickWidth: 刻度线的宽度
-tickmarkPlacement: 刻度线位置
-title: {
-align: 对齐
-enabled: 是否显示
-margin: 外边距
-offset: 偏移
-rotation: 旋转
-style: 样式
-text: 文字
-x: 水平偏移
-y: 竖直偏移
-}
-type: 坐标轴类型
-uniqueNames: 关联名字
-units:
-visible: 是否显示
-}]
-***** yAxis: [{Y 轴}]
-      allowDecimals: 是否允许小数
-alternateGridColor: 间隔网格背景
-angle: 角度
-breaks: [{中断}]
-categories: 分类
-ceiling: 上限
-className: 类名
-crosshair: {十字准星线}
-dateTimeLabelFormats: 时间标签格式化字符
-description: 描述
-endOnTick: 结束于刻度线
-events: {事件}
-floor: 下限
-gridLineColor: 网格线颜色
-gridLineDashStyle: 网格线线条样式
-gridLineInterpolation: null
-gridLineWidth: 网格线宽度
-gridZIndex: 网格线层叠
-id: 编号
-labels: {轴标签}
-lineColor: 轴线颜色
-lineWidth: 轴线宽度
-linkedTo: 关联
-max: 最大值
-maxColor: "#003399"
-maxPadding: 0.05
-maxZoom: 最大缩放值
-min: 最小值
-minColor: "#e6ebf5"
-minPadding: 0.05
-minRange: 最小范围
-minTickInterval: undefined
-minorGridLineColor: 次网格线颜色
-minorGridLineDashStyle: 次网格线条样式
-minorGridLineWidth: 次网格线宽度
-minorTickColor: 次刻度线颜色
-minorTickInterval: undefined
-minorTickLength: 次刻度线长度
-minorTickPosition: 次刻度线位置
-minorTickWidth: 次刻度线宽度
-offset: 偏移
-opposite: 对面显示
-plotBands: [{标识区}]
-plotLines: [{标示线}]
-reversed: 反转
-reversedStacks: true
-showEmpty: 是否显示空轴
-showFirstLabel: 是否显示第一个轴标签
-showLastLabel: 是否显示最后一个轴标签
-softMax: 柔和的最大值
-softMin: 柔和的最小值
-stackLabels: {…}
-startOfWeek: 一周的开始
-startOnTick: true
-stops: undefined
-tickAmount: 刻度总数
-tickColor: 刻度线颜色
-tickInterval: undefined
-tickLength: 刻度线长度
-tickPixelInterval: 像素间隔
-tickPosition: 刻度位置
-tickPositioner: 刻度计算函数
-tickPositions: 刻度数组
-tickWidth: 刻度线的宽度
-tickmarkPlacement: 刻度线位置
-title: {标题}
-type: 坐标轴类型
-uniqueNames: 关联名字
-units:
-visible: 是否显示
-}]
-***** zAxis: {Z 轴}
-      allowDecimals: 是否允许小数
-      alternateGridColor: 间隔网格背景
-      categories: 分类
-      ceiling: 上限
-      className: 类名
-      crosshair: {十字准星线}
-      dateTimeLabelFormats: 时间标签格式化字符
-      description: 描述
-endOnTick: false
-events: {事件}
-floor: 下限
-gridLineColor: 网格线颜色
-gridLineDashStyle: 网格线线条样式
-gridLineWidth: 网格线宽度
-gridZIndex: 网格线层叠
-id: 编号
-labels: {轴标签}
-lineColor: "#ccd6eb"
-lineWidth: 1
-linkedTo: 关联
-max: 最大值
-maxPadding: 0.01
-maxZoom: 最大缩放值
-min: 最小值
-minPadding: 0.01
-minRange: 最小范围
-minTickInterval: 最小间隔
-minorGridLineColor: 次网格线颜色
-minorGridLineDashStyle: 次网格线条样式
-minorGridLineWidth: 次网格线宽度
-minorTickColor: 次刻度线颜色
-minorTickInterval: undefined
-minorTickLength: 次刻度线长度
-minorTickPosition: 次刻度线位置
-minorTickWidth: 次刻度线宽度
-nameToX: true
-offset: 偏移
-opposite: 对面显示
-plotBands: [{…}]
-plotLines: [{标示线}]
-reversed: 反转
-showEmpty: 是否显示空轴
-showFirstLabel: 是否显示第一个轴标签
-showLastLabel: 是否显示最后一个轴标签
-softMax: 柔和的最大值
-softMin: 柔和的最小值
-startOfWeek: 一周的开始
-startOnTick: false
-tickAmount: 刻度总数
-tickColor: 刻度线颜色
-tickInterval: undefined
-tickLength: 刻度线长度
-tickPixelInterval: 像素间隔
-tickPosition: 刻度位置
-tickPositioner: 刻度计算函数
-tickPositions: 刻度数组
-tickWidth: 刻度线的宽度
-tickmarkPlacement: 刻度线位置
-title: {标题}
-type: 坐标轴类型
-uniqueNames: 关联名字
-units:
-visible: 是否显示
-}
-      });
-**** 函数及属性
-Axis: {坐标轴}
-Chart: {图表对象}
-Element: {SVG 元素}
-Highcharts: {命名空间}
-Legend: {图例}
-Point: {数据点}
-Renderer: {绘图工具}
-Series: {数据列}
-xAxis
-** 数据处理
-** 图表类型
-** 高级特性
-** 图表导出模块
-** 图表设计及样式
-** 插件扩展
-** 地图
-** HIghstock
-*** 开始使用 Highstock
-    Highstock 是基于 Highcharts 创建的专门用于股票图及大数据的时间轴图表，也就是意味着 Highstock 包含
-    Highcharts 所有功能，只是在 Highcharts 的基础上增加了新的功能，另外 Highstock 支持 K线图、蜡烛图等股票金融专用图表。
-
-[[file:image/sdjacf.png][Highstock 组成部分
-]]
-Highstock 组成部分
-**** 导航器（Navigator）
-     导航器用于查看整个图表数据趋势及快速选择查看的时间范围，详细信息请参考教程：导航器
-**** 滚动条（scrollbar）
-滚动条用于滚动查看数据范围，详细信息请参考教程：滚动条
-**** 准星线（crosshair）
-准星线是指跟随提示框显示在水平和数值的线条，可以很方便的阅读当前的时间和数值，相关配置请参考 API 文档：xAxis.crosshair 和 yAxis.crosshair。
-
-在 Highcharts 中同样可以使用准星线，只不过默认是关闭的，并且不支持准星线标签（crosshair.label）。
-#+BEGIN_SRC javascript
-$(function () {
-    var chart = null;
-    $.getJSON('https://data.jianshukeji.com/jsonp?filename=json/aapl-c.json&callback=?', function (data) {
-        // Create the chart
-        $('#container').highcharts('StockChart', {
-            rangeSelector : {
-                selected : 1
-            },
-            title : {
-                text : 'AAPL Stock Price'
-            },
-            series : [{
-                name : 'AAPL',
-                data : data,
-                tooltip: {
-                    valueDecimals: 2
-                }
-            }]
-        }, function(c) {
-            chart = c;
-        });
-    });
-    $('li').click(function(){
-        // console.log(chart.rangeSelector);
-        var index = parseInt($(this).html()) -1,
-            selected = chart.rangeSelector.selected;
-        if(index === selected) {
-            return false;
-        }
-        chart.rangeSelector.clickButton(index);
-    });
-});
-
-#+END_SRC
-*** 范围选择器（rangeSelector）
-    范围选择器是用来选择预设的时间范围或手动输入时间范围，它提供了预配置的时间选择按钮，
-    包括 1天，1周，1个月等，同时也提供时间输入框用于手动指定时间范围。
-
-    通过 rangeSelector.buttons 可以指定时间选择按钮，默认是
-#+BEGIN_SRC javascript
-  buttons: [{
-      type: 'month',
-      count: 1,
-      text: '1m'
-  }, {
-      type: 'month',
-      count: 3,
-      text: '3m'
-  }, {
-      type: 'month',
-      count: 6,
-      text: '6m'
-  }, {
-      type: 'ytd',
-      text: 'YTD'
-  }, {
-      type: 'year',
-      count: 1,
-      text: '1y'
-  }, {
-      type: 'all',
-      text: 'All'
-  }]
-#+END_SRC
-
-其中 type 表示时间单位，可用的值有 millisecond、second、minute、hour、day、week、month、ytd（Year to Date，最近的一年）、all（全部；
-count 为数量，text 为按钮显示的文字。
-
-通过 type 和 count 我们可以很灵活的组合时间范围。
-
-默认选中
-默认选中指的是图表显示的默认范围，我们可以通过 selected 属性来指定默认选中的时间范围按钮
-
-rangeSelector: {
-    buttons: [{ // 时间范围按钮数组
-
-    }],
-    selected: 1  // 默认选中的范围，值为上面 buttons 数组的下标（从 0 开始）
-}
-时间输入框
-时间输入框包含两个 Input 输入框，其值为当前图表的时间范围，我们可以通过 inputDateFormat 和 inputEditDateFormat 来指定输入框显示状态和输入状态的时间格式。
-
-如果不需要时间输入框，可以设置 inputEnabled = false 来关闭输入框。
-
-范围选择器相关事件
-范围选择器改变的范围其实是对坐标轴改变范围，所以如果需要监听范围选择器事件，我们可以通过坐标轴的相关事件来处理，下面是示例代码：
-
-xAxis: {
-    events: {
-        // 范围选择器改变的范围最终是改变坐标轴的范围，所以我们监听坐标的极值变更事件函数即可
-        afterSetExtremes: function(e) {
-            // e.min 和 e.max 为坐标轴当前的范围
-            console.log(e.min, e.max);
-        }
-    }
-}
-常见问题
-1. 如何使 rangeSelector 生效，但是不显示对应的 按钮和文字
-请参考示例代码：
-
-Highcharts.setOptions({
-    lang: {
-        rangeSelectorZoom: '' // 不显示 'zoom' 文字
-    }
-})
-
-$('#container').highcharts('Stock', {
-
-    // ... 省略代码
-    rangeSelector: {
-        buttonTheme: {
-            display: 'none' // 不显示按钮
-        },
-        selected: 1,
-        inputEnabled: false // 不显示日期输入框
-    }
-});
-出自帖子：关于 Highstock 的一些小技巧
-
-2. 如何在外部触发时间范围按钮
-可以调用 rangeSelector.clickButton 函数，该函数是内部未公开的函数，通过阅读源码得知。
-#+BEGIN_SRC javascript
-$(function () {
-    var chart = null;
-    $.getJSON('https://data.jianshukeji.com/jsonp?filename=json/aapl-c.json&callback=?', function (data) {
-        // Create the chart
-        $('#container').highcharts('StockChart', {
-            rangeSelector : {
-                selected : 1
-            },
-            title : {
-                text : 'AAPL Stock Price'
-            },
-            series : [{
-                name : 'AAPL',
-                data : data,
-                tooltip: {
-                    valueDecimals: 2
-                }
-            }]
-        }, function(c) {
-            chart = c;
-        });
-    });
-    $('li').click(function(){
-        // console.log(chart.rangeSelector);
-        var index = parseInt($(this).html()) -1,
-            selected = chart.rangeSelector.selected;
-        if(index === selected) {
-            return false;
-        }
-        chart.rangeSelector.clickButton(index);
-    });
-});
-
-#+END_SRC
-
-chart.rangeSelector.clickButton(index);
-index 指定是哪个索引
-*** 导航器
-最后修改时间：2017-09-14 16:42
-
-导航器（navigator）是显示在主图下方的用来展示所有数据的数据列小图形，它提供对整个图表进行缩放、平移操作。
-
-导航器
-导航器默认显示的 Highstock 中的第一个数据列，可以使用 series.showInNavigator 来指定指定需要显示在导航器中的数据列
-
-series: [{
-    showInNavigator: false
-}, {
-    showInNavigator: true
-}, {
-    showInNavigator: true
-}]
-数据列配置
-导航器里的数据列配置可以通过 navigator.series 来配置，它可以对导航器里是所有数据列有效
-
-navigator: {
-    // 针对导航器来的所有数据列有效，注意 data 配置无效，因为该数据来源于主数据列
-    series: {  
-        type: 'areaspline',
-        // ...
-    }
-}
-如果需要对某个数据列进行单独配置，可以在 series.navigatorOptions 中配置
-
-series: [{
-    showInNavigator: false
-}, {
-    showInNavigator: true,
-    navigatorOptions: {
-        color: red,
-        type: 'spline'
-    }
-}, {
-    showInNavigator: true
-}]
-在线试一试
-
-坐标轴配置
-导航器里的坐标轴可以通过 navigator.xAxis 和 navigator.yAxis 来配置，其配置属性同普通的坐标轴，实例代码：
-
-navigator: {
-    xAxis: {
-        tickWidth: 0,
-        lineWidth: 0,
-        gridLineWidth: 1,
-        tickPixelInterval: 200,
-        labels: {
-            align: 'left',
-            style: {
-                color: '#888'
-            },
-            x: 3,
-            y: -4
-        }
-    }
-}
-*** 滚动条
-最后修改时间：2017-09-14 16:42
-
-滚 动条（scrollbar）可以用来对图表进行平移操作。
-
-滚动条
-y 轴滚动条
-Highstock 在 4.2.6 时支持了 任意坐标轴滚动条，即 x、y 轴都支持了滚动条。
-
-y 轴滚动条相关配置参见 yAxis.scrollbar。
-
-在线试一试（缩放后才会显示 y 轴滚动条）
-
-在 Highcharts 图表中使用滚动条
-如果需要在 Highcharts 图表中使用滚动条，只需要将 highcharts.js 替换成 highstock.js 即可，详细请 参考例子。
-Highcharts 4.2.6 发布啦，新增任意坐标轴滚动条！
-« 返回所有新闻
-发布时间：2016-08-17 22:25:05
-
-Highcharts / Highstock / Highmaps 4.2.6 发布啦，最新版可以到我们的 下载中心 获取，同时我们的 开放CDN服务 也已经全部同步更新到最新版，这里有 更新日志。
-
-此次的更新出了常规的 Bug 修复外，针对 Highstock 我们增加了任意坐标轴滚动条支持，详细的文档请查阅我们的 API文档，下面是一些实例
-
-#+BEGIN_SRC javascript
-$(function() {
-    $('#container').highcharts({
-        chart: {
-            type: 'bar',
-            marginLeft: 150
-        },
-        title: {
-            text: '截止 2016年4月 Highcharts 最受欢迎的功能需求'
-        },
-        subtitle: {
-            text: 'Source: <a href="https://highcharts.uservoice.com/forums/55896-highcharts-javascript-api">UserVoice</a>'
-        },
-        xAxis: {
-            type: 'category',
-            title: {
-                text: null
-            },
-            min: 0,
-            max: 4,
-            scrollbar: {
-                enabled: true
-            },
-            tickLength: 0
-        },
-        yAxis: {
-            min: 0,
-            max: 1200,
-            title: {
-                text: '投票数',
-                align: 'high'
-            }
-        },
-        plotOptions: {
-            bar: {
-                dataLabels: {
-                    enabled: true
-                }
-            }
-        },
-        legend: {
-            enabled: false
-        },
-        credits: {
-            enabled: false
-        },
-        series: [{
-            name: '投票',
-            data: [
-                ["甘特图", 1000],
-                ["自动计算趋势线", 575],
-                ["增加导航器用于多个数据列", 523],
-                ["动态调整图表字体", 427],
-                ["多坐标轴及对其方式控制", 399],
-                ["不规则时间的堆叠图", 309],
-                ["图表高度根据图例高度自适应", 278],
-                ["图表数据导出为 Excel 文件", 239],
-                ["图例切换", 235],
-                ["韦恩图", 203],
-                ["范围选择器可调整位置", 182],
-                ["可拖动的图例", 157],
-                ["桑基图", 149],
-                ["Highstock Y轴滚动条", 144],
-                ["x轴分组", 143],
-                ["ReactJS 插件", 137],
-                ["3D 曲面图", 134],
-                ["在股票图中数据分析线", 118],
-                ["数据库功能模块", 118],
-                ["可拖动的点", 117]
-            ]
-        }]
-    });
-});
-
-
-#+END_SRC
-#+BEGIN_SRC javascript
-$(function () {
-    $('#container').highcharts({
-        data: {
-            csv: document.getElementById('csv').innerHTML
-        },
-        title: {
-            text: 'Temperature by the hour'
-        },
-        subtitle: {
-            text: 'Drag mouse to zoom in'
-        },
-        chart: {
-            type: 'heatmap',
-            zoomType: 'xy'
-        },
-        xAxis: {
-            min: Date.UTC(2015, 4, 1),
-            max: Date.UTC(2015, 4, 30),
-            scrollbar: {
-                enabled: true
-            }
-        },
-        yAxis: {
-            minPadding: 0,
-            maxPadding: 0,
-            startOnTick: false,
-            endOnTick: false,
-            scrollbar: {
-                enabled: true
-            },
-            labels: {
-                format: '{value}:00'
-            },
-            title: {
-                text: 'Hour'
-            }
-        },
-        colorAxis: {
-            stops: [
-                [0, '#3060cf'],
-                [0.5, '#fffbbc'],
-                [0.9, '#c4463a']
-            ],
-            min: -10,
-            max: 20
-        },
-        series: [{
-            colsize: 24 * 36e5
-        }]
-    });
-});
-
-#+END_SRC
-#+BEGIN_SRC javascript
-$(function () {
-    $.getJSON('https://data.jianshukeji.com/jsonp?filename=json/large-dataset.json&callback=?', function(data) {
-        $('#container').highcharts('StockChart', {
-            chart: {
-                zoomType: 'xy'
-            },
-            title: {
-                text: 'Y 轴滚动条'
-            },
-            subtitle: {
-                text: '请缩放图表后查看滚动条'
-            },
-            yAxis: {
-                scrollbar: {
-                    enabled: true,
-                    showFull: false
-                }
-            },
-            tooltip: {
-                split: false
-            },
-            series: [{
-                data: data.data,
-                pointStart: data.pointStart,
-                pointInterval: data.pointInterval
-            }]
-        });
-    });
-});
-
-#+END_SRC
-*** K 线图
-K线图（又称蜡烛图）表示的是每个周期的股价变化情况，包括开票价、最高价、最低价格和收盘价，形如下图
-[[file:image/djdlbp.png][蜡烛图]]
-其中开盘价大于收盘价为涨，一般用红色表示，开盘价小于收盘价为跌，一般用绿色表示（红绿色是国内的习惯）。
-
-**** K 线图的数据
-     蜡烛图中的每个数据点包含五个数据，分别是 时间戳, 开盘价, 最高价, 最低价, 收盘价，实例如下：
-#+BEGIN_SRC javascript
-data: [
-    [1147651200000, 67.37, 68.38, 67.12, 67.79],
-    [1147737600000, 68.1, 68.25, 64.75, 64.98]
-]
-#+END_SRC
-在线试一试
-#+BEGIN_SRC javascript
-$(function () {
-    Highcharts.setOptions({
-        lang: {
-            rangeSelectorZoom: ''
-        }
-    });
-    $.getJSON('https://data.jianshukeji.com/stock/history/000001', function (data) {
-        if(data.code !== 1) {
-            alert('读取股票数据失败！');
-            return false;
-        }
-        data = data.data;
-        var ohlc = [],
-            volume = [],
-            dataLength = data.length,
-            // set the allowed units for data grouping
-            groupingUnits = [[
-                'week',                         // unit name
-                [1]                             // allowed multiples
-            ], [
-                'month',
-                [1, 2, 3, 4, 6]
-            ]],
-            i = 0;
-        for (i; i < dataLength; i += 1) {
-            ohlc.push([
-                data[i][0], // the date
-                data[i][1], // open
-                data[i][2], // high
-                data[i][3], // low
-                data[i][4] // close
-            ]);
-            volume.push([
-                data[i][0], // the date
-                data[i][5] // the volume
-            ]);
-        }
-        // create the chart
-        $('#container').highcharts('StockChart', {
-            rangeSelector: {
-                selected: 1,
-                inputDateFormat: '%Y-%m-%d'
-            },
-            title: {
-                text: '平安银行历史股价'
-            },
-            xAxis: {
-                dateTimeLabelFormats: {
-                    millisecond: '%H:%M:%S.%L',
-                    second: '%H:%M:%S',
-                    minute: '%H:%M',
-                    hour: '%H:%M',
-                    day: '%m-%d',
-                    week: '%m-%d',
-                    month: '%y-%m',
-                    year: '%Y'
-                }
-            },
-            tooltip: {
-                split: false,
-                shared: true,
-            },
-            yAxis: [{
-                labels: {
-                    align: 'right',
-                    x: -3
-                },
-                title: {
-                    text: '股价'
-                },
-                height: '65%',
-                resize: {
-                    enabled: true
-                },
-                lineWidth: 2
-            }, {
-                labels: {
-                    align: 'right',
-                    x: -3
-                },
-                title: {
-                    text: '成交量'
-                },
-                top: '65%',
-                height: '35%',
-                offset: 0,
-                lineWidth: 2
-            }],
-            series: [{
-                type: 'candlestick',
-                name: '平安银行',
-                color: 'green',
-                lineColor: 'green',
-                upColor: 'red',
-                upLineColor: 'red',
-                tooltip: {
-                },
-                navigatorOptions: {
-                    color: Highcharts.getOptions().colors[0]
-                },
-                data: ohlc,
-                dataGrouping: {
-                    units: groupingUnits
-                },
-                id: 'sz'
-            },{
-                type: 'column',
-                data: volume,
-                yAxis: 1,
-                dataGrouping: {
-                    units: groupingUnits
-                }
-            }]
-        });
-    });
-});
-
-#+END_SRC
-**** K 线图的颜色
-可以通过 seres.color 和 series.lineColor 来控制走势为跌的柱形颜色和线条颜色，series.upColor 和 series.upLineColor 来控制走势为涨的柱形颜色和线条颜色
-
-#+BEGIN_SRC javascript
-series: [{
-    type: 'candlestick',
-    data: [],
-    // 控制走势为跌的蜡烛颜色
-    color: 'green',
-    lineColor: 'green',
-
-    // 控制走势为涨的蜡烛颜色
-    upColor: 'red',
-    upLineColor: 'red'
-}]
-
-#+END_SRC
-在线试一试
-#+BEGIN_SRC javascript
-$(function () {
-    Highcharts.setOptions({
-        lang: {
-            rangeSelectorZoom: ''
-        }
-    });
-    $.getJSON('https://data.jianshukeji.com/stock/history/000001', function (data) {
-        if(data.code !== 1) {
-            alert('读取股票数据失败！');
-            return false;
-        }
-        data = data.data;
-        var ohlc = [],
-            volume = [],
-            dataLength = data.length,
-            // set the allowed units for data grouping
-            groupingUnits = [[
-                'week',                         // unit name
-                [1]                             // allowed multiples
-            ], [
-                'month',
-                [1, 2, 3, 4, 6]
-            ]],
-            i = 0;
-        for (i; i < dataLength; i += 1) {
-            ohlc.push([
-                data[i][0], // the date
-                data[i][1], // open
-                data[i][2], // high
-                data[i][3], // low
-                data[i][4] // close
-            ]);
-            volume.push([
-                data[i][0], // the date
-                data[i][5] // the volume
-            ]);
-        }
-        // create the chart
-        $('#container').highcharts('StockChart', {
-            rangeSelector: {
-                selected: 1,
-                inputDateFormat: '%Y-%m-%d'
-            },
-            title: {
-                text: '平安银行历史股价'
-            },
-            xAxis: {
-                dateTimeLabelFormats: {
-                    millisecond: '%H:%M:%S.%L',
-                    second: '%H:%M:%S',
-                    minute: '%H:%M',
-                    hour: '%H:%M',
-                    day: '%m-%d',
-                    week: '%m-%d',
-                    month: '%y-%m',
-                    year: '%Y'
-                }
-            },
-            tooltip: {
-                split: false,
-                shared: true,
-            },
-            yAxis: [{
-                labels: {
-                    align: 'right',
-                    x: -3
-                },
-                title: {
-                    text: '股价'
-                },
-                height: '65%',
-                resize: {
-                    enabled: true
-                },
-                lineWidth: 2
-            }, {
-                labels: {
-                    align: 'right',
-                    x: -3
-                },
-                title: {
-                    text: '成交量'
-                },
-                top: '65%',
-                height: '35%',
-                offset: 0,
-                lineWidth: 2
-            }],
-            series: [{
-                type: 'candlestick',
-                name: '平安银行',
-                color: 'green',
-                lineColor: 'green',
-                upColor: 'red',
-                upLineColor: 'red',
-                tooltip: {
-                },
-                navigatorOptions: {
-                    color: Highcharts.getOptions().colors[0]
-                },
-                data: ohlc,
-                dataGrouping: {
-                    units: groupingUnits
-                },
-                id: 'sz'
-            },{
-                type: 'column',
-                data: volume,
-                yAxis: 1,
-                dataGrouping: {
-                    units: groupingUnits
-                }
-            }]
-        });
-    });
-});
-
-#+END_SRC
-另外还可以在 css 中设置，代码如下：
-#+BEGIN_SRC javascript
-.highcharts-point-up {
-    fill: red;
-    stroke: red;
-}
-.highcharts-point-down {
-    fill: green;
-    stroke: green;
-}
-
-#+END_SRC
-在线试一试
-#+BEGIN_SRC javascript
-$(function () {
-    Highcharts.setOptions({
-        lang: {
-            rangeSelectorZoom: ''
-        }
-    });
-    $.getJSON('https://data.jianshukeji.com/jsonp?filename=json/aapl-ohlcv.json&callback=?', function (data) {
-        var ohlc = [],
-            volume = [],
-            dataLength = data.length,
-            // set the allowed units for data grouping
-            groupingUnits = [[
-                'week',                         // unit name
-                [1]                             // allowed multiples
-            ], [
-                'month',
-                [1, 2, 3, 4, 6]
-            ]],
-            i = 0;
-        for (i; i < dataLength; i += 1) {
-            ohlc.push([
-                data[i][0], // the date
-                data[i][1], // open
-                data[i][2], // high
-                data[i][3], // low
-                data[i][4] // close
-            ]);
-            volume.push([
-                data[i][0], // the date
-                data[i][5] // the volume
-            ]);
-        }
-        // create the chart
-        $('#container').highcharts('StockChart', {
-            rangeSelector: {
-                selected: 1,
-                inputDateFormat: '%Y-%m-%d'
-            },
-            title: {
-                text: '苹果历史股价'
-            },
-            xAxis: {
-                dateTimeLabelFormats: {
-                    millisecond: '%H:%M:%S.%L',
-                    second: '%H:%M:%S',
-                    minute: '%H:%M',
-                    hour: '%H:%M',
-                    day: '%m-%d',
-                    week: '%m-%d',
-                    month: '%y-%m',
-                    year: '%Y'
-                }
-            },
-            yAxis: [{
-                labels: {
-                    align: 'right',
-                    x: -3
-                },
-                title: {
-                    text: '股价'
-                },
-                height: '60%',
-                lineWidth: 2
-            }, {
-                labels: {
-                    align: 'right',
-                    x: -3
-                },
-                title: {
-                    text: '成交量'
-                },
-                top: '65%',
-                height: '35%',
-                offset: 0,
-                lineWidth: 2
-            }],
-            series: [{
-                type: 'candlestick',
-                name: 'AAPL',
-                // color: 'green',
-                // lineColor: 'green',
-                // upColor: 'red',
-                // upLineColor: 'red',
-                tooltip: {
-                },
-                data: ohlc,
-                dataGrouping: {
-                    units: groupingUnits
-                }
-            }, {
-                type: 'column',
-                name: 'Volume',
-                data: volume,
-                yAxis: 1,
-                dataGrouping: {
-                    units: groupingUnits
-                }
-            }]
-        });
-    });
-});
-
-#+END_SRC
-更多相关内容：
-
-Higtstock 一字板颜色问题
-K 线图的其他形式
-OHLC 形 K线
-[[file:image/yskdzu.png][OHLC K线图
-]]设置数据列的类型为 ohlc 即可将图形变成 OHCL 型 K线，其表达的内容和蜡烛图一样，只是形状不同。
-
-在线试一试
-
-空心蜡烛图
-[[file:image/cwbnfo.png][空心蜡烛图]]
-将蜡烛图的柱形填充颜色设置为透明即可实现空心蜡烛图，代码如下：
-#+BEGIN_SRC javascript
-series: [{
-    type: 'candlestick',
-    data: [],
-    // 控制走势为跌的蜡烛颜色
-    color:  'transparent', // 或 rgba(0,0,0,0)
-    lineColor: 'green',
-
-    // 控制走势为跌的蜡烛颜色
-    upColor: 'transparent',
-    upLineColor: 'red'
-}] 
-#+END_SRC
-在线试一试
-
-其他相关内容
-K 线图提示框中文字
-自定义 tooltip.pointFormat 即可
-#+BEGIN_SRC javascript
-plotOptions: {
-    ohlc: {
-        tooltip: {
-            pointFormat: '<span style="color:{point.color}">\u25CF</span> <b> {series.name}</b><br/>' +
-                '开盘: {point.open}<br/>' +
-                '最高: {point.high}<br/>' +
-                '最低: {point.low}<br/>' +
-                '收盘: {point.close}<br/>'
-        }
-    }
-}
-
-#+END_SRC
-在线试一试
-** HIghstock配置选项
-*** 全局配置
-**** Highcharts.setOptions({
-***** global: {全局参数}
-***** lang: {语言文字}
-**** });
-*** 主配置
-**** Highcharts.stockChart('container', {
-***** accessibility: {无障碍设计}
-***** chart: {图表配置}
-***** colors: [颜色集合]
-***** credits: {版权信息}
-***** exporting: {导出}
-***** labels: {标签}
-***** legend: {图例}
-***** loading: {加载}
-***** navigation: {导航}
-***** navigator: {导航器}
-***** noData: {没有数据}
-***** plotOptions: {数据列配置}
-***** rangeSelector: {范围选择器}
-***** responsive: {响应式}
-***** scrollbar: {滚动条}
-***** series: [{数据列}]
-****** type: "area",
-       {type: "arearange", …}]
-       {type: "areaspline", …}]
-       {type: "areasplinerange", …}]
-       {type: "candlestick", …}] 蜡烛图
-       {type: "column", …}] 柱状图
-       {type: "columnrange", …}]
-       {type: "flags", …}]
-       {type: "line", …}]
-       {type: "ohlc", …}]
-       {type: "polygon", …}]
-       {type: "scatter", …}]
-       {type: "spline", …}] 曲线（默认）
-****** allowPointSelect: false
-****** animation: true
-****** animationLimit:
-****** className:
-****** color: undefined
-****** colorIndex:
-****** compare: undefined
-****** compareBase: 0
-****** compareBase: 0
-****** connectNulls:
-****** cropThreshold: 300
-****** cursor: undefined
-****** dashStyle: "Solid"
-****** data: [{…}]
-****** dataGrouping: {
-******* approximation: undefined
-******* dateTimeLabelFormats:
-******* enabled: true
-******* forced: false
-******* groupPixelWidth: 2
-******* smoothed: false
-******* units:
-        An array determining what time intervals the data is allowed to be grouped to.
-        Each array item is an array where the first value is the time unit 
-        and the second value another array of allowed multiples. Defaults to:
-        #+BEGIN_SRC javascript
-          units: [[
-              'millisecond', // unit name
-              [1, 2, 5, 10, 20, 25, 50, 100, 200, 500] // allowed multiples
-          ], [
-              'second',
-              [1, 2, 5, 10, 15, 30]
-          ], [
-              'minute',
-            [1, 2, 5, 10, 15, 30]
-          ], [
-            'hour',
-            [1, 2, 3, 4, 6, 8, 12]
-          ], [
-            'day',
-            [1]
-          ], [
-            'week',
-            [1]
-          ], [
-            'month',
-            [1, 3, 6]
-          ], [
-            'year',
-            null
-          ]]
-        #+END_SRC
-******* }
-******* 文档
-        series
-图表的数据列，可以在每个数据列中指定其参数，另外也可以通过数据列配置（ plotOptions） 来指定对某一种类型的数据列有效的配置。
-
-数据列和数据列配置（ plotOptions）选项不同之处在于数据列里的对象是图表中具体的某一个数据列，包括数据、类型、ID、下标等具体的值，而数据列配置只是针对某一种数据列有效的通用参数，下面是代码示例说明：
-
-plotOptions: {
-  spline: {           // 针对 spline 有效的配置
-    lineWidth: 1 
-  },
-  series: {           // 针对所有数据列有效的配置
-    lineWidth: 2
-  }
-}
-
-series: [{
-  id: 'series 1',
-  type: 'spline',       // type 默认值是 'line'
-  data: [1, 4, 56, 69],
-  lineWidth: 2          // 该参数会覆盖 plotOptions.spline.lineWidth 里的配置
-}, {
-  data: [4, 5, 6],
-  lineWidth: 3          // 该参数会覆盖 plotOptions.series.lineWidth 里的配置
-}, {
-  data: [10, 500, 199]  // 该数据列会继承 plotOptions.series.lineWidth 里的配置
-}]
-
-
-series<area>.dataGrouping
-Data grouping is the concept of sampling the data values into larger blocks in order to ease readability and increase performance of the JavaScript charts. Highstock by default applies data grouping when the points become closer than a certain pixel value, determined by the groupPixelWidth option.
-
-If data grouping is applied, the grouping information of grouped points can be read from the Point.dataGroup.
-
-approximation: String|Function
-The method of approximation inside a group. When for example 30 days are grouped into one month, this determines what value should represent the group. Possible values are "average", "open", "high", "low", "close" and "sum". For OHLC and candlestick series the approximation is "ohlc" by default, which finds the open, high, low and close values within all the grouped data. For ranges, the approximation is "range", which finds the low and high values.
-
-Custom aggregate methods can be added by assigning a callback function as the approximation. This function takes a numeric array as the argument and should return a single numeric value or null. Note that the numeric array will never contain null values, only true numbers. Instead, if null values are present in the raw data, the numeric array will have an .hasNulls property set to true. For single-value data sets the data is available in the first argument of the callback function. For OHLC data sets, all the open values are in the first argument, all high values in the second etc.
-
-Since v4.2.7, grouping meta data is available in the approximation callback from this.dataGroupInfo. It can be used to extract information from the raw data.
-
-Defaults to average for line-type series, sum for columns, range for range series and ohlc for OHLC and candlestick.
-
-在线实例： Approximation callback with custom data.
-dateTimeLabelFormats: Object
-Datetime formats for the header of the tooltip in a stock chart. The format can vary within a chart depending on the currently selected time range and the current data grouping.
-
-The default formats are:
-
-{
-   millisecond: ['%A, %b %e, %H:%M:%S.%L', '%A, %b %e, %H:%M:%S.%L', '-%H:%M:%S.%L'],
-   second: ['%A, %b %e, %H:%M:%S', '%A, %b %e, %H:%M:%S', '-%H:%M:%S'],
-   minute: ['%A, %b %e, %H:%M', '%A, %b %e, %H:%M', '-%H:%M'],
-   hour: ['%A, %b %e, %H:%M', '%A, %b %e, %H:%M', '-%H:%M'],
-   day: ['%A, %b %e, %Y', '%A, %b %e', '-%A, %b %e, %Y'],
-   week: ['Week from %A, %b %e, %Y', '%A, %b %e', '-%A, %b %e, %Y'],
-   month: ['%B %Y', '%B', '-%B %Y'],
-   year: ['%Y', '%Y', '-%Y']
-}
-For each of these array definitions, the first item is the format used when the active time span is one unit. For instance, if the current data applies to one week, the first item of the week array is used. The second and third items are used when the active time span is more than two units. For instance, if the current data applies to two weeks, the second and third item of the week array are used, and applied to the start and end date of the time span.
-
-enabled: Boolean
-Enable or disable data grouping. 默认是：true.
-forced: Boolean
-When data grouping is forced, it runs no matter how small the intervals are. This can be handy for example when the sum should be calculated for values appearing at random times within each hour. 默认是：false.
-groupPixelWidth: Number
-The approximate pixel width of each group. If for example a series with 30 points is displayed over a 600 pixel wide plot area, no grouping is performed. If however the series contains so many points that the spacing is less than the groupPixelWidth, Highcharts will try to group it into appropriate groups so that each is more or less two pixels wide. If multiple series with different group pixel widths are drawn on the same x axis, all series will take the greatest width. For example, line series have 2px default group width, while column series have 10px. If combined, both the line and the column will have 10px by default. 默认是：2.
-smoothed: Boolean
-Normally, a group is indexed by the start of that group, so for example when 30 daily values are grouped into one month, that month's x value will be the 1st of the month. This apparently shifts the data to the left. When the smoothed option is true, this is compensated for. The data is shifted to the middle of the group, and min and max values are preserved. Internally, this is used in the Navigator series. 默认是：false.
-units: Array
-An array determining what time intervals the data is allowed to be grouped to. Each array item is an array where the first value is the time unit and the second value another array of allowed multiples. Defaults to:
-units: [[
-	'millisecond', // unit name
-	[1, 2, 5, 10, 20, 25, 50, 100, 200, 500] // allowed multiples
-], [
-	'second',
-	[1, 2, 5, 10, 15, 30]
-], [
-	'minute',
-	[1, 2, 5, 10, 15, 30]
-], [
-	'hour',
-	[1, 2, 3, 4, 6, 8, 12]
-], [
-	'day',
-	[1]
-], [
-	'week',
-	[1]
-], [
-	'month',
-	[1, 3, 6]
-], [
-	'year',
-	null
-]]
-****** dataLabels: {…}
-****** description: undefined
-****** enableMouseTracking: true
-****** events: {…}
-****** fillColor: null
-****** fillOpacity: .75
-****** findNearestPointBy: undefined
-****** gapSize: 0
-****** getExtremesFromAll: false
-****** id:
-****** index: undefined
-****** keys: undefined
-****** legendIndex: undefined
-****** lineColor: null
-****** lineWidth: 2
-****** linecap: "round"
-****** linkedTo:
-****** marker: {…}
-****** name: undefined
-****** navigatorOptions: undefined
-****** negativeColor: null
-****** point: {…}
-****** pointInterval: 1
-****** pointIntervalUnit: undefined
-****** pointPlacement: null
-****** pointRange: 0
-****** pointStart: 0
-****** selected: false
-****** shadow: false
-****** showCheckbox: false
-****** showInLegend: true
-****** showInNavigator: undefined
-****** softThreshold: false
-****** stack: null
-****** stacking: null
-****** states: {…}
-****** step: "false"
-****** stickyTracking: true
-****** threshold: 0
-****** tooltip: {…}
-****** trackByArea: false
-****** turboThreshold: 1000
-****** visible: true
-****** xAxis: 0
-****** yAxis: 0
-****** zIndex:
-****** zoneAxis: "y"
-****** zones: [{…}]
-****** }]
-***** subtitle: {副标题}
-***** title: {标题}
-***** tooltip: {数据提示框}
-***** xAxis: [{X 轴}]
-***** yAxis: [{Y 轴}]
-***** });
-*** 函数及属性
-    Axis: {坐标轴}
-    Chart: {图表对象}
-    Element: {SVG 元素}
-    Highcharts: {命名空间}
-    Legend: {图例}
-    Point: {数据点}
-    Renderer: {绘图工具}
-    Series: {数据列}
-** highcharts.net
-* echarts
-** 获取 ECharts
-   在 ECharts 的 GitHub 上下载最新的 release 版本，解压出来的文件夹里的 dist 目录里可以找到最新版本的 echarts 库。
-   通过 npm 获取 echarts，npm install echarts --save，详见“在 webpack 中使用 echarts”
-   cdn 引入，你可以在 cdnjs，npmcdn 或者国内的 bootcdn 上找到 ECharts 的最新版本。
-   http://www.bootcdn.cn/echarts/
-
-在绘图前我们需要为 ECharts 准备一个具备高宽的 DOM 容器。
-#+BEGIN_SRC html
-<body>
-    <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-    <div id="main" style="width: 600px;height:400px;"></div>
-</body>
-#+END_SRC
-
-然后就可以通过 echarts.init 方法初始化一个 echarts 实例并通过 setOption 方法生成一个简单的柱状图，下面是完整代码。
-#+BEGIN_SRC html
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>ECharts</title>
-    <!-- 引入 echarts.js -->
-    <script src="https://cdn.bootcss.com/echarts/4.0.4/echarts.min.js"></script>
-</head>
-<body>
-    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-    <div id="main" style="width: 600px;height:400px;"></div>
-    <script type="text/javascript">
-        // 基于准备好的dom，初始化echarts实例
-        var myChart = echarts.init(document.getElementById('main'));
-
-        // 指定图表的配置项和数据
-        var option = {
-            title: {
-                text: 'ECharts 入门示例'
-            },
-            tooltip: {},
-            legend: {
-                data:['销量']
-            },
-            xAxis: {
-                data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
-            },
-            yAxis: {},
-            series: [{
-                name: '销量',
-                type: 'bar',
-                data: [5, 20, 36, 10, 10, 20]
-            }]
-        };
-
-        // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
-    </script>
-</body>
-</html>
-#+END_SRC
-** 绘制南丁格尔图
-饼图主要是通过扇形的弧度表现不同类目的数据在总和中的占比，它的数据格式比柱状图更简单，只有一维的数值，不需要给类目。因为不在直角坐标系上，所以也不需要xAxis，yAxis。
-
-myChart.setOption({
-    series : [
-        {
-            name: '访问来源',
-            type: 'pie',
-            radius: '55%',
-            data:[
-                {value:235, name:'视频广告'},
-                {value:274, name:'联盟广告'},
-                {value:310, name:'邮件营销'},
-                {value:335, name:'直接访问'},
-                {value:400, name:'搜索引擎'}
-            ]
-        }
-    ]
-})
-* 不推介 javascript 前端 基于 npm、bower、grunt的标准项目构建
-** 工具介绍 
-   npm	Node.js的包管理工具
-   bower	基于github的软件包管理器
-   grunt	Grunt是基于Node.js的项目构建工具
-  
-   npm	当它透明，不存在
-   bower	用什么外部组件就加什么内容，如jquery，easyui等等
-   grunt	自动化完成js语法检查、css编译、js文件压缩、文件复制合并等工作
-** 目录结构组成
- 名称	类型	描述
- app	dir	SPA应用程序源码目录
- bower_components	dir	bower组件存放目录，比如jquery、bootstrap等等
- dist	dir	SPA应用程序打包输出目录
- node_modules	dir	npm组件目录，比如grunt等等
- .jshintrc	file	js语法检查配置文件
- bower.json	file	bower组件描述文件，bower_components中的内容由本文件决定
- Gruntfile.js	file	grunt构建工具的任务文件
- package.json	file	npm组件描述文件，node_modules中的内容由本文件决定
-** 项目管理工具配置
- 上述目录结构中bower_components和node_modules一定需要被git、svn等源码管理工具屏蔽的，因为其内容多而杂，而dist作为编译后的应用程序，是否需要屏蔽可以根据具体需要而定，下面给出git适合一般使用的.gitignore文件配置：
-
- logs/*
- !.gitkeep
- node_modules/
- app/bower_components/
- bower_components/
- tmp
- .tmp
- .DS_Store
- .idea
- dist
- 注：上述配置中dist是被屏蔽的
-
- 文件内容：
- bower.json
- {
-   "name": "myapp",
-   "description": "A starter project for backbone",
-   "version": "0.3.0",
-   "license": "MIT",
-   "private": true,
-   "dependencies": {
-     "requirejs-text": "2.0.x",
-     "requirejs": "2.1.x",
-     "bootstrap": "~3.3.5",
-     "backbone": "~1.2.3",
-     "handlebars": "~4.0.5",
-     "requirejs-domready": "~2.0.1",
-     "highcharts": "~4.1.9",
-     "font-awesome": "~4.5.0",
-     "d3": "~3.5.11"
-   },
-   "devDependencies": {},
-   "appPath": "app", 
-   "moduleName": "myApp"
- }
- 
- 重要节点解释：
- dependencies	本应用程序依赖的外部组件，分为名称和版本号，该信息都来自于github，版本号前缀字符有‘～’、‘>=’等等，暂时将其统一理解为必须满足该版本号的要求即可
- devDependencies	内容格式与dependencies完全一样，但只用于开发阶段
- appPath	指定应用程序存放的路径，本例中指向了当前目录下的app，与目录结构中的app是一致的
- 
- .jshintrc
- .jshintrc是grunt的jshint插件的配置文件，该插件能够对js文件进行语法检查，具体配置项非常多，下面是我一直使用的内容，大体意思是打开严格检查、结尾需要‘;‘等等，一般情况下一个团队改一次就够了。需要修改时建议查阅官方文档。
-
- { 
-     "globalstrict": true,
-     "boss":false,
-     "sub":true, 
-     "strict": true, 
-     "undef": true, 
-     "eqeqeq": true, 
-     "eqnull": true, 
-     "laxbreak":true, 
-     "laxcomma":true, 
-     "regexp":true, 
-     "plusplus":true,
-     "asi": false, 
-     "newcap": true, 
-     "bitwise": true, 
-     "curly": false, 
-     "expr":true, 
-     "browser": true, 
-     "node": true, 
-     "latedef": false,   
-     "noarg": true,      
-     "-W032":false,
-     //"es5": true, 
-     //"esnext": true,       
-     //"proto": true,    
-     "smarttabs": true,
-     "jasmine": true,
-     "predef": [
-         "require",
-         "define",
-         "notify"
-     ]
- }
-
- Gruntfile.js
- 'use strict';
- module.exports=function(grunt){
-     var appConfig = {
-         app: require('./bower.json').appPath || 'app',//重点：对应目录结构中的app目录
-         dist: 'dist' //重点：对应目录结构中的dist目录
-     };
-     //任务配置，所有插件的配置信息
-     grunt.initConfig({
-
-         // Project settings
-         yeoman: appConfig,
-
-         //获取package.json的信息
-         pkg:grunt.file.readJSON('package.json'),
-
-         //jshint语法检查配置，Gruntfile.js就是被该插件调用
-         jshint:{
-             build:['Gruntfile.js','<%= yeoman.app %>/*.js'],
-             options:{
-                 jshintrc:'.jshintrc'
-             }
-         },      
-         bower: {   //由grunt调用bower时需要的参数
-             install: { 
-                 options: {
-                         "targetDir": "<%= yeoman.dist %>/lib",
-                         "layout": "byComponent",
-                         "install": true,
-                         "verbose": false,
-                         "cleanTargetDir": true
-                       }
-                   }
-         },
-         // 重点：清理dist目录
-         clean: {
-           dist: {
-             files: [{
-               dot: true,
-               src: [
-                 '.tmp',
-                 '<%= yeoman.dist %>/{,*/}*',
-                 '!<%= yeoman.dist %>/.git{,*/}*'
-               ]
-             }]
-           },
-           server: '.tmp'
-         },      
-         // 重点：复制文件到dist目录下，这个部分经常会根据项目的需要进行修改，但总体上还是固定的
-         copy: {
-           dist: {
-             files: [{
-               expand: true,
-               dot: true,
-               cwd: '<%= yeoman.app %>',
-               dest: '<%= yeoman.dist %>',
-               src: [
-                 '*.{ico,png,txt}',
-                 '.htaccess',
-                 '*.js',
-                 //'*.html',
-                 'images/{,*/}*.{webp}',
-                 'styles/fonts/{,*/}*.*'
-               ]
-             }, {
-               expand: true,
-               cwd: '.tmp/images',
-               dest: '<%= yeoman.dist %>/images',
-               src: ['generated/*']
-             },{
-               expand: true,
-               cwd: 'bower_components/bootstrap/dist',
-               src: 'fonts/*',
-               dest: '<%= yeoman.dist %>'
-             },{
-               expand: true,
-               cwd: 'bower_components/bootstrap/dist/css',
-               src: '*.min.css',
-               dest: '<%= yeoman.dist %>/styles'
-             },{
-                 expand: true,
-                 cwd: 'bower_components/font-awesome',
-                 src: 'fonts/*',
-                 dest: '<%= yeoman.dist %>'
-             },{
-                 expand: true,
-                 cwd: 'bower_components/font-awesome/css',
-                 src: '*.min.css',
-                 dest: '<%= yeoman.dist %>/styles'
-             }
-             ]
-           },
-           styles: {
-             expand: true,
-             cwd: '<%= yeoman.app %>/styles',
-             dest: '<%= yeoman.dist %>/styles/',
-             src: '{,*/}*.css'
-           },
-           scripts:{
-             expand: true,
-             cwd: '<%= yeoman.app %>/scripts',
-             dest: '<%= yeoman.dist %>/scripts/',
-             src: '{,*/}*.js'
-           },
-           views:{
-             expand: true,
-             cwd: '<%= yeoman.app %>/views',
-             dest: '<%= yeoman.dist %>/views/',
-             src: '{,*/}*.*'
-           },
-           routers:{
-             expand:true,
-             cwd: '<%= yeoman.app %>/routers',
-             dest: '<%= yeoman.dist %>/routers/',
-             src: '{,*/}*.*'
-           }
-         },      
-         targethtml: {
-             dist: {
-                 src: 'app/index.html',
-                 dest: 'dist/index.html'
-             }
-         },              
-         replace: {//重点：将源码中的字符进行替换，可以使得支持开发中调试所见即所得
-           dist: {
-             options: {
-               patterns: [
-                 {
-                   match: /\.\.\/bower_components/g,
-                   replacement: 'lib'
-                 }
-               ]
-             },
-             files: [
-               {expand: true, flatten: true, src: ['app/require-config.js'], dest: 'dist/'}
-             ]
-           }
-         },
-         watch:{
-             scripts: {
-                 files: ['src/*.js'],
-                 tasks: ['jshint']
-             }
-         }
-     });
-
- //重点：插件注册区，上述所有插件都在这里完成注册，当需要使用其他插件是，这里需要将其引入
-     //grunt.loadNpmTasks('grunt-contrib-uglify');
-     grunt.loadNpmTasks('grunt-contrib-jshint');
-     //grunt.loadNpmTasks('grunt-contrib-concat');
-     grunt.loadNpmTasks('grunt-contrib-watch');
-     grunt.loadNpmTasks('grunt-contrib-copy');
-     grunt.loadNpmTasks('grunt-bower-task');
-     grunt.loadNpmTasks("grunt-contrib-clean");
-     grunt.loadNpmTasks("grunt-targethtml");
-     grunt.loadNpmTasks("grunt-replace");
-
-     //注册任务，使支持命令行调用
-     //default任务只进行js代码验证
-     grunt.registerTask('default',['jshint']);
-     //build任务完成整个构建（本例中没有加入test部分），其实质为按顺序调用上述插件，如果一个插件执行出现异常，则整个任务失败
-     grunt.registerTask('build',['jshint','clean','bower','copy','targethtml','replace']);
- };
- 
- package.json
- {
-   "name": "angular-requirejs-seed",
-   "private": true,
-   "version": "0.3.0",
-   "description": "AngularJS seed project modified for RequireJS support.",
-   "repository": "https://github.com/tnajdek/angular-requirejs-seed",
-   "license": "MIT",
-   "devDependencies": {
-     "bower": "^1.3.1",
-     "grunt-bower-task": "^0.4.0",
-     "grunt-contrib-clean": "^0.6.0",
-     "grunt-contrib-copy": "^0.8.0",
-     "grunt-contrib-jshint": "^0.11.2",
-     "grunt-contrib-requirejs": "^0.4.4",
-     "grunt-contrib-watch": "^0.6.1",
-     "grunt-replace": "^0.9.2",
-     "grunt-string-replace": "^1.2.0",
-     "grunt-targethtml": "^0.2.6",
-     "grunt-usemin": "^3.0.0",
-     "grunt-wiredep": "^2.0.0",
-     "http-server": "^0.6.1",
-     "jasmine-core": "^2.3.0",
-     "protractor": "^1.1.1",
-     "requirejs": "^2.1.15",
-     "shelljs": "^0.2.6",
-     "grunt": "^0.4.5"
-   },
-   "scripts": {
-     "postinstall": "bower install",
-     "prestart": "npm install",
-     "start": "http-server -a localhost -p 8000 -c-1 app",
-     "pretest": "npm install"
-   }
- }
- 
- 在package.json中预定义了很多指令，如start、test等，其实质为npm run 命令的简写，执行的化只需要输入npm [指令名称]即可，比如npm start就会启动
-http server并在localhost：8000这个位置提供http服务，具体使用时还需要查阅npm官方手册
-
- 常用命令
- 在项目所在目录依次执行下述命令即可快速初始化和项目构建工作。
-
- 初始化：
- npm update          //根据package.json生成node_modules目录
- bower update        //根据bower.json生成bower_components目录
- 
- 项目构建
- grunt build    //根据Gruntfile.js中的配置进行项目架构
- 
- 安装移除组件
- bower install jquery --save //加入jquery组件，其会保存在bower_components中
- bower uninstall jquery --save   //移除jquery组件
- 
- 日常工作中执行最多的是grunt命令，用其完成项目构建，而npm update和bower update经常是在需要初始化组件或者更新组件时才需要执行。
-
- 总结
- 前端的构建与java的maven、gradle其实是同样的思路，而且该项工作可以被团队、项目标准化。本文最重要的目的是给出一个适合的SPA应用项目构建结构，形成内部规范。
-从而使团队合作更加协调，更容易聚焦于用户体验、业务逻辑等具体工作中。本文中给出的方案没有给出文件合并、压缩等指令，而scss等自动生成我将其放在了开发工具中
-（比如webstorm），这个读者可以自行实验下。合适的工具做合适的事，最终达到思路清晰、事半功倍的效果。但文中还缺少一个非常重要的grunt部分：test！
-前端test编写也是非常重要的部分，考虑单独写一篇来描述。
 * jquery
 确定当前的conext
 在任何事件内部，this引用的都是Dom对象
@@ -5796,456 +1484,9 @@ jQuery的具体实现
 throw	不会改变promise的状态，而是直接throw出去
 另一个promise	改变promise的状态
 所以，在jquery中想要扭转promise的状态就只能依靠返回另一种状态的promise对象
-* node.js学习笔记
-** 基本用法
-   #!/usr/bin/env node
-   console.log("hello world");
-*** 返回值
-  if (err) {
-    process.exit(1);
-  } else {
-    process.exit(0);
-  }
-*** 等待用户输入
-  var readlineSync = require("readline-sync");
-  // 等待输入
-  var userName = readlineSync.question("May I have your name? ");
-  console.log("Hi " + userName + "!");
- 
-  // 阴文输入
-  var favFood = readlineSync.question("What is your favorite food? ", { hideEchoBack: true });
-  console.log("Oh, " + userName + " loves " + favFood + "!");
-  1.4 获取命令行参数(基本形式)
-  1
-  console.log("hello ", process.argv[2]);
-  1.5 获取命令行参数(option形式: 如--help, -a)
-  1
-  2
-  var argv = require("yargs").argv;
-  console.log("hello ", argv.name);
-  运行: ./hello --name=mike
-  显示: hello mike
-  单个字母用于短选项:
-
-  1
-  console.log("hello ", argv.n);
-  运行: ./hello -n mike
-  显示: hello mike
-  获取option之外(不带"--"或者"-"的)的命令行参数:
-
-  console.log(argv._);
-  更多选项配置:
-
-  1
-  2
-  3
-  var argv = require("yargs")
-      .option("n", { alias : "name", demand: true, default: "tom", describe: "your name", type: "string" })
-      .argv;
-  无参选项:
-
-  1
-  var argv = require("yargs").boolean(["n"]).argv;
-  帮助信息:
-
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  var argv = require("yargs")
-      .usage("Usage: hello [options]")
-      .example("hello -n tom", "say hello to Tom")
-      .help("h")
-      .alias("h", "help")
-      .epilog("copyright 2015")
-      .argv;
-  子命令(类似与git commit):
-
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
-  var argv = require("yargs")
-      .command("morning", "good morning", function (yargs) {
-          console.log("Good Morning");
-      })
-      .command("evening", "good evening", function (yargs) {
-          console.log("Good Evening");
-      }).argv;
- 
-  console.log("hello ", argv.n);
-  1.6 文件操作
-  1.6.1 读取文本文件
-  1
-  2
-  3
-  4
-  var text = fs.readFileSync(fileName, "utf8");
-  text.split(/\r?\n/).forEach(function (line) {
-      ...
-  });
-  1.6.2 写入文本文件
-  1
-  2
-  3
-  4
-  fs.writeFileSync(fileName, str, 'utf8');
-  var out = fs.createWriteStream(fileName, { encoding: "utf8" });
-  out.write(str);
-  out.end();
-  1.6.3 判断文件是否存在
-  1
-  ret = fs.existsSync(path); // 返回bool类型, true为存在.
-  1.6.4 获取文件信息
-  1
-  ret = fs.statSync(path); // 返回 fs.Stats 的实例
-  stats类中的方法有:
-
-  方法	描述
-  stats.isFile()	如果是文件返回 true, 否则返回 false.
-  stats.isDirectory()	如果是目录返回 true, 否则返回 false.
-  stats.isBlockDevice()	如果是块设备返回 true, 否则返回 false.
-  stats.isCharacterDevice()	如果是字符设备返回 true, 否则返回 false.
-  stats.isSymbolicLink()	如果是软链接返回 true, 否则返回 false.
-  stats.isFIFO()	如果是FIFO, 返回true, 否则返回 false. FIFO是UNIX中的一种特殊类型的命令管道.
-  stats.isSocket()	如果是 Socket 返回 true, 否则返回 false.
-  1.7 管道
-  1
-  2
-  3
-  4
-  5
-  process.stdin.resume();
-  process.stdin.setEncoding("utf8");
-  process.stdin.on("data", function(data) {
-      process.stdout.write(data);
-  });
-  运行: echo "foo" | ./hello
-  显示: hello foo
-  1.7.1 shell命令间管道
-  var proc = require('procstreams');
-  proc('cat app.log').pipe('wc -l').data(function (stdout, stderr) {
-      console.log(stdout);
-  });
-  1.7.2 重定向到文件
-  1
-  2
-  cat('input.txt').to('output.txt');
-  cat('input.txt').toEnd('output.txt');
-  1.8 Linux系统信号
-  1
-  2
-  3
-  4
-  process.on("SIGINT", function () {
-      console.log("User interrupted");
-      process.exit(1);
-  });
-  1.9 进度条
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
-  10
-  11
-  12
-  // width: 显示宽度, total: 总数据量, tick: 每次的数据量. 当所有tick的值加起来等于total则为100%.
-  var ProgressBar = require('progress');
- 
-  var cols = parseInt(sh.exec("echo $COLUMNS").stdout); // 获取终端列数
-  var progressBar = new ProgressBar(':bar :percent ', { width: cols-5, total: 300, complete: "#" });
-  var timer = setInterval(function () {
-      progressBar.tick(10);
-      if (progressBar.complete) {
-          console.log('\ncomplete\n');
-          clearInterval(timer);
-      }
-  }, 100);
-  2 调用命令行程序
-  2.1 通过shelljs
-  npm install shelljs
-  shelljs项目主页: https://github.com/shelljs/shelljs
-
-  调用命令:
-
-  1
-  2
-  var sh = require("shelljs");
-  sh.echo("hello");
-  调用命令的通用方法:
-
-  1
-  2
-  ret = sh.exec("ls" + name, {silent:true}); // silent表示不直接显示命令行输出, echo除外.
-  //结果分别在: ret.code, ret.stdout, ret.stderr中.
-  或者可以用global模式(目前已不建议, 因为会污染global环境):
-
-  1
-  2
-  require("shelljs/global");
-  echo("hello"); // global模式下可以直接写shell命令.
-  常用命令:
-
-  1
-  2
-  3
-  4
-  5
-  var ret = sh.find("../test/").filter(function(file) { return file.match(/\.js$/); }); // 返回数组
- 
-  sh.sed("-i", "PROGRAM_VERSION", "v0.1.3", "source.js");
-  sh.sed(/.*DELETE_THIS_LINE.*\n/, "", "source.js");
-  sh.sed(/(\w+)\s(\w+)/, "$2, $1", "file.txt");
-  其他命令说明见: shelljs项目主页
-
-  模拟xargs:
-
-  1
-  sh.ls("*.js").forEach(function(file) { sh.sed("-i", /.*REPLACE_LINE_WITH_MACRO.*\n/, sh.cat("macro.js"), file); });
-  2.2 通过子进程
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
-  10
-  11
-  12
-  13
-  14
-  15
-  16
-  17
-  var spawn = require("child_process").spawn;
-  free = spawn("free", ["-m"]); 
- 
-  // 捕获标准输出并将其打印到控制台 
-  free.stdout.on("data", function (data) { 
-      console.log("standard output:\n" + data); 
-  }); 
- 
-  // 捕获标准错误输出并将其打印到控制台 
-  free.stderr.on("data", function (data) { 
-      console.log("standard error output:\n" + data); 
-  }); 
- 
-  // 注册子进程关闭事件 
-  free.on("exit", function (code, signal) { 
-      console.log("child process eixt ,exit:" + code); 
-  });
-  2.3 通过exec
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
-  10
-  11
-  12
-  13
-  14
-  15
-  16
-  require("child_process").exec; 
-  var cmdStr = "curl http://www.weather.com.cn/data/sk/101010100.html";
-  exec(cmdStr, function(err,stdout,stderr){
-      if(err) {
-          console.log("get weather api error:"+stderr);
-      } else {
-          /*
-          这个stdout的内容就是上面我curl出来的这个东西:
-          {"weatherinfo":{"city":"北京","cityid":"101010100","temp":"3",
-          "WD":"西北风","WS":"3级","SD":"23%","WSE":"3","time":"21:20",
-          "isRadar":"1","Radar":"JC_RADAR_AZ9010_JB","njd":"暂无实况","qy":"1019"}}
-          */
-          var data = JSON.parse(stdout);
-          console.log(data);
-      }
-  });
-  2.4 调用shell脚本
-  调用传参数的shell脚本(child_process.execFile())
-
-  1
-  2
-  3
-  4
-  5
-  var callfile = require("child_process").execFile;
-  var username = "test";
-  callfile("a.sh", ["-U", username], null, function (err, stdout, stderr) {
-      ...
-  });
-  2.5 同步调用子进程
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
-  var execSync = require('child_process').execSync;
- 
-  try {
-      var result = execSync("git log", { encoding: "utf8" });
-      process.stdout.write(result);
-  } catch(e) {
-      console.log(e.status); // 命令返回值
-      console.log(e.stderr); // err信息
-  }
-  3 log系统
-  3.1 (console-log-level)可以控制打印级别的简单log模块:
-  与console.log类似, 只是添加了打印级别的控制. 适合简单的单一文件脚本的简单log需求.
-
-  npm install console-log-level
-  用法:
-
-  var logger = require('console-log-level')({ level: 'info' })
- 
-  logger.debug('b') // will not do anything 
-  logger.info('c')  // will output 'c\n' on STDOUT 
-  logger.warn('d')  // will output 'd\n' on STDERR 
-  logger.error('e') // will output 'e\n' on STDERR 
-  4 参考
-  十大Node.js 的Web框架, 快速提升工作效率
-
-  Human knowledge belongs to the world
-
-  Contact: wytabc@126.com
-
-  声明: 本站如有侵权行为请及时通知至以上邮箱
 * 同级元素 不要有空格，有空格就下级了 
   同级属性
   $('.moneyRadio[value=2]').prop("checked", true);
-* 触发事件
-  $('#btn').trigger("click");
-* 原
-JS获取子节点、父节点和兄弟节点的若干种方式
-2017年07月22日 16:50:49
-阅读数：58937
-一、js获取子节点的方式
-1.通过获取dom方式直接获取子节点
-其中test的父标签id的值，div为标签的名字。getElementsByTagName是一个方法。返回的是一个数组。在访问的时候要按数组的形式访问。
-
-var a = document.getElementById("test").getElementsByTagName("div");
-1
-2
-2.通过childNodes获取子节点
-使用childNodes获取子节点的时候，childNodes返回的是子节点的集合，是一个数组的格式。他会把换行和空格也当成是节点信息。
-
-var b =document.getElementById("test").childNodes;
-1
-2
-为了不显示不必须的换行的空格，我们如果要使用childNodes就必须进行必要的过滤。通过正则表达式式取掉不必要的信息。下面是过滤掉
-
-//去掉换行的空格
-for(var i=0; i<b.length;i++){
-    if(b[i].nodeName == "#text" && !/\s/.test(b.nodeValue)){
-        document.getElementById("test").removeChild(b[i]);
-    }
-}
-//打印测试
-for(var i=0;i<b.length;i++){
-    console.log(i+"---------")
-    console.log(b[i]);
-}
-//补充 document.getElementById("test").childElementCount;  可以直接获取长度 同length
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-4.通过children来获取子节点
-利用children来获取子元素是最方便的，他也会返回出一个数组。对其获取子元素的访问只需按数组的访问形式即可。
-
-var getFirstChild = document.getElementById("test").children[0];
-1
-2
-5.获取第一个子节点
-firstChild来获取第一个子元素，但是在有些情况下我们打印的时候会显示undefined，这是什么情况呢？？其实firstChild和childNodes是一样的，在浏览器解析的时候会把他当换行和空格一起解析，其实你获取的是第一个子节点，只是这个子节点是一个换行或者是一个空格而已。那么不要忘记和childNodes一样处理呀。
-
-var getFirstChild = document.getElementById("test").firstChild;
-1
-2
-6.firstElementChild获取第一个子节点
-使用firstElementChild来获取第一个子元素的时候，这就没有firstChild的那种情况了。会获取到父元素第一个子元素的节点 这样就能直接显示出来文本信息了。他并不会匹配换行和空格信息。
-
-var getFirstChild = document.getElementById("test").firstElementChild;
-1
-2
-7.获取最后一个子节点
-lastChild获取最后一个子节点的方式其实和firstChild是类似的。同样的lastElementChild和firstElementChild也是一样的。不再赘余。
-
- var getLastChildA = document.getElementById("test").lastChild;
- var getLastChildB = document.getElementById("test").lastElementChild;
-1
-2
-3
-二、js获取父节点的方式
-1.parentNode获取父节点
-获取的是当前元素的直接父元素。parentNode是w3c的标准。
-
-var p  = document.getElementById("test").parentNode;
-1
-2
-2.parentElement获取父节点
-parentElement和parentNode一样，只是parentElement是ie的标准。
-
-var p1 = document.getElementById("test").parentElement;
-1
-2
-3.offsetParent获取所有父节点
-一看offset我们就知道是偏移量 其实这个是于位置有关的上下级 ，直接能够获取到所有父亲节点， 这个对应的值是body下的所有节点信息。
-
-var p2 = document.getElementById("test").offsetParent;
-1
-2
-三、js获取兄弟节点的方式
-1.通过获取父亲节点再获取子节点来获取兄弟节点
-var brother1 = document.getElementById("test").parentNode.children[1];
-1
-2
-2.获取上一个兄弟节点
-在获取前一个兄弟节点的时候可以使用previousSibling和previousElementSibling。他们的区别是previousSibling会匹配字符，包括换行和空格，而不是节点。previousElementSibling则直接匹配节点。
-
-var brother2 = document.getElementById("test").previousElementSibling;
-var brother3 = document.getElementById("test").previousSibling;
-1
-3.获取下一个兄弟节点
-同previousSibling和previousElementSibling，nextSibling和nextElementSibling也是类似的。
-
-var brother4 = document.getElementById("test").nextElementSibling;
-var brother5 = document.getElementById("test").nextSibling;
 * 60个很实用的jQuery代码开发技巧收集
 偶然在网上看到这些不错的jQuery代码开发技巧。原文收集了30个，另外查找的时候发现了还有20个。加上另外十个实用的jQuery代码片段，共60个代码技巧，收集在一起分享给大家。
 
@@ -6253,15 +1494,10 @@ var brother5 = document.getElementById("test").nextSibling;
 
 1. 创建一个嵌套的过滤器
 
-1
-2
 <span class="pun">.filter(":not(:has(.selected))") //去掉所有不包含class为.selected的元素
 </span>
 2. 重用你的元素查询
 
-1
-2
-3
     var allItems = $("div.item");  
     var keepList = $("div#container1 div.item");
     $(formToLookAt + " input:checked").each(function() {     keepListkeepList = keepList.filter("." + $(this).attr("name")); });
@@ -7066,3 +2302,298 @@ $("#myform").submit();
 希望大家觉得这些jQuery代码会对你的开发有帮助，如果你也有类似的jQuery代码或者jQuery插件，欢迎一起分享！
 
 注：部分代码原文应该是英文的。但是看见转的几个链接已经打不开了。所以就这样吧。
+* web移动开发最佳实践之js篇
+二、使用字面量（literal notation）来声明对象和数组
+
+　　创建对象和数组的方法有很多，但是使用字面量是最简单最快的。传统的方法是使用内建的构造器声明：
+
+复制代码
+//create an object
+var obj = new Object();
+obj.debug = false;
+obj.lang = "en";
+ 
+//create an array
+var arr = new Array("one", "two", "three");
+
+这种方式在技术上是没问题的，但是使用字面量声明会更快而且代码更少：
+
+//create an object
+var obj = {debug: false, lang: "en"};
+ 
+//create an array
+var arr = ["one", "two", "three"];
+三、避免使用全局变量和函数
+
+　　即把属性和方法都绑定到一个命名空间对象里，这样不仅可以减少命名冲突，而且可以提升程序性能。
+
+　　当两个区域的代码使用同一个全局变量名作不同用途时，就会产生命名冲突。在JavaScript里，函数外定义的变量或对象都是全局的，随着程序代码和库的增加，命名冲突的概率就越大。如果函数内或其他区域的代码引用了一个特定的全局变量，脚本引擎就必须遍历一遍作用域直到找到这个变量，局部变量则更容易找到。全局变量会在整个脚本的生命周期中存在，但是局部变量会及时被垃圾收集器回收。
+
+例如以下使用全局的声明（不高效）：
+
+
+//define global variables
+var lang = "en";
+var debug = true;
+ 
+//define global function
+function setLang (arg) {
+    lang = arg;
+}
+
+使用如下声明则更好：
+
+
+var myApp = {
+    lang: "en",
+    debug: true,
+};
+ 
+myApp.setLang = function (arg) {
+    this.lang = arg;
+}
+
+四、高效的使用try catch语句
+
+　　你可以使用try-catch语句来拦截程序抛出的错误（在浏览器处理之前），这对于向用户隐藏错误或者为用户定制错误信息是很有用的。
+
+　　当try结构中发生错误时，程序会立即停止并跳到catch结构（会提供错误对象）中。在catch结构中，错误对象会赋给一个新的变量，新的变量在catch结构中一直存在，直到catch语句结束。创建并处理这个新的运行时变量会影响到程序的性能，在关键功能和循环中应避免使用try-catch结构。例如：
+
+
+var object = ['foo', 'bar'], i;
+for (i = 0; i < object.length; i++) {
+   try {
+      // do something
+   } catch (e) {
+      // handle exception
+   }
+}
+
+以上这段代码可能会抛出多个错误，这样写可能会更好：
+
+
+var object = ['foo', 'bar'], i;
+try {
+    for (i = 0; i < object.length; i++) {
+        // do something
+    }
+} catch (e) {
+    // handle exception
+}
+
+五、使用赋值运算来连接字符串
+
+　　字符串连接是很常用的操作，也有很多种方式，比如：
+
+
+//Using the concatenation (+) operator
+str = "h" + "e";  
+//Using the shorthand assigment (+=) operator
+str += "l";            
+//Using string.concat()
+str = str.concat("l", "o");        
+//Using array.join()
+str = ["h", "e", "l", "l", "o"].join("");    
+
+如果你执行的连接操作次数较少，那么以上任何一种方式都可以。但是，当执行大量的连接操作时，就需要优化一下了：
+
+//Slower: Concatenating strings with + operator
+str += "x" + "y";
+以上连接操作比较慢，它会按以下步骤执行（参见‘编译原理’）：
+
+创建一个临时变量
+连接后的字符串xy被赋给这个临时变量
+临时变量与str的当前值相加
+结果赋给str变量
+你可以使用如下的方式避免使用临时变量（减少内存的使用）：
+
+str += "x";
+str += "y";
+六、优化你的循环
+
+　　当你使用循环的时候，你可以通过减少每次迭代时工作量来优化循环的整体性能。例如：
+
+for (var i = 0; i < arr.length; i++) {
+    // length of arr is recalculated every time
+}
+在以上代码中，arr.length在每次循环中都被计算了一次，这是不必要的，可以声明一个局部变量len来缓存这个值，就会提高运行速度：
+
+for (var i = 0, len = arr.length; i < len; i++) {
+    // cache the length of the array
+}
+或者为了进一步优化，考虑反向的执行循环（如果不关心数组成员的顺序的话）：
+
+for (var i = arr.length; i--;) {
+    // in reverse
+}
+七、避免使用eval()方法
+
+　　eval()方法可以执行一段JavaScript代码，应该避免使用的原因：
+
+性能较差，它必须调用编译器来传递其参数，然后执行
+安全问题，因为它会执行传递给它的任何代码，所以容易受各种注入攻击，特别是在来源未知的时候
+不利于调试，eval的参数是动态产生的，调试起来不方便，可读性也较差
+//Incorrect usage: Using eval to set a value
+eval("myValue = myObject." + myKey + ";");
+
+//Correct usage: Using subscript notation to set a value
+myValue = myObject[myKey];
+另外timeout函数中的setTimeout()和setInterval()也可以接受字符串参数，然后执行，因此表现跟eval()一样。应该避免传递字符串，如下：
+
+
+// Incorrect usage: Passing a string to setInterval()
+var oElement = null;
+setInterval('oElement = document.getElementById("pepe");', 0);
+
+// Correct usage: Passing a function to setInterval()
+var oElement = null;
+setInterval(function() {
+    oElement = document.getElementById("pepe");
+}, 0);
+
+八、使用事件委托
+
+　　在处理DOM事件的时候，你可以仅对一个父元素绑定一个事件而不是每一个子元素。这种技术即事件委托，它利用事件冒泡来分配事件处理程序，可以提高脚本的性能。比如，一个div元素下面有10个按钮，你可以给div绑定一个监听事件，而不是给10个按钮分别绑定一个事件。传统的声明方式：
+
+<a href="javascript:handleClick();">Click</a>
+<button id="btn1" onclick="handleClick();">One</button>
+<button id="btn2" onclick="handleClick();">Two</button>
+为了提高代码的性能，我们可以加一个div父元素，事件会向上冒泡，直到被处理。事件对象是触发事件的元素，我们可以根据它的id属性来判断是哪一个元素触发了事件：
+
+
+<div id="btngroup">
+  <button id="btn1">One</button>
+  <button id="btn2">Two</button>
+</div>
+document.getElementById("btngroup").addEventListener("click", function (event) {
+  switch (event.srcElement.id) {　　//firefox 下为 event.target.id
+  case "btn1":
+    handleClick();
+    break;
+  default:
+    handleClick();
+  }
+}, false); // type, listener, useCapture (true=beginning, false=end)
+
+九、尽量减少DOM操作
+
+　　DOM是一个包含了很多信息的复杂的API，因此即使是很小的操作可能会花费较长的时间执行（如果要重绘页面的话）。为了提高程序性能，应尽量减少DOM操作，这里有一些建议：
+
+1.减少DOM的数目
+
+DOM节点的数目会影响与它相关的所有操作，要尽量使DOM树小一些：
+
+避免多余的标记和嵌套的表格
+元素数尽量控制在500个以内（document.getElementsByTagName('*').length）
+2.缓存已经访问过的节点
+
+当访问过一个DOM元素后，就应该把它缓存起来，因为你的程序往往要重复访问某个对象的，例如：
+
+for (var i = 0; i < document.images.length; i++) {
+    document.images[i].src = "blank.gif";
+}
+以上例子中，docum.images对象被访问了多次，这并不高效，因为每一次循环中，浏览器都要查找这个元素两次：第一次读取它的长度，第二次改变相应的src值。更好的做法是先把这个对象存储起来：
+
+var imgs = document.images;
+for (var i = 0; i < imgs.length; i++) {　　//当然也可以把 imgs.length 提前算出来，这里不是重点
+    imgs[i].src = "blank.gif";
+}
+十、减少页面重绘
+
+　　在控制DOM元素数目的同时，你还可以通过减少修改元素（减少页面的重绘）的方法来提高性能。重绘有两种方式：repaint、reflow。
+
+1.repaint，也叫redraw，即改变了元素的视觉效果，但是不影响它的排版（比如改变背景颜色）
+
+2.reflow，会影响部分或者全部页面的排版，浏览器不仅要计算该元素的位置，还要计算它影响到的周围的元素位置
+
+当你要改变页面布局的时候，reflow就发生了，主要有如下情况：
+
+增加或删除DOM节点
+改变元素的位置
+改变元素的尺寸（如margin，padding，border，font，width，height等）
+调整浏览器窗口的尺寸
+增加或删除css
+改变内容（如用户输入表单）
+命中css选择器（如hover）
+更改了class属性
+利用脚本更改了DOM
+检索一个必须被计算的尺寸（如offsetWidth，offsetHeight）
+设置了一个css属性
+这里有一些减少页面重绘的建议：
+
+css的建议：
+
+改变class属性时应尽量少的影响到周围的元素节点
+避免声明多个内联的样式（把多个样式放在一个外部文件里）
+有动画的元素使用绝对定位，这样不会影响其他元素
+避免使用table来排版，如果需要使用保存数据，那么要固定排版（table-layout:fixed）
+js的建议：
+
+缓存计算过的样式
+对于固定的样式，改变class的名词而不是样式；对于动态的样式，改变cssText属性：
+
+// bad - changing the stle - accessing DOM multiple times
+var myElement = document.getElementById('mydiv');
+myElement.style.borderLeft = '2px';
+myElement.style.borderRight = '3px';
+myElement.style.padding = '5px';
+ 
+// good - use cssText and modify DOM once
+var myElement = document.getElementById('mydiv');
+myElement.style.cssText = 'border-left: 2px; border-right: 3px; padding: 5px;';
+
+当你要对一个DOM元素做出很多修改时，可以先进行一些‘预处理’，批量修改后再替换原始的元素
+创建一个副本（cloneNode()），对这个副本进行更新，然后替代原来的节点
+
+// slower - multiple reflows
+var list = ['foo', 'bar', 'baz'], elem, contents;
+for (var i = 0; i < list.length; i++) {
+    elem = document.createElement('div');
+    content = document.createTextNode(list[i]);
+    elem.appendChild(content);
+    document.body.appendChild(elem); // multiple reflows
+}
+             
+// faster - create a copy
+var orig = document.getElementById('container'),
+    clone = orig.cloneNode(true), // create a copy
+    list = ['foo', 'bar', 'baz'], elem, contents;
+clone.setAttribute('width', '50%');
+
+修改一个不可见的元素，可以先让其不可见（display:none），修改完成后，再恢复其可见（display:block），这样就会减少reflow的次数
+
+// slower
+var subElem = document.createElement('div'),
+    elem = document.getElementById('animated');
+elem.appendChild(subElem);
+elem.style.width = '320px';
+             
+// faster
+var subElem = document.createElement('div'),
+    elem = document.getElementById('animated');
+elem.style.display = 'none'; // will not be repainted
+elem.appendChild(subElem);
+elem.style.width = '320px';
+elem.style.display = 'block';
+
+创建一个文档片段（使用DocumentFragment()），修改完成后，再把它追加到原始文档中
+
+// slower
+var list = ['foo', 'bar', 'baz'], elem, contents;
+for (var i = 0; i < list.length; i++) {
+    elem = document.createElement('div');
+    content = document.createTextNode(list[i]);
+    elem.appendChild(content);
+    document.body.appendChild(elem); // multiple reflows
+}
+             
+// faster
+var fragment = document.createDocumentFragment(),
+    list = ['foo', 'bar', 'baz'], elem, contents;
+for (var i = 0; i < list.length; i++) {
+    elem = document.createElement('div');
+    content = document.createTextNode(list[i]);
+    fragment.appendChild(content);
+}
+document.body.appendChild(fragment); // one reflow
+

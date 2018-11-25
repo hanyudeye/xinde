@@ -1,3 +1,4 @@
+在5.7及之后的版本中，若要以root用户登录系统，必须使用sudo
 * 表视图
 桶, 文件柜
 |   |   |   |   |   |
@@ -17,14 +18,10 @@
 |  3 | hy     |  23 | nixia    | 32322 |
 
 * mysql
-** 查 
-select * from emp;  #注释
-** 进入
-mysql -h 主机地址 -u 用户名 －p 用户密码 
-** MySql 用户管理
-mysql -uroot -p databasename;
-
-** 增加用户
+** 用户登录
+   mysql -h 主机地址 -u 用户名 －p 用户密码 
+   mysql -uroot -p 
+** 创建用户
 #格式:grant 权限 on 数据库.* to 用户名@登录主机 identified by '密码'
 /*
 如，增加一个用户 user1 密码为 password1，让其可以在本机上登录， 并对所有数据库有查询、插入、修改、删除的权限。首先用以 root 用户连入 mysql，然后键入以下命令： 
@@ -35,6 +32,7 @@ grant select,insert,update,delete on mydb.* to user1@localhost identified by "";
 */
 
 grant all privileges on wpj1105.* to sunxiao@localhost identified by '123';   #all privileges 所有权限
+grant all privileges on *.* to wuming@localhost identified by 'wuming';   #all privileges 所有权限
 
 #----------------------------
 ** MySql 数据库操作基础
@@ -211,6 +209,9 @@ load data local infile "D:/mysql.txt" into table MYTABLE;
 *** #导入.sql 文件命令（例如 D:/mysql.sql）
 source d:/mysql.sql;  #或者  /. d:/mysql.sql;
 * sqlmode
+** 开启服务
+   sql-start
+ | ~SPC m s r~ | Send the selected region to the SQLi buffer |
 ** 特性  
 *** 语法高亮 
   - ANSI
@@ -244,7 +245,6 @@ I wrote a Python utility that is a drop in replacement for sqlcmd/osql as far as
 – SebastianMonia
 ** Key bindings
 *** Highlighting
-
  | Key Binding | Description                       |
  |-------------+-----------------------------------|
  | ~SPC m h k~ | select a SQL dialect to highlight |
@@ -257,9 +257,8 @@ I wrote a Python utility that is a drop in replacement for sqlcmd/osql as far as
  | ~SPC m l a~ | List all objects            |
  | ~SPC m l t~ | list all objects in a table |
 
-**** Send SQL queries to SQLi:
-
- | Key Binding | Description                                                                           |
+*** Send SQL queries to SQLi:
+ | KeyBinding | Description                                                                           |
  |-------------+---------------------------------------------------------------------------------------|
  | ~SPC m s b~ | Send the whole buffer to the SQLi buffer                                              |
  | ~SPC m s B~ | Send the whole buffer to the SQLi buffer and switch to it in =insert state=           |
@@ -2791,3 +2790,24 @@ DEALLOCATE tempCursor;							--释放游标
 * 月初 月末
 select DATEADD(mm,DATEDIFF(mm,0,GETDATE()),0) AS docdate1,
 DATEADD(ms,-3,DATEADD(mm,1,DATEADD(mm,DATEDIFF(mm,0,GETDATE()),0))) AS docdate2
+* .my.cnf 文件
+  $HOME/.my.cnf文件来读取特定的启动命令和设置。其中一项设置就是用户启动的mysql会话的默认
+密码。
+
+[client]
+password = test
+$ chmod 400 .my.cnf
+* 执行命令
+  #!/bin/bash
+  # send a command to the MySQL server
+  MYSQL=$(which mysql)
+  $MYSQL mytest -u test -e 'select * from employees'
+
+  一段文本
+  $MYSQL mytest -u test <<EOF
+  show tables;
+  select * from employees where salary > 40000;
+  EOF
+* 输出XML格式
+  -X
+$ mysql mytest -u test -X -e 'select * from employees where empid = 1'

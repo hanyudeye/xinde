@@ -1,14 +1,60 @@
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
+
+- [区块元素](#区块元素)
+    - [段落和换行](#段落和换行)
+    - [标题](#标题)
+- [如 这是标题](#如-这是标题)
+    - [这是标题](#这是标题)
+        - [如 这是标题](#如-这是标题-1)
+    - [区块引用 >](#区块引用-)
+    - [列表](#列表)
+    - [代码区块](#代码区块)
+    - [分隔线](#分隔线)
+    - [***](#)
+- [区段元素](#区段元素)
+    - [链接](#链接)
+    - [强调](#强调)
+    - [代码](#代码)
+    - [图片](#图片)
+    - [表格](#表格)
+- [其他](#其他)
+    - [自动链接](#自动链接)
+    - [转义 \](#转义-)
+- [markdown mode](#markdown-mode)
+    - [预览](#预览)
+    - [生成 TOC(目录)](#生成-toc目录)
+    - [键盘绑定](#键盘绑定)
+        - [Element insertion](#element-insertion)
+        - [Completion](#completion)
+        - [Following and Jumping](#following-and-jumping)
+        - [Indentation](#indentation)
+        - [Header navigation](#header-navigation)
+        - [Buffer-wide commands](#buffer-wide-commands)
+        - [List editing](#list-editing)
+        - [Movement](#movement)
+        - [Promotion, Demotion](#promotion-demotion)
+        - [Toggles](#toggles)
+
+<!-- markdown-toc end -->
+
 *简单的标签实现格式化的文档, 兼容HTML*
 # 区块元素
 ## 段落和换行
 ## 标题
 1. 底线形式 (只有两阶)
 如 这是标题
-//============
-或
+============
 这是标题
-//--------
-
+--------
+:laughing:
+:cry:
+* zheg:flags:
+* nihao :small_airplane:
+* dabai 
+:clap: :clap: 
+:cat2:
+:dog:
 2. #形式 (可以有六阶**
 ### 如 这是标题
 

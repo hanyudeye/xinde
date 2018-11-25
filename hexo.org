@@ -262,136 +262,6 @@ blog.nearwo.xyz
                               categories: false
                               tags: true
 #+END_SRC
-* 含义
-  # Header
-menu:
-  主页: /
-  随笔: /tags/随笔/
-
-# SubNav
-subnav:
-  github: "#"
-  weibo: "#"
-  rss: "#"
-  zhihu: "#"
-  #qq: "#"
-  #weixin: "#"
-  #jianshu: "#"
-  #douban: "#"
-  #segmentfault: "#"
-  #bilibili: "#"
-  #acfun: "#"
-  #mail: "mailto:litten225@qq.com"
-  #facebook: "#"
-  #google: "#"
-  #twitter: "#"
-  #linkedin: "#"
-
-rss: /atom.xml
-
-# 是否需要修改 root 路径
-# 如果您的网站存放在子目录中，例如 http://yoursite.com/blog，
-# 请将您的 url 设为 http://yoursite.com/blog 并把 root 设为 /blog/。
-root: 
-
-# Content
-
-# 文章太长，截断按钮文字
-excerpt_link: more
-# 文章卡片右下角常驻链接，不需要请设置为false
-show_all_link: '展开全文'
-# 数学公式
-mathjax: false
-# 是否在新窗口打开链接
-open_in_new: false
-
-# 打赏
-# 打赏type设定：0-关闭打赏； 1-文章对应的md文件里有reward:true属性，才有打赏； 2-所有文章均有打赏
-reward_type: 2
-# 打赏wording
-reward_wording: '谢谢你请我吃糖果'
-# 支付宝二维码图片地址，跟你设置头像的方式一样。比如：/assets/img/alipay.jpg
-alipay: 
-# 微信二维码图片地址
-weixin: 
-
-# 目录
-# 目录设定：0-不显示目录； 1-文章对应的md文件里有toc:true属性，才有目录； 2-所有文章均显示目录
-toc: 1
-# 根据自己的习惯来设置，如果你的目录标题习惯有标号，置为true即可隐藏hexo重复的序号；否则置为false
-toc_hide_index: true
-# 目录为空时的提示
-toc_empty_wording: '目录，不存在的…'
-
-# 是否有快速回到顶部的按钮
-top: true
-
-# Miscellaneous
-baidu_analytics: ''
-google_analytics: ''
-favicon: /favicon.png
-
-#你的头像url
-avatar:
-
-#是否开启分享
-share_jia: true
-
-#评论：1、多说；2、网易云跟帖；3、畅言；4、Disqus；5、Gitment
-#不需要使用某项，直接设置值为false，或注释掉
-#具体请参考wiki：https://github.com/litten/hexo-theme-yilia/wiki/
-
-#1、多说
-duoshuo: false
-
-#2、网易云跟帖
-wangyiyun: false
-
-#3、畅言
-changyan_appid: false
-changyan_conf: false
-
-#4、Disqus 在hexo根目录的config里也有disqus_shortname字段，优先使用yilia的
-disqus: false
-
-#5、Gitment
-gitment_owner: false      #你的 GitHub ID
-gitment_repo: ''          #存储评论的 repo
-gitment_oauth:
-  client_id: ''           #client ID
-  client_secret: ''       #client secret
-
-# 样式定制 - 一般不需要修改，除非有很强的定制欲望…
-style:
-  # 头像上面的背景颜色
-  header: '#4d4d4d'
-  # 右滑板块背景
-  slider: 'linear-gradient(200deg,#a0cfe4,#e8c37e)'
-
-# slider的设置
-slider:
-  # 是否默认展开tags板块
-  showTags: false
-
-# 智能菜单
-# 如不需要，将该对应项置为false
-# 比如
-#smart_menu:
-#  friends: false
-smart_menu:
-  innerArchive: '所有文章'
-  friends: '友链'
-  aboutme: '关于我'
-
-friends:
-  友情链接1: http://localhost:4000/
-  友情链接2: http://localhost:4000/
-  友情链接3: http://localhost:4000/
-  友情链接4: http://localhost:4000/
-  友情链接5: http://localhost:4000/
-  友情链接6: http://localhost:4000/
-
-aboutme: 很惭愧<br><br>只做了一点微小的工作<br>谢谢大家
 * 资源文件夹
 资源（Asset）代表 source 文件夹中除了文章以外的所有文件，例如图片、CSS、JS 文件等。比方说，如果你的Hexo项目中只有少量图片，那最简单的方法就是将它们放在 source/images 文件夹中。然后通过类似于 ![](/images/image.jpg) 的方法访问它们。
 文章资源文件夹
@@ -413,3 +283,279 @@ post_asset_folder: true
 
 {% asset_img example.jpg This is an example image %}
 通过这种方式，图片将会同时出现在文章和主页以及归档页中。
+* 插件
+** 站长统计 不蒜子 
+*** 总计
+    文件 /home/wuming/git/web/blog/themes/yilia/layout/_partial/footer.ejs
+    添加
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+*** 单页面
+    文件    /home/wuming/git/web/blog/themes/yilia/layout/_partial/article.ejs
+    添加
+    <% if ( !index ){ %>
+		<span class="archive-article-date">
+		阅读量 <span id="busuanzi_value_page_pv"></span>
+		</span>
+    <% } %>
+* 主题
+** NexT 参考 https://notes.iissnan.com/
+*** 安装 
+**** 1.下载最新 release 版本
+     #+BEGIN_SRC shell
+            $ mkdir themes/next
+            $ curl -s https://api.github.com/repos/theme-next/hexo-theme-next/releases/latest | grep tarball_url | cut -d '"' -f 4 | wget -i - -O- | tar -zx -C themes/next --strip-components=1
+     #+END_SRC
+**** 2.指定branch 使用 git 安装：
+     $ git clone --branch v6.0.0 https://github.com/theme-next/hexo-theme-next themes/next
+**** 3.下载最新 master 分支
+     $ git clone https://github.com/theme-next/hexo-theme-next themes/next
+     
+#+BEGIN_SRC shell
+获取 tags 列表：
+
+$ cd themes/next
+$ git tag -l
+…
+v6.0.0
+v6.0.1
+v6.0.2
+例如，假设你想要切换到 v6.0.1 这一 tag 指向的 release 版本。输入如下指令：
+
+$ git checkout tags/v6.0.1
+Note: checking out 'tags/v6.0.1'.
+…
+HEAD is now at da9cdd2... Release v6.0.1
+然后，假设你想要切换回 master 分支，输入如下指令即可：
+
+$ git checkout master
+#+END_SRC
+**** 完成配置
+     在 hexo 根配置文件 _config.yml 中设置你的主题：
+     theme: next
+*** Hexo的Next主题配置
+    使用Next主题
+  将下载的代码放在myBlog/next目录下
+  设置站点myBlog/_config.yml的theme字段值为next
+  生成新页面hexo g
+  开启服务hexo s --debug
+  发布代码hexo d
+  注：此时登录网站，发现是空白的，打开控制台，提示很多vendors目录下的文件404，解决办法是将next主题下即myBlog/themes/next/source下的vendors目录名改为lib，并修改myBlog/themes/next/_config.yml的_internal: vendors改为_internal: lib。
+
+  参考：iissnan的回答
+
+  主题配置
+  主题风格设定
+  通过修改next主题下的_config.yml的scheme字段，配置不同的风格。
+
+  # Schemes
+  scheme: Muse
+  #scheme: Mist
+  #scheme: Pisces
+  本站点使用的是默认的Muse，显示效果如下：
+
+
+
+  菜单设置
+  通过修改next主题下的_config.yml的menu字段，选定显示的菜单项。
+
+  menu:
+    home: /
+    categories: /categories
+    about: /about
+    archives: /archives
+    tags: /tags
+    #commonweal: /404.html
+  其中，home代表主页，categories代表分类页，about代表关于页面，archives代表归档页，commonweal代表404页面（page not found时候显示的页面）。
+
+  菜单项文本修改是在对next主题下的language文件夹下的文件进行修改，若当前语言是简体中文，直接修改language/zh-Hans.yml里的对应字段即可。
+
+  本站点显示主页，分类页，关于页面和归档页。
+
+  头像设置
+  在主题下的source/images/下放置头像文件avatar.gif即可。
+
+  设置文章代码主题
+  Next主题总共支持5种主题，默认主题是白色的normal。通过修改next主题下的_config.yml的highlight字段，来设置代码主题。
+
+  本站点使用的是night主题。即令highlight为night。
+
+  添加标签页面
+  前面通过修改next主题下的_config.yml文件中的menu选项，可以在主页面的菜单栏添加标签选项，但是此时点击标签，跳转的页面会显示page not found。
+
+  添加标签页面的具体方法是：
+
+  新建页面
+  输入如下命令：
+
+  $ cd myBlog
+  $ hexo new page tags
+  输入命令后，在myBlog/source下会新生成一个新的文件夹tags，在该文件夹下会有一个index.md文件。
+
+  设置页面类型
+  在上步新生成的myBlog/source/tags/index.md中添加type: "tags"，index.md文件内容如下：
+
+  ---
+  title: tags
+  date: 2016-11-15 19:10:05
+  type: "tags"
+  ---
+  设置具体文章的tags
+  当要为某一篇文章添加标签，只需在myBlog/source/_post目录下的具体文章的tags中添加标签即可，如：
+
+  ---
+  title: 基于Hexo和Github搭建博客
+  date: 2016-11-09
+  tags: [npm, hexo, github]
+  categories: 搭建博客
+  ---
+  本站添加为标签后的效果如下：
+
+
+
+  添加分类页面
+  步骤与添加标签页面类似，具体如下：
+
+  新建页面
+  输入如下命令：
+
+  $ cd myBlog
+  $ hexo new page categories
+  输入命令后，在myBlog/source下会新生成一个新的文件夹categories，在该文件夹下会有一个index.md文件。
+
+  设置页面类型
+  在上步新生成的myBlog/source/categories/index.md中添加type: "categories"，index.md文件内容如下：
+
+  ---
+  title: categories
+  date: 2016-11-15 19:11:13
+  type: "categories"
+  ---
+  设置具体文章的categories
+  当要为某一篇文章添加分类，只需在myBlog/source/_post目录下的具体文章的categories中添加分类即可，如：
+
+  ---
+  title: 基于Hexo和Github搭建博客
+  date: 2016-11-09
+  tags: [npm, hexo, github]
+  categories: 搭建博客
+  ---
+  本站添加为标签后的效果如下：
+
+
+
+  添加关于我页面
+  步骤与添加标签页面类似，具体如下：
+
+  新建页面
+  $ cd myBlog
+  $ hexo new page about
+  输入命令后，在myBlog/source下会新生成一个新的文件夹about，在该文件夹下会有一个index.md文件。
+
+  修改about/index.md
+  本站点index.md如下：
+
+  ---
+  title: about
+  date: 2016-11-15 19:08:50
+  ---
+  ## 关于我
+
+  一只学习前端的小菜鸟，欢迎分享知识。
+
+  From XDU
+
+  QQ：847909475
+  Email: 847909475@qq.com
+  效果如下：
+
+
+
+  引入第三方服务
+  加入评论功能
+  本站点使用的是多说。加入评论功能的步骤如下：
+
+  登录多说，填写表单，创建站点
+
+
+  图片中红框圈中的框中内容就是下一步duoshuo_shortname字段的值
+
+  添加duoshuo_shortname
+  在站点的myBlog/_config.yml中加入duoshuo_shortname字段，值为第一步红框里的内容
+
+  加入评论后效果如下：
+
+
+
+  加入分享功能
+  本站点使用的是多说。加入分享功能的步骤如下：
+
+  在站点的myBlog/_config.yml中加入duoshuo_share字段，值为true。
+
+  加入分享后效果如下：
+
+
+  加入站点内容搜索功能
+  本站点使用的是Local Search。加入站点内容搜索功能步骤如下：
+
+  安装hexo-generator-searchdb
+  $ npm install hexo-generator-searchdb --save
+  注意：安装时应在站点根目录下，即myBlog目录下
+
+  添加search字段
+  在站点myBlog/_config.yml中添加search字段，如下：
+
+  search:
+    path: search.xml
+    field: post
+    format: html
+    limit: 10000
+  效果如下：
+
+
+
+  加入数据统计与分析功能
+  本站点使用的是百度统计。加入数据统计与分析功能步骤如下：
+
+  注册站长账号并登陆
+  在这里注册站长账号，并填写信息，网站域名和网站首页以下图为例来填写，注册完成后并登陆。
+
+
+  在跳转的页面中会显示下图，复制hm.js后的id值
+
+
+  添加baidu_analytics字段
+
+  在站点myBlog/_config.yml中添加search字段，值为上步复制的id值
+
+  至此，该功能已成功加入，大约过20min后在百度统计上可以看到站点的访问情况，如下图：
+
+*** ### 提交合并请求
+
+提交合并请求前，请再次确认您已经查看了[你需要了解的](#before-submitting-an-issue)内容，避免提交重复的合并请求。确定相关仓库后，创建合并请求。更多详细操作过程可以查看[帮助文档](https://help.github.com/articles/creating-a-pull-request/)。
+
+1. 进入 [hexo-theme-next](https://github.com/theme-next/hexo-theme-next) 源仓库，点击`Fork`。
+2. 进入到已经`Fork`的个人仓库（`https://github.com/username/hexo-theme-next`），点击 **Clone or download** 并复制该仓库地址。选择本地文件夹，并打开 Git Bash ，输入如下命令并回车，即可完成仓库克隆。
+    ```bash
+    $ git clone git@github.com:username/hexo-theme-next.git
+    ```
+3. 进入 `hexo-theme-next` 本地文件夹，并创建分支。
+    ```bash
+    $ cd hexo-theme-next
+    $ git checkout -b patchname
+    ```
+4. 本地修改并测试，推送分支。
+    ```bash
+    $ git add .
+    $ git commit -m "add commit messamge"
+    $ git push origin patchname
+    ```
+5. 进入 `fork` 后的仓库，切换到新提交的 `patchname` 分支，点击 `patchname` 分支右侧的 **New pull request** 。在 PR 对比页面，正确选择你需要发起合并请求的分支，然后点击 **Create pull request** ，建立一个新的合并申请并描述变动。
+
+请认真遵守如下指南，这样我们才能更好地理解你的合并请求：
+
+创建合并请求时，请遵守[编码规范](#coding-rules)和[提交信息规范](#commit-messages-rules)。
+在标题中清晰准确地描述你的合并请求，不要加入 Issue 编号。
+按照[模板](../../.github/PULL_REQUEST_TEMPLATE.md)尽可能的详细填写相关信息。
+合并请求需要在所有主题样式中测试通过，并提供所表现功能的样例，如图像文件、在线演示网址等等。
+<a name="creating-releases"></a>
