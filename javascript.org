@@ -1,7 +1,4 @@
 * Javascript
-** 执行
-   nodejs js.js 
-   浏览器 
 ** 对象构造
    #+BEGIN_SRC javascript
      function person(firstname,lastname,age,eyecolor)
@@ -18,7 +15,7 @@
   数组 concat() join() sort() Array()
   RegExp 对象有 3 个方法：test()、exec() 以及 compile()。
   #+END_SRC
-** 事件(交互对象才用事件)
+** 事件(多接口对象才有事件)
    document.getElementById("btnTest").onclick=thisTest; //给button的onclick事件注册一个函数
 *** 事件类型
  #+BEGIN_SRC 
@@ -491,320 +488,6 @@ var sum = values.reduceRight(function(prev, cur, index, array){
 return prev + cur;
 },10);
 console.log(sum); //25
-* javascript学习笔记
-** 获取日期与时间
-   var myDate = new Date();
-   myDate.getYear();               //获取当前年份(2位)
-   myDate.getFullYear();           //获取完整的年份(4位,1970-????)
-   myDate.getMonth();              //获取当前月份(0-11,0代表1月)
-   myDate.getDate();               //获取当前日(1-31)
-   myDate.getDay();                //获取当前星期X(0-6,0代表星期天)
-   myDate.getTime();               //获取当前时间(从1970.1.1开始的毫秒数)
-   myDate.getHours();              //获取当前小时数(0-23)
-   myDate.getMinutes();            //获取当前分钟数(0-59)
-   myDate.getSeconds();            //获取当前秒数(0-59)
-   myDate.getMilliseconds();       //获取当前毫秒数(0-999)
-   myDate.toLocaleDateString();    //获取当前日期
-   myDate.toLocaleTimeString();    //获取当前时间
-   myDate.toLocaleString( );       //获取日期与时间
- 日期时间脚本库方法列表:
-
- Date.prototype.isLeapYear       判断闰年
- Date.prototype.Format           日期格式化
- Date.prototype.DateAdd          日期计算
- Date.prototype.DateDiff         比较日期差
- Date.prototype.toString         日期转字符串
- Date.prototype.toArray          日期分割为数组
- Date.prototype.DatePart         取日期的部分信息
- Date.prototype.MaxDayOfDate     取日期所在月的最大天数
- Date.prototype.WeekNumOfYear    判断日期所在年的第几周
- StringToDate                    字符串转日期型
- IsValidDate                     验证日期有效性
- CheckDateTime                   完整日期时间检查
- daysBetween                     日期天数差
- 2.1 Date Format:
- // (new Date()).Format("yyyy-MM-dd hh:mm:ss.S") ==> 2006-07-02 08:09:04.423
- // (new Date()).Format("yyyy-M-d h:m:s.S")      ==> 2006-7-2 8:9:4.18
-
-     Date.prototype.Format = function(fmt)   {
-         var o = {
-             "M+" : this.getMonth()+1,                 //月份
-             "d+" : this.getDate(),                    //日
-             "h+" : this.getHours(),                   //小时
-             "m+" : this.getMinutes(),                 //分
-             "s+" : this.getSeconds(),                 //秒
-             "q+" : Math.floor((this.getMonth()+3)/3), //季度
-             "S"  : this.getMilliseconds()             //毫秒
-         };
-         if(/(y+)/.test(fmt)) {
-             fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
-         }
-         for(var k in o) {
-             if(new RegExp("("+ k +")").test(fmt)) {
-                 fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
-             }
-         }
-         return fmt;
-     }
-
-     var d = new Date();
-     console.log("date:", d.toISOString());
-     console.log("Format:", d.Format("yyyy-MM-dd hh:mm:ss.S"));
-** 对象
-   简单定义对象:
-
- var o = {
-     a:'aa',
-     b:'b'
- };
- 遍历对象:
-
- for(var i in o) {
-     alert(o[i]);
- }
- for in 可以遍历到对象的普通属性与方法, 但是遍历不到setter/getter.
-
- var v = "mm";
- alert("undefined"!=typeof(o[v])) //判断这个下标是否存在
-*** 浏览器对象
-  浏览器中最外层this为window. 以下3个都是输出window对象
-
-  console.log("this:", this);
-  console.log("this.top:", this.top);
-  console.log("self:", self);
-*** js内置全局对象
-   全局属性: undefined, Infinity, NaN
-   全局函数: isNaN(), parseInt(), eval()
-   全局构造: Date(), RegExp(), String(), Object(), Array()
-   全局对象: Math, JSON
-*** setter/getter用法:
-   对象中:
-
-   var o4 = {
-       get aa() {
-           return this._aa;
-       },
-       set aa(value) {
-           this._aa = value;
-       }
-   }
-   构造函数中(ES5):
-
-   Object.defineProperties(this, {
-       "c3_aa": {
-            "get": function() { return this._c3_aa },
-            "set": function(v) { this._c3_aa = v }
-       }
-   });
-   3.4 attribute's property
-   普通属性4个特性:
-
-   value
-   writable
-   enumerable
-   configurable
-   存取器setter/getter4个特性:
-
-   get
-   set
-   enumerable
-   configurable
-*** 原型(prototype)
-   原型中添加属性, 会影响到其继承对象. 假如对象o1是o2的prototype, 当o2创建后, o1中增加/删除的属性, 也会被o2继承. 如:
-
-   var o1 = {a1:1}; var o2 = Object.create(o1); console.log("o2", o2); for (a in o2) { console.log(" ", a, o2[a]); // 此时只有a1 };
-
-   console.log("o2", o2); o1.a1Later = 11; for (a in o2) { console.log(" ", a, o2[a]); // 此时只有a1和a1Later. };
-
-   但是如果o2自己已经对同名属性进行了赋值, 则不会发生上述情况.
-
-   原型链中的属性特性, 同样会被继承.
-*** 对象序列化
-   var s = '{ "name":"hello", "hehe":"abc" }'
-   var o = JSON.parse(s)
-   console.log("o:", o);
-   var s2 = JSON.stringify(o)
-   console.log("s2:", s2);
-   序列化支持对象, 数组, 字符串, 无穷大, true, false, null.
-   NaN, Infinity, -Infinity序列化结果为null.
-   日期对象序列化结果是ISO格式的字符串, 但是不能反序列化.
-   函数, RegExp, Error对象和undefined值不能序列化和反序列化.
-*** 对象常用方法
-   Object.create
-
-   var o1 = {a1:1}; var o2 = Object.create( o1, { a2: { value:2, writable: true, configurable: true, enumerable: true } } );
-
-   属性:
-
-   o.hasOwnProperty: 对象的hasOwnProperty(prop)方法, 对象自有属性为true, 继承的为false.
-   o.propertyIsEnumerable(prop): 自有且可枚举的为true. 继承的为false但是却可以被for in遍历到.
-   Object.getOwnPropertyNames(): 返回对象的所有自有属性的名称(组成的数组).
-   Object.keys(): 返回对象的所有"可枚举的"自有属性的名称(组成的数组).
-
-   Object.defineProperty(o, attrName, {des...}): 设置属性的特性.
-   Object.defineProperties(): 一次设置多个属性的特性.
-
-   属性特性:
-
-   Object.getOwnPropertyDescriptor(o, attrName): 获取指定属性的属性描述符(property descriptor).
-   原型(prototype):
-
-   Object.getPrototypeOf(o): 获取对象的原型.
-   o1.isPrototypeOf(o2): 判断是否是原型(即使是间接的原型也返回true).
-   可扩展性:
-
-   Object.preventExtensions(o): 禁止可扩展, 便不能再添加新属性. 但是该函数不影响对象的原型对象的可扩展性, 如果原型对象扩展了, 还是会被继承.
-   Object.isExtensible(o): 判断是否可扩展.
-
-   Object.seal(o): 除了禁止可扩展外, 还将对象的自有属性设置为不可配置.
-   Object.isSealed(o): 来检测是否seal过.
-
-   Object.freeze(o): 不可扩展, 自有属性不可配置, 自有属性只读(不影响setter效果).
-   Object.isFrozen(o): 检测是否freeze过.
-** 数组
-   4.1 创建
-   var arr = [];
-   var arr = [1, 2, 3];
-   4.2 添加
-   arr.push(4); // 尾部(最大index处)添加元素, 改变原数组, 返回新的length.
-   arr.pop()    // pop出尾部元素, 数组-1.
-   arr.shift()  // 类似pop, 但是从index 0处弹出, 同样数组-1.
-   4.3 删除
-   delete arr[2]; // 删除后会留下空洞
-   4.4 遍历
-   for index: 会遍历空元素, 不遍历继承属性,
-   for in: 不遍历空元素, 会遍历继承属性,
-   arr.forEach(function(v, i, arr){...}) // 配合throw异常中断遍历.
-   4.5 排列
-   arr.reverse(); // 逆序排列数组, 会改变原数组.
-   arr.sort(func); // 排序, 同样会改变原数组.
-   4.6 组合
-   数组的拼接不能直接用"+"来进行, 否则会得到由两个数组的打印字符串相加得到的新字符串.
-
-   arr.concat(); // 返回新数组, 不会修改原数组.
-   1
-   2
-   3
-   4
-   5
-   var a = [1, 2, 3];
-   arr.concat(4, 5);
-   arr.concat([4, 5]);
-   arr.concat([4, 5], [6, 7]);  // 返回[1, 2, 3, 4, 5, 6, 7]
-   arr.concat(4, [5, [6, 7]]);  // 返回[1, 2, 3, 4, 5, [6, 7]]
-   4.7 切片
-   arr.slice();
-   也就是说, 参数为一维数组会展开, 二维数组只展开其中外层.
-
-   4.8 ES5函数式方法
-   forEach()
-   map(): 返回由回调函数的返回值组成的数组, 不改变稀疏性. 不修改原数组.
-   filter(): 返回由回调函数范围会'真'的 "原数组元素" 组成的数组. 返回的是稠密数组.
-   every(): 当所有被调用的函数都返回true, every才返回true.
-   some(): 与every相反, 它是或的关系, 只要有一个返回true, 它就返回true.
-   arr.reduce/reduceRight(function(last, v) {return last + v}); // last即上次调用回调函数的返回值.
-   4.9 其他
-   arr.join(str); // 以str连接数组元素组成字符串. 如:
-       console.log("new Array(80).join('='):", new Array(80).join("="));
-
-   arr.indexOf/indexOfRight(); // 查找指定值的index. 找不到返回-1.
-   Array.isArray(arr);
-   5 Other
-   // 下面两行第一行true, 第二行false
-
-       console.log(null == undefined);
-       console.log(null === undefined);
-
-   // 类型转换
-
-       null == undefined   // true
-       "0" == 0            // true, 比较之前字符串转成数字
-       0 == false          // true, 比较之前布尔转成数字
-       "0" == false        // true, 比较之前字符串和布尔转成数字
-
-   // 以上几个如果用'==='恒等来判断, 是false, 因为恒等不做类型转换.
-
-
-   // 函数作用域与声明提前
-   //
-   //    js变量的作用域为函数作用域而非块作用域. 也就是说, 函数里面的变量, 在声明的
-   //    代码行之前, 就已经存在了. 此特性当想要在函数中使用同名全局变量的时候, 体现
-   //    尤为突出.
-
-   // 作用域链(定义了此段代码"作用域中"的变量):
-   //     * 非嵌套函数, 链中包括2个对象:
-   //         |- {参数 与 局部变量}
-   //         `- {全局变量}
-   //     * 嵌套函数, 链中至少包括3个对象:
-   //         |- {本身参数 与 局部变量}
-   //         |- {外层参数 与 局部变量} * n
-   //         `- {全局变量}
-   //
-
-   // 加号+运算符的结合性: 由于从左到右的结合, 所以:
-
-           1 + 2 + "hello"  // 得到: "3hello"
-           "hello" + 1 + 2  // 得到: "hello12"
-
-   // js的左值可以是: 变量, 对象, 数组元素.
-
-   // delete可以删除数组元素, 但是会留下一个洞, 数组总长度没变.
-   // delete删除对象属性, 则是真的删除了, 对象中便没有该属性.
-   // 一些内置核心和客户端属性不能删除.
-   // var声明的变量不能删除.
-   // 通过function语句定义的函数与函数参数也不能删除.
-
-
-   //判断手机横竖屏状态：
-   function getOrientation() {
-       if(window.orientation==180||window.orientation==0){
-           alert("竖屏状态！");
-       }
-       if(window.orientation==90||window.orientation==-90){
-           alert("横屏状态！");
-       }
-   }
-   window.addEventListener("onorientationchange" in window ?
-           "orientationchange" :
-           "resize", getOrientation, false);
-
-   getOrientation();
-** 小技巧
-   6.1 利用加号'+'转换字符串为数字
-   被转换的字符串内必须为纯数字字符, 例如:
-
-   var a = +'123'          // 得到数字123
-   var a = +'n123'         // 得到NaN
-   var a = +'123hello'     // 同样得到NaN. 此种情况用parseInt('123hello')则得到123
-   var a = +'n123' || 0    // 得到0. 用于解析错误则赋0的情况.
-   6.2 利用!!来将变量转化成布尔值
-   let myMoney = 10000000000;  // ^_^
-   let iHaveMoney = !!myMoney; // true
-** webpack + ES6 快速配置
-   7.1 安装
-   npm install --save-dev webpack babel-loader babel-core babel-preset-es2015
-   其中webpack是将多个模块打包的, babel是将ES6语法转为当前(2017-01-20) 多数浏览器能支持的ES5语法.
-
-   也可以全局安装:
-
-   sudo npm install -g webpack babel-loader babel-core babel-preset-es2015
-   7.2 webpack基本配置
-   module.exports = {
-       entry:{
-           bundle : __dirname + '/src/main.js' // 入口
-       },
-       output:{
-           path: __dirname + '/dist',
-           filename: '[name].js' // 生成目标
-       },
-       module:{
-           loaders:[{
-               test: /\.js$/,
-               exclude: /node_modules/, // 不检查本地安装的npm包
-               loader: 'babel?presets=es2015'
-           }]
-       }
-   }
 * DOM（浏览器对象）
 *** window
 **** 属性
@@ -1355,7 +1038,6 @@ function ppt(){
  | ~SPC m r d h~ | show list of available jsdoc tags     |
 
 *** REPL (skewer-mode)
-
  | Key Binding | Description                                                      |
  |-------------+------------------------------------------------------------------|
  | ~SPC m e e~ | evaluates the last expression                                    |
@@ -1374,6 +1056,8 @@ function ppt(){
  | ~SPC m s s~ | switch to REPL                                                                     |
 
 * jquery
+** 源  
+   https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.js
 确定当前的conext
 在任何事件内部，this引用的都是Dom对象
 在任何插件内部，this引用的都是当前的jquery对象
@@ -1484,9 +1168,6 @@ jQuery的具体实现
 throw	不会改变promise的状态，而是直接throw出去
 另一个promise	改变promise的状态
 所以，在jquery中想要扭转promise的状态就只能依靠返回另一种状态的promise对象
-* 同级元素 不要有空格，有空格就下级了 
-  同级属性
-  $('.moneyRadio[value=2]').prop("checked", true);
 * 60个很实用的jQuery代码开发技巧收集
 偶然在网上看到这些不错的jQuery代码开发技巧。原文收集了30个，另外查找的时候发现了还有20个。加上另外十个实用的jQuery代码片段，共60个代码技巧，收集在一起分享给大家。
 
@@ -2304,9 +1985,7 @@ $("#myform").submit();
 注：部分代码原文应该是英文的。但是看见转的几个链接已经打不开了。所以就这样吧。
 * web移动开发最佳实践之js篇
 二、使用字面量（literal notation）来声明对象和数组
-
 　　创建对象和数组的方法有很多，但是使用字面量是最简单最快的。传统的方法是使用内建的构造器声明：
-
 复制代码
 //create an object
 var obj = new Object();

@@ -1,4 +1,4 @@
-* php
+* Php
 ** 安装与配置
    配置文件/etc/php/7.0/apache2/php.ini
    命令行配置 /etc/php/7.0/cli/php.ini 
@@ -59,21 +59,7 @@
    short_open_tag = Off（是否允许使用 PHP 代码开始标志的缩写形式（<? ?> ）。）；
    memory_limit = 128M（最大使用内存的大小）；
    upload_max_filesize = 2M（上传附件的最大值），第一个需要改成 on，否则的话很多 php 程序都会运行不了，后面的两项就按照大家的实际需求更改就行了。
-** 对象分辨
-   获取类型 echo gettype($bool);
-        
-   is_bool()：判断是否是布尔型。
-   is_int()、is_integer()和 is_long()：判断是否是整型。
-   is_float()、is_double()和 is_real()：判断是否是浮点数。
-   is_string()：判断是否是字符串。
-   is_array()：判断是否是数组。
-   is_object()：判断是否是对象。
-   is_resource()：判断是否是资源类型。
-   is_null()：判断是否是为空。
-   is_scalar()：判断是否是标量，也就是一个整数、浮点数、布尔型或字符串。
-   is_numeric()：判断是否是任何类型的数字或数字字符串。
-   is_callable()：判断是否是有效的函数名。
-** 自带变量
+** 系统变量
    __FILE__  当前的文件名  在哪个文件中使用，就代表哪个文件名称  
    __LINE__  当前的行数  在代码的哪行使用，就代表哪行的行号  
    __FUNCTION__  当前的函数名  在哪个函数中使用，就代表哪个函数名  
@@ -92,7 +78,7 @@
    E_NOTICE  8  关键的错误，例如变量末初始化  
    M_PI  3.1415926535898  Π  
 ** 功能
-*** 引用我的方法
+*** 包含文件
     使用 require 语句包含并执行 config.php 文件
     include_once()和 require_once()语句也是在脚本执行期间包括并运行指定文件。
 *** 数组处理
@@ -100,7 +86,6 @@
 ***** array_values() 返回数组中所有元素的值
 ***** array_keys() 返回数组中所有的键名
       array  array_keys ( array input [, mixed search_value [, bool strict]] )
-      
       如果指定了可选参数 search_value，则只返回指定该值的键名，否则 input 数组中的所有键名都会被返回。
      #+BEGIN_SRC php
        $lamp=array("a"=>"Linux","b"=>"Apache","c"=>"MySQL","d"=>"PHP");  //只使第一个必需的参数
@@ -116,7 +101,6 @@
 ***** array_flip()的作用是交换数组中的键和值。
 ***** array_reverse()作用是将原数组中的元素顺序翻转，创建新的数组并返回。
       第二个参数是可选项，如果指定为 TRUE，则元素的键名保持不变，否则键名将丢失。
-      
 **** 统计数组元素的个数和唯一性 
 ***** int count ( mixed var [, int mode] )
       第二个参数是可选的，规定函数的模式是否递归地计算多维数组中的数组的元素个数。可能的值是 0 和 1，0 为默认值，不检测多维数组，1 则检测多维数组。
@@ -124,7 +108,7 @@
 ***** array_unique()函数用于删除数组中重复的值，并返回没有重复值的新数组
 **** 使用回调函数处理数组的函数 
 ***** array_fileter()函数用回调函数过滤数组中的元素，返回按用户自定义函数过滤后的新数组
-       array array_filter ( array input [, callback callback] )
+      array array_filter ( array input [, callback callback] )
  该函数的第一个参数是必选项，要求输入一个被过滤的数组。第二个参数是可选项，将用户自定义的函数名以字符
  串形式传入。如果自定义过滤函数返回 true，则被操作的数组的当前值就会被包含在返回的结果数组中，并将结果
  组成一个新的数组。如果原数组是一个关联数组，键名保持不变。函数 array_filter()使用的代码如下所示：
@@ -136,13 +120,11 @@
 
          $array = array("a"=>1, "b"=>2, "c"=>3, "d"=>4, "e"=>5);          //声明值为整数序列的数组
       //使用函数 array_filter()将自定义的函数名以字符串的形式传给第二个参数
-         print_r(array_filter($array, "myFun"));                         //过滤后的结果输出 Array ( [b] => 2 [d] => 4 )
- ?>
+      print_r(array_filter($array, "myFun"));                         //过滤后的结果输出 Array ( [b] => 2 [d] => 4 )
+      ?>
 
- 在上面的代码中，array_filter()函数依次将$array 数组中的每个值传递到 myFun()函数中，如果 myFun()函数返回
- TRUE，则$array 数组的当前值会被包含在返回的结果数组中，并将结果组成一个新的数组返回。
-
-
+         在上面的代码中，array_filter()函数依次将$array 数组中的每个值传递到 myFun()函数中，如果 myFun()函数返回
+         TRUE，则$array 数组的当前值会被包含在返回的结果数组中，并将结果组成一个新的数组返回。
 ***** array_walk()函数对数组中的每个元素应用回调函数处理。如果成功则返回 TRUE，否则返回 FALSE。该函数有三个
        bool array_walk ( array &array, callback funcname [, mixed userdata] )
 
@@ -1107,336 +1089,7 @@
      $ cd ~/public_html
      $ php -S localhost:8000
 ** PHP 扩展
-*** 压缩  
-**** zip
-     Windows 用户需要在 php.ini 里使 php_zip.dll 可用，以便使用这些函数。
-     Linux 在编译 PHP 时用 --enable-zip 配置选项来提供 zip 支持。
-**** Bzip2
-**** LZF
-**** Rar
-**** ZipArchive
-*** excel
-    最近因项目需要，需要开发一个模块，把系统中的一些数据导出成 Excel，修改后再导回系统。就趁机对这个研究了一番，下面进行一些总结。
-    基本上导出的文件分为两种：
-    1：类 Excel 格式，这个其实不是传统意义上的 Excel 文件，只是因为 Excel 的兼容能力强，能够正确打开而已。修改这种文件后再保存，通常会提示你是否要转换成 Excel 文件。
-    优点：简单。
-    缺点：难以生成格式，如果用来导入需要自己分别编写相应的程序。
-    2：Excel 格式，与类 Excel 相对应，这种方法生成的文件更接近于真正的 Excel 格式。
-
-    如果导出中文时出现乱码，可以尝试将字符串转换成 gb2312，例如下面就把$yourStr 从 utf-8 转换成了 gb2312:
-    $yourStr = mb_convert_encoding(”gb2312″, “UTF-8″, $yourStr);
-
-    下面详细列举几种方法。
-    一、PHP 导出 Excel
-    1：第一推荐无比风骚的 PHPExcel，官方网站：http://www.codeplex.com/PHPExcel
-    导入导出都成，可以导出 office2007 格式，同时兼容 2003。
-    下载下来的包中有文档和例子，大家可以自行研究。
-    抄段例子出来：
-    #+BEGIN_SRC php
-     <?php   
-    /**  
-    */   
-   
-    /** Error reporting */   
-    error_reporting(E_ALL);   
-   
-    /** Include path **/   
-    set_include_path(get_include_path() . PATH_SEPARATOR . ‘../Classes/’);   
-   
-    /** PHPExcel */   
-    include ‘PHPExcel.php’;   
-   
-    /** PHPExcel_Writer_Excel2007 */   
-    include ‘PHPExcel/Writer/Excel2007.php’;   
-   
-    // Create new PHPExcel object   
-    echo date(’H:i:s’) . ” Create new PHPExcel object\n”;   
-    $objPHPExcel = new PHPExcel();   
-   
-    // Set properties   
-    echo date(’H:i:s’) . ” Set properties\n”;   
-    $objPHPExcel->getProperties()->setCreator(”Maarten Balliauw”);   
-    $objPHPExcel->getProperties()->setLastModifiedBy(”Maarten Balliauw”);   
-    $objPHPExcel-
-  
-    #+END_SRC
- 
-
-    2、使用 pear 的 Spreadsheet_Excel_Writer 类
-    下载地址：http://pear.php.net/package/Spreadsheet_Excel_Writer
-    此类依赖于 OLE,下载地址：http://pear.php.net/package/OLE
-    需要注意的是导出的 Excel 文件格式比较老，修改后保存会提示是否转换成更新的格式。
-    不过可以设定格式，很强大。
- #+BEGIN_SRC php
-    <?php   
-    require_once ‘Spreadsheet/Excel/Writer.php’;   
-   
-    // Creating a workbook   
-    $workbook = new Spreadsheet_Excel_Writer();   
-   
-    // sending HTTP headers   
-    $workbook->send(’test.xls’);   
-   
-    // Creating a worksheet   
-    $worksheet =& $workbook->addWorksheet(’My first worksheet’);   
-   
-    // The actual data   
-    $worksheet->write(0, 0, ‘Name’);   
-    $worksheet->write(0, 1, ‘Age’);   
-    $worksheet->write(1, 0, ‘John Smith’);   
-    $worksheet->write(1, 1, 30);   
-    $worksheet->write(2, 0, ‘Johann Schmidt’);   
-    $worksheet->write(2, 1, 31);   
-    $worksheet->write(3, 0, ‘Juan Herrera’);   
-    $worksheet->write(3, 1, 32);   
-   
-    // Let’s send the file   
-    $workbook->close();   
-    ?>  
- #+END_SRC
-
-    3:利用 smarty，生成符合 Excel 规范的 XML 或 HTML 文件
-    支持格式，非常完美的导出方案。不过导出来的的本质上还是 XML 文件，如果用来导入就需要另外处理了。
-    详细内容请见 rardge 大侠的帖子：http://bbs.chinaunix.net/viewthread.php?tid=745757
-
-    需要注意的是如果导出的表格行数不确定时，最好在模板中把”ss:ExpandedColumnCount=”5″ ss:ExpandedRowCount=”21″”之类的东西删掉。
-
-    4、利用 pack 函数打印出模拟 Excel 格式的断句符号，这种更接近于 Excel 标准格式，用 office2003 修改后保存，还不会弹出提示，推荐用这种方法。
-    缺点是无格式。
-
-
-    PHP 代码
-    <?php   
-    // Send Header   
-    header(”Pragma: public”);   
-    header(”Expires: 0″);   
-    header(”Cache-Control: must-revalidate, post-check=0, pre-check=0″);   
-    header(”Content-Type: application/force-download”);   
-    header(”Content-Type: application/octet-stream”);   
-    header(”Content-Type: application/download”);;   
-    header(”Content-Disposition: attachment;filename=test.xls “);   
-    header(”Content-Transfer-Encoding: binary “);   
-    // XLS Data Cell   
-   
-    xlsBOF();   
-    xlsWriteLabel(1,0,”My excel line one”);   
-    xlsWriteLabel(2,0,”My excel line two : “);   
-    xlsWriteLabel(2,1,”Hello everybody”);   
-   
-    xlsEOF();   
-   
-    function xlsBOF() {   
-    echo pack(”ssssss”, 0×809, 0×8, 0×0, 0×10, 0×0, 0×0);   
-    return;   
-    }   
-    function xlsEOF() {   
-    echo pack(”ss”, 0×0A, 0×00);   
-    return;   
-    }   
-    function xlsWriteNumber($Row, $Col, $Value) {   
-    echo pack(”sssss”, 0×203, 14, $Row, $Col, 0×0);   
-    echo pack(”d”, $Value);   
-    return;   
-    }   
-    function xlsWriteLabel($Row, $Col, $Value ) {   
-    $L = strlen($Value);   
-    echo pack(”ssssss”, 0×204, 8 + $L, $Row, $Col, 0×0, $L);   
-    echo $Value;   
-    return;   
-    }   
-    ?>   
-    不过笔者在 64 位 linux 系统中使用时失败了，断句符号全部变成了乱码。   
-   
-    5、使用制表符、换行符的方法   
-    制表符”\t”用户分割同一行中的列，换行符”\t\n”可以开启下一行。   
-    <?php   
-    header(”Content-Type: application/vnd.ms-execl”);   
-    header(”Content-Disposition: attachment; filename=myExcel.xls”);   
-    header(”Pragma: no-cache”);   
-    header(”Expires: 0″);   
-    /*first line*/   
-    echo “hello”.”\t”;   
-    echo “world”.”\t”;   
-    echo “\t\n”;   
-   
-    /*start of second line*/   
-    echo “this is second line”.”\t”;   
-    echo “Hi,pretty girl”.”\t”;   
-    echo “\t\n”;   
-    ?>  
-
-
-    6、使用 com
-    如果你的 PHP 可以开启 com 模块，就可以用它来导出 Excel 文件
-
-
-    PHP 代码
-    <?PHP   
-    $filename = “c:/spreadhseet/test.xls”;   
-    $sheet1 = 1;   
-    $sheet2 = “sheet2″;   
-    $excel_app = new COM(”Excel.application”) or Die (”Did not connect”);   
-    print “Application name: {$excel_app->Application->value}\n” ;   
-    print “Loaded version: {$excel_app->Application->version}\n”;   
-    $Workbook = $excel_app->Workbooks->Open(”$filename”) or Die(”Did not open $filename $Workbook”);   
-    $Worksheet = $Workbook->Worksheets($sheet1);   
-    $Worksheet->activate;   
-    $excel_cell = $Worksheet->Range(”C4″);   
-    $excel_cell->activate;   
-    $excel_result = $excel_cell->value;   
-    print “$excel_result\n”;   
-    $Worksheet = $Workbook->Worksheets($sheet2);   
-    $Worksheet->activate;   
-    $excel_cell = $Worksheet->Range(”C4″);   
-    $excel_cell->activate;   
-    $excel_result = $excel_cell->value;   
-    print “$excel_result\n”;   
-    #To close all instances of excel:   
-    $Workbook->Close;   
-    unset($Worksheet);   
-    unset($Workbook);   
-    $excel_app->Workbooks->Close();   
-    $excel_app->Quit();   
-    unset($excel_app);   
-    ?>  
-
-    一个更好的例子：http://blog.chinaunix.net/u/16928/showart_387171.html
-
-    一、PHP 导入 Excel
-
-    1：还是用 PHPExcel，官方网站：http://www.codeplex.com/PHPExcel。
-
-    2：使用 PHP-ExcelReader,下载地址: http://sourceforge.net/projects/phpexcelreader
-    举例：
-
-
-    PHP 代码
-    <?php   
-    require_once ‘Excel/reader.php’;   
-   
-    // ExcelFile($filename, $encoding);   
-    $data = new Spreadsheet_Excel_Reader();   
-   
-    // Set output Encoding.   
-    $data->setOutputEncoding(’utf8′);   
-   
-    $data->read(’ jxlrwtest.xls’);   
-   
-    error_reporting(E_ALL ^ E_NOTICE);   
-   
-    for ($i = 1; $i <= $data->sheets[0]['numRows']; $i++) {   
-    for ($j = 1; $j <= $data->sheets[0]['numCols']; $j++) {   
-    echo “\”".$data->sheets[0]['cells'][$i][$j].”\”,”;   
-    }   
-    echo “\n”;   
-    }   
-   
-    ?>  
-*** mPDF
-    支持 html 标签, 样式的导出(不是全部样式, 如 floating 只能部分)
-    使用了很多代码, 有荣誉的人很多
-**** install
-     在/ttfontdata/ /tmp/ /graph_cache/文件夹中有写权限
-     测试: [path_to_mpdf_folder]/mpdf/examples/
-     要改变/tmp/文件夹的目录, 看手册 ^_^
-*** 音频 ID3
-*** 图像
-**** 二维码 phpqrcode
-    phpqrcode.php 提供了一个关键的 png()方法，其中
-    参数$text 表示生成二位的的信息文本；
-    参数$outfile 表示是否输出二维码图片 文件，默认否；
-    参数$level 表示容错率，也就是有被覆盖的区域还能识别，分别是 L（QR_ECLEVEL_L，7%），M（QR_ECLEVEL_M，15%），Q（QR_ECLEVEL_Q，25%），H（QR_ECLEVEL_H，30%）； 
-    参数$size 表示生成图片大小，默认是 3；参数$margin 表示二维码周围边框空白区域间距值；
-    参数$saveandprint 表示是否保存二维码并显示。
-
-    . 代码如下:
-    #+BEGIN_SRC php
-      public static function png($text, $outfile=false, $level=QR_ECLEVEL_L, $size=3, $margin=4, $saveandprint=false)    
-                    {   
-                      $enc = QRencode::factory($level, $size, $margin);   
-                      return $enc->encodePNG($text, $outfile, $saveandprint=false);   
-                    }
-    #+END_SRC
-  
-    调用 PHP QR Code 非常简单，如下代码即可生成一张内容为"http://www.cnblogs.com/txw1958/"的二维码.
-
-    #+BEGIN_SRC php
-      include 'phpqrcode.php'; 
-      QRcode::png('http://www.cnblogs.com/txw1958/');
- 
-    #+END_SRC
-
-
-    那么实际应用中，我们会在二维码的中间加上自己的 LOGO，已增强宣传效果。那如何生成含有 logo 的二维码呢？其实原理很简单，先使用 PHP QR Code 生成一张二维码图片，然后再利用 php 的 image 相关函数，将事先准备好的 logo 图片加入到刚生成的原始二维码图片中间，然后重新生成一张新 的二维码图片。
-    . 代码如下:
-    #+BEGIN_SRC php
-      include 'phpqrcode.php';    
-      $value = 'http://www.cnblogs.com/txw1958/'; //二维码内容   
-      $errorCorrectionLevel = 'L';//容错级别   
-      $matrixPointSize = 6;//生成图片大小   
-      //生成二维码图片   
-      QRcode::png($value, 'qrcode.png', $errorCorrectionLevel, $matrixPointSize, 2);   
-      $logo = 'logo.png';//准备好的 logo 图片   
-      $QR = 'qrcode.png';//已经生成的原始二维码图   
-
-      if ($logo !== FALSE) {   
-        $QR = imagecreatefromstring(file_get_contents($QR));   
-        $logo = imagecreatefromstring(file_get_contents($logo));   
-        $QR_width = imagesx($QR);//二维码图片宽度   
-        $QR_height = imagesy($QR);//二维码图片高度   
-        $logo_width = imagesx($logo);//logo 图片宽度   
-        $logo_height = imagesy($logo);//logo 图片高度   
-        $logo_qr_width = $QR_width / 5;   
-        $scale = $logo_width/$logo_qr_width;   
-        $logo_qr_height = $logo_height/$scale;   
-        $from_width = ($QR_width - $logo_qr_width) / 2;   
-        //重新组合图片并调整大小   
-        imagecopyresampled($QR, $logo, $from_width, $from_width, 0, 0, $logo_qr_width,   
-                           $logo_qr_height, $logo_width, $logo_height);   
-      }   
-      //输出图片   
-      imagepng($QR, 'helloweixin.png');   
-      echo '<img src="helloweixin.png">';   
-
-    #+END_SRC
-    复制代码
-    复制代码
-    include 'phpqrcode.php';    
-    $value = 'http://www.cnblogs.com/txw1958/'; //二维码内容   
-    $errorCorrectionLevel = 'L';//容错级别   
-    $matrixPointSize = 6;//生成图片大小   
-    //生成二维码图片   
-    QRcode::png($value, 'qrcode.png', $errorCorrectionLevel, $matrixPointSize, 2);   
-    $logo = 'logo.png';//准备好的 logo 图片   
-    $QR = 'qrcode.png';//已经生成的原始二维码图   
-
-    if ($logo !== FALSE) {   
-    $QR = imagecreatefromstring(file_get_contents($QR));   
-    $logo = imagecreatefromstring(file_get_contents($logo));   
-    $QR_width = imagesx($QR);//二维码图片宽度   
-    $QR_height = imagesy($QR);//二维码图片高度   
-    $logo_width = imagesx($logo);//logo 图片宽度   
-    $logo_height = imagesy($logo);//logo 图片高度   
-    $logo_qr_width = $QR_width / 5;   
-    $scale = $logo_width/$logo_qr_width;   
-    $logo_qr_height = $logo_height/$scale;   
-    $from_width = ($QR_width - $logo_qr_width) / 2;   
-    //重新组合图片并调整大小   
-    imagecopyresampled($QR, $logo, $from_width, $from_width, 0, 0, $logo_qr_width,   
-    $logo_qr_height, $logo_width, $logo_height);   
-    }   
-    //输出图片   
-    imagepng($QR, 'helloweixin.png');   
-    echo '<img src="helloweixin.png">';   
-    复制代码
-    由于二维码允许有一定的容错性，一般的二维码即使在遮住部分但仍然能够解码，经常我们扫描二维码的时候扫描到甚至不到一半时就能解码扫描结果，这是因为生成器会将部分信息重复表示来提高其容错度，这就是为什么我们在二维码中间加个 LOGO 图片并不影响解码结果的原因。
 *** 扩展管理器
-**** pecl
-    下载: pecl install extname
-    这里可以指定版本   extname-0.1
-    或者 svn: $ svn checkout http://svn.php.net/repository/pecl/extname/trunk extname
-    然后在 php.ini 中激活扩展 ubuntu 中要创建软链接, 包含在文件夹中的, 所以不用修改 php.ini 文件 
-    php-config  php 配置信息
 **** Composer 依赖管理器
 ***** 安装 composer
      curl -sS https://getcomposer.org/installer | php
@@ -1444,23 +1097,23 @@
 ***** 设置镜像地址(中国的镜像地址 -g 参数表示全局配置)
       composer config -g repo.packagist composer https://packagist.phpcomposer.com
        然后在自己项目里面的 composer.json 文件里面添加如下：
-   "repositories": {
-          "packagist": {
-              "type": "composer",
-              "url": "https://packagist.phpcomposer.com"
-          }
-      }
-
+       #+BEGIN_SRC json
+         "repositories": {
+             "packagist": {
+                 "type": "composer",
+                 "url": "https://packagist.phpcomposer.com"
+             }
+         }
+       #+END_SRC
 ***** 声明依赖
-   在项目目录下创建一个 composer.json 文件，指明依赖，比如，你的项目依赖 monolog：
+      在项目目录下创建一个 composer.json 文件，指明依赖，比如，你的项目依赖 monolog：
    #+BEGIN_SRC json
-   {
-       "require": {
-           "monolog/monolog": "1.2.*"
-       }
-   }
+     {
+         "require": {
+             "monolog/monolog": "1.2.*"
+         }
+     }
    #+END_SRC
-
 ***** 安装依赖
       安装依赖非常简单，只需在项目目录下运行：
       composer install
@@ -1781,7 +1434,7 @@ $this->output->delete_cache('/foo/bar');
 : define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
 *** URI 安全
 : CodeIgniter 严格限制 URI 中允许出现的字符，以此来减少恶意数据传到你的应用程序的可能性。
-* php-mode
+* php layers
   执行区域  php-send-region
   查网页文档(这个好点, 查关键字的) C-c C-f         php-search-documentation
   看手册    C-c RET         php-browse-manual
@@ -1962,10 +1615,7 @@ $this->output->delete_cache('/foo/bar');
  #+END_SRC
 ** 临时域名
      ./natapp -authtoken=e5eb817e91aeee83 
-
 * 树的节点
-
-
 /**
  * Class TNode
  * 节点类
@@ -2180,19 +1830,3 @@ var_dump($tnode);
 $tree->delete(5);
 var_dump($tree);
 =======
-* window 下配置
-** hosts 目录 C:\Windows\System32\drivers\etc
-** apache2 配置
-   #+BEGIN_SRC conf
-   <VirtualHost _default_:80>
-ServerName hello.com
-DocumentRoot "D:\phpStudy\PHPTutorial\WWW\hello"
-  <Directory "D:\phpStudy\PHPTutorial\WWW\hello">
-    Options -Indexes -FollowSymLinks +ExecCGI
-    AllowOverride All
-    Order allow,deny
-    Allow from all
-    Require all granted
-  </Directory>
-</VirtualHost>
-   #+END_SRC

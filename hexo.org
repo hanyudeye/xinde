@@ -1,37 +1,15 @@
-* github pages 服务搭建博客
-#+BEGIN_SRC 
-使用github pages服务搭建博客的好处有：
-全是静态文件，访问速度快；
-免费方便，不用花一分钱就可以搭建一个自由的个人博客，不需要服务器不需要后台；
-可以随意绑定自己的域名，不仔细看的话根本看不出来你的网站是基于github的；
-数据绝对安全，基于github的版本管理，想恢复到哪个历史版本都行；
-博客内容可以轻松打包、转移、发布到其它平台；
-等等；
-#+END_SRC
-* Hexo 
+* Hexo A fast, simple & powerful blog framework, powered by [Node.js](http://nodejs.org).
+** 帮助  https://hexo.io/zh-cn/docs/writing
   创建 hexo new "My New Post"
-  编辑
   hexo s -g #生成并本地预览
+  hexo server -p 5000 设定端口
   hexo d -g #生成并上传
-** 准备环境
-   有一个github账号，没有的话去注册一个；
-   安装了node.js、npm，并了解相关基础知识；
-   安装了git for windows（或者其它git客户端）
-   1.每一个github账户最多只能创建一个这样可以直接使用域名访问的仓库。 创建仓库 username.github.io, 作为github pages 的仓库
-   2.Clone the repository git clone https://github.com/username/username.github.io
-   3.Push it
-   #+BEGIN_SRC shell
-     ~$git add --all
-     ~$git commit -m "Initial commit"
-     ~$git push -u origin master
-   #+END_SRC
 ** 绑定域名
    域名配置最常见有2种方式，CNAME和A记录，CNAME填写域名，A记录填写IP，
    由于不带www方式只能采用A记录，所以必须先ping一下你的用户名.github.io的IP，
    然后到你的域名DNS设置页，将A记录指向你ping出来的IP，将CNAME指向你的用户名.github.io，
    这样可以保证无论是否添加www都可以访问
-1.  [[file:image/cname.png][示例]] 
-2. 然后到你的github项目根目录新建一个名为CNAME的文件（无后缀），里面填写你的域名，加不加www看你自己喜好，因为经测试： 
+  [[file:image/cname.png][示例]] 
 ** 配置sshkey
    因为直接用用户名和密码太不安全
    
@@ -45,38 +23,24 @@
    此时你还需要配置：
 $ git config --global user.name "liuxianan"// 你的github用户名，非昵称
 $ git config --global user.email  "xxx@qq.com"// 填写你的github注册邮箱
-** 安装 hexo
+** 安装
+   $ npm install hexo-cli -g
    $ npm install -g hexo
-** 初始化
-   $ cd /f/Workspaces/hexo/
-   $ hexo init
-** 生成
-$ hexo g # 生成
-$ hexo s # 启动服务
-$ hexo server -p 5000 设定端口
-** 修改主题
-   下载
-   #+BEGIN_SRC shell
-     $ cd /f/Workspaces/hexo/
-     $ git clone https://github.com/litten/hexo-theme-yilia.git themes/yilia
-   #+END_SRC
-   修改_config.yml中的theme: landscape改为theme: yilia，然后重新执行hexo g来重新生成。
-** 清理
-   如果出现一些莫名其妙的问题，可以先执行hexo clean来清理一下public的内容，然后再来重新生成和发布。
-** 文件含义
-#+BEGIN_SRC 
-node_modules：是依赖包
-public：存放的是生成的页面
-scaffolds：命令生成文章等的模板
-source：用命令创建的各种文章
-themes：主题
-_config.yml：整个博客的配置
-db.json：source解析所得到的
-package.json：项目所需模块项目的配置信息
-#+END_SRC
+** 创建博客
+   $ hexo init blog
+   $ cd blog
+** 开启服务
+   $ hexo server
+** Create a new post
+   $ hexo new "Hello Hexo"
+** Generate static files
+   $ hexo generate
+** 发布
+   hexo d -g #生成并上传
+   deploy
+** 清理 hexo clean来清理一下public的内容，然后再来重新生成和发布。
 ** 上传到github
 首先，ssh key肯定要配置好。
-
 其次，配置_config.yml中有关deploy的部分：
 
 正确写法：
@@ -116,152 +80,6 @@ hexo d == hexo deploy
 
 hexo s -g #生成并本地预览
 hexo d -g #生成并上传
-* CNAME 
-  CNAME 被称为规范名字。这种记录允许您将多个名字映射到同一台计算机。 
-  通常用于同时提供WWW和MAIL服务的计算机。例如，有一台计算机名为“r0WSPFSx58.”（A记录）。
-  它同时提供WWW和MAIL服务，为了便于用户访问服务。可以为该计算机设置两个别名（CNAME）：WWW和MAIL。
-  同样的方法可以用于当您拥有多个域名需要指向同一服务器IP，此时您就可以将一个域名做A记录指向服务器IP，
-  然后将其他的域名做别名(即CNAME)到A记录的域名上；那么当您的服务器IP地址变更时，
-  您就可以不必对一个一个域名做更改指向了，只需要更改A记录的那个域名到服务器新IP上，
-  其他做别名（即CNAME）的那些域名的指向将自动更改到新的IP地址上（以上操作均需要在DNS处执行）。
-  上面的主机IP为假设，以便于理解。
-** CNAME 
-blog.nearwo.xyz
-* _config.yml
-#+BEGIN_SRC yaml 
-  # Hexo Configuration
-  ## Docs: http://hexo.io/docs/configuration.html
-  ## Source: https://github.com/hexojs/hexo/
-
-  # Site
-  title: Litten的博客
-  subtitle: 胆小认生，不易相处
-  description: 华中科技大学09级，就职于腾讯SNG。擅长各项前端技能，深入研究移动端开发与前端性能。非专业视觉设计师。此为博客一枚。 
-  author: Litten
-  email: litten225@qq.com
-  keywords: "前端,js,jquery,javascript,html5,开发者,程序猿,程序媛,极客,编程,代码,开源,IT网站,Developer,Programmer,Coder,Geek,html,css,css3,用户体验"
-
-  # URL
-  ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-  url: //litten.me
-  root: /
-  permalink: :year/:month/:day/:title/
-  tag_dir: tags
-  archive_dir: archives
-  category_dir: categories
-  code_dir: downloads/code
-  permalink_defaults:
-
-    # Directory
-    source_dir: source
-    public_dir: public
-
-    # Writing
-    new_post_name: :title.md # File name of new posts
-    default_layout: post
-    titlecase: false # Transform title into titlecase
-    external_link: true # Open external links in new tab
-    filename_case: 0
-    render_drafts: false
-    post_asset_folder: false
-    relative_link: false
-    highlight:                                                                                                                                                                                                   
-      enable: true                                                                                                                                                                                               
-      auto_detect: true                                                                                                                                                                                          
-      line_number: true                                                                                                                                                                                          
-      tab_replace: ''
-
-      # Category & Tag
-      default_category: uncategorized
-      category_map:
-        tag_map:
-
-          # Archives
-          ## 2: Enable pagination
-          ## 1: Disable pagination
-          ## 0: Fully Disable
-          archive: 1
-          category: 1
-          tag: 1
-
-          # Server
-          ## Hexo uses Connect as a server
-          ## You can customize the logger format as defined in
-          ## http://www.senchalabs.org/connect/logger.html
-          port: 4000
-          server_ip: localhost
-          logger: false
-          logger_format: dev
-
-          # Date / Time format
-          ## Hexo uses Moment.js to parse and display date
-          ## You can customize the date format as defined in
-          ## http://momentjs.com/docs/#/displaying/format/
-          date_format: YYYY-MM-DD
-          time_format: HH:mm:ss
-
-          # Pagination
-          ## Set per_page to 0 to disable pagination
-          per_page: 8
-          pagination_dir: page
-
-          # Disqus
-          disqus_shortname:
-
-            # Extensions
-            ## Plugins: https://github.com/hexojs/hexo/wiki/Plugins
-            ## Themes: https://github.com/hexojs/hexo/wiki/Themes
-            # plugins:
-              #  - hexo-generator-feed
-              #  - hexo-generator-baidu-sitemap
-              #  - hexo-generator-sitemap
-
-              theme: yilia
-              exclude_generator:
-
-                # Deployment
-                ## Docs: http://hexo.io/docs/deployment.html
-                #deploy:
-                  #  type: git
-                  #  repository: git@github.com:litten/litten.github.com.git
-                  #  branch: master
-
-                  deploy:
-                    type: rsync
-                    host: 120.24.181.238
-                    user: root
-                    root: /usr/local/nginx/litten.me/
-                    port: 22
-
-                    sitemap:
-                      path: sitemap.xml
-                      baidusitemap:
-                        path: baidusitemap.xm
-
-                        feed:
-                          type: atom
-                          path: atom.xml
-                          limit: 100
-
-                          jsonContent:
-                            meta: false
-                            pages: false
-                            posts:
-                              title: true
-                              date: true
-                              path: true
-                              text: false
-                              raw: false
-                              content: false
-                              slug: false
-                              updated: false
-                              comments: false
-                              link: false
-                              permalink: false
-                              excerpt: false
-                              categories: false
-                              tags: true
-#+END_SRC
 * 资源文件夹
 资源（Asset）代表 source 文件夹中除了文章以外的所有文件，例如图片、CSS、JS 文件等。比方说，如果你的Hexo项目中只有少量图片，那最简单的方法就是将它们放在 source/images 文件夹中。然后通过类似于 ![](/images/image.jpg) 的方法访问它们。
 文章资源文件夹
@@ -559,3 +377,4 @@ $ git checkout master
 按照[模板](../../.github/PULL_REQUEST_TEMPLATE.md)尽可能的详细填写相关信息。
 合并请求需要在所有主题样式中测试通过，并提供所表现功能的样例，如图像文件、在线演示网址等等。
 <a name="creating-releases"></a>
+  

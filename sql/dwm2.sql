@@ -6,7 +6,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-
+hh
 
 
 ALTER PROC [dbo].[DWM_Loading_RolePower]

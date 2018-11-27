@@ -1,421 +1,68 @@
-* 查找
-  #+BEGIN_SRC c
-  while( i<N && who!=current)
-  {i++}
-  if(i<N) return i; 
-  else return -1; 
-  #+END_SRC
 * 向左旋转字符串
-  #+BEGIN_SRC cpp
-    #include <string.h>
+  #+BEGIN_SRC c
+    //copyright@July、颜沙
+    //最终代码,July,updated again,2011.04.17。
     #include <iostream>
+    #include <string>
     using namespace std;
-            
-    void Swap(char* a,char* b)      //特此把交换函数,独立抽取出来。当然,不排除会 有人认为,此为多此一举。
-    {
-      char temp =*a;
-      ,*a = *b;
-      ,*b = temp;
-    }
-             
-    // Reverse the string between pStart and pEnd
-    void ReverseString(char* pStart, char* pEnd)
-    {
-      if(*pStart != '/0' && *pEnd != '/0')
-        //这句也可以是:if(pStart != NULL && pEnd != NULL)。
-        {
-          while(pStart <= pEnd)
-            {
-              Swap(pStart,pEnd);      //交换
-             
-              pStart++;
-              pEnd--;
-            }
-        }
-    }
-         
-    // Move the first n chars in a string to its end
-    char* LeftRotateString(char* pStr, unsigned int n)
-    {
-      if(pStr != NULL)
-        {
-          int nLength = static_cast<int>(strlen(pStr));
-          if(nLength >0 && n != 0 && n<nLength)    //n 可以=0,也可以说不该 =0。
-            //nLength 是整个字符串的长度,n 是左边的一部分,所以应该是
-            n<nLength。
-              //之前上传的答案(代码),就错在这里,最初的为 n>nLength,当然, 就是错的了。July、k,updated。
-              {
-                char* pFirstStart = pStr;
-                char* pFirstEnd = pStr + n - 1;
-                char* pSecondStart = pStr + n;
-                char* pSecondEnd = pStr + nLength - 1;
 
-                // reverse the first part of the string
-                ReverseString(pFirstStart, pFirstEnd);
-                // reverse the second part of the strint
-                ReverseString(pSecondStart, pSecondEnd);
-                // reverse the whole string
-                ReverseString(pFirstStart, pSecondEnd);
-              }
-        }
-      return pStr;
-    }
-
-    int main()
+    void rotate(string &str, int m)
     {
-      char a[11]="hello July";    //2、修正,以一个数组实现存储整个字符串
-      char *ps=a;
-      LeftRotateString(ps, 6);
-      for(;*ps!='/0';ps++)
-        cout<<*ps;
-      cout<<endl;
-      ps=NULL;    //代码规范
-      return 0;
-    }
-  
+
+      if (str.length() == 0 || m <= 0)
+        return;
+      int n = str.length();
+
+     if (m % n <= 0)
+     return;
+
+     int p1 = 0, p2 = m;
+     int k = (n - m) - n % m;
+
+     // 交换 p1,p2 指向的元素,然后移动 p1,p2
+     while (k --)
+     {
+     swap(str[p1], str[p2]);
+     p1++;
+     p2++;
+     }
+
+     // 重点,都在下述几行。
+     // 处理尾部,r 为尾部左移次数
+     int r = n - p2;
+     while (r--)
+     {
+     int i = p2;
+     while (i > p1)
+     {
+     swap(str[i], str[i-1]);
+     i--;
+     }
+     p2++;
+     p1++;
+     }
+     //比如一个例子,abcdefghijk
+     //                    p1    p2
+     //当执行到这里时,defghi a b c j k
+     //p2+m 出界 了,
+     //r=n-p2=2,所以以下过程,要执行循环俩次。
+
+     //第一次:j 步步前移,abcjk->abjck->ajbck->jabck
+     //然后,p1++,p2++,p1 指 a,p2 指 k。
+     //               p1    p2
+     //第二次:defghi j a b c k
+     //同理,此后,k 步步前移,abck->abkc->akbc->kabc。
+     }
+
+     int main()
+     {
+     string ch="abcdefghijk";
+     rotate(ch,3);
+     cout<<ch<<endl;
+     return 0;
+     }
   #+END_SRC
-
-上述,修正的俩处错误,如下所示:
-1、如上注释中所述:
-if(nLength >0 && n<nLength)
-//nLength 是整个字符串的长度吧,n 是左边的一部分,所以应该是 n<nLength。
-2、至于之前的主函数为什么编写错误,请看下面的注释:
-int main()
-{
-    char *ps="hello July"; //本身没错,但你不能对 ps 所指的字符串做任何修改。
-   //这句其实等价于:const char *ps = "hello July"
-    LeftShiftString( ps, 4 ); //而在这里,试图修改 ps 所指的字符串常量,所以将出现错误。
-    puts( ps );
-    return 0;
-}
-当然,上面的解释也不是完全正确的,正如 ivan 所说:从编程实践来说,不完全对。
-如果在一个大的工程里面,你怎么知道 ps 指向的是""字符串,还是 malloc 出来的东西?
-那么如何决定要不要对 ps 进行 delete?
-不过,至少第 26 题的思路一的代码,最终完整修正完全了。
-1.3、updated:
-    可能你还是感觉上述代码,有点不好理解,ok,下面再给出一段 c 实现的代码。
-然后,我们可以看到 c 的高效与简洁。
-              1. //copyright@ yiyibupt&&July
-              2. //已测试正确,July、updated,2011.04.17.
-              3. //不要小看每一段程序,July。
-              4. #include <cstdio>
-              5. #include <cstring>
-              6.
-              7. void rotate(char *start, char *end)
-              8. {
-              9.      while(start != NULL && end !=NULL && start<end)
-              10.     {
-              11.          char temp=*start;
-              12.          *start=*end;
-              13.          *end=temp;
-              14.          start++;
-              15.          end--;
-                                                                      12
-            16.     }
-            17.
-            18. }
-            19.
-            20. void leftrotate(char *p,int m)
-            21. {
-            22.     if(p==NULL)
-            23.         return ;
-            24.     int len=strlen(p);
-            25.     if(m>0&&m<=len)
-            26.     {
-            27.         char *xfirst,*xend;
-            28.         char *yfirst,*yend;
-            29.         xfirst=p;
-            30.         xend=p+m-1;
-            31.         yfirst=p+m;
-            32.         yend=p+len-1;
-            33.         rotate(xfirst,xend);
-            34.         rotate(yfirst,yend);
-            35.         rotate(p,p+len-1);
-            36.     }
-            37. }
-            38.
-            39. int main(void)
-            40. {
-            41.     char str[]="abcdefghij";
-            42.     leftrotate(str,3);
-            43.     printf("%s/n",str);
-            44.     return 0;
-            45. }
-第二节、两指针逐步翻转
-    先看下网友 litaoye 的回复:26.左旋转字符串跟 panda 所想,是一样的,即,
-以 abcdef 为例
-1. ab->ba
-2. cdef->fedc
-原字符串变为 bafedc
-3. 整个翻转:cdefab
-  //只要俩次翻转,且时间复杂度也为 O(n)。
-                                                  13
-2.1、在此,本人再奉献另外一种思路,即为本思路二:
-abc defghi,要 abc 移动至最后
-abc defghi->def abcghi->def ghiabc
-定义俩指针,p1 指向 ch[0],p2 指向 ch[m];
-一下过程循环 m 次,交换 p1 和 p2 所指元素,然后 p1++, p2++;。
-第一步,交换 abc 和 def ,
-abc defghi->def abcghi
-第二步,交换 abc 和 ghi,
-def abcghi->def ghiabc
-整个过程,看起来,就是 abc 一步一步 向后移动
-abc defghi
-def abcghi
-def ghi abc
- //最后的 复杂度是 O(m+n)
-以下是朋友颜沙针对上述过程给出的图解:
-                                           14
-2.2、各位读者注意了:
-   由上述例子九个元素的序列 abcdefghi,您已经看到,m=3 时,p2 恰好指到了数组最后
-一个元素,于是,上述思路没有问题。但如果上面例子中 i 的后面还有元素列?
-   即,如果是要左旋十个元素的序列:abcdefghij,ok,下面,就举这个例子,对 abcdefghij
-序列进行左旋转操作:
-如果 abcdef ghij 要变成 defghij abc:
-  abcdef ghij
-1. def abc ghij
-2. def ghi abc j  //接下来,j 步步前移
-3. def ghi ab jc
-4. def ghi a j bc
-5. def ghi j abc
-下面,再针对上述过程,画个图清晰说明下,如下所示:
-                                                    15
-   ok,咱们来好好彻底总结一下此思路二:(就 4 点,请仔细阅读):
-1、首先让 p1=ch[0],p2=ch[m],即让 p1,p2 相隔 m 的距离;
-2、判断 p2+m-1 是否越界,如果没有越界转到 3,否则转到 4(abcdefgh 这 8 个字母的字符
-串,以 4 左旋,那么初始时 p2 指向 e,p2+4 越界了,但事实上 p2 至 p2+m-1 是 m 个字符,
-可以再做一个交换)。
-3、不断交换*p1 与*p2,然后 p1++,p2++,循环 m 次,然后转到 2。
-                                                        16
-4、此时 p2+m-1 已经越界,在此只需处理尾巴。过程如下:
-      4.1 通过 n-p2 得到 p2 与尾部之间元素个数 r,即我们要前移的元素个数。
-      4.2 以下过程执行 r 次:
-               ch[p2]<->ch[p2-1],ch[p2-1]<->ch[p2-2],....,ch[p1+1]<->ch[p1];p1++;
-p2++;
-(特别感谢 tctop 组成员 big 的指正,tctop 组的修订 wiki 页面为:
-http://tctop.wikispaces.com/)
-       所以,之前最初的那个左旋转九个元素 abcdefghi 的思路在末尾会出现问题的(如
-果 p2 后面有元素就不能这么变,例如,如果是处理十个元素,abcdefghij 列?对的,就是
-这个意思),解决办法有两个:
-方法一(即如上述思路总结所述):
-def ghi abc jk
-当 p1 指向 a,p2 指向 j 时,由于 p2+m 越界,那么此时 p1,p2 不要变
-这里 p1 之后(abcjk)就是尾巴,处理尾巴只需将 j,k 移到 abc 之前,得到最终序列,代码
-编写如下:
-   1. //copyright@July、颜沙
-   2. //最终代码,July,updated again,2011.04.17。
-   3. #include <iostream>
-   4. #include <string>
-   5. using namespace std;
-   6.
-   7. void rotate(string &str, int m)
-   8. {
-   9.
-   10.     if (str.length() == 0 || m <= 0)
-   11.         return;
-   12.
-   13.     int n = str.length();
-   14.
-   15.     if (m % n <= 0)
-   16.         return;
-   17.
-   18.     int p1 = 0, p2 = m;
-   19.     int k = (n - m) - n % m;
-   20.
-   21.     // 交换 p1,p2 指向的元素,然后移动 p1,p2
-   22.     while (k --)
-   23.     {
-   24.         swap(str[p1], str[p2]);
-                                                                                 17
-   25.         p1++;
-   26.         p2++;
-   27.     }
-   28.
-   29.     // 重点,都在下述几行。
-   30.     // 处理尾部,r 为尾部左移次数
-   31.     int r = n - p2;
-   32.     while (r--)
-   33.     {
-   34.         int i = p2;
-   35.         while (i > p1)
-   36.         {
-   37.             swap(str[i], str[i-1]);
-   38.             i--;
-   39.         }
-   40.         p2++;
-   41.         p1++;
-   42.     }
-   43.     //比如一个例子,abcdefghijk
-   44.     //                    p1    p2
-   45.     //当执行到这里时,defghi a b c j k
-   46.     //p2+m 出界 了,
-   47.     //r=n-p2=2,所以以下过程,要执行循环俩次。
-   48.
-   49.     //第一次:j 步步前移,abcjk->abjck->ajbck->jabck
-   50.     //然后,p1++,p2++,p1 指 a,p2 指 k。
-   51.     //               p1    p2
-   52.     //第二次:defghi j a b c k
-   53.     //同理,此后,k 步步前移,abck->abkc->akbc->kabc。
-   54. }
-   55.
-   56. int main()
-   57. {
-   58.     string ch="abcdefghijk";
-   59.     rotate(ch,3);
-   60.     cout<<ch<<endl;
-   61.     return 0;
-   62. }
-    方法二:
-def ghi abc jk
-当 p1 指向 a,p2 指向 j 时,那么交换 p1 和 p2,
-此时为:
-def ghi jbc ak
-                                                   18
-p1++,p2++,p1 指向 b,p2 指向 k,继续上面步骤得:
-def ghi jkc ab
-p1++,p2 不动,p1 指向 c,p2 指向 b,p1 和 p2 之间(cab)也就是尾巴,
-那么处理尾巴(cab)需要循环左移一定次数(而后的具体操作步骤已在下述程序的注释中已
-详细给出)。
-   根据方案二,不难写出下述代码(已测试正确):
-    1. #include <iostream>
-    2. #include <string>
-    3. using namespace std;
-    4.
-    5. //颜沙,思路二之方案二,
-    6. //July、updated,2011.04.16。
-    7. void rotate(string &str, int m)
-    8. {
-    9.       if (str.length() == 0 || m < 0)
-    10.          return;
-    11.
-    12.      //初始化 p1,p2
-    13.      int p1 = 0, p2 = m;
-    14.      int n = str.length();
-    15.
-    16.      // 处理 m 大于 n
-    17.      if (m % n == 0)
-    18.          return;
-    19.
-    20.      // 循环直至 p2 到达字符串末尾
-    21.      while(true)
-    22.      {
-    23.          swap(str[p1], str[p2]);
-    24.          p1++;
-    25.          if (p2 < n - 1)
-    26.              p2++;
-    27.          else
-    28.              break;
-    29.      }
-    30.
-    31.      // 处理尾部,r 为尾部循环左移次数
-    32.      int r = m - n % m;  // r = 1.
-    33.      while (r--)   //外循环执行一次
-    34.      {
-    35.          int i = p1;
-    36.          char temp = str[p1];
-                                                 19
-  37.         while (i < p2)     //内循环执行俩次
-  38.         {
-  39.              str[i] = str[i+1];
-  40.              i++;
-  41.         }
-  42.         str[p2] = temp;
-  43.     }
-  44.     //举一个例子
-  45.     //abcdefghijk
-  46.     //当执行到这里的时候,defghiabcjk
-  47.     //       p1       p2
-  48.     //defghi a b c j k,a 与 j 交换,jbcak,然后,p1++,p2++
-  49.     //          p1      p2
-  50.     //        j b c a k,b 与 k 交换,jkcab,然后,p1++,p2 不动,
-  51.
-  52.     //r = m - n % m= 3-11%3=1,即循环移位 1 次。
-  53.     //             p1   p2
-  54.     //        j k c a b
-  55.     //p1 所指元素 c 实现保存在 temp 里,
-  56.     //然后执行此条语句:str[i] = str[i+1]; 即 a 跑到 c 的位置处,a_b
-  57.     //i++,再次执行:str[i] = str[i+1],ab_
-  58.     //最后,保存好的 c 填入,为 abc,所以,最终序列为 defghi jk abc。
-  59.     //July、updated,2011.04.17 晚,送走了她。
-  60. }
-  61.
-  62. int main()
-  63. {
-  64.     string ch="abcdefghijk";
-  65.     rotate(ch,3);
-  66.     cout<<ch<<endl;
-  67.     return 0;
-  68. }
-注意:上文中都是假设 m<n,且如果鲁棒点的话令 m=m%n,这样 m 允许大于 n。另外,
-各位要记得处理指针为空的情况。
-还可以看下这段代码:
-          1. /*
-          2.   * myinvert2.cpp
-          3.   *
-          4.   *  Created on: 2011-5-11
-          5.   *       Author: BigPotato
-          6.   */
-                                                            20
-7. #include<iostream>
-8. #include<string>
-9. #define positiveMod(m,n) ((m) % (n) + (n)) % (n)
-10.
-11. /*
-12. *左旋字符串 str,m 为负数时表示右旋 abs(m)个字母
-13. */
-14. void rotate(std::string &str, int m) {
-15.     if (str.length() == 0)
-16.         return;
-17.     int n = str.length();
-18.     //处理大于 str 长度及 m 为负数的情况,positiveMod 可以取得 m 为负数时对 n 取
-    余得到正数
-19.     m = positiveMod(m,n);
-20.     if (m == 0)
-21.         return;
-22.     //    if (m % n <= 0)
-23.     //         return;
-24.     int p1 = 0, p2 = m;
-25.     int round;
-26.     //p2 当前所指和之后的 m-1 个字母共 m 个字母,就可以和 p2 前面的 m 个字母交
-    换。
-27.     while (p2 + m - 1 < n) {
-28.         round = m;
-29.         while (round--) {
-30.             std::swap(str[p1], str[p2]);
-31.             p1++;
-32.             p2++;
-33.         }
-34.     }
-35.     //剩下的不足 m 个字母逐个交换
-36.     int r = n - p2;
-37.     while (r--) {
-38.         int i = p2;
-39.         while (i > p1) {
-40.             std::swap(str[i], str[i - 1]);
-41.             i--;
-42.         }
-43.         p2++;
-44.         p1++;
-45.     }
-46. }
-47.
-48. //测试
-                                                           21
-          49. int main(int argc, char **argv) {
-          50.     //    std::cout << ((-15) % 7 + 7) % 7 << std::endl;
-          51.     //    std::cout << (-15) % 7 << std::endl;
-          52.     std::string ch = "abcdefg";
-          53.     int len = ch.length();
-          54.     for (int m = -2 * len; m <= len * 2; m++) {
-          55.         //由于传给 rotate 的是 string 的引用,所以这里每次调用都用了一个新的
-              字符串
-          56.         std::string s = "abcdefg";
-          57.         rotate(s, m);
-          58.         std::cout << positiveMod(m,len) << ": " << s << std::endl;
-          59.     }
-          60.
-          61.     return 0;
-          62. }
+  
 第三节、通过递归转换,缩小问题之规模
    本文最初发布时,网友留言 bluesmic 说:楼主,谢谢你提出的研讨主题,很有学术和实
 践价值。关于思路二,本人提一个建议:思路二的代码,如果用递归的思想去简化,无论代
@@ -424,7 +71,7 @@ p1++,p2 不动,p1 指向 c,p2 指向 b,p1 和 p2 之间(cab)也就是尾巴,
    举例来说,设字符串总长度为 L,左侧要旋转的部分长度为 s1,那么当从左向右循环交
 换长度为 s1 的小段,直到最后,由于剩余的部分长度为 s2(s2==L%s1)而不能直接交换。
    该问题可以递归转化成规模为 s1+s2 的,方向相反(从右向左)的同一个问题。随着递归
-的进行,左右反复回荡,直到某一次满足条件 L%s1==0 而交换结束。
+   的进行,左右反复回荡,直到某一次满足条件 L%s1==0 而交换结束。
    举例解释一下:
    设原始问题为:将“123abcdefg”左旋转为“abcdefg123”,即总长度为 10,旋转部("123")
 长度为 3 的左旋转。按照思路二的运算,演变过程为
@@ -12402,3 +12049,4 @@ July、2012.04.03。
 起编程的乐趣,共同迎接互联网无私分享时代的来临!
                  --July,2012.04.03 做客有鱼网公司所题。
                                                        401
+                                                       
