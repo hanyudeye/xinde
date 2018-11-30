@@ -1,127 +1,126 @@
 * elisp(橡皮泥)
-** 基本功能(基本橡皮数字 和操作)
-*** 数据操作
-**** 算术操作
-     1+
-     1-
-     + - * / % mod(允许浮点数）
-     floor  ffloor 区别是一个返回整数，一个返回.0 的小数 
-     fceiling
-     fround
-     sin
-     cos
-     tan
-     asin
-     acos
-     random 随机数
-***** 位操作 
-      lsh 左移
-      ash 符号位  如果是负数移位，就有区别
-      logand 逻辑与
-      logior 逻辑或
-      logxor 异或
-      lognot 非
-**** 字串操作
-  string-or-null-p
-  char-or-string-p
-  make-string count character  从字符创造字串
-  (make-string 5 ?x) "xxxxx"
-  (string ?a ?b ?c) 拼接 
-  substring
-  split-string
-  char-equal
-  string=
-  number-to-string number
-  string-to-number
-  char-to-string
-  format string &rest object
-  format-message string &rest objects
-  downcase
-**** 列表操作
-     consp object
-     atom  判断是不是基本元素
-     listp
-     null
-     访问元素
-  car
-  cdr
-  car-safe
-  pop 后面只能变量
-  nth n list
-  nthcdr n list 
-  last list n   
-  safe-length list
+** 数据操作
+*** 算术操作
+    1+
+    1-
+    + - * / % mod(允许浮点数）
+    floor  ffloor 区别是一个返回整数，一个返回.0 的小数 
+    fceiling
+    fround
+    sin
+    cos
+    tan
+    asin
+    acos
+    random 随机数
+**** 位操作 
+     lsh 左移
+     ash 符号位  如果是负数移位，就有区别
+     logand 逻辑与
+     logior 逻辑或
+     logxor 异或
+     lognot 非
+*** 字串操作
+ string-or-null-p
+ char-or-string-p
+ make-string count character  从字符创造字串
+ (make-string 5 ?x) "xxxxx"
+ (string ?a ?b ?c) 拼接 
+ substring
+ split-string
+ char-equal
+ string=
+ number-to-string number
+ string-to-number
+ char-to-string
+ format string &rest object
+ format-message string &rest objects
+ downcase
+*** 列表操作
+    consp object
+    atom  判断是不是基本元素
+    listp
+    null
+    访问元素
+ car
+ cdr
+ car-safe
+ pop 后面只能变量
+ nth n list
+ nthcdr n list 
+ last list n   
+ safe-length list
 
-  构建
-  (cons 1 '(2))
-  append
+ 构建
+ (cons 1 '(2))
+ append
 
-  修改
-  push element listname
+ 修改
+ push element listname
 
-  关联列表
-       ((pine . cones)
-        (oak . acorns)
-        (maple . seeds))
+ 关联列表
+      ((pine . cones)
+       (oak . acorns)
+       (maple . seeds))
 
-  属性列表
-**** 列表扩展操作
-     sequenceq 是否是序列
-     length
-     elt sequence index  返回第几个元素, 从 0 开始
-     copy-sequence
-     reverse sequence
-     数组 [ 23 2 3]
-     arrayp object 是否数组
-     向量 数据类型不同的数组
-*** 全局变量赋值
-    set setq
-*** 交互函数
-    #+BEGIN_SRC elisp
-      (defun fun()
-        " 说明"
-        (interactive "p") ;;添加这一段
-        (message "xxx")
-        )  
-    #+END_SRC
-**** 交互方式
-     (interactive "r")  会将点位所在区域的开始值和结束值作为参量 要选择一个区域，不然取同一个值
-     (interactive "BAppend to buffer:") 提示输入缓冲区名字, 得到的值是缓冲区名
-*** 编辑器内部
-    buffer-name
-    buffer-file-name
-    switch-to-buffer
-    point
-    point-min
-    point-max
-    buffer-size
-    goto-char 
-    push-mark
-    beginning-of-buffer
-    mark-whole-buffer
-    append-to-buffer
-    copy-to-buffer
-*** 保存流程
-    save-excursion
-*** 加载文件
-***** load (load $FILENAME)
-***** autoload
-***** require
-***** 流程
-****** 程序段        
+ 属性列表
+*** 列表扩展操作
+    sequenceq 是否是序列
+    length
+    elt sequence index  返回第几个元素, 从 0 开始
+    copy-sequence
+    reverse sequence
+    数组 [ 23 2 3]
+    arrayp object 是否数组
+    向量 数据类型不同的数组
+** 全局变量赋值
+   set setq
+** 交互函数
+   #+BEGIN_SRC elisp
+     (defun fun()
+       " 说明"
+       (interactive "p") ;;添加这一段
+       (message "xxx")
+       )  
+   #+END_SRC
+*** 交互方式
+    (interactive "r")  会将点位所在区域的开始值和结束值作为参量 要选择一个区域，不然取同一个值
+    (interactive "BAppend to buffer:") 提示输入缓冲区名字, 得到的值是缓冲区名
+** 编辑器内部
+   buffer-name
+   buffer-file-name
+   switch-to-buffer
+   point
+   point-min
+   point-max
+   buffer-size
+   goto-char 
+   push-mark
+   beginning-of-buffer
+   mark-whole-buffer
+   append-to-buffer
+   copy-to-buffer
+** 保存流程
+   save-excursion
+** 加载文件
+**** load (load $FILENAME)
+**** autoload
+**** require
+**** 流程
+***** 程序段        
+     #+BEGIN_SRC lisp
+       (progn (print "The first form")
+              (print "The second form")
+              (print "The third form"))
+     #+END_SRC 
+    prog2, prog3 的含义就是 返回的参数是哪一个 
+***** if
       #+BEGIN_SRC lisp
-        (progn (print "The first form")
-               (print "The second form")
-               (print "The third form"))
-      #+END_SRC 
-     prog2, prog3 的含义就是 返回的参数是哪一个 
-****** if
-       #+BEGIN_SRC lisp
-         (if nil
-             (print 'true)
-           'very-false)
-    #+END_SRC
-* emacs-lisp 层
+        (if nil
+            (print 'true)
+          'very-false)
+   #+END_SRC
+* emacs lisp layers
 ** 执行 ，e f
 ** 调试  
 ，d f 设置断点
@@ -142,15 +141,31 @@ The [[https://github.com/syl20bnr/spacemacs/blob/develop/layers/%2Bemacs/semanti
 | ~SPC m = o~ | format all on one line  |
 | ~SPC m = s~ | format current sexp     |
 
+** Debugging
+   To start debugging:
+
+   | Key Binding | Description                                                            |
+   |-------------+------------------------------------------------------------------------|
+   | ~SPC m d f~ | on a =defun= symbol toggle on the instrumentalisation of the function  |
+   | ~SPC m d F~ | on a =defun= symbol toggle off the instrumentalisation of the function |
+   | ~SPC m d t~ | insert =(debug)= to print the stack trace and re-evaluate the function |
+
+   In =edebug-mode= (=*Debugging*= is displayed in the minor modes segment of the
+   mode line)
+
+   TODO
+
+   In =debugger-mode= (=Debugger= is displayed in major mode segment of the mode
+   line)
+
+   TODO
 * elisp 
 1 hello world
 假定文件hello.elisp的内容如下：
 
 (print "hello world")
 使用下面的命令来运行代码：
-
 emacs -Q --script <脚本文件>
-
 执行的结果如下：
 
 xuyang@debian-xuyang:~$ emacs -Q --script ./hello.elisp

@@ -1,296 +1,79 @@
-在5.7及之后的版本中，若要以root用户登录系统，必须使用sudo
-* 表视图
-桶, 文件柜
-|   |   |   |   |   |
-|---+---+---+---+---|
-|   |   |   |   |   |
-|---+---+---+---+---|
-|   |   |   |   |   |
-| + | + | + | + | + |
-|   |   |   |   |   |
-|   |   |   |   |   |
-表
-
-| ID | name   | age | address  | phone |
-|----+--------+-----+----------+-------|
-|  1 | xiaoli |  30 | changzou | 12345 |
-|  2 | xiaom  |  32 | suzou    | 12334 |
-|  3 | hy     |  23 | nixia    | 32322 |
-
 * mysql
+  在5.7及之后的版本中，若要以root用户登录系统，必须使用sudo
 ** 用户登录
    mysql -h 主机地址 -u 用户名 －p 用户密码 
    mysql -uroot -p 
+** 无密码登录
+  $HOME/.my.cnf文件来读取特定的启动命令和设置。
+  [client]
+  password = test
+  $ chmod 400 .my.cnf
 ** 创建用户
-#格式:grant 权限 on 数据库.* to 用户名@登录主机 identified by '密码'
-/*
-如，增加一个用户 user1 密码为 password1，让其可以在本机上登录， 并对所有数据库有查询、插入、修改、删除的权限。首先用以 root 用户连入 mysql，然后键入以下命令： 
-grant select,insert,update,delete on *.* to user1@localhost Identified by "password1"; 
-如果希望该用户能够在任何机器上登陆 mysql，则将 localhost 改为"%"。 
-如果你不想 user1 有密码，可以再打一个命令将密码去掉。 
-grant select,insert,update,delete on mydb.* to user1@localhost identified by ""; 
-*/
-
-grant all privileges on wpj1105.* to sunxiao@localhost identified by '123';   #all privileges 所有权限
-grant all privileges on *.* to wuming@localhost identified by 'wuming';   #all privileges 所有权限
-
-#----------------------------
-** MySql 数据库操作基础
-*** #显示数据库
-    show databases;
-
-*** #判断是否存在数据库 wpj1105,有的话先删除
-    drop database if exists wpj1105;
-
-*** #创建数据库
-    create database wpj1105;
-
-*** #删除数据库
-    drop database wpj1105;
-
-*** #使用该数据库
-use wpj1105;
-
-*** #显示数据库中的表
-    show tables;
-
-*** #先判断表是否存在,存在先删除
-    drop table if exists student;
-
-*** #创建表
-create table student(
-id int auto_increment primary key,
-name varchar(50),
-sex varchar(20),
-date varchar(50),
-content varchar(100)
-)default charset=utf8;
-
-*** #删除表
-drop table student;
-
-*** #查看表的结构
-describe student;  #可以简写为 desc student;
-
-*** #插入数据
-insert into student values(null,'aa','男','1988-10-2','......');
-insert into student values(null,'bb','女','1889-03-6','......');
-insert into student values(null,'cc','男','1889-08-8','......');
-insert into student values(null,'dd','女','1889-12-8','......');
-insert into student values(null,'ee','女','1889-09-6','......');
-insert into student values(null,'ff','null','1889-09-6','......');
-*** #查询表中的数据
-select * from student;
-select id,name from student;
-
-*** #修改某一条数据
-update student set sex='男' where id=4;
-
-*** #删除数据
-delete from student where id=5;
-*** # and 且
-select * from student where date>'1988-1-2' and date<'1988-12-1';
-
-# or 或
-select * from student where date<'1988-11-2' or date>'1988-12-1';
+   #格式:grant 权限 on 数据库.* to 用户名@登录主机 identified by '密码'
+   /*
+   如，增加一个用户 user1 密码为 password1，让其可以在本机上登录， 并对所有数据库有查询、插入、修改、删除的权限。首先用以 root 用户连入 mysql，然后键入以下命令： 
+   grant select,insert,update,delete on *.* to user1@localhost Identified by "password1"; 
+   如果希望该用户能够在任何机器上登陆 mysql，则将 localhost 改为"%"。 
+   如果你不想 user1 有密码，可以再打一个命令将密码去掉。 
+   grant select,insert,update,delete on mydb.* to user1@localhost identified by ""; 
+   */
    
-#between
-select * from student where date between '1988-1-2' and '1988-12-1';
+   grant all privileges on wpj1105.* to sunxiao@localhost identified by '123';   #all privileges 所有权限
+   grant all privileges on *.* to wuming@localhost identified by 'wuming';   #all privileges 所有权限
+** 基础操作
+*** 显示数据库 show databases;
+*** 是否存在数据库 drop database if exists Databasename;
+*** 创建数据库 create database Databasename;
+*** 删除数据库 drop database wpj1105;
+*** 使用该数据库 use wpj1105;
+*** 显示数据库中的表 show tables;
+*** 先判断表是否存在,存在先删除 drop table if exists student;
+*** 创建表
+    create table student(
+    id int auto_increment primary key,
+    name varchar(50),
+    sex varchar(20),
+    date varchar(50),
+    content varchar(100)
+    )default charset=utf8;
 
-*** #in 查询制定集合内的数据
-select * from student where id in (1,3,5);
-
-*** #排序 asc 升序  desc 降序
+*** 删除表 drop table student;
+*** 查看表的结构 describe student;  #可以简写为 desc student;
+*** 插入数据 insert into student values(null,'aa','男','1988-10-2','......');
+*** 查询表中的数据 select * from student;
+*** 修改某一条数据 update student set sex='男' where id=4;
+*** 删除数据 delete from student where id=5;
+*** 条件限制
+    select * from student where id in (1,3,5);
+    in
+    and 
+    or 
+    <> /!=
+    > <
+*** 排序 asc 升序  desc 降序
 select * from student order by id asc;
-
-#分组查询 #聚合函数 
-select max(id),name,sex from student group by sex;
-
-select min(date) from student;
-
-select avg(id) as '求平均' from student;
-
-select count(*) from student;   #统计表中总数
-
-select count(sex) from student;   #统计表中性别总数  若有一条数据中 sex 为空的话,就不予以统计~
-
-select sum(id) from student;
-
-#查询第 i 条以后到第 j 条的数据(不包括第 i 条)
-select * from student limit 2,5;  #显示 3-5 条数据
-
-*** #巩固练习
-create table c(
- id int primary key auto_increment,
- name varchar(10) not null,
- sex varchar(50) ,  #DEFAULT '男' ,
- age int unsigned, #不能为负值(如为负值 则默认为 0)
- sno int unique    #不可重复
-);
-
-drop table c;
-desc c;
-
-insert into c (id,name,sex,age,sno) values (null,'涛哥','男',68,1);
-insert into c (id,name,sex,age,sno) values (null,'aa','男',68,2);
-insert into c (id,name,sex,age,sno) values (null,'平平','男',35,3);
-...
-
-select * from c;
-
-#修改数据 
-update c set age=66 where id=2;
-update c set name='花花',age=21,sex='女' where id=2
-delete from c where age=21;
-
-#常用查询语句
-select name,age ,id from c
-select * from c where age>40 and age<60;  #and
-select * from c where age<40 or age<60;  #or
-select * from c where age between 40 and 60 #between
-select * from c where age in (30,48,68,99);     #in 查询指定集合内的数据
-select * from c order by age desc;      #order by（asc 升序 des 降序）
-
-#分组查询
-select name,max(age) from c group by sex;  #按性别分组查年龄最大值
-#聚合函数
-select min(age) from c;
-select avg(age) as '平均年龄 ' from c;
-select count(*) from c;  #统计表中数据总数
-select sum(age) from c;
-
-#修改表的名字
-#格式:alter table tbl_name rename to new_name
-alter table c rename to a;
- 
-#表结构修改
-create table test
-(
-id int not null auto_increment primary key, #设定主键
-name varchar(20) not null default 'NoName', #设定默认值
-department_id int not null,
-position_id int not null,
-unique (department_id,position_id) #设定唯一值
-);
-
-#修改表的名字
-#格式:alter table tbl_name rename to new_name
-alter table test rename to test_rename;
-
-#向表中增加一个字段(列)
-#格式:alter table tablename add columnname type;/alter table tablename add(columnname type);
-alter table test add  columnname varchar(20);
-
-#修改表中某个字段的名字
-alter table tablename change columnname newcolumnname type;  #修改一个表的字段名
-alter table test change name uname varchar(50);
-
-select * from test;
-
-#表 position 增加列 test
-alter table position add(test char(10));
-#表 position 修改列 test
-alter table position modify test char(20) not null;
-#表 position 修改列 test 默认值
-alter table position alter test set default 'system';
-#表 position 去掉 test 默认值
-alter table position alter test drop default;
-#表 position 去掉列 test
-alter table position drop column test;
-#表 depart_pos 删除主键
-alter table depart_pos drop primary key;
-#表 depart_pos 增加主键
-alter table depart_pos add primary key PK_depart_pos
-(department_id,position_id);
-
-#用文本方式将数据装入数据库表中（例如 D:/mysql.txt）
-load data local infile "D:/mysql.txt" into table MYTABLE;
-
-*** #导入.sql 文件命令（例如 D:/mysql.sql）
-source d:/mysql.sql;  #或者  /. d:/mysql.sql;
-* sqlmode
-** 开启服务
-   sql-start
- | ~SPC m s r~ | Send the selected region to the SQLi buffer |
-** 特性  
-*** 语法高亮 
-  - ANSI
-  - DB2
-  - Informix
-  - Ingres
-  - Interbase
-  - Linter
-  - Microsoft
-  - MySQL
-  - Oracle
-  - Postgres
-  - Solid
-  - SQLite
-  - Sybase
-  - Vertica
-*** 交互
-- REPL support via =SQLi= buffer.
-*** 语法检查
-	gem install sqlint
-*** 开头大写
-    sql-capitalize-keywords t
-    黑名单  sql-capitalize-keywords-blacklist '("name" "varchar")
-*** MS SQL server with ms-sql
-If you’re trying to use MS SQL Server in sql-mode, and the Microsoft command-line query processors osql and isql are not available to you, try jisql, a free, Java-based “workalike” provided by the clever (and generous) folks at Xigole Systems, Inc. http://www.xigole.com/software/jisql.jsp. Apache license.
-
-Another option for users lacking access to osql/isql is sqsh, another Java-based command-line SQL client. The primary advantage to sqsh is that it is in the Debian/Ubuntu repositories (I can’t speak for Fedora, etc.) making it easier to install. When using sqsh to connect to SQL Server, use M-x sql-sybase, not sql-ms. Otherwise, Emacs won’t pass the right command-line parameters and it won’t connect.
-
-I wrote a Python utility that is a drop in replacement for sqlcmd/osql as far as SQLi is concerned. You can find it in https://github.com/sebasmonia/sqlcmdline. It uses ODBC so in theory should work in platforms other than Windows. customize-group SQL, change Sql Ms Program to “/path/to/sqlcmdline” (or compiled/batch if under Windows), and for Emacs up to version 25 you still need to fix the prompt-regex as mentioned below.
-
-– SebastianMonia
-** Key bindings
-*** Highlighting
- | Key Binding | Description                       |
- |-------------+-----------------------------------|
- | ~SPC m h k~ | select a SQL dialect to highlight |
-
-*** Inferior Process Interactions (SQLi)
- | Key Binding | Description                 |
- |-------------+-----------------------------|
- | ~SPC m b b~ | show the SQLi buffer name   |
- | ~SPC m b s~ | set the SQLi buffer         |
- | ~SPC m l a~ | List all objects            |
- | ~SPC m l t~ | list all objects in a table |
-
-*** Send SQL queries to SQLi:
- | KeyBinding | Description                                                                           |
- |-------------+---------------------------------------------------------------------------------------|
- | ~SPC m s b~ | Send the whole buffer to the SQLi buffer                                              |
- | ~SPC m s B~ | Send the whole buffer to the SQLi buffer and switch to it in =insert state=           |
- | ~SPC m s i~ | Start the SQLi process                                                                |
- | ~SPC m s f~ | Send the paragraph around point to the SQLi buffer                                    |
- | ~SPC m s F~ | Send the paragraph around point to the SQLi buffer and switch to it in =insert state= |
- | ~SPC m s q~ | Prompt for a string to send to the SQLi buffer                                        |
- | ~SPC m s Q~ | Prompt for a string to send to the SQLi buffer and switch to it in =insert state=     |
- | ~SPC m s r~ | Send the selected region to the SQLi buffer                                           |
- | ~SPC m s R~ | Send the selected region to the SQLi buffer and switch to it in =insert state=        |
-
-*** SQLi buffer
- | Key Binding | Description                                                  |
- |-------------+--------------------------------------------------------------|
- | ~SPC m b r~ | rename buffer (follow up in the SQL buffer with ~SPC m b s~) |
- | ~SPC m b S~ | save the current connection                                  |
-
-*** Code Formating
- | ~SPC m = c~ | capitalize SQL keywords in region (if capitalize is enabled) |
+*** 分组查询 select max(id),name,sex from student group by sex;
+*** 聚合函数 
+    select min(date) from student;
+    select avg(id) as '求平均' from student;
+    select count(*) from student;   #统计表中总数
+    select count(sex) from student;   #统计表中性别总数  若有一条数据中 sex 为空的话,就不予以统计~
+    select sum(id) from student;
+*** 查询第 i 条以后到第 j 条的数据(不包括第 i 条) select * from student limit 2,5;  #显示 3-5 条数据
+*** 导入.sql文件 source d:/mysql.sql;  #或者  /. d:/mysql.sql;
 * oracle
-1、查找表的所有索引（包括索引名，类型，构成列）：
-select t.*,i.index_type from user_ind_columns t,user_indexes i where t.index_name = i.index_name and t.table_name = i.table_name and t.table_name = 要查询的表
-2、查找表的主键（包括名称，构成列）：
-
-select cu.* from user_cons_columns cu, user_constraints au where cu.constraint_name = au.constraint_name and au.constraint_type = 'P' and au.table_name = 要查询的表
-
-3、查找表的唯一性约束（包括名称，构成列）：
-select column_name from user_cons_columns cu, user_constraints au where cu.constraint_name = au.constraint_name and au.constraint_type = 'U' and au.table_name = 要查询的表
-
-4、查找表的外键（包括名称，引用表的表名和对应的键名，下面是分成多步查询）：
-select * from user_constraints c where c.constraint_type = 'R' and c.table_name = 要查询的表
-
+  1、查找表的所有索引（包括索引名，类型，构成列）：
+  select t.*,i.index_type from user_ind_columns t,user_indexes i where t.index_name = i.index_name and t.table_name = i.table_name and t.table_name = 要查询的表
+  2、查找表的主键（包括名称，构成列）：
+  
+  select cu.* from user_cons_columns cu, user_constraints au where cu.constraint_name = au.constraint_name and au.constraint_type = 'P' and au.table_name = 要查询的表
+  
+  3、查找表的唯一性约束（包括名称，构成列）：
+  select column_name from user_cons_columns cu, user_constraints au where cu.constraint_name = au.constraint_name and au.constraint_type = 'U' and au.table_name = 要查询的表
+  
+  4、查找表的外键（包括名称，引用表的表名和对应的键名，下面是分成多步查询）：
+  select * from user_constraints c where c.constraint_type = 'R' and c.table_name = 要查询的表
+  
 查询外键约束的列名：
 select * from user_cons_columns cl where cl.constraint_name = 外键名称
 
@@ -302,358 +85,25 @@ select t.*,c.COMMENTS from user_tab_columns t,user_col_comments c where t.table_
 
 6、查询所有表
 select* from tabs
-* sqlserver2008 快捷键                                                                 
-    CTRL       +       SHIFT       +       B                 生成解决方案       
-    CTRL       +       F7                                           生成编译       
-    CTRL       +       O                                            打开文件       
-    CTRL       +       SHIFT       +       O                   打开项目       
-    CTRL       +       SHIFT       +       C                显示类视图窗口       
-    F4                                                               显示属性窗口       
-    SHIFT       +       F4                                      显示项目属性窗口       
-    CTRL       +       SHIFT       +       E                显示资源视图       
-    F12                                                                转到定义       
-    CTRL       +       F12                                        转到声明       
-    CTRL       +       ALT       +       J                       对象浏览       
-    CTRL       +       ALT       +       F1                     帮助目录       
-    CTRL       +       F1                                          动态帮助           
-    F1                                                                    帮助       
-    SHIFT       +       F1                                     当前窗口帮助       
-    CTRL       +       ALT       +       F3                   帮助-搜索       
-    SHIFT       +       ALT       +       ENTER             全屏显示       
-    CTRL       +       -                                           向后定位       
-    CTRL       +       SHIFT       +       -                    向前定位       
-    CTRL       +       F4                                      关闭文档窗口       
-    CTRL       +       PAGE       DOWN                 光标定位到窗口上方       
-    CTRL       +       PAGE       UP                       光标定位到窗口下方       
-    CTRL       +       F6       
-    CTRL       +       TAB                                   下一个文档窗口       
-    CTRL       +       SHIFT       +       F6       
-    CTRL       +       SHIFT       +       TAB           上一个文档窗口       
-    ALT       +       F6                                       下一个面板窗口       
-    CTRL       +       K,       CTRL       +       L      取消 remark       
-    CTRL       +       K,       CTRL       +       C     注释选择的代码       
-    CTRL       +       K,       CTRL       +       U     取消对选择代码的注释       
-    CTRL       +       M,       CTRL       +       O      折叠代码定义       
-    CTRL       +       M,       CTRL       +       L     展开代码定义       
-    CTRL       +       DELETE                              删除至词尾       
-    CTRL       +       BACKSPACE                        删除至词头       
-    SHIFT       +       TAB                                  取消制表符       
-    CTRL       +       U                                         转小写       
-    CTRL       +       SHIFT       +       U                转大写       
-    CTRL       +       SHIFT       +       END        选择至文档末尾       
-    CTRL       +       SHIFT       +       HOME      选择至文档末尾开始       
-    SHIFT       +       END                                选择至行尾       
-    SHIFT       +       HOME                              选择至行开始处       
-    SHIFT       +       ALT       +       END           　　垂直选择到最后尾       
-    SHIFT       +       ALT       +       HOME         　　　　　　　　垂直选择到最前面       
-    CTRL       +       A                                    　　　　　　　　 全选       
-    CTRL       +       W　　　　　　　　　　　　　　　　　　　　　　选择当前单词       
-    CTRL       +       SHIFT       +       PAGE       UP　　　　　　选择至本页前面       
-    CTRL       +       SHIFT       +       PAGE       DOWN　　　　选择至本页后面       
-    CTRL       +       END　　　　　　　　　　　　　　　　　　　　文档定位到最后       
-    CTRL       +       HOME　　　　　　　　　　　　　　　　　　　文档定位到最前       
-    CTRL       +       G 转到…       
-    CTRL       +       K,       CTRL       +       P　　　　　　　　　　　上一个标签       
-    CTRL       +       K,       CTRL       +       N　　　　　　　　　　　　下一个标签       
-    ALT       +       F10　　　　　　　　　　　　　　　　　　　　调试-ApplyCodeChanges           
-    CTRL       +       ALT+       Break　　　　　　　　　　　　　　停止调试       
-    CTRL       +       SHIFT       +       F9      　　　　　　　　　　取消所有断点       
-    CTRL       +       F9　　　　　　　　　　　　　　　　　　　　　允许中断       
-    CTRL       +       SHIFT       +       F5   　　　　　　　　　　　　调试-重新开始       
-    F5　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　运行调试       
-    CTRL       +       F5　　　　　　　　　　　　　　　　　　　　　　运行不调试       
-    F10　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　跨过程序执行       
-    F11　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　单步逐句执行       
-    CTRL       +       J　　　　　　　　　　　　　　　　　　　　　　　列出成员           
-    CTRL       +       PAGE       DOWN　　　　　　　　　　　　　　下一个视图       
-    CTRL       +       B　　　　　　　　　　　　　　　　　　　　　　格式-粗体       
-    CTRL       +       SHIFT       +       T　　　　　　　　　　　　格式-文字缩进   
-
-怀仁怀朴，唯真唯实。
-* T-SQL 的一些关键字
-  Print  向客户端返回用户信息
-例：　　print '青苹果'         屏幕上就会显示“青苹果三个字“
-Go      用来通知 SQL 一批语句的结束
-Distinct   去掉重复值
-Declare    用来声明变量(局部变量?????)
-例：　　declare @a int
-Set    为变量赋值
-
-例：　　set @a='青苹果'
-While  在 SQL 中用来循环(好像在 SQL 中用来做循环的关键字不多)
-
-复制代码
-语法：　　　　WHILE <条件表达式>
-                 BEGIN
-                    <命令行或程序块>
-                   [BREAK]
-                   [CONTINUE]
-                   [命令行或程序块]
-                 END
-复制代码
-While 比较重要，我们来做个例子加深一下对 While 循环的理解：
-
-复制代码
-declare @a int
-set @a=1
-while @a<5
-begin 
-print '青苹果'
-set @a=@a+1
-end
-
-输出结果：青苹果
-　　　　　青苹果
-　　　　　青苹果
-　　　　　青苹果
-复制代码
-if else    判断语句
-
-判断语句用的还是比较多的我们还是来做个例子说明一下；
-
-求：a、b、c 三个数的最大值？
-
-复制代码
-declare  @a int,@b int,@c int,@max  int
-set @a=1 set @b=2 set @c=3 
-if  @a>@b               
-   set  @max=@a
-else
-   set  @max=@b
-if  @max<@c
-   set  @max=@c      
-print   @max
-
-输出结果：3
-
-复制代码
-begin end  用来设定一个程序块，将在 BEGIN…END 内的所有程序视为一个单元执行。
-
-Exists     判断是否存在
-
-Case   也是用来判断的，和 IF 语句差不多，它的格式为：
-
-　CASE  <运算式>
-     　　 WHEN <运算式 1> THEN  <结果 1>
-          … 
-           WHEN<运算式 n> THEN   <结果 n>
-          [ELSE  <结果 n+1>]
-  END
- Return 　　用于结束当前程序的执行，返回到上一个调用它的程序或其它程序。在括号内可指定一个返回值。
-
-Goto 标示符  用来改变程序执行的流程，使程序跳到标有标识符的指定的程序行再继续往下执行。要注意的是作为跳转目标的标识符可为数字与字符的组合，但必须以“：”结尾，如：“1023：” “qingpingguo:”
-
-复制代码
-例子：
-        declare @a int 
-     　　set @a = 1  
-　　　　　qingpignguo:       
-　　　　　print @a       
-     　　set @a = @a + 1 
-     　　while @a < 6   
-  　　　　goto qingpignguo
-
-输出结果：12345
-复制代码
-最后一个给大家看个好玩的：
-
-Waitfor    用来暂停程序执行，直到等待指定时间之后，或所设定的时间已到才继续往下运行程序。
-
-语法：　　waitfor {delay '时间'|time '时间'}
-解释：
-
-（1）‘时间’必须为 DATETIME 类型数据，且不能包括日期，如‘10:12:05’
-
-（2）DELAY:用来设定等待的时间长短，最多为 24 小时。(是一个时间间隔)
-
-（3）TIME：用来设定等待结束的时间点（是一个具体的时间)
-
-例子：
-    waitfor  delay '00:00:03'
- 　　print '你好,我是青苹果'
- 　　go
-以上就是 T-SQL 的所有内容了，接下来我们来利用最后的时间画几个图形：
-
-直角三角形：
-
-复制代码
-declare @a int 
-set @a=1
-while(@a<11)
-begin
-print replace(space(@a),' ','*')
-set @a=@a+1
-end
-复制代码
-直角三角形 输出结果：
-
- 
-
-正方形：
-
-复制代码
-declare @a int
-declare @b int
-declare @c nvarchar(100)
-set @a=1
-set @b=1
-set @c=''
-while (@a<9)
-begin
-   while (@b<15)
-   begin 
-    set @c=@c+'*'
-    set @b=@b+1
-   end
-    print @c 
-set @a=@a+1
-end
-复制代码
- 
-
-正方形 输出结果：
-
- 
-
-菱形：
-
-复制代码
-declare @a int,@b int
-set @a=1 set @b=15
-
-if(@b%2!=1)
-print '数字必须都是奇数'
-else
-while(@a<=@b)
-begin
-if(@a%2=1)
-print space((@b-@a)/2)+replace(space(@a),' ','*')+space((@b-@a)/2)
-set @a=@a+1
-end
-set @a=@a-2
-while (@a<=@b)
-begin
-if(@a%2=1)
-print space((@b-@a)/2)+replace(space(@a),' ','*')+space((@b-@a)/2)
-set @a=@a-1    
-if (@a<0)
-break
-end
-复制代码
-菱形 输出结果：
-
- 
-
-梯形：
-
-复制代码
-declare @a int,@b int
-set @a=7 set @b=21
-if(@a%2=1)
-while(@a<@b)
-begin
-print space((@b-@a)/2)+replace(space(@a),' ','*')+space((@b-@a)/2)
-set @a=@a+2
-end
-复制代码
-梯形 输出结果：
-
- 
-
-矩形：
-
-复制代码
-declare @a int
-declare @b int
-declare @c nvarchar(100)
-set @a=1
-set @b=1
-set @c=''
-while (@a<9)
-begin
-   while (@b<23)
-   begin 
-    set @c=@c+'*'
-    set @b=@b+1
-   end
-    print @c 
-set @a=@a+1
-end
-复制代码
-矩形 输出结果：
-
- 
-
-圆形：
-
-复制代码
-declare @a int,@b int
-set @a=9 set @b=13
-
-while (@a<=@b)
-begin
-if(@a%2=1)
-print space((@b-@a)/2)+replace(space(@a),' ','*')+space((@b-@a)/2)
-set @a=@a+1
-end
-set @a=@a-1
-begin
-print space((@b-@a)/2)+replace(space(@a),' ','*')+space((@b-@a)/2)
-end
-while (@a<=@b)
-begin
-if(@a%2=1)
-print space((@b-@a)/2)+replace(space(@a),' ','*')+space((@b-@a)/2)
-set @a=@a-1
-if(@a<10)
-break
-end
-set @a=@a-2
-begin
-print space((@b-@a)/2)+replace(space(@a),' ','*')+space((@b-@a)/2)
-end
 * Tsql
 ** 安装
+*** Import the public repository GPG keys:
+   wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+*** 添加到仓库列表Register the Microsoft SQL Server Ubuntu repository:
+    sudo add-apt-repository "$(wget -qo- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"
+*** 安装
+    sudo apt-get update
+    sudo apt-get install -y mssql-server
+*** 设置sa的密码
+    sudo /opt/mssql/bin/mssql-conf setup
+*** 运行
+    systemctl status mssql-server
+*** 远程连接, 防火墙打开 1433 端口
+** 连接
    sqlcmd -S localhost -U SA -P '<YourPassword>'
    tsql -S 127.0.0.1 -U sa -P Wuming123  
-*** 安装
-**** Import the public repository GPG keys:
-    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-
-**** Register the Microsoft SQL Server Ubuntu repository:(添加到仓库列表)
-     sudo add-apt-repository "$(wget -qo- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"
-**** 安装
-     sudo apt-get update
-     sudo apt-get install -y mssql-server
-**** 设置 sa 的密码
-     sudo /opt/mssql/bin/mssql-conf setup
-**** 是否运行
-     systemctl status mssql-server
-**** 远程连接, 防火墙打开 1433 端口
-**** 命令行工具
-***** Import the public repository GPG keys:
-      wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-
-***** Register the Microsoft Ubuntu repository:
-      sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/16.04/prod.list)"
-
-***** 安装工具
- sudo apt-get update
- sudo apt-get install -y mssql-tools unixodbc-dev
-***** 设置环境变量
-      For convenience, add /opt/mssql-tools/bin/ to your PATH environment variable. 
-      This enables you to run the tools without specifying the full path. Run the following commands 
-      to modify the PATH for both login sessions and interactive/non-login sessions:
-      
-      echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
-      echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
-      source ~/.bashrc
-      Sqlcmd is just one tool for connecting to SQL Server to run queries and perform management and development tasks. Other tools include:
-*** 连接
-    sqlcmd -S localhost -U SA -P '<YourPassword>'
-    tsql -S 127.0.0.1 -U sa -P Wuming123  
-    If you later decide to connect remotely, specify the machine name or IP address for the -S parameter, and make sure port 1433 is open on your firewall.
-    远程连接 确保端口 1433 打开
+   If you later decide to connect remotely, specify the machine name or IP address for the -S parameter, and make sure port 1433 is open on your firewall.
+   远程连接 确保端口 1433 打开
 ** 数据类型
 *** 精确数值类型
     bigint	-9,223,372,036,854,775,808	9,223,372,036,854,775,807
@@ -716,14 +166,6 @@ end
     TABLE -存储结果集以供稍后处理。
     HIERARCHYID -用于表示层次结构中位置的可变长度的系统数据类型（在 SQL Server 2008 中引入）。
 
-** 运算符
-*** 比较
-    >，<，=，
-*** 逻辑
-    LIKE，NOT LIKE
-    通配符
-    百分号（％）百分号表示零个，一个或多个字符
-    下划线（_）下划线表示单个数字或字符
 ** 使用
 *** 显示库属性
 **** 显示库 
@@ -732,10 +174,6 @@ end
 **** 显示库表
      select [id], [name] from [sysobjects] where [type] = 'u' order by [name]
      SELECT name FROM sysobjects WHERE xtype = 'U'
-**** 查看表是否存在
-     exec sp_columns TABLENAME
-**** 查询表中字段 
-     select [name] from [syscolumns] where [name] = 'tableXXX'order by [colid]
 *** 操作库
 **** 创建
      CREATE DATABASE $DATABASENAME
@@ -1414,8 +852,7 @@ return 语句要指定返回值,如果没有指定返回值,SQL Server 系统会
 --set @ThisMonthBeginDay=dateadd(day,27,dateadd(month,-1,DATEADD(mm,  DATEDIFF(mm,0,@Monthid),  0))) --上月 28 号零点
 --set @ThisMonthEndDay=dateadd(ms,-3,dateadd(day,27,DATEADD(mm,DATEDIFF(mm,0,@Monthid),0)))    --本月 27 号 23 点 59 分 59 秒
 set @docdate2=DATEADD(ms,-3,DATEADD(mm,1,DATEADD(mm,DATEDIFF(mm,0,@Monthid),0)))  --本月最后一天 23 点 59 分 59
-**  子查询
-   -- 筛   选
+** 子查询
    #+BEGIN_SRC sql
        SELECT * from  (
        SELECT   1  AS ID , 'zs' AS  CustomerName
@@ -1487,707 +924,274 @@ FIBillLackAmount
 ** 浮点函数
  fabs(f1-f2)
  if( fabs(f1-f2) < 预先指定的精度）
-* sp_executesql
-  execute 相信大家都用的用熟了，简写为 exec,除了用来执行存储过程，一般都用来执行动态 Sql 
-  sp_executesql，sql2005 中引入的新的系统存储过程，也是用来处理动态 sql 的, 如： 
+** sp_executesql
+   execute 相信大家都用的用熟了，简写为 exec,除了用来执行存储过程，一般都用来执行动态 Sql 
+   sp_executesql，sql2005 中引入的新的系统存储过程，也是用来处理动态 sql 的, 如： 
   
-  exec sp_executesql @sql, N'@count int out,@id varchar(20)', @cou out ,@id 
-@sql 为拼成的动态 sql 
-N'@count int out,@id varchar(20)'为拼成的动态 sql 内的参数列表 
-@cou out,@id 为为动态 sql 内参数列表提供值的外部参数列表 
+   exec sp_executesql @sql, N'@count int out,@id varchar(20)', @cou out ,@id 
+ @sql 为拼成的动态 sql 
+ N'@count int out,@id varchar(20)'为拼成的动态 sql 内的参数列表 
+ @cou out,@id 为为动态 sql 内参数列表提供值的外部参数列表 
 
-那么它们之间有什么区别呢？ 
+ 那么它们之间有什么区别呢？ 
 
-１，它们之间最大的区别是嵌入式的参数，如下面一个语句 
-#+BEGIN_SRC sql
-  declare @sql   nvarchar(2000) 
-  declare @id varchar(20) 
-  set @id='1' 
-  set @sql='select count(*) from emp where id=' + @id 
-  exec @sql 
-#+END_SRC
-我想把得到的 count(*)传出来，用传统的 exec 是不好办到的，但是用 sp_executesql 则很容易就办到了： 
-#+BEGIN_SRC sql
-  declare @sql nvarchar(2000) 
-  declare @cou int 
-  declare @id varchar(20) 
-  set @id='1' 
-  set @sql='select @count=count(*) from emp where id=@id' 
-  exec sp_executesql @sql, N'@count int out,@id varchar(20)', @cou out ,@id 
-  print @cou 
-#+END_SRC
+ １，它们之间最大的区别是嵌入式的参数，如下面一个语句 
+ #+BEGIN_SRC sql
+   declare @sql   nvarchar(2000) 
+   declare @id varchar(20) 
+   set @id='1' 
+   set @sql='select count(*) from emp where id=' + @id 
+   exec @sql 
+ #+END_SRC
+ 我想把得到的 count(*)传出来，用传统的 exec 是不好办到的，但是用 sp_executesql 则很容易就办到了： 
+ #+BEGIN_SRC sql
+   declare @sql nvarchar(2000) 
+   declare @cou int 
+   declare @id varchar(20) 
+   set @id='1' 
+   set @sql='select @count=count(*) from emp where id=@id' 
+   exec sp_executesql @sql, N'@count int out,@id varchar(20)', @cou out ,@id 
+   print @cou 
+ #+END_SRC
 
-2.性能 
-可以看到，如果用 exec，由于每次传入的@id 不一样，所以每次生成的@sql 就不一样，这样每执行一次 Sql2005 就必须重新将要执行的动态 Sql 重新编译一次 
-但是 sp_executesql 则不一样，由于将数值参数化，要执行的动态 Sql 永远不会变化，只是传入的参数的值在变化，那每次执行的时候就秒用重新编译，速度自然快多了哈！ 
+ 2.性能 
+ 可以看到，如果用 exec，由于每次传入的@id 不一样，所以每次生成的@sql 就不一样，这样每执行一次 Sql2005 就必须重新将要执行的动态 Sql 重新编译一次 
+ 但是 sp_executesql 则不一样，由于将数值参数化，要执行的动态 Sql 永远不会变化，只是传入的参数的值在变化，那每次执行的时候就秒用重新编译，速度自然快多了哈！ 
 
-注意： 
-１.sp_executesql 要求动态 Sql 和动态 Sql 参数列表必须是 Nvarchar，比如上个例子的@sql,N'@count int out,@id varchar(20)'我记得在 sql2005 中 Varchar 也可以的，但是我打了 Sp3 补丁后就不行了，必须为 Nvarchar 
-２.动态 Sql 的参数列表与外部提供值的参数列表顺序必需一致，如： 
-N'@count int out,@id varchar(20)', @cou out,@id 
-@count 对应 @cou,@id 对应@id 
-如果不一致，必须显式标明，如： 
-N'@count int out,@id varchar(20)', @id＝@id, @count=@cou out 
-３.动态 SQl 的参数列表与外部提供参数的参数列表参数名可以同名
-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 注意： 
+ １.sp_executesql 要求动态 Sql 和动态 Sql 参数列表必须是 Nvarchar，比如上个例子的@sql,N'@count int out,@id varchar(20)'我记得在 sql2005 中 Varchar 也可以的，但是我打了 Sp3 补丁后就不行了，必须为 Nvarchar 
+ ２.动态 Sql 的参数列表与外部提供值的参数列表顺序必需一致，如： 
+ N'@count int out,@id varchar(20)', @cou out,@id 
+ @count 对应 @cou,@id 对应@id 
+ 如果不一致，必须显式标明，如： 
+ N'@count int out,@id varchar(20)', @id＝@id, @count=@cou out 
+ ３.动态 SQl 的参数列表与外部提供参数的参数列表参数名可以同名
+ ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-语法
+ 语法
 
  
-sp_executesql [ @statement = ] statement
-[ 
-    { , [ @params = ] N'@parameter_name data_type [ OUT | OUTPUT ][ ,...n ]' } 
-     { , [ @param1 = ] 'value1' [ ,...n ] }
-]
-参数
+ sp_executesql [ @statement = ] statement
+ [ 
+     { , [ @params = ] N'@parameter_name data_type [ OUT | OUTPUT ][ ,...n ]' } 
+      { , [ @param1 = ] 'value1' [ ,...n ] }
+ ]
+ 参数
 
-[ @statement = ] statement
-包含 Transact-SQL 语句或批处理的 Unicode 字符串。statement 必须是 Unicode 常量或 Unicode 变量。不允许使用更复杂的 Unicode 表达式（例如使用 + 运算符连接两个字符串）。不允许使用字符常量。如果指定了 Unicode 常量，则必须使用 N 作为前缀。例如，Unicode 常量 N'sp_who' 是有效的，但是字符常量 'sp_who' 则无效。字符串的大小仅受可用数据库服务器内存限制。在 64 位服务器中，字符串大小限制为 2 GB，即 nvarchar(max) 的最大大小。
+ [ @statement = ] statement
+ 包含 Transact-SQL 语句或批处理的 Unicode 字符串。statement 必须是 Unicode 常量或 Unicode 变量。不允许使用更复杂的 Unicode 表达式（例如使用 + 运算符连接两个字符串）。不允许使用字符常量。如果指定了 Unicode 常量，则必须使用 N 作为前缀。例如，Unicode 常量 N'sp_who' 是有效的，但是字符常量 'sp_who' 则无效。字符串的大小仅受可用数据库服务器内存限制。在 64 位服务器中，字符串大小限制为 2 GB，即 nvarchar(max) 的最大大小。
 
-注意：
-stmt 可以包含与变量名形式相同的参数，例如：N'SELECT * FROM HumanResources.Employee WHERE EmployeeID = @IDParameter'
-stmt 中包含的每个参数在 @params 参数定义列表和参数值列表中均必须有对应项。
+ 注意：
+ stmt 可以包含与变量名形式相同的参数，例如：N'SELECT * FROM HumanResources.Employee WHERE EmployeeID = @IDParameter'
+ stmt 中包含的每个参数在 @params 参数定义列表和参数值列表中均必须有对应项。
 
-[ @params = ] N'@parameter_name data_type [ ,... n ] '
-包含 stmt 中嵌入的所有参数定义的字符串。字符串必须是 Unicode 常量或 Unicode 变量。每个参数定义由参数名称和数据类型组成。n 是表示附加参数定义的占位符。在 statement 中指定的每个参数都必须在 @params 中定义。如果 stmt 中的 Transact-SQL 语句或批处理不包含参数，则不需要 @params。该参数的默认值为 NULL。
+ [ @params = ] N'@parameter_name data_type [ ,... n ] '
+ 包含 stmt 中嵌入的所有参数定义的字符串。字符串必须是 Unicode 常量或 Unicode 变量。每个参数定义由参数名称和数据类型组成。n 是表示附加参数定义的占位符。在 statement 中指定的每个参数都必须在 @params 中定义。如果 stmt 中的 Transact-SQL 语句或批处理不包含参数，则不需要 @params。该参数的默认值为 NULL。
 
-[ @param1 = ] 'value1'
-参数字符串中定义的第一个参数的值。该值可以是 Unicode 常量，也可以是 Unicode 变量。必须为 stmt 中包含的每个参数提供参数值。如果 stmt 中的 Transact-SQL 语句或批处理没有参数，则不需要这些值。
+ [ @param1 = ] 'value1'
+ 参数字符串中定义的第一个参数的值。该值可以是 Unicode 常量，也可以是 Unicode 变量。必须为 stmt 中包含的每个参数提供参数值。如果 stmt 中的 Transact-SQL 语句或批处理没有参数，则不需要这些值。
 
-[ OUT | OUTPUT ]
-指示参数是输出参数。除非是公共语言运行 (CLR) 过程，否则 text、ntext 和 image 参数均可用作 OUTPUT 参数。使用 OUTPUT 关键字的输出参数可以为游标占位符，CLR 过程除外。
+ [ OUT | OUTPUT ]
+ 指示参数是输出参数。除非是公共语言运行 (CLR) 过程，否则 text、ntext 和 image 参数均可用作 OUTPUT 参数。使用 OUTPUT 关键字的输出参数可以为游标占位符，CLR 过程除外。
 
-n
-附加参数值的占位符。这些值只能为常量或变量，不能是很复杂的表达式（例如函数）或使用运算符生成的表达式。
+ n
+ 附加参数值的占位符。这些值只能为常量或变量，不能是很复杂的表达式（例如函数）或使用运算符生成的表达式。
 
-返回代码值
+ 返回代码值
 
-0（成功）或非零（失败）
+ 0（成功）或非零（失败）
 
-结果集
+ 结果集
 
-从生成 SQL 字符串的所有 SQL 语句返回结果集。
+ 从生成 SQL 字符串的所有 SQL 语句返回结果集。
 
-注释
+ 注释
 
-在批处理、名称作用域和数据库上下文方面，sp_executesql 与 EXECUTE 的行为相同。sp_executesql stmt 参数中的 Transact-SQL 语句或批处理在执行 sp_executesql 语句时才编译。随后，将编译 stmt 中的内容，并将其作为执行计划运行。该执行计划独立于名为 sp_executesql 的批处理的执行计划。sp_executesql 批处理不能引用调用 sp_executesql 的批处理中声明的变量。sp_executesql 批处理中的本地游标或变量对调用 sp_executesql 的批处理是不可见的。对数据库上下文所做的更改只在 sp_executesql 语句结束前有效。
+ 在批处理、名称作用域和数据库上下文方面，sp_executesql 与 EXECUTE 的行为相同。sp_executesql stmt 参数中的 Transact-SQL 语句或批处理在执行 sp_executesql 语句时才编译。随后，将编译 stmt 中的内容，并将其作为执行计划运行。该执行计划独立于名为 sp_executesql 的批处理的执行计划。sp_executesql 批处理不能引用调用 sp_executesql 的批处理中声明的变量。sp_executesql 批处理中的本地游标或变量对调用 sp_executesql 的批处理是不可见的。对数据库上下文所做的更改只在 sp_executesql 语句结束前有效。
 
-如果只更改了语句中的参数值，则 sp_executesql 可用来代替存储过程多次执行 Transact-SQL 语句。因为 Transact-SQL 语句本身保持不变，仅参数值发生变化，所以 SQL Server 查询优化器可能重复使用首次执行时所生成的执行计划。
+ 如果只更改了语句中的参数值，则 sp_executesql 可用来代替存储过程多次执行 Transact-SQL 语句。因为 Transact-SQL 语句本身保持不变，仅参数值发生变化，所以 SQL Server 查询优化器可能重复使用首次执行时所生成的执行计划。
 
-注意：
-若要改善性能，请在语句字符串中使用完全限定对象名。
-sp_executesql 支持独立于 Transact-SQL 字符串设置参数值，如以下示例所示。
-
- 	 
-DECLARE @IntVariable int;
-DECLARE @SQLString nvarchar(500);
-DECLARE @ParmDefinition nvarchar(500);
-
-/* Build the SQL string one time.*/
-SET @SQLString =
-     N'SELECT BusinessEntityID, NationalIDNumber, JobTitle, LoginID
-       FROM AdventureWorks2008R2.HumanResources.Employee 
-       WHERE BusinessEntityID = @BusinessEntityID';
-SET @ParmDefinition = N'@BusinessEntityID tinyint';
-/* Execute the string with the first parameter value. */
-SET @IntVariable = 197;
-EXECUTE sp_executesql @SQLString, @ParmDefinition,
-                      @BusinessEntityID = @IntVariable;
-/* Execute the same string with the second parameter value. */
-SET @IntVariable = 109;
-EXECUTE sp_executesql @SQLString, @ParmDefinition,
-                      @BusinessEntityID = @IntVariable;
-输出参数也可用于 sp_executesql。以下示例从 AdventureWorks2008R2.HumanResources.Employee 表中检索职务，并在输出参数@max_title 中返回它。
+ 注意：
+ 若要改善性能，请在语句字符串中使用完全限定对象名。
+ sp_executesql 支持独立于 Transact-SQL 字符串设置参数值，如以下示例所示。
 
  	 
-DECLARE @IntVariable int;
-DECLARE @SQLString nvarchar(500);
-DECLARE @ParmDefinition nvarchar(500);
-DECLARE @max_title varchar(30);
+ DECLARE @IntVariable int;
+ DECLARE @SQLString nvarchar(500);
+ DECLARE @ParmDefinition nvarchar(500);
 
-SET @IntVariable = 197;
-SET @SQLString = N'SELECT @max_titleOUT = max(JobTitle) 
-   FROM AdventureWorks2008R2.HumanResources.Employee
-   WHERE BusinessEntityID = @level';
-SET @ParmDefinition = N'@level tinyint, @max_titleOUT varchar(30) OUTPUT';
-
-EXECUTE sp_executesql @SQLString, @ParmDefinition, @level = @IntVariable, @max_titleOUT=@max_title OUTPUT;
-SELECT @max_title;
-替换 sp_executesql 中的参数的能力，与使用 EXECUTE 语句执行字符串相比，有下列优点：
-
-因为在 sp_executesql 字符串中，Transact-SQL 语句的实际文本在两次执行之间并未改变，所以查询优化器应该能将第二次执行中的 Transact-SQL 语句与第一次执行时生成的执行计划匹配。因此，SQL Server 不必编译第二条语句。
-
-Transact-SQL 字符串只生成一次。
-
-整数参数按其本身格式指定。不需要转换为 Unicode。
-
-权限
-
-要求具有 public 角色的成员身份。
-
-示例
-
-A. 执行简单的 SELECT 语句
-
-以下示例将创建并执行一个简单的 SELECT 语句，其中包含名为 @level 的嵌入参数。
+ /* Build the SQL string one time.*/
+ SET @SQLString =
+      N'SELECT BusinessEntityID, NationalIDNumber, JobTitle, LoginID
+        FROM AdventureWorks2008R2.HumanResources.Employee 
+        WHERE BusinessEntityID = @BusinessEntityID';
+ SET @ParmDefinition = N'@BusinessEntityID tinyint';
+ /* Execute the string with the first parameter value. */
+ SET @IntVariable = 197;
+ EXECUTE sp_executesql @SQLString, @ParmDefinition,
+                       @BusinessEntityID = @IntVariable;
+ /* Execute the same string with the second parameter value. */
+ SET @IntVariable = 109;
+ EXECUTE sp_executesql @SQLString, @ParmDefinition,
+                       @BusinessEntityID = @IntVariable;
+ 输出参数也可用于 sp_executesql。以下示例从 AdventureWorks2008R2.HumanResources.Employee 表中检索职务，并在输出参数@max_title 中返回它。
 
  	 
-EXECUTE sp_executesql 
-          N'SELECT * FROM AdventureWorks2008R2.HumanResources.Employee 
-          WHERE BusinessEntityID = @level',
-          N'@level tinyint',
-          @level = 109;
-B. 执行动态生成的字符串
+ DECLARE @IntVariable int;
+ DECLARE @SQLString nvarchar(500);
+ DECLARE @ParmDefinition nvarchar(500);
+ DECLARE @max_title varchar(30);
 
-以下示例显示使用 sp_executesql 执行动态生成的字符串。该示例中的存储过程用于向一组表中插入数据，这些表用于划分一年的销售数据。一年中的每个月均有一个表，格式如下：
+ SET @IntVariable = 197;
+ SET @SQLString = N'SELECT @max_titleOUT = max(JobTitle) 
+    FROM AdventureWorks2008R2.HumanResources.Employee
+    WHERE BusinessEntityID = @level';
+ SET @ParmDefinition = N'@level tinyint, @max_titleOUT varchar(30) OUTPUT';
 
- 	 
-CREATE TABLE May1998Sales
-    (OrderID int PRIMARY KEY,
-    CustomerID int NOT NULL,
-    OrderDate  datetime NULL
-        CHECK (DATEPART(yy, OrderDate) = 1998),
-    OrderMonth int
-        CHECK (OrderMonth = 5),
-    DeliveryDate datetime  NULL,
-        CHECK (DATEPART(mm, OrderDate) = OrderMonth)
-    )
-此示例存储过程将动态生成并执行 INSERT 语句，以便向正确的表中插入新订单。此示例使用订货日期生成应包含数据的表的名称，然后将此名称并入 INSERT 语句中。
+ EXECUTE sp_executesql @SQLString, @ParmDefinition, @level = @IntVariable, @max_titleOUT=@max_title OUTPUT;
+ SELECT @max_title;
+ 替换 sp_executesql 中的参数的能力，与使用 EXECUTE 语句执行字符串相比，有下列优点：
 
-注意：
-这是一个简单的 sp_executesql 示例。此示例不包含错误检查以及业务规则检查，例如确保订单号在各个表之间不重复。
- 	 
-CREATE PROCEDURE InsertSales @PrmOrderID INT, @PrmCustomerID INT,
-                 @PrmOrderDate DATETIME, @PrmDeliveryDate DATETIME
-AS
-DECLARE @InsertString NVARCHAR(500)
-DECLARE @OrderMonth INT
+ 因为在 sp_executesql 字符串中，Transact-SQL 语句的实际文本在两次执行之间并未改变，所以查询优化器应该能将第二次执行中的 Transact-SQL 语句与第一次执行时生成的执行计划匹配。因此，SQL Server 不必编译第二条语句。
 
--- Build the INSERT statement.
-SET @InsertString = 'INSERT INTO ' +
-       /* Build the name of the table. */
-       SUBSTRING( DATENAME(mm, @PrmOrderDate), 1, 3) +
-       CAST(DATEPART(yy, @PrmOrderDate) AS CHAR(4) ) +
-       'Sales' +
-       /* Build a VALUES clause. */
-       ' VALUES (@InsOrderID, @InsCustID, @InsOrdDate,' +
-       ' @InsOrdMonth, @InsDelDate)'
+ Transact-SQL 字符串只生成一次。
 
-/* Set the value to use for the order month because
-   functions are not allowed in the sp_executesql parameter
-   list. */
-SET @OrderMonth = DATEPART(mm, @PrmOrderDate)
+ 整数参数按其本身格式指定。不需要转换为 Unicode。
 
-EXEC sp_executesql @InsertString,
-     N'@InsOrderID INT, @InsCustID INT, @InsOrdDate DATETIME,
-       @InsOrdMonth INT, @InsDelDate DATETIME',
-     @PrmOrderID, @PrmCustomerID, @PrmOrderDate,
-     @OrderMonth, @PrmDeliveryDate
+ 权限
 
-GO
-在该过程中使用 sp_executesql 比使用 EXECUTE 执行字符串更有效。使用 sp_executesql 时，只生成 12 个版本的 INSERT 字符串，每个月的表对应 1 个字符串。使用 EXECUTE 时，因为参数值不同，每个 INSERT 字符串均是唯一的。尽管两种方法生成的批处理数相同，但因为 sp_executesql 生成的 INSERT 字符串都相似，所以查询优化器更有可能重复使用执行计划。
+ 要求具有 public 角色的成员身份。
 
-C. 使用 OUTPUT 参数
+ 示例
 
-以下示例使用 OUTPUT 参数将由 SELECT 语句生成的结果集存储于 @SQLString 参数中。然后将执行两个使用 OUTPUT 参数值的 SELECT 语句。
+ A. 执行简单的 SELECT 语句
+
+ 以下示例将创建并执行一个简单的 SELECT 语句，其中包含名为 @level 的嵌入参数。
 
  	 
-USE AdventureWorks2008R2;
-GO
-DECLARE @SQLString nvarchar(500);
-DECLARE @ParmDefinition nvarchar(500);
-DECLARE @SalesOrderNumber nvarchar(25);
-DECLARE @IntVariable int;
-SET @SQLString = N'SELECT @SalesOrderOUT = MAX(SalesOrderNumber)
-    FROM Sales.SalesOrderHeader
-    WHERE CustomerID = @CustomerID';
-SET @ParmDefinition = N'@CustomerID int,
-    @SalesOrderOUT nvarchar(25) OUTPUT';
-SET @IntVariable = 22276;
-EXECUTE sp_executesql
-    @SQLString
-    ,@ParmDefinition
-    ,@CustomerID = @IntVariable
-    ,@SalesOrderOUT = @SalesOrderNumber OUTPUT;
--- This SELECT statement returns the value of the OUTPUT parameter.
-SELECT @SalesOrderNumber;
--- This SELECT statement uses the value of the OUTPUT parameter in
--- the WHERE clause.
-SELECT OrderDate, TotalDue
-FROM Sales.SalesOrderHeader
-WHERE SalesOrderNumber = @SalesOrderNumber;
-* 游标
-  #+BEGIN_SRC sql
-         use database1
-         declare my_cursor cursor scroll dynamic
-     /**//*scroll 表示可随意移动游标指针（否则只能向前），dynamic 表示可以读写游标（否则游标只读）*/
-    for
-    select productname from  product
-    open my_cursor
-    declare @pname sysname
-    fetch next from my_cursor into @pname
-    while(@@fetch_status=0)
-      begin
-        print 'Product Name: ' + @pname
-        fetch next from my_cursor into @pname
-      end
---    fetch first from my_cursor into @pname -- 获取第一个
- --   print @pname
-    /**//*update product set productname='zzg' where current of my_cursor */
-    /**//*delete from product where current of my_cursor */
-    close my_cursor
-    deallocate my_cursor
-  #+END_SRC
+ EXECUTE sp_executesql 
+           N'SELECT * FROM AdventureWorks2008R2.HumanResources.Employee 
+           WHERE BusinessEntityID = @level',
+           N'@level tinyint',
+           @level = 109;
+ B. 执行动态生成的字符串
+
+ 以下示例显示使用 sp_executesql 执行动态生成的字符串。该示例中的存储过程用于向一组表中插入数据，这些表用于划分一年的销售数据。一年中的每个月均有一个表，格式如下：
+
+ 	 
+ CREATE TABLE May1998Sales
+     (OrderID int PRIMARY KEY,
+     CustomerID int NOT NULL,
+     OrderDate  datetime NULL
+         CHECK (DATEPART(yy, OrderDate) = 1998),
+     OrderMonth int
+         CHECK (OrderMonth = 5),
+     DeliveryDate datetime  NULL,
+         CHECK (DATEPART(mm, OrderDate) = OrderMonth)
+     )
+ 此示例存储过程将动态生成并执行 INSERT 语句，以便向正确的表中插入新订单。此示例使用订货日期生成应包含数据的表的名称，然后将此名称并入 INSERT 语句中。
+
+ 注意：
+ 这是一个简单的 sp_executesql 示例。此示例不包含错误检查以及业务规则检查，例如确保订单号在各个表之间不重复。
+ 	 
+ CREATE PROCEDURE InsertSales @PrmOrderID INT, @PrmCustomerID INT,
+                  @PrmOrderDate DATETIME, @PrmDeliveryDate DATETIME
+ AS
+ DECLARE @InsertString NVARCHAR(500)
+ DECLARE @OrderMonth INT
+
+ -- Build the INSERT statement.
+ SET @InsertString = 'INSERT INTO ' +
+        /* Build the name of the table. */
+        SUBSTRING( DATENAME(mm, @PrmOrderDate), 1, 3) +
+        CAST(DATEPART(yy, @PrmOrderDate) AS CHAR(4) ) +
+        'Sales' +
+        /* Build a VALUES clause. */
+        ' VALUES (@InsOrderID, @InsCustID, @InsOrdDate,' +
+        ' @InsOrdMonth, @InsDelDate)'
+
+ /* Set the value to use for the order month because
+    functions are not allowed in the sp_executesql parameter
+    list. */
+ SET @OrderMonth = DATEPART(mm, @PrmOrderDate)
+
+ EXEC sp_executesql @InsertString,
+      N'@InsOrderID INT, @InsCustID INT, @InsOrdDate DATETIME,
+        @InsOrdMonth INT, @InsDelDate DATETIME',
+      @PrmOrderID, @PrmCustomerID, @PrmOrderDate,
+      @OrderMonth, @PrmDeliveryDate
+
+ GO
+ 在该过程中使用 sp_executesql 比使用 EXECUTE 执行字符串更有效。使用 sp_executesql 时，只生成 12 个版本的 INSERT 字符串，每个月的表对应 1 个字符串。使用 EXECUTE 时，因为参数值不同，每个 INSERT 字符串均是唯一的。尽管两种方法生成的批处理数相同，但因为 sp_executesql 生成的 INSERT 字符串都相似，所以查询优化器更有可能重复使用执行计划。
+
+ C. 使用 OUTPUT 参数
+
+ 以下示例使用 OUTPUT 参数将由 SELECT 语句生成的结果集存储于 @SQLString 参数中。然后将执行两个使用 OUTPUT 参数值的 SELECT 语句。
+
+ 	 
+ USE AdventureWorks2008R2;
+ GO
+ DECLARE @SQLString nvarchar(500);
+ DECLARE @ParmDefinition nvarchar(500);
+ DECLARE @SalesOrderNumber nvarchar(25);
+ DECLARE @IntVariable int;
+ SET @SQLString = N'SELECT @SalesOrderOUT = MAX(SalesOrderNumber)
+     FROM Sales.SalesOrderHeader
+     WHERE CustomerID = @CustomerID';
+ SET @ParmDefinition = N'@CustomerID int,
+     @SalesOrderOUT nvarchar(25) OUTPUT';
+ SET @IntVariable = 22276;
+ EXECUTE sp_executesql
+     @SQLString
+     ,@ParmDefinition
+     ,@CustomerID = @IntVariable
+     ,@SalesOrderOUT = @SalesOrderNumber OUTPUT;
+ -- This SELECT statement returns the value of the OUTPUT parameter.
+ SELECT @SalesOrderNumber;
+ -- This SELECT statement uses the value of the OUTPUT parameter in
+ -- the WHERE clause.
+ SELECT OrderDate, TotalDue
+ FROM Sales.SalesOrderHeader
+ WHERE SalesOrderNumber = @SalesOrderNumber;
+** 游标
+   #+BEGIN_SRC sql
+          use database1
+          declare my_cursor cursor scroll dynamic
+      /**//*scroll 表示可随意移动游标指针（否则只能向前），dynamic 表示可以读写游标（否则游标只读）*/
+     for
+     select productname from  product
+     open my_cursor
+     declare @pname sysname
+     fetch next from my_cursor into @pname
+     while(@@fetch_status=0)
+       begin
+         print 'Product Name: ' + @pname
+         fetch next from my_cursor into @pname
+       end
+ --    fetch first from my_cursor into @pname -- 获取第一个
+  --   print @pname
+     /**//*update product set productname='zzg' where current of my_cursor */
+     /**//*delete from product where current of my_cursor */
+     close my_cursor
+     deallocate my_cursor
+   #+END_SRC
 
   
 
 
-					----更新已开发票数量和未开发票数量
-					UPDATE CP_ProductOutSub
-					SET FIBillLackAmount =Outqty -ISNULL(FIBillAmount,0) - @BillAmount,
-					FIBillAmount =ISNULL(FIBillAmount,0) + @BillAmount				
-					WHERE (ID = @CP_ProductOutSub_ID)
-
-					IF @@ROWCOUNT<>1 OR @@error<>0
-						BEGIN
-							ROLLBACK TRAN
-							RAISERROR('更新成品已开发票数量和未开发票数量出错，请核实!',16,1) WITH SETERROR
-							RETURN
-						END
-* left join(左联接) 返回包括左表中的所有记录和右表中联结字段相等的记录 
-　　right join(右联接) 返回包括右表中的所有记录和左表中联结字段相等的记录
-　　inner join(等值连接) 只返回两个表中联结字段相等的行
-* sqlserver 日期与字符串之间的转换
-** 1、日期时间转字符串
-
-Select CONVERT(varchar(100), GETDATE(), 0): 05 16 2006  10:57AM
-Select CONVERT(varchar(100), GETDATE(), 1): 05/16/06
-Select  CONVERT(varchar(100), GETDATE(), 2): 06.05.16
-Select CONVERT(varchar(100),  GETDATE(), 3): 16/05/06
-Select CONVERT(varchar(100), GETDATE(), 4):  16.05.06
-Select CONVERT(varchar(100), GETDATE(), 5): 16-05-06
-Select  CONVERT(varchar(100), GETDATE(), 6): 16 05 06
-Select CONVERT(varchar(100),  GETDATE(), 7): 05 16, 06
-Select CONVERT(varchar(100), GETDATE(), 8):  10:57:46
-Select CONVERT(varchar(100), GETDATE(), 9): 05 16 2006  10:57:46:827AM
-Select CONVERT(varchar(100), GETDATE(), 10):  05-16-06
-Select CONVERT(varchar(100), GETDATE(), 11): 06/05/16
-Select  CONVERT(varchar(100), GETDATE(), 12): 060516
-Select CONVERT(varchar(100),  GETDATE(), 13): 16 05 2006 10:57:46:937
-Select CONVERT(varchar(100),  GETDATE(), 14): 10:57:46:967
-Select CONVERT(varchar(100), GETDATE(), 20):  2006-05-16 10:57:47
-Select CONVERT(varchar(100), GETDATE(), 21): 2006-05-16  10:57:47.157
-Select CONVERT(varchar(100), GETDATE(), 22): 05/16/06 10:57:47  AM
-Select CONVERT(varchar(100), GETDATE(), 23): 2006-05-16
-Select  CONVERT(varchar(100), GETDATE(), 24): 10:57:47
-Select CONVERT(varchar(100),  GETDATE(), 25): 2006-05-16 10:57:47.250
-Select CONVERT(varchar(100),  GETDATE(), 100): 05 16 2006 10:57AM
-Select CONVERT(varchar(100), GETDATE(),  101): 05/16/2006
-Select CONVERT(varchar(100), GETDATE(), 102):  2006.05.16
-Select CONVERT(varchar(100), GETDATE(), 103): 16/05/2006
-Select  CONVERT(varchar(100), GETDATE(), 104): 16.05.2006
-Select  CONVERT(varchar(100), GETDATE(), 105): 16-05-2006
-Select  CONVERT(varchar(100), GETDATE(), 106): 16 05 2006
-Select  CONVERT(varchar(100), GETDATE(), 107): 05 16, 2006
-Select  CONVERT(varchar(100), GETDATE(), 108): 10:57:49
-Select CONVERT(varchar(100),  GETDATE(), 109): 05 16 2006 10:57:49:437AM
-Select CONVERT(varchar(100),  GETDATE(), 110): 05-16-2006
-Select CONVERT(varchar(100), GETDATE(), 111):  2006/05/16
-Select CONVERT(varchar(100), GETDATE(), 112): 20060516
-Select  CONVERT(varchar(100), GETDATE(), 113): 16 05 2006 10:57:49:513
-Select  CONVERT(varchar(100), GETDATE(), 114): 10:57:49:547
-Select  CONVERT(varchar(100), GETDATE(), 120): 2006-05-16 10:57:49
-Select  CONVERT(varchar(100), GETDATE(), 121): 2006-05-16 10:57:49.700
-Select  CONVERT(varchar(100), GETDATE(), 126): 2006-05-16T10:57:49.827
-Select  CONVERT(varchar(100), GETDATE(), 130): 18 ???? ?????? 1427  10:57:49:907AM
-Select CONVERT(varchar(100), GETDATE(), 131): 18/04/1427  10:57:49:920AM
-
-** 2、Sql Server 日期与时间函数
-
-1.  当前系统日期、时间
-select getdate()
-
-2. dateadd  在向指定日期加上一段时间的基础上，返回新的 datetime 值
-例如：向日期加上 2 天
-select dateadd(day,2,'2004-10-15')  --返回：2004-10-17 00:00:00.000
-
-3. datediff 返回跨两个指定日期的日期和时间边界数。
-select datediff(day,'2004-09-01','2004-09-18')   --返回：17
-
-4. datepart 返回代表指定日期的指定日期部分的整数。
-SELECT DATEPART(month, '2004-10-15')  --返回 10
-
-5. datename 返回代表指定日期的指定日期部分的字符串
-SELECT datename(weekday, '2004-10-15')  --返回：星期五
-
-6. day(), month(),year() --可以与 datepart 对照一下
-select 当前日期=convert(varchar(10),getdate(),120) ,当前时间=convert(varchar(8),getdate(),114)
-select datename(dw,'2004-10-15')
-select 本年第多少周=datename(week,'2004-10-15'),今天是周几=datename(weekday,'2004-10-15')
-
-3、SQL Server 日期函数     参数/功能
-GetDate( )    返回系统目前的日期与时间
-
-DateDiff (interval,date1,date2)   以 interval 指定的方式，返回 date2 与 date1 两个日期之间的差值 date2-date1
-
-DateAdd (interval,number,date)   以 interval 指定的方式，加上 number 之后的日期
-
-DatePart (interval,date)    返回日期 date 中，interval 指定部分所对应的整数值
-
-DateName (interval,date)   返回日期 date 中，interval 指定部分所对应的字符串名称
-
-参数 interval 的设定值如下：
-
-值缩写（Sql Server） (Access 和 ASP) 说明
-
-Year Yy yyyy 年 1753 ~ 9999
-
-Quarter Qq q   季 1 ~ 4
-
-Month Mm m   月 1 ~ 12
-
-Day of year Dy y  一年的日数,一年中的第几日 1-366
-
-Day Dd d   日，1-31
-
-Weekday Dw w 一周的日数，一周中的第几日 1-7
-
-Week Wk ww  周，一年中的第几周 0 ~ 51
-
-Hour Hh h   时 0 ~ 23
-
-Minute Mi n  分钟 0 ~ 59
-
-Second Ss s 秒 0 ~ 59
-
-Millisecond Ms - 毫秒 0 ~ 999
-
-Access 和 Asp 中用 date()和 now()取得系统日期时间；其中 DateDiff,DateAdd,DatePart 也同是能用于 Access 和 asp 中，这些函数的用法也类似。
-
-4、SQL Server 日期函数举例
-
-1.GetDate() 用于 sql server :select GetDate()
-
-2.DateDiff('s','2005-07-20','2005-7-25 22:56:32')返回值为 514592 秒
-
-DateDiff('d','2005-07-20','2005-7-25 22:56:32')返回值为 5 天
-
-3.DatePart('w','2005-7-25 22:56:32')返回值为 2 即星期一(周日为 1，周六为 7)
-
-DatePart('d','2005-7-25 22:56:32')返回值为 25 即 25 号
-
-DatePart('y','2005-7-25 22:56:32')返回值为 206 即这一年中第 206 天
-
-DatePart('yyyy','2005-7-25 22:56:32')返回值为 2005 即 2005 年
-* 字符转换为日期时,Style 的使用
-
---1. Style=101 时,表示日期字符串为:mm/dd/yyyy 格式
-SELECT CONVERT(datetime,'11/1/2003',101)
---结果:2003-11-01 00:00:00.000
-
---2. Style=101 时,表示日期字符串为:dd/mm/yyyy 格式
-SELECT CONVERT(datetime,'11/1/2003',103)
---结果:2003-01-11 00:00:00.000
-
- 
-
-/*== 日期转换为字符串 ==*/
-DECLARE @dt datetime
-SET @dt='2003-1-11'
-
---1. Style=101 时,表示将日期转换为:mm/dd/yyyy 格式
-SELECT CONVERT(varchar,@dt,101)
---结果:01/11/2003
-
---2. Style=103 时,表示将日期转换为:dd/mm/yyyy 格式
-SELECT CONVERT(varchar,@dt,103)
---结果:11/01/2003
-
-
-/*== 这是很多人经常犯的错误,对非日期型转换使用日期的 style 样式 ==*/
-SELECT CONVERT(varchar,'2003-1-11',101)
---结果:2003-1-11
-
---1.
-/*--说明
-SET DATEFORMAT 设置对使用 CONVERT 把字符型日期转换为日期的处理也具有影响
-但不影响明确指定了 style 的 CONVERT 处理。
---*/
-
---示例 ，在下面的示例中，第一个 CONVERT 转换未指定 style，转换的结果受 SET DATAFORMAT 的影响，第二个 CONVERT 转换指定了 style，转换结果受 style 的影响。
---设置输入日期顺序为 日/月/年
-SET DATEFORMAT DMY
-
---不指定 Style 参数的 CONVERT 转换将受到 SET DATEFORMAT 的影响
-SELECT CONVERT(datetime,'2-1-2005')
---结果: 2005-01-02 00:00:00.000
-
---指定 Style 参数的 CONVERT 转换不受 SET DATEFORMAT 的影响
-SELECT CONVERT(datetime,'2-1-2005',101)
---结果: 2005-02-01 00:00:00.000
-GO
-
---2.
-/*--说明
-
-如果输入的日期包含了世纪部分，则对日期进行解释处理时
-年份的解释不受 SET DATEFORMAT 设置的影响。
---*/
-
---示例，在下面的代码中，同样的 SET DATEFORMAT 设置，输入日期的世纪部分与不输入日期的世纪部分，解释的日期结果不同。
-DECLARE @dt datetime
-
---设置 SET DATEFORMAT 为:月日年
-SET DATEFORMAT MDY
-
---输入的日期中指定世纪部分
-SET @dt='01-2002-03'
-SELECT @dt
---结果: 2002-01-03 00:00:00.000
-
---输入的日期中不指定世纪部分
-SET @dt='01-02-03'
-SELECT @dt
---结果: 2003-01-02 00:00:00.000
-GO
-
---3.
-/*--说明
-
-如果输入的日期不包含日期分隔符，那么 SQL Server 在对日期进行解释时
-将忽略 SET DATEFORMAT 的设置。
---*/
-
---示例，在下面的代码中，不包含日期分隔符的字符日期，在不同的 SET DATEFORMAT 设置下，其解释的结果是一样的。
-DECLARE @dt datetime
-
---设置 SET DATEFORMAT 为:月日年
-SET DATEFORMAT MDY
-SET @dt='010203'
-SELECT @dt
---结果: 2001-02-03 00:00:00.000
-
---设置 SET DATEFORMAT 为:日月年
-SET DATEFORMAT DMY
-SET @dt='010203'
-SELECT @dt
---结果: 2001-02-03 00:00:00.000
-
---输入的日期中包含日期分隔符
-SET @dt='01-02-03'
-SELECT @dt
---结果: 2003-02-01 00:00:00.000
-
---以下示例演示了在不同的语言环境(SET LANGUAGE)下，DATENAME 与 CONVERT 函数的不同结果。
-USE master
-
---设置会话的语言环境为: English
-SET LANGUAGE N'English'
-SELECT 
-DATENAME(Month,GETDATE()) AS [Month],
-DATENAME(Weekday,GETDATE()) AS [Weekday],
-CONVERT(varchar,GETDATE(),109) AS [CONVERT]
-/*--结果:
-Month    Weekday   CONVERT
-------------- -------------- -------------------------------
-March    Tuesday   Mar 15 2005 8:59PM
---*/
-
---设置会话的语言环境为: 简体中文
-SET LANGUAGE N'简体中文'
-SELECT 
-DATENAME(Month,GETDATE()) AS [Month],
-DATENAME(Weekday,GETDATE()) AS [Weekday],
-CONVERT(varchar,GETDATE(),109) AS [CONVERT]
-/*--结果
-* 字符串转日期时间：
-convert(datetime,'2017-12-12 00:00:01', 20)
-日期时间转字符串：
-Select CONVERT(varchar(100), GETDATE(), 0): 05 16 2006 10:57AM   
-Select CONVERT(varchar(100), GETDATE(), 1): 05/16/06   
-Select CONVERT(varchar(100), GETDATE(), 2): 06.05.16   
-Select CONVERT(varchar(100), GETDATE(), 3): 16/05/06   
-Select CONVERT(varchar(100), GETDATE(), 4): 16.05.06   
-Select CONVERT(varchar(100), GETDATE(), 5): 16-05-06   
-Select CONVERT(varchar(100), GETDATE(), 6): 16 05 06   
-Select CONVERT(varchar(100), GETDATE(), 7): 05 16, 06   
-Select CONVERT(varchar(100), GETDATE(), 8): 10:57:46   
-Select CONVERT(varchar(100), GETDATE(), 9): 05 16 2006 10:57:46:827AM   
-Select CONVERT(varchar(100), GETDATE(), 10): 05-16-06   
-Select CONVERT(varchar(100), GETDATE(), 11): 06/05/16   
-Select CONVERT(varchar(100), GETDATE(), 12): 060516   
-Select CONVERT(varchar(100), GETDATE(), 13): 16 05 2006 10:57:46:937   
-Select CONVERT(varchar(100), GETDATE(), 14): 10:57:46:967   
-Select CONVERT(varchar(100), GETDATE(), 20): 2006-05-16 10:57:47   
-Select CONVERT(varchar(100), GETDATE(), 21): 2006-05-16 10:57:47.157   
-Select CONVERT(varchar(100), GETDATE(), 22): 05/16/06 10:57:47 AM   
-Select CONVERT(varchar(100), GETDATE(), 23): 2006-05-16   
-Select CONVERT(varchar(100), GETDATE(), 24): 10:57:47   
-Select CONVERT(varchar(100), GETDATE(), 25): 2006-05-16 10:57:47.250   
-Select CONVERT(varchar(100), GETDATE(), 100): 05 16 2006 10:57AM   
-Select CONVERT(varchar(100), GETDATE(), 101): 05/16/2006   
-Select CONVERT(varchar(100), GETDATE(), 102): 2006.05.16   
-Select CONVERT(varchar(100), GETDATE(), 103): 16/05/2006   
-Select CONVERT(varchar(100), GETDATE(), 104): 16.05.2006   
-Select CONVERT(varchar(100), GETDATE(), 105): 16-05-2006   
-Select CONVERT(varchar(100), GETDATE(), 106): 16 05 2006   
-Select CONVERT(varchar(100), GETDATE(), 107): 05 16, 2006   
-Select CONVERT(varchar(100), GETDATE(), 108): 10:57:49   
-Select CONVERT(varchar(100), GETDATE(), 109): 05 16 2006 10:57:49:437AM   
-Select CONVERT(varchar(100), GETDATE(), 110): 05-16-2006   
-Select CONVERT(varchar(100), GETDATE(), 111): 2006/05/16   
-Select CONVERT(varchar(100), GETDATE(), 112): 20060516   
-Select CONVERT(varchar(100), GETDATE(), 113): 16 05 2006 10:57:49:513   
-Select CONVERT(varchar(100), GETDATE(), 114): 10:57:49:547   
-Select CONVERT(varchar(100), GETDATE(), 120): 2006-05-16 10:57:49   
-Select CONVERT(varchar(100), GETDATE(), 121): 2006-05-16 10:57:49.700   
-Select CONVERT(varchar(100), GETDATE(), 126): 2006-05-16T10:57:49.827   
-Select CONVERT(varchar(100), GETDATE(), 130): 18 ???? ?????? 1427 10:57:49:907AM  
-在 SQL 数据库中，有一类函数是不得不提的，那就是 SQL Server 日期时间函数，这是 SQL Server 处理日期和时间最常用的函数，下面就将为介绍这类函数。
-
-
-Sql Server 日期与时间函数:
-
-1.  当前系统日期、时间 
-
-select getdate() 
-1. dateadd  在向指定日期加上一段时间的基础上，返回新的 datetime 值
-例如：向日期加上 2 天 
-select dateadd(day,2,'2004-10-15')  --返回：2004-10-17 00:00:00.000
-1. datediff 返回跨两个指定日期的日期和时间边界数。
-select datediff(day,'2004-09-01','2004-09-18')   --返回：17
-1. datepart 返回代表指定日期的指定日期部分的整数。
-SELECT DATEPART(month, '2004-10-15')  --返回 10
-1. datename 返回代表指定日期的指定日期部分的字符串
-SELECT datename(weekday, '2004-10-15')  --返回：星期五
-1. day(), month(),year() --可以与 datepart 对照一下
-select 当前日期=convert(varchar(10),getdate(),120) ,当前时间=convert(varchar(8),getdate(),114)
-select datename(dw,'2004-10-15')
-select 本年第多少周=datename(week,'2004-10-15'),今天是周几=datename(weekday,'2004-10-15')
-
-
-SQL Server 日期函数     参数/功能
-
-GetDate( )    返回系统目前的日期与时间
-DateDiff (interval,date1,date2)   以 interval 指定的方式，返回 date2 与 date1 两个日期之间的差值 date2-date1
-DateAdd (interval,number,date)   以 interval 指定的方式，加上 number 之后的日期
-DatePart (interval,date)    返回日期 date 中，interval 指定部分所对应的整数值
-DateName (interval,date)   返回日期 date 中，interval 指定部分所对应的字符串名称
-参数 interval 的设定值如下：
-值缩写（Sql Server） (Access 和 ASP) 说明
-Year Yy yyyy 年 1753 ~ 9999
-Quarter Qq q   季 1 ~ 4
-Month Mm m   月 1 ~ 12
-Day of year Dy y  一年的日数,一年中的第几日 1-366
-Day Dd d   日，1-31
-Weekday Dw w 一周的日数，一周中的第几日 1-7
-Week Wk ww  周，一年中的第几周 0 ~ 51
-Hour Hh h   时 0 ~ 23
-Minute Mi n  分钟 0 ~ 59
-Second Ss s 秒 0 ~ 59
-Millisecond Ms - 毫秒 0 ~ 999
-Access 和 Asp 中用 date()和 now()取得系统日期时间；其中 DateDiff,DateAdd,DatePart 也同是能用于 Access 和 asp 中，这些函数的用法也类似。
-
-
-SQL Server 日期函数举例：
-
-
-1.GetDate() 用于 sql server :select GetDate()
-2.DateDiff('s','2005-07-20','2005-7-25 22:56:32')返回值为 514592 秒
-DateDiff('d','2005-07-20','2005-7-25 22:56:32')返回值为 5 天
-3.DatePart('w','2005-7-25 22:56:32')返回值为 2 即星期一(周日为 1，周六为 7)
-DatePart('d','2005-7-25 22:56:32')返回值为 25 即 25 号
-DatePart('y','2005-7-25 22:56:32')返回值为 206 即这一年中第 206 天
-DatePart('yyyy','2005-7-25 22:56:32')返回值为 2005 即 2005 年
-* commit transcation :SQL 多步操作之后，提交事务，此时数据才真正保存到数据库
-rollback transcation:SQL 多步操作发生错误，调用此语句，数据回滚到最初始状态。
-* 以下是出现错误的 SQL 部分语句：
-
-BEGIN TRAN
---进行判断，不符合条件就回滚，不执行其他操作
-IF NOT EXISTS(SELECT [ID] FROM [TestTable] WHERE NO='123')
-BEGIN
-ROLLBACK TRAN;
-END
-
---这里执行其他 SQL 操作语句。
-UPDATE TestTable SET NO='312' WHERE NO='122'
-
---如果有错误就回滚，没错误就提交
-IF(@@ERROR<>0)
-BEGIN  
-     ROLLBACK TRAN;
-END
-ELSE
-BEGIN
-     COMMIT TRAN;
-END
-此错误的原因是由于一个事务只能对应一个操作，要么回滚要么提交，所以执行了 ROLLBACK TRAN 语句后一定不能再执行
-COMMIT TRAN 语句！！！而无论是回滚事务还是提交事务，都是不会中断 SQL 处理流程的，要想中断流程就需要使用 RETURN 语句。
-
-上面范例中的语句先执行了 ROLLBACK TRAN 回滚操作（这里造成事务已经处理完成），但是并没有中断流程，
-所以后面的语句依然会继续执行。执行过程中由于没有任何异常错误，最终导致重复执行了底部的 COMMIT TRAN 事务提交操作，
-最后一次事务操作没有找到相匹配的事务声明，就会提示"COMMIT TRANSACTION(事务提交) 请求没有对应的 BEGIN TRANSACTION(事务声明)"这个错误。
-
-所以要跳出事务，在进行回滚 ROLLBACK 操作后，还必须马上使用 RETURN 语句跳出执行流程。以下为修改后的语句：
-
-BEGIN TRAN
---进行判断，不符合条件就回滚，不执行其他操作
-IF NOT EXISTS(SELECT [ID] FROM [TestTable] WHERE NO='123')
-BEGIN
-     ROLLBACK TRAN;
-     --------------------------------
-     --这里需要添加 RETURN，中断处理流程，防止重复执行事务提交！
-     RETURN;
-     --------------------------------
-END
-
---这里执行其他 SQL 操作语句。
-UPDATE TestTable SET NO='312' WHERE NO='122'
-
---如果有错误就回滚，没错误就提交
-IF(@@ERROR<>0)
-BEGIN
-     ROLLBACK TRAN;
-END
-
-ELSE
-BEGIN  
-     COMMIT TRAN;
-END
-
-这里在做一个简单测试，有助于理解所谓的一个事务只能对应一个事务操作的意思，在 SQL 中输入下图的三行代码并执行：
-
-简单测试还原错误
-
-事务的语法只能一一对应，我们只有一个事务声明但是却有两个事务操作，最后一个事务操作无法找到匹配的事务声明，自然就出错。
-* 查看存储过程
-  select * from sys.objects where type ='P'
-  或者：SSMS=〉数据库=〉对应数据库=〉可编程性=〉存储过程
-* 空时间日期
-  CAST(NULL AS DATETIME) AS AgreementDate
-* 判断是否为空
-  使用指定的替换值替换 NULL。
-
-语法：ISNULL ( check_expression , replacement_value )
-and (ProductBatch=@BatchNo or isnull(@BatchNo,'')='')
-* 四舍五入
-select cast(362315*1.0/10000 as numeric(18,2))
-select convert(decimal(18, 2), 362315 * 1.0 / 10000)
-
-1. ROUND(该函数，只是负责四舍五入到两位小数，但是不负责截断 只留两位小数，例如下例：)
-
-关于 ROUND 函数，我们平常理解为 4 舍 5 入，如：
-
-print ROUND(13.145, 2);
-
-结果为：13.150
- 
-
-2. 使用转换类型，才能达到保留两位小数位的目的： 
-select cast(13.145 as   decimal(10,   2))
-结果为：13.15
-* 2018/8/3 经典 SQL 语句大全
+					 ----更新已开发票数量和未开发票数量
+					 UPDATE CP_ProductOutSub
+					 SET FIBillLackAmount =Outqty -ISNULL(FIBillAmount,0) - @BillAmount,
+					 FIBillAmount =ISNULL(FIBillAmount,0) + @BillAmount				
+					 WHERE (ID = @CP_ProductOutSub_ID)
+
+					 IF @@ROWCOUNT<>1 OR @@error<>0
+						 BEGIN
+							 ROLLBACK TRAN
+							 RAISERROR('更新成品已开发票数量和未开发票数量出错，请核实!',16,1) WITH SETERROR
+							 RETURN
+						 END
+* 经典 SQL 语句大全
 一、基础
 1、说明：创建数据库
 CREATE DATABASE database-name
@@ -2762,42 +1766,10 @@ where not exists(
 select * from author where id=b.id)
 go
 63
-* 当天日期
-    convert(date ,PLDate)=convert(date ,@LJDate)
-* 成功的 checkmsg , 注意前面是 1
-  
-select 1 as CheckResult,'批号为'+ @BatchNo +'的产品需先删除'+cast(@CardNum-@TodayQty as nvarchar(10))+'张流程卡'   as CheckMsg
-* 游标
-DECLARE @id INT;
-DECLARE tempCursor CURSOR
-FOR
-    ( SELECT    id
-      FROM      HrmResource
-      WHERE     status IN ( 0, 1, 2, 3 )
-    )
-    ORDER BY id;								--创建游标 tempCursor，并定义游标所指向的集合   
-OPEN tempCursor;								--打开游标  
-FETCH NEXT FROM tempCursor INTO @id;			--游标读取下一个数据  
-WHILE @@fetch_status = 0                        --游标读取下一个数据的状态，0 表示读取成功  
-    BEGIN  
-        PRINT ( @id )							--打印 id
-		SELECT * FROM HrmResource WHERE id = @id;
-        FETCH NEXT FROM tempCursor INTO @id;    --继续用游标读取下一个数据  
-    END  
-CLOSE tempCursor;								--关闭游标
-DEALLOCATE tempCursor;							--释放游标
-
-* 月初 月末
+月初 月末
 select DATEADD(mm,DATEDIFF(mm,0,GETDATE()),0) AS docdate1,
 DATEADD(ms,-3,DATEADD(mm,1,DATEADD(mm,DATEDIFF(mm,0,GETDATE()),0))) AS docdate2
-* .my.cnf 文件
-  $HOME/.my.cnf文件来读取特定的启动命令和设置。其中一项设置就是用户启动的mysql会话的默认
-密码。
-
-[client]
-password = test
-$ chmod 400 .my.cnf
-* 执行命令
+* shell执行命令
   #!/bin/bash
   # send a command to the MySQL server
   MYSQL=$(which mysql)
@@ -2808,6 +1780,98 @@ $ chmod 400 .my.cnf
   show tables;
   select * from employees where salary > 40000;
   EOF
-* 输出XML格式
-  -X
-$ mysql mytest -u test -X -e 'select * from employees where empid = 1'
+* sql layer
+** 手册 file:///home/wuming/.local/share/Zeal/Zeal/docsets/MySQL.docset/Contents/Resources/Documents/index.html
+** 特点:
+   语法高亮
+   语法检查
+   代码片段插入 snippet 
+   交互 Sqli
+   关键字首字母自动大写
+
+   语法检查 For syntax-checking you also need to install [[https://www.ruby-lang.org/en/about/][ruby]] as well as =sqlint=.
+   gem install sqlint
+** SQL Keywords Capitalization
+SQL, by convention, uses upper-case keywords, although lower-case works just as
+well. As humans, the separation between upper-case and lower-case helps scan and
+parse the code much more quickly.
+
+To install [[https://github.com/Trevoke/sqlup-mode.el][sqlup-mode]] which enables auto capitalization in =sql mode= set the
+variable =sql-capitalize-keywords= to =t=.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default dotspacemacs-configuration-layers '(
+    (sql :variables sql-capitalize-keywords t)))
+#+END_SRC
+
+*** SQL Interactive Mode
+If you want capitalization only in =sql-mode= and not in =sql-interactive-mode=
+you can set the variable =sql-capitalize-keywords-disable-interactive= to =t=.
+
+*** Blacklisting keywords
+[[https://github.com/Trevoke/sqlup-mode.el][sqlup-mode]] can be configured to ignore certain keywords. For example if you use
+=name= as column name it would be annoying to have it upcased. You can prevent
+this behaviour by setting the variable =sql-capitalize-keywords-blacklist= to
+a list with keywords to ignore, e.g.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default dotspacemacs-configuration-layers '(
+    (sql :variables
+         sql-capitalize-keywords t
+         sql-capitalize-keywords-blacklist '("name" "varchar"))))
+#+END_SRC
+
+This layer is blacklisting =name= by default as it is a very common name for
+column and NAME is non-reserved SQL keyword.
+
+** Auto-Indent
+This mode use [[https://github.com/alex-hhh/emacs-sql-indent][sql-indent]] to indent the code. You can check the package’s README
+to adjust the rules. If that’s not what you want, you can also disable
+auto-indent by setting the variable =sql-auto-indent= to =nil=.
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default dotspacemacs-configuration-layers '(
+    (sql :variables sql-auto-indent nil)))
+#+END_SRC
+
+** Key bindings
+*** 代码高亮Highlighting
+
+ | Key Binding | Description                       |
+ |-------------+-----------------------------------|
+ | ~SPC m h k~ | 代码高亮select a SQL dialect to highlight |
+
+*** 交互界面Inferior Process Interactions (SQLi)
+
+ | Key Binding | Description                             |
+ |-------------+-----------------------------------------|
+ | ~SPC m b b~ | 显示命令缓冲区show the SQLi buffer name |
+ | ~SPC m b s~ | set the SQLi buffer                     |
+ | ~SPC m l a~ | 显示数据库中的表List all objects                |
+ | ~SPC m l t~ | 显示表信息list all objects in a table    |
+
+**** Send SQL queries to SQLi:
+
+ | Key Binding | Description                                                                           |
+ |-------------+---------------------------------------------------------------------------------------|
+ | ~SPC m s b~ | 发送整个buffer执行Send the whole buffer to the SQLi buffer                                  |
+ | ~SPC m s B~ | Send the whole buffer to the SQLi buffer and switch to it in =insert state=           |
+ | ~SPC m s i~ | Start the SQLi process                                                                |
+ | ~SPC m s f~ | Send the paragraph around point to the SQLi buffer                                    |
+ | ~SPC m s F~ | Send the paragraph around point to the SQLi buffer and switch to it in =insert state= |
+ | ~SPC m s q~ | Prompt for a string to send to the SQLi buffer                                        |
+ | ~SPC m s Q~ | Prompt for a string to send to the SQLi buffer and switch to it in =insert state=     |
+ | ~SPC m s r~ | 发送选区执行Send the selected region to the SQLi buffer                                     |
+ | ~SPC m s R~ | Send the selected region to the SQLi buffer and switch to it in =insert state=        |
+
+*** SQLi buffer
+
+ | Key Binding | Description                                                  |
+ |-------------+--------------------------------------------------------------|
+ | ~SPC m b r~ | rename buffer (follow up in the SQL buffer with ~SPC m b s~) |
+ | ~SPC m b S~ | save the current connection                                  |
+
+*** Code Formatting
+
+ | ~SPC m = c~ | capitalize SQL keywords in region (if capitalize is enabled) |
+

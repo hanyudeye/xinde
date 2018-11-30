@@ -1,2 +1,3117 @@
 * [bootstrap](http://www.bootcss.com/)
+** 安装 $ npm install bootstrap@3
+  $ composer require twbs/bootstrap
+** 样式CSS
+   col-xs : For an extra small display (screen width less than 34em or 544px)
+   col-sm : For a smaller display (screen width 34em or 544ps and up)
+   col-md : For a medium display (screen width 48em or 768px and up)
+   col-lg : For a larger display (screen width 62em or 992px and up)
+   col-xl : For an extra large display (screen width 75em or 1200px and up)
+*** 栅格系统
+   占用格子数 <div class="col-md-8">.col-md-8</div>
+   全屏容器 <div class="container-fluid"> , 没白边
+   固定屏容器 <div class="container">
+   中屏幕占用四个格子，如果是手机屏幕，占用一半格子  <div class="col-xs-6 col-md-4">.col-xs-6 .col-md-4</div>
+   列偏移 使用.col-md-offset-*可以将列偏移到右侧。这些class通过使用*选择器将所有列增加了列的左侧margin。
+   嵌套列 为了使用内置的栅格将内容嵌套，通过添加一个新的.row和一系列.col-md-*列到已经存在的.col-md-*列内即可实现。嵌套row所包含的列加起来应该等于12。
+   列排序 通过使用.col-md-push-* 和 .col-md-pull-*就可以很容易的改变列的顺序。
+*** 排版
+   删除线<del> / <s>
+   着重 <mark>
+   下划线 <ins>/<u>
+   Small
+   strong
+   em
 
+   对齐 classes
+ - <p class="text-left">Left aligned text.</p>
+ - <p class="text-center">Center aligned text.</p>
+ - <p class="text-right">Right aligned text.</p>
+ - <p class="text-justify">Justified text.</p>
+ - <p class="text-nowrap">No wrap text.</p>
+
+ 缩写
+ <abbr title="attribute">attr</abbr>
+ <abbr title="HyperText Markup Language" class="initialism">HTML</abbr>
+
+
+ 无格式列表 <ul class="list-unstyled">
+ 行内式 <ul class="list-inline">
+ 定义式列表
+ <dl class="dl-horizontal">
+   <dt>...</dt>
+   <dd>...</dd>
+ </dl>
+
+ 键盘标记 To edit settings, press <kbd><kbd>ctrl</kbd> + <kbd>,</kbd></kbd>
+
+ 行内代码 <code>
+ 例子输出 <samp>
+ 地址 <address>
+ 引用选项 <blockquote>
+ 右对齐 <blockquote class="pull-right">
+
+ 表格
+ <table class="table">
+
+ <table border="1">
+   <tr>
+     <th>Month</th>
+     <th>Savings</th>
+   </tr>
+   <tr>
+     <td>January</td>
+     <td>$100</td>
+   </tr>
+ </table>
+
+ 条纹状表格 利用.table-striped可以给<tbody>之内的每一样增加斑马条纹样式。
+ 带边框的表格 利用.table-bordered为表格和其中的每个单元格增加边框。
+ 鼠标悬停 利用.table-hover可以让<tbody>中的每一行响应鼠标悬停状态。
+ 紧缩表格 利用.table-condensed可以让表格更加紧凑，单元格中的内部（padding）均会减半。
+
+ 状态class 通过这些状态class可以为行货单元格设置颜色。
+ Class	描述
+ .active	鼠标悬停在行或单元格上时所设置的颜色
+ .success	标识成功或积极的动作
+ .warning	标识警告或需要用户注意
+ .danger	标识危险或潜在的带来负面影响的动作
+
+ 响应式表格 将任何.table包裹在.table-responsive中即可创建响应式表格，其会在小屏幕设备上（小于768px）水平滚动。当屏幕大于768px宽度时，水平滚动条消失。
+
+ 强调class
+ <p class="text-muted">...</p>
+ <p class="text-primary">...</p>
+ <p class="text-success">...</p>
+ <p class="text-info">...</p>
+ <p class="text-warning">...</p>
+ <p class="text-danger">...</p>
+
+
+ 表单
+ 基本案例
+ 单独的表单控件会被自动赋予一些全局样式。所有设置了.form-control的<input>、<textarea>和<select>元素都将被默认设置为width: 100%;。将label和前面提到的这些控件包裹在.form-group中可以获得最好的排列。
+ #+BEGIN_SRC html
+ <form role="form">
+   <div class="form-group">
+     <label for="exampleInputEmail1">Email address</label>
+     <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email">
+   </div>
+   <div class="form-group">
+     <label for="exampleInputPassword1">Password</label>
+     <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+   </div>
+   <div class="form-group">
+     <label for="exampleInputFile">File input</label>
+     <input type="file" id="exampleInputFile">
+     <p class="help-block">Example block-level help text here.</p>
+   </div>
+   <div class="checkbox">
+     <label>
+       <input type="checkbox"> Check me out
+     </label>
+   </div>
+   <button type="submit" class="btn btn-default">Submit</button>
+ </form>
+ #+END_SRC
+
+
+ 内联表单 为左对齐和inline-block级别的控件设置.form-inline，可以将其排布的更紧凑。
+ 水平排列的表单 通过为表单添加.form-horizontal，并使用Bootstrap预置的栅格class可以将label和控件组水平并排布局。这样做将改变.form-group的行为，使其表现为栅格系统中的行（row），因此就无需再使用.row了。
+ #+BEGIN_SRC html
+ <form class="form-horizontal" role="form">
+   <div class="form-group">
+     <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+     <div class="col-sm-10">
+       <input type="email" class="form-control" id="inputEmail3" placeholder="Email">
+     </div>
+   </div>
+   <div class="form-group">
+     <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+     <div class="col-sm-10">
+       <input type="password" class="form-control" id="inputPassword3" placeholder="Password">
+     </div>
+   </div>
+   <div class="form-group">
+     <div class="col-sm-offset-2 col-sm-10">
+       <div class="checkbox">
+         <label>
+           <input type="checkbox"> Remember me
+         </label>
+       </div>
+     </div>
+   </div>
+   <div class="form-group">
+     <div class="col-sm-offset-2 col-sm-10">
+       <button type="submit" class="btn btn-default">Sign in</button>
+     </div>
+   </div>
+ </form>
+ #+END_SRC
+
+ Checkbox 和 radio Checkbox用于选择列表中的一个或多个选项，而radio用于从多个选项中只选择一个。
+ Inline checkboxes 通过将.checkbox-inline 或 .radio-inline应用到一系列的checkbox或radio控件上，可以使这些控件排列在一行。
+
+ Select 使用默认选项或添加multiple属性可以显示多个选项。
+
+
+ 控件状态 通过为控件和label设置一些基本状态，可以为用户提供回馈。
+ 输入焦点 我们移除了某些表单控件的默认outline样式，并对其:focus状态赋予了box-shadow样式。
+ 被禁用的输入框 为输入框设置disabled属性可以防止用户输入，并能改变一点外观，使其更直观。
+ 被禁用的fieldset 为<fieldset>设置disabled属性可以禁用<fieldset>中包含的所有控件。
+
+
+ 校验状态 Bootstrap对表单控件的校验状态，如error、warning和success状态，都定义了样式。使用时，添加.has-warning、.has-error或.has-success到这些控件的父元素即可。
+ 任何包含在此元素之内的.control-label、.form-control和.help-block都将接受这些校验状态的样式。
+ 控件尺寸 通过.input-lg之类的class可以为控件设置高度，通过.col-lg-*之类的class可以为控件设置宽度。
+ 调整列尺寸 用栅格系统中的列包裹input或其任何父元素，都可很容易的为其设置宽度。
+ 帮助文本 用于表单控件的块级帮助文本。
+
+
+
+ 按钮
+ 选项 使用下面列出的class可以快速创建一个带有样式的按钮。
+ #+BEGIN_SRC html
+ <!-- Standard button -->
+ <button type="button" class="btn btn-default">Default</button>
+
+ <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
+ <button type="button" class="btn btn-primary">Primary</button>
+
+ <!-- Indicates a successful or positive action -->
+ <button type="button" class="btn btn-success">Success</button>
+
+ <!-- Contextual button for informational alert messages -->
+ <button type="button" class="btn btn-info">Info</button>
+
+ <!-- Indicates caution should be taken with this action -->
+ <button type="button" class="btn btn-warning">Warning</button>
+
+ <!-- Indicates a dangerous or potentially negative action -->
+ <button type="button" class="btn btn-danger">Danger</button>
+
+ <!-- Deemphasize a button by making it look like a link while maintaining button behavior -->
+ <button type="button" class="btn btn-link">Link</button>
+ #+END_SRC
+ 尺寸 需要让按钮具有不同尺寸吗？使用.btn-lg、.btn-sm、.btn-xs可以获得不同尺寸的按钮。
+ 活动状态 当按钮处于活动状态时，其表现为被按压下（底色更深，边框夜色更深，内置阴影）。对于B<button>元素，是通过:active实现的。对于<a>元素，是通过.active实现的。然而，你还可以联合使用.active <button>并通过编程的方式使其处于活动状态。
+ 按钮元素 由于:active是伪状态，因此 无需添加，但是在需要表现出同样外观的时候可以添加.active。
+ 链接元素 可以为<a>添加.active class。
+
+ 禁用状态 通过将按钮的背景色做50%的褪色处理就可以呈现出无法点击的效果。
+ 按钮元素 为<button>添加disabled属性。
+ 链接元素 为<a>添加.disabled class。
+ 可作按钮使用的HTML标签 可以为<a>、<button>或<input>元素添加按钮class。
+ <a class="btn btn-default" href="#" role="button">Link</a>
+ <button class="btn btn-default" type="submit">Button</button>
+ <input class="btn btn-default" type="button" value="Input">
+ <input class="btn btn-default" type="submit" value="Submit">
+
+ 图片
+ 为<img>元素增加不同的class，就可以轻松的改变其样式。
+ <img src="..." alt="..." class="img-rounded">
+ <img src="..." alt="..." class="img-circle">
+ <img src="..." alt="..." class="img-thumbnail">
+
+ 工具class
+ 关闭按钮 通过使用一个象征关闭的图标，可以用来让模式对话框和警告框消失。 <button type="button" class="close" aria-hidden="true">&times;</button>
+ 快速设置浮动 通过这两个class让页面元素左右浮动。 !important被用来避免某些问题。也可以像mixin一样使用这两个class。
+ <div class="pull-left">...</div>
+ <div class="pull-right">...</div>
+ 内容区域居中 将页面元素设置为 display: block并通过设置margin使其居中。可以作为mixin或class使用。 <div class="center-block">...</div>
+ 清除浮动 使用.clearfix清除任意页面元素的浮动。我们使用了Nicolas Gallagher的the micro clearfix。也可以像mixin一样使用。 <div class="clearfix">...</div>
+ 显示或隐藏内容 通过.show 和 .hide设置display属性可以强行显示或隐藏任一页面元素。这两个class使用了!important以避免冲突，原因和快速浮动类似。这两个class只能用于块级元素，也可以作为mixin使用。
+ 针对屏幕阅读器的内容 使用.sr-only可以在任何地方隐藏页面元素，包括屏幕阅读器。其也可以作为mixin使用。<div class="hidden"></div>
+ 图片替换 使用.text-hide class（也可作为mixin使用）可以将页面元素所包含的文本内容替换为背景图。 <h1 class="text-hide">Custom heading</h1>
+
+ 响应式工具
+ 通过使用这些工具class可以根据屏幕和不同的媒体查询显示或隐藏页面内容，加速针对移动设备的开发。
+
+** 组件Components 无数可复用的组件，包括图标，下拉菜单，导航，警告框，弹出框等更多功能。
+   https://v3.bootcss.com/components/
+*** Glyphicons 图标 
+    如何使用 出于性能的考虑，所有图标都需要基类和单独的图标类。把下面的代码放 在任何地方都能使用。为了留下正确的内补（padding），一定要在图标和文本之间加上一个空格。
+    <span class="glyphicon glyphicon-search"></span>
+    案例 把它们放在按钮，工具栏的按钮组中，导航或输入栏的前面都可以。  
+*** 下拉菜单
+    用于显示链接列表的可切换、有上下文的菜单。JavaScript 下拉菜单插件让它有交互性。
+    案例 将下拉菜单触发器和下拉菜单都包裹在.dropdown里，或者另一个声明了position: relative;的元素。然后添加组成菜单的HTML代码。
+   #+BEGIN_SRC html
+ <div class="dropdown">
+   <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+     Dropdown
+     <span class="caret"></span>
+   </button>
+   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+     <li><a href="#">Action</a></li>
+     <li><a href="#">Another action</a></li>
+     <li><a href="#">Something else here</a></li>
+     <li role="separator" class="divider"></li>
+     <li><a href="#">Separated link</a></li>
+   </ul>
+ </div>
+   #+END_SRC 
+    通过为下拉菜单的父元素设置 .dropup 类，可以让菜单向上弹出（默认是向下弹出的）。
+    #+BEGIN_SRC html
+    <div class="dropup">
+   <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+     Dropup
+     <span class="caret"></span>
+   </button>
+   <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+     <li><a href="#">Action</a></li>
+     <li><a href="#">Another action</a></li>
+     <li><a href="#">Something else here</a></li>
+     <li role="separator" class="divider"></li>
+     <li><a href="#">Separated link</a></li>
+   </ul>
+ </div>
+    #+END_SRC
+**** 对齐 B默认情况下，下拉菜单自动沿着父元素的上沿和左侧被定位为 100% 宽度。 为 .dropdown-menu 添加 .dropdown-menu-right 类可以让菜单右对齐。
+**** 标题 在任何下拉菜单中均可通过添加标题来标明一组动作。
+     #+BEGIN_SRC html
+       <ul class="dropdown-menu" aria-labelledby="dropdownMenu3">
+         ...
+         <li class="dropdown-header">Dropdown header</li>
+         ...
+       </ul>
+     #+END_SRC
+**** 禁用的菜单项 为下拉菜单中的 <li> 元素添加 .disabled 类，从而禁用相应的菜单项。
+*** hello     
+    标题
+在任何下拉菜单中均可通过添加标题来标明一组动作。
+
+Dropdown header
+Action
+Another action
+Something else here
+Dropdown header
+Separated link
+<ul class="dropdown-menu" aria-labelledby="dropdownMenu3">
+  ...
+  <li class="dropdown-header">Dropdown header</li>
+  ...
+</ul>
+分割线
+为下拉菜单添加一条分割线，用于将多个链接分组。
+
+Action
+Another action
+Something else here
+Separated link
+<ul class="dropdown-menu" aria-labelledby="dropdownMenuDivider">
+  ...
+  <li role="separator" class="divider"></li>
+  ...
+</ul>
+禁用的菜单项
+为下拉菜单中的 <li> 元素添加 .disabled 类，从而禁用相应的菜单项。
+
+Regular link
+Disabled link
+Another link
+<ul class="dropdown-menu" aria-labelledby="dropdownMenu4">
+  <li><a href="#">Regular link</a></li>
+  <li class="disabled"><a href="#">Disabled link</a></li>
+  <li><a href="#">Another link</a></li>
+</ul>
+按钮组
+通过按钮组容器把一组按钮放在同一行里。通过与按钮插件联合使用，可以设置为单选框或多选框的样式和行为。
+
+按钮组中的工具提示和弹出框需要特别的设置
+当为 .btn-group 中的元素应用工具提示或弹出框时，必须指定 container: 'body' 选项，这样可以避免不必要的副作用（例如工具提示或弹出框触发时，会让页面元素变宽和/或失去圆角）。
+
+确保设置正确的 role 属性并提供一个 label 标签
+为了向使用辅助技术 - 如屏幕阅读器 - 的用户正确传达一正确的按钮分组，需要提供一个合适的 role 属性。对于按钮组合，应该是 role="group"，对于toolbar（工具栏）应该是 role="toolbar"。
+
+一个例外是按钮组合只包含一个单一的控制元素或一个下拉菜单（比如实际情况，<button> 元素组成的两端对齐排列的按钮组 ）或下拉菜单。
+
+此外，按钮组和工具栏应给定一个明确的label标签，尽管设置了正确的 role 属性，但是大多数辅助技术将不会正确的识读他们。在这里提供的实例中，我们使用 aria-label，但是， aria-labelledby 也可以使用。
+
+基本实例
+Wrap a series of buttons with .btn in .btn-group.
+
+ <div class="btn-group" role="group" aria-label="...">
+  <button type="button" class="btn btn-default">Left</button>
+  <button type="button" class="btn btn-default">Middle</button>
+  <button type="button" class="btn btn-default">Right</button>
+</div>
+按钮工具栏
+把一组 <div class="btn-group"> 组合进一个 <div class="btn-toolbar"> 中就可以做成更复杂的组件。
+
+<div class="btn-toolbar" role="toolbar" aria-label="...">
+  <div class="btn-group" role="group" aria-label="...">...</div>
+  <div class="btn-group" role="group" aria-label="...">...</div>
+  <div class="btn-group" role="group" aria-label="...">...</div>
+</div>
+尺寸
+只要给 .btn-group 加上 .btn-group-* 类，就省去为按钮组中的每个按钮都赋予尺寸类了，如果包含了多个按钮组时也适用。
+
+ 
+ 
+ 
+ <div class="btn-group btn-group-lg" role="group" aria-label="...">...</div>
+<div class="btn-group" role="group" aria-label="...">...</div>
+<div class="btn-group btn-group-sm" role="group" aria-label="...">...</div>
+<div class="btn-group btn-group-xs" role="group" aria-label="...">...</div>
+嵌套
+想要把下拉菜单混合到一系列按钮中，只须把 .btn-group 放入另一个 .btn-group 中。
+
+ <div class="btn-group" role="group" aria-label="...">
+  <button type="button" class="btn btn-default">1</button>
+  <button type="button" class="btn btn-default">2</button>
+
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Dropdown
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a href="#">Dropdown link</a></li>
+      <li><a href="#">Dropdown link</a></li>
+    </ul>
+  </div>
+</div>
+垂直排列
+让一组按钮垂直堆叠排列显示而不是水平排列。分列式按钮下拉菜单不支持这种方式。
+
+ <div class="btn-group-vertical" role="group" aria-label="...">
+  ...
+</div>
+两端对齐排列的按钮组
+让一组按钮拉长为相同的尺寸，填满父元素的宽度。对于按钮组中的按钮式下拉菜单也同样适用。
+
+关于边框的处理
+由于对两端对齐的按钮组使用了特定的 HTML 和 CSS （即 display: table-cell），两个按钮之间的边框叠加在了一起。在普通的按钮组中，margin-left: -1px 用于将边框重叠，而没有删除任何一个按钮的边框。然而，margin 属性不支持 display: table-cell。因此，根据你对 Bootstrap 的定制，你可以删除或重新为按钮的边框设置颜色。
+
+IE8 和边框
+Internet Explorer 8 不支持在两端对齐的按钮组中绘制边框，无论是 <a> 或 <button> 元素。为了照顾 IE8，把每个按钮放入另一个 .btn-group 中即可。
+
+参见 #12476 获取详细信息。
+
+关于 <a> 元素
+只须将一系列 .btn 元素包裹到 .btn-group.btn-group-justified 中即可。
+
+
+<div class="btn-group btn-group-justified" role="group" aria-label="...">
+  ...
+</div>
+Links acting as buttons
+If the <a> elements are used to act as buttons – triggering in-page functionality, rather than navigating to another document or section within the current page – they should also be given an appropriate role="button".
+
+关于 <button> 元素
+为了将 <button> 元素用于两端对齐的按钮组中，必须将每个按钮包裹进一个按钮组中you must wrap each button in a button group。大部分的浏览器不能将我们的 CSS 应用到对齐的 <button> 元素上，但是，由于我们支持按钮式下拉菜单，我们可以解决这个问题。
+
+<div class="btn-group btn-group-justified" role="group" aria-label="...">
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-default">Left</button>
+  </div>
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-default">Middle</button>
+  </div>
+  <div class="btn-group" role="group">
+    <button type="button" class="btn btn-default">Right</button>
+  </div>
+</div>
+按钮式下拉菜单
+把任意一个按钮放入 .btn-group 中，然后加入适当的菜单标签，就可以让按钮作为菜单的触发器了。
+
+插件依赖
+按钮式下拉菜单依赖下拉菜单插件 ，因此需要将此插件包含在你所使用的 Bootstrap 版本中。
+
+单按钮下拉菜单
+只要改变一些基本的标记，就能把按钮变成下拉菜单的开关。
+
+     
+<!-- Single button -->
+<div class="btn-group">
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Action <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="#">Action</a></li>
+    <li><a href="#">Another action</a></li>
+    <li><a href="#">Something else here</a></li>
+    <li role="separator" class="divider"></li>
+    <li><a href="#">Separated link</a></li>
+  </ul>
+</div>
+分裂式按钮下拉菜单
+相似地，分裂式按钮下拉菜单也需要同样的改变一些标记，但只是多一个分开的按钮。
+
+     
+<!-- Split button -->
+<div class="btn-group">
+  <button type="button" class="btn btn-danger">Action</button>
+  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="#">Action</a></li>
+    <li><a href="#">Another action</a></li>
+    <li><a href="#">Something else here</a></li>
+    <li role="separator" class="divider"></li>
+    <li><a href="#">Separated link</a></li>
+  </ul>
+</div>
+尺寸
+按钮式下拉菜单适用所有尺寸的按钮。
+
+<!-- Large button group -->
+<div class="btn-group">
+  <button class="btn btn-default btn-lg dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Large button <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+</div>
+
+<!-- Small button group -->
+<div class="btn-group">
+  <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Small button <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+</div>
+
+<!-- Extra small button group -->
+<div class="btn-group">
+  <button class="btn btn-default btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Extra small button <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    ...
+  </ul>
+</div>
+向上弹出式菜单
+给父元素添加 .dropup 类就能使触发的下拉菜单朝上方打开。
+
+<div class="btn-group dropup">
+  <button type="button" class="btn btn-default">Dropup</button>
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <span class="caret"></span>
+    <span class="sr-only">Toggle Dropdown</span>
+  </button>
+  <ul class="dropdown-menu">
+    <!-- Dropdown menu links -->
+  </ul>
+</div>
+输入框组
+通过在文本输入框 <input> 前面、后面或是两边加上文字或按钮，可以实现对表单控件的扩展。为 .input-group 赋予 .input-group-addon 或 .input-group-btn 类，可以给 .form-control 的前面或后面添加额外的元素。
+
+只支持文本输入框 <input>
+这里请避免使用 <select> 元素，因为 WebKit 浏览器不能完全绘制它的样式。
+
+避免使用 <textarea> 元素，由于它们的 rows 属性在某些情况下不被支持。
+
+输入框组中的工具提示和弹出框需要特别的设置
+为 .input-group 中所包含的元素应用工具提示（tooltip）或popover（弹出框）时，必须设置 container: 'body' 参数，为的是避免意外的副作用（例如，工具提示或弹出框被激活后，可能会让当前元素变得更宽或/和变得失去其圆角）。
+
+不要和其他组件混用
+不要将表单组或栅格列（column）类直接和输入框组混合使用。而是将输入框组嵌套到表单组或栅格相关元素的内部。
+
+Always add labels
+Screen readers will have trouble with your forms if you don't include a label for every input. For these input groups, ensure that any additional label or functionality is conveyed to assistive technologies.
+
+The exact technique to be used (visible <label> elements, <label> elements hidden using the .sr-only class, or use of the aria-label, aria-labelledby, aria-describedby, title or placeholder attribute) and what additional information will need to be conveyed will vary depending on the exact type of interface widget you're implementing. The examples in this section provide a few suggested, case-specific approaches.
+
+基本实例
+在输入框的任意一侧添加额外元素或按钮。你还可以在输入框的两侧同时添加额外元素。
+
+我们不支持在输入框的单独一侧添加多个额外元素（.input-group-addon 或 .input-group-btn）。
+
+我们不支持在单个输入框组中添加多个表单控件。
+
+@
+Username
+
+
+Recipient's username
+@example.com
+$
+.00
+Your vanity URL
+https://example.com/users/
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon1">@</span>
+  <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1">
+</div>
+
+<div class="input-group">
+  <input type="text" class="form-control" placeholder="Recipient's username" aria-describedby="basic-addon2">
+  <span class="input-group-addon" id="basic-addon2">@example.com</span>
+</div>
+
+<div class="input-group">
+  <span class="input-group-addon">$</span>
+  <input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+  <span class="input-group-addon">.00</span>
+</div>
+
+<label for="basic-url">Your vanity URL</label>
+<div class="input-group">
+  <span class="input-group-addon" id="basic-addon3">https://example.com/users/</span>
+  <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+</div>
+尺寸
+为 .input-group 添加相应的尺寸类，其内部包含的元素将自动调整自身的尺寸。不需要为输入框组中的每个元素重复地添加控制尺寸的类。
+
+@
+Username
+
+@
+Username
+
+@
+Username
+<div class="input-group input-group-lg">
+  <span class="input-group-addon" id="sizing-addon1">@</span>
+  <input type="text" class="form-control" placeholder="Username" aria-describedby="sizing-addon1">
+</div>
+
+<div class="input-group">
+  <span class="input-group-addon" id="sizing-addon2">@</span>
+  <input type="text" class="form-control" placeholder="Username" aria-describedby="sizing-addon2">
+</div>
+
+<div class="input-group input-group-sm">
+  <span class="input-group-addon" id="sizing-addon3">@</span>
+  <input type="text" class="form-control" placeholder="Username" aria-describedby="sizing-addon3">
+</div>
+作为额外元素的多选框和单选框
+可以将多选框或单选框作为额外元素添加到输入框组中。
+
+ 
+ 
+<div class="row">
+  <div class="col-lg-6">
+    <div class="input-group">
+      <span class="input-group-addon">
+        <input type="checkbox" aria-label="...">
+      </span>
+      <input type="text" class="form-control" aria-label="...">
+    </div><!-- /input-group -->
+  </div><!-- /.col-lg-6 -->
+  <div class="col-lg-6">
+    <div class="input-group">
+      <span class="input-group-addon">
+        <input type="radio" aria-label="...">
+      </span>
+      <input type="text" class="form-control" aria-label="...">
+    </div><!-- /input-group -->
+  </div><!-- /.col-lg-6 -->
+</div><!-- /.row -->
+作为额外元素的按钮
+为输入框组添加按钮需要额外添加一层嵌套，不是 .input-group-addon，而是添加 .input-group-btn 来包裹按钮元素。由于不同浏览器的默认样式无法被统一的重新赋值，所以才需要这样做。
+
+ 
+Search for...
+
+Search for...
+ <div class="row">
+  <div class="col-lg-6">
+    <div class="input-group">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="button">Go!</button>
+      </span>
+      <input type="text" class="form-control" placeholder="Search for...">
+    </div><!-- /input-group -->
+  </div><!-- /.col-lg-6 -->
+  <div class="col-lg-6">
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="Search for...">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="button">Go!</button>
+      </span>
+    </div><!-- /input-group -->
+  </div><!-- /.col-lg-6 -->
+</div><!-- /.row -->
+作为额外元素的按钮式下拉菜单
+ 
+
+ <div class="row">
+  <div class="col-lg-6">
+    <div class="input-group">
+      <div class="input-group-btn">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action <span class="caret"></span></button>
+        <ul class="dropdown-menu">
+          <li><a href="#">Action</a></li>
+          <li><a href="#">Another action</a></li>
+          <li><a href="#">Something else here</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#">Separated link</a></li>
+        </ul>
+      </div><!-- /btn-group -->
+      <input type="text" class="form-control" aria-label="...">
+    </div><!-- /input-group -->
+  </div><!-- /.col-lg-6 -->
+  <div class="col-lg-6">
+    <div class="input-group">
+      <input type="text" class="form-control" aria-label="...">
+      <div class="input-group-btn">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action <span class="caret"></span></button>
+        <ul class="dropdown-menu dropdown-menu-right">
+          <li><a href="#">Action</a></li>
+          <li><a href="#">Another action</a></li>
+          <li><a href="#">Something else here</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#">Separated link</a></li>
+        </ul>
+      </div><!-- /btn-group -->
+    </div><!-- /input-group -->
+  </div><!-- /.col-lg-6 -->
+</div><!-- /.row -->
+作为额外元素的分裂式按钮下拉菜单
+  
+
+ 
+<div class="input-group">
+  <div class="input-group-btn">
+    <!-- Button and dropdown menu -->
+  </div>
+  <input type="text" class="form-control" aria-label="...">
+</div>
+
+<div class="input-group">
+  <input type="text" class="form-control" aria-label="...">
+  <div class="input-group-btn">
+    <!-- Button and dropdown menu -->
+  </div>
+</div>
+Multiple buttons
+While you can only have one add-on per side, you can have multiple buttons inside a single .input-group-btn.
+
+  
+
+ 
+<div class="input-group">
+  <div class="input-group-btn">
+    <!-- Buttons -->
+  </div>
+  <input type="text" class="form-control" aria-label="...">
+</div>
+
+<div class="input-group">
+  <input type="text" class="form-control" aria-label="...">
+  <div class="input-group-btn">
+    <!-- Buttons -->
+  </div>
+</div>
+导航
+Bootstrap 中的导航组件都依赖同一个 .nav 类，状态类也是共用的。改变修饰类可以改变样式。
+
+在标签页上使用导航需要依赖 JavaScript 标签页插件
+由于标签页需要控制内容区的展示，因此，你必须使用 标签页组件的 JavaScript 插件。另外还要添加 role 和 ARIA 属性 – 详细信息请参考该插件的 实例。
+
+确保导航组件的可访问性
+如果你在使用导航组件实现导航条功能，务必在 <ul> 的最外侧的逻辑父元素上添加 role="navigation" 属性，或者用一个 <nav> 元素包裹整个导航组件。不要将 role 属性添加到 <ul> 上，因为这样可以被辅助设备（残疾人用的）上被识别为一个真正的列表。
+
+标签页
+注意 .nav-tabs 类依赖 .nav 基类。
+
+Home
+Profile
+Messages
+<ul class="nav nav-tabs">
+  <li role="presentation" class="active"><a href="#">Home</a></li>
+  <li role="presentation"><a href="#">Profile</a></li>
+  <li role="presentation"><a href="#">Messages</a></li>
+</ul>
+胶囊式标签页
+HTML 标记相同，但使用 .nav-pills 类：
+
+Home
+Profile
+Messages
+<ul class="nav nav-pills">
+  <li role="presentation" class="active"><a href="#">Home</a></li>
+  <li role="presentation"><a href="#">Profile</a></li>
+  <li role="presentation"><a href="#">Messages</a></li>
+</ul>
+胶囊是标签页也是可以垂直方向堆叠排列的。只需添加 .nav-stacked 类。
+
+Home
+Profile
+Messages
+<ul class="nav nav-pills nav-stacked">
+  ...
+</ul>
+两端对齐的标签页
+在大于 768px 的屏幕上，通过 .nav-justified 类可以很容易的让标签页或胶囊式标签呈现出同等宽度。在小屏幕上，导航链接呈现堆叠样式。
+
+两端对齐的导航条导航链接已经被弃用了。
+
+Safari 和响应式两端对齐导航
+从 v9.1.2 版本开始，Safari 有一个bug：对于两端对齐的导航，水平改变浏览器大小将引起绘制错误。此bug可以在两端对齐的导航实例中得到重现。
+
+Home
+Profile
+Messages
+
+Home
+Profile
+Messages
+<ul class="nav nav-tabs nav-justified">
+  ...
+</ul>
+<ul class="nav nav-pills nav-justified">
+  ...
+</ul>
+禁用的链接
+对任何导航组件（标签页、胶囊式标签页），都可以添加 .disabled 类，从而实现链接为灰色且没有鼠标悬停效果。
+
+链接功能不受到影响
+这个类只改变 <a> 的外观，不改变功能。可以自己写 JavaScript 禁用这里的链接。
+
+Clickable link
+Clickable link
+Disabled link
+<ul class="nav nav-pills">
+  ...
+  <li role="presentation" class="disabled"><a href="#">Disabled link</a></li>
+  ...
+</ul>
+添加下拉菜单
+用一点点额外 HTML 代码并加入下拉菜单插件的 JavaScript 插件即可。
+
+带下拉菜单的标签页
+Home
+Help
+Dropdown 
+<ul class="nav nav-tabs">
+  ...
+  <li role="presentation" class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+      Dropdown <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+      ...
+    </ul>
+  </li>
+  ...
+</ul>
+带下拉菜单的胶囊式标签页
+Home
+Help
+Dropdown 
+<ul class="nav nav-pills">
+  ...
+  <li role="presentation" class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+      Dropdown <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+      ...
+    </ul>
+  </li>
+  ...
+</ul>
+导航条
+默认样式的导航条
+导航条是在您的应用或网站中作为导航页头的响应式基础组件。它们在移动设备上可以折叠（并且可开可关），且在视口（viewport）宽度增加时逐渐变为水平展开模式。
+
+两端对齐的导航条导航链接已经被弃用了。
+
+导航条内所包含元素溢出
+由于 Bootstrap 并不知道你在导航条内放置的元素需要占据多宽的空间，你可能会遇到导航条中的内容折行的情况（也就是导航条占据两行）。解决办法如下：
+
+减少导航条内所有元素所占据的宽度。
+在某些尺寸的屏幕上（利用 响应式工具类）隐藏导航条内的一些元素。
+修改导航条在水平排列和折叠排列互相转化时，触发这个转化的最小屏幕宽度值。可以通过修改 @grid-float-breakpoint 变量实现，或者自己重写相关的媒体查询代码，覆盖 Bootstrap 的默认值。
+依赖 JavaScript 插件
+如果 JavaScript 被禁用，并且视口（viewport）足够窄，致使导航条折叠起来，导航条将不能被打开，.navbar-collapse 内所包含的内容也将不可见。
+
+响应式导航条依赖 collapse 插件，定制 Bootstrap 的话时候必将其包含。
+
+修改视口的阈值，从而影响导航条的排列模式
+当浏览器视口（viewport）的宽度小于 @grid-float-breakpoint 值时，导航条内部的元素变为折叠排列，也就是变现为移动设备展现模式；当浏览器视口（viewport）的宽度大于 @grid-float-breakpoint 值时，导航条内部的元素变为水平排列，也就是变现为非移动设备展现模式。通过调整源码中的这个值，就可以控制导航条何时堆叠排列，何时水平排列。默认值是 768px （小屏幕 -- 或者说是平板 --的最小值，或者说是平板）。
+
+导航条的可访问性
+务必使用 <nav> 元素，或者，如果使用的是通用的 <div> 元素的话，务必为导航条设置 role="navigation" 属性，这样能够让使用辅助设备的用户明确知道这是一个导航区域。
+
+Brand
+Link (current)
+Link
+Dropdown 
+
+Search
+ 
+Link
+Dropdown 
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Brand</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
+        <li><a href="#">Link</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">One more separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+      <form class="navbar-form navbar-left">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Link</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+            <li><a href="#">Another action</a></li>
+            <li><a href="#">Something else here</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+品牌图标
+将导航条内放置品牌标志的地方替换为 <img> 元素即可展示自己的品牌图标。由于 .navbar-brand 已经被设置了内补（padding）和高度（height），你需要根据自己的情况添加一些 CSS 代码从而覆盖默认设置。
+
+Brand
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">
+        <img alt="Brand" src="...">
+      </a>
+    </div>
+  </div>
+</nav>
+表单
+将表单放置于 .navbar-form 之内可以呈现很好的垂直对齐，并在较窄的视口（viewport）中呈现折叠状态。 使用对齐选项可以规定其在导航条上出现的位置。
+
+注意，.navbar-form 和 .form-inline 的大部分代码都一样，内部实现使用了 mixin。 某些表单组件，例如输入框组，可能需要设置一个固定宽度，从而在导航条内有合适的展现。
+
+Brand
+
+Search
+ 
+<form class="navbar-form navbar-left" role="search">
+  <div class="form-group">
+    <input type="text" class="form-control" placeholder="Search">
+  </div>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
+移动设备上的注意事项
+在移动设备上，对于在 fixed 定位的元素内使用表单控件的情况有一些注意事项。请参考我们提供的浏览器支持情况相关的文档 。
+
+为输入框添加 label 标签
+如果你没有为输入框添加 label 标签，屏幕阅读器将会遇到问题。对于导航条内的表单，可以通过添加 .sr-only 类隐藏 label 标签。
+
+按钮
+对于不包含在 <form> 中的 <button> 元素，加上 .navbar-btn 后，可以让它在导航条里垂直居中。有一些对于为辅助设备提供可识别标签的方法，例如， aria-label、aria-labelledby 或者 title 属性。如果这些方法都没有，屏幕阅读器将使用 placeholder 属性（如果这个属性存在的话），但是请注意，使用 placeholder 代替其他识别标签的方式是不推荐的。
+
+Brand
+ <button type="button" class="btn btn-default navbar-btn">Sign in</button>
+基于情境的用法
+就像标准的 按钮类 一样，.navbar-btn 可以被用在 <a> 和 <input> 元素上。然而，在 .navbar-nav 内，.navbar-btn 和标准的按钮类都不应该被用在 <a> 元素上。
+
+文本
+把文本包裹在 .navbar-text中时，为了有正确的行距和颜色，通常使用 <p> 标签。
+
+Brand
+Signed in as Mark Otto
+<p class="navbar-text">Signed in as Mark Otto</p>
+非导航的链接
+或许你希望在标准的导航组件之外添加标准链接，那么，使用 .navbar-link 类可以让链接有正确的默认颜色和反色设置。
+
+Brand
+Signed in as Mark Otto
+<p class="navbar-text navbar-right">Signed in as <a href="#" class="navbar-link">Mark Otto</a></p>
+组件排列
+通过添加 .navbar-left 和 .navbar-right 工具类让导航链接、表单、按钮或文本对齐。两个类都会通过 CSS 设置特定方向的浮动样式。例如，要对齐导航链接，就要把它们放在个分开的、应用了工具类的 <ul> 标签里。
+
+这些类是 .pull-left 和 .pull-right 的 mixin 版本，但是他们被限定在了媒体查询（media query）中，这样可以更容易的在各种尺寸的屏幕上处理导航条组件。
+
+向右侧对齐多个组件
+导航条目前不支持多个 .navbar-right 类。为了让内容之间有合适的空隙，我们为最后一个 .navbar-right 元素使用负边距（margin）。如果有多个元素使用这个类，它们的边距（margin）将不能按照你的预期正常展现。
+
+我们将在 v4 版本中重写这个组件时重新审视这个功能。
+
+固定在顶部
+添加 .navbar-fixed-top 类可以让导航条固定在顶部，还可包含一个 .container 或 .container-fluid 容器，从而让导航条居中，并在两侧添加内补（padding）。
+
+Brand
+Home
+Link
+Link
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    ...
+  </div>
+</nav>
+需要为 body 元素设置内补（padding）
+这个固定的导航条会遮住页面上的其它内容，除非你给 <body> 元素底部设置了 padding。用你自己的值，或用下面给出的代码都可以。提示：导航条的默认高度是 50px。
+
+body { padding-top: 70px; }
+Make sure to include this after the core Bootstrap CSS.
+
+固定在底部
+添加 .navbar-fixed-bottom 类可以让导航条固定在底部，并且还可以包含一个 .container 或 .container-fluid 容器，从而让导航条居中，并在两侧添加内补（padding）。
+
+Brand
+Home
+Link
+Link
+<nav class="navbar navbar-default navbar-fixed-bottom">
+  <div class="container">
+    ...
+  </div>
+</nav>
+需要为 body 元素设置内补（padding）
+这个固定的导航条会遮住页面上的其它内容，除非你给 <body> 元素底部设置了 padding。用你自己的值，或用下面给出的代码都可以。提示：导航条的默认高度是 50px。
+
+body { padding-bottom: 70px; }
+Make sure to include this after the core Bootstrap CSS.
+
+静止在顶部
+通过添加 .navbar-static-top 类即可创建一个与页面等宽度的导航条，它会随着页面向下滚动而消失。还可以包含一个 .container 或 .container-fluid 容器，用于将导航条居中对齐并在两侧添加内补（padding）。
+
+与 .navbar-fixed-* 类不同的是，你不用给 body 添加任何内补（padding）。
+
+Brand
+Home
+Link
+Link
+<nav class="navbar navbar-default navbar-static-top">
+  <div class="container">
+    ...
+  </div>
+</nav>
+反色的导航条
+通过添加 .navbar-inverse 类可以改变导航条的外观。
+
+Brand
+Home
+Link
+Link
+<nav class="navbar navbar-inverse">
+  ...
+</nav>
+路径导航
+在一个带有层次的导航结构中标明当前页面的位置。
+
+各路径间的分隔符已经自动通过 CSS 的 :before 和 content 属性添加了。
+
+Home
+Home Library
+Home Library Data
+<ol class="breadcrumb">
+  <li><a href="#">Home</a></li>
+  <li><a href="#">Library</a></li>
+  <li class="active">Data</li>
+</ol>
+分页
+为您的网站或应用提供带有展示页码的分页组件，或者可以使用简单的翻页组件。
+
+默认分页
+受 Rdio 的启发，我们提供了这个简单的分页组件，用在应用或搜索结果中超级棒。组件中的每个部分都很大，优点是容易点击、易缩放、点击区域大。
+
+« 1 2 3 4 5 »
+<nav aria-label="Page navigation">
+  <ul class="pagination">
+    <li>
+      <a href="#" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    <li><a href="#">1</a></li>
+    <li><a href="#">2</a></li>
+    <li><a href="#">3</a></li>
+    <li><a href="#">4</a></li>
+    <li><a href="#">5</a></li>
+    <li>
+      <a href="#" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+Labelling the pagination component
+The pagination component should be wrapped in a <nav> element to identify it as a navigation section to screen readers and other assistive technologies. In addition, as a page is likely to have more than one such navigation section already (such as the primary navigation in the header, or a sidebar navigation), it is advisable to provide a descriptive aria-label for the <nav> which reflects its purpose. For example, if the pagination component is used to navigate between a set of search results, an appropriate label could be aria-label="Search results pages".
+
+禁用和激活状态
+链接在不同情况下可以定制。你可以给不能点击的链接添加 .disabled 类、给当前页添加 .active 类。
+
+« 1 (current) 2 3 4 5 »
+<nav aria-label="...">
+  <ul class="pagination">
+    <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+    <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+    ...
+  </ul>
+</nav>
+我们建议将 active 或 disabled 状态的链接（即 <a> 标签）替换为 <span> 标签，或者在向前/向后的箭头处省略<a> 标签，这样就可以让其保持需要的样式而不能被点击。
+
+<nav aria-label="...">
+  <ul class="pagination">
+    <li class="disabled">
+      <span>
+        <span aria-hidden="true">&laquo;</span>
+      </span>
+    </li>
+    <li class="active">
+      <span>1 <span class="sr-only">(current)</span></span>
+    </li>
+    ...
+  </ul>
+</nav>
+尺寸
+想要更小或更大的分页？.pagination-lg 或 .pagination-sm 类提供了额外可供选择的尺寸。
+
+« 1 2 3 4 5 »
+« 1 2 3 4 5 »
+« 1 2 3 4 5 »
+<nav aria-label="..."><ul class="pagination pagination-lg">...</ul></nav>
+<nav aria-label="..."><ul class="pagination">...</ul></nav>
+<nav aria-label="..."><ul class="pagination pagination-sm">...</ul></nav>
+翻页
+用简单的标记和样式，就能做个上一页和下一页的简单翻页。用在像博客和杂志这样的简单站点上棒极了。
+
+默认实例
+在默认的翻页中，链接居中对齐。
+
+Previous Next
+<nav aria-label="...">
+  <ul class="pager">
+    <li><a href="#">Previous</a></li>
+    <li><a href="#">Next</a></li>
+  </ul>
+</nav>
+对齐链接
+你还可以把链接向两端对齐：
+
+← Older Newer →
+<nav aria-label="...">
+  <ul class="pager">
+    <li class="previous"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
+    <li class="next"><a href="#">Newer <span aria-hidden="true">&rarr;</span></a></li>
+  </ul>
+</nav>
+可选的禁用状态
+.disabled 类也可用于翻页中的链接。
+
+← Older Newer →
+<nav aria-label="...">
+  <ul class="pager">
+    <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span> Older</a></li>
+    <li class="next"><a href="#">Newer <span aria-hidden="true">&rarr;</span></a></li>
+  </ul>
+</nav>
+标签
+实例
+Example heading New
+Example heading New
+Example heading New
+Example heading New
+Example heading New
+Example heading New
+<h3>Example heading <span class="label label-default">New</span></h3>
+可用的变体
+用下面的任何一个类即可改变标签的外观。
+
+Default Primary Success Info Warning Danger
+<span class="label label-default">Default</span>
+<span class="label label-primary">Primary</span>
+<span class="label label-success">Success</span>
+<span class="label label-info">Info</span>
+<span class="label label-warning">Warning</span>
+<span class="label label-danger">Danger</span>
+如果标签数量很多怎么办？
+如果你有大量的设置为 inline 属性的标签全部放在一个较窄的容器元素内，在页面上展示这些标签就会出现问题，每个标签就会有自己的一个 inline-block 元素（就像图标一样）。解决的办法是为每个标签都设置为 display: inline-block; 属性。关于这个问题以及实例，请参考 #13219 。
+
+徽章
+给链接、导航等元素嵌套 <span class="badge"> 元素，可以很醒目的展示新的或未读的信息条目。
+
+Inbox 42 
+
+ <a href="#">Inbox <span class="badge">42</span></a>
+
+<button class="btn btn-primary" type="button">
+  Messages <span class="badge">4</span>
+</button>
+Self collapsing
+如果没有新的或未读的信息条目，也就是说不包含任何内容，徽章组件能够自动隐藏（通过CSS的 :empty 选择符实现) 。
+
+跨浏览器兼容性
+徽章组件在 Internet Explorer 8 浏览器中不会自动消失，因为 IE8 不支持 :empty 选择符。
+
+适配导航元素的激活状态
+Bootstrap 提供了内置的样式，让胶囊式导航内处于激活状态的元素所包含的徽章展示相匹配的样式。
+
+Home 42
+Profile
+Messages 3
+<ul class="nav nav-pills" role="tablist">
+  <li role="presentation" class="active"><a href="#">Home <span class="badge">42</span></a></li>
+  <li role="presentation"><a href="#">Profile</a></li>
+  <li role="presentation"><a href="#">Messages <span class="badge">3</span></a></li>
+</ul>
+巨幕
+这是一个轻量、灵活的组件，它能延伸至整个浏览器视口来展示网站上的关键内容。
+
+Hello, world!
+This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.
+
+
+<div class="jumbotron">
+  <h1>Hello, world!</h1>
+  <p>...</p>
+  <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>
+</div>
+如果需要让巨幕组件的宽度与浏览器宽度一致并且没有圆角，请把此组件放在所有 .container 元素的外面，并在组件内部添加一个 .container 元素。
+
+<div class="jumbotron">
+  <div class="container">
+    ...
+  </div>
+</div>
+页头
+页头组件能够为 h1 标签增加适当的空间，并且与页面的其他部分形成一定的分隔。它支持 h1 标签内内嵌 small 元素的默认效果，还支持大部分其他组件（需要增加一些额外的样式）。
+
+Example page header Subtext for header
+<div class="page-header">
+  <h1>Example page header <small>Subtext for header</small></h1>
+</div>
+缩略图
+通过缩略图组件扩展 Bootstrap 的 栅格系统，可以很容易地展示栅格样式的图像、视频、文本等内容。
+
+如果你想实现一个类似 Pinterest 的页面效果（不同高度和/宽度的缩略图顺序排列）的话，你需要使用一个第三方插件，比如 Masonry、Isotope 或 Salvattore。
+
+默认样式的实例
+Boostrap 缩略图的默认设计仅需最少的标签就能展示带链接的图片。
+
+100%x180
+100%x180
+100%x180
+100%x180
+<div class="row">
+  <div class="col-xs-6 col-md-3">
+    <a href="#" class="thumbnail">
+      <img src="..." alt="...">
+    </a>
+  </div>
+  ...
+</div>
+自定义内容
+添加一点点额外的标签，就可以把任何类型的 HTML 内容，例如标题、段落或按钮，加入缩略图组件内。
+
+100%x200
+Thumbnail label
+Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
+
+ 
+
+100%x200
+Thumbnail label
+Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
+
+ 
+
+100%x200
+Thumbnail label
+Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
+
+ 
+
+<div class="row">
+  <div class="col-sm-6 col-md-4">
+    <div class="thumbnail">
+      <img src="..." alt="...">
+      <div class="caption">
+        <h3>Thumbnail label</h3>
+        <p>...</p>
+        <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+警告框
+警告框组件通过提供一些灵活的预定义消息，为常见的用户动作提供反馈消息。
+
+实例
+将任意文本和一个可选的关闭按钮组合在一起就能组成一个警告框，.alert 类是必须要设置的，另外我们还提供了有特殊意义的4个类（例如，.alert-success），代表不同的警告信息。
+
+没有默认类
+警告框没有默认类，只有基类和修饰类。默认的灰色警告框并没有多少意义。所以您要使用一种有意义的警告类。目前提供了成功、消息、警告或危险。
+
+Well done! You successfully read this important alert message.
+Heads up! This alert needs your attention, but it's not super important.
+Warning! Better check yourself, you're not looking too good.
+Oh snap! Change a few things up and try submitting again.
+<div class="alert alert-success" role="alert">...</div>
+<div class="alert alert-info" role="alert">...</div>
+<div class="alert alert-warning" role="alert">...</div>
+<div class="alert alert-danger" role="alert">...</div>
+可关闭的警告框
+为警告框添加一个可选的 .alert-dismissible 类和一个关闭按钮。
+
+依赖警告框 JavaScript 插件
+如果需要为警告框组件提供关闭功能，请使用 jQuery 警告框插件。
+
+×Warning! Better check yourself, you're not looking too good.
+<div class="alert alert-warning alert-dismissible" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+  <strong>Warning!</strong> Better check yourself, you're not looking too good.
+</div>
+确保在所有设备上的正确行为
+务必给 <button> 元素添加 data-dismiss="alert" 属性。
+
+警告框中的链接
+用 .alert-link 工具类，可以为链接设置与当前警告框相符的颜色。
+
+Well done! You successfully read this important alert message.
+Heads up! This alert needs your attention, but it's not super important.
+Warning! Better check yourself, you're not looking too good.
+Oh snap! Change a few things up and try submitting again.
+<div class="alert alert-success" role="alert">
+  <a href="#" class="alert-link">...</a>
+</div>
+<div class="alert alert-info" role="alert">
+  <a href="#" class="alert-link">...</a>
+</div>
+<div class="alert alert-warning" role="alert">
+  <a href="#" class="alert-link">...</a>
+</div>
+<div class="alert alert-danger" role="alert">
+  <a href="#" class="alert-link">...</a>
+</div>
+进度条
+通过这些简单、灵活的进度条，为当前工作流程或动作提供实时反馈。
+
+跨浏览器兼容性
+进度条组件使用了 CSS3 的 transition 和 animation 属性来完成一些特效。这些特性在 Internet Explorer 9 或以下版本中、Firefox 的老版本中没有被支持。Opera 12 不支持 animation 属性。
+
+Content Security Policy (CSP) compatibility
+If your website has a Content Security Policy (CSP) which doesn't allow style-src 'unsafe-inline', then you won't be able to use inline style attributes to set progress bar widths as shown in our examples below. Alternative methods for setting the widths that are compatible with strict CSPs include using a little custom JavaScript (that sets element.style.width) or using custom CSS classes.
+
+基本实例
+默认样式的进度条
+
+60% Complete
+<div class="progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+    <span class="sr-only">60% Complete</span>
+  </div>
+</div>
+带有提示标签的进度条
+将设置了 .sr-only 类的 <span> 标签从进度条组件中移除 类，从而让当前进度显示出来。
+
+60%
+<div class="progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+    60%
+  </div>
+</div>
+在展示很低的百分比时，如果需要让文本提示能够清晰可见，可以为进度条设置 min-width 属性。
+
+0%
+2%
+<div class="progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em;">
+    0%
+  </div>
+</div>
+<div class="progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: 2%;">
+    2%
+  </div>
+</div>
+根据情境变化效果
+进度条组件使用与按钮和警告框相同的类，根据不同情境展现相应的效果。
+
+40% Complete (success)
+20% Complete
+60% Complete (warning)
+80% Complete (danger)
+<div class="progress">
+  <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+    <span class="sr-only">40% Complete (success)</span>
+  </div>
+</div>
+<div class="progress">
+  <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+    <span class="sr-only">20% Complete</span>
+  </div>
+</div>
+<div class="progress">
+  <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+    <span class="sr-only">60% Complete (warning)</span>
+  </div>
+</div>
+<div class="progress">
+  <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+    <span class="sr-only">80% Complete (danger)</span>
+  </div>
+</div>
+条纹效果
+通过渐变可以为进度条创建条纹效果，IE9 及更低版本不支持。
+
+40% Complete (success)
+20% Complete
+60% Complete (warning)
+80% Complete (danger)
+<div class="progress">
+  <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+    <span class="sr-only">40% Complete (success)</span>
+  </div>
+</div>
+<div class="progress">
+  <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+    <span class="sr-only">20% Complete</span>
+  </div>
+</div>
+<div class="progress">
+  <div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+    <span class="sr-only">60% Complete (warning)</span>
+  </div>
+</div>
+<div class="progress">
+  <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+    <span class="sr-only">80% Complete (danger)</span>
+  </div>
+</div>
+动画效果
+为 .progress-bar-striped 添加 .active 类，使其呈现出由右向左运动的动画效果。IE9 及更低版本的浏览器不支持。
+
+45% Complete
+<div class="progress">
+  <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+    <span class="sr-only">45% Complete</span>
+  </div>
+</div>
+堆叠效果
+把多个进度条放入同一个 .progress 中，使它们呈现堆叠的效果。
+
+35% Complete (success)20% Complete (warning)10% Complete (danger)
+<div class="progress">
+  <div class="progress-bar progress-bar-success" style="width: 35%">
+    <span class="sr-only">35% Complete (success)</span>
+  </div>
+  <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: 20%">
+    <span class="sr-only">20% Complete (warning)</span>
+  </div>
+  <div class="progress-bar progress-bar-danger" style="width: 10%">
+    <span class="sr-only">10% Complete (danger)</span>
+  </div>
+</div>
+媒体对象
+这是一个抽象的样式，用以构建不同类型的组件，这些组件都具有在文本内容的左或右侧对齐的图片（就像博客评论或 Twitter 消息等）。
+
+默认样式
+默认样式的媒体对象组件允许在一个内容块的左边或右边展示一个多媒体内容（图像、视频、音频）。
+
+ 64x64	
+Media heading
+Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+ 64x64	
+Media heading
+Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+ 64x64	
+Nested media heading
+Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+Media heading
+Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.	 64x64
+ 64x64	
+Media heading
+Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.	 64x64
+<div class="media">
+  <div class="media-left">
+    <a href="#">
+      <img class="media-object" src="..." alt="...">
+    </a>
+  </div>
+  <div class="media-body">
+    <h4 class="media-heading">Media heading</h4>
+    ...
+  </div>
+</div>
+.pull-left 和 .pull-right 这两个类以前也曾经被用在了媒体组件上，但是，从 v3.3.0 版本开始，他们就不再被建议使用了。.media-left 和 .media-right 替代了他们，不同之处是，在 html 结构中， .media-right 应当放在 .media-body 的后面。
+
+对齐
+图片或其他媒体类型可以顶部、中部或底部对齐。默认是顶部对齐。
+
+ 64x64	
+Top aligned media
+Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+
+Donec sed odio dui. Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+
+ 64x64	
+Middle aligned media
+Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+
+Donec sed odio dui. Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+
+ 64x64	
+Bottom aligned media
+Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+
+Donec sed odio dui. Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+
+<div class="media">
+  <div class="media-left media-middle">
+    <a href="#">
+      <img class="media-object" src="..." alt="...">
+    </a>
+  </div>
+  <div class="media-body">
+    <h4 class="media-heading">Middle aligned media</h4>
+    ...
+  </div>
+</div>
+媒体对象列表
+用一点点额外的标记，就能在列表内使用媒体对象组件（对评论或文章列表很有用）。
+
+ 64x64	
+Media heading
+Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
+
+ 64x64	
+Nested media heading
+Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
+ 64x64	
+Nested media heading
+Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
+ 64x64	
+Nested media heading
+Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
+<ul class="media-list">
+  <li class="media">
+    <div class="media-left">
+      <a href="#">
+        <img class="media-object" src="..." alt="...">
+      </a>
+    </div>
+    <div class="media-body">
+      <h4 class="media-heading">Media heading</h4>
+      ...
+    </div>
+  </li>
+</ul>
+列表组
+列表组是灵活又强大的组件，不仅能用于显示一组简单的元素，还能用于复杂的定制的内容。
+
+基本实例
+最简单的列表组仅仅是一个带有多个列表条目的无序列表，另外还需要设置适当的类。我们提供了一些预定义的样式，你可以根据自身的需求通过 CSS 自己定制。
+
+Cras justo odio
+Dapibus ac facilisis in
+Morbi leo risus
+Porta ac consectetur ac
+Vestibulum at eros
+<ul class="list-group">
+  <li class="list-group-item">Cras justo odio</li>
+  <li class="list-group-item">Dapibus ac facilisis in</li>
+  <li class="list-group-item">Morbi leo risus</li>
+  <li class="list-group-item">Porta ac consectetur ac</li>
+  <li class="list-group-item">Vestibulum at eros</li>
+</ul>
+徽章
+给列表组加入徽章组件，它会自动被放在右边。
+
+14 Cras justo odio
+2 Dapibus ac facilisis in
+1 Morbi leo risus
+<ul class="list-group">
+  <li class="list-group-item">
+    <span class="badge">14</span>
+    Cras justo odio
+  </li>
+</ul>
+链接
+用 <a> 标签代替 <li> 标签可以组成一个全部是链接的列表组（还要注意的是，我们需要将 <ul> 标签替换为 <div> 标签）。没必要给列表组中的每个元素都加一个父元素。
+
+Cras justo odio
+Dapibus ac facilisis in
+Morbi leo risus
+Porta ac consectetur ac
+Vestibulum at eros
+<div class="list-group">
+  <a href="#" class="list-group-item active">
+    Cras justo odio
+  </a>
+  <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
+  <a href="#" class="list-group-item">Morbi leo risus</a>
+  <a href="#" class="list-group-item">Porta ac consectetur ac</a>
+  <a href="#" class="list-group-item">Vestibulum at eros</a>
+</div>
+按钮
+列表组中的元素也可以直接就是按钮（也同时意味着父元素必须是 <div> 而不能用 <ul> 了），并且无需为每个按钮单独包裹一个父元素。注意不要使用标准的 .btn 类！
+
+Cras justo odio
+Dapibus ac facilisis in
+Morbi leo risus
+Porta ac consectetur ac
+Vestibulum at eros
+<div class="list-group">
+  <button type="button" class="list-group-item">Cras justo odio</button>
+  <button type="button" class="list-group-item">Dapibus ac facilisis in</button>
+  <button type="button" class="list-group-item">Morbi leo risus</button>
+  <button type="button" class="list-group-item">Porta ac consectetur ac</button>
+  <button type="button" class="list-group-item">Vestibulum at eros</button>
+</div>
+被禁用的条目
+为 .list-group-item 添加 .disabled 类可以让单个条目显示为灰色，表现出被禁用的效果。
+
+Cras justo odio
+Dapibus ac facilisis in
+Morbi leo risus
+Porta ac consectetur ac
+Vestibulum at eros
+<div class="list-group">
+  <a href="#" class="list-group-item disabled">
+    Cras justo odio
+  </a>
+  <a href="#" class="list-group-item">Dapibus ac facilisis in</a>
+  <a href="#" class="list-group-item">Morbi leo risus</a>
+  <a href="#" class="list-group-item">Porta ac consectetur ac</a>
+  <a href="#" class="list-group-item">Vestibulum at eros</a>
+</div>
+情境类
+为列表中的条目添加情境类，默认样式或链接列表都可以。还可以为列表中的条目设置 .active 状态。
+
+Dapibus ac facilisis in
+Cras sit amet nibh libero
+Porta ac consectetur ac
+Vestibulum at eros
+Dapibus ac facilisis in
+Cras sit amet nibh libero
+Porta ac consectetur ac
+Vestibulum at eros
+<ul class="list-group">
+  <li class="list-group-item list-group-item-success">Dapibus ac facilisis in</li>
+  <li class="list-group-item list-group-item-info">Cras sit amet nibh libero</li>
+  <li class="list-group-item list-group-item-warning">Porta ac consectetur ac</li>
+  <li class="list-group-item list-group-item-danger">Vestibulum at eros</li>
+</ul>
+<div class="list-group">
+  <a href="#" class="list-group-item list-group-item-success">Dapibus ac facilisis in</a>
+  <a href="#" class="list-group-item list-group-item-info">Cras sit amet nibh libero</a>
+  <a href="#" class="list-group-item list-group-item-warning">Porta ac consectetur ac</a>
+  <a href="#" class="list-group-item list-group-item-danger">Vestibulum at eros</a>
+</div>
+定制内容
+列表组中的每个元素都可以是任何 HTML 内容，甚至是像下面的带链接的列表组。
+
+List group item heading
+Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.
+
+List group item heading
+Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.
+
+List group item heading
+Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.
+
+<div class="list-group">
+  <a href="#" class="list-group-item active">
+    <h4 class="list-group-item-heading">List group item heading</h4>
+    <p class="list-group-item-text">...</p>
+  </a>
+</div>
+面版
+虽然不总是必须，但是某些时候你可能需要将某些 DOM 内容放到一个盒子里。对于这种情况，可以试试面板组件。
+
+基本实例
+默认的 .panel 组件所做的只是设置基本的边框（border）和内补（padding）来包含内容。
+
+Basic panel example
+<div class="panel panel-default">
+  <div class="panel-body">
+    Basic panel example
+  </div>
+</div>
+带标题的面版
+通过 .panel-heading 可以很简单地为面板加入一个标题容器。你也可以通过添加设置了 .panel-title 类的 <h1>-<h6> 标签，添加一个预定义样式的标题。不过，<h1>-<h6> 标签的字体大小将被 .panel-heading 的样式所覆盖。
+
+为了给链接设置合适的颜色，务必将链接放到带有 .panel-title 类的标题标签内。
+
+Panel heading without title
+Panel content
+Panel title
+Panel content
+<div class="panel panel-default">
+  <div class="panel-heading">Panel heading without title</div>
+  <div class="panel-body">
+    Panel content
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Panel title</h3>
+  </div>
+  <div class="panel-body">
+    Panel content
+  </div>
+</div>
+带脚注的面版
+把按钮或次要的文本放入 .panel-footer 容器内。注意面版的脚注不会从情境效果中继承颜色，因为他们并不是主要内容。
+
+Panel content
+Panel footer
+<div class="panel panel-default">
+  <div class="panel-body">
+    Panel content
+  </div>
+  <div class="panel-footer">Panel footer</div>
+</div>
+情境效果
+像其他组件一样，可以简单地通过加入有情境效果的状态类，给特定的内容使用更针对特定情境的面版。
+
+Panel title
+Panel content
+Panel title
+Panel content
+Panel title
+Panel content
+Panel title
+Panel content
+Panel title
+Panel content
+<div class="panel panel-primary">...</div>
+<div class="panel panel-success">...</div>
+<div class="panel panel-info">...</div>
+<div class="panel panel-warning">...</div>
+<div class="panel panel-danger">...</div>
+带表格的面版
+为面板中不需要边框的表格添加 .table 类，是整个面板看上去更像是一个整体设计。如果是带有 .panel-body 的面板，我们为表格的上方添加一个边框，看上去有分隔效果。
+
+Panel heading
+Some default panel content here. Nulla vitae elit libero, a pharetra augue. Aenean lacinia bibendum nulla sed consectetur. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Nullam id dolor id nibh ultricies vehicula ut id elit.
+
+#	First Name	Last Name	Username
+1	Mark	Otto	@mdo
+2	Jacob	Thornton	@fat
+3	Larry	the Bird	@twitter
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Panel heading</div>
+  <div class="panel-body">
+    <p>...</p>
+  </div>
+
+  <!-- Table -->
+  <table class="table">
+    ...
+  </table>
+</div>
+如果没有 .panel-body ，面版标题会和表格连接起来，没有空隙。
+
+Panel heading
+#	First Name	Last Name	Username
+1	Mark	Otto	@mdo
+2	Jacob	Thornton	@fat
+3	Larry	the Bird	@twitter
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Panel heading</div>
+
+  <!-- Table -->
+  <table class="table">
+    ...
+  </table>
+</div>
+带列表组的面版
+可以简单地在任何面版中加入具有最大宽度的列表组。
+
+Panel heading
+Some default panel content here. Nulla vitae elit libero, a pharetra augue. Aenean lacinia bibendum nulla sed consectetur. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Nullam id dolor id nibh ultricies vehicula ut id elit.
+
+Cras justo odio
+Dapibus ac facilisis in
+Morbi leo risus
+Porta ac consectetur ac
+Vestibulum at eros
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Panel heading</div>
+  <div class="panel-body">
+    <p>...</p>
+  </div>
+
+  <!-- List group -->
+  <ul class="list-group">
+    <li class="list-group-item">Cras justo odio</li>
+    <li class="list-group-item">Dapibus ac facilisis in</li>
+    <li class="list-group-item">Morbi leo risus</li>
+    <li class="list-group-item">Porta ac consectetur ac</li>
+    <li class="list-group-item">Vestibulum at eros</li>
+  </ul>
+</div>
+具有响应式特性的嵌入内容
+根据被嵌入内容的外部容器的宽度，自动创建一个固定的比例，从而让浏览器自动确定视频或 slideshow 的尺寸，能够在各种设备上缩放。
+
+这些规则被直接应用在 <iframe>、<embed>、<video> 和 <object> 元素上。如果你希望让最终样式与其他属性相匹配，还可以明确地使用一个派生出来的 .embed-responsive-item 类。
+
+超级提示： 不需要为 <iframe> 元素设置 frameborder="0" 属性，因为我们已经替你这样做了！
+
+<!-- 16:9 aspect ratio -->
+<div class="embed-responsive embed-responsive-16by9">
+  <iframe class="embed-responsive-item" src="..."></iframe>
+</div>
+
+<!-- 4:3 aspect ratio -->
+<div class="embed-responsive embed-responsive-4by3">
+  <iframe class="embed-responsive-item" src="..."></iframe>
+</div>
+Well
+默认效果
+把 Well 用在元素上，就能有嵌入（inset）的简单效果。
+
+Look, I'm in a well!
+<div class="well">...</div>
+可选类/样式
+通过这两种可选修饰类，可以控制此组件的内补（padding）和圆角的设置。
+
+Look, I'm in a large well!
+<div class="well well-lg">...</div>
+Look, I'm in a small well!
+<div class="well well-sm">...</div>
+
+** JavaScript https://v3.bootcss.com/javascript/
+   概览
+ 单个还是全部引入
+ JavaScript 插件可以单个引入（使用 Bootstrap 提供的单个 *.js 文件），或者一次性全部引入（使用 bootstrap.js 或压缩版的 bootstrap.min.js）。
+
+ 建议使用压缩版的 JavaScript 文件
+ bootstrap.js 和 bootstrap.min.js 都包含了所有插件，你在使用时，只需选择一个引入页面就可以了。
+
+ 插件之间的依赖关系
+ 某些插件和 CSS 组件依赖于其它插件。如果你是单个引入每个插件的，请确保在文档中检查插件之间的依赖关系。注意，所有插件都依赖 jQuery （也就是说，jQuery必须在所有插件之前引入页面）。 bower.json 文件中列出了 Bootstrap 所支持的 jQuery 版本。
+
+ data 属性
+ 你可以仅仅通过 data 属性 API 就能使用所有的 Bootstrap 插件，无需写一行 JavaScript 代码。这是 Bootstrap 中的一等 API，也应该是你的首选方式。
+
+ 话又说回来，在某些情况下可能需要将此功能关闭。因此，我们还提供了关闭 data 属性 API 的方法，即解除以 data-api 为命名空间并绑定在文档上的事件。就像下面这样：
+
+ $(document).off('.data-api')
+ 另外，如果是针对某个特定的插件，只需在 data-api 前面添加那个插件的名称作为命名空间，如下：
+
+ $(document).off('.alert.data-api')
+ Only one plugin per element via data attributes
+ Don't use data attributes from multiple plugins on the same element. For example, a button cannot both have a tooltip and toggle a modal. To accomplish this, use a wrapping element.
+
+ 编程方式的 API
+ 我们为所有 Bootstrap 插件提供了纯 JavaScript 方式的 API。所有公开的 API 都是支持单独或链式调用方式，并且返回其所操作的元素集合（注：和jQuery的调用形式一致）。
+
+ $('.btn.danger').button('toggle').addClass('fat')
+ 所有方法都可以接受一个可选的 option 对象作为参数，或者一个代表特定方法的字符串，或者什么也不提供（在这种情况下，插件将会以默认值初始化）：
+
+ $('#myModal').modal()                      // 以默认值初始化
+ $('#myModal').modal({ keyboard: false })   // initialized with no keyboard
+ $('#myModal').modal('show')                // 初始化后立即调用 show 方法
+ 每个插件还通过 Constructor 属性暴露了其原始的构造函数：$.fn.popover.Constructor。如果你想获取某个插件的实例，可以直接通过页面元素获取：$('[rel="popover"]').data('popover')。
+
+ 默认设置
+ 每个插件都可以通过修改其自身的 Constructor.DEFAULTS 对象从而改变插件的默认设置：
+
+ $.fn.modal.Constructor.DEFAULTS.keyboard = false // 将模态框插件的 `keyboard` 默认选参数置为 false
+ 避免命名空间冲突
+ 某些时候可能需要将 Bootstrap 插件与其他 UI 框架共同使用。在这种情况下，命名空间冲突随时可能发生。如果不幸发生了这种情况，你可以通过调用插件的 .noConflict 方法恢复其原始值。
+
+ var bootstrapButton = $.fn.button.noConflict() // return $.fn.button to previously assigned value
+ $.fn.bootstrapBtn = bootstrapButton            // give $().bootstrapBtn the Bootstrap functionality
+ 事件
+ Bootstrap 为大部分插件所具有的动作提供了自定义事件。一般来说，这些事件都有不定式和过去式两种动词的命名形式，例如，不定式形式的动词（例如 show）表示其在事件开始时被触发；而过去式动词（例如 shown ）表示在动作执行完毕之后被触发。
+
+ 从 3.0.0 版本开始，所有 Bootstrap 事件的名称都采用命名空间方式。
+
+ 所有以不定式形式的动词命名的事件都提供了 preventDefault 功能。这就赋予你在动作开始执行前将其停止的能力。
+
+ $('#myModal').on('show.bs.modal', function (e) {
+   if (!data) return e.preventDefault() // 阻止模态框的展示
+ })
+ 版本号
+ 每个 Bootstrap 的 jQuery 插件的版本号都可以通过插件的构造函数上的 VERSION 属性获取到。例如工具提示框（tooltip）插件：
+
+ $.fn.tooltip.Constructor.VERSION // => "3.3.7"
+ 未对禁用 JavaScript 的浏览器提供补救措施
+ Bootstrap 插件未对禁用 JavaScript 的浏览器提供补救措施。如果你对这种情况下的用户体验很关心的话，请添加 <noscript> 标签向你的用户进行解释（并告诉他们如何启用 JavaScript），或者按照你自己的方式提供补救措施。
+
+ 第三方工具库
+ Bootstrap 官方不提供对第三方 JavaScript 工具库的支持，例如 Prototype 或 jQuery UI。除了 .noConflict 和为事件名称添加命名空间，还可能会有兼容性方面的问题，这就需要你自己来处理了。
+
+ 过渡效果 transition.js
+ 关于过渡效果
+ 对于简单的过渡效果，只需将 transition.js 和其它 JS 文件一起引入即可。如果你使用的是编译（或压缩）版的 bootstrap.js 文件，就无需再单独将其引入了。
+
+ 包含的内容
+ Transition.js 是针对 transitionEnd 事件的一个基本辅助工具，也是对 CSS 过渡效果的模拟。它被其它插件用来检测当前浏览器对是否支持 CSS 的过渡效果。
+
+ 禁用过度效果
+ 通过下面的 JavaScript 代码可以在全局范围禁用过渡效果，并且必须将此代码放在 transition.js （或 bootstrap.js 或 bootstrap.min.js）后面，确保在 js 文件加载完毕后再执行下面的代码：
+
+ $.support.transition = false
+ 模态框 modal.js
+ 模态框经过了优化，更加灵活，以弹出对话框的形式出现，具有最小和最实用的功能集。
+
+ 不支持同时打开多个模态框
+ 千万不要在一个模态框上重叠另一个模态框。要想同时支持多个模态框，需要自己写额外的代码来实现。
+
+ 模态框的 HTML 代码放置的位置
+ 务必将模态框的 HTML 代码放在文档的最高层级内（也就是说，尽量作为 body 标签的直接子元素），以避免其他组件影响模态框的展现和/或功能。
+
+ 对于移动设备的附加说明
+ 这里提供了在移动设备上使用模态框有一些附加说明。请参考浏览器支持章节。
+
+ Due to how HTML5 defines its semantics, the autofocus HTML attribute has no effect in Bootstrap modals. To achieve the same effect, use some custom JavaScript:
+
+ $('#myModal').on('shown.bs.modal', function () {
+   $('#myInput').focus()
+ })
+ 实例
+ 静态实例
+ 以下模态框包含了模态框的头、体和一组放置于底部的按钮。
+
+ ×
+ Modal title
+ One fine body…
+
+ 
+ <div class="modal fade" tabindex="-1" role="dialog">
+   <div class="modal-dialog" role="document">
+     <div class="modal-content">
+       <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+         <h4 class="modal-title">Modal title</h4>
+       </div>
+       <div class="modal-body">
+         <p>One fine body&hellip;</p>
+       </div>
+       <div class="modal-footer">
+         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+         <button type="button" class="btn btn-primary">Save changes</button>
+       </div>
+     </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+ </div><!-- /.modal -->
+ 动态实例
+ 点击下面的按钮即可通过 JavaScript 启动一个模态框。此模态框将从上到下、逐渐浮现到页面前。
+
+  <!-- Button trigger modal -->
+ <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+   Launch demo modal
+ </button>
+
+ <!-- Modal -->
+ <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+   <div class="modal-dialog" role="document">
+     <div class="modal-content">
+       <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+         <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+       </div>
+       <div class="modal-body">
+         ...
+       </div>
+       <div class="modal-footer">
+         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+         <button type="button" class="btn btn-primary">Save changes</button>
+       </div>
+     </div>
+   </div>
+ </div>
+ 增强模态框的可访问性
+ 务必为 .modal 添加 role="dialog" 和 aria-labelledby="..." 属性，用于指向模态框的标题栏；为 .modal-dialog 添加 aria-hidden="true" 属性。
+
+ 另外，你还应该通过 aria-describedby 属性为模态框 .modal 添加描述性信息。
+
+ 嵌入 YouTube 视频（天朝无用）
+ 在模态框中嵌入 YouTube 视频需要增加一些额外的 JavaScript 代码，用于自动停止重放等功能，这些代码并没有在 Bootstrap 中提供。请参考这份发布在 Stack Overflow 上的文章。
+
+ 可选尺寸
+ 模态框提供了两个可选尺寸，通过为 .modal-dialog 增加一个样式调整类实现。
+
+ 
+ <!-- Large modal -->
+ <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg">Large modal</button>
+
+ <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+   <div class="modal-dialog modal-lg" role="document">
+     <div class="modal-content">
+       ...
+     </div>
+   </div>
+ </div>
+
+ <!-- Small modal -->
+ <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-sm">Small modal</button>
+
+ <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+   <div class="modal-dialog modal-sm" role="document">
+     <div class="modal-content">
+       ...
+     </div>
+   </div>
+ </div>
+ 禁止动画效果
+ 如果你不需要模态框弹出时的动画效果（淡入淡出效果），删掉 .fade 类即可。
+
+ <div class="modal" tabindex="-1" role="dialog" aria-labelledby="...">
+   ...
+ </div>
+ Using the grid system
+ To take advantage of the Bootstrap grid system within a modal, just nest .rows within the .modal-body and then use the normal grid system classes.
+
+  <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridSystemModalLabel">
+   <div class="modal-dialog" role="document">
+     <div class="modal-content">
+       <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+         <h4 class="modal-title" id="gridSystemModalLabel">Modal title</h4>
+       </div>
+       <div class="modal-body">
+         <div class="row">
+           <div class="col-md-4">.col-md-4</div>
+           <div class="col-md-4 col-md-offset-4">.col-md-4 .col-md-offset-4</div>
+         </div>
+         <div class="row">
+           <div class="col-md-3 col-md-offset-3">.col-md-3 .col-md-offset-3</div>
+           <div class="col-md-2 col-md-offset-4">.col-md-2 .col-md-offset-4</div>
+         </div>
+         <div class="row">
+           <div class="col-md-6 col-md-offset-3">.col-md-6 .col-md-offset-3</div>
+         </div>
+         <div class="row">
+           <div class="col-sm-9">
+             Level 1: .col-sm-9
+             <div class="row">
+               <div class="col-xs-8 col-sm-6">
+                 Level 2: .col-xs-8 .col-sm-6
+               </div>
+               <div class="col-xs-4 col-sm-6">
+                 Level 2: .col-xs-4 .col-sm-6
+               </div>
+             </div>
+           </div>
+         </div>
+       </div>
+       <div class="modal-footer">
+         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+         <button type="button" class="btn btn-primary">Save changes</button>
+       </div>
+     </div><!-- /.modal-content -->
+   </div><!-- /.modal-dialog -->
+ </div><!-- /.modal -->
+ Varying modal content based on trigger button
+ Have a bunch of buttons that all trigger the same modal, just with slightly different contents? Use event.relatedTarget and HTML data-* attributes (possibly via jQuery) to vary the contents of the modal depending on which button was clicked. See the Modal Events docs for details on relatedTarget,
+
+    ...more buttons...
+ <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">Open modal for @mdo</button>
+ <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@fat">Open modal for @fat</button>
+ <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@getbootstrap">Open modal for @getbootstrap</button>
+ ...more buttons...
+
+ <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+   <div class="modal-dialog" role="document">
+     <div class="modal-content">
+       <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+         <h4 class="modal-title" id="exampleModalLabel">New message</h4>
+       </div>
+       <div class="modal-body">
+         <form>
+           <div class="form-group">
+             <label for="recipient-name" class="control-label">Recipient:</label>
+             <input type="text" class="form-control" id="recipient-name">
+           </div>
+           <div class="form-group">
+             <label for="message-text" class="control-label">Message:</label>
+             <textarea class="form-control" id="message-text"></textarea>
+           </div>
+         </form>
+       </div>
+       <div class="modal-footer">
+         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+         <button type="button" class="btn btn-primary">Send message</button>
+       </div>
+     </div>
+   </div>
+ </div>
+ $('#exampleModal').on('show.bs.modal', function (event) {
+   var button = $(event.relatedTarget) // Button that triggered the modal
+   var recipient = button.data('whatever') // Extract info from data-* attributes
+   // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+   // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+   var modal = $(this)
+   modal.find('.modal-title').text('New message to ' + recipient)
+   modal.find('.modal-body input').val(recipient)
+ })
+ 用法
+ 通过 data 属性或 JavaScript 调用模态框插件，可以根据需要动态展示隐藏的内容。模态框弹出时还会为 <body> 元素添加 .modal-open 类，从而覆盖页面默认的滚动行为，并且还会自动生成一个 .modal-backdrop 元素用于提供一个可点击的区域，点击此区域就即可关闭模态框。
+
+ 通过 data 属性
+ 不需写 JavaScript 代码也可激活模态框。通过在一个起控制器作用的元素（例如：按钮）上添加 data-toggle="modal" 属性，或者 data-target="#foo" 属性，再或者 href="#foo" 属性，用于指向被控制的模态框。
+
+ <button type="button" data-toggle="modal" data-target="#myModal">Launch modal</button>
+ 通过 JavaScript 调用
+ 只需一行 JavaScript 代码，即可通过元素的 id myModal 调用模态框：
+
+ $('#myModal').modal(options)
+ 参数
+ 可以将选项通过 data 属性或 JavaScript 代码传递。对于 data 属性，需要将参数名称放到 data- 之后，例如 data-backdrop=""。
+
+ 名称	类型	默认值	描述
+ backdrop	boolean 或 字符串 'static'	true	Includes a modal-backdrop element. Alternatively, specify static for a backdrop which doesn't close the modal on click.
+ keyboard	boolean	true	键盘上的 esc 键被按下时关闭模态框。
+ show	boolean	true	模态框初始化之后就立即显示出来。
+ remote	path	false	
+ This option is deprecated since v3.3.0 and has been removed in v4. We recommend instead using client-side templating or a data binding framework, or calling jQuery.load yourself.
+
+ 如果提供的是 URL，将利用 jQuery 的 load 方法从此 URL 地址加载要展示的内容（只加载一次）并插入 .modal-content 内。如果使用的是 data 属性 API，还可以利用 href 属性指定内容来源地址。下面是一个实例：
+
+ <a data-toggle="modal" href="remote.html" data-target="#modal">Click me</a>
+ 方法
+ .modal(options)
+ 将页面中的某块内容作为模态框激活。接受可选参数 object。
+
+ $('#myModal').modal({
+   keyboard: false
+ })
+ .modal('toggle')
+ 手动打开或关闭模态框。在模态框显示或隐藏之前返回到主调函数中（也就是，在触发 shown.bs.modal 或 hidden.bs.modal 事件之前）。
+
+ $('#myModal').modal('toggle')
+ .modal('show')
+ 手动打开模态框。在模态框显示之前返回到主调函数中 （也就是，在触发 shown.bs.modal 事件之前）。
+
+ $('#myModal').modal('show')
+ .modal('hide')
+ 手动隐藏模态框。在模态框隐藏之前返回到主调函数中 （也就是，在触发 hidden.bs.modal 事件之前）。
+
+ $('#myModal').modal('hide')
+ .modal('handleUpdate')
+ Readjusts the modal's positioning to counter a scrollbar in case one should appear, which would make the modal jump to the left.
+
+ Only needed when the height of the modal changes while it is open.
+
+ $('#myModal').modal('handleUpdate')
+ 事件
+ Bootstrap 的模态框类提供了一些事件用于监听并执行你自己的代码。
+
+ All modal events are fired at the modal itself (i.e. at the <div class="modal">).
+
+ 事件类型	描述
+ show.bs.modal	show 方法调用之后立即触发该事件。如果是通过点击某个作为触发器的元素，则此元素可以通过事件的 relatedTarget 属性进行访问。
+ shown.bs.modal	此事件在模态框已经显示出来（并且同时在 CSS 过渡效果完成）之后被触发。如果是通过点击某个作为触发器的元素，则此元素可以通过事件的 relatedTarget 属性进行访问。
+ hide.bs.modal	hide 方法调用之后立即触发该事件。
+ hidden.bs.modal	此事件在模态框被隐藏（并且同时在 CSS 过渡效果完成）之后被触发。
+ loaded.bs.modal	从远端的数据源加载完数据之后触发该事件。
+ $('#myModal').on('hidden.bs.modal', function (e) {
+   // do something...
+ })
+ Dropdowns dropdown.js
+ Examples
+ Add dropdown menus to nearly anything with this simple plugin, including the navbar, tabs, and pills.
+
+ Within a navbar
+ Project Name
+ Dropdown 
+ Dropdown 
+ Dropdown 
+ Within pills
+ Regular link
+ Dropdown 
+ Dropdown 
+ Dropdown 
+ Usage
+ Via data attributes or JavaScript, the dropdown plugin toggles hidden content (dropdown menus) by toggling the .open class on the parent list item.
+
+ On mobile devices, opening a dropdown adds a .dropdown-backdrop as a tap area for closing dropdown menus when tapping outside the menu, a requirement for proper iOS support. This means that switching from an open dropdown menu to a different dropdown menu requires an extra tap on mobile.
+
+ Note: The data-toggle="dropdown" attribute is relied on for closing dropdown menus at an application level, so it's a good idea to always use it.
+
+ Via data attributes
+ Add data-toggle="dropdown" to a link or button to toggle a dropdown.
+
+ <div class="dropdown">
+   <button id="dLabel" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+     Dropdown trigger
+     <span class="caret"></span>
+   </button>
+   <ul class="dropdown-menu" aria-labelledby="dLabel">
+     ...
+   </ul>
+ </div>
+ To keep URLs intact with link buttons, use the data-target attribute instead of href="#".
+
+ <div class="dropdown">
+   <a id="dLabel" data-target="#" href="http://example.com" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+     Dropdown trigger
+     <span class="caret"></span>
+   </a>
+
+   <ul class="dropdown-menu" aria-labelledby="dLabel">
+     ...
+   </ul>
+ </div>
+ Via JavaScript
+ Call the dropdowns via JavaScript:
+
+ $('.dropdown-toggle').dropdown()
+ data-toggle="dropdown" still required
+ Regardless of whether you call your dropdown via JavaScript or instead use the data-api, data-toggle="dropdown" is always required to be present on the dropdown's trigger element.
+
+ Options
+ None
+
+ Methods
+ $().dropdown('toggle')
+ Toggles the dropdown menu of a given navbar or tabbed navigation.
+
+ Events
+ All dropdown events are fired at the .dropdown-menu's parent element.
+
+ All dropdown events have a relatedTarget property, whose value is the toggling anchor element.
+
+ Event Type	Description
+ show.bs.dropdown	This event fires immediately when the show instance method is called.
+ shown.bs.dropdown	This event is fired when the dropdown has been made visible to the user (will wait for CSS transitions, to complete).
+ hide.bs.dropdown	This event is fired immediately when the hide instance method has been called.
+ hidden.bs.dropdown	This event is fired when the dropdown has finished being hidden from the user (will wait for CSS transitions, to complete).
+ $('#myDropdown').on('show.bs.dropdown', function () {
+   // do something…
+ })
+ 滚动监听 scrollspy.js
+ 导航条实例
+ 滚动监听插件是用来根据滚动条所处的位置来自动更新导航项的。如下所示，滚动导航条下面的区域并关注导航项的变化。下拉菜单中的条目也会自动高亮显示。
+
+ Project Name
+ @fat
+ @mdo
+ Dropdown 
+ @fat
+ Ad leggings keytar, brunch id art party dolor labore. Pitchfork yr enim lo-fi before they sold out qui. Tumblr farm-to-table bicycle rights whatever. Anim keffiyeh carles cardigan. Velit seitan mcsweeney's photo booth 3 wolf moon irure. Cosby sweater lomo jean shorts, williamsburg hoodie minim qui you probably haven't heard of them et cardigan trust fund culpa biodiesel wes anderson aesthetic. Nihil tattooed accusamus, cred irony biodiesel keffiyeh artisan ullamco consequat.
+
+ @mdo
+ Veniam marfa mustache skateboard, adipisicing fugiat velit pitchfork beard. Freegan beard aliqua cupidatat mcsweeney's vero. Cupidatat four loko nisi, ea helvetica nulla carles. Tattooed cosby sweater food truck, mcsweeney's quis non freegan vinyl. Lo-fi wes anderson +1 sartorial. Carles non aesthetic exercitation quis gentrify. Brooklyn adipisicing craft beer vice keytar deserunt.
+
+ one
+ Occaecat commodo aliqua delectus. Fap craft beer deserunt skateboard ea. Lomo bicycle rights adipisicing banh mi, velit ea sunt next level locavore single-origin coffee in magna veniam. High life id vinyl, echo park consequat quis aliquip banh mi pitchfork. Vero VHS est adipisicing. Consectetur nisi DIY minim messenger bag. Cred ex in, sustainable delectus consectetur fanny pack iphone.
+
+ two
+ In incididunt echo park, officia deserunt mcsweeney's proident master cleanse thundercats sapiente veniam. Excepteur VHS elit, proident shoreditch +1 biodiesel laborum craft beer. Single-origin coffee wayfarers irure four loko, cupidatat terry richardson master cleanse. Assumenda you probably haven't heard of them art party fanny pack, tattooed nulla cardigan tempor ad. Proident wolf nesciunt sartorial keffiyeh eu banh mi sustainable. Elit wolf voluptate, lo-fi ea portland before they sold out four loko. Locavore enim nostrud mlkshk brooklyn nesciunt.
+
+ three
+ Ad leggings keytar, brunch id art party dolor labore. Pitchfork yr enim lo-fi before they sold out qui. Tumblr farm-to-table bicycle rights whatever. Anim keffiyeh carles cardigan. Velit seitan mcsweeney's photo booth 3 wolf moon irure. Cosby sweater lomo jean shorts, williamsburg hoodie minim qui you probably haven't heard of them et cardigan trust fund culpa biodiesel wes anderson aesthetic. Nihil tattooed accusamus, cred irony biodiesel keffiyeh artisan ullamco consequat.
+
+ Keytar twee blog, culpa messenger bag marfa whatever delectus food truck. Sapiente synth id assumenda. Locavore sed helvetica cliche irony, thundercats you probably haven't heard of them consequat hoodie gluten-free lo-fi fap aliquip. Labore elit placeat before they sold out, terry richardson proident brunch nesciunt quis cosby sweater pariatur keffiyeh ut helvetica artisan. Cardigan craft beer seitan readymade velit. VHS chambray laboris tempor veniam. Anim mollit minim commodo ullamco thundercats.
+
+ 用法
+ 依赖 Bootstrap 的导航组件
+ 滚动监听插件依赖 Bootstrap 的导航组件 用于高亮显示当前激活的链接。
+
+ Resolvable ID targets required
+ Navbar links must have resolvable id targets. For example, a <a href="#home">home</a> must correspond to something in the DOM like <div id="home"></div>.
+
+ Non-:visible target elements ignored
+ Target elements that are not :visible according to jQuery will be ignored and their corresponding nav items will never be highlighted.
+
+ 需要相对定位（relative positioning）
+ 无论何种实现方式，滚动监听都需要被监听的组件是 position: relative; 即相对定位方式。大多数时候是监听 <body> 元素。When scrollspying on elements other than the <body>, be sure to have a height set and overflow-y: scroll; applied.
+
+ 通过 data 属性调用
+ To easily add scrollspy behavior to your topbar navigation, add data-spy="scroll" to the element you want to spy on (most typically this would be the <body>). Then add the data-target attribute with the ID or class of the parent element of any Bootstrap .nav component.
+
+ body {
+   position: relative;
+ }
+ <body data-spy="scroll" data-target="#navbar-example">
+   ...
+   <div id="navbar-example">
+     <ul class="nav nav-tabs" role="tablist">
+       ...
+     </ul>
+   </div>
+   ...
+ </body>
+ 通过 JavaScript 调用
+ 在 CSS 中添加 position: relative; 之后，通过 JavaScript 代码启动滚动监听插件：
+
+ $('body').scrollspy({ target: '#navbar-example' })
+ 方法
+ .scrollspy('refresh')
+ 当使用滚动监听插件的同时在 DOM 中添加或删除元素后，你需要像下面这样调用此刷新（ refresh） 方法：
+
+ $('[data-spy="scroll"]').each(function () {
+   var $spy = $(this).scrollspy('refresh')
+ })
+ 参数
+ 可以通过 data 属性或 JavaScript 传递参数。对于 data 属性，其名称是将参数名附着到 data- 后面组成，例如 data-offset=""。
+
+ 名称	类型	默认值	描述
+ offset	number	10	计算滚动位置时相对于顶部的偏移量（像素数）。
+ 事件
+ 事件类型	描述
+ activate.bs.scrollspy	每当一个新条目被激活后都将由滚动监听插件触发此事件。
+ $('#myScrollspy').on('activate.bs.scrollspy', function () {
+   // do something…
+ })
+ Togglable tabs tab.js
+ Example tabs
+ Add quick, dynamic tab functionality to transition through panes of local content, even via dropdown menus. Nested tabs are not supported.
+
+ Home
+ Profile
+ Dropdown 
+ Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.
+
+ Extends tabbed navigation
+ This plugin extends the tabbed navigation component to add tabbable areas.
+
+ Usage
+ Enable tabbable tabs via JavaScript (each tab needs to be activated individually):
+
+ $('#myTabs a').click(function (e) {
+   e.preventDefault()
+   $(this).tab('show')
+ })
+ You can activate individual tabs in several ways:
+
+ $('#myTabs a[href="#profile"]').tab('show') // Select tab by name
+ $('#myTabs a:first').tab('show') // Select first tab
+ $('#myTabs a:last').tab('show') // Select last tab
+ $('#myTabs li:eq(2) a').tab('show') // Select third tab (0-indexed)
+ Markup
+ You can activate a tab or pill navigation without writing any JavaScript by simply specifying data-toggle="tab" or data-toggle="pill" on an element. Adding the nav and nav-tabs classes to the tab ul will apply the Bootstrap tab styling, while adding the nav and nav-pills classes will apply pill styling.
+
+ <div>
+
+   <!-- Nav tabs -->
+   <ul class="nav nav-tabs" role="tablist">
+     <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>
+     <li role="presentation"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab">Profile</a></li>
+     <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
+     <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li>
+   </ul>
+
+   <!-- Tab panes -->
+   <div class="tab-content">
+     <div role="tabpanel" class="tab-pane active" id="home">...</div>
+     <div role="tabpanel" class="tab-pane" id="profile">...</div>
+     <div role="tabpanel" class="tab-pane" id="messages">...</div>
+     <div role="tabpanel" class="tab-pane" id="settings">...</div>
+   </div>
+
+ </div>
+ Fade effect
+ To make tabs fade in, add .fade to each .tab-pane. The first tab pane must also have .in to make the initial content visible.
+
+ <div class="tab-content">
+   <div role="tabpanel" class="tab-pane fade in active" id="home">...</div>
+   <div role="tabpanel" class="tab-pane fade" id="profile">...</div>
+   <div role="tabpanel" class="tab-pane fade" id="messages">...</div>
+   <div role="tabpanel" class="tab-pane fade" id="settings">...</div>
+ </div>
+ Methods
+ $().tab
+ Activates a tab element and content container. Tab should have either a data-target or an href targeting a container node in the DOM. In the above examples, the tabs are the <a>s with data-toggle="tab" attributes.
+
+ .tab('show')
+ Selects the given tab and shows its associated content. Any other tab that was previously selected becomes unselected and its associated content is hidden. Returns to the caller before the tab pane has actually been shown (i.e. before the shown.bs.tab event occurs).
+
+ $('#someTab').tab('show')
+ Events
+ When showing a new tab, the events fire in the following order:
+
+ hide.bs.tab (on the current active tab)
+ show.bs.tab (on the to-be-shown tab)
+ hidden.bs.tab (on the previous active tab, the same one as for the hide.bs.tab event)
+ shown.bs.tab (on the newly-active just-shown tab, the same one as for the show.bs.tab event)
+ If no tab was already active, then the hide.bs.tab and hidden.bs.tab events will not be fired.
+
+ Event Type	Description
+ show.bs.tab	This event fires on tab show, but before the new tab has been shown. Use event.target and event.relatedTarget to target the active tab and the previous active tab (if available) respectively.
+ shown.bs.tab	This event fires on tab show after a tab has been shown. Use event.target and event.relatedTarget to target the active tab and the previous active tab (if available) respectively.
+ hide.bs.tab	This event fires when a new tab is to be shown (and thus the previous active tab is to be hidden). Use event.target and event.relatedTarget to target the current active tab and the new soon-to-be-active tab, respectively.
+ hidden.bs.tab	This event fires after a new tab is shown (and thus the previous active tab is hidden). Use event.target and event.relatedTarget to target the previous active tab and the new active tab, respectively.
+ $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+   e.target // newly activated tab
+   e.relatedTarget // previous active tab
+ })
+ Tooltips tooltip.js
+ Inspired by the excellent jQuery.tipsy plugin written by Jason Frame; Tooltips are an updated version, which don't rely on images, use CSS3 for animations, and data-attributes for local title storage.
+
+ Tooltips with zero-length titles are never displayed.
+
+ Examples
+ Hover over the links below to see tooltips:
+
+ Tight pants next level keffiyeh you probably haven't heard of them. Photo booth beard raw denim letterpress vegan messenger bag stumptown. Farm-to-table seitan, mcsweeney's fixie sustainable quinoa 8-bit american apparel have a terry richardson vinyl chambray. Beard stumptown, cardigans banh mi lomo thundercats. Tofu biodiesel williamsburg marfa, four loko mcsweeney's cleanse vegan chambray. A really ironic artisan whatever keytar, scenester farm-to-table banksy Austin twitter handle freegan cred raw denim single-origin coffee viral.
+
+ Static tooltip
+ Four options are available: top, right, bottom, and left aligned.
+
+ Tooltip on the left
+ 
+ Tooltip on the top
+ 
+ Tooltip on the bottom
+ 
+ Tooltip on the right
+ Four directions
+   
+ <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="left" title="Tooltip on left">Tooltip on left</button>
+
+ <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Tooltip on top">Tooltip on top</button>
+
+ <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Tooltip on bottom">Tooltip on bottom</button>
+
+ <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="right" title="Tooltip on right">Tooltip on right</button>
+ Opt-in functionality
+ For performance reasons, the Tooltip and Popover data-apis are opt-in, meaning you must initialize them yourself.
+
+ One way to initialize all tooltips on a page would be to select them by their data-toggle attribute:
+
+ $(function () {
+   $('[data-toggle="tooltip"]').tooltip()
+ })
+ Usage
+ The tooltip plugin generates content and markup on demand, and by default places tooltips after their trigger element.
+
+ Trigger the tooltip via JavaScript:
+
+ $('#example').tooltip(options)
+ Markup
+ The required markup for a tooltip is only a data attribute and title on the HTML element you wish to have a tooltip. The generated markup of a tooltip is rather simple, though it does require a position (by default, set to top by the plugin).
+
+ <!-- HTML to write -->
+ <a href="#" data-toggle="tooltip" title="Some tooltip text!">Hover over me</a>
+
+ <!-- Generated markup by the plugin -->
+ <div class="tooltip top" role="tooltip">
+   <div class="tooltip-arrow"></div>
+   <div class="tooltip-inner">
+     Some tooltip text!
+   </div>
+ </div>
+ Multiple-line links
+ Sometimes you want to add a tooltip to a hyperlink that wraps multiple lines. The default behavior of the tooltip plugin is to center it horizontally and vertically. Add white-space: nowrap; to your anchors to avoid this.
+
+ Tooltips in button groups, input groups, and tables require special setting
+ When using tooltips on elements within a .btn-group or an .input-group, or on table-related elements (<td>, <th>, <tr>, <thead>, <tbody>, <tfoot>), you'll have to specify the option container: 'body' (documented below) to avoid unwanted side effects (such as the element growing wider and/or losing its rounded corners when the tooltip is triggered).
+
+ Don't try to show tooltips on hidden elements
+ Invoking $(...).tooltip('show') when the target element is display: none; will cause the tooltip to be incorrectly positioned.
+
+ Accessible tooltips for keyboard and assistive technology users
+ For users navigating with a keyboard, and in particular users of assistive technologies, you should only add tooltips to keyboard-focusable elements such as links, form controls, or any arbitrary element with a tabindex="0" attribute.
+
+ Tooltips on disabled elements require wrapper elements
+ To add a tooltip to a disabled or .disabled element, put the element inside of a <div> and apply the tooltip to that <div> instead.
+
+ Options
+ Options can be passed via data attributes or JavaScript. For data attributes, append the option name to data-, as in data-animation="".
+
+ Name	Type	Default	Description
+ animation	boolean	true	Apply a CSS fade transition to the tooltip
+ container	string | false	false	
+ Appends the tooltip to a specific element. Example: container: 'body'. This option is particularly useful in that it allows you to position the tooltip in the flow of the document near the triggering element - which will prevent the tooltip from floating away from the triggering element during a window resize.
+
+ delay	number | object	0	
+ Delay showing and hiding the tooltip (ms) - does not apply to manual trigger type
+
+ If a number is supplied, delay is applied to both hide/show
+
+ Object structure is: delay: { "show": 500, "hide": 100 }
+
+ html	boolean	false	Insert HTML into the tooltip. If false, jQuery's text method will be used to insert content into the DOM. Use text if you're worried about XSS attacks.
+ placement	string | function	'top'	
+ How to position the tooltip - top | bottom | left | right | auto.
+ When "auto" is specified, it will dynamically reorient the tooltip. For example, if placement is "auto left", the tooltip will display to the left when possible, otherwise it will display right.
+
+ When a function is used to determine the placement, it is called with the tooltip DOM node as its first argument and the triggering element DOM node as its second. The this context is set to the tooltip instance.
+
+ selector	string	false	If a selector is provided, tooltip objects will be delegated to the specified targets. In practice, this is used to enable dynamic HTML content to have tooltips added. See this and an informative example.
+ template	string	'<div class="tooltip" role="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'	
+ Base HTML to use when creating the tooltip.
+
+ The tooltip's title will be injected into the .tooltip-inner.
+
+ .tooltip-arrow will become the tooltip's arrow.
+
+ The outermost wrapper element should have the .tooltip class.
+
+ title	string | function	''	
+ Default title value if title attribute isn't present.
+
+ If a function is given, it will be called with its this reference set to the element that the tooltip is attached to.
+
+ trigger	string	'hover focus'	How tooltip is triggered - click | hover | focus | manual. You may pass multiple triggers; separate them with a space. manual cannot be combined with any other trigger.
+ viewport	string | object | function	{ selector: 'body', padding: 0 }	
+ Keeps the tooltip within the bounds of this element. Example: viewport: '#viewport' or { "selector": "#viewport", "padding": 0 }
+
+ If a function is given, it is called with the triggering element DOM node as its only argument. The this context is set to the tooltip instance.
+
+ Data attributes for individual tooltips
+ Options for individual tooltips can alternatively be specified through the use of data attributes, as explained above.
+
+ Methods
+ $().tooltip(options)
+ Attaches a tooltip handler to an element collection.
+
+ .tooltip('show')
+ Reveals an element's tooltip. Returns to the caller before the tooltip has actually been shown (i.e. before the shown.bs.tooltip event occurs). This is considered a "manual" triggering of the tooltip. Tooltips with zero-length titles are never displayed.
+
+ $('#element').tooltip('show')
+ .tooltip('hide')
+ Hides an element's tooltip. Returns to the caller before the tooltip has actually been hidden (i.e. before the hidden.bs.tooltip event occurs). This is considered a "manual" triggering of the tooltip.
+
+ $('#element').tooltip('hide')
+ .tooltip('toggle')
+ Toggles an element's tooltip. Returns to the caller before the tooltip has actually been shown or hidden (i.e. before the shown.bs.tooltip or hidden.bs.tooltip event occurs). This is considered a "manual" triggering of the tooltip.
+
+ $('#element').tooltip('toggle')
+ .tooltip('destroy')
+ Hides and destroys an element's tooltip. Tooltips that use delegation (which are created using the selector option) cannot be individually destroyed on descendant trigger elements.
+
+ $('#element').tooltip('destroy')
+ Events
+ Event Type	Description
+ show.bs.tooltip	This event fires immediately when the show instance method is called.
+ shown.bs.tooltip	This event is fired when the tooltip has been made visible to the user (will wait for CSS transitions to complete).
+ hide.bs.tooltip	This event is fired immediately when the hide instance method has been called.
+ hidden.bs.tooltip	This event is fired when the tooltip has finished being hidden from the user (will wait for CSS transitions to complete).
+ inserted.bs.tooltip	This event is fired after the show.bs.tooltip event when the tooltip template has been added to the DOM.
+ $('#myTooltip').on('hidden.bs.tooltip', function () {
+   // do something…
+ })
+ 弹出框 popover.js
+ 为任意元素添加一小块浮层，就像 iPad 上一样，用于存放非主要信息。
+
+ 弹出框的标题和内容的长度都是零的话将永远不会被显示出来。
+
+ 插件依赖
+ 弹出框依赖 工具提示插件 ，因此，如果你定制了 Bootstrap，一定要注意将依赖的插件编译进去。
+
+ 初始化
+ 由于性能的原因，工具提示和弹出框的 data 编程接口（data api）是必须要手动初始化的。
+
+ 在一个页面上一次性初始化所有弹出框的方式是通过 data-toggle 属性选中他们：
+
+ $(function () {
+   $('[data-toggle="popover"]').popover()
+ })
+ Popovers in button groups, input groups, and tables require special setting
+ When using popovers on elements within a .btn-group or an .input-group, or on table-related elements (<td>, <th>, <tr>, <thead>, <tbody>, <tfoot>), you'll have to specify the option container: 'body' (documented below) to avoid unwanted side effects (such as the element growing wider and/or losing its rounded corners when the popover is triggered).
+
+ Don't try to show popovers on hidden elements
+ Invoking $(...).popover('show') when the target element is display: none; will cause the popover to be incorrectly positioned.
+
+ Popovers on disabled elements require wrapper elements
+ To add a popover to a disabled or .disabled element, put the element inside of a <div> and apply the popover to that <div> instead.
+
+ Multiple-line links
+ Sometimes you want to add a popover to a hyperlink that wraps multiple lines. The default behavior of the popover plugin is to center it horizontally and vertically. Add white-space: nowrap; to your anchors to avoid this.
+
+ 实例
+ 静态弹出框
+ 4个可能的弹出方向：顶部、右侧、底部和左侧。
+
+ Popover 顶部
+ Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.
+
+ Popover 右侧
+ Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.
+
+ Popover 顶部
+ Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.
+
+ Popover 左侧
+ Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.
+
+ 实例演示
+  <button type="button" class="btn btn-lg btn-danger" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?">点我弹出/隐藏弹出框</button>
+ 4个弹出方向
+   
+ <button type="button" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="left" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+   Popover on 左侧
+ </button>
+
+ <button type="button" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="top" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+   Popover on 顶部
+ </button>
+
+ <button type="button" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Vivamus
+ sagittis lacus vel augue laoreet rutrum faucibus.">
+   Popover on 底部
+ </button>
+
+ <button type="button" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="right" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">
+   Popover on 右侧
+ </button>
+ 点击并让弹出框消失
+ 通过使用 focus 触发器可以在用户点击弹出框是让其消失。
+
+ 实现“点击并让弹出框消失”的效果需要一些额外的代码
+ 为了更好的跨浏览器和跨平台效果，你必须使用 <a> 标签，不能使用 <button> 标签，并且，还必须包含 role="button" 和 tabindex 属性。
+
+  <a tabindex="0" class="btn btn-lg btn-danger" role="button" data-toggle="popover" data-trigger="focus" title="Dismissible popover" data-content="And here's some amazing content. It's very engaging. Right?">可消失的弹出框</a>
+ 用法
+ 通过 JavaScript 代码启动弹出框：
+
+ $('#example').popover(options)
+ 参数
+ 可以通过 data 属性或 JavaScript 传递参数。对于 data 属性，将参数名附着到 data- 后面，例如 data-animation=""。
+
+ 名称	类型	默认值	描述
+ animation	boolean	true	为弹出框赋予淡出的 CSS 动画效果。
+ container	string | false	false	
+ Appends the popover to a specific element. Example: container: 'body'. This option is particularly useful in that it allows you to position the popover in the flow of the document near the triggering element - which will prevent the popover from floating away from the triggering element during a window resize.
+
+ content	string | function	''	
+ Default content value if data-content attribute isn't present.
+
+ If a function is given, it will be called with its this reference set to the element that the popover is attached to.
+
+ delay	number | object	0	
+ Delay showing and hiding the popover (ms) - does not apply to manual trigger type
+
+ If a number is supplied, delay is applied to both hide/show
+
+ Object structure is: delay: { "show": 500, "hide": 100 }
+
+ html	boolean	false	Insert HTML into the popover. If false, jQuery's text method will be used to insert content into the DOM. Use text if you're worried about XSS attacks.
+ placement	string | function	'right'	
+ How to position the popover - top | bottom | left | right | auto.
+ When "auto" is specified, it will dynamically reorient the popover. For example, if placement is "auto left", the popover will display to the left when possible, otherwise it will display right.
+
+ When a function is used to determine the placement, it is called with the popover DOM node as its first argument and the triggering element DOM node as its second. The this context is set to the popover instance.
+
+ selector	string	false	If a selector is provided, popover objects will be delegated to the specified targets. In practice, this is used to enable dynamic HTML content to have popovers added. See this and an informative example.
+ template	string	'<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>'	
+ Base HTML to use when creating the popover.
+
+ The popover's title will be injected into the .popover-title.
+
+ The popover's content will be injected into the .popover-content.
+
+ .arrow will become the popover's arrow.
+
+ The outermost wrapper element should have the .popover class.
+
+ title	string | function	''	
+ Default title value if title attribute isn't present.
+
+ If a function is given, it will be called with its this reference set to the element that the popover is attached to.
+
+ trigger	string	'click'	How popover is triggered - click | hover | focus | manual. You may pass multiple triggers; separate them with a space. manual cannot be combined with any other trigger.
+ viewport	string | object | function	{ selector: 'body', padding: 0 }	
+ Keeps the popover within the bounds of this element. Example: viewport: '#viewport' or { "selector": "#viewport", "padding": 0 }
+
+ If a function is given, it is called with the triggering element DOM node as its only argument. The this context is set to the popover instance.
+
+ Data attributes for individual popovers
+ Options for individual popovers can alternatively be specified through the use of data attributes, as explained above.
+
+ Methods
+ $().popover(options)
+ Initializes popovers for an element collection.
+
+ .popover('show')
+ Reveals an element's popover. Returns to the caller before the popover has actually been shown (i.e. before the shown.bs.popover event occurs). This is considered a "manual" triggering of the popover. Popovers whose both title and content are zero-length are never displayed.
+
+ $('#element').popover('show')
+ .popover('hide')
+ Hides an element's popover. Returns to the caller before the popover has actually been hidden (i.e. before the hidden.bs.popover event occurs). This is considered a "manual" triggering of the popover.
+
+ $('#element').popover('hide')
+ .popover('toggle')
+ Toggles an element's popover. Returns to the caller before the popover has actually been shown or hidden (i.e. before the shown.bs.popover or hidden.bs.popover event occurs). This is considered a "manual" triggering of the popover.
+
+ $('#element').popover('toggle')
+ .popover('destroy')
+ Hides and destroys an element's popover. Popovers that use delegation (which are created using the selector option) cannot be individually destroyed on descendant trigger elements.
+
+ $('#element').popover('destroy')
+ Events
+ Event Type	Description
+ show.bs.popover	This event fires immediately when the show instance method is called.
+ shown.bs.popover	This event is fired when the popover has been made visible to the user (will wait for CSS transitions to complete).
+ hide.bs.popover	This event is fired immediately when the hide instance method has been called.
+ hidden.bs.popover	This event is fired when the popover has finished being hidden from the user (will wait for CSS transitions to complete).
+ inserted.bs.popover	This event is fired after the show.bs.popover event when the popover template has been added to the DOM.
+ $('#myPopover').on('hidden.bs.popover', function () {
+   // do something…
+ })
+ 警告信息 alert.js
+ 实例
+ 通过此插件可以为警告信息添加点击并消失的功能。
+
+ 当使用 .close 按钮时，它必须是 .alert-dismissible 的第一个子元素，并且在它之前不能有任何文本内容。
+
+ ×Holy guacamole! Best check yo self, you're not looking too good.
+ ×
+ Oh snap! You got an error!
+ Change this and that and try again. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Cras mattis consectetur purus sit amet fermentum.
+
+ 
+
+ 用法
+ 为关闭按钮添加 data-dismiss="alert" 属性就可以使其自动为警告框赋予关闭功能。关闭警告框也就是将其从 DOM 中删除。
+
+ <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+   <span aria-hidden="true">&times;</span>
+ </button>
+ 为了让警告框在关闭时表现出动画效果，请确保为其添加了 .fade 和 .in 类。
+
+ 方法
+ $().alert()
+ 让警告框监听具有 data-dismiss="alert" 属性的后裔元素的点击（click）事件。（如果是通过 data 属性进行的初始化则无需使用）
+
+ $().alert('close')
+ 关闭警告框并从 DOM 中将其删除。如果警告框被赋予了 .fade 和 .in 类，那么，警告框在淡出之后才会被删除。
+
+ 事件
+ Bootstrap 的警告框插件对外暴露了一些可以被监听的事件。
+
+ 事件类型	描述
+ close.bs.alert	当 close 方法被调用后立即触发此事件。
+ closed.bs.alert	当警告框被关闭后（也即 CSS 过渡效果完毕之后）立即触发此事件。
+ $('#myAlert').on('closed.bs.alert', function () {
+   // do something…
+ })
+ 按钮 button.js
+ 按钮的功能很丰富。通过控制按钮的状态或创建一组按钮并形成一些新的组件，例如工具条。
+
+ 跨浏览器兼容性
+ 在页面多次加载之间，Firefox 仍然保持表单控件的状态（禁用状态和选择状态）。一个解决办法是设置 autocomplete="off"。参见 Mozilla bug #654072。
+
+ 状态
+ 通过添加 data-loading-text="Loading..." 可以为按钮设置正在加载的状态。
+
+ 从 v3.3.5 版本开始，此特性不再建议使用，并且已经在 v4 版本中删除了。
+
+ Use whichever state you like!
+ For the sake of this demonstration, we are using data-loading-text and $().button('loading'), but that's not the only state you can use. See more on this below in the $().button(string) documentation.
+
+  <button type="button" id="myButton" data-loading-text="Loading..." class="btn btn-primary" autocomplete="off">
+   Loading state
+ </button>
+
+ <script>
+   $('#myButton').on('click', function () {
+     var $btn = $(this).button('loading')
+     // business logic...
+     $btn.button('reset')
+   })
+ </script>
+ Single toggle
+ Add data-toggle="button" to activate toggling on a single button.
+
+ Pre-toggled buttons need .active and aria-pressed="true"
+ For pre-toggled buttons, you must add the .active class and the aria-pressed="true" attribute to the button yourself.
+
+  <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
+   Single toggle
+ </button>
+ Checkbox / Radio
+ Add data-toggle="buttons" to a .btn-group containing checkbox or radio inputs to enable toggling in their respective styles.
+
+ Preselected options need .active
+ For preselected options, you must add the .active class to the input's label yourself.
+
+ Visual checked state only updated on click
+ If the checked state of a checkbox button is updated without firing a click event on the button (e.g. via <input type="reset"> or via setting the checked property of the input), you will need to toggle the .active class on the input's label yourself.
+
+  <div class="btn-group" data-toggle="buttons">
+   <label class="btn btn-primary active">
+     <input type="checkbox" autocomplete="off" checked> Checkbox 1 (pre-checked)
+   </label>
+   <label class="btn btn-primary">
+     <input type="checkbox" autocomplete="off"> Checkbox 2
+   </label>
+   <label class="btn btn-primary">
+     <input type="checkbox" autocomplete="off"> Checkbox 3
+   </label>
+ </div>
+  <div class="btn-group" data-toggle="buttons">
+   <label class="btn btn-primary active">
+     <input type="radio" name="options" id="option1" autocomplete="off" checked> Radio 1 (preselected)
+   </label>
+   <label class="btn btn-primary">
+     <input type="radio" name="options" id="option2" autocomplete="off"> Radio 2
+   </label>
+   <label class="btn btn-primary">
+     <input type="radio" name="options" id="option3" autocomplete="off"> Radio 3
+   </label>
+ </div>
+ 方法
+ $().button('toggle')
+ Toggles push state. Gives the button the appearance that it has been activated.
+
+ $().button('reset')
+ 重置按钮状态 - 将按钮上的文本还原回原始的内容。此为异步方法，此方法在内容被重置完成之前即返回。
+
+ $().button(string)
+ Swaps text to any data defined text state.
+
+ <button type="button" id="myStateButton" data-complete-text="finished!" class="btn btn-primary" autocomplete="off">
+   ...
+ </button>
+
+ <script>
+   $('#myStateButton').on('click', function () {
+     $(this).button('complete') // button text will be "finished!"
+   })
+ </script>
+ Collapse collapse.js
+ Flexible plugin that utilizes a handful of classes for easy toggle behavior.
+
+ Plugin dependency
+ Collapse requires the transitions plugin to be included in your version of Bootstrap.
+
+ Example
+ Click the buttons below to show and hide another element via class changes:
+
+ .collapse hides content
+ .collapsing is applied during transitions
+ .collapse.in shows content
+ You can use a link with the href attribute, or a button with the data-target attribute. In both cases, the data-toggle="collapse" is required.
+
+ 
+
+ <a class="btn btn-primary" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+   Link with href
+ </a>
+ <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+   Button with data-target
+ </button>
+ <div class="collapse" id="collapseExample">
+   <div class="well">
+     ...
+   </div>
+ </div>
+ Accordion example
+ Extend the default collapse behavior to create an accordion with the panel component.
+
+ Collapsible Group Item #1
+ Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+ Collapsible Group Item #2
+ Collapsible Group Item #3
+ <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+   <div class="panel panel-default">
+     <div class="panel-heading" role="tab" id="headingOne">
+       <h4 class="panel-title">
+         <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+           Collapsible Group Item #1
+         </a>
+       </h4>
+     </div>
+     <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+       <div class="panel-body">
+         Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+       </div>
+     </div>
+   </div>
+   <div class="panel panel-default">
+     <div class="panel-heading" role="tab" id="headingTwo">
+       <h4 class="panel-title">
+         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+           Collapsible Group Item #2
+         </a>
+       </h4>
+     </div>
+     <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+       <div class="panel-body">
+         Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+       </div>
+     </div>
+   </div>
+   <div class="panel panel-default">
+     <div class="panel-heading" role="tab" id="headingThree">
+       <h4 class="panel-title">
+         <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+           Collapsible Group Item #3
+         </a>
+       </h4>
+     </div>
+     <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+       <div class="panel-body">
+         Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+       </div>
+     </div>
+   </div>
+ </div>
+ It's also possible to swap out .panel-bodys with .list-groups.
+
+ Collapsible list group
+ Make expand/collapse controls accessible
+ Be sure to add aria-expanded to the control element. This attribute explicitly defines the current state of the collapsible element to screen readers and similar assistive technologies. If the collapsible element is closed by default, it should have a value of aria-expanded="false". If you've set the collapsible element to be open by default using the in class, set aria-expanded="true" on the control instead. The plugin will automatically toggle this attribute based on whether or not the collapsible element has been opened or closed.
+
+ Additionally, if your control element is targeting a single collapsible element – i.e. the data-target attribute is pointing to an id selector – you may add an additional aria-controls attribute to the control element, containing the id of the collapsible element. Modern screen readers and similar assistive technologies make use of this attribute to provide users with additional shortcuts to navigate directly to the collapsible element itself.
+
+ Usage
+ The collapse plugin utilizes a few classes to handle the heavy lifting:
+
+ .collapse hides the content
+ .collapse.in shows the content
+ .collapsing is added when the transition starts, and removed when it finishes
+ These classes can be found in component-animations.less.
+
+ Via data attributes
+ Just add data-toggle="collapse" and a data-target to the element to automatically assign control of a collapsible element. The data-target attribute accepts a CSS selector to apply the collapse to. Be sure to add the class collapse to the collapsible element. If you'd like it to default open, add the additional class in.
+
+ To add accordion-like group management to a collapsible control, add the data attribute data-parent="#selector". Refer to the demo to see this in action.
+
+ Via JavaScript
+ Enable manually with:
+
+ $('.collapse').collapse()
+ Options
+ Options can be passed via data attributes or JavaScript. For data attributes, append the option name to data-, as in data-parent="".
+
+ Name	type	default	description
+ parent	selector	false	If a selector is provided, then all collapsible elements under the specified parent will be closed when this collapsible item is shown. (similar to traditional accordion behavior - this is dependent on the panel class)
+ toggle	boolean	true	Toggles the collapsible element on invocation
+ Methods
+ .collapse(options)
+ Activates your content as a collapsible element. Accepts an optional options object.
+
+ $('#myCollapsible').collapse({
+   toggle: false
+ })
+ .collapse('toggle')
+ Toggles a collapsible element to shown or hidden. Returns to the caller before the collapsible element has actually been shown or hidden (i.e. before the shown.bs.collapse or hidden.bs.collapse event occurs).
+
+ .collapse('show')
+ Shows a collapsible element. Returns to the caller before the collapsible element has actually been shown (i.e. before the shown.bs.collapse event occurs).
+
+ .collapse('hide')
+ Hides a collapsible element. Returns to the caller before the collapsible element has actually been hidden (i.e. before the hidden.bs.collapse event occurs).
+
+ Events
+ Bootstrap's collapse class exposes a few events for hooking into collapse functionality.
+
+ Event Type	Description
+ show.bs.collapse	This event fires immediately when the show instance method is called.
+ shown.bs.collapse	This event is fired when a collapse element has been made visible to the user (will wait for CSS transitions to complete).
+ hide.bs.collapse	This event is fired immediately when the hide method has been called.
+ hidden.bs.collapse	This event is fired when a collapse element has been hidden from the user (will wait for CSS transitions to complete).
+ $('#myCollapsible').on('hidden.bs.collapse', function () {
+   // do something…
+ })
+ Carousel carousel.js
+ A slideshow component for cycling through elements, like a carousel. Nested carousels are not supported.
+
+ Examples
+  
+ Second slide [900x500]PreviousNext
+ <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
+   <!-- Indicators -->
+   <ol class="carousel-indicators">
+     <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+     <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+     <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+   </ol>
+
+   <!-- Wrapper for slides -->
+   <div class="carousel-inner" role="listbox">
+     <div class="item active">
+       <img src="..." alt="...">
+       <div class="carousel-caption">
+         ...
+       </div>
+     </div>
+     <div class="item">
+       <img src="..." alt="...">
+       <div class="carousel-caption">
+         ...
+       </div>
+     </div>
+     ...
+   </div>
+
+   <!-- Controls -->
+   <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+     <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+     <span class="sr-only">Previous</span>
+   </a>
+   <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+     <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+     <span class="sr-only">Next</span>
+   </a>
+ </div>
+ Accessibility issue
+ The carousel component is generally not compliant with accessibility standards. If you need to be compliant, please consider other options for presenting your content.
+
+ Transition animations not supported in Internet Explorer 8 & 9
+ Bootstrap exclusively uses CSS3 for its animations, but Internet Explorer 8 & 9 don't support the necessary CSS properties. Thus, there are no slide transition animations when using these browsers. We have intentionally decided not to include jQuery-based fallbacks for the transitions.
+
+ Initial active element required
+ The .active class needs to be added to one of the slides. Otherwise, the carousel will not be visible.
+
+ Glyphicon icons not necessary
+ The .glyphicon .glyphicon-chevron-left and .glyphicon .glyphicon-chevron-right classes are not necessarily needed for the controls. Bootstrap provides .icon-prev and .icon-next as plain unicode alternatives.
+
+ Optional captions
+ Add captions to your slides easily with the .carousel-caption element within any .item. Place just about any optional HTML within there and it will be automatically aligned and formatted.
+
+  
+ 900x500
+ Second slide label
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+ PreviousNext
+ <div class="item">
+   <img src="..." alt="...">
+   <div class="carousel-caption">
+     <h3>...</h3>
+     <p>...</p>
+   </div>
+ </div>
+ Usage
+ Multiple carousels
+ Carousels require the use of an id on the outermost container (the .carousel) for carousel controls to function properly. When adding multiple carousels, or when changing a carousel's id, be sure to update the relevant controls.
+
+ Via data attributes
+ Use data attributes to easily control the position of the carousel. data-slide accepts the keywords prev or next, which alters the slide position relative to its current position. Alternatively, use data-slide-to to pass a raw slide index to the carousel data-slide-to="2", which shifts the slide position to a particular index beginning with 0.
+
+ The data-ride="carousel" attribute is used to mark a carousel as animating starting at page load. It cannot be used in combination with (redundant and unnecessary) explicit JavaScript initialization of the same carousel.
+
+ Via JavaScript
+ Call carousel manually with:
+
+ $('.carousel').carousel()
+ Options
+ Options can be passed via data attributes or JavaScript. For data attributes, append the option name to data-, as in data-interval="".
+
+ Name	type	default	description
+ interval	number	5000	The amount of time to delay between automatically cycling an item. If false, carousel will not automatically cycle.
+ pause	string | null	"hover"	If set to "hover", pauses the cycling of the carousel on mouseenter and resumes the cycling of the carousel on mouseleave. If set to null, hovering over the carousel won't pause it.
+ wrap	boolean	true	Whether the carousel should cycle continuously or have hard stops.
+ keyboard	boolean	true	Whether the carousel should react to keyboard events.
+ Methods
+ .carousel(options)
+ Initializes the carousel with an optional options object and starts cycling through items.
+
+ $('.carousel').carousel({
+   interval: 2000
+ })
+ .carousel('cycle')
+ Cycles through the carousel items from left to right.
+
+ .carousel('pause')
+ Stops the carousel from cycling through items.
+
+ .carousel(number)
+ Cycles the carousel to a particular frame (0 based, similar to an array).
+
+ .carousel('prev')
+ Cycles to the previous item.
+
+ .carousel('next')
+ Cycles to the next item.
+
+ Events
+ Bootstrap's carousel class exposes two events for hooking into carousel functionality.
+
+ Both events have the following additional properties:
+
+ direction: The direction in which the carousel is sliding (either "left" or "right").
+ relatedTarget: The DOM element that is being slid into place as the active item.
+ All carousel events are fired at the carousel itself (i.e. at the <div class="carousel">).
+
+ Event Type	Description
+ slide.bs.carousel	This event fires immediately when the slide instance method is invoked.
+ slid.bs.carousel	This event is fired when the carousel has completed its slide transition.
+ $('#myCarousel').on('slide.bs.carousel', function () {
+   // do something…
+ })
+ Affix affix.js
+ Example
+ The affix plugin toggles position: fixed; on and off, emulating the effect found with position: sticky;. The subnavigation on the right is a live demo of the affix plugin.
+
+ Usage
+ Use the affix plugin via data attributes or manually with your own JavaScript. In both situations, you must provide CSS for the positioning and width of your affixed content.
+
+ Note: Do not use the affix plugin on an element contained in a relatively positioned element, such as a pulled or pushed column, due to a Safari rendering bug.
+
+ Positioning via CSS
+ The affix plugin toggles between three classes, each representing a particular state: .affix, .affix-top, and .affix-bottom. You must provide the styles, with the exception of position: fixed; on .affix, for these classes yourself (independent of this plugin) to handle the actual positions.
+
+ Here's how the affix plugin works:
+
+ To start, the plugin adds .affix-top to indicate the element is in its top-most position. At this point no CSS positioning is required.
+ Scrolling past the element you want affixed should trigger the actual affixing. This is where .affix replaces .affix-top and sets position: fixed; (provided by Bootstrap's CSS).
+ If a bottom offset is defined, scrolling past it should replace .affix with .affix-bottom. Since offsets are optional, setting one requires you to set the appropriate CSS. In this case, add position: absolute; when necessary. The plugin uses the data attribute or JavaScript option to determine where to position the element from there.
+ Follow the above steps to set your CSS for either of the usage options below.
+
+ Via data attributes
+ To easily add affix behavior to any element, just add data-spy="affix" to the element you want to spy on. Use offsets to define when to toggle the pinning of an element.
+
+ <div data-spy="affix" data-offset-top="60" data-offset-bottom="200">
+   ...
+ </div>
+ Via JavaScript
+ Call the affix plugin via JavaScript:
+
+ $('#myAffix').affix({
+   offset: {
+     top: 100,
+     bottom: function () {
+       return (this.bottom = $('.footer').outerHeight(true))
+     }
+   }
+ })
+ Options
+ Options can be passed via data attributes or JavaScript. For data attributes, append the option name to data-, as in data-offset-top="200".
+
+ Name	type	default	description
+ offset	number | function | object	10	Pixels to offset from screen when calculating position of scroll. If a single number is provided, the offset will be applied in both top and bottom directions. To provide a unique, bottom and top offset just provide an object offset: { top: 10 } or offset: { top: 10, bottom: 5 }. Use a function when you need to dynamically calculate an offset.
+ target	selector | node | jQuery element	the window object	Specifies the target element of the affix.
+ Methods
+ .affix(options)
+ Activates your content as affixed content. Accepts an optional options object.
+
+ $('#myAffix').affix({
+   offset: 15
+ })
+ .affix('checkPosition')
+ Recalculates the state of the affix based on the dimensions, position, and scroll position of the relevant elements. The .affix, .affix-top, and .affix-bottom classes are added to or removed from the affixed content according to the new state. This method needs to be called whenever the dimensions of the affixed content or the target element are changed, to ensure correct positioning of the affixed content.
+
+ $('#myAffix').affix('checkPosition')
+ Events
+ Bootstrap's affix plugin exposes a few events for hooking into affix functionality.
+
+ Event Type	Description
+ affix.bs.affix	This event fires immediately before the element has been affixed.
+ affixed.bs.affix	This event is fired after the element has been affixed.
+ affix-top.bs.affix	This event fires immediately before the element has been affixed-top.
+ affixed-top.bs.affix	This event is fired after the element has been affixed-top.
+ affix-bottom.bs.affix	This event fires immediately before the element has been affixed-bottom.
+ affixed-bottom.bs.affix	This event is fired after the element has been affixed-bottom.
+** Customize https://v3.bootcss.com/customize/
+ 

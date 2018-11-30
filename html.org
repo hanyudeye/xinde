@@ -1,88 +1,32 @@
-* html layer
-** web beautify
-* web移动开发最佳实践之html篇
-一、前言
+* Html
+** 模板  
+   #+BEGIN_SRC html
+     <!DOCTYPE html>
+     <html lang="en">
+         <head>
+             <meta charset="utf-8">
+             <meta name="viewport" content="width=device-width,
+                 initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,
+                 user-scalable=no">
+             <title>Heading</title>
+             <link href="favicon.ico" rel="icon" type="image/x-icon">
+             <link rel="stylesheet" href="css/app.css">
+             <style type="text/css">
+             </style>
+         </head>
+         <body>
+             <h1>Heading</h1>
+             <p>The quick brown fox jumps over the lazy dog.</p>
+             <script src="js/app.js"></script>
+         </body>
+     </html>
+   #+END_SRC
 
-　　在目前的移动应用开发大潮下，使用web技术进行移动应用开发正变得越来越流行，它主要使用html5、css3、js等技术，在跨平台性、可移植性方面具有无可比拟的优势，特别适合开发对性能要求不太高、项目不太庞大的应用。这对于有过web经验及刚入门移动应用的同学来说，绝对是福音。
-
-　　接下来的几篇文章主要介绍使用web技术进行移动应用开发时，应遵循的一些‘最佳实践’。这里所说的最佳实践其实就是一些建议，它可以让你的程序更加高效，涉及到代码风格、标准等，例如缩进、空格、行宽、命名、代码样式、变量声明和使用……随着开发经验的丰富，我会逐步更新这些文章。
-
-　　使用‘最佳实践’的好处：
-
-提高性能（使用更少的CPU和带宽）
-提高跨浏览器的兼容性
-提高代码的可维护性（这对于较大的项目和团队尤其重要）
-提高代码可读性，以利于日后的审查和重构
-有利于自动化任务实施，如构建脚本，自动化测试
-更容易调试，节省时间，减少成本
-二、html概述
-
-　　html即超文本标记语言（Hyper Text Markup Language），它并不是一种编程语言，而是使用一套标记标签来描述网页。它的主要功能是展现网页内容。
-
-　　在经历了几代的标准的进化后，html5是目前的最新标准，而且正往这个方向大力推进。下面几个章节中，将重点介绍使用html过程中的最佳实践方案。这里主要参考了黑莓10的开发指南和W3C标准。
-
-三、从模板开始
-
-　　这个，做很多事情都是差不多的。把自己常用的代码片段保存为一个模板，随时调用，不仅节省时间而且能加快开发进度。写重复的代码是没有意义的，因此当你创建了一个可以重用的基本结构时，就把它保存下来，供日后复用，这样你的效率就越来越高。一个html模板应该包括web页面的典型元素。比如：
-
-复制代码
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, 
-            initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, 
-            user-scalable=no">
-        <title>Heading</title>
-        <link href="favicon.ico" rel="icon" type="image/x-icon">
-        <link rel="stylesheet" href="css/app.css">
-        <style type="text/css">
-        </style>
-    </head>
-    <body>
-        <h1>Heading</h1>
-        <p>The quick brown fox jumps over the lazy dog.</p>
-        <script src="js/app.js"></script>
-    </body>
-</html>
-复制代码
-这个模板中，有几个注意点：
-
-这个应用会设置为全屏显示，因为它包含了以下meta标签：
-initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0
-Zooming函数被关闭了，因为设置了：
-user-scalable=no
-为了提高性能，js脚本部分被放在了body元素的底部，关于这点会在以后的js篇中介绍。
-四、指定文档类型（document type）
-
-　　文档开头的 DOCTYPE 声明位于文档中的最前面的位置，处于<html>标签之前。它会告诉浏览器书写文档的html版本，这会影响到浏览器对内容的渲染。还有就是当你进行html标准校验时，校验器也会根据这个 DOCTYPE 来选择相应的html版本，以确定所写代码是否符合规范。
-
-　　如果你没有包括 DOCTYPE 的声明，那么不同的浏览器就可能出现不同的渲染结果。使用这个声明会要求浏览器使用相应的标准来解析页面内容。
-
-　　h5是目前的标准，包含了大量的新特性，声明是很简单的：
-
-<!DOCTYPE html>
-　　对于一些较老的设备和浏览器，可能需要声明为其他的类型(HTML 4.01 Strict or XHTML 1.0 Strict)：
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "
-http://www.w3.org/TR/html4/strict.dtd">
-<!DOCTYPE html
-PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-五、把程序设计为离线下仍然可以使用
-
-　　能随时随地地使用手机设备上应用程序的需求正越来越强，即使在离线状况下。对于web应用，你可以使用h5的缓存功能W3C HTML5 application cache来：
-
-离线下仍然可以使用
-把资源缓存在本地以提高速度
-仅下载更新的或改变的资源以减少加载次数和数据使用
-　　程序缓存（即AppCache）可以让你指定缓存的文件，这样即使离线仍然可以访问。当然你还可以利用开发平台提供的API来获取本地存取文件的权限。
-
+全屏显示，因为它包含了以下meta标签： initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0 Zooming函数被关闭了，因为设置了： user-scalable=no
+** 把程序设计为离线下仍然可以使用
 　　1.创建一个缓存清单（manifest）
-
 　　　　为了使用AppCache，你的web应用必须为浏览器提供一个"manifest"，这个清单要列举出在离线情况下你的应用需要的所有资源。页面第一次加载后，"manifest"中列举的资源就会从程序缓存中加载，而不是web服务器。"manifest"其实就是一个以".appcache"为后缀的文本文件（配置文件）。例如：
-
-复制代码
+#+BEGIN_SRC html
 CACHE MANIFEST
 # 2012-03-08:v1
  
@@ -98,11 +42,12 @@ FALLBACK:
 # All other resources require an online connection
 NETWORK:
 *
- 
 # Additional cached resources
 CACHE:
 img/logo.png
-复制代码
+
+#+END_SRC
+
 　　　　你的manifest文件的mime-type必须是"text/cache-manifest"，因此你需要在web服务器添加一行配置。例如，在Apache的httpd.conf文件添加一行：
 
 AddType text/cache-manifest .appcache
@@ -233,3 +178,524 @@ if (window.addEventListener) {
 } else {
     window.onload = lazyload;
 }
+#+TITLE: HTML layer
+
+[[file:img/html.png]]
+
+* Html layer This layer adds support for editing HTML and CSS.
+** 特点:
+- 编辑文件 Editing HTML and CSS file using [[http://web-mode.org/][web-mode]]
+- 支持编辑 sass文件 Support for Sass/Scss and Less files
+- 支持生成html代码Generate HTML and CSS coding using [[https://github.com/smihica/emmet-mode][emmet-mode]]
+- 导航Tags navigation on key ~%~ using [[https://github.com/redguardtoo/evil-matchit][evil-matchit]]
+- 支持模板Support for editing Slim and Pug templates using [[https://github.com/slim-template/emacs-slim][slim-mode]] and [[https://github.com/hlissner/emacs-pug-mode][pug-mode]]
+- 预览模式See the effects of typed HTML using [[https://github.com/skeeto/impatient-mode][impatient-mode]]
+- sass快速提示imenu support for CSS and Sass through [[https://github.com/hlissner/emacs-counsel-css][counsel-css]]
+- 代码格式Formatting with [[https://github.com/yasuyk/web-beautify][web-beautify]]
+** 安装
+ To use this configuration layer, add it to your =~/.spacemacs=. You will need to
+ add =html= to the existing =dotspacemacs-configuration-layers= list in this
+ file.
+
+ 代码检查
+ SCSS linting requires SCSS-Lint version >= 0.43.0. You can get it from GitHub:
+
+ #+BEGIN_SRC command-line
+   gem install specific_install
+   gem specific_install https://github.com/brigade/scss-lint.git
+   gem specific_install https://github.com/Sweetchuck/scss_lint_reporter_checkstyle.git
+ #+END_SRC
+
+** web-beautify
+   See [[file:../../+tools/web-beautify/README.org][web-beautify layer]] documentation.
+** prettier (支持很多插件的代码格式化)
+See [[file:../../+tools/prettier/README.org][prettier layer]] documentation.
+
+** 选择格式化插件 Choosing a formatter
+To choose a formatter, set the layer variable =web-fmt-tool=:
+
+#+BEGIN_SRC elisp
+  (html :variables web-fmt-tool 'web-beautify)
+#+END_SRC
+
+Formatter can be chosen on a per project basis using directory local variables
+(files named =.dir-locals.el= at the root of a project), an example to use the
+=prettier= formatter:
+
+#+BEGIN_SRC elisp
+  ;;; Directory Local Variables
+  ;;; For more information see (info "(emacs) Directory Variables")
+
+  ((html-mode (web-fmt-tool . prettier)))
+#+END_SRC
+
+快速插入本地变量 *Note:* you can easily add a directory local variable with ~SPC f v d~.
+
+** 快速显示 Live display in browser
+ Use ~SPC m i~ to enable impatient mode, opening a live view of a HTML file in
+ your browser. You may wish to enable impatient mode in referenced CSS or JS
+ files, too.
+
+ When the underlying file is an HTML file, ~SPC m i~ automatically opens the page
+ in the browser. For other buffers, a list of available views can be found on
+ [[http://localhost:8080/imp]].
+
+ For more information visit the [[https://github.com/skeeto/impatient-mode/blob/master/README.md][help page on GitHub.]]
+
+** Key Bindings
+*** Web mode
+ | Key Binding | Description                                               |
+ |-------------+-----------------------------------------------------------|
+ | ~SPC m i~   | open live view in browser                                 |
+ | ~SPC m g b~ | go to the beginning of current element                    |
+ | ~SPC m g c~ | 到子标签go to the first child element                         |
+ | ~SPC m g p~ | 导航到父标签go to the parent element                                  |
+ | ~SPC m g s~ | 兄弟标签go to next sibling                                    |
+ | ~SPC m h p~ | 显示节点具体路径 show xpath of the current element                |
+ | ~SPC m r c~ | 拷贝节点clone the current element                             |
+ | ~SPC m r d~ | 删除节点delete the current element (does not delete the children) |
+ | ~SPC m r r~ | 重命名节点rename current element                               |
+ | ~SPC m r w~ | 截断节点wrap current element                                  |
+ | ~SPC m z~   | 闭合节点fold/unfold current element                           |
+ | ~%~         | evil-matchit key binding to jump to closing tag           |
+
+ A transient-state is also defined, start it with ~SPC m .~ or ~, .~
+
+ | Key Binding | Description                                                    |
+ |-------------+----------------------------------------------------------------|
+ | ~?~         | Toggle full help                                               |
+ | ~c~         | clone current element                                          |
+ | ~d~         | delete (vanish) current element (does not delete the children) |
+ | ~D~         | delete current element and children                            |
+ | ~j~         | next element                                                   |
+ | ~J~ / ~gj~  | next sibling element                                           |
+ | ~h~         | parent element                                                 |
+ | ~k~         | previous element                                               |
+ | ~K~ / ~gk~  | previous sibling element                                       |
+ | ~l~         | first child element                                            |
+ | ~p~         | show xpath of current element                                  |
+ | ~q~         | leave the transient-state                                      |
+ | ~r~         | rename current element                                         |
+ | ~w~         | wrap current element                                           |
+
+*** CSS/SCSS
+| Key Binding | Description                      |
+|-------------+----------------------------------|
+| ~SPC m g h~ | quickly navigate CSS rules       |
+| ~SPC m z c~ | fold css statement to one line   |
+| ~SPC m z o~ | unfold css statement to one line |
+** emmet-mode
+   Usage
+   Place point in a emmet snippet and press C-j to expand it (or alternatively, alias your preferred keystroke to M-x emmet-expand-line) and you'll transform your snippet into the appropriate tag structure.
+
+HTML abbreviations
+Basic tags
+a                        <a href=""></a>
+a.x                      <a class="x" href=""></a>
+a#q.x                    <a id="q" class="x" href=""></a>
+a#q.x.y.z                <a id="q" class="x y z" href=""></a>
+#q                       <div id="q">
+                         </div>
+.x                       <div class="x">
+                         </div>
+#q.x                     <div id="q" class="x">
+                         </div>
+#q.x.y.z                 <div id="q" class="x y z">
+                         </div>
+Empty tags
+a/                       <a href=""/>
+a/.x                     <a class="x" href=""/>
+a/#q.x                   <a id="q" class="x" href=""/>
+a/#q.x.y.z               <a id="q" class="x y z" href=""/>
+Self-closing tags
+input[type=text]         <input type="text" name="" value=""/>
+img                      <img src="" alt=""/>
+img>metadata/*2          <img src="" alt="">
+                             <metadata/>
+                             <metadata/>
+                         </img>
+Siblings
+a+b                      <a href=""></a>
+                         <b></b>
+a+b+c                    <a href=""></a>
+                         <b></b>
+                         <c></c>
+a.x+b                    <a class="x" href=""></a>
+                         <b></b>
+a#q.x+b                  <a id="q" class="x" href=""></a>
+                         <b></b>
+a#q.x.y.z+b              <a id="q" class="x y z" href=""></a>
+                         <b></b>
+a#q.x.y.z+b#p.l.m.n      <a id="q" class="x y z" href=""></a>
+                         <b id="p" class="l m n"></b>
+Tag expansion
+table+                   <table>
+                             <tr>
+                                 <td>
+                                 </td>
+                             </tr>
+                         </table>
+dl+                      <dl>
+                             <dt></dt>
+                             <dd></dd>
+                         </dl>
+ul+                      <ul>
+                             <li></li>
+                         </ul>
+ul++ol+                  <ul>
+                             <li></li>
+                         </ul>
+                         <ol>
+                             <li></li>
+                         </ol>
+ul#q.x.y[m=l]            <ul id="q" class="x y" m="l">
+                             <li></li>
+                         </ul>
+Parent > child
+a>b                      <a href=""><b></b></a>
+a>b>c                    <a href=""><b><c></c></b></a>
+a.x>b                    <a class="x" href=""><b></b></a>
+a#q.x>b                  <a id="q" class="x" href=""><b></b></a>
+a#q.x.y.z>b              <a id="q" class="x y z" href=""><b></b></a>
+a#q.x.y.z>b#p.l.m.n      <a id="q" class="x y z" href=""><b id="p" class="l m n"></b></a>
+#q>.x                    <div id="q">
+                             <div class="x">
+                             </div>
+                         </div>
+a>b+c                    <a href="">
+                             <b></b>
+                             <c></c>
+                         </a>
+a>b+c>d                  <a href="">
+                             <b></b>
+                             <c><d></d></c>
+                         </a>
+Climb-up
+a>b^c                    <a href=""><b></b></a><c></c>
+a>b>c^d                  <a href="">
+                             <b><c></c></b>
+                             <d></d>
+                         </a>
+a>b>c^^d                 <a href=""><b><c></c></b></a>
+                         <d></d>
+Multiplication
+a*1                      <a href=""></a>
+a*2                      <a href=""></a>
+                         <a href=""></a>
+a/*2                     <a href=""/>
+                         <a href=""/>
+a*2+b*2                  <a href=""></a>
+                         <a href=""></a>
+                         <b></b>
+                         <b></b>
+a*2>b*2                  <a href="">
+                             <b></b>
+                             <b></b>
+                         </a>
+                         <a href="">
+                             <b></b>
+                             <b></b>
+                         </a>
+a>b*2                    <a href="">
+                             <b></b>
+                             <b></b>
+                         </a>
+a#q.x>b#q.x*2            <a id="q" class="x" href="">
+                             <b id="q" class="x"></b>
+                             <b id="q" class="x"></b>
+                         </a>
+a#q.x>b/#q.x*2           <a id="q" class="x" href="">
+                             <b id="q" class="x"/>
+                             <b id="q" class="x"/>
+                         </a>
+Item numbering
+ul>li.item$*3            <ul>
+                             <li class="item1"></li>
+                             <li class="item2"></li>
+                             <li class="item3"></li>
+                         </ul>
+ul>li.item$$$*3          <ul>
+                             <li class="item001"></li>
+                             <li class="item002"></li>
+                             <li class="item003"></li>
+                         </ul>
+ul>li.item$@-*3          <ul>
+                             <li class="item3"></li>
+                             <li class="item2"></li>
+                             <li class="item1"></li>
+                         </ul>
+ul>li.item$@3*3          <ul>
+                             <li class="item3"></li>
+                             <li class="item4"></li>
+                             <li class="item5"></li>
+                         </ul>
+ul>li.item$@-3*3         <ul>
+                             <li class="item5"></li>
+                             <li class="item4"></li>
+                             <li class="item3"></li>
+                         </ul>
+a$b$@-/*5                <a1b5/>
+                         <a2b4/>
+                         <a3b3/>
+                         <a4b2/>
+                         <a5b1/>
+a.$*2>b.$$@-*3           <a class=\"1\" href="">
+                             <b class=\"03\"></b>
+                             <b class=\"02\"></b>
+                             <b class=\"01\"></b>
+                         </a>
+                         <a class=\"2\" href="">
+                             <b class=\"03\"></b>
+                             <b class=\"02\"></b>
+                             <b class=\"01\"></b>
+                         </a>
+(div>(a#id$$*2)+b.c$@-3+c#d$)*2
+                         <div>
+                             <a id=\"id01\" href=""></a>
+                             <a id=\"id02\" href=""></a>
+                             <b class=\"c4\"></b>
+                             <c id=\"d1\"></c>
+                         </div>
+                         <div>
+                             <a id=\"id01\" href=""></a>
+                             <a id=\"id02\" href=""></a>
+                             <b class=\"c3\"></b>
+                             <c id=\"d2\"></c>
+                         </div>
+ul>li.c${price: 10\\$}*3 <ul>
+                             <li class=\"c1\">price: 10$</li>
+                             <li class=\"c2\">price: 10$</li>
+                             <li class=\"c3\">price: 10$</li>
+                         </ul>
+Properties
+b[x]                     <b x=""></b>
+b[x=]                    <b x=""></b>
+b[x=""]                  <b x=""></b>
+b[x=y]                   <b x="y"></b>
+b[x="y"]                 <b x="y"></b>
+b[x="()"]                <b x="()"></b>
+b[x m]                   <b x="" m=""></b>
+b[x= m=""]               <b x="" m=""></b>
+b[x=y m=l]               <b x="y" m="l"></b>
+b/[x=y m=l]              <b x="y" m="l"/>
+b#foo[x=y m=l]           <b id="foo" x="y" m="l"></b>
+b.foo[x=y m=l]           <b class="foo" x="y" m="l"></b>
+b#foo.bar.mu[x=y m=l]    <b id="foo" class="bar mu" x="y" m="l"></b>
+b/#foo.bar.mu[x=y m=l]   <b id="foo" class="bar mu" x="y" m="l"/>
+b[x=y]+b                 <b x="y"></b>
+                         <b></b>
+b[x=y]+b[x=y]            <b x="y"></b>
+                         <b x="y"></b>
+b[x=y]>b                 <b x="y"><b></b></b>
+b[x=y]>b[x=y]            <b x="y"><b x="y"></b></b>
+b[x=y]>b[x=y]+c[x=y]     <b x="y">
+                             <b x="y"></b>
+                             <c x="y"></c>
+                         </b>
+Parentheses
+(a)                      <a href=""></a>
+(a)+(b)                  <a href=""></a>
+                         <b></b>
+a>(b)                    <a href=""><b></b></a>
+(a>b)>c                  <a href=""><b></b></a>
+(a>b)+c                  <a href=""><b></b></a>
+                         <c></c>
+z+(a>b)+c+k              <z></z>
+                         <a href=""><b></b></a>
+                         <c></c>
+                         <k></k>
+(x)*2                    <x></x>
+                         <x></x>
+((x)*2)                  <x></x>
+                         <x></x>
+((x))*2                  <x></x>
+                         <x></x>
+(x>b)*2                  <x><b></b></x>
+                         <x><b></b></x>
+(x+b)*2                  <x></x>
+                         <b></b>
+                         <x></x>
+                         <b></b>
+Text
+a{Click me}              <a href="">Click me</a>
+a>{Click me}*2           <a href="">
+                             Click me
+                             Click me
+                         </a>
+x{click}+b{here}         <x>click</x>
+                         <b>here</b>
+span>{click}+b{here}     <span>
+                             click
+                             <b>here</b>
+                         </span>
+p>{Click}+span{here}+{ to continue}
+                         <p>
+                             Click
+                             <span>here</span>
+                              to continue
+                         </p>
+p{Click}+span{here}+{ to continue}
+                         <p>
+                             Click
+                         </p>
+                         <span>here</span>
+                          to continue
+p{\{Escape brackets!\} and \\}
+                         <p>{Escape brackets} and \</p>
+Lorem-Ipsum generator
+lorem                    Diam, vulputate ut pharetra sit amet, aliquam id! Egestas sed tempus, urna et pharetra pharetra, massa massa ultricies mi, quis hendrerit dolor magna eget est lorem ipsum dolor sit amet!
+lorem5                   Hendrerit gravida rutrum quisque non?
+ipsum3                   Viverra ipsum nunc.
+p*3>lorem3               <p>Pellentesque elit eget?</p>
+                         <p>Sed odio morbi?</p>
+                         <p>Eget arcu dictum!</p>
+ul.list>ipsum3*3         <ul class=\"list\">
+                             Nam libero justo.
+                             Pellentesque habitant morbi?
+                             Enim blandit volutpat.
+                         </ul>
+ul.list>ipsum3.itm*3     <ul class=\"list\">
+                             <div class=\"itm\">Urna condimentum mattis.</div> <!-- emmet-mode doesn't support implicit tag name resolver -->
+                             <div class=\"itm\">Sed turpis tincidunt.</div>
+                             <div class=\"itm\">Faucibus turpis in?</div>
+                         </ul>
+ul.list>(li.itm>lorem3)*3
+                         <ul class=\"list\">
+                             <li class=\"itm\">Est pellentesque elit.</li>
+                             <li class=\"itm\">In nulla posuere.</li>
+                             <li class=\"itm\">Felis eget nunc.</li>
+                         </ul>
+Filter: HTML with comments
+a.b|c                    <!-- .b -->
+                         <a class="b" href=""></a>
+                         <!-- /.b -->
+#a>.b|c                  <!-- #a -->
+                         <div id="a">
+                             <!-- .b -->
+                             <div class="b">
+                             </div>
+                             <!-- /.b -->
+                         </div>
+                         <!-- /#a -->
+Filter: HAML
+a|haml                   %a
+a#q.x.y.z|haml           %a#q.x.y.z
+a#q.x[x=y m=l]|haml      %a#q.x{:x => "y", :m => "l"}
+div|haml                 %div
+div.footer|haml          .footer
+.footer|haml             .footer
+p>{txt}+a[href=#]+br|haml  %p
+                             txt
+                             %a{:href => "#"}
+                             %br
+Filter: Hiccup
+a|hic                    [:a]
+a#q.x.y.z|hic            [:a#q.x.y.z]
+a#q.x[x=y m=l]|hic       [:a#q.x {:x "y", :m "l"}]
+.footer|hic              [:div.footer]
+p>a[href=#]+br|hic       [:p
+                             [:a {:href "#"}]
+                             [:br]]
+#q>(a*2>b{x})+p>b|hic    [:div#q
+                             [:a [:b "x"]]
+                             [:a [:b "x"]]
+                             [:p
+                                 [:b]]]
+Filter: escape
+script[src=&quot;]|e     &lt;script src="&amp;quot;"&gt;
+                         &lt;/script&gt;
+Aliases
+html:5                   <!doctype html>
+                         <html lang="en">
+                           <head>
+                             <meta charset="UTF-8"/>
+                             <title>Document</title>
+                           </head>
+                           <body>
+                           </body>
+                         </html>
+
+html:xt                  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+                         <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+                           <head>
+                             <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
+                             <title>Document</title>
+                           </head>
+                         </html>
+
+meta:vp                  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+See HTML section of cheat-sheet to find more aliases.
+CSS abbreviations
+Basic Usage
+p1-2!+m10e+bd1#2s        padding: 1px 2px !important;
+                         margin: 10em;
+                         border: 1px #222 solid;
+Keywords
+m                        margin: ;
+bg+                      background: #fff url() 0 0 no-repeat;
+c                        color: #000;
+See CSS section of cheat-sheet to find more keywords.
+Values
+separate each value by '-' or ' ';
+
+m1-2-3-4                 margin: 1px 2px 3px 4px;
+m1 2 3 4                 margin: 1px 2px 3px 4px;
+m1--2                    margin: 1px -2px;
+m1 -2                    margin: 1px -2px;
+
+bg+#c /back.png 10 20 repeat-x
+                         background: #cccccc url(/back.png) 10px 20px repeat-x;
+Multiple property definition
+concatenate each property by '+';
+
+m10+p0                   margin: 10px;
+                         padding: 0px;
+
+bg++c#0                  background: #fff url() 0 0 no-repeat;
+                         color: #000;
+
+m0+p10+c#f+fw:b+w100+h20+bg#f00
+                         margin: 0px;
+                         padding: 10px;
+                         color: #fff;
+                         font-weight: bold;
+                         width: 100px;
+                         height: 20px;
+                         background: #f00;
+Value units
+m10                      margin: 10px;
+m1.5                     margin: 1.5em;
+m1.5ex                   margin: 1.5ex;
+m1.5x                    margin: 1.5ex;
+m10foo                   margin: 10foo;
+m10ex20em                margin: 10ex 20em;
+m10x20e                  margin: 10ex 20em;
+m10x-5                   margin: 10ex -5px;
+w100p                    width: 100%;
+m10p30e5x                margin: 10% 30em 5ex;
+Unit-aliases
+
+  e                        em
+  p                        %
+  x                        ex
+  r                        rem
+Unitless property
+lh2                      line-height: 2;
+fw400                    font-weight: 400;
+Color abbreviations
+c#3                      color: #333;
+bd5#0s                   border: 5px #000 solid; /* s: solid, t: dotted, n: none, h: hidden */
+bd5#20rgb                border: 5px rgb(32,32,32);
+bd5#20rgbt               border: 5px rgb(32,32,32) dotted;
+Color expansion
+
+  #1                       #111
+  #e0                      #e0e0e0
+  #fc0                     #fc0
+Important
+c#3!+bdrs2!              color: #333 !important;
+                         border-radius: 2px !important;
+** slim-mode
+   安装 gem install slim
+
+e
