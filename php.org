@@ -1435,13 +1435,10 @@ $this->output->delete_cache('/foo/bar');
 *** URI 安全
 : CodeIgniter 严格限制 URI 中允许出现的字符，以此来减少恶意数据传到你的应用程序的可能性。
 * php layers
-  执行区域  php-send-region
   查网页文档(这个好点, 查关键字的) C-c C-f         php-search-documentation
   看手册    C-c RET         php-browse-manual
   标记函数             mark-defun
   跳到定义 ~SPC m g g~ 
-  返回  ~C-t~      
-
 ** 初始化工程 php-extras
 1. Run the following
   #+BEGIN_SRC shell
@@ -1450,7 +1447,6 @@ $this->output->delete_cache('/foo/bar');
   #+END_SRC
 2.在 spacemacs
   = ac-php-remake-tags-all =
-
 * 例子
 ** 简单文件上传 
   注意路径都是相对路径，绝对路径 必须是/home/wuming 这种的，要么用常量 ROOT 这种
@@ -1832,4 +1828,123 @@ var_dump($tree);
 =======
 * 数据库调试
   echo mysql_errno();  
-echo mysql_error();
+  echo mysql_error();
+* phpunit 最新https://phar.phpunit.de/
+$ wget http://phar.phpunit.cn/phpunit-6.2.phar
+$ chmod +x phpunit-6.2.phar
+$ sudo mv phpunit-6.2.phar /usr/local/bin/phpunit
+$ phpunit --version
+* 数据库操作
+1.链接数据库通用方法：conn.php 
+<?php 
+//第一步：链接数据库 
+$conn=@mysql_connect("localhost:3306","wuming","wuming")or die ("mysql链接失败"); 
+
+//第二步: 选择指定的数据库，设置字符集 
+@mysql_select_db("test",$conn) or die ("db链接失败".mysql_error()); 
+print_r($conn);
+mysql_query('SET NAMES UTF8')or die ("字符集设置错误"); 
+?> 
+
+2.增加 add.php 
+<?php 
+include("conn.php");//引入链接数据库 
+if(!empty($_POST['sub'])){ 
+$title=$_POST['title']; 
+$con=$_POST['con']; 
+echo $sql="insert into news(id,title,dates,contents) value (null,'$title',now(),'$con')" ; 
+mysql_query($sql); 
+echo"插入成功"; 
+} 
+?> 
+<form action="add.php" method="post"> 
+标题: <input type="text" name="title"><br> 
+内容: <textarea rows="5" cols="50" name="con"></textarea><br> 
+<input type="submit" name="sub" value="发表"> 
+</form> 
+
+3.删除del.php 
+<?php 
+include("conn.php");//引入链接数据库<pre name="code" class="html"><?php 
+include("conn.php");//引入链接数据库 
+if(!empty ($_GET['id'])){ 
+$sql="select * from news where id='".$_GET['id']."'"; 
+$query=mysql_query($sql); 
+$rs=mysql_fetch_array($query); 
+} 
+if(!empty($_POST['sub'])){ 
+$title=$_POST['title']; 
+$con=$_POST['con']; 
+$hid=$_POST['hid']; 
+$sql="update news set title='$title',contents='$con' where id='$hid' limit 1 "; 
+mysql_query($sql); 
+echo "<script> alert('更新成功'); location.href='index.php'</script>"; 
+echo"更新成功"; 
+} 
+?> 
+<form action="edit.php" method="post"> 
+<input type="hidden" name="hid" value="<?php echo $rs['id']?>"/> 
+标题: <input type="text" name="title" value="<?php echo $rs['title']?>"><br> 
+内容: <textarea rows="5" cols="50" name="con"><?php echo $rs['contents']?></textarea><br> 
+<input type="submit" name="sub" value="发表"> 
+</form></pre><br> 
+if(!empty($_GET['del'])){ $d=$_GET['del']; $sql="delete from news where id ='$d'"; } $query=mysql_query($sql); echo "删除成功"; ?><p></p> 
+<pre></pre> 
+<br> 
+4，改 edit.php页面 
+<p></p> 
+<p><br> 
+</p> 
+<p></p><pre name="code" class="html"><?php 
+include("conn.php");//引入链接数据库 
+if(!empty ($_GET['id'])){ 
+$sql="select * from news where id='".$_GET['id']."'"; 
+$query=mysql_query($sql); 
+$rs=mysql_fetch_array($query); 
+} 
+if(!empty($_POST['sub'])){ 
+$title=$_POST['title']; 
+$con=$_POST['con']; 
+$hid=$_POST['hid']; 
+$sql="update news set title='$title',contents='$con' where id='$hid' limit 1 "; 
+mysql_query($sql); 
+echo "<script> alert('更新成功'); location.href='index.php'</script>"; 
+echo"更新成功"; 
+} 
+?> 
+<form action="edit.php" method="post"> 
+<input type="hidden" name="hid" value="<?php echo $rs['id']?>"/> 
+标题: <input type="text" name="title" value="<?php echo $rs['title']?>"><br> 
+内容: <textarea rows="5" cols="50" name="con"><?php echo $rs['contents']?></textarea><br> 
+<input type="submit" name="sub" value="发表"> 
+</form></pre><br> 
+5.查，列表页面<pre name="code" class="html"><a href="add.php">添加内容</a> 
+<form> 
+<input type="text" name="keys" /> 
+<input type="submit" name="subs" value="搜索"/> 
+</form> 
+<?php 
+include("conn.php");//引入链接数据库 
+if(!empty($_GET['keys'])){ 
+$w=" title like '%".$_GET['keys']."%'"; 
+}else{ 
+$w=1; 
+} 
+$sql="select * from news where $w order by id desc"; 
+$query=mysql_query($sql); 
+while($rs=mysql_fetch_array($query)){ 
+?> 
+<h2>标题:<a href="view.php?id=<?php echo $rs['id'] ?>"><?php echo $rs['title'] ?></a> <a href="edit.php?id=<?php echo $rs['id'] ?>">编辑</a>｜｜<a href="del.php?del=<?php echo $rs['id'] ?>">删除</a></h2> 
+<li><?php echo $rs['dates'] ?></li> 
+<p><?php echo $rs['contents'] ?></p> 
+<hr> 
+<?php 
+} 
+
+
+
+
+* hello
+  nice to meet you 
+  how do you dou 
+  if you want to get some thing better

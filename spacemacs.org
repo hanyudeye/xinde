@@ -1,31 +1,11 @@
-* spacemacs 全功能编辑器
-** 显示
-*** 书签  bookmarks
-*** 集中显示选中的文本
-    | 〜SPC nf〜 | 将缓冲区缩小到当前函数   | narrow-to-defun |
-    | 〜SPC np〜 | 将缓冲区缩小到可见页面   |                 |
-    | 〜SPC nr〜 | 将缓冲区缩小到选定的文本 |                 |
-    | 〜SPC nw〜 | 加宽，即显示整个缓冲区   |                 |
-*** 字体缩放 
-    scale zoom-frm
-    text-scale
-*** 移动光标
-    - 顶部 top
-    - 底部 bottom
-*** 行内移动光标
-    - 行首 evil-digit-argument-or-evil-org-beginning-of-line
-    - 一个词 evil-forward-word-begin
-*** 屏幕滚动
-    - 滚动一屏 evil-scroll-page-down
-    - 滚动一行 evil-scroll-line-down
-*** 高亮当前行 (global-hl-line-mode 1)
+* spacemacs 黑板
 ** 编程功能
 *** flycheck(错误检查）
     | Key Binding | Description                                                           |
     |-------------+-----------------------------------------------------------------------|
     | ~SPC t s~   | toggle flycheck                                                       |
     | ~SPC e c~   | clear all errors                                                      |
-    | ~SPC e h~   |语法检查算法描述 describe a flycheck checker                                   |
+    | ~SPC e h~   | 语法检查算法描述 describe a flycheck checker                          |
     | ~SPC e l~   | toggle the display of the =flycheck= list of errors/warnings          |
     | ~SPC e n~   | go to the next error                                                  |
     | ~SPC e p~   | go to the previous error                                              |
@@ -358,7 +338,7 @@
 
      If the language is not directly supported by =gtags=, and you have not set the
      GTAGSLABEL environment variable, use this command instead:
-
+     如果不支持某语言，用插件来增强
    #+BEGIN_SRC sh
      gtags --gtagslabel=pygments
    #+END_SRC
@@ -393,6 +373,7 @@
    - windows-scripts (.bat .cmd files)
 
 ******* Universal ctags languages
+        如果是最新的，还会增加以下语言
    If instead you installed you the newer/beta =universal ctags= and use that
    as the backend (i.e., GTAGSLABEL=ctags or --gtagslabel=ctags) the following
    additional languages will have tags created for them:
@@ -783,18 +764,6 @@
 ** 环境变量
    spacemacs/edit-env 
    配置文件  ~/.spacemacs.env
-** 编译
-   Spacemacs binds a few commands to support compiling a project.
-
-   | Key Binding | Description                    |
-   |-------------+--------------------------------|
-   | ~SPC c c~   | use =helm-make= via projectile |
-   | ~SPC c C~   | compile                        |
-   | ~SPC c d~   | close compilation window       |
-   | ~SPC c k~   | kill compilation               |
-   | ~SPC c m~   | =helm-make=                    |
-   | ~SPC c r~   | recompile                      |
-
 ** 预留前缀Reserved prefix command for user
    ~SPC o~ and ~SPC m o~ are reserved for the user. Setting key bindings behind
    these is *guaranteed* to never conflict with Spacemacs default key bindings.
@@ -1780,67 +1749,67 @@
      adding a major-mode to the variable =spacemacs-indent-sensitive-modes= in your
      =dotspacemacs/user-config= function.
 
-*** Text manipulation commands
+*** 文本操作Text manipulation commands
     Text related commands (start with ~x~):
 
-    | Key Binding   | Description                                                   |
-    |---------------+---------------------------------------------------------------|
-    | ~SPC x a &~   | align region at &                                             |
-    | ~SPC x a (~   | align region at (                                             |
-    | ~SPC x a )~   | align region at )                                             |
-    | ~SPC x a [~   | align region at [                                             |
-    | ~SPC x a ]~   | align region at ]                                             |
-    | ~SPC x a {~   | align region at {                                             |
-    | ~SPC x a }~   | align region at }                                             |
-    | ~SPC x a ​,​~   | align region at ,                                             |
-    | ~SPC x a .~   | align region at . (for numeric tables)                        |
-    | ~SPC x a :~   | align region at :                                             |
-    | ~SPC x a ;~   | align region at ;                                             |
-    | ~SPC x a =~   | align region at =                                             |
-    | ~SPC x a a~   | align region (or guessed section) using default rules         |
-    | ~SPC x a c~   | align current indentation region using default rules          |
-    | ~SPC x a l~   | left-align with evil-lion                                     |
-    | ~SPC x a L~   | right-align with evil-lion                                    |
-    | ~SPC x a r~   | align region using user-specified regexp                      |
-    | ~SPC x a m~   | align region at arithmetic operators (+-*/)                   |
-    | ~SPC x a ¦~   | align region at ¦                                             |
-    | ~SPC x c~     | count the number of chars/words/lines in the selection region |
-    | ~SPC x d w~   | delete trailing whitespaces                                   |
-    | ~SPC x d SPC~ | Delete all spaces and tabs around point, leaving one space    |
-    | ~SPC x g l~   | set languages used by translate commands                      |
-    | ~SPC x g t~   | translate current word using Google Translate                 |
-    | ~SPC x g T~   | reverse source and target languages                           |
-    | ~SPC x i c~   | change symbol style to =lowerCamelCase=                       |
-    | ~SPC x i C~   | change symbol style to =UpperCamelCase=                       |
-    | ~SPC x i i~   | cycle symbol naming styles (~i~ to keep cycling)              |
-    | ~SPC x i -~   | change symbol style to =kebab-case=                           |
-    | ~SPC x i k~   | change symbol style to =kebab-case=                           |
-    | ~SPC x i _~   | change symbol style to =under_score=                          |
-    | ~SPC x i u~   | change symbol style to =under_score=                          |
-    | ~SPC x i U~   | change symbol style to =UP_CASE=                              |
-    | ~SPC x j c~   | set the justification to center                               |
-    | ~SPC x j f~   | set the justification to full                                 |
-    | ~SPC x j l~   | set the justification to left                                 |
-    | ~SPC x j n~   | set the justification to none                                 |
-    | ~SPC x j r~   | set the justification to right                                |
-    | ~SPC x J~     | move down a line of text (enter transient state)              |
-    | ~SPC x K~     | move up a line of text (enter transient state)                |
-    | ~SPC x l d~   | duplicate line or region                                      |
-    | ~SPC x l s~   | sort lines                                                    |
-    | ~SPC x l u~   | uniquify lines                                                |
-    | ~SPC x o~     | use avy to select a link in the frame and open it             |
-    | ~SPC x O~     | use avy to select multiple links in the frame and open them   |
-    | ~SPC x t c~   | swap (transpose) the current character with the previous one  |
-    | ~SPC x t e~   | swap (transpose) the current sexp with the previous one       |
-    | ~SPC x t l~   | swap (transpose) the current line with the previous one       |
-    | ~SPC x t p~   | swap (transpose) the current paragraph with the previous one  |
-    | ~SPC x t s~   | swap (transpose) the current sentence with the previous one   |
-    | ~SPC x t w~   | swap (transpose) the current word with the previous one       |
-    | ~SPC x u~     | set the selected text to lower case                           |
-    | ~SPC x U~     | set the selected text to upper case                           |
-    | ~SPC x w c~   | count the number of occurrences per word in the select region |
-    | ~SPC x w d~   | show dictionary entry of word from wordnik.com                |
-    | ~SPC x TAB~   | indent or dedent a region rigidly                             |
+    | Key Binding   | Description                                                          |
+    |---------------+----------------------------------------------------------------------|
+    | ~SPC x a &~   | 对齐align region at &                                                |
+    | ~SPC x a (~   | align region at (                                                    |
+    | ~SPC x a )~   | align region at )                                                    |
+    | ~SPC x a [~   | align region at [                                                    |
+    | ~SPC x a ]~   | align region at ]                                                    |
+    | ~SPC x a {~   | align region at {                                                    |
+    | ~SPC x a }~   | align region at }                                                    |
+    | ~SPC x a ​,​~   | align region at ,                                                    |
+    | ~SPC x a .~   | align region at . (for numeric tables)                               |
+    | ~SPC x a :~   | align region at :                                                    |
+    | ~SPC x a ;~   | align region at ;                                                    |
+    | ~SPC x a =~   | align region at =                                                    |
+    | ~SPC x a a~   | align region (or guessed section) using default rules                |
+    | ~SPC x a c~   | align current indentation region using default rules                 |
+    | ~SPC x a l~   | left-align with evil-lion                                            |
+    | ~SPC x a L~   | right-align with evil-lion                                           |
+    | ~SPC x a r~   | align region using user-specified regexp                             |
+    | ~SPC x a m~   | align region at arithmetic operators (+-*/)                          |
+    | ~SPC x a ¦~   | align region at ¦                                                    |
+    | ~SPC x c~     | count the number of chars/words/lines in the selection region        |
+    | ~SPC x d w~   | delete trailing whitespaces                                          |
+    | ~SPC x d SPC~ | Delete all spaces and tabs around point, leaving one space           |
+    | ~SPC x g l~   | set languages used by translate commands                             |
+    | ~SPC x g t~   | translate current word using Google Translate                        |
+    | ~SPC x g T~   | reverse source and target languages                                  |
+    | ~SPC x i c~   | change symbol style to =lowerCamelCase=                              |
+    | ~SPC x i C~   | change symbol style to =UpperCamelCase=                              |
+    | ~SPC x i i~   | cycle symbol naming styles (~i~ to keep cycling)                     |
+    | ~SPC x i -~   | change symbol style to =kebab-case=                                  |
+    | ~SPC x i k~   | change symbol style to =kebab-case=                                  |
+    | ~SPC x i _~   | change symbol style to =under_score=                                 |
+    | ~SPC x i u~   | change symbol style to =under_score=                                 |
+    | ~SPC x i U~   | change symbol style to =UP_CASE=                                     |
+    | ~SPC x j c~   | 居中对齐set the justification to center                              |
+    | ~SPC x j f~   | set the justification to full                                        |
+    | ~SPC x j l~   | set the justification to left                                        |
+    | ~SPC x j n~   | set the justification to none                                        |
+    | ~SPC x j r~   | set the justification to right                                       |
+    | ~SPC x J~     | move down a line of text (enter transient state)                     |
+    | ~SPC x K~     | move up a line of text (enter transient state)                       |
+    | ~SPC x l d~   | duplicate line or region                                             |
+    | ~SPC x l s~   | 排序 sort lines                                                      |
+    | ~SPC x l u~   | 去重 uniquify lines                                                  |
+    | ~SPC x o~     | 跳转链接 use avy to select a link in the frame and open it           |
+    | ~SPC x O~     | use avy to select multiple links in the frame and open them          |
+    | ~SPC x t c~   | swap (transpose) the current character with the previous one         |
+    | ~SPC x t e~   | swap (transpose) the current sexp with the previous one              |
+    | ~SPC x t l~   | swap (transpose) the current line with the previous one              |
+    | ~SPC x t p~   | swap (transpose) the current paragraph with the previous one         |
+    | ~SPC x t s~   | swap (transpose) the current sentence with the previous one          |
+    | ~SPC x t w~   | swap (transpose) the current word with the previous one              |
+    | ~SPC x u~     | 小写 set the selected text to lower case                             |
+    | ~SPC x U~     | 大写 set the selected text to upper case                             |
+    | ~SPC x w c~   | 多少字 count the number of occurrences per word in the select region |
+    | ~SPC x w d~   | show dictionary entry of word from wordnik.com                       |
+    | ~SPC x TAB~   | indent or dedent a region rigidly                                    |
 
 *** Text insertion commands
     Text insertion commands (start with ~i~):
@@ -2244,9 +2213,9 @@
 
    | Key Binding | Description                                                                              |
    |-------------+------------------------------------------------------------------------------------------|
-   | ~SPC p '​~   | open a shell in project’s root (with the =shell= layer)                                  |
-   | ~SPC p !~   | run shell command in project’s root                                                      |
-   | ~SPC p &~   | run async shell command in project’s root                                                |
+   | ~SPC p '​~   | open a shell in project’s root (with the =shell= layer)                                 |
+   | ~SPC p !~   | run shell command in project’s root                                                     |
+   | ~SPC p &~   | run async shell command in project’s root                                               |
    | ~SPC p %~   | replace a regexp                                                                         |
    | ~SPC p a~   | toggle between implementation and test                                                   |
    | ~SPC p b~   | switch to project buffer                                                                 |
@@ -2257,7 +2226,7 @@
    | ~SPC p f~   | find file                                                                                |
    | ~SPC p F~   | find file based on path around point                                                     |
    | ~SPC p g~   | find tags                                                                                |
-   | ~SPC p G~   | regenerate the project’s =etags= / =gtags=                                               |
+   | ~SPC p G~   | regenerate the project’s =etags= / =gtags=                                              |
    | ~SPC p h~   | find file                                                                                |
    | ~SPC p I~   | invalidate the projectile cache                                                          |
    | ~SPC p k~   | kill all project buffers                                                                 |
@@ -2425,7 +2394,6 @@
  differently from the default Evil search. To go to the next match, use ~C-s~.
 
 *** Leader keys
-
  | *Key Binding*         | *Description*                             |
  |-----------------------+-------------------------------------------|
  | *Slicing*             |                                           |

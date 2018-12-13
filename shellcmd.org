@@ -235,7 +235,6 @@ https://uappexplorer.com/snaps
 *** 比较 diff
 *** 文件类型 file 
 *** 改名 mv
-*** 查找文件 find whereis which
 *** 编辑
 **** sed 命令编辑器
 ***** 选项 
@@ -564,6 +563,7 @@ https://uappexplorer.com/snaps
      grep -c pattern files  即可查找总行数
 
 *** find 
+    find [-H] [-L] [-P] [-D debugopts] [-Olevel] [starting-point...] [expression]
     pathname -options [-print -exec -ok ...]
     关系操作
     -a and
@@ -595,6 +595,7 @@ https://uappexplorer.com/snaps
 **** -mount：在查找文件时不跨越文件系统 mount 点。
 **** -follow：如果 find 命令遇到符号链接文件，就跟踪至链接所指向的文件。
 **** -cpio：对匹配的文件使用 cpio 命令，将这些文件备份到磁带设备中。
+**** -maxdepth 1 深度  mindepth
 **** time
      : -amin n   查找系统中最后 N 分钟访问的文件  -n n 天以内;+n n 天之前
      : -atime n  查找系统中最后 n*24 小时访问的文件
@@ -779,11 +780,11 @@ join 按两个文件的相同字段合并。
 tr 替换或删除字符。
 vi/vim 命令行文本编辑器。
 ** 文件压缩及解压缩命令（4 个）
-tar 打包压缩。oldboy
-unzip 解压文件。
-gzip gzip 压缩工具。
-zip 压缩工具。
-
+   tar 打包压缩。
+   unzip 解压文件。
+   unzip -O CP936 xxx.zip (用GBK, GB18030也可以)
+   gzip gzip 压缩工具。
+   zip 压缩工具。
 ** 信息显示命令（11 个）
    uname 显示操作系统相关信息的命令。
    hostname 显示或者设置当前系统的主机名。
@@ -1202,3 +1203,104 @@ init
 service
 
 启动、停止、重新启动和关闭系统服务，还可以显示所有系统服务的当前状态。
+
+* ubuntu自定义登录xsession和桌面环境
+linux
+查看系统内置的xsession
+
+$ ls /usr/share/xsessions/
+gnome-classic.desktop  gnome-fallback.desktop  ubuntu-2d.desktop  xsession.desktop
+gnome.desktop          gnome-shell.desktop     ubuntu.desktop     xterm.desktop
+修改默认登陆的xsession
+
+$ sudo vim /etc/lightdm/lightdm.conf
+[SeatDefaults]
+greeter-session=unity-greeter
+user-session=ubuntu    #修改为如上的xsession即可
+……
+切换X管理程序
+以下命令需要远程操作，因为停止X管理程序会导致黑屏
+
+$ sudo apt-get install gdm
+$ sudo dpkg-reconfigure gdm  #切换显示管理器(将lightdm换为gdm)
+$ sudo /etc/init.d/lightdm stop  #注意此时会黑屏
+$ ps -ef | grep Xorg         #找到Xorg的进程，并kill之
+$ sudo /etc/init.d/gdm start #然后就会发现桌面恢复了
+启用XDMCP登陆
+根据Ubuntu的官方WIKI介绍，Ubuntu12.04以后的版本，默认使用lightdm作为X Server程序
+
+$ sudo cat /etc/lightdm/lightdm.conf    #确保有如下两行
+……
+[XDMCPServer]
+enabled=true
+……
+
+$ sudo restart lightdm    #重启服务就可以使用XDMCP了
+对于Ubuntu 10.04以前的版本，由于默认使用GDM作为X管理程序，需要做如下设置
+
+$ sudo vim /etc/gdm/custom.conf  #手动建立此文件，输入如下内容
+[daemon]
+RemoteGreeter=/usr/lib/gdm/gdmlogin
+
+[xdmcp]
+Enable=true
+DisplaysPerHost=1
+Port=177
+
+$ sudo service gdm restart    #重启服务就可以使用XDMCP了
+更多GDM的配置参数可以参考GNOME官方的这篇文章。
+
+XDMCP初探
+
+$ sudo netstat -anup | grep :177      #监听UDP177端口
+udp6       0      0 :::177                  :::*                                12472/gdm-binary
+
+$ sudo netstat -anp | grep 6000       #连接建立以后使用TCP协议监听客户端的6000端口
+tcp        0      0 192.168.137.129:42359   192.168.137.1:6000      ESTABLISHED 12655/pulseaudio
+tcp        0      0 192.168.137.129:42337   192.168.137.1:6000      ESTABLISHED 13530/unity-2d-shel
+tcp        0      0 192.168.137.129:42345   192.168.137.1:6000      ESTABLISHED 13539/bluetooth-app
+tcp        0      0 192.168.137.129:42331   192.168.137.1:6000      ESTABLISHED 13452/gnome-session
+tcp        0      0 192.168.137.129:42342   192.168.137.1:6000      ESTABLISHED 13542/bamfdaemon
+tcp        0      0 192.168.137.129:42365   192.168.137.1:6000      ESTABLISHED 13770/telepathy-ind
+tcp        0      0 192.168.137.129:42347   192.168.137.1:6000      ESTABLISHED 13540/nm-applet 
+tcp        0      0 192.168.137.129:42333   192.168.137.1:6000      ESTABLISHED 13511/gnome-setting
+tcp        0      0 192.168.137.129:42330   192.168.137.1:6000      ESTABLISHED 13499/dbus-launch
+tcp        0      0 192.168.137.129:42361   192.168.137.1:6000      ESTABLISHED 13714/gdu-notificat
+tcp        0      0 192.168.137.129:42343   192.168.137.1:6000      ESTABLISHED 13537/polkit-gnome-
+tcp        0      0 192.168.137.129:42368   192.168.137.1:6000      ESTABLISHED 13868/update-notifi
+tcp        0      0 192.168.137.129:42348   192.168.137.1:6000      ESTABLISHED 13529/unity-2d-pane
+XDMCP常见错误处理
+当我们在Windows系统中使用Xmanager去连接一个Linux系统时，Windows是服务端，而Linux才是客户端，客户端（Linux）的UDP 177端口用于向服务端发起XDMCP连接，而服务端（Windows）上的TCP 6000-6100 端口则用于向远程客户端传递X。
+
+由于这种特殊的性质，当XDMCP无法连接时，常见的处理方式为：
+第一步，检查Linux上的UDP 177端口是否有程序在监听；
+第二步，则是检查服务端（Windows）方面的日志，见下图：
+XDMCP常见错误处理
+
+打开日志后，会看到本地的错误日志。目前已知的可能出现的错误有：
+1，XDMCP fatal error: Session declined Maximum number of open sessions from your host reached
+原因及解决办法：
+这是由于Xmanager是经过router来连接host的，session超出了host允许的最大值，
+修改/etc/gdm/custom.conf，在[xdmcp]下面添加一行DisplaysPerHost=5
+
+2，Xdmcp: Timed out, state 8. Retransmissions: N
+原因及解决办法：
+可能是客户端本地的防火墙阻止了连接。当我们在Windows系统中使用Xmanager去连接一个Linux系统时，Windows是服务端，而Linux才是客户端，客户端（Linux）的UDP 177端口用于向服务端发起XDMCP连接，而服务端（Windows）上的TCP 6000-6100 端口则用于向远程客户端传递X。因此，需要检查以下内容：
+(1),客户端IP和服务端IP可以双向PING通（如果客户端和服务端处于不同的子网，而又没有添加正确的路由表的情况下，极有可能可以单向PING通，但不能双向PING通）
+(2),Windows的IP是否为本地连接的IP？（我就遇到一回，Xmanager的日志中显示Windows系统的IP并不是我本地连接的IP，而是VMware生成的虚拟网卡的IP，无语。）
+(3),防火墙(网关)是否会阻止UDP协议的连接？是否会阻止6000-6100端口的连接？
+
+参考文章1
+参考文章2
+
+后记：
+============================
+2015.03.09
+系统用户较多，在登陆界面，用户列表显示不全，想了很多办法，最后决定禁用用户列表（要求输入用户名）来解决：
+
+sudo gconftool-2 --direct --config-source xml:readwrite:/etc/gconf/gconf.xml.mandatory --type Boolean --set /apps/gdm/simple-greeter/disable_user_list True
+2015.03.23
+检查Ubuntu系统是否打开了3D加速：
+
+glxinfo | grep rendering
+/usr/lib/nux/unity_support_test -p
