@@ -206,7 +206,7 @@ https://uappexplorer.com/snaps
     ls /dev/
 *** 硬盘设备 
     查看容量 df
-**** 使用 mount
+**** mount
      mount 用于加载文件系统到指定的加载点
     mount  [-t vfstype] [-o options] device dir
     1.-t vfstype 文件系统类型
@@ -224,7 +224,200 @@ https://uappexplorer.com/snaps
     3.device 要挂接(mount)的设备。
     4.dir 设备在系统上的挂接点(mount point)。
     sudo mount -t smbfs -o username=user,password='' //10.0.1.1/windowsshare /mnt 浏览 windows 共享文件夹
-**** 取消使用 umount
+**** fstab 
+***** 挂载的限制
+      1、根目录是必须挂载的，而且一定要先于其他mount point被挂载。因为mount是所有
+      目录的跟目录，其他木有都是由根目录 /衍生出来的。
+
+      2、挂载点必须是已经存在的目录。
+   
+      3、挂载点的指定可以任意，但必须遵守必要的系统目录架构原则
+
+      4、所有挂载点在同一时间只能被挂载一次
+
+      5、所有分区在同一时间只能挂在一次
+
+      6、若进行卸载，必须将工作目录退出挂载点（及其子目录）之外。
+
+***** /etc/fstab文件中的参数
+   一共有六列
+   # <file system> <mount point>   <type>  <options>       <dump>  <pass>
+
+****** 第一列：Device：磁盘设备文件或者该设备的Label或者UUID
+******** 1）查看分区的label和uuid
+        Label就是分区的标签，在最初安装系统时填写的挂载点就是标签的名字。可以通过查看一个分区的superblock中的信息找到UUID和Label name。
+
+        例如:我们要查看/dev/sda1这个设备的uuid和label name
+        sudo dumpe2fs -h /dev/sda1
+
+        对于ntfs文件系统 
+        sudo ntfsinfo -m /dev/sdb1 
+ 
+        只查看UUID
+        sudo blkid /dev/vda1
+
+        要显示分区的基本信息请运行：
+        $ lsblk -f
+******** 2）使用设备名和label及uuid作为标识的不同
+        使用设备名称（/dev/sda)来挂载分区时是被固定死的，一旦磁盘的插槽顺序发生了变
+        化，就会出现名称不对应的问题。因为这个名称是会改变的。
+
+        不过使用label(volume name)挂载就不用担心插槽顺序方面的问题。不过要随时注意你的Label name。至
+        于UUID，每个分区被格式化以后都会有一个UUID作为唯一的标识号。使用uuid挂载的话就
+        不用担心会发生错乱的问题了。
+
+****** 第二列：Mount point：设备的挂载点，就是你要挂载到哪个目录下。
+****** 第三列：filesystem：磁盘文件系统的格式，包括ext2、ext3、reiserfs、nfs、vfat等
+****** 第四列：parameters：文件系统的参数
+       Async/sync 设置是否为同步方式运行，默认为async
+
+       auto - 在启动时或键入了 mount -a 命令时自动挂载。
+       noauto - 只在你的命令下被挂载。
+
+       rw/ro 是否以以只读或者读写模式挂载
+
+       exec/noexec 限制此文件系统内是否能够进行"执行"的操作
+
+       user/nouser 是否允许用户使用mount命令挂载
+
+       suid/nosuid 是否允许SUID的存在
+
+       Usrquota 启动文件系统支持磁盘配额模式
+
+       Grpquota 启动文件系统对群组磁盘配额模式的支持
+
+       sync - I/O 同步进行。
+       async - I/O 异步进行。
+    
+       Defaults 同时具有rw,suid,dev,exec,auto,nouser,async等默认参数的设置
+****** 第五列：能否被dump备份命令作用：dump是一个用来作为备份的命令。通常这个参数的值为0或者1
+       0 代表不要做dump备份
+       1 代表要每天进行dump的操作
+       2 代表不定日期的进行dump操作
+****** 第六列：是否检验扇区：开机的过程中，系统默认会以fsck检验我们系统是否为完整（clean）。
+       0 不要检验
+       1 最早检验（一般根目录会选择）
+       2 1级别检验完成之后进行检验
+******  /dev/hdc1 /c vfat defaults 0 0
+        (/c 是事先建立的文件夹，作为c盘的挂载点。)
+        当你修改了/etc/fstab后，一定要重新引导系统才会有效。
+****** 修改fstab 后, 执行 mount -a 生效
+****** 内核名称
+       你可以使用 fdisk -l 来获得内核名称，前缀是 dev.
+
+   自动挂载
+   如果 /home 分区较大，可以让不依赖 /home 分区的服务先启动。把下面的参数添加到 /etc/fstab 文件中 /home 项目的参数部分即可：
+   noauto,x-systemd.automount
+   这样 /home 分区只有需要访问时才会被挂载。内核会缓存所有的文件操作，直到 /home 分区准备完成。
+
+   注意: 这样做会使 /home 的文件系统类型被识别为 autofs，造成 mlocate 查询时忽略该目录。实际加速效果因配置而异，所以请自己权衡是否需要。
+   挂载远程文件系统也是同理。如果你仅想在需要的时候才挂载，也可以添加 noauto,x-systemd.automount 参数。另外，可以设置 x-systemd.device-timeout=# 参数，设置超时时间，以防止网络资源不能访问的时候浪费时间。
+   如果你的加密文件系统需要密钥，则需要添加 noauto 参数到 /etc/crypttab 文件中的对应位置。systemd 开机的时候就不会打开这个加密设备，会一直等待到设备被访问时再使用密钥文件挂载。比如在使用加密RAID设备的时候可以节省一定的时间，因为 systemd 不必等到设备可用后才能访问。例如：
+   /etc/crypttab
+   data /dev/md0 /root/key noauto
+   交换分区 UUID
+   如果交换分区没有 UUID，可以手动加入。如果使用 lsblk -f 命令没有列出交换分区的 UUID 就说明发生了这种情况。下面是为交换分区指定 UUID 的步骤：
+
+   确定交换分区：
+
+   # swapon -s
+   禁用交换分区：
+
+   # swapoff /dev/sda7
+   用新 UUID 重新创建交换分区：
+
+   # mkswap -U random /dev/sda7
+   激活交换分区:
+
+   # swapon /dev/sda7
+   路径名有空格
+   如果挂载的路径中有空格，可以使用 "\040" 转义字符来表示空格（以三位八进制数来进行表示）
+
+   /etc/fstab
+   UUID=47FA-4071     /home/username/Camera\040Pictures   vfat  defaults,noatime      0  2
+   /dev/sda7          /media/100\040GB\040(Storage)       ext4  defaults,noatime,user  0  0
+   .....</nowiki>}}
+
+   外部设备
+   外部设备在插入时挂载，在未插入时忽略。这需要 nofail 选项，可以在启动时若设备不存在直接忽略它而不报错.
+
+   /etc/fstab
+    /dev/sdg1    /media/backup    jfs    defaults,nofail    0  2
+   atime 参数
+   使用 noatime, nodiratime 或 relatime 可以提升 ext2， ext3 及 ext4 格式磁盘的性能。 Linux 在默认情况下使用atime选项，每次在磁盘上读取（或写入）数据时都会产生一个记录。这是为服务器设计的，在桌面使用中意义不大。默认的 atime 选项最大的问题在于即使从页面缓存读取文件(从内存而不是磁盘读取)，也会产生磁盘写操作！
+
+   使用 noatime 选项阻止了读文件时的写操作。大部分应用程序都能很好工作。只有少数程序如 Mutt 需要这些信息。Mutt 的用户应该使用 relatime 选项。使用 relatime 选项后，只有文件被修改时才会产生文件访问时间写操作。nodiratime 选项仅对目录禁用了文件访问时间。relatime 是比较好的折衷，Mutt 等程序还能工作，但是仍然能够通过减少访问时间更新提升系统性能。
+
+   注意: noatime 已经包含了 nodiratime。不需要同时指定。
+   tmpfs
+   tmpfs 是一个临时文件系统，驻留于你的交换分区或是内存中（取决于你的使用情况）。使用它可以提高文件访问速度，并能保证重启时会自动清除这些文件。
+
+   经常使用 tmpfs 的目录有 /tmp, /var/lock and /var/run. 不要将之使用于 /var/tmp,
+   因为这一目录中的临时文件在重启过程中需要被保留。使用 tmpfs /run 目录，/var/run
+   和 /var/lock 是为了兼容老版本建立的链接。默认 /etc/fstab中的的/tmp也是 tmpfs.
+
+   默认情况下， tmpfs 分区被设置为你总的内存的一半，当然你可以自由设定这一值。注意
+   实际中内存和交换分区的使用情况取决于你的使用情况，而 tmpfs 分区在其真正使用前是
+   不会占用存储空间的。
+
+   要将 /tmp 放到 tmpfs，将下行加入 /etc/fstab：
+
+   /etc/fstab ..... tmpfs /tmp tmpfs nodev,nosuid 0 0 ..... 
+   可以指定大小，但不要修
+   改 mode 选项，以保证文件具有正确的访问权限(1777)。在上例中 /tmp 将最多使用一半内
+   存，要指定最大空间，使用 size 挂载选项：
+
+   /etc/fstab
+   .....
+   tmpfs /tmp      tmpfs nodev,nosuid,size=2G          0 0
+   .....
+
+   这里有一个更高级的例子，展示如何为用户添加 tmpfs 挂载。这对于网站、mysql 临时文
+   件, ~/.vim/, 和其他情况很有用。尝试并获得理想的挂载选项来完成目标是很重要的。目
+   标是尽量采用安全的策略来防止滥用。限制大小，同时指定 uid 和 gid 加上 mode 是非常
+   安全的。更多信息.
+
+   /etc/fstab
+   tmpfs /www/cache tmpfs rw,size=1G,nr_inodes=5k,noexec,nodev,nosuid,uid=648,gid=648,mode=1700 0 0
+
+   参阅 mount 命令 man 手册以获得更多的内容。
+
+   重启后方能生效。注意不要直接执行 mount -a 命令，因为可能造成无法访问当前目录中的
+   文件（比如你应该保证 lockfiles 的正常存在）。然而，如果它们都是空的，那么就可以
+   直接执行 mount -a 而不必重启电脑。
+
+   应用更改后，可以通过 findmnt 检查是否生效：
+
+   $ findmnt --target /tmp
+   TARGET SOURCE FSTYPE OPTIONS
+   /tmp   tmpfs  tmpfs  rw,nosuid,nodev,relatime
+   使用
+
+   一般需要大量读写操作的程序在使用 tmpfs 时都会提升性能。有些程序把共享内存放到
+   tmpfs 上时性能会大幅提升，例如将 Firefox Profile 文件夹放到内存后，Firefox 性能
+   大幅提升。
+
+   Note: tmpfs 目录(/tmp) 挂载时需要去掉 noexec 参数，否则有些编译程序无法执行，此
+   外，tmpfs 的默认大小是内存的一般，可能会产生空间不够的问题。下面命令可以让
+   makepkg在tmpfs目录进行编辑，也可以在在/etc/makepkg.conf中进行设置:
+
+   $ BUILDDIR=/tmp/makepkg makepkg
+   普通用户读写 FAT32
+   为了取得对 FAT32 分区的写权限，你必须修改/etc/fstab文件。
+
+   /etc/fstab /dev/sdxY /mnt/some_folder vfat user,rw,umask=000 0 0 
+
+   “users”标签的意思是任何用户（甚至非 root 用户）都可以挂载或卸载分区 '/dev/sdX'。
+   “rw”标签则分配读写的使用权。但我不知道“umask”标签的意义（umask 是权限掩码命
+   令 umask=000 指任何人没有特权，且权限为777，即所有人都可以读、写、执行）。我曾试
+   图在“man mount”中查询，但是没有什么结果。
+
+   比如你的 FAT32 分区在 '/dev/sda9'，你想将其挂载到 '/mnt/fat32'，那么你需要输入并
+   运行
+
+   /etc/fstab
+   /dev/sda9    /mnt/fat32        vfat   user,rw,umask=111,dmask=000    0  0
+**** umount
 ** 文件系统
 ** 文件管理
 *** 查看 cat less more head tac tail wc
@@ -628,6 +821,13 @@ https://uappexplorer.com/snaps
 *** 中文语音朗读 ekho
    (如果保存不了，是文件属性的问题，就 chmod 755 /etc/shadow，这样就 OK 了)
 6. #reboot 重启，root 密码为空
+*** info
+    -d：添加包含info格式帮助文档的目录；
+    -f：指定要读取的info格式的帮助文档；
+    -n：指定首先访问的info帮助文件的节点；
+    -o：输出被选择的节点内容到指定文件。
+
+    下载info文件 ，在emacs源码提取，然后用gzip 压缩
 * 网络
   已知 ip 地址，查主机名最简单的方法就是使用命令，以下是两种方法：
   1、使用 ping 命令加上参数-a 的方法反解析 IP 地址，可以得到主机名。
@@ -912,12 +1112,7 @@ dump
 
 ext2/3/4 文件系统备份工具。
 
-fdisk
-
-磁盘分区命令，适用于 2TB 以下磁盘分区。
-
-parted
-
+* parted
 磁盘分区命令，没有磁盘大小限制，常用于 2TB 以下磁盘分区。
 
 mkfs
@@ -1204,6 +1399,497 @@ service
 
 启动、停止、重新启动和关闭系统服务，还可以显示所有系统服务的当前状态。
 
+** 虚拟机
+*** qemu 
+    qemu-system-i386 qemu-system-x86_64
+**** 安装qemu kvm
+     $:apt install qemu kvm qemu-kvm
+
+     由于kvm需要CPU硬件支持，使用lscpu查看cpu是否指出vx-d or vx-t，其次要在bios使能
+     kvm，使用kvm-ok查看是否在bios中打开了kvm支持，其次是将kernel中kvm相关的feature打
+     开，这些都可以在kvm-ok的输出中得到信息。如果kernel中没有打开就需要重新编译kernel
+     并重启机器。
+     
+    源码安装 
+     $ tar -zxvf qemu-0.14.0.tar.gz
+     $ cd qemu-0.14.0
+
+    运行配置脚本。我们将针对 i386 架构进行编译。 (它也可为其他架构编译，如 ARM、PPC、
+    SPARC 等。) 接下来我们要在虚拟机里面安装 Ubuntu 发行版——这就是我们为什么选择针对
+    i386 架构编译 QEMU：
+
+    $ ./configure –target-list=i386-softmmu
+
+**** KVM虚拟机 
+     Kernel-based Virtual Machine的简称，是一个开源的系统虚拟化模块，自Linux 2.6.20之
+     后集成在Linux的各个主要发行版本中。它使用Linux自身的调度器进行管理，所以相对于
+     Xen，其核心源码很少。KVM目前已成为学术界的主流VMM之一。KVM的虚拟化需要硬件支持
+     （如Intel VT技术或者AMD V技术)。是基于硬件的完全虚拟化。而Xen早期则是基于软件模
+     拟的Para-Virtualization，新版本则是基于硬件支持的完全虚拟化。但Xen本身有自己的进
+     程调度器，存储管理模块等，所以代码较为庞大。广为流传的商业系统虚拟化软件VMware
+     ESX系列是基于软件模拟的Full-Virtualization。
+***** 安装方法
+      一、安装准备
+      1.确定机器有VT
+      终端输入命令： grep vmx /proc/cpuinfo (INTEL芯片)
+ grep svm /proc/cpuinfo (AMD芯片)
+ 不知道芯片的生产厂商则输入：egrep '(vmx|svm)' /proc/cpuinfo
+ 如果flags: 里有vmx 或者svm就说明支持VT；如果没有任何的输出，说明你的cpu不支持，将无法成功安装KVM虚拟机。
+ 2. 确保BIOS里开启VT
+ Intel(R) Virtualization Tech [Enabled]
+ 如有必要，还需在BIOS中开启VT-d
+ 3. 确保内核版本较新，支持KVM
+ 用uname -r查看内核版本，如果在2.6.20以下的linux版本，需升级内核。
+*****  二、安装KVM
+ 下面就Ubuntu和CentOS下安装使用KVM虚拟机做介绍：
+ Ubuntu 中用guest登陆，安装KVM的命令为：
+ sudo apt-get install kvm qemu qemu-kvm virt-manager kernel-package linux-source kqemu-source build-essential
+ kvm安装成功后会有/dev/kvm，如果无需图形管理器，只需要安装前三个即可。
+ 再来查看下KVM是否安装成功,执行：virsh -c qemu:///system list
+ 如果输入结果像下面这样的，那么成功了：
+ Connecting to uri: qemu:///system
+ Id Name State
+ ----------------------------------
+ 注1：CentOS中安装时，先要选择Selinux为enable，使用命令
+ #system-config-securitylevel-tui
+ 可查看或修改selinux的状态。
+ 注2: CentOS中用root登陆时则安装命令为：
+ yum install kvm kmod-kvm qemu
+ 再装入kvm模块：modprobe kvm-intel (Intel机器) 或者 modprobe kvm-amd (amd机器)
+ 注3：可以用以下命令来检查是否装入kvm模块：
+ /sbin/lsmod | grep kvm
+ 如果输出关于kvm版本的信息则已装入kvm模块
+ 注4: 安装好后，可使用qemu-kvm命令，输入该命令，如果系统显示未知的命令，可查看/usr/libexec中是否有qemu-kvm可执行文件，如果有，将其拷贝到/bin目录下即可。如果确实按照上面的步骤进行了，却在/bin，/usr/libexec，/usr/bin，/usr/sbin里都找不到qemu-kvm可执行文件，可执行以下命令：
+ #yum provides "*/qemu-kvm"
+ 注5：安装新内核后，可能有部分软件版本过低，不兼容。比如firefox因版本过低，无法启动。
+ CentOS下可使用如下命令更新该软件(以firefox为例)：
+ #yum update firefox
+ 三、在KVM下安装虚拟机
+ 1.用QEMU创建磁盘镜像
+ sudo qemu-img create –f qcow windows.img 8G
+ 注：在CentOS和新版Qemu中为：qemu-img create –f qcow2 windows.img 8G
+ 2.使用KVM安装Guest VM
+ 光盘安装：
+ sudo kvm –localtime –cdrom /dev/cdrom -m 512 -boot d win2.img
+ 硬盘安装：
+ sudo kvm –localtime –m 512 –hda windows.img –cdrom winxp.iso –boot d –clock –rtc –no-acpi
+ 注：官方推荐使用 -no-acpi 参数，原因是 qemu/kvm不太支持，可能造成 cpu 的占用偏高。
+ 注1：CentOS下硬盘安装为 qemu-kvm –localtime –m 512 –hda windows.img –cdrom winxp.iso –boot d –no-acpi 即需要去掉了-clock rtc选项，否则会出现无法初始化时钟。
+ 注2：CentOS quest mouse: export SDL_VIDEO_X11_DGAMOUSE=0可解决VM中无法识别USB鼠标的问题。
+ 注3: 安装win 7时，不能使用-no-acpi选项。
+ 使用编辑
+ KVM启动Guest
+ ① sudo kvm –boot c –m 512
+ –hda windows.img
+ ② sudo kvm -boot c
+ -m 512
+ -hda /home/lm/kvm/winxp.img
+ -localtime
+ -net nic,vlan=0,macaddr=52-54-00-12-34-01 -net tap,vlan=0,df=h,ifname=tap0,script=no
+ -clock rtc
+ -soundhw es1370
+ -smp 2
+ 注意：在KVM－87下，请去掉df=h
+ -m 512 分配512MB的内存
+ -hda /home/lm/kvm/winxp.img
+ -localtime 使用本地时间（一定要加这个参数，不然虚拟机时间会有问题）
+ -net nic,vlan=0,macaddr=52-54-00-12-34-01 -net tap,vlan=0,df=h,ifname=tapo,script=no
+ 使用网络，并连接到一个存在的网络设备tap0,注意mac地址一定要自己编一个，特别是如果你虚拟了多个系统并且要同时运行的话，不然就MAC冲突了，在KVM－87下去掉df=h
+ -boot d 从光盘启动 （从镜像启动也是用这个。从硬盘启动则为 -boot c )
+ -smp 2 smp处理器个数为2个，如果你是4核处理器，后面的数字就为4
+ -clock rtc
+ 使用rtc时钟（如果不开启此选项，WINXP可能会很慢）
+**** 1.命令参数: 
+     -L dir :指向 BIOS 和 VGA BIOS 所在目录(一般我们使用”-L .”) 
+
+     -hda/-hdb/-hdd/-hdc “文件名” :虚拟机系统安装文件 
+
+     -cdrom “文件名” :使用“文件名”作为光盘景象（文件应该是 ISO 类型） 
+     *Windows 下，可以通过下列命令使用实体光盘: -cdrom //./x: -> x 代表光盘名称/位置
+     例如:-cdrom //./e: -> 使用 E:\ 为光盘* 
+
+     -fda/-fdb “文件名” :使用“文件名”作为磁盘 0/1 镜像. 
+
+     -boot [a|b|c] :使用磁盘 a，光盘 d，或者硬盘 c 启动. 
+     
+     -m 容量 :指定内存的大小，单位是 MB. 
+
+     -soundhw c1,„: 使用声卡设备. 
+
+     -soundhw ? :列出所有可使用的声卡 -soundhw all 使用全部声卡 
+
+     -usb :允许使用 usb 设备. 
+
+     -usbdevice :名字 添加一个 usb 设备“名字”. 
+
+     -net nic :创建一块新的网卡. 
+**** 3.1.打开 CMD 窗口,切到 F 盘的 qemu 程序目录下.然后输入命令: 
+     创建虚拟磁盘 
+     qemu-img create -f qcow f:\system-virtual\windowsxp\windowsxp.img 8G  
+
+     create 参数表示创建 windowsxp 所需的虚拟磁盘 
+
+     -f 参数表示创建文件格式，后边所带的子参数 qcow 表示 qemu 镜像格式 
+
+     f:\system-virtual\windowsxp\windowsxp.img 为虚拟磁盘文件放置路径及名称 
+     
+     8G 为所创建虚拟机文件的上限大小，也就是虚拟机的硬盘大小 
+
+建议大家不要创建 qcow 格式的磁盘文件.它生成的磁盘文件比较占用空间.该命令是常规命
+
+令.兜兜建议使用 VMWare 的磁盘文件来安装虚拟系统.命令如下: 
+qemu-img create -f vmdk f:\system-virtual\windowsxp\windowsxp.vmdk 8G 
+
+两种创建方式,在使用的过程中没有很大区别,唯一的区别在于磁盘占用率上.随各位自己喜欢咯. 
+
+ 3.2.好了.给虚拟系统的硬盘分区已经分割好了.什么?什么时候分割的?晕!上面那
+
+一步创建虚拟磁盘文件就是为新的系统准备空间啊!接下来开始安装系统了.大家可以
+
+简单回想一下,在裸机或者 vmware 中安装新系统,需要拿些东西? 
+
+光驱,指定内存大小,指定硬盘空间„.需要指定 USB,声卡..等等吗?暂时不需要的.看下面
+
+这段安装时候要用到的命令吧. 
+安装系统
+qemu.exe -kernel-kqemu -L . -m 512 -hda f:\system-virtual\windowsxp\windowsxp. 
+vmdk -cdrom e:\my-lab\iso\windowsxp-en.iso -boot d 
+
+-kernel-kqemu 加快 qemu 速度 
+
+-m 512 为虚拟机分配 512m 内存 
+
+ -hda f:\system-virtual\windowsxp\windowsxp.vmdk 系统安装到哪里去,就安装
+
+到刚才建立的虚拟磁盘文件中去 
+
+ -cdrom e:\my-lab\iso\windowsxp-en.iso 为 qemu 的虚拟光驱中插入光盘镜像 
+
+ -boot d 设置 qemu 的 BIOS 由光驱启动. 
+
+把这段命令输入到记事本里,然后保存在 qemu for win 程序的根目录里.命名为:Install w
+
+indowsxp.bat .完全是为了方便才这样的,如果你不嫌麻烦,你可以直接进入 CMD,切到 qemu
+
+ for win 的目录下,输入那一段命令,就会弹出窗口,开始 windowsxp 的安装过程了. 
+
+安装的问题,兜兜就不赘述了.这里要注意的是,当你把鼠标定位到了虚拟 windowsxp 窗口中,
+
+要把鼠标释放出来,需要按组合键: ctrl+alt
+
+4
+4.安装过程完毕了.关闭虚拟机.你可以直接XX关闭,建议按照windows的正常关机流程来操
+
+作,当虚拟系统关闭,窗口也会消失.接下来,该编写虚拟系统运行的命令了.同样的,建议使
+
+用批处理的方式.免得每次要启动系统都需要输入一大串命令. 
+
+命令其实和安装雷同.如下: 
+
+qemu.exe -kernel-kqemu -L . -m 512 -hda f:\system-virtual\windowsxp\windowsxp.
+
+vmdk -boot c 
+
+保存到 qemu for win 程序目录下,命名为:start windowsxp.bat 
+
+如果你想挂载光驱,在命令里补上-cdrom 就可以了.当然,你如果需要挂载其他的硬件设备,
+
+加上相应的参数即可.参数在文上部有说明. 
+
+ 
+
+END
+经验内容仅供参考，如果您需解决具体问题(尤其法律、医学等领域)，建议您详细咨询相关领域专业人士。举报
+投票(0)
+有得(0)
+我有疑问(0)  
+**** 创建新虚拟机
+     如果你熟悉其他的虚拟化软件，你可能好奇如何使用 QEMU 创建一个新的虚拟机。第一步是
+     为虚拟机创建一个硬盘镜像。然后就可以安装 Ubuntu 9.10 了；这里我们创建一个 10GB
+     的硬盘镜像就足够了。使用以下命令创建：
+
+     $ qemu-img create ubuntu.img 10G
+     $ ls -lh ubuntu.img
+     -rw-r--r--. 1 root root 10G Mar 11 11:54 ubuntu.img
+
+     下一步是安装 Ubuntu (我已经下载好了 Ubuntu 9.10 (Karmic) 的 ISO 镜像，放在我的工
+     作目录下) ：
+
+     $ qemu -hda ubuntu.img -boot d -cdrom ./ubuntu-9.10-desktop-i386.iso -m 512
+     
+     $ qemu-system-x86_64 -hda ubuntu.img -boot d -cdrom ./ubuntu-9.10-desktop-i386.iso -m 512
+     
+     在上面的命令中，-hda 选项用来指定磁盘镜像文件；-cdrom 用来指定 CD-ROM 或者
+     ISO 镜像来作为虚拟机的光驱。-m 选项指定虚拟机所使用的内存大小 (此种情况下，
+     内存大小我申请为 512MB；你可以根据自己的需要和硬件状况来决定) 。最后，我们
+     使用 -boot d 选项让 QEMU 从 ISO 镜像启动虚拟机。运行上述命令后，虚拟机启动，
+     然后出现 Ubuntu 启动菜单 (见图2) 。
+
+     下面就像你在真机上安装系统一样的操作。安装完成后，你可以直接使用以下命令从硬盘镜
+     像启动虚拟机。
+     
+     启动虚拟机
+     $ qemu -m 512 -hda ubuntu.img
+
+**** QEMU 网络设置
+     设置 QEMU 虚拟机的网络是很麻烦的事情。我们使用与硬件以太网设备不同的内核虚拟网络
+     设备 TAP 和 TUN；TAP 和 TUN 只有内核支持 (如，只在软件中) 。TAP 工作在数据链层，
+     而 TUN 工作在网络层。
+
+     QEMU 可以使用 TAP 接口为虚拟机提供完整的网络支持。在此之前，我们需要在宿主机上安
+     装 VPN (虚拟专用网) 软件包，然后在 host 和 guest 之间建立桥接。安装 openvpn 和
+     bridge-utils 软件包：
+
+     $ yum install openvpn
+     $ yum install bridge-utils
+     
+     现在，用以下内容创建 qemu—qemu-ifup 和 qemu-ifdown 两个脚本：
+
+#qemu-ifup
+/sbin/ifconfig eth1 down
+/sbin/ifconfig eth1 0.0.0.0 promisc up
+openvpn --mktun --dev tap0
+ifconfig tap 0 0.0.0.0 up
+brctl addbr br0
+brctl addif br0 eth1
+brctl addif br0 tap0
+brctl stp br0 off
+ifconfig br0 10.10.10.2 netmask
+255.255.255.0
+
+上面这个脚本用来开启 QEMU 网络设置，第一行，禁用 Ethernet 设备，由于 Ethernet 接
+口是桥接网络的一部分，所以我们在第二行将其 IP 地址设置为 0.0.0.0。在第三、四行，
+我们创建了并且启动了 TAP/tap0。下面几步，使用 eth1 和 tap0 创建桥接。最后，给桥
+指定一个 IP 地址。
+
+下面是 qemu-ifdown 脚本：
+#qemu-ifdown
+ifconfig eth1 down
+ifconfig eth1 -promisc
+ifup eth1
+ifconfig br0 down
+brctl delbr br0
+openvpn --rmtun --dev tap0
+这个脚本用来关闭 QEMU 网络；见文知义，关闭两个接口，删除网桥，和 tap0 设备。
+
+把这两个脚本复制到你的 /etc 目录下，然后进行测试：
+
+$ /etc/qemu-ifup
+Wed Apr 6 15:53:50 2011 TUN/TAP device tap0 opened
+Wed Apr 6 15:53:50 2011 Persist state set to: ON
+$ ifconfig br0
+br0       Link encap:Ethernet HWaddr 00:25:11:74:5B:0C
+          inet addr:10.10.10.2 Bcast:10.10.10.255 Mask:255.255.255.0
+          inet6 addr: fe80::225:11ff:fe74:5b0c/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:29 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:0 (0.0 b)  TX bytes:7539 (7.3 KiB)
+$ ifconfig tap0
+tap0      Link encap:Ethernet HWaddr C2:10:27:8C:B8:35
+          UP BROADCAST MULTICAST MTU:1500 Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:100
+          RX bytes:0 (0.0 b)  TX bytes:0 (0.0 b)
+虚拟设备 tap0 和网桥 br0 都启动了，脚本运行正常。
+
+1
+2
+3
+4
+$ /etc/qemu-ifdown
+Error: Connection activation failed: Device not managed by NetworkManager
+Wed Apr 6 15:56:44 2011 TUN/TAP device tap0 opened
+Wed Apr 6 15:56:44 2011 Persist state set to: OFF
+一切设置正常；是时候启动完整网络支持的 Ubuntu 虚拟机了。
+开启网络 (使用 root 用户) ：
+
+1
+$ /etc/qemu-ifup
+然后启动虚拟机 (使用普通用户) :
+
+$ qemu -m 512 -hda ubuntu.img -net nic -net tap,ifname=tap0,script=no
+当机器启动之后，在虚拟机里设置 eth0 接口的IP地址：
+
+$ sudo ifconfig eth0 10.10.10.100 netmask 255.255.255.0
+试着 ping 以下网桥的 IP (结果见图4) ：
+
+$ ping 10.10.10.2
+ 
+图4：QEMU 使用内核网络虚拟设备
+
+现在虚拟机的网络正常了，可以做一些实验了。试着在 host 上建立一个代理服务器，然后
+从 guest 连接到网络。
+**** QEMU是一款高效而实用的模拟器及虚拟机监管器，本系列博客试图从最基本的安装使用开始，逐层深入地介绍QEMU。本篇文章从QEMU最基础的知识讲起，介绍了QEMU的安装使用、系统模拟的基本原理以及如何利用QEMU来创建和管理虚拟机。
+QEMU 虚拟化
+一、QEMU简介
+QEMU是一款开源的模拟器及虚拟机监管器(Virtual Machine Monitor, VMM)。QEMU主要提供两种功能给用户使用。一是作为用户态模拟器，利用动态代码翻译机制来执行不同于主机架构的代码。二是作为虚拟机监管器，模拟全系统，利用其他VMM(Xen, KVM, etc)来使用硬件提供的虚拟化支持，创建接近于主机性能的虚拟机。
+
+用户可以通过不同Linux发行版所带有的软件包管理器来安装QEMU。如在Debian系列的发行版上可以使用下面的命令来安装：
+
+sudo apt-get install qemu
+
+或者在红帽系列的发行版上使用如下命令安装：
+
+sudo yum install qemu -y
+
+除此之外，也可以选择从源码安装。
+
+获取QEMU源码
+可以从QEMU官网上下载QEMU源码的tar包，以命令行下载2.0版本的QEMU为例：
+
+$wget http://wiki.qemu-project.org/download/qemu-2.0.0.tar.bz2
+$tar xjvf qemu-2.0.0.tar.bz2
+如果需要参与到QEMU的开发中，最好使用Git获取源码：
+
+$git clone git://git.qemu-project.org/qemu.git
+
+编译及安装
+获取源码后，可以根据需求来配置和编译QEMU。
+
+$cd qemu-2.0.0 //如果使用的是git下载的源码，执行cd qemu
+$./configure --enable-kvm --enable-debug --enable-vnc --enable-werror  --target-list="x86_64-softmmu"
+$make -j8
+$sudo make install
+configure脚本用于生成Makefile，其选项可以用./configure --help查看。这里使用到的选项含义如下：
+
+--enable-kvm：编译KVM模块，使QEMU可以利用KVM来访问硬件提供的虚拟化服务。
+--enable-vnc：启用VNC。
+--enalbe-werror：编译时，将所有的警告当作错误处理。
+--target-list：选择目标机器的架构。默认是将所有的架构都编译，但为了更快的完成编译，指定需要的架构即可。
+二、基本原理
+QEMU作为系统模拟器时，会模拟出一台能够独立运行操作系统的虚拟机。如下图所示，每个虚拟机对应主机(Host)中的一个QEMU进程，而虚拟机的vCPU对应QEMU进程的一个线程。
+
+QEMU结构图
+
+系统虚拟化最主要是虚拟出CPU、内存及I/O设备。虚拟出的CPU称之为vCPU，QEMU为了提升效率，借用KVM、XEN等虚拟化技术，直接利用硬件对虚拟化的支持，在主机上安全地运行虚拟机代码(需要硬件支持)。虚拟机vCPU调用KVM的接口来执行任务的流程如下(代码源自QEMU开发者Stefan的技术博客)：
+
+open("/dev/kvm")
+ioctl(KVM_CREATE_VM)
+ioctl(KVM_CREATE_VCPU)
+for (;;) {
+     ioctl(KVM_RUN)
+     switch (exit_reason) {
+     case KVM_EXIT_IO:  /* ... */
+     case KVM_EXIT_HLT: /* ... */
+     }
+}
+QEMU发起ioctrl来调用KVM接口，KVM则利用硬件扩展直接将虚拟机代码运行于主机之上，一旦vCPU需要操作设备寄存器，vCPU将会停止并退回到QEMU，QEMU去模拟出操作结果。
+
+虚拟机内存会被映射到QEMU的进程地址空间，在启动时分配。在虚拟机看来，QEMU所分配的主机上的虚拟地址空间为虚拟机的物理地址空间。
+
+QEMU在主机用户态模拟虚拟机的硬件设备，vCPU对硬件的操作结果会在用户态进行模拟，如虚拟机需要将数据写入硬盘，实际结果是将数据写入到了主机中的一个镜像文件中。
+
+三、创建及使用虚拟机
+命令行创建及启动虚拟机
+成功安装QEMU之后便可创建自己的虚拟机。具体步骤如下：
+
+1, 使用qemu-img创建虚拟机镜像。虚拟机镜像用来模拟虚拟机的硬盘，在启动虚拟机之前需要创建镜像文件。
+
+[kelvin@kelvin tmp]$ qemu-img create -f qcow2 fedora.img 10G
+Formatting 'fedora.img', fmt=qcow2 size=10737418240 encryption=off cluster_size=65536 lazy_refcounts=off 
+[kelvin@kelvin tmp]$ ls
+fedora.img
+-f选项用于指定镜像的格式，qcow2格式是QEMU最常用的镜像格式，采用写时复制技术来优化性能。fedora.img是镜像文件的名字，10G是镜像文件大小。镜像文件创建完成后，可使用qemu-system-x86来启动x86架构的虚拟机：
+
+qemu-system-x86_64 fedora.img
+
+此时会弹出一个窗口来作为虚拟机的显示器，显示内容如下：
+
+QEMU虚拟机显示器输出
+
+因为fedora.img中并未给虚拟机安装操作系统，所以会提示“No bootable device”，无可启动设备。
+
+2, 准备操作系统镜像。
+
+可以从不同Linux发行版的官方网站上获取安装镜像，以fedora20为例：
+
+[kelvin@kelvin tmp]$ wget http://ftp6.sjtu.edu.cn/fedora/linux/releases/20/Live/x86_64/Fedora-Live-Desktop-x86_64-20-1.iso
+
+3, 检查KVM是否可用。
+
+QEMU使用KVM来提升虚拟机性能，如果不启用KVM会导致性能损失。要使用KVM，首先要检查硬件是否有虚拟化支持：
+
+[kelvin@kelvin ~]$ grep -E 'vmx|svm' /proc/cpuinfo
+
+如果有输出则表示硬件有虚拟化支持。其次要检查kvm模块是否已经加载：
+
+[kelvin@kelvin ~]$ lsmod | grep kvm
+kvm_intel             142999  0 
+kvm                   444314  1 kvm_intel
+如果kvm_intel/kvm_amd、kvm模块被显示出来，则kvm模块已经加载。最后要确保qemu在编译的时候使能了KVM，即在执行configure脚本的时候加入了–enable-kvm选项。
+
+4, 启动虚拟机安装操作系统。
+
+执行下面的命令启动带有cdrom的虚拟机：
+
+[kelvin@kelvin tmp]$ qemu-system-x86_64 -m 2048 -enable-kvm fedora.img -cdrom ./Fedora-Live-Desktop-x86_64-20-1.iso
+
+-m 指定虚拟机内存大小，默认单位是MB， -enable-kvm使用KVM进行加速，-cdrom添加fedora的安装镜像。可在弹出的窗口中操作虚拟机，安装操作系统，安装完成后重起虚拟机便会从硬盘(fedora.img)启动。之后再启动虚拟机只需要执行：
+
+[kelvin@kelvin tmp]$ qemu-system-x86_64 -m 2048 -enable-kvm fedora.img
+
+即可。
+
+图形界面创建及启动虚拟机
+命令行启动虚拟机比较繁琐，适合开发者，但对于普通用户来说，采用图形界面管理虚拟机则更为方便。采用图形界面管理QEMU虚拟机需要安装virt-manager，红帽系列的发行版只需要执行命令：
+
+$sudo yum install virt-manager -y
+
+安装完成后用root用户启动virt-manager：
+
+$su -
+*** 安装语句：
+
+$ sudo apt-get install qemu
+
+安装之后终端输入qemu进行测试，如果可行，则表明安装成功，如果不可行，需要注意，再输入qemu-system-i386进行测试，如果这个可行，表明安装成功，为了后期方便使用，我们对其进行链接，语句如下：
+$ sudo ln -s /usr/bin/qemu-system-i386 /usr/bin/qemu
+
+
+此时我们可以在终端下输入qemu进行使用了，此处需要注意qemu需要在图形界面下使用，否则会报如下错误：
+
+Could not initialize SDL(No available video device) - exiting
+--------------------- 
+作者：夜月xl 
+来源：CSDN 
+原文：https://blog.csdn.net/u013045749/article/details/53575639 
+版权声明：本文为博主原创文章，转载请附上博文链接！
+*** 在x86上用qemu起虚拟机是比较容易的。qemu是一款可以从ISA(instructure system arch）开始模拟硬件架构的工具。比如在x86上可以模拟arm架构的机器，它可以不断将guest虚拟机需要的机器指令转换成host指令来模拟不同架构。因此它的性能相当差。因此一般通过联合kvm这种半虚拟化工具达到提高性能的目的，一般有kvm加持的虚拟机速度堪比host。
+
+1 安装qemu kvm
+
+$:apt install qemu kvm qemu-kvm
+
+由于kvm需要CPU硬件支持，使用lscpu查看cpu是否指出vx-d or vx-t，其次要在bios使能
+kvm，使用kvm-ok查看是否在bios中打开了kvm支持，其次是将kernel中kvm相关的feature打
+开，这些都可以在kvm-ok的输出中得到信息。如果kernel中没有打开就需要重新编译kernel
+并重启机器。
+
+2 下载Ubuntu 镜像文件
+
+百度或谷歌搜索Ubuntu cloud imge可以找到下载点，下载x86的ubuntu*.iso 或者 disk镜像。这里推荐iso镜像因为不知道disk起来后的用户名和密码。
+
+3 创建磁盘
+
+$:qemu-img create -q -f qcow2 ubuntu.img 10G
+
+这样就可以创建一个qemu可用的磁盘文件作为虚拟机的磁盘使用。
+
+4 安装虚拟机
+
+$:qemu-system-x86_64 -m 1024 -cdrom ubuntu*.iso --enable-kvm ubuntu.img 
+
+上面的iso镜像相当于光盘，上面的操作是给虚拟机的磁盘装系统，装好后Ubuntu.img 就可以当作含有系统的硬盘正常启动了，安装过程与给真是的物理机安装系统一样，非常简单。
+
+5启动虚拟机
+
+$:qemu-system-x86_64 -m 1024 --enable-kvm ubuntu.img
+
+这样就可以正常启动虚拟机了，因为有kvm的帮助，启动速冻非常快。enjoy！
+--------------------- 
 * ubuntu自定义登录xsession和桌面环境
 linux
 查看系统内置的xsession
@@ -1304,3 +1990,72 @@ sudo gconftool-2 --direct --config-source xml:readwrite:/etc/gconf/gconf.xml.man
 
 glxinfo | grep rendering
 /usr/lib/nux/unity_support_test -p
+* 网易云音乐 
+  /usr/bin/netease-cloud-music
+
+* fdisk 创建 mdr 和 gpt 分区
+Linux fdisk是一个创建和维护分区表的程序，它兼容DOS类型的分区表、BSD或者SUN类型的磁盘列表。
+
+语法
+fdisk [必要参数][选择参数]
+必要参数：
+
+-l 列出素所有分区表
+-u 与"-l"搭配使用，显示分区数目
+选择参数：
+
+-s<分区编号> 指定分区
+-v 版本信息
+菜单操作说明
+
+m ：显示菜单和帮助信息
+a ：活动分区标记/引导分区
+d ：删除分区
+l ：显示分区类型
+n ：新建分区
+p ：显示分区信息
+q ：退出不保存
+t ：设置分区号
+v ：进行分区检查
+w ：保存修改
+x ：扩展应用，高级功能
+实例
+显示当前分区情况：
+
+# fdisk -l
+
+Disk /dev/sda: 10.7 GB, 10737418240 bytes
+255 heads, 63 sectors/track, 1305 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+
+  Device Boot   Start     End   Blocks  Id System
+/dev/sda1  *      1     13   104391  83 Linux
+/dev/sda2       14    1305  10377990  8e Linux LVM
+
+Disk /dev/sdb: 5368 MB, 5368709120 bytes
+255 heads, 63 sectors/track, 652 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+
+Disk /dev/sdb doesn't contain a valid partition table
+显示SCSI硬盘的每个分区情况
+
+# fdisk -lu  
+
+Disk /dev/sda: 10.7 GB, 10737418240 bytes
+255 heads, 63 sectors/track, 1305 cylinders, total 20971520 sectors
+Units = sectors of 1 * 512 = 512 bytes
+
+  Device Boot   Start     End   Blocks  Id System
+/dev/sda1  *     63   208844   104391  83 Linux
+/dev/sda2     208845  20964824  10377990  8e Linux LVM
+
+Disk /dev/sdb: 5368 MB, 5368709120 bytes
+255 heads, 63 sectors/track, 652 cylinders, total 10485760 sectors
+Units = sectors of 1 * 512 = 512 bytes
+
+Disk /dev/sdb doesn't contain a valid partition table
+
+磁盘分区命令，适用于 2TB 以下磁盘分区。
+* gdisk /dev/sda 创建 gpt 分区 
+* timedatectl status
+查看一下系统时间状态，如果时间不对的话可以输入

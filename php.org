@@ -1,6 +1,7 @@
-* Php
+* PHP
 ** 安装与配置
-   配置文件/etc/php/7.0/apache2/php.ini
+   sudo apt install php7
+   apache服务器配置文件/etc/php/7.0/apache2/php.ini
    命令行配置 /etc/php/7.0/cli/php.ini 
 *** 安装
     ./configure --with-mysql --with-apxs=/www/bin/apxs
@@ -1125,11 +1126,10 @@
       require 'vendor/autoload.php';
 ***** 模块仓库
       packagist.org 是 Composer 的仓库，很多著名的 PHP 库都能在其中找到。你也可以提交你自己的作品。
-***** 1. 仅更新单个库
-   只想更新某个特定的库，不想更新它的所有依赖，很简单：
-
-   composer update foo/bar
-   此外，这个技巧还可以用来解决“警告信息问题”。你一定见过这样的警告信息：
+***** 仅更新单个库
+      只想更新某个特定的库，不想更新它的所有依赖，很简单：
+      composer update foo/bar
+      此外，这个技巧还可以用来解决“警告信息问题”。你一定见过这样的警告信息：
 
    Warning: The lock file is not up to date with the latest changes in composer.json, you may be getting outdated dependencies, run update to update them.
    擦，哪里出问题了？别惊慌！如果你编辑了 composer.json，你应该会看到这样的信息。比如，如果你增加或更新了细节信息，比如库的描述、作者、更多参数，甚至仅仅增加了一个空格，都会改变文件的 md5sum。然后 Composer 就会警告你哈希值和 composer.lock 中记载的不同。
@@ -1147,7 +1147,7 @@
    如果你用的 Composer 版本足够新，那么你可以直接使用--lock 选项：
 
    composer update --lock
-***** 2. 不编辑 composer.json 的情况下安装库
+***** 不编辑 composer.json 的情况下安装库
    你可能会觉得每安装一个库都需要修改 composer.json 太麻烦，那么你可以直接使用 require 命令。
 
    composer require "foo/bar:1.0.0"
@@ -1160,13 +1160,13 @@
            "foo/bar": "1.0.0"
        }
    }
-***** 3. 派生很容易
+***** 派生很容易
    初始化的时候，你试过 create-project 命令么？
 
    composer create-project doctrine/orm path 2.2.0
    这会自动克隆仓库，并检出指定的版本。克隆库的时候用这个命令很方便，不需要搜寻原始的 URI 了。
 
-***** 4. 考虑缓存，dist 包优先
+***** 考虑缓存，dist 包优先
    最近一年以来的 Composer 会自动存档你下载的 dist 包。默认设置下，dist 包用于加了 tag 的版本，例如"symfony/symfony": "v2.1.4"，或者是通配符或版本区间，"2.1.*"或">=2.2,<2.3-dev"（如果你使用 stable 作为你的 minimum-stability）。
 
    dist 包也可以用于诸如 dev-master 之类的分支，Github 允许你下载某个 git 引用的压缩包。为了强制使用压缩包，而不是克隆源代码，你可以使用 install 和 update 的--prefer-dist 选项。
@@ -1198,7 +1198,7 @@
    Memory usage: 4.96MB (peak: 5.57MB), time: 0.45s
    这里，twig/twig:1.12.2 的压缩包被保存在~/.composer/cache/files/twig/twig/1.12.2.0-v1.12.2.zip。重新安装包时直接使用。
 
-***** 5. 若要修改，源代码优先
+***** 若要修改，源代码优先
    当你需要修改库的时候，克隆源代码就比下载包方便了。你可以使用--prefer-source 来强制选择克隆源代码。
 
    composer update symfony/yaml --prefer-source
@@ -1830,10 +1830,10 @@ var_dump($tree);
   echo mysql_errno();  
   echo mysql_error();
 * phpunit 最新https://phar.phpunit.de/
-$ wget http://phar.phpunit.cn/phpunit-6.2.phar
-$ chmod +x phpunit-6.2.phar
-$ sudo mv phpunit-6.2.phar /usr/local/bin/phpunit
-$ phpunit --version
+  $ wget http://phar.phpunit.cn/phpunit-6.2.phar
+  $ chmod +x phpunit-6.2.phar
+  $ sudo mv phpunit-6.2.phar /usr/local/bin/phpunit
+  $ phpunit --version
 * 数据库操作
 1.链接数据库通用方法：conn.php 
 <?php 
@@ -1943,8 +1943,3 @@ while($rs=mysql_fetch_array($query)){
 
 
 
-
-* hello
-  nice to meet you 
-  how do you dou 
-  if you want to get some thing better

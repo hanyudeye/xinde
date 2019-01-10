@@ -1,17 +1,5 @@
 * spacemacs 黑板
 ** 编程功能
-*** flycheck(错误检查）
-    | Key Binding | Description                                                           |
-    |-------------+-----------------------------------------------------------------------|
-    | ~SPC t s~   | toggle flycheck                                                       |
-    | ~SPC e c~   | clear all errors                                                      |
-    | ~SPC e h~   | 语法检查算法描述 describe a flycheck checker                          |
-    | ~SPC e l~   | toggle the display of the =flycheck= list of errors/warnings          |
-    | ~SPC e n~   | go to the next error                                                  |
-    | ~SPC e p~   | go to the previous error                                              |
-    | ~SPC e v~   | verify flycheck setup (useful to debug 3rd party tools configuration) |
-    | ~SPC e .~   | error transient state                                                 |
-
 *** 注释 
     | Key Binding | Description               |
     |-------------+---------------------------|
@@ -226,7 +214,7 @@
   - Enables =eldoc= in modes that otherwise might not support it.
   - Enables =company complete= in modes that otherwise might not support it.
 
-**** Install 安装
+**** Install
 ***** GNU Global (gtags)
    To use gtags, you first have to install [[https://www.gnu.org/software/global/download.html][GNU Global]].
 
@@ -475,6 +463,8 @@
     | ~SPC c m~   | =helm-make=                    |
     | ~SPC c r~   | recompile                      |
 
+*** 手动折行
+    org-fill-paragraph 快捷键 M-q
 ** 按键
 *** 键绑定
     (evil-leader/set-key "o y" 'copy-to-clipboard)
@@ -515,7 +505,6 @@
        不论何时，你遇到怪异的行为或想知道是什么东西做的，这些功能是你应该首先查阅的。
 
        探索
-       SPC f e h 	    列出所有层并允许你浏览层上的文件。
        SPC ? 	    列出所有快捷键。helm-descbinds
 
        .spacemacs  文件
@@ -867,7 +856,6 @@
      By default the [[https://github.com/justbur/emacs-which-key][which-key]] buffer will be displayed quickly after the key has been
      pressed. You can change the delay by setting the variable
      =dotspacemacs-which-key-delay= to your liking (the value is in seconds).
-
 **** Describe key bindings
      It is possible to search for specific key bindings by pressing ~SPC ?~.
 
@@ -2476,3 +2464,64 @@
 | ~g V~       | View content source |
 
 Hint: use ~SPC w c~ to center the buffer.
+
+* 英汉转换
+  打开英语提示 (toggle-company-english-helper)
+* syntax check(语法检查） layers
+** Features:
+- Support for automatic syntax checking with [[http://www.flycheck.org/][Flycheck]] for various language layers
+- Tooltip syntax errors with =popwin=
+** Layer
+To use this configuration layer, add it to your =~/.spacemacs=. You will need to
+add =syntax-checking= to the existing =dotspacemacs-configuration-layers= list in this
+file.
+
+As this is a support layer you will also have to install at least one supported language
+layer for it to have any effect.
+
+** Enabling/Disabling tooltips
+By default tooltips are enabled and used whenever it is possible.
+You can disable them by setting the variable =syntax-checking-enable-tooltips=
+to =nil=:
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default dotspacemacs-configuration-layers
+    '((syntax-checking :variables syntax-checking-enable-tooltips nil)))
+#+END_SRC
+
+** Disabling by default
+By default, syntax-checking is enabled in all available major modes (except for
+=emacs-lisp-mode=) and may be toggled off with ~SPC t s~. You can default this to off
+by setting the variable =syntax-checking-enable-by-default= to =nil=:
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default dotspacemacs-configuration-layers
+    '((syntax-checking :variables syntax-checking-enable-by-default nil)))
+#+END_SRC
+
+If you want more fine-grained control, you can configure the variable
+=flycheck-global-modes= instead. Note that this variable should be manipulated
+in =dotspacemacs/user-config=.
+
+** Bitmaps
+If the original flycheck fringe bitmaps are more to your liking, you can set the
+variable =syntax-checking-use-original-bitmaps= to =t=:
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default dotspacemacs-configuration-layers
+    '((syntax-checking :variables syntax-checking-use-original-bitmaps t)))
+#+END_SRC
+
+** Key bindings
+| Key binding | Description                                                  |
+|-------------+--------------------------------------------------------------|
+| ~SPC e b~   | check for errors now                                         |
+| ~SPC e c~   | clear errors                                                 |
+| ~SPC e h~   | describe flycheck checker                                    |
+| ~SPC e l~   | display a list of all the errors                             |
+| ~SPC e L~   | display a list of all the errors and focus the errors buffer |
+| ~SPC e s~   | set flycheck checker                                         |
+| ~SPC e S~   | set flycheck checker executable                              |
+| ~SPC e v~   | verify flycheck setup                                        |
+| ~SPC t s~   | toggle flycheck                                              |
+| ~SPC e x~   | explain the error at point                                   |

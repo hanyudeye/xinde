@@ -1,0 +1,862 @@
+* Archlinux安装笔记
+身为一个小小弱菜，却有个不安分的心，不停的尝试发行版，Arch应该是在7月多去掉了AIF
+安装框架，安装过程相对就比较麻烦了，不过还好它wiki是相当的全面，网上还有很多资料
+可以参考下载镜像烧进U盘就不多说了，主菜单选择 "Boot Arch Linux" 并按回车，系统将
+加载并给出登录提示，自动以 'root' 登录。系统默认使用美式键盘映射。
+
+网络连接
+
+archlinux安装是特别依赖网络的，没有网络安装的话就X疼了。 安装程序会自动执行
+dhcpcd建立连接，可以试试ping一下百度什么的，不行的话用以下方法手动配置
+
+如果是有线连接：
+激活接口：
+
+# ip link set eth0 up
+添加ip地址：
+
+# ip addr add <ip 地址>/<子网掩码> dev <接口名>
+用类似下面的命令添加网关，ip 地址替换为实际的网关地址：
+
+# ip route add default via <ip 地址>
+编辑/etc/resolv.conf 如下, 替换你的DNS服务器IP地址和本地域名:
+
+# nano /etc/resolv.conf
+ nameserver 61.23.173.5
+ nameserver 61.95.849.8
+ search example.com
+如果是无线网络：
+下面的示例中使用 wlan0 作为接口，linksys 作为 ESSID。请根据实际情况修改。
+确定网络接口：
+
+# lspci | grep -i net
+用 iwconfig 确定 udev 已经载入驱动，而且驱动程序创建了可用的无线内核接口：
+输出和下面不相似表示驱动没有载入，需要自己加入
+
+#iwconfig
+lo no wireless extensions.
+eth0 no wireless extensions.
+wlan0    unassociated  ESSID:""
+         Mode:Managed  Channel=0  Access Point: Not-Associated
+         Bit Rate:0 kb/s   Tx-Power=20 dBm   Sensitivity=8/0
+         Retry limit:7   RTS thr:off   Fragment thr:off
+         Power Management:off
+         Link Quality:0  Signal level:0  Noise level:0
+         Rx invalid nwid:0  Rx invalid crypt:0  Rx invalid frag:0
+         Tx excessive retries:0  Invalid misc:0   Missed beacon:0
+wlan0 为可用接口。
+启用接口：
+
+# ip link set wlan0 up
+在安装 Archlinux 时,无线网络驱动和工具已经包含在 base 组中。请确保为无线网卡安装正确的驱动。通常在初始化的光盘系统和新装的系统中，Udev 会加载合适的驱动,并创建无线网络接口。如果在安装 Archlinux 系统的时候没有配置无线网卡,请确保下列所需的软件包已经通过 pacman 安装完毕(驱动,必须的固件, wireless_tools，iw，wpa_supplicant
+然后使用netcfg提供的 wifi-menu 连接到网络：
+
+# wifi-menu wlan0
+如果是需要拨号上网的 可选择pppoe
+
+分区
+
+现在的arch有三种分区工具，如果你是GPT分区表的话可以选择cgdisk，mbr选择cfdisk，
+gparted则是两者都支持。
+
+弱菜君用的mbr分区表
+
+# cfdisk /dev/sda
+然后根据需求分区
+分区之后，还需要用 mkfs 将分区格式化为选定的文件系统，我使用的是ext4文件系统
+
+# mkfs.ext4 /dev/sda1
+# mkfs.ext4 /dev/sda2
+刷新一下分区表(如果变动比较大要在格式化之前刷新一下分区表)
+
+# partprobe /dev/sda
+挂载分区
+要检查当前磁盘的标识符和布局：
+
+ # lsblk /dev/sda
+先挂载根分区到/mnt.
+
+# mount /dev/sda1 /mnt
+# ls /mnt
+格式化完应该就一个lost+found
+
+然后挂载/home分区和其余单独分区(/boot, /var 等)。
+然后在 /mnt 中创建 home 目录并挂载分区：
+
+# mkswap /dev/sdaX && swapon /dev/sdaX ##分区格式化为swap,并且创造swap分区
+# mount /dev/sdaX /mnt ##挂载/分区到/mnt上
+# mkdir /mnt/home && mount /dev/sdaY /mnt/home ##创建home文件,并且将Y分区挂载到上面
+
+把163的源放在最前面
+
+# nano /etc/pacman.d/mirrorlist
+Server = http://mirrors.163.com/archlinux/$repo/os/$arch
+然后升级文件列表
+
+pacman -Syy
+#nano /etc/pacman.conf
+[options]
+前面的选项改成这样
+
+RootDir = /mnt
+DBPath = /mnt/var/lib/pacman/
+CacheDir = /mnt/var/cache/pacman/pkg/
+LogFile = /mnt/var/log/pacman.log
+GPGDir = /mnt/etc/pacman.d/gnupg/
+SigLevel = Never
+后面
+core、extra、community
+的SigLevel = PackageRequired之前加#注释掉
+
+使用 pacstrap 脚本安装基本系统：
+
+# pacstrap /mnt base base-devel
+无线的同时安装以下软件包，否则chroot后上不了网
+
+#pacstrp /mnt wireless_tools wpa_supplicant wpa_actiond dialog
+
+生成fstab
+#genfstab -p /mnt >> /mnt/etc/fstab
+
+Chroot到新系统
+#arch-chroot /mnt 配置系统
+
+#vi /etc/locale.gen
+选择你需要的本地化类型，移除前面的#即可
+
+en_US.UTF-8 UTF-8
+en_GB.UTF-8 UTF-8
+zh_CN.GB18030 GB18030
+zh_CN.GBK GBK
+zh_CN.UTF-8 UTF-8
+zh_CN GB2312
+然后运行
+
+# locale-gen
+locale.conf 文件默认不存在，一般设置LANG就行了，它是其它设置的默认值。
+
+LANG=zh_CN.UTF-8
+LC_TIME=en_GB.UTF-8
+时区
+编辑文件 /etc/timezone
+Asia/Shanghai
+同时，将/etc/localtime 软链接到 /usr/share/zoneinfo/Zone/SubZone.其中 Zone 和 Subzone 替换为所在时区
+
+# ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+硬件时间
+在 /etc/adjtime 中设置，默认、推荐的设置为UTC
+可用以下命令自动生成
+# hwclock --systohc --localtime
+NTPd是使用网络时间协议将 GNU/Linux 系统的软件时钟与 Internet 时间服务器同步的最常见的方法
+安装ntp
+
+pacman -S ntp
+想要仅仅同步时钟一次，不想启动守护进程的话，运行：
+
+# ntpd -qg
+# hwclock -s
+内核模块
+一般情况下 udev 会自动加载需要的模块，大部分用户都不需要手动修改。这里只需要加入真正需要的模块。
+/etc/modules-load.d/中保存内核启动时加入模块的配置文件。每个配置文件已/etc/modules-load.d/.conf的格式命名。配置文件中包含需要装入的内核列表，每个一行。空行和以 # 或 ; 开头的行直接被忽略。比如
+
+/etc/modules-load.d/virtio-net.conf
+# Load virtio-net.ko at boot
+virtio-net
+注意：新版本arch使用systemd系统和服务管理器。systemd 是 Linux 下的一款系统和服务管理器，兼容 SysV 和 LSB 的启动脚本。systemd的特性有：支持并行化任务；同时采用 socket 式与 D-Bus 总线式激活服务；按需启动守护进程（daemon）；利用 Linux 的 cgroups 监视进程；支持快照和系统恢复；维护挂载点；各服务间基于依赖关系进行精密控制。systemd 完全可以替代 Arch 默认的 sysvinit 启动系统。
+
+系统默认安装systemd。建议所有系统都使用 systemd 的配置文件。
+启用 net-auto-wireless 服务
+
+# systemctl enable net-auto-wireless.service
+Make sure that the correct wireless interface (usually wlan0) is set in /etc/conf.d/netcfg:
+
+# nano /etc/conf.d/netcfg
+WIRELESS_INTERFACE="wlan0"
+设置主机名
+
+/etc/hostname
+myhostname
+设置 Root 密码并创建一般用户
+
+# passwd
+# useradd -m -g users -s /bin/bash archie
+# passwd archie
+安装配置启动加载器
+BIOS 系统由三个供选择 - Syslinux, GRUB, 和 LILO. 按个人喜好选择一个引导
+syslinux
+
+# pacman -S syslinux
+# syslinux-install_update -iam
+编辑 /boot/syslinux/syslinux.cfg，将 / 指向正确的根分区，这是必须的，否则 Arch 启动不起来。将"sda3"修改为实际的根分区。同样，修改LABEL archfallback.
+
+# nano /boot/syslinux/syslinux.cfg
+...
+LABEL arch
+ ...
+ APPEND root=/dev/sda3 ro
+如果你有windows系统，将 windows启动项目前的#删除。
+grub 我是用的grub
+安装到 BIOS 主板系统：
+
+# pacman -S grub-bios
+# grub-install --target=i386-pc --recheck /dev/sda
+# cp /usr/share/locale/en\@quot/LC_MESSAGES/grub.mo /boot/grub/locale/en.mo
+虽然手动配置grub.cfg完全可以工作，建议自动生成这个文件。
+要搜索硬盘上安装的其它操作系统，请先用 # pacman -S os-prober 安装 os-prober。
+
+# grub-mkconfig -o /boot/grub/grub.cfg
+安装桌面
+pacman -S lxde或者pacman -S gnome-core
+这个自己选择，kde、gnome、lxde或者可以选用openbox、awesome等WM
+
+安装完成后, 复制/etc/xdg/openbox里的3个文件到 ~/.config/openbox :
+menu.xml rc.xml autostart
+也可以运行以下命令
+
+mkdir -p ~/.config/openbox
+cp /etc/xdg/openbox/menu.xml /etc/xdg/openbox/rc.xml /etc/xdg/openbox/autostart ~/.config/openbox
+设置开机自动启动的程序
+用你喜欢的编辑器打开/etc/xdg/lxsession/LXDE/autostart，然后在其中添加你要开机自动启动的程序，就像这样：
+
+@xscreensaver -no-splash
+@lxpanel --profile LXDE
+@pcmanfm -d
+@fcitx
+@xcompmgr -Ss -n -Cc -fF -I-10 -O-10 -D1 -t-3 -l-4 -r4 &
+启动桌面环境
+
+使用登录管理器
+通过启动登录管理器（或称显示管理器），即可进行图形界面登录。目前，Arch 提供了 GDM、KDM、SLiM、XDM 和 LXDM 的 systemd 服务文件。以 KDM 为例，配置开机启动：
+
+# systemctl enable lxdm.service
+执行上述命令后，登录管理器应当能正常工作了。
+
+启动速度优化
+systemd 自己实现了一个 readahead，可以用来提高开机效率。不过，效果会因内核版本和硬件情况而不同（极端的还会变慢）。开启 readahead：
+
+# systemctl enable systemd-readahead-collect.service systemd-readahead-replay.service
+要知道，readahead 的超级牛力只有在重启几次后才会显现。
+
+安装显卡驱动
+如果是nvidia的显卡，首先安装yaourt
+
+最简单安装Yaourt的方式是添加Yaourt源至 /etc/pacman.conf:
+
+[archlinuxfr]
+Server = http://repo.archlinux.fr/$arch
+或者
+ [archlinuxfr]
+ Server = http://repo-fr.archlinuxcn.org/$arch
+同步并安装：
+# pacman -Syu yaourt
+安装nvidia-all脚本
+
+yaourt -S nvidia-all
+假如使用的是最新的显卡，也许需要使用AUR上的驱动nvidia-beta和nvidia-utils-beta，因为稳定版的驱动不支持一些新引入的特性。
+安装的时候，如果 pacman 询问您移除 libgl 并且因为依赖无法移除，可以使用 # pacman -Rdd libgl 移除 libgl.
+自动配置nvidia,创建一个基本的配置文件/etc/X11/xorg.conf
+
+#nvidia-xconfig
+编辑/etc/X11/xorg.conf ：
+关闭启动时的Logo
+添加"NoLogo"选项到Device节里：
+
+Option "NoLogo" "1"
+启用硬件加速
+注意: 从97.46.xx版本开始RenderAccel就已经被默认启用。
+添加"RenderAccel"选项在Device节下面：
+
+Option "RenderAccel" "1"
+32位应用程序无法启动
+
+在64位系统下，安装lib32-nvidia-utils对应相同版本的64位驱动可以修复这个问题。
+笔记本触摸板驱动
+
+笔记本(或触摸屏)用户需要 synaptics 软件包以支持触摸板/触摸屏：
+# pacman -S xf86-input-synaptics
+中文化与安装字体
+除了设置好locale，还需要安装中文字体。
+常用的免费（GPL或兼容版权）中文字体有：
+
+wqy-bitmapfont
+wqy-zenhei
+ttf-arphic-ukai
+ttf-arphic-uming
+ttf-fireflysung
+wqy-microhei（AUR中）
+wqy-microhei-lite（AUR中）
+系统字体将默认安装到/usr/share/fonts。
+也可以手动安装字体，将字体复制到 /usr/share/fonts，进入/usr/share/fonts，执行 fc-cache -fv
+
+更新系统
+更新前，请阅读 新闻 (或者 通告邮件列表)。开发者通常会针对已知问题提供需要配置和修改的重要信息。在升级前访问这些页面是个好习惯。
+同步、刷新、升级整个系统：
+
+# pacman -Syu
+卸载分区并重启系统
+
+如果还在 chroot 环境，先用 exit 命令退出系统：
+
+# exit
+卸载/mnt中挂载的系统：
+
+# umount /mnt/{boot,home,}
+重启：
+
+# reboot
+硬盘里有ntfs分区的需要挂载，编辑/etc/fstab
+
+首先在/mnt创建挂载到的文件夹
+
+$sudo mkdir /mnt/winc /mnt/wind /mnt/wine
+安装ntfs-3g
+
+$sudo pacman -S ntfs-3g
+编辑 fstab
+
+$sudo leafpad /etc/fstab
+添加如下类似文件，自己修改
+
+/dev/sda1 /media/winc ntfs defaults,iocharset=utf8 0 0
+/dev/sda5 /media/wind ntfs defaults,iocharset=utf8 0 0
+/dev/sda6 /media/wine ntfs defaults,iocharset=utf8 0 0
+下面是lxde的简易配置
+没有快捷键真不爽，所以首先设置它
+网上都是说rc.xml用于设置快捷键，但是很奇怪，我发现登录后，快捷键没生效，不过如果运行了fusion-icon，点击一下reload window manager，快捷键就能生效
+继续研究发现，~/.config/openbox下还有一个lxde-rc.xml文件，这里也可以设置快捷键，和上面相反，这里的设置在登录后直接就能用，但reload wm后就不能用了。
+所以办法是，对两个文件都设置，格式如下：
+
+ <keybind key="F9">
+      <action name="Execute">
+        <execute>gnome-terminal -x mocp</execute>
+      </action>
+    </keybind>
+其中第一行是要设置的快捷键，第三行是相应的命令，把它放在 和之间。
+LXDE下我找不到调节音量的东东，所以把音量调节绑定到快捷键了：
+
+<!-- 音量調節 -->
+<keybind key="C-KP_3">
+<action name="Execute">
+<command>amixer -q set Master 3%-</command>
+</action>
+</keybind>
+<keybind key="C-KP_9">
+<action name="Execute">
+<command>amixer -q set Master unmute 3%+</command>
+</action>
+</keybind>
+接下来设置一下字体DPI，默认的太小了,改为96：
+
+$ echo Xft.dpi:96 >> ~/.Xresources
+
+如果使用startx启动Openbox的话，要在.xinitrc的开始处添加一行：
+
+xrdb -merge ~/.Xresources
+其它设置可以用obconf，LXDE会继承gnome的一些东西，比如登录时自动运行的程序，在/.config/autostart目录下。
+主题之类的可以在“程序菜单-首选项-外观”那里设置
+
+#编辑~/.xprofile，使fcitx自启动
+
+#!/bin/sh
+LANG=zh_CN.UTF-8
+export XMODIFIERS="@im=fcitx"
+fcitx &
+接下来就是使用sudo，自动挂载U盘，配置vim zsh 看个人需要了。
+到这里弱菜君的安装笔记就算是结束了，Arch采用systemed，表示很不习惯，也不是很经常用，也没有用过逆天的aur，现在不怎么进Arch了，主要用Debian，寒假准备最后换成Gentoo后稳定下来
+* arch安装
+原文主要针对的是使用BIOS和MBR的计算机，不过考虑到目前大家都开始使用支持UEFI的机
+器，并且可能由于部分原因需要使用GPT，此文也就更新了相关内容(其实是我换新机器
+了。。。)。
+
+Archlinux的优点：
+1.滚动升级，使用最新的包，比如最新的内核
+3.较完美得解决软件包的依赖问题
+4.详细的wiki，基本能够找到你想要的
+
+Archlinux的缺点：
+1.据说pacman会滚动失败
+2.安装有一定难度
+3.软件包可能存在bug
+
+如果你不怕折腾，但又厌倦无休止的折腾，那么ArchLinux是一个比较好的选择，但不要在
+生产环境中使用它，因为这纯粹是自找麻烦。
+
+===Changelog===
+[2015-4-20] 添加ibus-rime的相关配置，fcitx-sogoupinyin不再作为首选方案。
+[2016-1-28] 添加deepin桌面的配置，并将其作为首选方案，重新启用fcitx-sogoupinyin
+[2016-4-15] 修正EFI的boot loader，使用bootctl
+[2017-4-22] 修正DDE潜在的依赖缺失问题，感谢Dr. Xie
+
+0x00 安装准备
+1.安装介质
+我是从USTC的源上下载镜像文件的，教育网速度飞快，点击进入，非教育网用户，点击进入。
+你可以选择刻录到光盘或者U盘，或者放到手机里等等，在此不再复述，如果你不会，请先学习相关内容。
+
+2.测试网络
+如果你使用有线网，直接ping任何网站(当然不能是局域网内的)。
+如果你使用无线网，我的建议是使用wifi-menu，没有有线网卡的机器有时候的确很让人无奈。。。
+
+0x01 安装基本系统
+1.UEFI模式测试
+如果你想使用UEFI，并且你的机器支持UEFI，你在引导时应该会看到如下选项，
+
+Arch Linux archiso x86_64 UEFI USB
+UEFI Shell x86_64 v1
+UEFI Shell x86_64 v2
+EFI Default Loader
+你应该可以知道Archlinux只提供64位的UEFI模式安装，32位无法引导，本人已经尝试过了。
+如果你忘记了是否出现过上述选项，你也可以使用如下命令：
+
+efivar -l
+如果你看到了一大串内容，那就是进入了UEFI安装模式。否则，请记住，你的电脑可能不支持UEFI或者你没进入UEFI安装模式，在后续内容中，你应该选择BIOS和MBR。
+
+2.创建分区
+在这里设计到一个很大的内容，如何安排分区，这个看每个人如何规划了，下面我将使用一个比较普遍的方案：
+
+/dev/sda1  1G  /boot  物理分区
+/dev/sda2  40G /      物理分区
+/dev/sda3  60G /home  物理分区
+/dev/sda4  8G  swap   物理分区
+关于分区的扩展知识，请参考wiki，点击进入。
+
+首先是MBR分区的创建，GPT的请略过，这里使用的工具是fdisk。
+
+fdisk /dev/sda
+本机只有一个硬盘，所以使用/dev/sda，如果你有多个硬盘，应该也能知道该使用什么绝对地址了。
+分区的方法都比较相似，使用m，可以列出所有命令，请根据提示分区。
+
+其次是GPT分区，基本和MBR分区一样，只是我们使用的工具是gdisk。
+
+gdisk /dev/sda
+需要注意的是分区的标志，
+
+/dev/sda1 EF00
+/dev/sda2 8300
+/dev/sda3 8300
+/dev/sda4 8200
+
+3.安装文件系统
+
+接下来是安装文件系统，在这里GPT和MBR的区别只有/dev/sda1这个分区，我们放到最后解
+释。这里我们使用的FS是比较成熟的ext4，至于最新的btrfs，老实说我没用过，即使我用
+的是SSD，并且“据说”btrfs对SSD有优化，大家可以尝试下。
+
+mkfs.ext4 /dev/sda2
+mkfs.ext4 /dev/sda3
+mkswap /dev/sda4
+swapon /dev/sda4
+最后一条命令是开启交换分区。
+对于/boot这个分区，使用MBR的命令如下：
+
+mkfs.ext4 /dev/sda1
+对于GPT分区，请使用如下命令：
+
+mkfs.fat -F32 /dev/sda1
+4.挂载分区
+如果你使用推荐的分区，请使用如下命令，否则，请自行调整
+
+mount /dev/sda2 /mnt
+mkdir /mnt/{boot,home}
+mount /dev/sda1 /mnt/boot
+mount /dev/sda3 /mnt/home
+5.选择更新源
+sed -i "s/^\b/#/g" /etc/pacman.d/mirrorlist
+nano /etc/pacman.d/mirrorlist
+pacman -Syy
+
+还是和之前说的那样，请根据你的网络环境选择镜像，选择镜像，只需要将对应地址前的#
+去掉即可，这里推荐使用ustc或者163的源。
+
+这里还有一个小故事，第一次安装Arch的时候，在mirrorlist中所有的Taiwan后面都有
+“Province of China”字样，顿生好感，只可惜现在的mirrorlist中已经没有这个彩蛋了。
+
+6.部署基本系统
+
+这里只要一条基本的命令就能自动完成部署了，比Gentoo简单不少。如果你想使用netstat
+和ifconfig之类的指令，请加上net-tools。
+
+pacstrap -i /mnt base base-devel net-tools
+7.生成fstab fstab中记录了挂载的相关信息，Archlinux中提供了工具来一键生成(怎么感觉逼格有点低。。。)
+
+genfstab -U -p /mnt >> /mnt/etc/fstab
+
+这里使用的是UUID，如果不加-U，那么在fstab中记录的就是/dev/sdX之类的地址了，UUID
+的方式更加好，为什么呢？请自行wiki。
+
+0x03 基本系统设置
+
+首先请使用chroot进入部署好的基本系统，这里使用“进入”，只是为了避免此blog涵盖过
+多内容，关于chroot的知识，点击进入。
+
+arch-chroot /mnt /bin/bash
+alias ls='ls --color'
+后一条命令是为了让ls显示颜色，方便查看。
+
+1.设置Locale
+nano /etc/locale.gen
+这里你至少开启en_US.UTF-8和zh_CN.UTF-8。
+
+locale-gen
+echo LANG=zh_CN.UTF-8 >> /etc/locale.conf
+这里由于console字体的原因，中文会变成方框，如果你不安装桌面环境，请使用en_US.UTF-8。
+
+2.设置console
+nano /etc/vconsole.conf
+输入如下内容
+
+KEYMAP=us
+FONT=
+3.设置时区
+ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+这里大家可能会发现BIOS的时间和系统不一样了，我提供一个解决方案。
+
+nano /etc/adjtime
+输入如下内容：
+
+0.000000 0 0.000000
+0
+LOCAL
+原本是为了方便时区调整的措施，点击详解，对于多系统的用户而言，就很纠结了，特别是我这样有OCD的。
+
+4.设置主机名
+虽说这里的主机名可以有大写，不过我建议大家使用常规的英文小写。
+
+echo 主机名 > /etc/hostname
+你还得修改/etc/hosts文件的内容。
+
+nano /etc/hosts
+你会看到如下内容：
+
+#
+# /etc/hosts: static lookup table for host names
+#
+#<ip-address>    <hostname.domain.org>              <hostname>
+127.0.0.1    localhost.localdomain localhost   主机名    
+::1        localhost.localdomain localhost   主机名
+#End of file
+请把myhostname替换成你所设置的主机名。
+
+5.生成初始ramdisk环境
+mkinitcpio -p linux
+6.用户设置
+首先是设置root的密码：
+
+passwd
+创建一个日常用户，这里添加wheel用户组是为了能够使用sudo提权，毕竟我可不敢直接拿着root操作(虽然我经常这么干)。
+
+useradd -m -g users -G wheel -s /bin/bash 用户名 
+passwd 用户名
+7.安装启动器
+首先是对于BIOS用户，UEFI的请略过。这里推荐使用GRUB。
+
+pacman -S grub-bios 
+grub-install /dev/sda 
+grub-mkconfig -o /boot/grub/grub.cfg
+这三条命令分别是使用pacman获取grub，将引导信息写到sda，以及生成配置文件grub.cfg。
+
+对于使用UEFI的用户，官方文档不再使用gummiboot，由于我已经很久没有重装系统了，因此也就没有关注官方的更新，对不住。现在的启动器是system-boot，应该是直接用systemd来接管启动，总算是统一了。
+
+只需要运行如下命令：
+
+bootctl install
+虽然换成了system-boot，但是配置依旧少不了。
+
+首先我们需要在/boot/loader/entries文件夹中创建名为arch.conf的配置文件，添加如下内容：
+
+title Arch Linux
+linux /vmlinuz-linux
+initrd /initramfs-linux.img
+options root=/dev/sda2 rw
+大致意思，各位根据名字应该就能猜个大概，这里只需要注意root部分可以填写UUID，但是为了图方面，我就直接用路径代替了，sda2即为root分区，各位需要根据自己的分区情况自行决定。
+
+接下来需要配置/boot/loader/loader.conf，这个文件有默认的内容，只需要修改下即可。
+
+timeout 3
+default arch
+如有特殊需求，请自行参考相关wiki，点击进入。
+
+8.重启
+需要退出chroot，卸载分区，然后直接reboot。
+
+exit
+umount /mnt/{boot,home}
+umount /mnt
+reboot
+请注意，如果你的机器只有无线网卡，并且你希望通过wifi-menu联网，那么请确保在reboot之前，你已经安装了dialog。
+
+
+0x04 相关驱动安装
+这里有个问题很纠结，我准备在这篇blog里先提供Gnome环境的配置，而目前Gnome能够只是wayland了，但是呢，还不完美，经过本人的测试，会出现部分触控失灵等问题。因此，先偷个懒，使用Gnome的默认环境X。
+
+1.安装ALSA(声卡)
+pacman -S alsa-utils
+2.安装显卡驱动
+由于我使用的是Intel核显，因此如下是核显驱动的安装，如果你使用的是其他显卡，请参考官方wiki，点击进入。
+pacman -S mesa xf86-video-intel
+3.安装触摸板驱动
+pacman -S xf86-input-synaptics
+4. 安装显示服务器
+这里可选wayland和xorg-server，gnome对于前者已经支持的比较完善了，当然大家亦可选择全装。
+
+# xorg及其utils
+pacman -S xorg-server xorg-xinit
+# wayland
+pacman -S wayland
+0x05 桌面环境
+在Archlinux中，有很多可用的桌面环境，以下简称DE，比如Gnome，KDE，Xfce等。截至2016年1月底，Gnome的最新版本为3.18.3，可以称之为稳定的DE。KDE5依旧一团糟，不建议读者使用。
+
+另外有一个好消息，Deepin DE正式从AUR并入package group，也就是说大家再也无需担心依赖问题了，本次更新，新增DDE的配置。
+
+Gnome DE安装
+1. Gnome基本环境安装
+pacman -S gnome
+2.安装额外软件包
+其实有另外一个包合集gnome-extra，只不过这个包里面包含了太多没用的东西，没什么用，OCD又犯了。。。
+
+pacman -S file-roller evolution gedit gnome-music gnome-photos cheese gnome-mplayer
+pacman -S unrar unzip p7zip
+Deepin DE安装
+如果你已经安装了Gnome，想要改为DDE，那么你需要先移除所有gnome相关的包，然后在按照如下进行配置，另外，在这个过程中networkmanager也会被移除，一定要再次安装，否则会相当麻烦。
+
+1. DDE基本环境安装
+pacman -S deepin deepin-extra lightdm lightdm-deepin-greeter
+2.安装额外软件包
+deepin-extra包含了deepin特有的一些应用，还是挺简洁的，这里就无需OCD加成了。不过，有些应用依旧缺失，需要补救一下。
+
+pacman -S file-roller evince gedit thunderbird gpicview
+pacman -S unrar unzip p7zip
+在安装完DDE后，可能会遇到无法将语言改为中文的情况，只要删除～/.pam_environment文件即可。
+
+3.安装浏览器
+这里我们使用chromium，至于为什么不是firefox，原因有二，其一，我觉得它更快；其二，它能用最近的flash插件。
+
+pacman -S chromium
+最新的flash插件需要到AUR上去下，这里提供下载地址，点击下载。
+下载完成后，解压，进入相关目录。
+
+makepkg
+pacman -U 生成的文件名，以.xz结尾
+4.配置输入法
+关于输入法，大致有2个选择，ibus和fcitx，分别有ibus-rime和fcitx-sogoupinyin。
+
+4.1 rime输入法配置
+安装ibus-rime很简单
+
+pacman -S ibus-rime
+依赖会自动完成安装。和fcitx一样，我们需要配置一下.xprofile
+
+export GTK_IM_MODULE=ibus
+export QT_IM_MODULE=ibus
+export XMODIFIERS=@im=ibus
+然后，在设置的输入源中就能找到rime了，你会发现ibus和gnome的集成比fcitx好多了，而且现在ibus也比原来快多了。
+Tip：关于半角全角和简体繁体切换，只需要在输入的时候按F4即可看到选项。
+
+4.2 sogou输入法安装
+先安装fcitx框架
+
+pacman -S fcitx fcitx-qt4 fcitx-qt5 fcitx-gtk2 fcitx-gtk3 fcitx-configtool
+这里会把qt的环境给依赖进来，没办法。。。
+在用户目录下添加个配置文件：
+
+$ nano ~/.xprofile
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+然后，从AUR下载fcitx-sougoupinyin，点击下载。
+先安装依赖opencc，这个神器是简体和繁体互相转换的库。
+
+pacman -S opencc
+解压下载的文件，进入目录，然后如下操作：
+
+makepkg
+pacman -U 生成的文件，以.xz结尾
+之后重启的时候，进菜单点击搜狗图标，应该就能用了，不行的话可以尝试运行sogou-qimpanel。
+
+5.注册相关服务
+务必记得安装networkmanager，不然无法开启网络的自动探测。
+
+pacman -S networkmanager
+开启网络服务
+
+systemctl enable NetworkManager
+如果你安装的是Gnome，你需要开启gdm。
+
+systemctl enable gdm
+如果你安装的是Deepin，你需要开启lightdm
+
+systemctl enable lightdm
+另外对于deepin，我们还需要修改lightdm的一个配置文件/etc/lightdm/lightdm.conf。
+在如下段中添加deepin的greeter-session。
+
+[Seat:*]
+...
+greeter-session=lightdm-deepin-greeter
+0xFF 写在最后
+至此，恭喜你，已经成功安装Archlinux发行版，我希望每位读者都能到达这一步。我会持续更新这篇文章，只要我还在使用Archlinux。码字不易，且看且珍惜。如果你们发现什么错误或者有什么需求，请在评论中说明，我会尽快更正。
+
+最后，声明一下，欢迎转载，但是请注明出处，并添加链接。
+* 安装archlinx
+  工具/原料
+  VM虚拟机
+  arch镜像
+  qemu-system-x86_64 -hda archlinux.vmdk -boot d -cdrom /home/wuming/soft/tar/archlinux-2017.03.01-dual.iso -m 512
+** 方法/步骤
+*** 首先 创建虚拟机, 加载镜像并开机
+*** 安装os
+    操作系统从光盘镜像引导启动, 需要把系统装在硬盘中
+**** 分区 
+     fdisk /dev/sda
+     设定分区大小, 用 +1G 命令
+     要使分区结果生效，需要用 w 命令
+     
+     BIOS(fdisk、cfdisk 和 sfdisk）
+     UEFI （工具使用gdisk、cgdisk 和 sgdisk)
+**** 如果您创建了交换分区（例如 /dev/sda3），使用 mkswap 将其初始化：
+     # mkswap /dev/sda3
+     # swapon /dev/sda3
+**** 格式化分区
+     输入mkfs.ext4 /dev/sda1
+**** 挂载分区
+     mount /dev/sda1 /mnt
+**** 修改镜像源。因为安装arch还需要下载，所以必须保证虚拟机处于联网状态。可以采用NAT模式。当然也可以根据你的需要，自行选择其他模式。
+     vi /etc/pacman.d/mirrorlist
+     建议将163的复制到最前面
+**** 安装系统
+     输入pacstrap /mnt base
+**** 生成fstab
+     fstab文件用于在系统启动的时候自动挂载所需分区。我们可以自动生成fstab。
+     genfstab -U -p /mnt >> /mnt/etc/fstab
+**** 初始化 pacman 密匙环
+     开始安装前，需要设置 pacman 密匙。
+
+     # pacman-key --init
+     # pacman-key --populate archlinux
+**** 进入新系统
+     arch-chroot /mnt /bin/bash
+**** 配置root密码
+     使用不带用户名的passwd来配置密码。
+**** 创建新用户
+     useradd wuming -m -g wheel -G audio,video,storage
+**** 修改用户的密码 
+     passwd wuming
+**** 如果用户创建错了，用userdel删除用户并重新创建。
+     userdel wuming --remove
+**** 安装grub
+     grub是一个广泛使用的引导工具，安装也非常方便。
+     pacman -S grub
+     
+     安装好grub之后还需要将其安装到系统中 ，并生成配置文件。注意设备名这里不需要
+     在后面添加数字。
+
+     grub-install --recheck /dev/sda
+     grub-mkconfig -o /boot/grub/grub.cfg
+**** 配置网络
+     虚拟机一般都使用NAT方式连接，在虚拟机内部会认为自己直连了网络，所以只需要启
+     动DHCP服务即可。
+
+     systemctl enable dhcpcd
+**** 安装桌面
+     虚拟机性能一般不会太好（除非你32G内存并将虚拟机装到了SSD中），所以桌面最好
+     使用轻量的xfce4。
+
+     pacman -S xfce4 xfce4-goodies
+     
+     为了能够开机自动启动图形界面，我们还需要安装显示管理器。其实xfce4自带了一个显示
+     管理器xfwm，不过这个家伙没有自带service文件，无法通过systemctl作为服务启动。所以
+     还是安装一个独立的显示管理器更好。我一直安装的是SDDM，用起来不错。
+
+     pacman -S sddm
+     systemctl enable sddm
+     
+     安装好之后，如果希望开机的时候自动打开数字锁定键，可以编辑配置文件/etc/sddm.conf，
+     打开数字锁定键。
+
+     Numlock=on
+     
+     然后重新启动虚拟机，这样应该就可以看到一个具有图形界面的Linux系统。
+**** 配置虚拟机高级功能
+     下面就是这篇文章主要内容了，配置虚拟机高级功能。
+**** 安装附加工具包
+     
+     首先需要安装支持虚拟机高级功能的附加工具包。假如不是在图形界面中使用这些功能，需
+     要安装virtualbox-guest-utils-nox，不过我们这里用不到这个。
+
+sudo pacman -S virtualbox-guest-utils
+
+安装的时候会出现一个选项询问使用哪个客户端模块。对于标准linux内核，也就是我们现
+在默认安装的这种情况，使用virtualbox-guest-modules-arch，也就是选2（这是我现在的
+顺序，不排除将来ArchLinux修改选项顺序）。如果是自定义内核的话，使用带dkms的那个。
+
+加载VirtualBox内核模块
+为了让VirtualBox内核模块自动加载，启动vboxservice服务。
+
+systemctl enable vboxservice.service
+如果需要手动启动的话，用下面的命令。不过一般情况我们用不到。
+
+# modprobe -a vboxguest vboxsf vboxvideo
+
+这样一来，ArchLinux的虚拟机高级功能应该就算配置好了。重启虚拟机就可以使用这些功
+能了。我觉得最实用的还是分辨率自适应和共享剪贴板了。
+*** 更多设置
+    设置 时区：
+
+    # ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
+例如：
+
+# ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+运行 hwclock(8) 以生成 /etc/adjtime：
+
+# hwclock --systohc
+这个命令假定硬件时间已经被设置为 UTC时间。详细信息请查看 System time#Time standard。
+
+本地化
+本地化的程序与库若要本地化文本，都依赖 Locale，后者明确规定地域、货币、时区日期的格式、字符排列方式和其他本地化标准等等。在下面两个文件设置：locale.gen 与 locale.conf。
+
+/etc/locale.gen 是一个仅包含注释文档的文本文件。指定您需要的本地化类型，只需移除对应行前面的注释符号（＃）即可，建议选择带 UTF-8 的项：
+
+# nano /etc/locale.gen
+en_US.UTF-8 UTF-8
+zh_CN.UTF-8 UTF-8
+zh_TW.UTF-8 UTF-8
+接着执行 locale-gen 以生成 locale 讯息：
+
+# locale-gen
+/etc/locale.gen 会生成指定的本地化文件。
+
+创建 locale.conf 并编辑 LANG 这一 变量，比如：
+
+Tip: 将系统 locale 设置为 en_US.UTF-8，系统的 Log 就会用英文显示，这样更容易问题的判断和处理。用户可以设置自己的 locale，详情参阅 Locale 或 Locale_(简体中文)#设置 locale。
+/etc/locale.conf
+LANG=en_US.UTF-8
+警告: 不推荐在此设置任何中文 locale，会导致 TTY 乱码。
+另外，如果你需要修改 #键盘布局，并想让这个设置持续生效，编辑 vconsole.conf(5)，例如：
+
+/etc/vconsole.conf
+KEYMAP=de-latin1
+主机名
+要设置 hostname，将其 添加 到 /etc/hostname，myhostname 是需要的主机名：
+
+/etc/hostname
+myhostname
+并且添加 对应的信息 到 hosts(5)：
+
+/etc/hosts
+127.0.0.1	localhost
+::1		localhost
+127.0.1.1	myhostname.localdomain	myhostname
+如果机器有一个永久的 IP 地址，请使用这个 IP 而不是 127.0.1.1。
+
+网络配置
+对新安装的系统，需要再次设置网络。具体请参考 Network configuration (简体中文)。
+
+对于 无线网络配置，安装 软件包 iw、wpa_supplicant、dialog 以及需要的 固件软件包。
+
+Initramfs
+你通常不需要创建 initramfs，因为在你执行 pacstrap 时已经安装 linux，这时 mkinitcpio 会被自动运行。
+
+如果修改了 mkinitcpio.conf，用以下命令创建一个Initramfs：
+
+# mkinitcpio -p linux
+Root 密码
+设置 Root 密码：
+
