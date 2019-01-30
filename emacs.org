@@ -1,34 +1,30 @@
 * emacs （黑板） 
-** 环境变量 (配置)
-*** 命令所在位置
-    getenv
-*** 设置环境
-    #+BEGIN_SRC elisp
-      (setenv "PATH"
-        (concat
-         "C:/Program Files (x86)/Notepad++" ";"
-         (getenv "PATH")
-        )
-      )
-    #+END_SRC
-** 界面 黑板
-** 黑板文字编辑 (黑板擦)
-** 扩展(黑板辅助)
-*** 加载
-    list-packages
-*** 配置 
+** 选项
+   | +<行号>         | 将光标移动到制定行号的行；                             |
+   | q               | 不加载初始化文件                                       |
+   | u<用户>         | 加载指定用户的初始化文件；                             |
+   | f<函数>         | 执行指定lisp（广泛应用于人工智能领域的编程语言）函数； |
+   | l<lisp代码文件> | 加载指定的lisp代码文件                                 |
+   | batch           | 以批处理模式运行emacs编辑器                            |
+   | debug-init      | 程序启动时，加载调试器                                 |
+   | script=file     | 执行文件                                               |
+   | insert=file     | 插入文件                                               |
+** 扩展(黑板辅助, 添加中断)
+*** 扩展列表 list-packages
+*** 加载扩展
     require <sysbol name>
     load load-path
     autoload
-    `autoload`告诉emacs某个地方有一个定义好的函数，并且告诉emacs，先别加载，只要记住在调用这个函数时去哪里寻找它的定义即可
+    
+    `autoload`告诉emacs某个地方有一个定义好的函数，并且告诉emacs，先别加载，只要
+    记住在调用这个函数时去哪里寻找它的定义即可
 *** 包管理器 elpa(Emacs package system)
-    安装一个插件后，elpa会自动在插件所在目录下生成一个autoloads文件。这个文档本意是方便你调用插件的。比如，你可以在`init.el`中加入`(load 某某插件-autoloads)`来加载该插件
-    如果你希望用`require`的方式来加载插件，并且还希望`require`这个autoloads文件，会出现一个问题。autoloads的结尾并没有`(provide '某某插件-autoloads)`，所以`require`一定会报错。而且这样做也没什么意义。因为你的目的在于将插件本身的名字放到features列表中，而不是“插件名-autoloads”。所以，请`load`而不是`require`autoloads文件
-    当然，你也可以直接加载插件的主脚本，比如`(require 'auto-complete)`而不是`(load 'auto-complete-autoloads)`。不过，这样做有两个坏处。第一，有些插件可能会指导elpa在生成autoloads文件时加入一些配置代码。在这种情形下，有可能你通过`load`这个autoloads文件能成功初始化插件，而直接`load`或者`require`插件的主脚本则不能。第二，autoloads由`autoload`函数构成，`autoload`的好处如前所述，可以轻便化emacs的启动
-*** load-path 很重要的变量（用来找到包）
+    方法 (load 'auto-complete-autoloads)
 *** 服务 程序调用程序     
-    调用编辑程序, 由环境变量 EDITOR 控制, 如果 是 emacs 会开启一个新进程，就不能共享缓存，命令历史和其他信息
-    那么，把emacs 设置层 edit server,因为服务是一直开着的，监视edit请求
+    调用编辑程序, 由环境变量 EDITOR 控制, 如果 是 emacs 会开启一个新进程，就不能
+    共享缓存，命令历史和其他信息那么，把emacs 设置层 edit server,因为服务是一直
+    开着的，监视edit请求
+    
     方法：1. 在emacs 中 server-start, 或放在init file中
     2.用 --daemon 作为启动emacs 的参数
     
@@ -37,16 +33,154 @@
     
     也能创建多个不同名字的emacs 服务
     先设置服务名
+    
     For example, M-x set-variable <RET> server-name <RET> "foo" <RET> sets the server name to ‘foo’. The emacsclient program can specify a server by name, using the ‘-s’ option (see emacsclient Options).
     
     TCP Emacs server: Listening to a TCP socket.
     Invoking emacsclient: Connecting to the Emacs server.
     emacsclient Options: Emacs client startup options.
     [1] Some programs use a different environment variable; for example, to make TeX use ‘emacsclient’, set the TEXEDIT environment variable to ‘emacsclient +%d %s’.
-* 扩展
-** WriteRoom
-   开启WriteRoom后即进入全屏模式,默认黑色界面,绿色字体也许会给你带来创作的灵感.
-   我也更喜欢这种模式的码字.没有图片,没有格式,只专注地将所要表达的文字给记录下来.
-   你不必分心,需要时仅仅将鼠标移向屏幕顶端即可显示无处不在的系统导航栏;
-   移向底部显示当前你所码入的字数.
-* emacs
+
+** 开发理念
+*** 屏幕
+*** 用户输入（键盘，鼠标)
+*** 按键的用法
+*** 命令 按键绑定的命名函数
+*** 打开
+*** 关闭
+** 基本功能
+** 文本操作
+*** 选中文本
+**** 标记 Mark
+***** 做标记 set-mark-command 或者鼠标 
+***** 标记对象 word, list, paragraph, page
+***** 操作标记
+****** 删除 kill 
+****** 拷贝 yank
+****** 大小转化
+****** 替换
+****** 缩进
+****** 填充
+****** 拼写检查
+****** 求值（lisp代码）
+****** 保存到寄存器 registers
+***** 标记环 mark ring (凡做标记的操作point会存储到环中)
+      全局 mark ring pop-global-mark
+***** shift键辅助标记
+      一些光标移动+ shift键会直接标记光标下的文本
+**** 矩形标记 rectangles
+*** Killing环   (删除文本到kill环中)
+    在图形编辑器中，还会拷贝到系统clipboard
+**** 删除命令(存在kill 环) 
+     kill-line kill-word kill-page
+**** delete命令（不会存在killing 环)
+     delete-char delete-backward-char delete-line
+*** 暂存器 Registers (大小写字符或数字都可) 
+**** 创建暂存器 
+***** position registers 
+    记录位置 point-to-register
+    跳转到位置 jump-to-register
+***** text registers
+     Copy region into register R (‘copy-to-register’).
+     Insert text from register R (‘insert-register’). 
+     append-to-register <RET> R
+***** rectangle registers
+      copy-rectangle-to-register
+      insert-register
+***** number registers
+      ‘C-u NUMBER C-x r n R’                                   
+      Store NUMBER into register R (‘number-to-register’).
+      
+      ‘C-x r i R’                                          
+      Insert the number from register R into the buffer.
+***** file registers
+***** keyboard macro registers
+      ‘C-x r j R’
+
+**** 显示 view-registers
+*** Display界面 
+*** 搜索 替换 
+*** 有用的命令 
+**** 大小转化 
+     M-l 小写
+     M-u 大写
+     M-c 首字母大写
+*** 键盘宏
+
+** Emacs结构
+*** Files::               All about handling files.
+*** Buffers::             Multiple buffers; editing several files at once.
+*** Windows::             Viewing multiple pieces of text in one frame.
+*** Frames::              Using multiple windows on your display.
+*** 国际化International::       Using non-ASCII character sets.
+**** International Chars::    键盘只能数100个字
+     emacs 有自己的编码（类unicode的编码)
+***** 编码输入 C-x 8 <RET> 🔔 16进制
+***** 显示编码 C-x =
+      详细信息 C-u C-x =
+**** 语言环境 把编码显示某国语言(超出某国的会乱码)
+***** 设置语言环境 set-language-environment 用sdcv 测试
+      
+**** Input Methods::           Entering text characters not on your keyboard.
+**** Select Input Method::     Specifying your choice of input methods.      
+**** Coding Systems:: 有时一种语言有几种编码系统 
+***** 显示编码 describe-coding-system 
+***** 列出编码 list-coding-systems
+***** 识别编码 方法 语言环境变量 
+***** 自定义 prefer-coding-system
+***** 指定文件编码 revert-buffer-with-coding-system
+***** 指定输出的编码 set-buffer-file-coding-system
+***** File Name Coding::        Coding systems for file _names_.                
+      (‘set-file-name-coding-system’).
+***** Terminal Coding::         Specifying coding systems for converting      
+      (‘set-terminal-coding-system’).
+
+**** 字体
+***** 字体信息 describe-fontset  
+***** 字体安装
+           xset fp+ /usr/local/share/emacs/fonts
+           xset fp rehash
+      
+***** Defining Fontsets       Defining a new fontset.                       
+***** 改字体 set-frame-font
+***** 改界面字体 set-face-font 
+**** Undisplayable Characters:: When characters don’t display.           
+**** Unibyte Mode::            You can pick one European character set       
+**** Charsets::                How Emacs groups its internal character codes.
+**** Bidirectional Editing::   Support for right-to-left scripts.           
+** 高级特性Advanced Features
+*** Modes::               Major and minor modes alter Emacs’s basic behavior.
+*** Indentation::         Editing the white space at the beginnings of lines.
+*** Text::                Commands and modes for editing human languages.
+*** Programs::            Commands and modes for editing programs.
+*** Building::            Compiling, running and debugging programs.
+*** Maintaining::         Features for maintaining large programs.
+*** Abbrevs::             Defining text abbreviations to reduce typing.
+*** Dired::               Directory and file manager.
+*** Calendar/Diary::      Calendar and diary facilities.
+*** Sending Mail::        Sending mail in Emacs.
+*** Rmail::               Reading mail in Emacs.
+*** Gnus::                A flexible mail and news reader.
+*** Host Security::       Security issues on a single computer.
+*** Network Security::    Managing the network security.
+*** Document View::       Viewing PDF, PS and DVI files.
+*** Shell::               Executing shell commands from Emacs.
+*** Emacs Server::        Using Emacs as an editing server.
+*** Printing::            Printing hardcopies of buffers or regions.
+*** Sorting::             Sorting lines, paragraphs or pages within Emacs.
+*** Picture Mode::        Editing pictures made up of text characters.
+*** Editing Binary Files::  Editing binary files with Hexl mode.
+*** Saving Emacs Sessions:: Saving Emacs state from one session to the next.
+*** Recursive Edit::      Performing edits while within another command.
+*** Hyperlinking::        Following links in buffers.
+*** Amusements::          Various games and hacks.
+*** Packages::            Installing additional features.
+*** Customization::       Modifying the behavior of Emacs.
+
+** Recovery from Problems
+*** Quitting::            Quitting and aborting.
+*** Lossage::             What to do if Emacs is hung or malfunctioning.
+*** Bugs::                How and when to report a bug.
+*** Contributing::        How to contribute improvements to Emacs.
+*** Service::             How to get help for your own Emacs needs.
+    

@@ -1,354 +1,83 @@
 * elisp(橡皮泥)
 ** 数据操作
+*** 数字写法 
+        - 进制写法    
+      - #xff => 255
+      - #o123 => 83
+      - #b1101 => 13
+      - 
+    - 浮点数写法
+      - 1500.0
+      - 12.0e2 
+      - 12.0e+2 
+
+      - 12.0e-3 .12e4 
+
+     - 正无穷大 1.0e+INF 
+     - 负无穷大 -1.0e+INF
+     - 正NaN： 0.0e+NaN 
+     - 负NaN： -0.0e+NaN
+
+     - 常数e float-e  => 2.718281828459045
+     - 常数pi float-pi  => 3.141592653589793
+
 *** 算术操作
-    1+
-    1-
-    + - * / % mod(允许浮点数）
-    floor  ffloor 区别是一个返回整数，一个返回.0 的小数 
-    fceiling
-    fround
-    sin
-    cos
-    tan
-    asin
-    acos
-    random 随机数
-**** 位操作 
-     lsh 左移
-     ash 符号位  如果是负数移位，就有区别
-     logand 逻辑与
-     logior 逻辑或
-     logxor 异或
-     lognot 非
-*** 字串操作
- string-or-null-p
- char-or-string-p
- make-string count character  从字符创造字串
- (make-string 5 ?x) "xxxxx"
- (string ?a ?b ?c) 拼接 
- substring
- split-string
- char-equal
- string=
- number-to-string number
- string-to-number
- char-to-string
- format string &rest object
- format-message string &rest objects
- downcase
-*** 列表操作
-    consp object
-    atom  判断是不是基本元素
-    listp
-    null
-    访问元素
- car
- cdr
- car-safe
- pop 后面只能变量
- nth n list
- nthcdr n list 
- last list n   
- safe-length list
+   - 算术操作
+     - 1+
+     - 1-
+     - + - * /
+     - % 返回被除数除以除数以后的余数
+     - mod 被除数模上除数的值，返回值的符号和除数一致
+     - 地板 floor  ffloor 
+     - 天花板 ceiling fceiling
+     - 四舍五入 round fround
+     - sin (sin (/ float-pi 2))
+     - cos
+     - tan
+     - asin
+     - acos
+     - random 随机数
+     - max
+     - min
+     - abs
 
- 构建
- (cons 1 '(2))
- append
+   (sin (* 0.5 float-pi)) => 1.0
+   (cos (* 0.5 float-pi)) => 6.123233995736766e-17 #这个不为零应该是pi的精度问题
+   (asin 1.0) => 1.5707963267948966 #约为pi/2
+   (exp 2) => 7.38905609893065
+   (log 7.38) => 1.998773638612381 # 
+   (expt 2 3) => 8
+   (expt 2 4) => 16
+   (sqrt 3) => 1.7320508075688772
 
- 修改
- push element listname
+   - 数字类型判断
+     - floatp x 判断x是否为浮点数
+     - integerp x 判断x是否为整数
+     - numberp x 判断x是否为数字（整数或者浮点）
+     - natnump x 判断x是否为自然数
+     - zerop x 判断x是否为零
+     - isnan x 判断一个浮点数是不是NaN
 
- 关联列表
-      ((pine . cones)
-       (oak . acorns)
-       (maple . seeds))
+   - 比较函数
+     - = number-or-marker &rest number-or-markers 相等起所有参数是否数字上判断
+     - eql value1 value2 当两个值都为数字时，比较数值和类型， 
+     - /= number1 number2 判断两个数值是否相等，不等返回t，相等返回nil
 
- 属性列表
-*** 列表扩展操作
-    sequenceq 是否是序列
-    length
-    elt sequence index  返回第几个元素, 从 0 开始
-    copy-sequence
-    reverse sequence
-    数组 [ 23 2 3]
-    arrayp object 是否数组
-    向量 数据类型不同的数组
-** 全局变量赋值
-   set setq
-** 交互函数
-   #+BEGIN_SRC elisp
-     (defun fun()
-       " 说明"
-       (interactive "p") ;;添加这一段
-       (message "xxx")
-       )  
-   #+END_SRC
-*** 交互方式
-    (interactive "r")  会将点位所在区域的开始值和结束值作为参量 要选择一个区域，不然取同一个值
-    (interactive "BAppend to buffer:") 提示输入缓冲区名字, 得到的值是缓冲区名
-** 编辑器内部
-   buffer-name
-   buffer-file-name
-   switch-to-buffer
-   point
-   point-min
-   point-max
-   buffer-size
-   goto-char 
-   push-mark
-   beginning-of-buffer
-   mark-whole-buffer
-   append-to-buffer
-   copy-to-buffer
-** 保存流程
-   save-excursion
-** 加载文件
-**** load (load $FILENAME)
-**** autoload
-**** require
-**** 流程
-***** 程序段        
-     #+BEGIN_SRC lisp
-       (progn (print "The first form")
-              (print "The second form")
-              (print "The third form"))
-     #+END_SRC 
-    prog2, prog3 的含义就是 返回的参数是哪一个 
-***** if
-      #+BEGIN_SRC lisp
-        (if nil
-            (print 'true)
-          'very-false)
-   #+END_SRC
-* emacs lisp layers
-** 执行 ，e f
-** 调试  
-，d f 设置断点
-,  e e 进入调试
-s 步进
- Press ~i~ to go into the =subroutine= where you can press ~s~ to step in
-function or press ~o~ to go out of it.
+   - 数据转换
+     - float x 将x转换为浮点数
+     - truncate x 把一个浮点数向0截断
 
- Press ~a~ to stop debugging.
+*** 位操作 
+    lsh 左移 (lsh 5 2)  5*(2^2)
+    ash 符号位  如果是负数移位，就有区别
+    logand 逻辑与
+    logior 逻辑或
+    logxor 异或
+    lognot 非
 
-** 格式化代码(美化)
-The [[https://github.com/syl20bnr/spacemacs/blob/develop/layers/%2Bemacs/semantic/README.org][semantic]] layer should be installed for these key bindings to become active.
 
-| Key Binding | Description             |
-|-------------+-------------------------|
-| ~SPC m = b~ | format current buffer   |
-| ~SPC m = f~ | format current function |
-| ~SPC m = o~ | format all on one line  |
-| ~SPC m = s~ | format current sexp     |
-
-** Debugging
-   To start debugging:
-
-   | Key Binding | Description                                                            |
-   |-------------+------------------------------------------------------------------------|
-   | ~SPC m d f~ | on a =defun= symbol toggle on the instrumentalisation of the function  |
-   | ~SPC m d F~ | on a =defun= symbol toggle off the instrumentalisation of the function |
-   | ~SPC m d t~ | insert =(debug)= to print the stack trace and re-evaluate the function |
-
-   In =edebug-mode= (=*Debugging*= is displayed in the minor modes segment of the
-   mode line)
-
-   TODO
-
-   In =debugger-mode= (=Debugger= is displayed in major mode segment of the mode
-   line)
-
-   TODO
-* elisp 
-1 hello world
-假定文件hello.elisp的内容如下：
-
-(print "hello world")
-
-使用下面的命令来运行代码：
-emacs -Q --script <脚本文件>
-执行的结果如下：
-
-xuyang@debian-xuyang:~$ emacs -Q --script ./hello.elisp
-
-"hello world"
-2 交互式运行emacs lisp
-在emacs中有一个交互运行emacs lisp的模式，名为“lisp-interaction-mode”,可以使用 M-x lisp-interaction-mode 来进入这个模式。 进入这个模式以后，可以在编辑区域编辑emacs lisp代码，编辑完一个表达式以后，可以使用 C-j 来对当前光标前的 表达式进行求值，求值的结果会直接打印在该表达式的下方。如下图所示：
-
-在这个模式下，也可以一次键入多个表达式，然后使用 M-x eval-buffer 来对整个buffer求值。另外也可以先选定 其中一部分表达式，使用 M-x eval-region 来对这个区域的表达式进行求值。只是这时候求值的结果不会打印在每个 表达式的下面。
-
-3 快速运行单行emacs lisp的方式
-在emacs中，任何时候都可以键入 M-: 然后键入一个emacs lisp表达式来求值。求值的结果也将显示在minibuffer中。如下所示：
-
-4 布尔值及布尔运算
-emacs lisp中用 t 表示真， nil 表示假。 逻辑操作为 and ， or ， not 。注意前面的t是小写， 大写是不可以的。以下为简单的逻辑运算：
-
-(and t nil) => nil
-(or t nil) => t
-(or t t) => t
-(not t) => nil
-因此注意不要在emacs lisp中定义名为 t 的变量。
-
-5 数字，运算和数学函数
-emacs lisp中的数字和其他语言差不多，比如整数 1, -1, 2 。对于其他进制的数，其表示方法有点特别：使用'#'开头，然后 用一个字符指名进制，比如‘b‘为二进制，’o‘为8进制，’x‘为16进制，如下所示：
-
-#xff => 255
-#o123 => 83
-#b1101 => 13
-浮点数除了一些常见的表示法，如 1500.0, 12.0e2, 12.0e+2, 12.0e-3 .12e4 以外，还有无穷大和NaN的表示如下：
-
-无穷大
-正无穷大 1.0e+INF ， 负无穷大 -1.0e+INF
-(/ 1 1.0e+INF) => 0.0
-NaN
-正NaN： 0.0e+NaN 负NaN： -0.0e+NaN
-(/ 1 0.0e+NaN) => 0.0e+NaN
-另外有两个常见的浮点常数定义如下：
-
-float-e
-常数e
-float-e  => 2.718281828459045
-float-pi
-常数pi
-float-pi  => 3.141592653589793
-5.1 数字相关的判断函数
-floatp x
-判断x是否为浮点数
-integerp x
-判断x是否为整数
-numberp x
-判断x是否为数字（整数或者浮点）
-natnump x
-判断x是否为自然数
-zerop x
-判断x是否为零
-isnan x
-判断一个浮点数是不是NaN
-5.2 数字相关的比较函数
-= number-or-marker &rest number-or-markers
-相等起所有参数是否数字上判断
-eql value1 value2
-当两个值都为数字时，比较数值和类型， 如
-/= number1 number2
-判断两个数值是否相等，不等返回t，相等返回nil
-下面是以上关于相等和不等的例子：
-
-(/= 1.0 1) => nil
-(= 1.0 1) => t
-(eql 1.0 1) => nil
-(eql 1.0 1.0) => t
-<, <=, >, >=
-这几个函数吉首两个或多个参数，比较第一个值是不是小于（小于等于，大于，大于等于）其后的所有参数
-max ， min
-其后接1个或多个参数，分别返回最大值或者最小值
-abs number
-返回一个值的绝对值
-5.3 整数和浮点的相互换转函数
-整数转为浮点 ：
-
-float x
-将x转换为浮点数
-浮点转为整数 有以下几个函数：
-
-truncate x
-把一个浮点数向0截断
-floor x
-向负无穷大截断
-ceiling x
-向正无穷大截断
-round x
-四舍五入到最近的整数
-下面是一些例子：
-
-(truncate 1.2) => 1
-(truncate -1.2) => -1
-(floor 1.2) => 1
-(floor -1.2) => -2
-(ceiling 1.2) => 2
-(ceiling -1.2) => -1
-(round 1.2) => 1
-另外有以下的浮点处理函数，它们和上面的浮点转整数的处理方式一样，单它们有一个f前缀，因此它们的返回值为浮点数而不是整数：
-
-ffloor x
-fceiling x
-ftruncate x
-fround x
-以下是一个实例，请注意返回值和上面这些表达式返回值的区别
-
-(ffloor -1.2) => -2.0
-5.4 数学运算相关函数
-1+ 加1
-(1+ 4) => 5
-1- 减1
-(1- 4) => 3
-+ 加法
-(+) => 0, (＋ 1) =>1 , (＋ 1 2 3) => 6
-- 减法
-(- 10) => -10 , (- 10 1 2 3 4) => 0 , (-) => 0
- * 乘法
-() => 1, ( 1)=> 1, (* 1 2 3 4) =>24
-/ 除法
-(/ 6 2) => 3, (/ 5 2 )=>2, (/ 4.0) =>0.25 , (/ 5 2.0)=>2.5
-% 求余
-这个函数返回被除数除以除数以后的余数，参数必需是整数 (% 9 4)=>1
-mod
-被除数模上除数的值，返回值的符号和除数一致，并且参数可以是浮点，如下所示
-(mod 9 4) =>1
-(mod -9 4) =>3
-(mod 9 -4) =>-1
-(mod 5.5 2.5) =>0.5
-5.5 位运算
-lsh interger count
-逻辑移位操作，将interger左移count位，当count位负时，右移相应的位数 ， 如
-(lsh 5 1) => 10
-(lsh 6 -1) => 3
-ash interger count
-算术移位操作，和逻辑移位比起来，算术移位是保持符号的。 对于负数而言，这两个操作的区别是明显的，如下所示：
-(ash -6 -1) => -3
-但是:
-(lsh -6 -1) => 2305843009213693949
-这是一个相当大的正数，通常不是你想要的。
-logand
-逻辑与
-logior
-逻辑或
-logxor
-逻辑异或
-lognot
-逻辑取反
-一些例子：
-
-(format "%X" (logand #xff #xf0)) => "F0"
-(format "%X" (logior #xff #xf0)) => "FF"
-(format "%X" (logxor #xff #xf0)) => "F"
-(format "%X" (lognot #xff)) => "3FFFFFFFFFFFFF00"
-(format "%X" (not #xff)) ;;错误，#xff类型不匹配
-5.6 数学函数
-sin arg
-cos arg
-tan arg
-asin arg
-acos arg
-atan arg
-exp arg
-log arg &optional base
-expt x y
-sqrt arg
-看一些实例，今后可以直接拿来用:
-
-(sin (* 0.5 float-pi)) => 1.0
-(cos (* 0.5 float-pi)) => 6.123233995736766e-17 #这个不为零应该是pi的精度问题
-(asin 1.0) => 1.5707963267948966 #约为pi/2
-(exp 2) => 7.38905609893065
-(log 7.38) => 1.998773638612381 # 
-(expt 2 3) => 8
-(expt 2 4) => 16
-(sqrt 3) => 1.7320508075688772
-5.7 随机函数
-random &optional limit
-返回一个伪随机数，如果给定正的limit，则返回值不会超过这个值
-(random 10) => 8  #每次运行的结果会不一样
-6 字符和字符串
+*** 字符表示
+    6 字符和字符串
 在emacs lisp中，字符常量通过一个问号来引入，比如 ?a 表示字符 a 。其内部表示为一个整数，可以 直接拿它跟一个整数进行比较，如
 
 (= ?a 97) => t
@@ -360,6 +89,7 @@ random &optional limit
 ?\r => 13 ; 回车
 ?\s => 32 ; 空格
 ?\\ => 92 ; 反斜杠
+
 另外，对于汉字字符，可通过汉字的Unicode编码来输入，比如 优 的编码为 4F18 ,可用 ?\u4F18 来表示：
 
 (format "%c" ?\u4F18) => "优"
@@ -381,6 +111,22 @@ unicode
 关于拼音的编码，主要是 a,o,e,i,u,ü 这几个字母上各声调的编码，这些编码可以 在unicode的 0x80-0x1fe 这个范围内找到
 字符串是一个定长的字符序列。即数组(array)，数组的长度是固定的，一旦数组被创建就不能被修改。 数组不象C的数组，不会以\0结尾。在emacs lisp中，字符串也是以双引号括起来的。如果字符传种包含 双引号，则使用 \ 来转义其中的双引号，比如 “hello\"” 。
 
+*** 字串操作
+    string-or-null-p
+    char-or-string-p
+    make-string count character  从字符创造字串
+    (make-string 5 ?x) "xxxxx"
+    (string ?a ?b ?c) 拼接 
+    substring
+    split-string
+    char-equal
+    string=
+    number-to-string number
+    string-to-number
+    char-to-string
+    format string &rest object
+    format-message string &rest objects
+    downcase
 6.1 创建字符串
 make-string count character
 返回包含count个character字符的字符串
@@ -509,6 +255,95 @@ replace-regexp-in-string regexp rep string
 将string中的所有regexp替换成rep
 (replace-regexp-in-string "hello" "goodbye" "helloworld") 
      => "goodbyeworld"
+7
+*** 列表操作
+    consp object
+    atom  判断是不是基本元素
+    listp
+    null
+    访问元素
+ car
+ cdr
+ car-safe
+ pop 后面只能变量
+ nth n list
+ nthcdr n list 
+ last list n   
+ safe-length list
+
+ 构建
+ (cons 1 '(2))
+ append
+
+ 修改
+ push element listname
+
+ 关联列表
+      ((pine . cones)
+       (oak . acorns)
+       (maple . seeds))
+
+ 属性列表
+*** 列表扩展操作
+    sequenceq 是否是序列
+    length
+    elt sequence index  返回第几个元素, 从 0 开始
+    copy-sequence
+    reverse sequence
+    数组 [ 23 2 3]
+    arrayp object 是否数组
+    向量 数据类型不同的数组
+** 打印函数
+*** 格式化输出 message (无返回)
+*** print (返回输出)
+** 全局变量赋值
+   set setq
+** 交互函数
+   #+BEGIN_SRC elisp
+     (defun fun()
+       " 说明"
+       (interactive "p") ;;添加这一段
+       (message "xxx")
+       )  
+   #+END_SRC
+*** 交互方式
+    (interactive "r")  会将点位所在区域的开始值和结束值作为参量 要选择一个区域，不然取同一个值
+    (interactive "BAppend to buffer:") 提示输入缓冲区名字, 得到的值是缓冲区名
+** 编辑器内部
+   buffer-name
+   buffer-file-name
+   switch-to-buffer
+   point
+   point-min
+   point-max
+   buffer-size
+   goto-char 
+   push-mark
+   beginning-of-buffer
+   mark-whole-buffer
+   append-to-buffer
+   copy-to-buffer
+** 保存流程
+   save-excursion
+** 加载文件
+**** load (load $FILENAME)
+**** autoload
+**** require
+**** 流程
+***** 程序段        
+     #+BEGIN_SRC lisp
+       (progn (print "The first form")
+              (print "The second form")
+              (print "The third form"))
+     #+END_SRC 
+    prog2, prog3 的含义就是 返回的参数是哪一个 
+***** if
+      #+BEGIN_SRC lisp
+        (if nil
+            (print 'true)
+          'very-false)
+   #+END_SRC
+* elisp 
 7 变量
 在介绍更多的类型和结构之前，先来看看变量的定义和赋值。emacs lisp中变量名中可以使用的 字符范围比通常的编程语言要大，比如 *, =, >, < 等符号都可以用在变量名中。按照 lisp的惯例，全局变量会以 * 开头和结尾。比如 *aa* 。
 

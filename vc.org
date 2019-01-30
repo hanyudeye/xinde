@@ -1,787 +1,4 @@
-* git 
-** 配置
-   git config [--system,--global]
-   /etc/gitconfig | ~/.gitconfig
-   user.name = "用户名或者用户 ID"
-   user.email = "邮箱"
-   ssh-keygen -C 'you email address@gmail.com' -t rsa
-   : 会在用户目录 ~/.ssh/ 下建立相应的密钥文件
-   : 可以使用 ssh -v git@github.com 命令来测试链接是否畅通
-*** 上传公钥
-# Title 可以随便命名，Key 的内容拷贝自 ~/.ssh/id_rsa.pub 中的内容，完成后，
-可以再使用 ssh -v git@github.com 进行测试。
-测试是否能够连接 ssh -T git@github.com
-** 功能 
-*** 初始化(对采样数据初始化) 
-    init
-*** 暂存功能 (备份增量数据)  
-**** 加入增量的东西 git add <modified files>/git add .
-**** 删除增量的东西 git rm --cached <file>  
-**** 取消增量的东西 
-    和暂存区删除文件差别不大, 删除会把索引也删除
-    git reset HEAD <file>
-    git rm --cached 
-    是从 stage（index，暂存区） 里面删除文件，当你提交（commit）之后文件就会删除了。
-    
-    git reset HEAD --file 
-    : 回退暂存区里的文件（还原为 HEAD commit 里面该文件的状态），会撤销从上一次提交（commit） 之后的一些操作。
-    如果是对于新增文件，这两个操作时等效的。
-**** 抛弃工作区修改, 不提交都能恢复
-    git checkout . # 抛弃工作区修改
-    git checkout <file>
-**** 用别的分支的文件替换同名文件
-     用 HEAD 指向的 master(默认主分支) 分支中的全部或者部分文件替换
-     git checkout HEAD .
-     git checkout HEAD <file>
-<<<<<<< HEAD
-**** 用两次确认的恢复草稿
-     此次操作之前和之后的commit和history都会保留，并且把这次撤销作为一次最新的提交
-**** 还原
-     git revert HEAD                  撤销前一次 commit
-     git revert HEAD^               撤销前前一次 commit
-     git revert commit-id（比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进行保存。
-     git revert 是提交一个新的版本，将需要 revert 的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。
-*** 仓库功能
-**** 保存到版本库
-     git commit -m "msg"
-     也可以将 git add 与 git commit 用一个指令完成
-     git commit -a -m "msg"
-**** 版本库分库
-***** 创建分支
-      git branch (branchname)
-***** 切换分支
-      git checkout (branchname)
-      当你切换分支的时候，Git 会用该分支的最后提交的快照替换你的工作目录的内容，所以多个分支不需要多个目录。
-***** 合并分支, 然后可以删除分支
-      git merge test 
-      把 test 分支合并到当前分支
-***** 删除分支
-     git branch -d (branchname)
-***** 隐藏
-      git stash
-      git pull
-      git stash pop
-      接下来 diff 一下此文件看看自动合并的情况，并作出相应修改。
-
-      git stash: 备份当前的工作区的内容，从最近的一次提交中读取相关内容，让工作区保证和上次提交的内容一致。同时，将当前的工作区内容保存到 Git 栈中。
-      git stash pop: 从 Git 栈中读取最近一次保存的内容，恢复工作区的相关内容。由于可能存在多个 Stash 的内容，所以用栈来管理，pop 会从最近的一个 stash 中读取内容并恢复。
-      git stash list: 显示 Git 栈内的所有备份，可以利用这个列表来决定从那个地方恢复。
-      git stash clear: 清空 Git 栈。此时使用 gitg 等图形化工具会发现，原来 stash 的哪些节点都消失了。
-     
-      2.放弃本地修改，直接覆盖之
-      git reset --hard
-      git pull
-
-***** 忘了切分支
-      可以先用 git stash save xxx 来保存工作区的内容，然后新建 一个分支并调用 git stash pop
-*** 远程仓库
-**** 克隆远程到本地
-     git clone RESP
-     git clone --depth=1 RESP 只克隆最新的
-**** 添加源
-    git remote add origin https://github.com/hanyudeye/test.git 添加远程源 
-**** 远程同步
-    git push -u origin master
-**** 更新本地
-     git pull/git pull git://github.com/tom/test.git
-**** 查看远程分支
-     git branch -r # 查看远程 branch
-     git checkout -b bug_fix_local bug_fix_remote #把本地端切换为远程的 bug_fix_remote branch 并命名为 bug_fix_local
-*** 日志
-**** 状态 status   
-    git status
-    git status -s 简短信息
-    git remote -v 列出服务器地址
-    git diff   尚未缓存的改动：
-    git diff --cached   查看已缓存的改动：
-    git diff HEAD  查看已缓存的与未缓存的所有改动：
-   
-    Git diff branch1 branch2 --stat   //显示出所有有差异的文件列表
-    Git diff branch1 branch2 文件名(带路径)   //显示指定文件的详细差异
-    Git diff branch1 branch2                   //显示出所有有差异的文件的详细差异
-
-    git diff --stat   显示摘要而非整个 diff
-    A: 你本地新增的文件（服务器上没有）.
-    C: 文件的一个新拷贝.
-    D: 你本地删除的文件（服务器上还在）.
-    M: 文件的内容或者 mode 被修改了.
-    R: 文件名被修改了。
-    T: 文件的类型被修改了。
-    U: 文件没有被合并(你需要完成合并才能进行提交)。
-    X: 未知状态(很可能是遇到 git 的 bug 了，你可以向 git 提交 bug report)。
-    在 man git diff-files 中可以查到这些标志的说明
-**** Git 查看提交历史
-     git log
-     git log --oneline 简洁--graph 拓扑图 '--reverse'逆向显示
-     --author 指定用户日志
-     如果你要指定日期，可以执行几个选项：--since 和 --before，但
-     是你也可以用 --until 和 --after。
-**** 某次提交的内容 
-    git show # 显示某次提交的内容 git show $id
-** .gitignore
-　　以斜杠“/”开头表示目录； 
-　　以星号“*”通配多个字符；
-　　以问号“?”通配单个字符
-　　以方括号“[]”包含单个字符的匹配列表；
-　　以叹号“!”表示不忽略(跟踪)匹配到的文件或目录；
-   规则：/fd1/*
-   说明：忽略根目录下的 /fd1/ 目录的全部内容；根目录指项目的的根目录
-* svn
-** svn 重新验证证书 ->会在用户名和密码错误的情况下重新验证 
-   Error:  “Server certificate verification failed: issuer is not trusted”
-   使用终端执行如下命令：svn list https://your.repository.url 接下来选择对应的（临时）/（永久）即可。
-** 功能
-   查看修改的文件记录
-   svn cat -- 显示特定版本的某文件内容。
-   svn list -- 显示一个目录或某一版本存在的文件列表。
-   svn log -- 显示 svn 的版本 log，含作者、日期、路径等。
-   svn diff -- 显示特定修改的行级详细信息。
-
-   list 示例：
-
-   svn list http://svn.test.com/svn     #查看目录中的文件。
-   svn list -v http://svn.test.com/svn  #查看详细的目录的信息(修订人,版本号,文件大小等)。
-   svn list [-v]                        #查看当前当前工作拷贝的版本库 URL。
-   cat 示例：
-
-   svn cat -r 4 test.c     #查看版本 4 中的文件 test.c 的内容,不进行比较。
-   diff 示例：
-
-   svn diff               #什么都不加，会坚持本地代码和缓存在本地.svn 目录下的信息的不同;信息太多，没啥用处。
-   svn diff -r 3          #比较你的本地代码和版本号为 3 的所有文件的不同。
-   svn diff -r 3 text.c   #比较你的本地代码和版本号为 3 的 text.c 文件的不同。
-   svn diff -r 5:6        #比较版本 5 和版本 6 之间所有文件的不同。
-   svn diff -r 5:6 text.c #比较版本 5 和版本 6 之间的 text.c 文件的变化。
-   svn diff -c 6 test.c    #比较版本 5 和版本 6 之间的 text.c 文件的变化。
-   log 示例：
-
-   svn log         #什么都不加会显示所有版本 commit 的日志信息:版本、作者、日期、comment。
-   svn log -r 4:20 #只看版本 4 到版本 20 的日志信息，顺序显示。
-svn log -r 20:5 #显示版本 20 到 4 之间的日志信息，逆序显示。
-svn log test.c  #查看文件 test.c 的日志修改信息。
-svn log -r 8 -v #显示版本 8 的详细修改日志，包括修改的所有文件列表信息。
-svn log -r 8 -v -q   #显示版本 8 的详细提交日志，不包括 comment。
-svn log -v -r 88:866 #显示从版本 88 到版本 866 之间，当前代码目录下所有变更的详细信息 。
-svn log -v dir  #查看目录的日志修改信息,需要加 v。
-svn log http://foo.com/svn/trunk/code/  #显示代码目录的日志信息。
-常用命令
-
-svn add file|dir -- 添加文件或整个目录
-svn checkout -- 获取 svn 代码
-svn commit  -- 提交本地修改代码
-svn status    -- 查看本地修改代码情况：修改的或本地独有的文件详细信息
-svn merge   -- 合并 svn 和本地代码
-svn revert   -- 撤销本地修改代码
-svn resolve -- 合并冲突代码
-
-svn help [command] -- 查看 svn 帮助，或特定命令帮助
-svn diff 个性化定制
-svn 配置文件: ~/.subversion/config
-
-修改~/.subversion/config，找到如下配置行：
-
-# diff-cmd = diff_program (diff, gdiff, etc.)
-将上面那个脚本的路径添加进去就行，修改为
-
-diff-cmd = /usr/local/bin/diffwrap.sh  #绝对路径
-这样 svn diff 命令就会默认使用 vimdiff 比较文件。
-
-diffwrap.sh 文件
-#! /bin/bash
-
-# for svn diff: 修改~/.subversion/config，找到如下配置行：
-# diff-cmd = diff_program (diff, gdiff, etc.)
-# diff-cmd = ~/bin/diffwrap.sh
-
-# 参数大于 5 时，去掉前 5 个参数；参数小于 5，失败，什么也不做
-shift 5
-
-# 使用 vimdiff 比较
-vimdiff "$@"
-** svn ignore
-   假设想忽略文件 temp
-1. cd 到 temp 所在的目录下：
-2. svn propedit svn:ignore .
-注意：请别漏掉最后的点（.表示当前目录），如果报错请看下面
-
-3. 打开的文件就是忽略列表文件了（默认是空的），每一行是一项，在该文件中输入 temp，保存退出
-
-4. svn st 查看状态，temp 的?状态已经消除了
-
-如果在 svn propedit svn:ignore .时报错：svn: None of the environment variables SVN_EDITOR, VISUAL or EDITOR are set, and no 'editor-cmd' run-time configuration option was found
-
-说明 SVN 的默认属性编辑器没有设置，设置方法如下：
-
-vi ~/.bash_profile
-
-在最后一行追加
-
-export SVN_EDITOR=vim
-
-保存退出，然后输入命令 source ~/.bash_profile（使配置文件立即生效）
-
-以上步骤完成后，继续按照上面的方法设置
-
-一直不知道 svn 的忽略命令如何使用，经过 google 的查找，使用方法还是有的，做个记录好了。
-如果想在 SVN 提交时，忽略某个文件，也就是某个文件不提交，可以使用
-svn propedit svn:ignore 命令。
-
-下面详细介绍一下使用步骤。
-
-单纯的看 svn 官方文档和一些网上搜索的资料，有时候真的不如亲自试验的好。
-
-svn propedit svn:ignore 目录名称。
-注意，在使用这个 SVN 的属性编辑前，你得确保后面的“目录名称”是 SVN 版本控制的目录。
-
-如果要忽略此目录下的文件，可以如下操作。
-比如，想忽略/product 目录下的 test.php 文件。前提是/product 目录必须在 svn 版本控制下，而 test.php 文件不在 svn 版本控制。
-
-svn st 先看一下状态，会显示如下：
-?     /product/test.php
-
-我们需要将 test.php 文件加入忽略列表。
-此时先设置 SVN 默认的编辑器
-export SVN_EDITOR=vim
-
-然后，使用 svn propedit svn:ignore ,用法如下
-
-svn propedit svn:ignore /product
-此时会出现一个 VIM 的编辑窗口，表示需要将某个文件加入到忽略列表里
-我们在编辑窗口中，写入
-test.php
-
-然后保存，并退出 VIM 编辑器。
-
-这时候会有一个提示：属性 “svn:ignore” 于 “product” 被设为新值。
-表示文件 test.php 的 svn:ignore 属性设置成功。
-然后使用 svn st 查看，会显示：
-M        product
-
-我们需要提交，然后这个 svn:ignore 属性才会起作用
-svn ci -m '忽略 test.php 文件'
-
-这时候，无论你如何修改 test.php 文件，再使用 svn st 时，也不会出现修改提示符合 M 了。
-jpg 改 doc
-
-* git 常用命令
-** 常用  
-   git add <file> # 将工作文件修改提交到本地暂存区
-   git add . # 将所有修改过的工作文件提交暂存区
-   git rm <file> # 从版本库中删除文件
-   git rm <file> --cached # 从版本库中删除文件，但不删除文件
-   git reset <file> # 从暂存区恢复到工作文件
-   git reset -- . # 从暂存区恢复到工作文件
-   git reset --hard # 恢复最近一次提交过的状态，即放弃上次提交后的所有本次修改
-   git ci <file> git ci . git ci -a # 将 git add, git rm 和 git ci 等操作都合并在一起做　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　git ci -am "some comments"
-   git ci --amend # 修改最后一次提交记录
-   git revert <$id> # 恢复某次提交的状态，恢复动作本身也创建次提交对象
-   git revert HEAD # 恢复最后一次提交的状态
-** 查看文件 diff
-   git diff <file> # 比较当前文件和暂存区文件差异 git diff
-   git diff <id1><id1><id2> # 比较两次提交之间的差异
-   git diff <branch1>..<branch2> # 在两个分支之间比较
-   git diff --staged # 比较暂存区和版本库差异
-   git diff --cached # 比较暂存区和版本库差异
-   git diff --stat # 仅仅比较统计信息
-** 查看提交记录
-   git log git log <file> # 查看该文件每次提交记录
-   git log -p <file> # 查看每次详细修改内容的 diff
-   git log -p -2 # 查看最近两次详细修改内容的 diff
-   git log --stat #查看提交统计信息
-** Git 本地分支管理
-*** 查看、切换、创建和删除分支
-    git br -r # 查看远程分支
-    git br <new_branch> # 创建新的分支
-    git br -v # 查看各个分支最后提交信息
-    git br --merged # 查看已经被合并到当前分支的分支
-    git br --no-merged # 查看尚未被合并到当前分支的分支
-    git co <branch> # 切换到某个分支
-    git co -b <new_branch> # 创建新的分支，并且切换过去
-    git co -b <new_branch> <branch> # 基于 branch 创建新的 new_branch
-    git co $id # 把某次历史提交记录 checkout 出来，但无分支信息，切换到其他分支会自动删除
-    git co $id -b <new_branch> # 把某次历史提交记录 checkout 出来，创建成一个分支
-    git br -d <branch> # 删除某个分支
-    git br -D <branch> # 强制删除某个分支 (未被合并的分支被删除的时候需要强制)
-*** 分支合并和 rebase
-    git merge <branch> # 将 branch 分支合并到当前分支
-    git merge origin/master --no-ff # 不要 Fast-Foward 合并，这样可以生成 merge 提交
-    git rebase master <branch> # 将 master rebase 到 branch，相当于：git co <branch> && git rebase master && git co master && git merge <branch>
-*** Git 补丁管理(方便在多台机器上开发同步时用)
-    git diff > ../sync.patch # 生成补丁
-    git apply ../sync.patch # 打补丁
-    git apply --check ../sync.patch #测试补丁能否成功
-    git checkout 分支名 文件   把分支下的某文件覆盖到当前分支
-*** Git 暂存管理
-    git stash # 暂存
-    git stash list # 列所有 stash
-    git stash apply # 恢复暂存的内容
-    git stash drop # 删除暂存区
-** Git 远程分支管理
-git pull # 抓取远程仓库所有分支更新并合并到本地
-git pull --no-ff # 抓取远程仓库所有分支更新并合并到本地，不要快进合并
-git fetch origin # 抓取远程仓库更新
-git merge origin/master # 将远程主分支合并到本地当前分支
-git co --track origin/branch # 跟踪某个远程分支创建相应的本地分支
-git co -b <local_branch> origin/<remote_branch> # 基于远程分支创建本地分支，功能同上
-git push # push 所有分支
-git push origin master # 将本地主分支推到远程主分支
-git push -u origin master # 将本地主分支推到远程(如无远程主分支则创建，用于初始化远程仓库)
-git push origin <local_branch> # 创建远程分支，origin 是远程仓库名
-git push origin <local_branch>:<remote_branch> # 创建远程分支
-git push origin :<remote_branch> #先删除本地分支(git br -d <branch>)，然后再 push 删除远程分支
-** Git 远程仓库管理
-*** GitHub
-    git remote -v # 查看远程服务器地址和仓库名称
-    git remote show origin # 查看远程服务器仓库状态
-    git remote add origin git@ github:robbin/robbin_site.git # 添加远程仓库地址
-    git remote set-url origin git@ github.com:robbin/robbin_site.git # 设置远程仓库地址(用于修改远程仓库地址) git remote rm <repository> # 删除远程仓库
-    git remote set-url --add --push origin ***** #添加多个源
-*** 创建远程仓库
-git clone --bare robbin_site robbin_site.git # 用带版本的项目创建纯版本仓库
-scp -r my_project.git git@ git.csdn.net:~ # 将纯仓库上传到服务器上
-mkdir robbin_site.git && cd robbin_site.git && git --bare init # 在服务器创建纯仓库
-git remote add origin git@ github.com:robbin/robbin_site.git # 设置远程仓库地址
-git push -u origin master # 客户端首次提交
-git push -u origin develop # 首次将本地 develop 分支提交到远程 develop 分支，并且 track
-git remote set-head origin master # 设置远程仓库的 HEAD 指向 master 分支
-*** 也可以命令设置跟踪远程库和本地库
-git branch --set-upstream master origin/master
-git branch --set-upstream develop origin/develop
-** 强制覆盖本地, 这里不想覆盖的也要覆盖
-   git fetch --all
-   git reset --hard origin/master
-   git pull
-** 修改远程仓库 
-*** 1.修改命令
-    git remote origin set-url [url]
-    !!!!!!现在是
-    git remote  set-url origin [url]
-*** 2.先删后加
-git remote rm origin
-git remote add origin [url]
-*** 3.直接修改 config 文件
-    
-git 远程仓库管理
-要参与任何一个 Git 项目的协作,必须要了解该如何管理远程仓库.远程仓库是指托管在网络上的项目仓库,可能会有好多个,其中有些你只能读,另外有些可以写.同他人协作开发某 个项目时,需要管理这些远程仓库,以便推送或拉取数据,分享各自的工作进展.管理远程仓库的工作,包括添加远程库,移除废弃的远程库,管理各式远程库分 支,定义是否跟踪这些分支,等等.本节我们将详细讨论远程库的管理和使用.
-
-　　查看当前的远程库
-
-　　要查看当前配置有哪些远程仓库,可以用 git remote 命令,它会列出每个远程库的简短名字.在克隆完某个项目后,至少可以看到一个名为 origin 的远程库,Git 默认使用这个名字来标识你所克隆的原始仓库:
-
-　　$ git clone git://github.com/schacon/ticgit.git
-
-　　Initialized empty Git repository in /private/tmp/ticgit/.git/
-
-　　remote: Counting objects: 595, done.
-
-　　remote: Compressing objects: 100% (269/269), done.
-
-　　remote: Total 595 (delta 255), reused 589 (delta 253)
-
-　　Receiving objects: 100% (595/595), 73.31 KiB | 1 KiB/s, done.
-
-　　Resolving deltas: 100% (255/255), done.
-
-　　$ cd ticgit
-
-　　$ git remote
-
-　　origin 也可以加上 -v 选项(译注:此为 ?verbose 的简写,取首字母),显示对应的克隆地址:
-
-　　$ git remote -v
-
-　　origin git://github.com/schacon/ticgit.git 如果有多个远程仓库,此命令将全部列出.比如在我的 Grit 项目中,可以看到:
-
-　　$ cd grit
-
-　　$ git remote -v
-
-　　bakkdoor git://github.com/bakkdoor/grit.git
-
-　　cho45 git://github.com/cho45/grit.git
-
-　　defunkt git://github.com/defunkt/grit.git
-
-　　koke git://github.com/koke/grit.git
-
-　　origin git@github.com:mojombo/grit.git 这样一来,我就可以非常轻松地从这些用户的仓库中,拉取他们的提交到本地.请注意,上面列出的地址只有 origin 用的是 SSH URL 链接,所以也只有这个仓库我能推送数据上去(我们会在第四章解释原因).
-
-　　添加远程仓库
-
-　　要添加一个新的远程仓库,可以指定一个简单的名字,以便将来引用,运行 git remote add [shortname] [url]:
-
-　　$ git remote
-
-　　origin
-
-　　$ git remote add pb git://github.com/paulboone/ticgit.git
-
-　　$ git remote -v
-
-　　origin git://github.com/schacon/ticgit.git
-
-　　pb git://github.com/paulboone/ticgit.git 现在可以用字串 pb 指代对应的仓库地址了.比如说,要抓取所有 Paul 有的,但本地仓库没有的信息,可以运行 git fetch pb:
-
-　　$ git fetch pb
-
-　　remote: Counting objects: 58, done.
-
-　　remote: Compressing objects: 100% (41/41), done.
-
-　　remote: Total 44 (delta 24), reused 1 (delta 0)
-
-　　Unpacking objects: 100% (44/44), done.
-
-　　From git://github.com/paulboone/ticgit
-
-　　* [new branch] master -> pb/master
-
-　　* [new branch] ticgit -> pb/ticgit 现在,Paul 的主干分支(master)已经完全可以在本地访问了,对应的名字是 pb/master,你可以将它合并到自己的某个分支,或者切换到这个分支,看看有些什么有趣的更新.
-
-　　从远程仓库抓取数据
-
-　　正如之前所看到的,可以用下面的命令从远程仓库抓取数据到本地:
-
-　　$ git fetch [remote-name]此命令会到远程仓库中拉取所有你本地仓库中还没有的数据.运行完成后,你就可以在本地访问该远程仓库中的所有分支,将其中某个 分支合并到本地,或者只是取出某个分支,一探究竟.(我们会在第三章详细讨论关于分支的概念和操作.)
-
-　　如果是克隆了一个仓库,此命令会自动将远程仓库归于 origin 名下.所以,git fetch origin 会抓取从你上次克隆以来别人上传到此远程仓库中的所有更新(或是上次 fetch 以来别人提交的更新).有一点很重要,需要记住,fetch 命令只是将远端的数据拉到本地仓库,并不自动合并到当前工作分支,只有当你确实准备好了,才能手工合并.(说 明:事先需要创建好远程的仓库,然后执行:git remote add [仓库名] [仓库 url],git fetch [远程仓库名],即可抓取到远程仓库数据到本地,再用 git merge remotes/[仓库名]/master 就可以将远程仓库 merge 到本地当前 branch.这种分支方式比较适合独立-整合开发,即各自开发测试好后 再整合在一起.比如,Android 的 Framework 和 AP 开发.
-
-　　可以使用--bare 选项运行 git init 来设定一个空仓库,这会初始化一个不包含工作目录的仓库.
-
-　　$ cd /opt/git
-
-　　$ mkdir project.git
-
-　　$ cd project.git
-
-　　$ git --bare init 这时,Join,Josie 或者 Jessica 就可以把它加为远程仓库,推送一个分支,从而把第一个版本的工程上传到仓库里了.)
-
-　　如果设置了某个分支用于跟踪某个远端仓库的分支(参见下节及第三章的内容),可以使用 git pull 命令自动抓取数据下来,然后将远端分支自动合并到本地仓库中当前分支.在日常工作中我们经常这么用,既快且好.实际上,默认情况下 git clone 命令本质上就是自动创建了本地的 master 分支用于跟踪远程仓库中的 master 分支(假设远程仓库确实有 master 分支).所以一般我们运行 git pull,目的都是要从原始克隆的远端仓库中抓取数据后,合并到工作目录中当前分支.
-
-　　推送数据到远程仓库
-
-　　项目进行到一个阶段,要同别人分享目前的成果,可以将本地仓库中的数据推送到远程仓库.实现这个任务的命令很简单: git push [remote-name] [branch-name].如果要把本地的 master 分支推送到 origin 服务器上(再次说明下,克隆操作会自动使用默认的 master 和 origin 名字),可以运行下面的命令:
-
-　　$ git push origin master 只有在所克隆的服务器上有写权限,或者同一时刻没有其他人在推数据,这条命令才会如期完成任务.如果在你推数据前,已经有其他人推送了若干更新,那 你的推送操作就会被驳回.你必须先把他们的更新抓取到本地,并到自己的项目中,然后才可以再次推送.有关推送数据到远程仓库的详细内容见第三章.
-
-　　查看远程仓库信息
-
-　　我们可以通过命令 git remote show [remote-name] 查看某个远程仓库的详细信息,比如要看所克隆的 origin 仓库,可以运行:
-
-　　$ git remote show origin
-
-　　* remote origin
-
-　　URL: git://github.com/schacon/ticgit.git
-
-　　Remote branch merged with 'git pull' while on branch master
-
-　　master
-
-　　Tracked remote branches
-
-　　master
-
-　　ticgit 除了对应的克隆地址外,它还给出了许多额外的信息.它友善地告诉你如果是在 master 分支,就可以用 git pull 命令抓取数据合并到本地.另外还列出了所有处于跟踪状态中的远端分支.
-
-　　实际使用过程中,git remote show 给出的信息可能会像这样:
-
-　　$ git remote show origin
-
-　　* remote origin
-
-　　URL: git@github.com:defunkt/github.git
-
-　　Remote branch merged with 'git pull' while on branch issues
-
-　　issues
-
-　　Remote branch merged with 'git pull' while on branch master
-
-　　master
-
-　　New remote branches (next fetch will store in remotes/origin)
-
-　　caching
-
-　　Stale tracking branches (use 'git remote prune')
-
-　　libwalker
-
-　　walker2
-
-　　Tracked remote branches
-
-　　acl
-
-　　apiv2
-
-　　dashboard2
-
-　　issues
-
-　　master
-
-　　postgres
-
-　　Local branch pushed with 'git push'
-
-　　master:master 它告诉我们,运行 git push 时缺省推送的分支是什么(译注:最后两行).它还显示了有哪些远端分支还没有同步 到本地(译注:第六行的 caching 分支),哪些已同步到本地的远端分支在远端服务器上已被删除(译注:Stale tracking branches 下面的两个分支),以及运行 git pull 时将自动合并哪些分支(译注:前四行中列出的 issues 和 master 分支).(此命令也可以查看到本地分支和远程仓库分支的对应关系.)
-
-　　远程仓库的删除和重命名
-
-　　在新版 Git 中可以用 git remote rename 命令修改某个远程仓库的简短名称,比如想把 pb 改成 paul,可以这么运行:
-
-　　$ git remote rename pb paul
-
-　　$ git remote
-
-　　origin
-
-　　paul 注意,对远程仓库的重命名,也会使对应的分支名称发生变化,原来的 pb/master 分支现在成了 paul/master.
-
-　　碰到远端仓库服务器迁移,或者原来的克隆镜像不再使用,又或者某个参与者不再贡献代码,那么需要移除对应的远端仓库,可以运行 git remote rm 命令:
-
-　　$ git remote rm paul
-
-　　$ git remote
-
-　　origin
-* git mode
-** 配置  
-*** 全屏显示
- #+BEGIN_SRC emacs-lisp
-   (defun dotspacemacs/user-init ()
-     (setq-default git-magit-status-fullscreen t))
- #+END_SRC
-*** 自动提交(auto-complete)
- #+BEGIN_SRC emacs-lisp
-   (setq magit-repository-directories '("~/repos/"))
- #+END_SRC
-*** SVN plugin
- #+BEGIN_SRC emacs-lisp
-   (defun dotspacemacs/user-init ()
-     (setq-default git-enable-magit-svn-plugin t))
- #+END_SRC
-*** (使用自带的提交输入参数方式）Global git commit mode
- #+begin_src emacs-lisp
- (global-git-commit-mode t)
- #+end_src
-
-** 功能
-*** 快捷键
-| Key Binding | Description                                         |                                                   |
-|-------------+-----------------------------------------------------+---------------------------------------------------|
-| ~SPC g b~   | open a =magit= blame                                | 打开历史记录                                      |
-| ~SPC g f f~ | view a file at a specific branch or commit          | 打开某个分支的文件                                |
-| ~SPC g f h~ | show file commits history                           | 显示仓库的提交历史                                |
-| ~SPC g H c~ | clear highlights                                    | 清除高亮                                          |
-| ~SPC g H h~ | highlight regions by age of commits                 | 高亮区域                                          |
-| ~SPC g H t~ | highlight regions by last updated time              | 高亮区域                                          |
-| ~SPC g i~   | initialize a new git repository                     | 初始化仓库                                        |
-| ~SPC g I~   | open=helm-gitignore=                                | 打开 helm-gitignore 模板                            |
-| ~SPC g L~   | open magit-repolist                                 | 打开仓库列表，需设置 magit-repository-directories |
-| ~SPC g s~   | open a =magit= status window                        | 打开仓库状态                                      |
-| ~SPC g S~   | stage current file                                  | 存储当前文件                                      |
-| ~SPC g m~   | magit dispatch popup                                | 弹出 magit 功能                                     |
-| ~SPC g M~   | display the last commit message of the current line | 显示当前行的提交消息                              |
-| ~SPC g t~   | launch the git time machine                         | 显示每个提交的内容                                |
-| ~SPC g U~   | unstage current file                                | 撤销存储当前文件                                  |
-|-------------+-----------------------------------------------------+---------------------------------------------------|
-
-Magit 状态  快捷键
-
- | Key Binding | Description                                                         |                          |
- |-------------+---------------------------------------------------------------------+--------------------------|
- | ~$~         | open =command output buffer=                                        | 打开                     |
- | ~c c~       | open a =commit message buffer=                                      | 打开提交缓存             |
- | ~b b~       | checkout a branch                                                   | 签出分支                 |
- | ~b c~       | create a branch                                                     | 创建分支                 |
- | ~f f~       | fetch changes                                                       | 拉取                     |
- | ~F (r) u~   | pull tracked branch and rebase                                      |                          |
- | ~gr~        | refresh                                                             | 刷新状态                 |
- | ~l l~       | open =log buffer=                                                   | 打开日志                 |
- | ~o~         | revert item at point                                                |                          |
- | ~P u~       | push to tracked branch                                              |                          |
- | ~P m~       | push to matching branch  (e.g., upstream/develop to origin/develop) |                          |
- | ~q~         | quit                                                                | 退出界面                 |
- | ~s~         | on a file or hunk in a diff: stage the file or hunk                 | 存储                     |
- | ~x~         | discard changes   复原                                              |                          |
- | ~+~         | on a hunk: increase hunk size                                       |                          |
- | ~-~         | on a hunk: decrease hunk size                                       |                          |
- | ~S~         | stage all                                                           | 存储所有                 |
- | ~TAB~       | on a file: expand/collapse diff                                     | 显示修改(与最近提交差异) |
- | ~u~         | on a staged file: unstage                                           | 取消存储                 |
- | ~U~         | unstage all staged files                                            | 取消所有存储             |
- | ~z z~       | stash changes                                                       | 隐藏改变                 |
- |             |                                                                     |                          |
- 
-   提交信息 ~C-c C-c~ , 取消   ~C-c C-k~
-*** Interactive rebase buffer
-
- | Key Binding | Description    |
- |-------------+----------------|
- | ~c~ or ~p~  | pick           |
- | ~e~         | edit           |
- | ~f~         | fixup          |
- | ~j~         | go down        |
- | ~M-j~       | move line down |
- | ~k~         | go up          |
- | ~M-k~       | move line up   |
- | ~d~ or ~x~  | kill line      |
- | ~r~         | reword         |
- | ~s~         | squash         |
- | ~u~         | undo           |
- | ~y~         | insert         |
- | ~!~         | execute        |
-
-*** 快速指导
- - 修改提交的消息 Amend(修改）a commit:
-   - ~l l~ to open =log buffer=
-   - ~c a~ on the commit you want to amend
-   - ~​,​c~ or ~C-c C-c~ to submit the changes
- - Squash(压扁）last commit:
-   - ~l l~ to open =log buffer=
-   - ~r e~ on the second to last commit, it opens the =rebase buffer=
-   - ~j~ to put point on last commit
-   - ~s~ to squash it
-   - ~​,​c~ or ~C-c C-c~ to continue to the =commit message buffer=
-   - ~​,​c~ or ~C-c C-c~ again when you have finished to edit the commit message
- - Force push a squashed commit:
-   - in the =status buffer= you should see the new commit unpushed and the old
-     commit unpulled
-   - ~P -f P~ for force a push (*beware* usually it is not recommended to rewrite
-     the history of a public repository, but if you are *sure* that you are the
-     only one to work on a repository it is ok - i.e. in your fork).
- - Add upstream remote (the parent repository you have forked):
-   - ~M~ to open the =remote popup=
-   - ~a~ to add a remote, type the name (i.e. =upstream=) and the URL
- - Pull changes from upstream (the parent repository you have forked) and push:
-   - ~F -r C-u F~ and choose =upstream= or the name you gave to it
-   - ~P P~ to push the commit to =origin=
-
-*** 历史明细 Git time machine
-    [[https://github.com/pidu/git-timemachine][git-timemachine]] allows to quickly browse the commits of the current buffer.
-
- | Key Binding | Description                                        |
- |-------------+----------------------------------------------------|
- | ~SPC g t~   | start git timemachine and initiate transient-state |
- | ~c~         | show current commit                                |
- | ~n~         | show next commit                                   |
- | ~N~         | show previous commit                               |
- | ~p~         | show previous commit                               |
- | ~q~         | leave transient-state and git timemachine          |
- | ~Y~         | copy current commit hash                           |
-
-*** Git links to web services
- These key bindings allow to quickly construct URLs pointing to a given commit
- or lines in a file hosted on Git web services like GitHub, GitLab, Bitbucket...
-
- | Key Binding | Description                                                            |
- |-------------+------------------------------------------------------------------------|
- | ~SPC g l c~ | on a commit hash, browse to the current file at this commit            |
- | ~SPC g l C~ | on a commit hash, create link to the file at this commit and copy it   |
- | ~SPC g l l~ | on a region, browse to file at current lines position                  |
- | ~SPC g l L~ | on a region, create a link to the file highlighting the selected lines |
-
- *Notes:*
- - You can use the universal argument ~SPC u~ to select a remote repository.
- - When the link is opened, the URL is also copied in the kill ring, you can
-   override this behavior by setting the variable =git-link-open-in-browser= to
-   =nil=.
-
-* github layer
-** Features:
-   拉取请求 - [[https://github.com/sigma/magit-gh-pulls][magit-gh-pulls]]: handy =magit= add-on to manage GitHub pull requests.
-   git 功能 - [[https://github.com/vermiculus/magithub][magithub]]: magit integrated interface to [[https://hub.github.com/][hub]] command line
-   浏览gist - [[https://github.com/defunkt/gist.el][gist.el]]: full-featured mode to browse and post GitHub gists.
-   地址生成 - [[https://github.com/sshaw/git-link][git-link]]: quickly generate URLs for commits or files.
-   克隆仓库 - [[https://github.com/dgtized/github-clone.el][github-clone]] allows for easy cloning and forking of repositories.
-   
-** 安装
-*** 配置 token
- You will need to generate a [[https://github.com/settings/tokens][personal access token]] on GitHub. This token should
- have the =gist= and =repo= permissions. Once this token is created, it needs to
- be added to your =~/.gitconfig=
-
- You will also need to [[https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/][generate an SSH key]] and [[https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/][add it to your GitHub account]].
-
- #+BEGIN_SRC sh
-   git config --global github.oauth-token <token>
- #+END_SRC
-
-*** Hub configuration
- For now, =Magithub= 需要 requires the =hub= 功能 utility to work -- before trying to use
- Magithub, follow the installation instructions at hub.github.com. To force hub
- to authenticate, you can use hub browse in a terminal (inside a GitHub repo).
-** Key Bindings(键盘绑定)
-*** magit-gh-pulls
- In a =magit status= buffer (~SPC g s~):
-
- | Key Binding | Description                                                 |
- |-------------+-------------------------------------------------------------|
- | ~# c~       | create a pull request                                       |
- | ~# g~       |获取拉取请求列表 get a list of (or reload) all PRs in the current repository |
- | ~# f~       |获取提交次数 fetch the commits associated with the current PR at point |
- | ~# b~       | create a branch for the current PR at point                 |
- | ~# m~       | merge the PR with current branch at point                   |
- | ~# d~       | show a diff of the current pull request at point            |
- | ~# o~       | open PR at point in browser                                 |
-
- Note that =magit-gh-pulls= will try to fast-forward the PRs whenever it is
- possible.
-
-*** magithub
- | Key Binding | Description                                      |
- |-------------+--------------------------------------------------|
- | ~@ H~       | 在浏览器打开仓库 opens the current repository in the browser |
- | ~@ c~       | pushes a brand-new local repository up to GitHub |
- | ~@ f~       | create a fork of an existing repository          |
- | ~@ p~       | submit pull request upstream                     |
- | ~@ i~       | create an issue                                  |
-
-*** gist.el
-
- | Key Binding | Description                                   |
- |-------------+-----------------------------------------------|
- | ~SPC g g b~ | 创建公开的要点 create a public gist with the buffer content |
- | ~SPC g g B~ | create a private gist with the buffer content |
- | ~SPC g g l~ | open the gist list buffer                     |
- | ~SPC g g r~ | create a public gist with the region content  |
- | ~SPC g g R~ | create a private gist with the region content |
-
- In the gist list buffer:
-
- | Key Binding | Description                  |
- |-------------+------------------------------|
- | ~/~         | evil search                  |
- | ~+~         | add buffer to gist           |
- | ~-~         | remove file for gist         |
- | ~b~ or ~o~  | open current gist in browser |
- | ~f~         | fetch current gist           |
- | ~g~         | refresh the list             |
- | ~h~         | go left                      |
- | ~j~         | go down                      |
- | ~k~         | go up                        |
- | ~K~         | kill current gist            |
- | ~l~         | go right                     |
- | ~n~         | next search occurrence       |
- | ~N~         | next previous occurrence     |
- | ~v~         | =visual state=               |
- | ~V~         | =visual-line state=          |
- | ~y~         | print URL and copy it        |
-
-*** Clone repositories
-
- | Key Binding   | Description                                              |
- |---------------+----------------------------------------------------------|
- | ~SPC g h c /~ | search for a repository to clone it                      |
- | ~SPC g h c c~ | clone and optionally fork repository                     |
- | ~SPC g h c r~ | add a remote that is an existing fork of selected remote |
- | ~SPC g h c f~ | fork remote in current user namespace                    |
- | ~SPC g h c u~ | add upstream as remote                                   |
-<!-- GFM-TOC -->
-* 版本控制（多人可控的东西)
+* 版本控制（多人可修改的东西,我的修改版，你的修改版,修改记录)
   版本控制包括：检入检出控制(修改)、分支和合并、历史记录。
 ** 集中式与分布式(版本库的位置)
    Git 属于分布式版本控制系统，而 SVN 属于集中式。
@@ -868,3 +85,555 @@ $ ssh-keygen -t rsa -C "youremail@example.com"
 不需要全部自己编写，可以到
 [https://github.com/github/gitignore](https://github.com/github/gitignore) 中进
 行查询。
+* git 
+** 配置东西的属性  所属人，所属分支
+   git config [--system,--global]
+   /etc/gitconfig | ~/.gitconfig
+   user.name = "用户名或者用户 ID"
+   user.email = "邮箱"
+   
+** 配置github仓库审核秘钥   
+ - 创建秘钥 ssh-keygen -C 'you email address@gmail.com' -t rsa
+   : 会在用户目录 ~/.ssh/ 下建立相应的密钥文件
+   : 可以使用 ssh -v git@github.com 命令来测试链接是否畅通
+- 上传公钥
+  # Title 可以随便命名，Key 的内容拷贝自 ~/.ssh/id_rsa.pub 中的内容，完成后，
+  可以再使用 ssh -v git@github.com 进行测试。
+  测试是否能够连接 ssh -T git@github.com
+** 功能 (本地文件 本地库文件要一致，才能同步远程库文件,三个不一致难搞的)
+*** 东西目录初始化(东西都在目录下) 
+    init
+*** 暂存功能 (修改的东西放到暂存区)  
+**** 加入暂存区东西 git add <modified files>/git add .
+**** 删除暂存区东西 git rm --cached <file>  
+**** 取消暂存区的东西 
+     和暂存区删除文件差别不大, 删除会把索引也删除
+     git reset HEAD <file>
+     git rm --cached 
+     是从 stage（index，暂存区） 里面删除文件，当你提交（commit）之后文件就会删除了。
+    
+     git reset HEAD --file 
+     : 回退暂存区里的文件（还原为 HEAD commit 里面该文件的状态），会撤销从上一次提交（commit） 之后的一些操作。
+     如果是对于新增文件，这两个操作时等效的。
+**** 抛弃工作区修改, 不提交都能恢复
+     git checkout . # 抛弃工作区修改
+     git checkout <file>
+**** 用别的分支的文件替换同名文件
+     用 HEAD 指向的 master(默认主分支) 分支中的全部或者部分文件替换
+     git checkout HEAD .
+     git checkout HEAD <file>
+     <<<<<<< HEAD
+**** 用两次确认的恢复草稿
+     此次操作之前和之后的commit和history都会保留，并且把这次撤销作为一次最新的提交
+**** 还原
+     git revert HEAD                  撤销前一次 commit
+     git revert HEAD^               撤销前前一次 commit
+     git revert commit-id（比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进行保存。
+     git revert 是提交一个新的版本，将需要 revert 的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。
+*** 仓库功能(清空暂存区，把东西放到本地版本库)
+**** 保存到本地版本库(当前分支)
+     git commit -m "msg"
+     也可以将 git add 与 git commit 用一个指令完成
+     git commit -a -m "msg"
+**** 版本库分库
+***** 创建分支
+      git branch (branchname)
+***** 切换分支
+      git checkout (branchname)
+      当你切换分支的时候，Git 会用该分支的最后提交的快照替换你的工作目录的内容，所以多个分支不需要多个目录。
+***** 合并分支, 然后可以删除分支
+      git merge test 
+      把 test 分支合并到当前分支
+***** 删除分支
+      git branch -d (branchname)
+***** 隐藏
+      git stash
+      git pull
+      git stash pop
+      接下来 diff 一下此文件看看自动合并的情况，并作出相应修改。
+
+      git stash: 备份当前的工作区的内容，从最近的一次提交中读取相关内容，让工作区保证和上次提交的内容一致。同时，将当前的工作区内容保存到 Git 栈中。
+      git stash pop: 从 Git 栈中读取最近一次保存的内容，恢复工作区的相关内容。由于可能存在多个 Stash 的内容，所以用栈来管理，pop 会从最近的一个 stash 中读取内容并恢复。
+      git stash list: 显示 Git 栈内的所有备份，可以利用这个列表来决定从那个地方恢复。
+      git stash clear: 清空 Git 栈。此时使用 gitg 等图形化工具会发现，原来 stash 的哪些节点都消失了。
+     
+      2.放弃本地修改，直接覆盖之
+      git reset --hard
+      git pull
+
+***** 忘了切分支
+      可以先用 git stash save xxx 来保存工作区的内容，然后新建 一个分支并调用 git stash pop
+*** 远程仓库(把本地版本库的东西放到中心服务器)
+**** 克隆远程到本地
+     git clone RESP
+     git clone --depth=1 RESP 只克隆最新的
+**** 添加要提交的中心服务器
+     git remote add origin https://github.com/hanyudeye/test.git 添加远程源 
+**** 远程的东西与本地同步
+     git push -u origin master
+**** 更新本地的版本库
+     git pull
+     git pull git://github.com/tom/test.git
+**** 查看远程分支
+     git branch -r # 查看远程 branch
+     git checkout -b bug_fix_local bug_fix_remote #把本地端切换为远程的 bug_fix_remote branch 并命名为 bug_fix_local
+*** 文件日志
+**** 状态 status   
+     git status
+     git status -s 简短信息
+     git remote -v 列出服务器地址
+     git diff   尚未缓存的改动：
+     git diff --cached   查看已缓存的改动：
+     git diff HEAD  查看已缓存的与未缓存的所有改动：
+   
+     Git diff branch1 branch2 --stat   //显示出所有有差异的文件列表
+     Git diff branch1 branch2 文件名(带路径)   //显示指定文件的详细差异
+     Git diff branch1 branch2                   //显示出所有有差异的文件的详细差异
+
+     git diff --stat   显示摘要而非整个 diff
+     A: 你本地新增的文件（服务器上没有）.
+     C: 文件的一个新拷贝.
+     D: 你本地删除的文件（服务器上还在）.
+     M: 文件的内容或者 mode 被修改了.
+     R: 文件名被修改了。
+     T: 文件的类型被修改了。
+     U: 文件没有被合并(你需要完成合并才能进行提交)。
+     X: 未知状态(很可能是遇到 git 的 bug 了，你可以向 git 提交 bug report)。
+     在 man git diff-files 中可以查到这些标志的说明
+**** Git 查看提交历史
+     git log
+     git log --oneline 简洁--graph 拓扑图 '--reverse'逆向显示
+     --author 指定用户日志
+     如果你要指定日期，可以执行几个选项：--since 和 --before，但
+     是你也可以用 --until 和 --after。
+**** 某次提交的内容 
+     git show # 显示某次提交的内容 git show $id
+** .gitignore
+   　　以斜杠“/”开头表示目录； 
+   　　以星号“*”通配多个字符；
+   　　以问号“?”通配单个字符
+   　　以方括号“[]”包含单个字符的匹配列表；
+   　　以叹号“!”表示不忽略(跟踪)匹配到的文件或目录；
+   规则：/fd1/*
+   说明：忽略根目录下的 /fd1/ 目录的全部内容；根目录指项目的的根目录
+* svn
+** svn 重新验证证书 ->会在用户名和密码错误的情况下重新验证 
+   Error:  “Server certificate verification failed: issuer is not trusted”
+   使用终端执行如下命令：svn list https://your.repository.url 接下来选择对应的（临时）/（永久）即可。
+** 功能
+   查看修改的文件记录
+   svn cat -- 显示特定版本的某文件内容。
+   svn list -- 显示一个目录或某一版本存在的文件列表。
+   svn log -- 显示 svn 的版本 log，含作者、日期、路径等。
+   svn diff -- 显示特定修改的行级详细信息。
+
+   list 示例：
+
+   svn list http://svn.test.com/svn     #查看目录中的文件。
+   svn list -v http://svn.test.com/svn  #查看详细的目录的信息(修订人,版本号,文件大小等)。
+   svn list [-v]                        #查看当前当前工作拷贝的版本库 URL。
+   cat 示例：
+
+   svn cat -r 4 test.c     #查看版本 4 中的文件 test.c 的内容,不进行比较。
+   diff 示例：
+
+   svn diff               #什么都不加，会坚持本地代码和缓存在本地.svn 目录下的信息的不同;信息太多，没啥用处。
+   svn diff -r 3          #比较你的本地代码和版本号为 3 的所有文件的不同。
+   svn diff -r 3 text.c   #比较你的本地代码和版本号为 3 的 text.c 文件的不同。
+   svn diff -r 5:6        #比较版本 5 和版本 6 之间所有文件的不同。
+   svn diff -r 5:6 text.c #比较版本 5 和版本 6 之间的 text.c 文件的变化。
+   svn diff -c 6 test.c    #比较版本 5 和版本 6 之间的 text.c 文件的变化。
+   log 示例：
+
+   svn log         #什么都不加会显示所有版本 commit 的日志信息:版本、作者、日期、comment。
+   svn log -r 4:20 #只看版本 4 到版本 20 的日志信息，顺序显示。
+   svn log -r 20:5 #显示版本 20 到 4 之间的日志信息，逆序显示。
+   svn log test.c  #查看文件 test.c 的日志修改信息。
+   svn log -r 8 -v #显示版本 8 的详细修改日志，包括修改的所有文件列表信息。
+   svn log -r 8 -v -q   #显示版本 8 的详细提交日志，不包括 comment。
+   svn log -v -r 88:866 #显示从版本 88 到版本 866 之间，当前代码目录下所有变更的详细信息 。
+   svn log -v dir  #查看目录的日志修改信息,需要加 v。
+   svn log http://foo.com/svn/trunk/code/  #显示代码目录的日志信息。
+   常用命令
+
+   svn add file|dir -- 添加文件或整个目录
+   svn checkout -- 获取 svn 代码
+   svn commit  -- 提交本地修改代码
+   svn status    -- 查看本地修改代码情况：修改的或本地独有的文件详细信息
+   svn merge   -- 合并 svn 和本地代码
+   svn revert   -- 撤销本地修改代码
+   svn resolve -- 合并冲突代码
+
+   svn help [command] -- 查看 svn 帮助，或特定命令帮助
+   svn diff 个性化定制
+   svn 配置文件: ~/.subversion/config
+
+   修改~/.subversion/config，找到如下配置行：
+
+   # diff-cmd = diff_program (diff, gdiff, etc.)
+   将上面那个脚本的路径添加进去就行，修改为
+
+   diff-cmd = /usr/local/bin/diffwrap.sh  #绝对路径
+   这样 svn diff 命令就会默认使用 vimdiff 比较文件。
+
+   diffwrap.sh 文件
+   #! /bin/bash
+
+   # for svn diff: 修改~/.subversion/config，找到如下配置行：
+   # diff-cmd = diff_program (diff, gdiff, etc.)
+   # diff-cmd = ~/bin/diffwrap.sh
+
+   # 参数大于 5 时，去掉前 5 个参数；参数小于 5，失败，什么也不做
+   shift 5
+
+   # 使用 vimdiff 比较
+   vimdiff "$@"
+** svn ignore
+   假设想忽略文件 temp
+   1. cd 到 temp 所在的目录下：
+   2. svn propedit svn:ignore .
+   注意：请别漏掉最后的点（.表示当前目录），如果报错请看下面
+
+   3. 打开的文件就是忽略列表文件了（默认是空的），每一行是一项，在该文件中输入 temp，保存退出
+
+   4. svn st 查看状态，temp 的?状态已经消除了
+
+   如果在 svn propedit svn:ignore .时报错：svn: None of the environment variables SVN_EDITOR, VISUAL or EDITOR are set, and no 'editor-cmd' run-time configuration option was found
+
+   说明 SVN 的默认属性编辑器没有设置，设置方法如下：
+
+   vi ~/.bash_profile
+
+   在最后一行追加
+
+   export SVN_EDITOR=vim
+
+   保存退出，然后输入命令 source ~/.bash_profile（使配置文件立即生效）
+
+   以上步骤完成后，继续按照上面的方法设置
+
+   一直不知道 svn 的忽略命令如何使用，经过 google 的查找，使用方法还是有的，做个记录好了。
+   如果想在 SVN 提交时，忽略某个文件，也就是某个文件不提交，可以使用
+   svn propedit svn:ignore 命令。
+
+   下面详细介绍一下使用步骤。
+
+   单纯的看 svn 官方文档和一些网上搜索的资料，有时候真的不如亲自试验的好。
+
+   svn propedit svn:ignore 目录名称。
+   注意，在使用这个 SVN 的属性编辑前，你得确保后面的“目录名称”是 SVN 版本控制的目录。
+
+   如果要忽略此目录下的文件，可以如下操作。
+   比如，想忽略/product 目录下的 test.php 文件。前提是/product 目录必须在 svn 版本控制下，而 test.php 文件不在 svn 版本控制。
+
+   svn st 先看一下状态，会显示如下：
+   ?     /product/test.php
+
+   我们需要将 test.php 文件加入忽略列表。
+   此时先设置 SVN 默认的编辑器
+   export SVN_EDITOR=vim
+
+   然后，使用 svn propedit svn:ignore ,用法如下
+
+   svn propedit svn:ignore /product
+   此时会出现一个 VIM 的编辑窗口，表示需要将某个文件加入到忽略列表里
+   我们在编辑窗口中，写入
+   test.php
+
+   然后保存，并退出 VIM 编辑器。
+
+   这时候会有一个提示：属性 “svn:ignore” 于 “product” 被设为新值。
+   表示文件 test.php 的 svn:ignore 属性设置成功。
+   然后使用 svn st 查看，会显示：
+   M        product
+
+   我们需要提交，然后这个 svn:ignore 属性才会起作用
+   svn ci -m '忽略 test.php 文件'
+
+   这时候，无论你如何修改 test.php 文件，再使用 svn st 时，也不会出现修改提示符合 M 了。
+   jpg 改 doc
+
+* git 常用命令
+** 常用  
+   git add <file> # 将工作文件修改提交到本地暂存区
+   git add . # 将所有修改过的工作文件提交暂存区
+   git rm <file> # 从版本库中删除文件
+   git rm <file> --cached # 从版本库中删除文件，但不删除文件
+   git reset <file> # 从暂存区恢复到工作文件
+   git reset -- . # 从暂存区恢复到工作文件
+   git reset --hard # 恢复最近一次提交过的状态，即放弃上次提交后的所有本次修改
+   git ci <file> git ci . git ci -a # 将 git add, git rm 和 git ci 等操作都合并在一起做　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　git ci -am "some comments"
+   git ci --amend # 修改最后一次提交记录
+   git revert <$id> # 恢复某次提交的状态，恢复动作本身也创建次提交对象
+   git revert HEAD # 恢复最后一次提交的状态
+** 查看文件 diff
+   git diff <file> # 比较当前文件和暂存区文件差异 git diff
+   git diff <id1><id1><id2> # 比较两次提交之间的差异
+   git diff <branch1>..<branch2> # 在两个分支之间比较
+   git diff --staged # 比较暂存区和版本库差异
+   git diff --cached # 比较暂存区和版本库差异
+   git diff --stat # 仅仅比较统计信息
+** 查看提交记录
+   git log git log <file> # 查看该文件每次提交记录
+   git log -p <file> # 查看每次详细修改内容的 diff
+   git log -p -2 # 查看最近两次详细修改内容的 diff
+   git log --stat #查看提交统计信息
+** Git 本地分支管理
+*** 查看、切换、创建和删除分支
+    git br -r # 查看远程分支
+    git br <new_branch> # 创建新的分支
+    git br -v # 查看各个分支最后提交信息
+    git br --merged # 查看已经被合并到当前分支的分支
+    git br --no-merged # 查看尚未被合并到当前分支的分支
+    git co <branch> # 切换到某个分支
+    git co -b <new_branch> # 创建新的分支，并且切换过去
+    git co -b <new_branch> <branch> # 基于 branch 创建新的 new_branch
+    git co $id # 把某次历史提交记录 checkout 出来，但无分支信息，切换到其他分支会自动删除
+    git co $id -b <new_branch> # 把某次历史提交记录 checkout 出来，创建成一个分支
+    git br -d <branch> # 删除某个分支
+    git br -D <branch> # 强制删除某个分支 (未被合并的分支被删除的时候需要强制)
+*** 分支合并和 rebase
+    git merge <branch> # 将 branch 分支合并到当前分支
+    git merge origin/master --no-ff # 不要 Fast-Foward 合并，这样可以生成 merge 提交
+    git rebase master <branch> # 将 master rebase 到 branch，相当于：git co <branch> && git rebase master && git co master && git merge <branch>
+*** Git 补丁管理(方便在多台机器上开发同步时用)
+    git diff > ../sync.patch # 生成补丁
+    git apply ../sync.patch # 打补丁
+    git apply --check ../sync.patch #测试补丁能否成功
+    git checkout 分支名 文件   把分支下的某文件覆盖到当前分支
+*** Git 暂存管理
+    git stash # 暂存
+    git stash list # 列所有 stash
+    git stash apply # 恢复暂存的内容
+    git stash drop # 删除暂存区
+** Git 远程分支管理
+   git pull # 抓取远程仓库所有分支更新并合并到本地
+   git pull --no-ff # 抓取远程仓库所有分支更新并合并到本地，不要快进合并
+   git fetch origin # 抓取远程仓库更新
+   git merge origin/master # 将远程主分支合并到本地当前分支
+   git co --track origin/branch # 跟踪某个远程分支创建相应的本地分支
+   git co -b <local_branch> origin/<remote_branch> # 基于远程分支创建本地分支，功能同上
+   git push # push 所有分支
+   git push origin master # 将本地主分支推到远程主分支
+   git push -u origin master # 将本地主分支推到远程(如无远程主分支则创建，用于初始化远程仓库)
+   git push origin <local_branch> # 创建远程分支，origin 是远程仓库名
+   git push origin <local_branch>:<remote_branch> # 创建远程分支
+   git push origin :<remote_branch> #先删除本地分支(git br -d <branch>)，然后再 push 删除远程分支
+** Git 远程仓库管理
+*** GitHub
+    git remote -v # 查看远程服务器地址和仓库名称
+    git remote show origin # 查看远程服务器仓库状态
+    git remote add origin git@ github:robbin/robbin_site.git # 添加远程仓库地址
+    git remote set-url origin git@ github.com:robbin/robbin_site.git # 设置远程仓库地址(用于修改远程仓库地址) git remote rm <repository> # 删除远程仓库
+    git remote set-url --add --push origin ***** #添加多个源
+*** 创建远程仓库
+    git clone --bare robbin_site robbin_site.git # 用带版本的项目创建纯版本仓库
+    scp -r my_project.git git@ git.csdn.net:~ # 将纯仓库上传到服务器上
+    mkdir robbin_site.git && cd robbin_site.git && git --bare init # 在服务器创建纯仓库
+    git remote add origin git@ github.com:robbin/robbin_site.git # 设置远程仓库地址
+    git push -u origin master # 客户端首次提交
+    git push -u origin develop # 首次将本地 develop 分支提交到远程 develop 分支，并且 track
+    git remote set-head origin master # 设置远程仓库的 HEAD 指向 master 分支
+*** 也可以命令设置跟踪远程库和本地库
+    git branch --set-upstream master origin/master
+    git branch --set-upstream develop origin/develop
+** 强制覆盖本地, 这里不想覆盖的也要覆盖
+   git fetch --all
+   git reset --hard origin/master
+   git pull
+** 修改远程仓库 
+*** 1.修改命令
+    git remote origin set-url [url]
+    !!!!!!现在是
+    git remote  set-url origin [url]
+*** 2.先删后加
+    git remote rm origin
+    git remote add origin [url]
+*** 3.直接修改 config 文件
+    
+    git 远程仓库管理
+    要参与任何一个 Git 项目的协作,必须要了解该如何管理远程仓库.远程仓库是指托管在网络上的项目仓库,可能会有好多个,其中有些你只能读,另外有些可以写.同他人协作开发某 个项目时,需要管理这些远程仓库,以便推送或拉取数据,分享各自的工作进展.管理远程仓库的工作,包括添加远程库,移除废弃的远程库,管理各式远程库分 支,定义是否跟踪这些分支,等等.本节我们将详细讨论远程库的管理和使用.
+
+    　　查看当前的远程库
+
+    　　要查看当前配置有哪些远程仓库,可以用 git remote 命令,它会列出每个远程库的简短名字.在克隆完某个项目后,至少可以看到一个名为 origin 的远程库,Git 默认使用这个名字来标识你所克隆的原始仓库:
+
+    　　$ git clone git://github.com/schacon/ticgit.git
+
+    　　Initialized empty Git repository in /private/tmp/ticgit/.git/
+
+    　　remote: Counting objects: 595, done.
+
+    　　remote: Compressing objects: 100% (269/269), done.
+
+    　　remote: Total 595 (delta 255), reused 589 (delta 253)
+
+    　　Receiving objects: 100% (595/595), 73.31 KiB | 1 KiB/s, done.
+
+    　　Resolving deltas: 100% (255/255), done.
+
+    　　$ cd ticgit
+
+    　　$ git remote
+
+    　　origin 也可以加上 -v 选项(译注:此为 ?verbose 的简写,取首字母),显示对应的克隆地址:
+
+    　　$ git remote -v
+
+    　　origin git://github.com/schacon/ticgit.git 如果有多个远程仓库,此命令将全部列出.比如在我的 Grit 项目中,可以看到:
+
+    　　$ cd grit
+
+    　　$ git remote -v
+
+    　　bakkdoor git://github.com/bakkdoor/grit.git
+
+    　　cho45 git://github.com/cho45/grit.git
+
+    　　defunkt git://github.com/defunkt/grit.git
+
+    　　koke git://github.com/koke/grit.git
+
+    　　origin git@github.com:mojombo/grit.git 这样一来,我就可以非常轻松地从这些用户的仓库中,拉取他们的提交到本地.请注意,上面列出的地址只有 origin 用的是 SSH URL 链接,所以也只有这个仓库我能推送数据上去(我们会在第四章解释原因).
+
+    　　添加远程仓库
+
+    　　要添加一个新的远程仓库,可以指定一个简单的名字,以便将来引用,运行 git remote add [shortname] [url]:
+
+    　　$ git remote
+
+    　　origin
+
+    　　$ git remote add pb git://github.com/paulboone/ticgit.git
+
+    　　$ git remote -v
+
+    　　origin git://github.com/schacon/ticgit.git
+
+    　　pb git://github.com/paulboone/ticgit.git 现在可以用字串 pb 指代对应的仓库地址了.比如说,要抓取所有 Paul 有的,但本地仓库没有的信息,可以运行 git fetch pb:
+
+    　　$ git fetch pb
+
+    　　remote: Counting objects: 58, done.
+
+    　　remote: Compressing objects: 100% (41/41), done.
+
+    　　remote: Total 44 (delta 24), reused 1 (delta 0)
+
+    　　Unpacking objects: 100% (44/44), done.
+
+    　　From git://github.com/paulboone/ticgit
+
+    　　* [new branch] master -> pb/master
+
+    　　* [new branch] ticgit -> pb/ticgit 现在,Paul 的主干分支(master)已经完全可以在本地访问了,对应的名字是 pb/master,你可以将它合并到自己的某个分支,或者切换到这个分支,看看有些什么有趣的更新.
+
+    　　从远程仓库抓取数据
+
+    　　正如之前所看到的,可以用下面的命令从远程仓库抓取数据到本地:
+
+    　　$ git fetch [remote-name]此命令会到远程仓库中拉取所有你本地仓库中还没有的数据.运行完成后,你就可以在本地访问该远程仓库中的所有分支,将其中某个 分支合并到本地,或者只是取出某个分支,一探究竟.(我们会在第三章详细讨论关于分支的概念和操作.)
+
+    　　如果是克隆了一个仓库,此命令会自动将远程仓库归于 origin 名下.所以,git fetch origin 会抓取从你上次克隆以来别人上传到此远程仓库中的所有更新(或是上次 fetch 以来别人提交的更新).有一点很重要,需要记住,fetch 命令只是将远端的数据拉到本地仓库,并不自动合并到当前工作分支,只有当你确实准备好了,才能手工合并.(说 明:事先需要创建好远程的仓库,然后执行:git remote add [仓库名] [仓库 url],git fetch [远程仓库名],即可抓取到远程仓库数据到本地,再用 git merge remotes/[仓库名]/master 就可以将远程仓库 merge 到本地当前 branch.这种分支方式比较适合独立-整合开发,即各自开发测试好后 再整合在一起.比如,Android 的 Framework 和 AP 开发.
+
+    　　可以使用--bare 选项运行 git init 来设定一个空仓库,这会初始化一个不包含工作目录的仓库.
+
+    　　$ cd /opt/git
+
+    　　$ mkdir project.git
+
+    　　$ cd project.git
+
+    　　$ git --bare init 这时,Join,Josie 或者 Jessica 就可以把它加为远程仓库,推送一个分支,从而把第一个版本的工程上传到仓库里了.)
+
+    　　如果设置了某个分支用于跟踪某个远端仓库的分支(参见下节及第三章的内容),可以使用 git pull 命令自动抓取数据下来,然后将远端分支自动合并到本地仓库中当前分支.在日常工作中我们经常这么用,既快且好.实际上,默认情况下 git clone 命令本质上就是自动创建了本地的 master 分支用于跟踪远程仓库中的 master 分支(假设远程仓库确实有 master 分支).所以一般我们运行 git pull,目的都是要从原始克隆的远端仓库中抓取数据后,合并到工作目录中当前分支.
+
+    　　推送数据到远程仓库
+
+    　　项目进行到一个阶段,要同别人分享目前的成果,可以将本地仓库中的数据推送到远程仓库.实现这个任务的命令很简单: git push [remote-name] [branch-name].如果要把本地的 master 分支推送到 origin 服务器上(再次说明下,克隆操作会自动使用默认的 master 和 origin 名字),可以运行下面的命令:
+
+    　　$ git push origin master 只有在所克隆的服务器上有写权限,或者同一时刻没有其他人在推数据,这条命令才会如期完成任务.如果在你推数据前,已经有其他人推送了若干更新,那 你的推送操作就会被驳回.你必须先把他们的更新抓取到本地,并到自己的项目中,然后才可以再次推送.有关推送数据到远程仓库的详细内容见第三章.
+
+    　　查看远程仓库信息
+
+    　　我们可以通过命令 git remote show [remote-name] 查看某个远程仓库的详细信息,比如要看所克隆的 origin 仓库,可以运行:
+
+    　　$ git remote show origin
+
+    　　* remote origin
+
+    　　URL: git://github.com/schacon/ticgit.git
+
+    　　Remote branch merged with 'git pull' while on branch master
+
+    　　master
+
+    　　Tracked remote branches
+
+    　　master
+
+    　　ticgit 除了对应的克隆地址外,它还给出了许多额外的信息.它友善地告诉你如果是在 master 分支,就可以用 git pull 命令抓取数据合并到本地.另外还列出了所有处于跟踪状态中的远端分支.
+
+    　　实际使用过程中,git remote show 给出的信息可能会像这样:
+
+    　　$ git remote show origin
+
+    　　* remote origin
+
+    　　URL: git@github.com:defunkt/github.git
+
+    　　Remote branch merged with 'git pull' while on branch issues
+
+    　　issues
+
+    　　Remote branch merged with 'git pull' while on branch master
+
+    　　master
+
+    　　New remote branches (next fetch will store in remotes/origin)
+
+    　　caching
+
+    　　Stale tracking branches (use 'git remote prune')
+
+    　　libwalker
+
+    　　walker2
+
+    　　Tracked remote branches
+
+    　　acl
+
+    　　apiv2
+
+    　　dashboard2
+
+    　　issues
+
+    　　master
+
+    　　postgres
+
+    　　Local branch pushed with 'git push'
+
+    　　master:master 它告诉我们,运行 git push 时缺省推送的分支是什么(译注:最后两行).它还显示了有哪些远端分支还没有同步 到本地(译注:第六行的 caching 分支),哪些已同步到本地的远端分支在远端服务器上已被删除(译注:Stale tracking branches 下面的两个分支),以及运行 git pull 时将自动合并哪些分支(译注:前四行中列出的 issues 和 master 分支).(此命令也可以查看到本地分支和远程仓库分支的对应关系.)
+
+    　　远程仓库的删除和重命名
+
+    　　在新版 Git 中可以用 git remote rename 命令修改某个远程仓库的简短名称,比如想把 pb 改成 paul,可以这么运行:
+
+    　　$ git remote rename pb paul
+
+    　　$ git remote
+
+    　　origin
+
+    　　paul 注意,对远程仓库的重命名,也会使对应的分支名称发生变化,原来的 pb/master 分支现在成了 paul/master.
+
+    　　碰到远端仓库服务器迁移,或者原来的克隆镜像不再使用,又或者某个参与者不再贡献代码,那么需要移除对应的远端仓库,可以运行 git remote rm 命令:
+
+    　　$ git remote rm paul
+
+    　　$ git remote
+
+    　　origin

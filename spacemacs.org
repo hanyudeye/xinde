@@ -924,14 +924,556 @@
           search-engine-alist)
 #+END_SRC
 
-
-
+** chrome
+*** 实时预览 markdown 文件  flymd-flyit(不工作)
 ** asm layers
   语言高亮
   自动缩进
   自动完成
   查找文档 
   智能菜单 Imenu integration SPC s j 
-
 | ~SPC m h h~ |查找命令文档 Look up the documentation for instruction at point |
 
+** java layers
+*** 集成开发工具ensime   
+    1.在工程下执行 sbt ensimeConfig 生成项目
+    2.emacs 打开服务并连接服务 ensime 就可以了, 多连接几次，可能在下载依赖
+    下面这个可以放在第一个
+    3.如要要用build 功能, 需配置，可以创建一个project/build.properties
+    #+BEGIN_SRC scala
+    sbt.version=1.2.6  
+    #+END_SRC
+    查看版本，可以在 sbt 命令行下，执行 sbtVersion
+    这样就可以 build , 和执行了
+*** 交互式构建工具 sbt 
+    echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
+    sudo apt-get update
+    sudo apt-get install sbt
+    sbt repositories
+*** 选择后端
+    我选的是 ensime, 此工具可以管理好多类工程
+**** sbt工程 
+     安装 sbt
+     
+    #+BEGIN_SRC shell
+      nix-env --install sbt
+    #+END_SRC
+**** gradle工程
+     Refer to the [[https://ensime.org/build_tools/gradle/][Ensime installation instructions]] to install the =ensime-gradle=
+**** 配置
+     Follow [[https://ensime.github.io/build_tools/sbt/][the ENSIME configuration instructions]]. Spacemacs uses
+**** 使用
+     ~SPC SPC spacemacs/ensime-gen-and-restart~ or ~SPC m D r~ generates a new config
+ for a project and starts the server. Afterwards ~SPC SPC ensime~ or ~SPC m D s~
+ will suffice do the trick.
+**** 注意
+     ENSIME is originally built for Scala, so support for java is not complete, in
+     particular refactoring doesn't work.
+     ensime 原来是为 scala 语言服务的，Java不完善
+
+*** Ensime key bindings
+**** Search
+  | Key Binding | Description                                         |
+  |-------------+-----------------------------------------------------|
+  | ~SPC m /~   | incremental search using =ensime-scalex= major mode |
+  | ~SPC m ?~   | incremental search in all live buffers              |
+
+**** Ensime Search Mode
+  | Key Binding | Description                                                       |
+  |-------------+-------------------------------------------------------------------|
+  | ~C-j~       | Move to next match                                                |
+  | ~C-k~       | Move to previous match                                            |
+  | ~C-i~       | Insert at point import of current result                          |
+  | ~RET~       | Jump to the target of the currently selected ensime-search-result |
+  | ~C-q~       | Quit ensime search                                                |
+
+**** sbt
+  | Key Binding | Description         |
+  |-------------+---------------------|
+  | ~SPC m b .~ | sbt transient state |
+  | ~SPC m b b~ | sbt command         |
+  | ~SPC m b c~ | compile             |
+  | ~SPC m b C~ | clean command       |
+  | ~SPC m b i~ | switch to sbt shell |
+  | ~SPC m b p~ | package command     |
+  | ~SPC m b r~ | run command         |
+
+**** Typecheck
+  | Key Binding | Description                     |
+  |-------------+---------------------------------|
+  | ~SPC m c t~ | type check the current file     |
+  | ~SPC m c T~ | type check all the open buffers |
+
+**** Debug
+  | Key Binding | Description                 |
+  |-------------+-----------------------------|
+  | ~SPC m d A~ | Attach to a remote debugger |
+  | ~SPC m d b~ | set breakpoint              |
+  | ~SPC m d B~ | clear breakpoint            |
+  | ~SPC m d C~ | clear all breakpoints       |
+  | ~SPC m d c~ | continue                    |
+  | ~SPC m d i~ | inspect value at point      |
+  | ~SPC m d n~ | next                        |
+  | ~SPC m d o~ | step out                    |
+  | ~SPC m d q~ | quit                        |
+  | ~SPC m d r~ | run                         |
+  | ~SPC m d s~ | step                        |
+  | ~SPC m d t~ | backtrace                   |
+
+  *Note:* These key bindings need a transient-state, PR welcome :-)
+
+**** Errors
+
+  | Key Binding | Description                                        |
+  |-------------+----------------------------------------------------|
+  | ~SPC m e e~ | print error at point                               |
+  | ~SPC m e l~ | show all errors and warnings                       |
+  | ~SPC m e s~ | switch to buffer containing the stack trace parser |
+
+**** Goto
+
+  | Key Binding | Description          |
+  |-------------+----------------------|
+  | ~SPC m g g~ | go to definition     |
+  | ~SPC m g i~ | go to implementation |
+  | ~SPC m g t~ | go to test           |
+
+**** Print and yank types
+
+  |-------------+--------------------------------|
+  | ~SPC m h T~ | print full type name at point  |
+  | ~SPC m h t~ | print short type name at point |
+  | ~SPC m y T~ | yank full type name at point   |
+  | ~SPC m y t~ | yank short type name at point  |
+
+**** Documentation, Inspect
+
+  | Key Binding | Description                            |
+  |-------------+----------------------------------------|
+  | ~SPC m h h~ | show documentation for symbol at point |
+  | ~SPC m h u~ | show uses for symbol at point          |
+  | ~SPC m i i~ | inspect type at point                  |
+  | ~SPC m i I~ | inspect type in other frame            |
+  | ~SPC m i p~ | inspect project package                |
+
+**** Server
+
+  | Key Binding | Description                                            |
+  |-------------+--------------------------------------------------------|
+  | ~SPC m D f~ | reload open files                                      |
+  | ~SPC m D r~ | regenerate the =.ensime= and restart the ensime server |
+  | ~SPC m D s~ | start ensime server                                    |
+
+**** Refactoring
+
+  | Key Binding | Description                                                          |
+  |-------------+----------------------------------------------------------------------|
+  | ~SPC m r a~ | add type annotation                                                  |
+  | ~SPC m r f~ | format source                                                        |
+  | ~SPC m r d~ | get rid of an intermediate variable (=ensime-refactor-inline-local=) |
+  | ~SPC m r D~ | get rid of an intermediate variable (=ensime-undo-peek=)             |
+  | ~SPC m r i~ | organize imports                                                     |
+  | ~SPC m r m~ | extract a range of code into a method                                |
+  | ~SPC m r r~ | rename a symbol project wide                                         |
+  | ~SPC m r t~ | import type at point                                                 |
+  | ~SPC m r v~ | extract a range of code into a variable                              |
+  | ~SPC m z~   | expand/contract region                                               |
+
+**** Tests
+
+  | Key Binding | Description              |
+  |-------------+--------------------------|
+  | ~SPC m t a~ | test command (sbt)       |
+  | ~SPC m t r~ | test quick command (sbt) |
+  | ~SPC m t t~ | test only (sbt)          |
+
+**** REPL
+
+  | Key Binding | Description                                                         |
+  |-------------+---------------------------------------------------------------------|
+  | ~SPC m s a~ | ask for a file to be loaded in the REPL                             |
+  | ~SPC m s b~ | send buffer to the REPL                                             |
+  | ~SPC m s B~ | send buffer to the REPL and focus the REPL buffer in =insert state= |
+  | ~SPC m s i~ | start or switch to the REPL inferior process                        |
+  | ~SPC m s r~ | send region to the REPL                                             |
+  | ~SPC m s R~ | send region to the REPL and focus the REPL buffer in =insert state= |
+*** LSP Java
+**** Code intelligence shorcuts
+
+ | Key binding   | Description                           |
+ |---------------+---------------------------------------|
+ | ~SPC m g g~   | Go to definition                      |
+ | ~SPC m g r~   | Find references                       |
+ | ~SPC m g R~   | Peek references using ~lsp-ui~        |
+ | ~SPC m g d~   | Goto type definition                  |
+ | ~SPC m g a~   | Search type in project                |
+ | ~SPC m g A~   | Search type in project using ~lsp-ui~ |
+ | ~SPC m h h~   | Describe thing at point               |
+ | ~SPC m e l~   | List project errors/warnings          |
+ | ~SPC m p u~   | Refresh user settings                 |
+ | ~SPC m e a~   | Execute code action                   |
+ | ~SPC m q r~   | Restart workspace                     |
+ | ~SPC m r o i~ | Organize imports                      |
+ | ~SPC m r r~   | Rename symbol                         |
+ | ~SPC m r a i~ | Add import                            |
+ | ~SPC m r a m~ | Add unimplemented methods             |
+ | ~SPC m r c p~ | Create parameter                      |
+ | ~SPC m r c f~ | Create field                          |
+ | ~SPC m r e c~ | Extract constant                      |
+ | ~SPC m r e l~ | Extract local                         |
+ | ~SPC m r e m~ | Extract method                        |
+ | ~SPC m c c~   | Build project                         |
+ | ~SPC m a n~   | Actionable notifications              |
+ | ~SPC m =~     | Format code                           |
+
+**** Debugger shorcuts
+
+ | Key binding   | Description                     |
+ |---------------+---------------------------------|
+ | ~SPC m d t t~ | Debug test method               |
+ | ~SPC m d t c~ | Debug test class                |
+ | ~SPC m d j~   | Debug java class(main method).  |
+ |---------------+---------------------------------|
+ | ~SPC m t t~   | Run test method                 |
+ | ~SPC m t c~   | Run test class                  |
+ |---------------+---------------------------------|
+ | ~SPC m d d d~ | start debugging                 |
+ | ~SPC m d d l~ | debug last configuration        |
+ | ~SPC m d d r~ | debug recent configuration      |
+ |---------------+---------------------------------|
+ | ~SPC m d c~   | continue                        |
+ | ~SPC m d i~   | step in                         |
+ | ~SPC m d o~   | step out                        |
+ | ~SPC m d s~   | next step                       |
+ | ~SPC m d v~   | inspect value at point          |
+ | ~SPC m d r~   | restart frame                   |
+ |---------------+---------------------------------|
+ | ~SPC m d .~   | debug transient state           |
+ |---------------+---------------------------------|
+ | ~SPC m d a~   | abandon current session         |
+ | ~SPC m d A~   | abandon all process             |
+ |---------------+---------------------------------|
+ | ~SPC m d e e~ | eval                            |
+ | ~SPC m d e r~ | eval region                     |
+ | ~SPC m d e t~ | eval value at point             |
+ |---------------+---------------------------------|
+ | ~SPC m d S s~ | switch session                  |
+ | ~SPC m d S t~ | switch thread                   |
+ | ~SPC m d S f~ | switch frame                    |
+ |---------------+---------------------------------|
+ | ~SPC m d I i~ | inspect                         |
+ | ~SPC m d I r~ | inspect region                  |
+ | ~SPC m d I t~ | inspect value at point          |
+ |---------------+---------------------------------|
+ | ~SPC m d b b~ | toggle a breakpoint             |
+ | ~SPC m d b c~ | change breakpoint condition     |
+ | ~SPC m d b l~ | change breakpoint log condition |
+ | ~SPC m d b h~ | change breakpoint hit count     |
+ | ~SPC m d b a~ | add a breakpoint                |
+ | ~SPC m d b d~ | delete a breakpoint             |
+ | ~SPC m d b D~ | clear all breakpoints           |
+ |---------------+---------------------------------|
+ | ~SPC m d '_~  | Run debug REPL                  |
+ |---------------+---------------------------------|
+ | ~SPC m d w l~ | list local variables            |
+ | ~SPC m d w o~ | goto output buffer if present   |
+ | ~SPC m d w s~ | list sessions                   |
+ | ~SPC m d w b~ | list breakpoints                |
+
+*** Maven
+
+ | Key binding     | Description                                          |
+ |-----------------+------------------------------------------------------|
+ | ~SPC m m c c~   | Compile                                              |
+ | ~SPC m m c C~   | Clean                                                |
+ | ~SPC m m c r~   | Clean and compile                                    |
+ | ~SPC m m g a~   | Switch between class and test file                   |
+ | ~SPC m m g A~   | Switch between class and test file in another window |
+ | ~SPC m m t a~   | Run all tests                                        |
+ | ~SPC m m t C-a~ | Clean and run all tests                              |
+ | ~SPC m m t b~   | Run current buffer tests                             |
+ | ~SPC m m t i~   | Test and install                                     |
+ | ~SPC m m t t~   | Run a specific test                                  |
+
+*** Gradle
+
+ | Key binding   | Description              |
+ |---------------+--------------------------|
+ | ~SPC m l c c~ | Compile                  |
+ | ~SPC m l c C~ | Clean                    |
+ | ~SPC m l c r~ | Clean and compile        |
+ | ~SPC m l t a~ | Run all tests            |
+ | ~SPC m l t b~ | Run current buffer tests |
+ | ~SPC m l t t~ | Run a specific test      |
+ | ~SPC m l x~   | Execute a Gradle task    |
+** emacs lisp layers
+*** 执行 ，e f
+*** 调试  
+ ，d f 设置断点
+ ,  e e 进入调试
+ s 步进
+  Press ~i~ to go into the =subroutine= where you can press ~s~ to step in
+ function or press ~o~ to go out of it.
+
+  Press ~a~ to stop debugging.
+
+*** 格式化代码(美化)
+ The [[https://github.com/syl20bnr/spacemacs/blob/develop/layers/%2Bemacs/semantic/README.org][semantic]] layer should be installed for these key bindings to become active.
+
+ | Key Binding | Description             |
+ |-------------+-------------------------|
+ | ~SPC m = b~ | format current buffer   |
+ | ~SPC m = f~ | format current function |
+ | ~SPC m = o~ | format all on one line  |
+ | ~SPC m = s~ | format current sexp     |
+
+*** 调试
+    | Key Binding | Description                                                            |
+    |-------------+------------------------------------------------------------------------|
+    | ~SPC m d f~ | on a =defun= symbol toggle on the instrumentalisation of the function  |
+    | ~SPC m d F~ | on a =defun= symbol toggle off the instrumentalisation of the function |
+    | ~SPC m d t~ | insert =(debug)= to print the stack trace and re-evaluate the function |
+
+    In =edebug-mode= (=*Debugging*= is displayed in the minor modes segment of
+    the mode line)
+
+
+    In =debugger-mode= (=Debugger= is displayed in major mode segment of the
+    mode line)
+
+** git layer
+*** 配置  
+**** 全屏显示
+     #+BEGIN_SRC emacs-lisp
+       (defun dotspacemacs/user-init ()
+         (setq-default git-magit-status-fullscreen t))
+     #+END_SRC
+**** 自动提交仓库
+     #+BEGIN_SRC emacs-lisp
+       (setq magit-repository-directories '("~/repos/"))
+     #+END_SRC
+ 
+**** SVN plugin
+     #+BEGIN_SRC emacs-lisp
+       (defun dotspacemacs/user-init ()
+         (setq-default git-enable-magit-svn-plugin t))
+     #+END_SRC
+**** (使用自带的提交输入参数方式）Global git commit mode
+     #+begin_src emacs-lisp
+       (global-git-commit-mode t)
+     #+end_src
+
+*** 功能
+**** 快捷键
+ | Key Binding | Description                                         |                                                   |
+ |-------------+-----------------------------------------------------+---------------------------------------------------|
+ | ~SPC g b~   | open a =magit= blame                                | 打开历史记录                                      |
+ | ~SPC g f f~ | view a file at a specific branch or commit          | 打开某个分支的文件                                |
+ | ~SPC g f h~ | show file commits history                           | 显示仓库的提交历史                                |
+ | ~SPC g H c~ | clear highlights                                    | 清除高亮                                          |
+ | ~SPC g H h~ | highlight regions by age of commits                 | 高亮区域                                          |
+ | ~SPC g H t~ | highlight regions by last updated time              | 高亮区域                                          |
+ | ~SPC g i~   | initialize a new git repository                     | 初始化仓库                                        |
+ | ~SPC g I~   | open=helm-gitignore=                                | 打开 helm-gitignore 模板                            |
+ | ~SPC g L~   | open magit-repolist                                 | 打开仓库列表，需设置 magit-repository-directories |
+ | ~SPC g s~   | open a =magit= status window                        | 打开仓库状态                                      |
+ | ~SPC g S~   | stage current file                                  | 存储当前文件                                      |
+ | ~SPC g m~   | magit dispatch popup                                | 弹出 magit 功能                                     |
+ | ~SPC g M~   | display the last commit message of the current line | 显示当前行的提交消息                              |
+ | ~SPC g t~   | launch the git time machine                         | 显示每个提交的内容                                |
+ | ~SPC g U~   | unstage current file                                | 撤销存储当前文件                                  |
+ |-------------+-----------------------------------------------------+---------------------------------------------------|
+
+ Magit 状态  快捷键
+
+  | Key Binding | Description                                                         |                          |
+  |-------------+---------------------------------------------------------------------+--------------------------|
+  | ~$~         | open =command output buffer=                                        | 打开                     |
+  | ~c c~       | open a =commit message buffer=                                      | 打开提交缓存             |
+  | ~b b~       | checkout a branch                                                   | 签出分支                 |
+  | ~b c~       | create a branch                                                     | 创建分支                 |
+  | ~f f~       | fetch changes                                                       | 拉取                     |
+  | ~F (r) u~   | pull tracked branch and rebase                                      |                          |
+  | ~gr~        | refresh                                                             | 刷新状态                 |
+  | ~l l~       | open =log buffer=                                                   | 打开日志                 |
+  | ~o~         | revert item at point                                                |                          |
+  | ~P u~       | push to tracked branch                                              |                          |
+  | ~P m~       | push to matching branch  (e.g., upstream/develop to origin/develop) |                          |
+  | ~q~         | quit                                                                | 退出界面                 |
+  | ~s~         | on a file or hunk in a diff: stage the file or hunk                 | 存储                     |
+  | ~x~         | discard changes   复原                                              |                          |
+  | ~+~         | on a hunk: increase hunk size                                       |                          |
+  | ~-~         | on a hunk: decrease hunk size                                       |                          |
+  | ~S~         | stage all                                                           | 存储所有                 |
+  | ~TAB~       | on a file: expand/collapse diff                                     | 显示修改(与最近提交差异) |
+  | ~u~         | on a staged file: unstage                                           | 取消存储                 |
+  | ~U~         | unstage all staged files                                            | 取消所有存储             |
+  | ~z z~       | stash changes                                                       | 隐藏改变                 |
+  |             |                                                                     |                          |
+ 
+    提交信息 ~C-c C-c~ , 取消   ~C-c C-k~
+**** Interactive rebase buffer
+
+  | Key Binding | Description    |
+  |-------------+----------------|
+  | ~c~ or ~p~  | pick           |
+  | ~e~         | edit           |
+  | ~f~         | fixup          |
+  | ~j~         | go down        |
+  | ~M-j~       | move line down |
+  | ~k~         | go up          |
+  | ~M-k~       | move line up   |
+  | ~d~ or ~x~  | kill line      |
+  | ~r~         | reword         |
+  | ~s~         | squash         |
+  | ~u~         | undo           |
+  | ~y~         | insert         |
+  | ~!~         | execute        |
+
+**** 快速指导
+  - 修改提交的消息 Amend(修改）a commit:
+    - ~l l~ to open =log buffer=
+    - ~c a~ on the commit you want to amend
+    - ~​,​c~ or ~C-c C-c~ to submit the changes
+  - Squash(压扁）last commit:
+    - ~l l~ to open =log buffer=
+    - ~r e~ on the second to last commit, it opens the =rebase buffer=
+    - ~j~ to put point on last commit
+    - ~s~ to squash it
+    - ~​,​c~ or ~C-c C-c~ to continue to the =commit message buffer=
+    - ~​,​c~ or ~C-c C-c~ again when you have finished to edit the commit message
+  - Force push a squashed commit:
+    - in the =status buffer= you should see the new commit unpushed and the old
+      commit unpulled
+    - ~P -f P~ for force a push (*beware* usually it is not recommended to rewrite
+      the history of a public repository, but if you are *sure* that you are the
+      only one to work on a repository it is ok - i.e. in your fork).
+  - Add upstream remote (the parent repository you have forked):
+    - ~M~ to open the =remote popup=
+    - ~a~ to add a remote, type the name (i.e. =upstream=) and the URL
+  - Pull changes from upstream (the parent repository you have forked) and push:
+    - ~F -r C-u F~ and choose =upstream= or the name you gave to it
+    - ~P P~ to push the commit to =origin=
+
+**** 历史明细 Git time machine
+     [[https://github.com/pidu/git-timemachine][git-timemachine]] allows to quickly browse the commits of the current buffer.
+
+  | Key Binding | Description                                        |
+  |-------------+----------------------------------------------------|
+  | ~SPC g t~   | start git timemachine and initiate transient-state |
+  | ~c~         | show current commit                                |
+  | ~n~         | show next commit                                   |
+  | ~N~         | show previous commit                               |
+  | ~p~         | show previous commit                               |
+  | ~q~         | leave transient-state and git timemachine          |
+  | ~Y~         | copy current commit hash                           |
+
+**** Git links to web services
+  These key bindings allow to quickly construct URLs pointing to a given commit
+  or lines in a file hosted on Git web services like GitHub, GitLab, Bitbucket...
+
+  | Key Binding | Description                                                            |
+  |-------------+------------------------------------------------------------------------|
+  | ~SPC g l c~ | on a commit hash, browse to the current file at this commit            |
+  | ~SPC g l C~ | on a commit hash, create link to the file at this commit and copy it   |
+  | ~SPC g l l~ | on a region, browse to file at current lines position                  |
+  | ~SPC g l L~ | on a region, create a link to the file highlighting the selected lines |
+
+  *Notes:*
+  - You can use the universal argument ~SPC u~ to select a remote repository.
+  - When the link is opened, the URL is also copied in the kill ring, you can
+    override this behavior by setting the variable =git-link-open-in-browser= to
+    =nil=.
+
+** github layer
+*** 特点:
+    拉取请求 
+    git 功能 
+    浏览gist
+    地址生成
+    克隆仓库 
+   
+*** 安装
+**** 配置 token
+  You will need to generate a [[https://github.com/settings/tokens][personal access token]] on GitHub. This token should
+  have the =gist= and =repo= permissions. Once this token is created, it needs to
+  be added to your =~/.gitconfig=
+
+  You will also need to [[https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/][generate an SSH key]] and [[https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/][add it to your GitHub account]].
+
+  #+BEGIN_SRC sh
+    git config --global github.oauth-token <token>
+  #+END_SRC
+
+**** Hub configuration
+  For now, =Magithub= 需要 requires the =hub= 功能 utility to work -- before trying to use
+  Magithub, follow the installation instructions at hub.github.com. To force hub
+  to authenticate, you can use hub browse in a terminal (inside a GitHub repo).
+*** Key Bindings(键盘绑定)
+**** magit-gh-pulls
+  In a =magit status= buffer (~SPC g s~):
+
+  | Key Binding | Description                                                 |
+  |-------------+-------------------------------------------------------------|
+  | ~# c~       | create a pull request                                       |
+  | ~# g~       |获取拉取请求列表 get a list of (or reload) all PRs in the current repository |
+  | ~# f~       |获取提交次数 fetch the commits associated with the current PR at point |
+  | ~# b~       | create a branch for the current PR at point                 |
+  | ~# m~       | merge the PR with current branch at point                   |
+  | ~# d~       | show a diff of the current pull request at point            |
+  | ~# o~       | open PR at point in browser                                 |
+
+  Note that =magit-gh-pulls= will try to fast-forward the PRs whenever it is
+  possible.
+
+**** magithub
+  | Key Binding | Description                                      |
+  |-------------+--------------------------------------------------|
+  | ~@ H~       | 在浏览器打开仓库 opens the current repository in the browser |
+  | ~@ c~       | pushes a brand-new local repository up to GitHub |
+  | ~@ f~       | create a fork of an existing repository          |
+  | ~@ p~       | submit pull request upstream                     |
+  | ~@ i~       | create an issue                                  |
+
+**** gist.el
+
+  | Key Binding | Description                                   |
+  |-------------+-----------------------------------------------|
+  | ~SPC g g b~ | 创建公开的要点 create a public gist with the buffer content |
+  | ~SPC g g B~ | create a private gist with the buffer content |
+  | ~SPC g g l~ | open the gist list buffer                     |
+  | ~SPC g g r~ | create a public gist with the region content  |
+  | ~SPC g g R~ | create a private gist with the region content |
+
+  In the gist list buffer:
+
+  | Key Binding | Description                  |
+  |-------------+------------------------------|
+  | ~/~         | evil search                  |
+  | ~+~         | add buffer to gist           |
+  | ~-~         | remove file for gist         |
+  | ~b~ or ~o~  | open current gist in browser |
+  | ~f~         | fetch current gist           |
+  | ~g~         | refresh the list             |
+  | ~h~         | go left                      |
+  | ~j~         | go down                      |
+  | ~k~         | go up                        |
+  | ~K~         | kill current gist            |
+  | ~l~         | go right                     |
+  | ~n~         | next search occurrence       |
+  | ~N~         | next previous occurrence     |
+  | ~v~         | =visual state=               |
+  | ~V~         | =visual-line state=          |
+  | ~y~         | print URL and copy it        |
+
+**** Clone repositories
+
+  | Key Binding   | Description                                              |
+  |---------------+----------------------------------------------------------|
+  | ~SPC g h c /~ | search for a repository to clone it                      |
+  | ~SPC g h c c~ | clone and optionally fork repository                     |
+  | ~SPC g h c r~ | add a remote that is an existing fork of selected remote |
+  | ~SPC g h c f~ | fork remote in current user namespace                    |
+  | ~SPC g h c u~ | add upstream as remote                                   |
+ <!-- GFM-TOC -->
