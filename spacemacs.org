@@ -1,4 +1,4 @@
-* spacemacs 黑板, 这块黑板对应的是各种字符的粉笔
+* spacemacs 黑板
 ** 按键 (粉笔)
 *** 键绑定 (我想用某个按键代表某个功能)
     (evil-leader/set-key "o y" 'copy-to-clipboard)
@@ -499,220 +499,6 @@
 *** 更新包后有错，要重新编译安装包
     spacemacs/recompile-elpa
 ** 编程功能
-*** 代码跳转　gtags
-**** 安装
-***** GNU Global (gtags)
-   To use gtags, you first have to install [[https://www.gnu.org/software/global/download.html][GNU Global]].
-
-   You can install =global= from the software repository of your OS; however, many
-   OS distributions are out of date, and you will probably be missing support for
-   =pygments= and =exuberant ctags=, and thus support for many languages. We
-   recommend installing from source. If not for example to install on Ubuntu:
-
-   #+begin_src sh
-     sudo apt-get install global
-   #+end_src
-
-****** Install on OSX using Homebrew
-   #+begin_src sh options
-     brew install global --with-pygments --with-ctags
-   #+end_src
-
-****** Install on *nix from source
-******* Install recommended dependencies
-   To take full advantage of global you should install 2 extra packages in
-   addition to global: pygments and ctags (exuberant). You can do this using
-   your normal OS package manager, e.g., on Ubuntu
-
-   #+BEGIN_SRC sh
-     sudo apt-get install exuberant-ctags python-pygments
-   #+END_SRC
-
-
-******* Install with recommended features
-   Download the latest tar.gz archive, then run these commands:
-
-   #+BEGIN_SRC sh
-     tar xvf global-6.5.3.tar.gz
-     cd global-6.5.3
-     ./configure --with-exuberant-ctags=/usr/bin/ctags
-     make
-     sudo make install
-   #+END_SRC
-
-******* Configure your environment to use pygments and ctags
-   To be able to use =pygments= and =ctags=, you need to copy the sample
-   =gtags.conf= either to =/etc/gtags.conf= or =$HOME/.globalrc=. For example:
-
-   #+begin_src sh
-     cp gtags.conf ~/.globalrc
-   #+end_src
-
-   Additionally you should define GTAGSLABEL in your shell startup file e.g.
-   with sh/ksh:
-
-   #+begin_src sh
-     echo export GTAGSLABEL=pygments >> .profile
-   #+end_src
-
-****** Conflict between =ctags= and emacs's =etags= binary
-   If you installed =emacs= from source after =ctags=, your original =ctags= binary
-   is probably replaced by emacs's =etags=. To get around this you will need to
-   configure =emacs= as following before installing:
-
-   #+begin_src sh
-     ./configure --program-transform-name='s/^ctags$/ctags.emacs/'
-   #+end_src
-
-   To check if you have the correct version of =ctags= execute:
-
-   #+begin_src sh
-     ctags --version | grep Exuberant
-   #+end_src
-
-   If yo do not get any output then it means you have the wrong =ctags= and must
-   install it again.
-
-***** Emacs Configuration
-   To use this configuration layer, add it to your =~/.spacemacs=. You
-   will need to add =gtags= to the existing =dotspacemacs-configuration-layers=.
-
-   #+begin_src emacs-lisp
-     (setq dotspacemacs-configuration-layers
-           '( ;; ...
-             gtags
-              ;; ...
-             ))
-   #+end_src
-
-****** Disabling by default
-   If =ggtags-mode= is too intrusive you can disable it by default, by setting the
-   layer variable =gtags-enable-by-default= to =nil=.
-
-   #+BEGIN_SRC emacs-lisp
-     (setq-default dotspacemacs-configuration-layers
-       '((gtags :variables gtags-enable-by-default t)))
-   #+END_SRC
-
-   This variable can also be set as a file-local or directory-local variable for
-   additional control per project.
-
-**** 使用
-   - 首先创建 gtags 数据库文件
-     运行 =helm-gtags-create-tags= ~SPC m g c~.
-     If the language is not directly supported by GNU Global, you
-     can choose =ctags= or =pygments= as a backend to generate tag database.
-     如果 =global= 不支持 此语言，那么可以换工具, 或者在终端执行
-
-   - From inside terminal, runs gtags at your project root in terminal:
-   #+BEGIN_SRC sh
-     cd /path/to/project/root
-     gtags
-   #+END_SRC
-
-     If the language is not directly supported by =gtags=, and you have not set the
-     GTAGSLABEL environment variable, use this command instead:
-     如果不支持某语言，用插件来增强
-   #+BEGIN_SRC sh
-     gtags --gtagslabel=pygments
-   #+END_SRC
-
-****** Language Support
-******* Built-in languages
-   If you do not have =ctags= or =pygments= enabled gtags will only produce
-   tags for the following languages:
-
-   - asm
-   - c/c++
-   - java
-   - php
-   - yacc
-
-******* Exuberant ctags languages
-   If you have enabled =exuberant ctags= and use that as the backend (i.e.,
-   =GTAGSLABEL=ctags= or =--gtagslabel=ctags=) the following additional languages
-   will have tags created for them:
-
-   - c#
-   - erlang
-   - javascript
-   - common-lisp
-   - emacs-lisp
-   - lua
-   - ocaml
-   - python
-   - ruby
-   - scheme
-   - vimscript
-   - windows-scripts (.bat .cmd files)
-
-******* Universal ctags languages
-        如果是最新的，还会增加以下语言
-   If instead you installed you the newer/beta =universal ctags= and use that
-   as the backend (i.e., GTAGSLABEL=ctags or --gtagslabel=ctags) the following
-   additional languages will have tags created for them:
-
-   - clojure
-   - d
-   - go
-   - rust
-
-******* Pygments languages (plus symbol and reference tags)
-   In order to look up symbol references for any language not in the built in
-   parser you must use the pygments backend. When this backend is used global
-   actually uses both ctags and pygments to find the definitions and uses of
-   functions and variables as well as "other symbols".
-
-   If you enabled pygments (the best choice) and use that as the backend (i.e.,
-   =GTAGSLABEL=pygments= or =--gtagslabel=pygments=) the following additional
-   languages will have tags created for them:
-
-   - elixir
-   - fsharp
-   - haskell
-   - octave
-   - racket
-   - scala
-   - shell-scripts
-   - tex
-
-***** Eldoc integration
-   This layer also integrates =ggtags= for its Eldoc feature. That means, when
-   writing code, you can look at the minibuffer (at the bottom) and see variable
-   and function definition of the symbol the cursor is on. However, this feature is
-   only activated for programming modes that are not one of these languages:
-
-   - C
-   - C++
-   - Common Lisp
-   - Emacs Lisp
-   - Python
-   - Ruby
-
-   Since these modes have better Eldoc integration already.
-
-   In addition, if output from =compile= (bound to ~SPC c C~), =shell-command=
-   (bound to ~SPC !~ and ~M-!~) or =async-shell-command= (bound to ~M-&~) commands
-   contains symbol in your project, you move cursor on such symbol and use any of
-   the gtags commands.
-**** 键盘绑定
-   | ~SPC m g C~ | create a tag database 第一步，创建标记文件                                   |
-   | ~SPC m g f~ | jump to a file in tag database    跳到包含那个 tag 的文件                     |
-   | ~SPC m g g~ | jump to a location based on context       这个更精确，调到函数定义           |
-   | ~SPC m g G~ | jump to a location based on context (open another window) 另个窗口           |
-   | ~SPC m g d~ | find definitions                      跟上面没区别                           |
-   | ~SPC m g i~ | present tags in current function only 这个给你选一下 tag 链表,表示可能它会认错 |
-   | ~SPC m g l~ | jump to definitions in file           如果这个 tag 是本文件定义的，这个可以用  |
-   | ~SPC m g n~ | jump to next location in context stack                                       |
-   | ~SPC m g p~ | jump to previous location in context stack                                   |
-   | ~SPC m g r~ | find references                         有几个人用了这函数                   |
-   | ~SPC m g R~ | resume previous helm-gtags session       看看 tags 文件中有多少 tag            |
-   | ~SPC m g s~ | select any tag in a project retrieved by gtags 看看 tags 文件中有多少 tag      |
-   | ~SPC m g S~ | show stack of visited locations                                              |
-   | ~SPC m g y~ | find symbols   状态栏显示符号                                                |
-   | ~SPC m g u~ | manually update tag database 手动更新 tag 数据库                               |
- | 〜SPC n  - 〜 | 减少指示点下的数量并启动暂态 |
- 参数（即〜10 SPC n +〜将点数加 10）
 *** 代码折叠
     zm      折叠
     zo      展开折叠
@@ -727,7 +513,7 @@
     zE     除去 (Eliminate) 窗口里“所有”的折叠。
 ** 帮助
 *** 手册 SPC h m 
-* layers
+* 扩展layers
 ** pdf layer
 *** 特征:
  - Searching and slicing with =occur=.
@@ -1477,3 +1263,1195 @@
   | ~SPC g h c f~ | fork remote in current user namespace                    |
   | ~SPC g h c u~ | add upstream as remote                                   |
  <!-- GFM-TOC -->
+** cmake
+*** 配置
+    #+BEGIN_SRC emacs-lisp
+
+    #+END_SRC
+
+** org layers                 
+*** 功能
+**** 导出到 Markdown 格式
+ #+BEGIN_SRC emacs-lisp
+   (setq-default dotspacemacs-configuration-layers '(
+     (org :variables org-enable-github-support t)))
+ #+END_SRC
+
+**** Twitter Bootstrap support
+ #+BEGIN_SRC emacs-lisp
+   (setq-default dotspacemacs-configuration-layers '(
+     (org :variables
+          org-enable-bootstrap-support t)))
+ #+END_SRC
+
+**** 绘制图表 Gnuplot support
+ Org-mode supports the plotting of data within tables through [[http://www.gnuplot.info/][Gnuplot]] as
+ demonstrated [[http://orgmode.org/worg/org-tutorials/org-plot.html][here]].
+
+ Unfortunately, this is [[https://github.com/bruceravel/gnuplot-mode/issues/15][not terribly well supported]] on Windows,
+ at this stage. To disable the configuration of gnuplot support - add
+ the =gnuplot= package to your =dotspacemacs-excluded-packages= variable.
+
+**** 简报 Reveal.js support
+ To enable the export of org files as a [[http://lab.hakim.se/reveal-js/][reveal.js]] presentation - set the
+ variable =org-enable-reveal-js-support= to =t=.
+ This would install the [[https://github.com/yjwen/org-reveal/][org-reveal]] Emacs extension.
+
+ #+BEGIN_SRC emacs-lisp
+   (setq-default dotspacemacs-configuration-layers
+    '((org :variables org-enable-reveal-js-support t)))
+ #+END_SRC
+
+ Then the extension needs to be pointed to the =reveal.js= itself.
+ So [[https://github.com/hakimel/reveal.js/releases][download]] =reveal.js= and point =org-reveal-root= to the path,
+ as it described in the [[https://github.com/yjwen/org-reveal#set-the-location-of-revealjs][manual]].
+
+ Alternatively, add the following line to each =.org= file you want to process:
+
+ #+BEGIN_EXAMPLE
+   #+REVEAL_ROOT: http://cdn.jsdelivr.net/reveal.js/3.0.0/
+ #+END_EXAMPLE
+
+**** 日记 Org-journal support
+ [[https://github.com/bastibe/org-journal][org-journal]] is a simple journal management system that:
+ - 每个日记保存一个文件 Keeps a separate journal file for each day inside a directory
+ - 日记总是代办事项 New daily file would always migrate entries with chosen TODO states
+ - 日记加密函数 Has journal encryption functionality
+ - Easily integrates with org-agenda and Emacs calendar, iCalendar,
+   allows scheduling
+ - Easily integrates with org-capture
+
+ To install org-journal - set the variable =org-enable-org-journal-support= to
+ =t=.
+
+ #+BEGIN_SRC emacs-lisp
+   (setq-default dotspacemacs-configuration-layers '(
+     (org :variables
+          org-enable-org-journal-support t)))
+ #+END_SRC
+
+ By default, journal files are stored in =~/Documents/journal/=. To override
+ this - set =org-journal-dir= variable in the =dotspacemacs/user-config=:
+
+ #+BEGIN_SRC emacs-lisp
+   (setq org-journal-dir "~/org/journal/")
+ #+END_SRC
+
+ To change the journal file name format - alter =org-journal-file-format=:
+
+ #+BEGIN_SRC emacs-lisp
+   (setq org-journal-file-format "%Y-%m-%d")
+ #+END_SRC
+
+ *Warning:* setting =org-journal-file-format= to include a file extension like
+ =%Y-%m-%d.org= would break the calendar search functionality.
+
+ By default, journal files are started with a first level heading (=*=) followed
+ by the date in the form set by locale. To format journal files differently:
+ - alter =org-journal-date-prefix= and =org-journal-date-format=.
+   For example, to have new journal files created with this header:
+
+   #+BEGIN_EXAMPLE
+     #+TITLE: Tuesday, September 06 2016
+   #+END_EXAMPLE
+
+ - define the following in =dotspacemacs/user-config=:
+
+   #+BEGIN_SRC emacs-lisp
+     (setq org-journal-date-prefix "#+TITLE: ")
+     (setq org-journal-date-format "%A, %B %d %Y")
+   #+END_SRC
+
+ The default entry is a second level heading (=** =) followed by a timestamp. If
+ you start your journal files with a Title as shown above you may want to adjust
+ entries to start at the first level heading and you may want to change or omit
+ the timestamp.
+
+ #+BEGIN_SRC emacs-lisp
+   (setq org-journal-time-prefix "* ")
+   (setq org-journal-time-format "")
+ #+END_SRC
+
+ Any of the org-journal settings can be configured in =dotspacemacs/user-config=
+ or defined alongside the layer itself.
+
+ For example:
+
+ #+CAPTION: Configure org-journal with the layer
+
+ #+BEGIN_SRC emacs-lisp
+   (setq-default dotspacemacs-configuration-layers '(
+     (org :variables
+         org-enable-org-journal-support t
+         org-journal-dir "~/org/journal/"
+         org-journal-file-format "%Y-%m-%d"
+         org-journal-date-prefix "#+TITLE: "
+         org-journal-date-format "%A, %B %d %Y"
+         org-journal-time-prefix "* "
+         org-journal-time-format "")
+   )
+ #+END_SRC
+
+**** Hugo support
+ To install the Org exporter [[https://ox-hugo.scripter.co][ox-hugo]] that generates [[https://gohugo.io][Hugo]] -compatible Markdown
+ /plus/ TOML/YAML front-matter, set the variable =org-enable-hugo-support= to
+ =t=.
+
+ #+BEGIN_SRC emacs-lisp
+   (setq-default dotspacemacs-configuration-layers '(
+     (org :variables
+          org-enable-hugo-support t)))
+ #+END_SRC
+
+**** Trello support
+ To install Trello support set the variable =org-enable-trello-support= to =t=.
+
+ #+BEGIN_SRC emacs-lisp
+   (setq-default dotspacemacs-configuration-layers '(
+     (org :variables
+          org-enable-trello-support t)))
+ #+END_SRC
+
+**** Different bullets
+ You can tweak the bullets displayed in the org buffer in the function
+ =dotspacemacs/user-config= of your dotfile by setting the variable
+ =org-bullets-bullet-list=. By default the list is set to =("◉" "○" "✸" "✿")=.
+
+ #+BEGIN_SRC emacs-lisp
+   (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
+ #+END_SRC
+
+ You can disable the fancy bullets entirely by adding =org-bullets= to =dotspacemacs-excluded-packages=.
+
+ #+BEGIN_SRC emacs-lisp
+   (dotspacemacs-excluded-packages '(org-bullets))
+ #+END_SRC
+
+**** Project support
+ Set the layer variable =org-projectile-file= to the filename where you want to
+ store project-specific TODOs. If this is an absolute path, all todos will be
+ stored in the same file (organized by project), whereas if it is just a single
+ filename, todos will be stored in each project root.
+
+ #+BEGIN_SRC emacs-lisp
+   (setq-default dotspacemacs-configuration-layers
+     '((org :variables org-projectile-file "TODOs.org")))
+ #+END_SRC
+
+ The TODO files are not added to the agenda automatically. You can do this with
+ the following snippet. Note that this may have unintended consequences until
+ [[https://github.com/IvanMalison/org-projectile/issues/10][this bug]] is fixed.
+
+ #+BEGIN_SRC emacs-lisp
+   (with-eval-after-load 'org-agenda
+     (require 'org-projectile)
+     (mapcar '(lambda (file)
+                    (when (file-exists-p file)
+                      (push file org-agenda-files)))
+             (org-projectile-todo-files)))
+ #+END_SRC
+
+**** 脑图 Org-brain support
+ For Emacs 25 or later, support for [[https://kungsgeten.github.io/org-brain.html][org-brain]] is included. See the [[https://github.com/Kungsgeten/org-brain][org-brain
+ package documentation]] for more information.
+
+**** Mode line support
+ To temporarily enable mode line display of org clock, press ~SPC t m c~.
+
+ To permanently enable mode line display of org clock, add this snippet to your
+ =dotspacemacs/user-config= function:
+
+ #+BEGIN_SRC elisp
+   (setq spaceline-org-clock-p t)
+ #+END_SRC
+
+*** 键盘绑定
+**** 待办 
+ | ~SPC a o #~   | 显示过期的代办                                                            |
+ | ~SPC a o /~   | 查找 在org代办中                                                          |
+ | ~SPC a o a~   | 显示代办 list                                                             |
+ | ~SPC a o c~   | 抓取到代办中 org capture                                                  |
+ | ~SPC a o e~   | 保存代办视图 org store agenda views                                       |
+ | ~SPC a o f i~ | org feed goto inbox                                                       |
+ | ~SPC a o f u~ | org feed update all                                                       |
+ | ~SPC a o C c~ | org cancel clock                                                          |
+ | ~SPC a o C g~ | org goto last clocked-in clock (go to specific recent clock with ~SPC u~) |
+ | ~SPC a o C i~ | org clock in                                                              |
+ | ~SPC a o C I~ | org clock in last                                                         |
+ | ~SPC a o C j~ | org jump to current clock                                                 |
+ | ~SPC a o C o~ | org clock out                                                             |
+ | ~SPC a o C r~ | org resolve clocks                                                        |
+ | ~SPC a o l~   | org store link                                                            |
+ | ~SPC a o m~   | tags视图 org tags view                                                      |
+ | ~SPC a o o~   | org agenda                                                                |
+ | ~SPC a o s~   | org search view                                                           |
+ | ~SPC a o t~   | 代办列表 list                                                         |
+ | ~SPC C c~     | org-capture                                                               |
+
+**** 开关
+ | Key binding | Description                                   |
+ |-------------+-----------------------------------------------|
+ | ~SPC m T c~ | org-toggle-checkbox                           |
+ | ~SPC m T e~ | org-toggle-pretty-entities                    |
+ | ~SPC m T i~ | org-toggle-inline-images                      |
+ | ~SPC m T l~ | org-toggle-link-display                       |
+ | ~SPC m T t~ | org-show-todo-tree                            |
+ | ~SPC m T T~ | org-todo                                      |
+ | ~SPC m T V~ | toggle =space-doc-mode= a read-only view mode |
+ | ~SPC m T x~ | org-preview-latex-fragment                    |
+
+**** Org with evil-org-mode
+ Please see the [[https://github.com/Somelauw/evil-org-mode/blob/master/doc/keythemes.org][evil-org documentation]] for additional instructions on customizing
+ =evil-org-mode=.
+
+ | Key binding   | Description                              |
+ |---------------+------------------------------------------|
+ | ~gj~ / ~gk~   | 同级导航 Next/previous element (heading) |
+ | ~gh~ / ~gl~   | 上级导航Parent/child element (heading)   |
+ | ~gH~          | 最顶层 Root heading                         |
+ | ~ae~          | Element text object                      |
+ | ~ar~          | Subtree text object                      |
+ | ~M-j~ / ~M-k~ | Move heading                             |
+ | ~M-h~ / ~M-l~ | Promote or demote heading                |
+ | ~M-J~ / ~M-K~ | Move subtree                             |
+ | ~M-H~ / ~M-L~ | Promote or demote subtree                |
+ | ~>>~ / ~<<~   | Promote or demote heading                |
+
+ If the layer variable =org-want-todo-bindings= is true, the following bindings
+ are also available.
+
+ | Key bindings | Description                         |
+ |--------------+-------------------------------------|
+ | ~t~          | Cycle TODO state of current heading |
+ | ~T~          | Insert new TODO heading             |
+ | ~M-t~        | Insert new TODO sub-heading         |
+
+**** 表格操作 SPC m t
+
+ | Key binding   | Description                                                                |
+ |---------------+----------------------------------------------------------------------------|
+ | ~SPC m t a~   | Align the table at point by aligning all vertical bars                     |
+ | ~SPC m t b~   | Blank the current table field or active region                             |
+ | ~SPC m t c~   | Convert from =org-mode= table to table.el and back                         |
+ | ~SPC m t d c~ | Delete a column from the table                                             |
+ | ~SPC m t d r~ | Delete the current row or horizontal line from the table                   |
+ | ~SPC m t e~   | Replace the table field value at the cursor by the result of a calculation |
+ | ~SPC m t E~   | Export table to a file, with configurable format                           |
+ | ~SPC m t h~   | Go to the previous field in the table                                      |
+ | ~SPC m t H~   | Move column to the left                                                    |
+ | ~SPC m t i c~ | Insert a new column into the table                                         |
+ | ~SPC m t i h~ | Insert a horizontal-line below the current line into the table             |
+ | ~SPC m t i H~ | Insert a hline and move to the row below that line                         |
+ | ~SPC m t i r~ | Insert a new row above the current line into the table                     |
+ | ~SPC m t I~   | Import a file as a table                                                   |
+ | ~SPC m t j~   | Go to the next row (same column) in the current table                      |
+ | ~SPC m t J~   | Move table row down                                                        |
+ | ~SPC m t K~   | Move table row up                                                          |
+ | ~SPC m t l~   | Go to the next field in the current table, creating new lines as needed    |
+ | ~SPC m t L~   | Move column to the right                                                   |
+ | ~SPC m t n~   | Query for a size and insert a table skeleton                               |
+ | ~SPC m t N~   | Use the table.el package to insert a new table                             |
+ | ~SPC m t p~   | Plot the table using org-plot/gnuplot                                      |
+ | ~SPC m t r~   | Recalculate the current table line by applying all stored formulas         |
+ | ~SPC m t s~   | Sort table lines according to the column at point                          |
+ | ~SPC m t t f~ | Toggle the formula debugger in tables                                      |
+ | ~SPC m t t o~ | Toggle the display of Row/Column numbers in tables                         |
+ | ~SPC m t w~   | Wrap several fields in a column like a paragraph                           |
+
+**** Trees
+ | Key binding   | Description                     |
+ |---------------+---------------------------------|
+ | ~gj~ / ~gk~   | Next/previous element (heading) |
+ | ~gh~ / ~gl~   | Parent/child element (heading)  |
+ | ~gH~          | Root heading                    |
+ | ~ae~          | Element text object             |
+ | ~ar~          | Subtree text object             |
+ | ~M-j~ / ~M-k~ | Move heading                    |
+ | ~M-h~ / ~M-l~ | Promote or demote heading       |
+ | ~M-J~ / ~M-K~ | Move subtree                    |
+ | ~M-H~ / ~M-L~ | Promote or demote subtree       |
+ | ~>>~ / ~<<~   | Promote or demote heading       |
+ | ~TAB~         | org-cycle                       |
+ | ~SPC m s a~   | Toggle archive tag for subtree  |
+ | ~SPC m s A~   | Archive subtree                 |
+ | ~SPC m s b~   | org-tree-to-indirect-buffer     |
+ | ~SPC m s l~   | org-demote-subtree              |
+ | ~SPC m s h~   | org-promote-subtree             |
+ | ~SPC m s k~   | org-move-subtree-up             |
+ | ~SPC m s j~   | org-move-subtree-down           |
+ | ~SPC m s n~   | org-narrow-to-subtree           |
+ | ~SPC m s N~   | widen narrowed subtree          |
+ | ~SPC m s r~   | org-refile                      |
+ | ~SPC m s s~   | show sparse tree                |
+ | ~SPC m s S~   | sort trees                      |
+
+**** Element insertion
+
+ | Key binding   | Description                      |
+ |---------------+----------------------------------|
+ | ~SPC m i d~   | org-insert-drawer                |
+ | ~SPC m i D s~ | Take screenshot                  |
+ | ~SPC m i D y~ | Yank image url                   |
+ | ~SPC m i e~   | org-set-effort                   |
+ | ~SPC m i f~   | org-insert-footnote              |
+ | ~SPC m i H~   | org-insert-heading-after-current |
+ | ~SPC m i h~   | org-insert-heading               |
+ | ~SPC m i K~   | spacemacs/insert-keybinding-org  |
+ | ~SPC m i l~   | org-insert-link                  |
+ | ~SPC m i n~   | org-add-note                     |
+ | ~SPC m i p~   | org-set-property                 |
+ | ~SPC m i s~   | org-insert-subheading            |
+ | ~SPC m i t~   | org-set-tags                     |
+
+**** Links
+
+ | Key binding | Description       |
+ |-------------+-------------------|
+ | ~SPC m x o~ | org-open-at-point |
+
+**** Babel / Source Blocks
+
+ | Key binding | Description                              |
+ |-------------+------------------------------------------|
+ | ~SPC m b .~ | Enter Babel Transient State              |
+ | ~SPC m b a~ | org-babel-sha1-hash                      |
+ | ~SPC m b b~ | org-babel-execute-buffer                 |
+ | ~SPC m b c~ | org-babel-check-src-block                |
+ | ~SPC m b d~ | org-babel-demarcate-block                |
+ | ~SPC m b e~ | org-babel-execute-maybe                  |
+ | ~SPC m b f~ | org-babel-tangle-file                    |
+ | ~SPC m b g~ | org-babel-goto-named-src-block           |
+ | ~SPC m b i~ | org-babel-lob-ingest                     |
+ | ~SPC m b I~ | org-babel-view-src-block-info            |
+ | ~SPC m b j~ | org-babel-insert-header-arg              |
+ | ~SPC m b l~ | org-babel-load-in-session                |
+ | ~SPC m b n~ | org-babel-next-src-block                 |
+ | ~SPC m b o~ | org-babel-open-src-block-result          |
+ | ~SPC m b p~ | org-babel-previous-src-block             |
+ | ~SPC m b r~ | org-babel-goto-named-result              |
+ | ~SPC m b s~ | org-babel-execute-subtree                |
+ | ~SPC m b t~ | org-babel-tangle                         |
+ | ~SPC m b u~ | org-babel-goto-src-block-head            |
+ | ~SPC m b v~ | org-babel-expand-src-block               |
+ | ~SPC m b x~ | org-babel-do-key-sequence-in-edit-buffer |
+ | ~SPC m b z~ | org-babel-switch-to-session              |
+ | ~SPC m b Z~ | org-babel-switch-to-session-with-code    |
+
+***** Org Babel Transient State
+ Use ~SPC m b .~ to enter a transient state for quick source block navigation and
+ execution. During that state, the following bindings are active:
+
+ | Key binding | Description                   |
+ |-------------+-------------------------------|
+ | ~'~         | edit source block             |
+ | ~e~         | execute source block          |
+ | ~g~         | jump to named source block    |
+ | ~j~         | jump to next source block     |
+ | ~k~         | jump to previous source block |
+ | ~z~         | recenter buffer in window     |
+ | ~q~         | leave transient state         |
+
+**** Emphasis
+
+ | Key binding | Description                |
+ |-------------+----------------------------|
+ | ~SPC m x b~ | make region bold           |
+ | ~SPC m x c~ | make region code           |
+ | ~SPC m x i~ | make region italic         |
+ | ~SPC m x r~ | clear region emphasis      |
+ | ~SPC m x s~ | make region strike-through |
+ | ~SPC m x u~ | make region underline      |
+ | ~SPC m x v~ | make region verbose        |
+
+**** Navigating in calendar
+
+ | Key binding | Description        |
+ |-------------+--------------------|
+ | ~M-l~       | One day forward    |
+ | ~M-h~       | One day backward   |
+ | ~M-j~       | One week forward   |
+ | ~M-k~       | One week backward  |
+ | ~M-L~       | One month forward  |
+ | ~M-H~       | One month backward |
+ | ~M-J~       | One year forward   |
+ | ~M-K~       | One year backward  |
+
+**** Capture buffers and src blocks
+ =org-capture-mode= and =org-src-mode= both support the confirm and abort
+ conventions.
+
+ | Key binding                                  | Description                            |
+ |----------------------------------------------+----------------------------------------|
+ | ~SPC m <dotspacemacs-major-mode-leader-key>~ | confirm in =org-capture-mode=          |
+ | ~SPC m '​~                                    | confirm in =org-src-mode=              |
+ | ~SPC m c~                                    | confirm                                |
+ | ~SPC m a~                                    | abort                                  |
+ | ~SPC m k~                                    | abort                                  |
+ | ~SPC m r~                                    | org-capture-refile in org-capture-mode |
+ #+TBLFM: 
+
+**** Org agenda
+***** Key bindings
+ The evilified org agenda supports the following bindings:
+
+ | Key binding          | Description                       |
+ |----------------------+-----------------------------------|
+ | ~M-SPC~ or ~s-M-SPC~ | org-agenda transient state        |
+ | ~SPC m a~            | org-agenda                        |
+ | ~SPC m C c~          | org-agenda-clock-cancel           |
+ | ~SPC m C i~          | org-agenda-clock-in               |
+ | ~SPC m C o~          | org-agenda-clock-out              |
+ | ~SPC m C p~          | org-pomodoro (if package is used) |
+ | ~SPC m d d~          | org-agenda-deadline               |
+ | ~SPC m d s~          | org-agenda-schedule               |
+ | ~SPC m i e~          | org-agenda-set-effort             |
+ | ~SPC m i p~          | org-agenda-set-property           |
+ | ~SPC m i t~          | org-agenda-set-tags               |
+ | ~SPC m s r~          | org-agenda-refile                 |
+ | ~M-j~                | next item                         |
+ | ~M-k~                | previous item                     |
+ | ~M-h~                | earlier view                      |
+ | ~M-l~                | later view                        |
+ | ~gr~                 | refresh                           |
+ | ~gd~                 | toggle grid                       |
+ | ~C-v~                | change view                       |
+ | ~RET~                | org-agenda-goto                   |
+ | ~M-RET~              | org-agenda-show-and-scroll-up     |
+
+***** Org agenda transient state
+ Use ~M-SPC~ or ~s-M-SPC~ in an org agenda buffer to activate its transient state.
+ The transient state aims to list the most useful org agenda commands and
+ visually organize them by category. The commands associated with each binding
+ are listed bellow.
+
+ | Key binding | Description         | Command                           |
+ |-------------+---------------------+-----------------------------------|
+ | Entry       |                     |                                   |
+ |-------------+---------------------+-----------------------------------|
+ | ~ht~        | set status          | org-agenda-todo                   |
+ | ~hk~        | kill                | org-agenda-kill                   |
+ | ~hR~        | refile              | org-agenda-refile                 |
+ | ~hA~        | archive             | org-agenda-archive-default        |
+ | ~h:~        | set tags            | org-agenda-set-tags               |
+ | ~hp~        | set priority        | org-agenda-priority               |
+ |-------------+---------------------+-----------------------------------|
+ | Visit entry |                     |                                   |
+ |-------------+---------------------+-----------------------------------|
+ | ~SPC~       | in other window     | org-agenda-show-and-scroll-up     |
+ | ~TAB~       | & go to location    | org-agenda-goto                   |
+ | ~RET~       | & del other windows | org-agenda-switch-to              |
+ | ~o~         | link                | link-hint-open-link               |
+ |-------------+---------------------+-----------------------------------|
+ | Filter      |                     |                                   |
+ |-------------+---------------------+-----------------------------------|
+ | ~ft~        | by tag              | org-agenda-filter-by-tag          |
+ | ~fr~        | refine by tag       | org-agenda-filter-by-tag-refine   |
+ | ~fc~        | by category         | org-agenda-filter-by-category     |
+ | ~fh~        | by top headline     | org-agenda-filter-by-top-headline |
+ | ~fx~        | by regexp           | org-agenda-filter-by-regexp       |
+ | ~fd~        | delete all filters  | org-agenda-filter-remove-all      |
+ |-------------+---------------------+-----------------------------------|
+ | Date        |                     |                                   |
+ |-------------+---------------------+-----------------------------------|
+ | ~ds~        | schedule            | org-agenda-schedule               |
+ | ~dS~        | un-schedule         | org-agenda-schedule               |
+ | ~dd~        | set deadline        | org-agenda-deadline               |
+ | ~dD~        | remove deadline     | org-agenda-deadline               |
+ | ~dt~        | timestamp           | org-agenda-date-prompt            |
+ | ~+~         | do later            | org-agenda-do-date-later          |
+ | ~-~         | do earlier          | org-agenda-do-date-earlier        |
+ |-------------+---------------------+-----------------------------------|
+ | Toggle      |                     |                                   |
+ |-------------+---------------------+-----------------------------------|
+ | ~tf~        | follow              | org-agenda-follow-mode            |
+ | ~tl~        | log                 | org-agenda-log-mode               |
+ | ~ta~        | archive             | org-agenda-archives-mode          |
+ | ~tr~        | clock report        | org-agenda-clockreport-mode       |
+ | ~td~        | diaries             | org-agenda-toggle-diary           |
+ |-------------+---------------------+-----------------------------------|
+ | View        |                     |                                   |
+ |-------------+---------------------+-----------------------------------|
+ | ~vd~        | day                 | org-agenda-day-view               |
+ | ~vw~        | week                | org-agenda-week-view              |
+ | ~vt~        | fortnight           | org-agenda-fortnight-view         |
+ | ~vm~        | month               | org-agenda-month-view             |
+ | ~vy~        | year                | org-agenda-year-view              |
+ | ~vn~        | next span           | org-agenda-later                  |
+ | ~vp~        | prev span           | org-agenda-earlier                |
+ | ~vr~        | reset               | org-agenda-reset-view             |
+ |-------------+---------------------+-----------------------------------|
+ | Clock       |                     |                                   |
+ |-------------+---------------------+-----------------------------------|
+ | ~cI~        | in                  | org-agenda-clock-in               |
+ | ~cO~        | out                 | org-agenda-clock-out              |
+ | ~cq~        | cancel              | org-agenda-clock-cancel           |
+ | ~cj~        | jump                | org-agenda-clock-goto             |
+ |-------------+---------------------+-----------------------------------|
+ | Other       |                     |                                   |
+ |-------------+---------------------+-----------------------------------|
+ | ~gr~        | reload              | org-agenda-redo                   |
+ | ~.~         | go to today         | org-agenda-goto-today             |
+ | ~gd~        | go to date          | org-agenda-goto-date              |
+
+**** 番茄时钟 Pomodoro
+ | Key binding | Description       |
+ |-------------+-------------------|
+ | ~SPC m C p~ | starts a pomodoro |
+
+**** Presentation
+ org-present must be activated explicitly by typing: ~SPC SPC org-present~
+
+ | Key binding | Description    |
+ |-------------+----------------|
+ | ~h~         | previous slide |
+ | ~l~         | next slide     |
+ | ~q~         | quit           |
+
+**** Helm-org-rifle
+
+ | Key binding | Description                                |
+ |-------------+--------------------------------------------|
+ | ~SPC a o r~ | Search org files for keywords and headings |
+
+**** Org-projectile
+
+ | Key binding       | Description                                             |
+ |-------------------+---------------------------------------------------------|
+ | ~SPC a o p~       | Capture a TODO for the current project                  |
+ | ~SPC u SPC a o p~ | Capture a TODO for any given project (choose from list) |
+ | ~SPC p o~         | Go to the TODOs for the current project                 |
+
+**** Org-journal
+
+ | Key binding   | Description            |
+ |---------------+------------------------|
+ | ~SPC a o j j~ | New journal entry      |
+ | ~SPC a o j s~ | Search journal entries |
+
+ Journal entries are highlighted in the calendar. The following key bindings are
+ available for =calendar-mode= for navigating and manipulating the journal.
+
+ | Key binding | Description                           |
+ |-------------+---------------------------------------|
+ | ~SPC m r~   | Read journal entry                    |
+ | ~SPC m i~   | Insert journal entry for date         |
+ | ~SPC m n~   | Next journal entry                    |
+ | ~SPC m p~   | Previous journal entry                |
+ | ~SPC m s~   | Search all journal entries            |
+ | ~SPC m w~   | Search calendar week journal entries  |
+ | ~SPC m m~   | Search calendar month journal entries |
+ | ~SPC m y~   | Search calendar year journal entries  |
+
+ While viewing a journal entry in =org-journal-mode= the following key bindings
+ are available.
+
+ | Key binding | Description            |
+ |-------------+------------------------|
+ | ~SPC m j~   | New journal entry      |
+ | ~SPC m p~   | Previous journal entry |
+ | ~SPC m n~   | Next journal entry     |
+
+**** Org-brain
+***** Application bindings
+
+ | Key binding | Description                  |
+ |-------------+------------------------------|
+ | ~SPC a o b~ | Visualize an org-brain entry |
+
+***** Visualization bindings
+
+ | Key binding | Description                           |
+ |-------------+---------------------------------------|
+ | ~j / TAB~   | Goto next link                        |
+ | ~k / S-TAB~ | Goto previous link                    |
+ | ~c~         | Add child                             |
+ | ~p~         | Add parent                            |
+ | ~l~         | Add resource link                     |
+ | ~C-y~       | Paste resource link                   |
+ | ~a~         | Add resource [[http://orgmode.org/manual/Attachments.html][attachment]]               |
+ | ~o~         | Open and edit the visualized entry    |
+ | ~f~         | Find/visit another entry to visualize |
+ | ~r~         | Rename this, or another, entry        |
+ |             |                                       |
+** 代码跳转　gtags
+*** 安装
+**** GNU Global (gtags)
+     To use gtags, you first have to install [[https://www.gnu.org/software/global/download.html][GNU Global]].
+
+  You can install =global= from the software repository of your OS; however, many
+  OS distributions are out of date, and you will probably be missing support for
+  =pygments= and =exuberant ctags=, and thus support for many languages. We
+  recommend installing from source. If not for example to install on Ubuntu:
+
+  #+begin_src sh
+    sudo apt-get install global
+  #+end_src
+
+***** Install on *nix from source
+****** Install recommended dependencies
+       To take full advantage of global you should install 2 extra packages in
+       addition to global: pygments and ctags (exuberant). You can do this using
+       your normal OS package manager, e.g., on Ubuntu
+       
+  #+BEGIN_SRC sh
+    sudo apt-get install exuberant-ctags python-pygments
+  #+END_SRC
+
+
+****** Install with recommended features
+       Download the latest tar.gz archive, then run these commands:
+       
+  #+BEGIN_SRC sh
+    tar xvf global-6.5.3.tar.gz
+    cd global-6.5.3
+    ./configure --with-exuberant-ctags=/usr/bin/ctags
+    make
+    sudo make install
+  #+END_SRC
+
+****** Configure your environment to use pygments and ctags
+  To be able to use =pygments= and =ctags=, you need to copy the sample
+  =gtags.conf= either to =/etc/gtags.conf= or =$HOME/.globalrc=. For example:
+
+  #+begin_src sh
+    cp gtags.conf ~/.globalrc
+  #+end_src
+
+  Additionally you should define GTAGSLABEL in your shell startup file e.g.
+  with sh/ksh:
+
+  #+begin_src sh
+    echo export GTAGSLABEL=pygments >> .profile
+  #+end_src
+
+***** Conflict between =ctags= and emacs's =etags= binary
+  If you installed =emacs= from source after =ctags=, your original =ctags= binary
+  is probably replaced by emacs's =etags=. To get around this you will need to
+  configure =emacs= as following before installing:
+
+  #+begin_src sh
+    ./configure --program-transform-name='s/^ctags$/ctags.emacs/'
+  #+end_src
+
+  To check if you have the correct version of =ctags= execute:
+
+  #+begin_src sh
+    ctags --version | grep Exuberant
+  #+end_src
+
+  If yo do not get any output then it means you have the wrong =ctags= and must
+  install it again.
+
+**** Emacs Configuration
+  To use this configuration layer, add it to your =~/.spacemacs=. You
+  will need to add =gtags= to the existing =dotspacemacs-configuration-layers=.
+
+  #+begin_src emacs-lisp
+    (setq dotspacemacs-configuration-layers
+          '( ;; ...
+            gtags
+             ;; ...
+            ))
+  #+end_src
+
+***** Disabling by default
+  If =ggtags-mode= is too intrusive you can disable it by default, by setting the
+  layer variable =gtags-enable-by-default= to =nil=.
+
+  #+BEGIN_SRC emacs-lisp
+    (setq-default dotspacemacs-configuration-layers
+      '((gtags :variables gtags-enable-by-default t)))
+  #+END_SRC
+
+  This variable can also be set as a file-local or directory-local variable for
+  additional control per project.
+
+*** 使用
+  - 首先创建 gtags 数据库文件
+    运行 =helm-gtags-create-tags= ~SPC m g c~.
+    If the language is not directly supported by GNU Global, you
+    can choose =ctags= or =pygments= as a backend to generate tag database.
+    如果 =global= 不支持 此语言，那么可以换工具, 或者在终端执行
+
+  - From inside terminal, runs gtags at your project root in terminal:
+  #+BEGIN_SRC sh
+    cd /path/to/project/root
+    gtags
+  #+END_SRC
+
+    If the language is not directly supported by =gtags=, and you have not set the
+    GTAGSLABEL environment variable, use this command instead:
+    如果不支持某语言，用插件来增强
+  #+BEGIN_SRC sh
+    gtags --gtagslabel=pygments
+  #+END_SRC
+
+***** Language Support
+****** Built-in languages
+  If you do not have =ctags= or =pygments= enabled gtags will only produce
+  tags for the following languages:
+
+  - asm
+  - c/c++
+  - java
+  - php
+  - yacc
+
+****** Exuberant ctags languages
+  If you have enabled =exuberant ctags= and use that as the backend (i.e.,
+  =GTAGSLABEL=ctags= or =--gtagslabel=ctags=) the following additional languages
+  will have tags created for them:
+
+****** Universal ctags languages
+       如果是最新的，还会增加以下语言
+  If instead you installed you the newer/beta =universal ctags= and use that
+  as the backend (i.e., GTAGSLABEL=ctags or --gtagslabel=ctags) the following
+  additional languages will have tags created for them:
+****** Pygments languages (plus symbol and reference tags)
+  In order to look up symbol references for any language not in the built in
+  parser you must use the pygments backend. When this backend is used global
+  actually uses both ctags and pygments to find the definitions and uses of
+  functions and variables as well as "other symbols".
+
+  If you enabled pygments (the best choice) and use that as the backend (i.e.,
+  =GTAGSLABEL=pygments= or =--gtagslabel=pygments=) the following additional
+  languages will have tags created for them:
+
+*** 键盘绑定
+  | ~SPC m g C~ | create a tag database 第一步，创建标记文件                                   |
+  | ~SPC m g f~ | jump to a file in tag database    跳到包含那个 tag 的文件                     |
+  | ~SPC m g g~ | jump to a location based on context       这个更精确，调到函数定义           |
+  | ~SPC m g G~ | jump to a location based on context (open another window) 另个窗口           |
+  | ~SPC m g d~ | find definitions                      跟上面没区别                           |
+  | ~SPC m g i~ | present tags in current function only 这个给你选一下 tag 链表,表示可能它会认错 |
+  | ~SPC m g l~ | jump to definitions in file           如果这个 tag 是本文件定义的，这个可以用  |
+  | ~SPC m g n~ | jump to next location in context stack                                       |
+  | ~SPC m g p~ | jump to previous location in context stack                                   |
+  | ~SPC m g r~ | find references                         有几个人用了这函数                   |
+  | ~SPC m g R~ | resume previous helm-gtags session       看看 tags 文件中有多少 tag            |
+  | ~SPC m g s~ | select any tag in a project retrieved by gtags 看看 tags 文件中有多少 tag      |
+  | ~SPC m g S~ | show stack of visited locations                                              |
+  | ~SPC m g y~ | find symbols   状态栏显示符号                                                |
+  | ~SPC m g u~ | manually update tag database 手动更新 tag 数据库                               |
+| 〜SPC n  - 〜 | 减少指示点下的数量并启动暂态 |
+参数（即〜10 SPC n +〜将点数加 10）
+** javascript layer
+*** 注释
+    | ~SPC m r d b~ | 文件注释      |
+    | ~SPC m r d f~ | 函数注释      |
+    | ~SPC m r d t~ | tag注释       |
+    | ~SPC m r d h~ | 显示tag的用法 |
+*** 代码导航
+     | ~SPC m C-g~   | 返回　brings you back to last place you were when you pressed M-..                          |
+     | ~SPC m g g~   | 跳到定义处jump to the definition of the thing under the cursor                                |
+     | ~SPC m g G~   | 跳到你要的定义处jump to definition for the given name                                            |
+     | ~SPC m h d~   | 帮助文档find docs of the thing under the cursor. Press again to open the associated URL (if any) |
+     | ~SPC m h t~   | 显示光标处的类型find the type of the thing under the cursor                                      |
+     | ~SPC m r r V~ | 重命名变量 rename variable under the cursor using tern                                        |
+*** 调试
+    : 开一个服务对象，把代码发给浏览器解释器，解释器求值后，发给服务    
+
+    - 空白页 run-skewer   
+    - 注入自己的页面 点击右上角三角Greasemonkey(多试两次) 
+    
+    | ~SPC m e e~ | 求最后表达式                                                            |
+    | ~SPC m s b~ | 执行buffer                                                              |
+    | ~SPC m s f~ | 发送函数给解释器                                                        |
+    | ~SPC m s r~ | send current region to the skewer REPL                                  |
+    | ~SPC m s R~ | send current region to the skewer REPL and switch to it in insert state |
+    | ~SPC m s s~ | 切换到skewer-repl buffer                                                |
+*** 工具配置
+**** 后端解释程序配置
+     (javascript :variables javascript-backend 'tern)
+     如果想自定义后端，可以在项目的根目录文件 =.dir-locals.el= 下定义本地变量
+     ;;; 定义本地变量，选择项目的后端 
+     ((js2-mode (javascript-backend . lsp)))
+**** 代码格式化工具
+     添加 web-beautify层
+     (javascript :variables javascript-fmt-tool 'web-beautify)
+
+     也可以自定义项目自身的格式化工具
+      ;;;定义格式化工具 
+      ((js2-mode (javascript-fmt-tool . prettier)))
+**** 后端工具配置
+***** tern 
+      安装 $ npm install -g tern
+      并且 =~/.spacemacs= 加入配置 tern
+    
+      如果想每个对话都使用当前服务, 需如下配置
+      (tern :variables tern-disable-port-files nil)
+***** 安装语言服务协议 npm i -g typescript javascript-typescript-langserver
+***** 配置Project configuration
+      A .tern-project file is a JSON file in a format like this:
+  #+BEGIN_SRC json
+
+  {
+    "libs": [
+      "browser",
+      "jquery"
+    ],
+    "loadEagerly": [
+      "importantfile.js"
+    ],
+    "plugins": {
+      "requirejs": {
+        "baseURL": "./",
+        "paths": {}
+      }
+    }
+  }
+  #+END_SRC
+
+  The libs property refers to the JSON type descriptions that should be loaded into the environment for this project.
+   See the defs/ directory for examples. The strings given here will be suffixed with .json, and searched for first in the project’s own dir, and then in the defs/ directory of the Tern distribution.
+  libs 表示要载入的预定义插件
+
+  包含 node, jquery, webpack, requirejs, angular, 
+  By default, local files are loaded into the Tern server when queries are run on them in the editor. loadEagerly allows you to force some files to always be loaded, it may be an array of filenames or glob patterns (i.e. foo/bar/*.js). The dontLoad option can be used to prevent Tern from loading certain files. It also takes an array of file names or glob patterns.
+
+  The plugins field may hold object used to load and configure Tern plugins. The names of the properties refer to files that implement plugins, either in the project dir or under plugin/ in the Tern directory. Their values are configuration objects that will be passed to the plugins. You can leave them at {} when you don’t need to pass any options.
+
+  You can specify an ecmaVersion field to configure the version of ECMAScript that Tern parses. The default is 6, and leaving it at that should be safe even for ECMAScript 5 code, but you can set it to 5 as well.
+
+  To configure the amount of work Tern is prepared to do to load a single dependency, the dependencyBudget option can be added to a project file. It indicates the maximum size of the files loaded in response to a single dependency (through plugins that load dependencies, such as the node and RequireJS plugins), counted in expressions. The default value is 20 000. Files loaded as dependencies of dependencies count towards the budget of the original dependency.
+** php larer
+   需要初始化工程 
+   cd /root/of/project
+   touch .ac-php-conf.json
+   
+  然后执行 Inside of spacemacs run:
+   = ac-php-remake-tags-all =
+
+  | 查关键词  | php-search-documentation |
+  | 浏览手册  | php-browse-manual        |
+  | 标记函数  | mark-defun               |
+  | 跳到定义  | ~SPC m g g~              |
+  | jump back | ~C-t~                    |
+
+** debug layer
+ | ~SPC m d d~ | open cmd buffer |
+ | ~bb~        | set break            |
+ | ~bc~        | clear break          |
+ | ~bd~        | delete break         |
+ | ~bs~        | disable break        |
+ | ~be~        | enable break         |
+ | ~c~         | continue             |
+ | ~i~         | step into            |
+ | ~J~         | jump to current line |
+ | ~o~         | step out             |
+ | ~q~         | quit debug           |
+ | ~r~         | restart              |
+ | ~s~         | step over            |
+ | ~S~         | goto cmd buffer      |
+ | ~v~         | eval variable        |
+** sql layer
+ #+BEGIN_SRC emacs-lisp
+   (setq-default dotspacemacs-configuration-layers '(
+     (sql :variables
+          sql-capitalize-keywords t
+          sql-capitalize-keywords-blacklist '("name" "varchar"))))
+ #+END_SRC
+*** 键盘绑定
+  | 显示*SQL*buffer| ~SPC m b b~ |
+  | 显示数据库中的表 | ~SPC m l a~ |
+  | 显示表信息       | ~SPC m l t~ |
+  | 发送buffer执行   | ~SPC m s b~ |
+  | 发送选区执行     | ~SPC m s r~ |
+
+** html layer
+*** 键盘绑定
+**** Web文件
+     | 实时预览     | ~SPC m i~   |
+     | 到对应标签   | ~SPC m g b~ |
+     | 到子标签     | ~SPC m g c~ |
+     | 导航到父标签 | ~SPC m g p~ |
+**** CSS/SCSS
+     | quickly navigate CSS rules | ~SPC m g h~ |
+*** 缩略元素 C-j 扩展
+    - HTML abbreviations
+      - Basic tags
+        a                       <a href=""></a>
+        a.x                    <a class="x" href=""></a>
+        a#q.x               <a id="q" class="x" href=""></a>
+        a#q.x.y.z          <a id="q" class="x y z" href=""></a>
+        #q                     <div id="q"> </div>
+        .x                       <div class="x"> </div>
+        #q.x                   <div id="q" class="x"> </div>
+        #q.x.y.z              <div id="q" class="x y z"> </div>
+      - Empty tags
+        a/                       <a href=""/>
+        a/.x                     <a class="x" href=""/>
+        a/#q.x                   <a id="q" class="x" href=""/>
+        a/#q.x.y.z               <a id="q" class="x y z" href=""/>
+        Self-closing tags
+        input[type=text]         <input type="text" name="" value=""/>
+        img                      <img src="" alt=""/>
+        img>metadata/*2          <img src="" alt=""> <metadata/> <metadata/> </img>
+      - Siblings
+          a+b                      <a href=""></a> <b></b>
+          a+b+c                    <a href=""></a> <b></b> <c></c>
+          a.x+b                    <a class="x" href=""></a> <b></b>
+          a#q.x+b                  <a id="q" class="x" href=""></a> <b></b>
+          a#q.x.y.z+b              <a id="q" class="x y z" href=""></a> <b></b>
+          a#q.x.y.z+b#p.l.m.n      <a id="q" class="x y z" href=""></a> <b id="p" class="l m n"></b>
+      - Tag expansion
+          table+                   <table> <tr> <td> </td> </tr> </table>
+          dl+                      <dl> <dt></dt> <dd></dd> </dl>
+          ul+                      <ul> <li></li> </ul>
+          ul++ol+                  <ul> <li></li> </ul> <ol> <li></li> </ol>
+          ul#q.x.y[m=l]            <ul id="q" class="x y" m="l"> <li></li> </ul>
+      - Parent > child
+         a>b                      <a href=""><b></b></a>
+         a>b>c                    <a href=""><b><c></c></b></a>
+         a.x>b                    <a class="x" href=""><b></b></a>
+         a#q.x>b                  <a id="q" class="x" href=""><b></b></a>
+         a#q.x.y.z>b              <a id="q" class="x y z" href=""><b></b></a>
+         a#q.x.y.z>b#p.l.m.n      <a id="q" class="x y z" href=""><b id="p" class="l m n"></b></a>
+         #q>.x                    <div id="q"> <div class="x"> </div> </div>
+         a>b+c                    <a href=""> <b></b> <c></c> </a>
+         a>b+c>d                  <a href=""> <b></b> <c><d></d></c> </a>
+      - Climb-up
+         a>b^c                    <a href=""><b></b></a><c></c>
+         a>b>c^d                  <a href=""> <b><c></c></b> <d></d> </a>
+         a>b>c^^d                 <a href=""><b><c></c></b></a> <d></d>
+      - Multiplication
+           a*1                      <a href=""></a>
+           a*2                      <a href=""></a> <a href=""></a>
+           a/*2                     <a href=""/> <a href=""/>
+           a*2+b*2                  <a href=""></a> <a href=""></a> <b></b> <b></b>
+           a*2>b*2                  <a href=""> <b></b> <b></b> </a> <a href=""> <b></b> <b></b> </a>
+           a>b*2                    <a href=""> <b></b> <b></b> </a>
+           a#q.x>b#q.x*2            <a id="q" class="x" href=""> <b id="q" class="x"></b> <b id="q" class="x"></b> </a>
+           a#q.x>b/#q.x*2           <a id="q" class="x" href=""> <b id="q" class="x"/> <b id="q" class="x"/> </a>
+      - Item numbering
+           ul>li.item$*3            <ul> <li class="item1"></li> <li class="item2"></li> <li class="item3"></li> </ul>
+           ul>li.item$$$*3          <ul> <li class="item001"></li> <li class="item002"></li> <li class="item003"></li> </ul>
+           ul>li.item$@-*3          <ul> <li class="item3"></li> <li class="item2"></li> <li class="item1"></li> </ul>
+           ul>li.item$@3*3          <ul> <li class="item3"></li> <li class="item4"></li> <li class="item5"></li> </ul>
+           ul>li.item$@-3*3         <ul> <li class="item5"></li> <li class="item4"></li> <li class="item3"></li> </ul>
+           a$b$@-/*5                <a1b5/> <a2b4/> <a3b3/> <a4b2/> <a5b1/>
+           a.$*2>b.$$@-*3           <a class=\"1\" href=""> <b class=\"03\"></b> <b class=\"02\"></b> <b class=\"01\"></b> </a> <a class=\"2\" href=""> <b class=\"03\"></b> <b class=\"02\"></b> <b class=\"01\"></b> </a>
+      - Properties
+           b[x]                     <b x=""></b>
+           b[x=]                    <b x=""></b>
+           b[x=""]                  <b x=""></b>
+           b[x=y]                   <b x="y"></b>
+           b[x="y"]                 <b x="y"></b>
+           b[x="()"]                <b x="()"></b>
+           b[x m]                   <b x="" m=""></b>
+           b[x= m=""]               <b x="" m=""></b>
+           b[x=y m=l]               <b x="y" m="l"></b>
+           b/[x=y m=l]              <b x="y" m="l"/>
+           b#foo[x=y m=l]           <b id="foo" x="y" m="l"></b>
+           b.foo[x=y m=l]           <b class="foo" x="y" m="l"></b>
+           b#foo.bar.mu[x=y m=l]    <b id="foo" class="bar mu" x="y" m="l"></b>
+           b/#foo.bar.mu[x=y m=l]   <b id="foo" class="bar mu" x="y" m="l"/>
+           b[x=y]+b                 <b x="y"></b> <b></b>
+           b[x=y]+b[x=y]            <b x="y"></b> <b x="y"></b>
+           b[x=y]>b                 <b x="y"><b></b></b>
+           b[x=y]>b[x=y]            <b x="y"><b x="y"></b></b>
+           b[x=y]>b[x=y]+c[x=y]     <b x="y"> <b x="y"></b> <c x="y"></c> </b>
+      - Parentheses
+         (a)                      <a href=""></a>
+         (a)+(b)                  <a href=""></a> <b></b>
+         a>(b)                    <a href=""><b></b></a>
+         (a>b)>c                  <a href=""><b></b></a>
+         (a>b)+c                  <a href=""><b></b></a> <c></c>
+         z+(a>b)+c+k              <z></z> <a href=""><b></b></a> <c></c> <k></k>
+         (x)*2                    <x></x> <x></x>
+         ((x)*2)                  <x></x> <x></x>
+         ((x))*2                  <x></x> <x></x>
+         (x>b)*2                  <x><b></b></x> <x><b></b></x>
+         (x+b)*2                  <x></x> <b></b> <x></x> <b></b>
+      - Text
+          a{Click me}              <a href="">Click me</a>
+          a>{Click me}*2           <a href=""> Click me Click me </a>
+          x{click}+b{here}         <x>click</x> <b>here</b>
+          span>{click}+b{here}     <span> click <b>here</b> </span>
+          p>{Click}+span{here}+{ to continue} <p> Click <span>here</span> to continue </p>
+          p{Click}+span{here}+{ to continue} <p> Click </p> <span>here</span> to continue
+      - Filter: HTML with comments
+          a.b|c                    <!-- .b --> <a class="b" href=""></a> <!-- /.b -->
+          #a>.b|c                  <!-- #a --> <div id="a"> <!-- .b --> <div class="b"> </div> <!-- /.b --> </div> <!-- /#a -->
+    - CSS abbreviations
+      - Basic Usage
+        - p1-2!+m10e+bd1#2s        padding: 1px 2px !important; margin: 10em; border: 1px #222 solid;
+      - Keywords
+         m                        margin: ;
+         bg+                      background: #fff url() 0 0 no-repeat;
+         c                        color: #000;
+** python layer 
+*** 选择后端 
+ To choose a default backend set the layer variable =python-backend=:
+
+ #+BEGIN_SRC elisp
+   (python :variables python-backend 'anaconda)
+   #+END_SRC
+
+    Backend can be chosen on a per project basis using directory local variables
+    (files named =.dir-locals.el= at the root of a project), an example to use the
+    =lsp= backend:
+   可以在 .dir-locals.el 文件中单独配置后端
+
+     ,#+BEGIN_SRC elisp
+     ;;; Directory Local Variables
+     ;;; For more information see (info "(emacs) Directory Variables")
+
+     ((python-mode (python-backend . lsp)))
+ #+END_SRC
+
+ *Note:* you can easily add a directory local variable with ~SPC f v d~.
+
+*** Management of Python versions and virtual environments
+**** Manage virtual environments with pyvenv
+  A virtual environment provides isolation of your Python package versions. For a
+  general overview see [[http://docs.python-guide.org/en/latest/dev/virtualenvs/][this site]]. [[http://virtualenvwrapper.readthedocs.io/en/latest/index.html][Virtualenvwrapper]] which is also explained in the
+  previous link, is a program which manages your virtual environments in a central
+  location set by the =WORKON_HOME= environment variable.
+
+  Spacemacs integration of virtual environments and virtualenvwrapper is provided
+  by the [[https://github.com/jorgenschaefer/pyvenv][pyvenv]] package. It provides the following keybindings:
+
+  | Key Binding | Description                                     |
+  |-------------+-------------------------------------------------|
+  | ~SPC m V a~ | activate a virtual environment in any directory |
+  | ~SPC m V d~ | deactivate active virtual environment           |
+  | ~SPC m V w~ | work on virtual environment in =WORKON_HOME=    |
+
+**** Manage multiple Python versions with pyenv
+  If you need multiple Python versions (e.g. Python 2 and Python 3) then take a
+  look at [[https://github.com/yyuu/pyenv][pyenv]]. It enables the installation and managment of multiple
+  Python versions.
+  [[https://www.brianthicks.com/post/2015/04/15/automate-your-python-environment-with-pyenv/][This blogpost]] gives a good overview on how to use the tool. Spacemacs
+  integration is provided by [[https://github.com/proofit404/pyenv-mode][pyenv mode]] which has the following keybindings.
+
+  | Key Binding | Description                          |
+  |-------------+--------------------------------------|
+  | ~SPC m v s~ | set a pyenv environment with [[https://github.com/pyenv/pyenv][pyenv]]   |
+  | ~SPC m v u~ | unset a pyenv environment with [[https://github.com/pyenv/pyenv][pyenv]] |
+
+  Pyenv can also manage virtual environments for each of the Python versions it
+  has installed. Those will be listed alongside your Python versions.
+
+***** Automatic activation of local pyenv version
+  A project-specific pyenv version may be written to a file called
+  =.python-version= using the [[https://github.com/yyuu/pyenv/blob/master/COMMANDS.md#user-content-pyenv-local][pyenv local]] command.
+
+  Spacemacs can search in parent directories for this file, and automatically set
+  the pyenv version. The behavior can be set with the variable
+  =python-auto-set-local-pyenv-version= to:
+  - =on-visit= (default) set the version when you visit a python buffer,
+  - =on-project-switch= set the version when you switch projects,
+  - =nil= to disable.
+
+  The same is also possible on pyvenv with a file called =.venv=. The behavior
+  can be set with the variable =python-auto-set-local-pyvenv-virtualenv== to:
+  - =on-visit= (default) set the virtualenv when you visit a python buffer,
+  - =on-project-switch= set the virtualenv when you switch projects,
+  - =nil= to disable.
+
+*** Key Bindings
+**** Inferior REPL process 在交互模式下, 需 SPC m s i
+  Start a Python or iPython inferior REPL process with ~SPC m s i~.
+  If =ipython= is available in system executable search paths, =ipython=
+  will be used to launch python shell; otherwise, default =python=
+  interpreter will be used.  You may change your system executable
+  search path by activating a virtual environment.
+
+  Send code to inferior process commands:
+
+  | Key Binding | Description                                     |
+  |-------------+-------------------------------------------------|
+  | ~SPC m s b~ | send buffer and keep code buffer focused        |
+  | ~SPC m s B~ | send buffer and switch to REPL in insert mode   |
+  | ~SPC m s f~ | send function and keep code buffer focused 发送光标处函数 |
+  | ~SPC m s F~ | send function and switch to REPL in insert mode |
+  | ~SPC m s i~ | start inferior REPL process                     |
+  | ~SPC m s r~ | send region and keep code buffer focused        |
+  | ~SPC m s R~ | send region and switch to REPL in insert mode   |
+  | ~CTRL+j~    | next item in REPL history                       |
+  | ~CTRL+k~    | previous item in REPL history                   |
+**** Running Python Script in shell
+  To run a Python script like you would in the shell press ~SPC m c c~
+  to start the Python script in comint mode. This is useful when working with
+  multiple Python files since the REPL does not reload changes made in other
+  modules.
+
+  | Key Binding | Description                                                               |
+  |-------------+---------------------------------------------------------------------------|
+  | ~SPC m c c~ | Execute current file in a comint shell                                    |
+  | ~SPC m c C~ | Execute current file in a comint shell and switch to it in =insert state= |
+
+  *Note:* With the universal argument ~SPC u~ you can enter a new
+  compilation command.
+ 用 spc u spc m c c 可以输入执行脚本的命令, 可以在后面加参数
+**** Testing (没装 nose)
+  Test commands start with ~m t~. To use the secondary test runner call the
+  function with a prefix argument, for example ~SPC u SPC m t a~.
+  | No Debug    | Description                                              |
+  |-------------+----------------------------------------------------------|
+  | ~SPC m t a~ | launch all tests of the project                          |
+  | ~SPC m t b~ | launch all tests of the current buffer (same as module)  |
+  | ~SPC m t m~ | launch all tests of the current module                   |
+  | ~SPC m t s~ | launch all tests of the current suite (only with =nose=) |
+  | ~SPC m t t~ | launch the current test (function)                       |
+
+  | Debug       | Description                                                            |
+  |-------------+------------------------------------------------------------------------|
+  | ~SPC m t A~ | launch all tests of the project in debug mode                          |
+  | ~SPC m t B~ | launch all tests of the current buffer (module) in debug mode          |
+  | ~SPC m t M~ | launch all tests of the current module in debug mode                   |
+  | ~SPC m t S~ | launch all tests of the current suite in debug mode (only with =nose=) |
+  | ~SPC m t T~ | launch the current test (function) in debug mode                       |
+
+**** Refactoring
+
+  | Key Binding | Description                          |
+  |-------------+--------------------------------------|
+  | ~SPC m r i~ | remove unused imports with [[https://github.com/myint/autoflake][autoflake]] |
+  | ~SPC m r I~ | sort imports with [[https://pypi.python.org/pypi/isort][isort]]              |
+
+**** Live coding
+  Live coding is provided by the [[https://github.com/donkirkby/live-py-plugin][live-py-plugin.]]
+
+  | Key Binding | Description         |
+  |-------------+---------------------|
+  | ~SPC m l~   | Toggle live-py-mode |
+
+**** Hy REPL process
+  Start a Hy inferior repel process with ~SPC m s i~. If =hy= is
+  available in system executable search paths, =hy= will be used to
+  launch the shell. You may change your system executable search path
+  by activating a virtual enviornment.
+
+  Send code to hy REPL commands:
+
+  | Key Binding | Description                                               |
+  |-------------+-----------------------------------------------------------|
+  | ~SPC m s b~ | send buffer and keep code buffer focused                  |
+  | ~SPC m s B~ | switch to REPL                                            |
+  | ~SPC m s e~ | send sexp in front of the cursor to the REPL              |
+  | ~SPC m s f~ | send function to REPL and stay in buffer                  |
+  | ~SPC m s F~ | send function to REPL and switch to repl buffer           |
+  | ~SPC m s i~ | start inferior hy repl                                    |
+  | ~SPC m s r~ | send current region to the REPL and stay in buffer        |
+  | ~SPC m s R~ | send current region to the REPL and switch to repl buffer |
+
+**** Other Python commands
+
+  | Key Binding | Description                                                                  |
+  |-------------+------------------------------------------------------------------------------|
+  | ~SPC m =~   | Reformat the buffer according to PEP8 using  [[https://github.com/google/yapf][YAPF]]                            |
+  | ~SPC m d b~ | toggle a breakpoint using =wdb=, =ipdb=, =pudb= or =pdb=                     |
+  | ~SPC m g g~ | go to definition using =anaconda-mode-find-definitions= (~C-o~ to jump back) |
+  | ~SPC m g a~ | go to assignment using =anaconda-mode-find-assignments= (~C-o~ to jump back) |
+  | ~SPC m g b~ | jump back                                                                    |
+  | ~SPC m g u~ | navigate between usages with =anaconda-mode-find-references=                 |
+  | ~SPC m h d~ | look for documentation using =helm-pydoc=                                    |
+  | ~SPC m h h~ | quick documentation using anaconda                                           |
+  | ~SPC m h H~ | open documentation in =firefox= using [[https://github.com/tsgates/pylookup][pylookup]]                               |
+  | ~SPC m v s~ | set a pyenv environment with [[https://github.com/pyenv/pyenv][pyenv]]                                           |
+  | ~SPC m v u~ | unset a pyenv environment with [[https://github.com/pyenv/pyenv][pyenv]]                                         |
+  | ~SPC m V w~ | work on virtual environment in =WORKON_HOME=                                 |
+  | ~SPC m V a~ | activate a virtual environment in any directory                              |
+  | ~SPC m V d~ | deactivate active virtual environment                                        |

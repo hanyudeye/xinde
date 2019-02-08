@@ -63,131 +63,91 @@
      }
   #+END_SRC
   
-第三节、通过递归转换,缩小问题之规模
-   本文最初发布时,网友留言 bluesmic 说:楼主,谢谢你提出的研讨主题,很有学术和实
-践价值。关于思路二,本人提一个建议:思路二的代码,如果用递归的思想去简化,无论代
-码还是逻辑都会更加简单明了。
-   就是说,把一个规模为 N 的问题化解为规模为 M(M<N)的问题。
-   举例来说,设字符串总长度为 L,左侧要旋转的部分长度为 s1,那么当从左向右循环交
-换长度为 s1 的小段,直到最后,由于剩余的部分长度为 s2(s2==L%s1)而不能直接交换。
-   该问题可以递归转化成规模为 s1+s2 的,方向相反(从右向左)的同一个问题。随着递归
-   的进行,左右反复回荡,直到某一次满足条件 L%s1==0 而交换结束。
-   举例解释一下:
-   设原始问题为:将“123abcdefg”左旋转为“abcdefg123”,即总长度为 10,旋转部("123")
-长度为 3 的左旋转。按照思路二的运算,演变过程为
-“123abcdefg”->"abc123defg"->"abcdef123g"。这时,"123"无法和"g"作对调,该问题递归
-转化为:将“123g”右旋转为"g123",即总长度为 4,旋转部("g")长度为 1 的右旋转。
-updated:
-     Ys:
-                                                                                 22
-     Bluesmic 的思路没有问题,他的思路以前很少有人提出。思路是通过递归
-将问题规模变小。当字符串总长度为 n,左侧要旋转的部分长度为 m,那么当从
-左向右循环交换长度为 m 的小段直到剩余部分为 m’(n                               %   m),此时 m’ <       m,
-已不能直接交换了。
-     此后,我们换一个思路,把该问题递归转化成规模大小为 m’ +m,方向相反
-的同一问题。随着递归的进行,直到满足结束条件 n % m==0。
-    举个具体事例说明,如下:
-1、对于字符串 abc def ghi gk,
-将 abc 右移到 def ghi gk 后面,此时 n = 11,m = 3,m’ =                   n   %  m   =  2;
-abc def       ghi    gk   ->  def ghi    abc  gk
-2、问题变成 gk 左移到 abc 前面,此时 n = m’ +                    m   =   5,m = 2,
-m’ =      n   %   m   1;
-abc gk       ->   a   gk   bc
-3、问题变成 a 右移到 gk 后面,此时 n = m’ +                    m   =   3,m = 1,
-  ’
-m    =    n   %   m   =   0;
-a gk      bc->    gk    a  bc。 由于此刻,n % m = 0,满足结束条件,返回结果。
-            即从左至右,后从右至左,再从左至右,如此反反复复,直到满足条件,
-返回退出。
-    代码如下,已测试正确(有待优化):
-    1. //递归,
-    2. //感谢网友 Bluesmic 提供的思路
-    3.
-    4. //copyright@ yansha 2011.04.19
-    5. //July,updated,2011.04.20.
-    6. #include <iostream>
-    7. using namespace std;
-    8.
-    9. void rotate(string &str, int n, int m, int head, int tail, bool flag)
-    10. {
-    11.      //n 待处理部分的字符串长度,m:待处理部分的旋转长度
-    12.      //head:待处理部分的头指针,tail:待处理部分的尾指针
-    13.      //flag = true 进行左旋,flag = false 进行右旋
-    14.
-    15.      // 返回条件
-    16.      if (head == tail || m <= 0)
-                                                                                 23
-17.         return;
-18.
-19.     if (flag == true)
-20.     {
-21.         int p1 = head;
-22.         int p2 = head + m;  //初始化 p1,p2
-23.
-24.         //1、左旋:对于字符串 abc def ghi gk,
-25.         //将 abc 右移到 def ghi gk 后面,此时 n = 11,m = 3,m’ = n % m = 2;
-26.         //abc def ghi gk -> def ghi abc gk
-27.         //(相信,经过上文中那么多繁杂的叙述,此类的转换过程,你应该是了如指掌了。)
-28.
-29.         int k = (n - m) - n % m;   //p1,p2 移动距离,向右移六步
-30.
-31.         /*---------------------
-32.         解释下上面的 k = (n - m) - n % m 的由来:
-33.         yansha:
-34.         以 p2 为移动的参照系:
-35.         n-m 是开始时 p2 到末尾的长度,n%m 是尾巴长度
-36.         (n-m)-n%m 就是 p2 移动的距离
-37.         比如 abc def efg hi
-38.         开始时 p2->d,那么 n-m 为 def efg hi 的长度 8,
-39.         n%m 为尾巴 hi 的长度 2,
-40.         因为我知道 abc 要移动到 hi 的前面,所以移动长度是
-41.         (n-m)-n%m = 8-2 = 6。
-42.         */
-43.
-44.         for (int i = 0; i < k; i++, p1++, p2++)
-45.             swap(str[p1], str[p2]);
-46.
-47.         rotate(str, n - k, n % m, p1, tail, false); //flag 标志变为 false,结
-    束左旋,下面,进入右旋
-48.     }
-49.     else
-50.     {
-51.         //2、右旋:问题变成 gk 左移到 abc 前面,此时 n = m’ + m = 5,m = 2,
-    m’ = n % m 1;
-52.         //abc gk -> a gk bc
-53.
-54.         int p1 = tail;
-55.         int p2 = tail - m;
-56.
-57.         // p1,p2 移动距离,向左移俩步
-58.         int k = (n - m) - n % m;
-                                                                          24
-   59.
-   60.         for (int i = 0; i < k; i++, p1--, p2--)
-   61.             swap(str[p1], str[p2]);
-   62.
-   63.         rotate(str, n - k, n % m, head, p1, true); //再次进入上面的左旋部
-       分,
-   64.         //3、左旋:问题变成 a 右移到 gk 后面,此时 n = m’ + m = 3,m = 1,
-       m’ = n % m = 0;
-   65.         //a gk bc-> gk a bc。 由于此刻,n % m = 0,满足结束条件,返回结果。
-   66.
-   67.     }
-   68. }
-   69.
-   70. int main()
-   71. {
-   72.     int i=3;
-   73.     string str = "abcdefghijk";
-   74.     int len = str.length();
-   75.     rotate(str, len, i % len, 0, len - 1, true);
-   76.     cout << str.c_str() << endl;   //转化成字符数组的形式输出
-   77.     return 0;
-   78. }
-非常感谢。
-  稍后,由下文,您将看到,其实上述思路二的本质即是下文将要阐述的 stl rotate 算法,
-详情,请继续往下阅读。
-第四节、stl::rotate 算法的步步深入
+* 第三节、通过递归转换,缩小问题之规模
+  代码如下,已测试正确(有待优化):
+  #+begin_src c
+
+    //递归,
+    //感谢网友 Bluesmic 提供的思路
+
+    //copyright@ yansha 2011.04.19
+    //July,updated,2011.04.20.
+    #include <iostream>
+    using namespace std;
+
+    void rotate(string &str, int n, int m, int head, int tail, bool flag)
+    {
+      //n 待处理部分的字符串长度,m:待处理部分的旋转长度
+      //head:待处理部分的头指针,tail:待处理部分的尾指针
+      //flag = true 进行左旋,flag = false 进行右旋
+
+      // 返回条件
+      if (head == tail || m <= 0)
+        return;
+
+      if (flag == true)
+        {
+          int p1 = head;
+          int p2 = head + m;  //初始化 p1,p2
+
+          //1、左旋:对于字符串 abc def ghi gk,
+          //将 abc 右移到 def ghi gk 后面,此时 n = 11,m = 3,m’ = n % m = 2;
+          //abc def ghi gk -> def ghi abc gk
+          //(相信,经过上文中那么多繁杂的叙述,此类的转换过程,你应该是了如指掌了。)
+
+          int k = (n - m) - n % m;   //p1,p2 移动距离,向右移六步
+
+          /*---------------------
+            解释下上面的 k = (n - m) - n % m 的由来:
+            yansha:
+            以 p2 为移动的参照系:
+            n-m 是开始时 p2 到末尾的长度,n%m 是尾巴长度
+            (n-m)-n%m 就是 p2 移动的距离
+            比如 abc def efg hi
+            开始时 p2->d,那么 n-m 为 def efg hi 的长度 8,
+            n%m 为尾巴 hi 的长度 2,
+            因为我知道 abc 要移动到 hi 的前面,所以移动长度是
+            (n-m)-n%m = 8-2 = 6。
+          ,*/
+
+          for (int i = 0; i < k; i++, p1++, p2++)
+            swap(str[p1], str[p2]);
+          rotate(str, n - k, n % m, p1, tail, false); //flag 标志变为 false,结 束左旋,下面,进入右旋
+        }
+      else
+        {
+          //2、右旋:问题变成 gk 左移到 abc 前面,此时 n = m’ + m = 5,m = 2, m’ = n % m 1;
+          //abc gk -> a gk bc
+
+          int p1 = tail;
+          int p2 = tail - m;
+
+          // p1,p2 移动距离,向左移俩步
+          int k = (n - m) - n % m;
+
+
+          for (int i = 0; i < k; i++, p1--, p2--)
+            swap(str[p1], str[p2]);
+
+          rotate(str, n - k, n % m, head, p1, true); //再次进入上面的左旋部 分,
+          //3、左旋:问题变成 a 右移到 gk 后面,此时 n = m’ + m = 3,m = 1, m’ = n % m = 0;
+          //a gk bc-> gk a bc。 由于此刻,n % m = 0,满足结束条件,返回结果。
+
+        }
+    }
+
+    int main()
+    {
+      int i=3;
+      string str = "abcdefghijk";
+      int len = str.length();
+      rotate(str, len, i % len, 0, len - 1, true);
+      cout << str.c_str() << endl;   //转化成字符数组的形式输出
+      return 0;
+    }
+  #+end_src  
+
+* 第四节、stl::rotate 算法的步步深入
 思路三:
 3.1、数组循环移位
    下面,我将再具体深入阐述下此 STL 里的 rotate 算法,由于 stl 里的 rotate 算法,用到

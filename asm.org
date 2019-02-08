@@ -20,7 +20,6 @@
    入寄存器 ebx。
 *** 操作数的长度
    b(byte, 8-bit), w(word, 16-bits), l(long,32-bits) 
-  
    如“movb %al, %bl” ,“movw %ax, %bx”,“movl %eax, %ebx ”
 *** Sign and Zero Extension
    其它的 Intel 格式的符号扩展指令还有:
@@ -30,9 +29,9 @@
    cdq -- sign-extend dword in %eax to quad in %edx:%eax;
    对应的 AT&T 语法的指令为 cbtw,cwtl,cwtd,cltd。
 *** 调用和跳转
-   段内调用和跳转指令为 "call" , "ret" 和 "jmp",
-
-   段间调用和跳转指令为 "lcall" , "lret" 和 "ljmp" 
+    段内调用和跳转指令为 "call" , "ret" 和 "jmp",
+    
+    段间调用和跳转指令为 "lcall" , "lret" 和 "ljmp" 
 
    段间调用和跳转指令的格式为“lcall/ljmp $SECTION, $OFFSET”
 
@@ -88,7 +87,7 @@
          movl array(, %eax, 4), %eax
          movw array(%ebx, %eax, 4), %cx
          movb $4, %fs:(%eax)
-** GNU 汇编语言结构
+** GNU 程序系统结构
       主要包括三个常用的段:
       data 数据段 声明带有初始值的元素
       bss 数据段 声明使用 0 或者 null 初始化的元素
@@ -105,7 +104,18 @@
       如:.globl _start
       使用通用库函数时可以使用:
       ld -dynamic-linker /lib/ld-linux.so.2
-** 数据定义
+** 内存对象操作
+*** 直接操作内存 
+    mov 内存地址，%eax 或
+    mov %eax，内存地址
+*** 间接操作内存
+     Intel 语法:
+     地址 section:[base+index*scale+displacement]
+  
+     AT&T 语法:
+     地址 section:displacement(base,index,scale)
+ 
+** 定义东西
 *** 数据段 .data .rodata(只读)内存有此属性
     .ascii 文本字符串
     .asciz 以空字符结尾的字符串
@@ -153,7 +163,7 @@
        
     因为不使用数据初始化 bss 段中声明的数据区域,所以内存区域被保留在运行时使
     用, 并且不必包含在最终的程序中
-** 指令列表   
+** 行为列表   
 *** 传送指令
 **** move 指令
      .section .data
@@ -247,8 +257,9 @@
       执行 call 指令时,它把 EIP 的值放到堆栈中, 然后修改 EIP 以指向被调用的函数地址, 当被调用函数完成后, 它从堆栈获取过去的 EIP 的
       值, 并把控制权返还给原始程序。
 ***** 中断
-         由硬件设备生成中断。 程序生成软件中断当一个程序产生中断调用时, 发出调用的程序暂停, 被调用的程序接替它运行, 指令指针被转移到
-         被调用的函数地址, 当调用完成时使用中断返回指令可以返回调原始程序。
+         由硬件设备生成中断。 程序生成软件中断当一个程序产生中断调用时, 发出调用
+         的程序暂停, 被调用的程序接替它运行, 指令指针被转移到被调用的函数地址,
+         当调用完成时使用中断返回指令可以返回调原始程序。
 **** 条件跳转:
      条件跳转按照 EFLAGS 中的值来判断是否该跳转, 格式为:
      jxx address, 其中 xx 是 1-3 个字符的条件代码, 取值如下:
@@ -427,18 +438,18 @@
     GNU 汇编语言定义函数的语法:
     .type 标签(也就是函数名), @function
     ret 返回到调用处
-** linux 系统调用
-    linux 系统调用的中断向量为 0x80
-    1, 系统调用标识存放在%eax 中
-    2, 系统调用输入值:
-    EBX 第一个参数
-    ECX 第二个参数
-    EDX 第三个参数
-    ESI 第四个参数
-    EDI 第五个参数
+*** linux系统 行为使用规范
+     linux 系统调用的中断向量为 0x80
+     1, 系统调用标识存放在%eax 中
+     2, 系统调用输入值:
+     EBX 第一个参数
+     ECX 第二个参数
+     EDX 第三个参数
+     ESI 第四个参数
+     EDI 第五个参数
        
-    需要输入超过 6 个输入参数的系统调用, EBX 指针用于保存指向输入参数内存位置
-    的指针, 输入参数按照连续的的顺序存储, 系统调用的返回值存放在 EAX 中
+     需要输入超过 6 个输入参数的系统调用, EBX 指针用于保存指向输入参数内存位置
+     的指针, 输入参数按照连续的的顺序存储, 系统调用的返回值存放在 EAX 中
 ** 汇编语言的高级功能
 *** gnu 内联汇编的语法:
     asm 或__asm__("汇编代码");
@@ -649,255 +660,3929 @@
          和 loop 优化技术。
          -fgcse-after-reload: 这中技术在完全重新加载生成的且优化后的汇编语言代码之后执行第二次 gcse 优化,帮助消除不同优化方式创建的
          任何冗余段。
-* Linux系统调用列表(外部事件) 
-  [[file:/usr/include/x86_64-linux-gnu/asm/unistd_32.h][列表]] /usr/include/x86_64-linux-gnu/asm/unistd_32.h
-** 进程控制：
-  | 指令名                 | %eax | 备注                                        |
-  |------------------------+------+---------------------------------------------|
-  | fork                   |   2  | 创建一个新进程                              |
-  | clone                  |      | 按指定条件创建子进程                        |
-  | execve                 |      | 运行可执行文件                              |
-  | exit                   |  1   | 中止进程                                    |
-  | _exit                  |      | 立即中止当前进程                            |
-  | getdtablesize          |      | 进程所能打开的最大文件数                    |
-  | getpgid                |      | 获取指定进程组标识号                        |
-  | setpgid                |      | 设置指定进程组标志号                        |
-  | getpgrp                |      | 获取当前进程组标识号                        |
-  | setpgrp                |      | 设置当前进程组标志号                        |
-  | getpid                 |20    | 获取进程标识号                              |
-  | getppid                |      | 获取父进程标识号                            |
-  | getpriority            |      | 获取调度优先级                              |
-  | setpriority            |      | 设置调度优先级                              |
-  | modify_ldt             |      | 读写进程的本地描述表                        |
-  | nanosleep              |      | 使进程睡眠指定的时间                        |
-  | nice                   |      | 改变分时进程的优先级                        |
-  | pause                  |      | 挂起进程，等待信号                          |
-  | personality            |      | 设置进程运行域                              |
-  | prctl                  |      | 对进程进行特定操作                          |
-  | ptrace                 |      | 进程跟踪                                    |
-  | sched_get_priority_max |      | 取得静态优先级的上限                        |
-  | sched_get_priority_min |      | 取得静态优先级的下限                        |
-  | sched_getparam         |      | 取得进程的调度参数                          |
-  | sched_getscheduler     |      | 取得指定进程的调度策略                      |
-  | sched_rr_get_interval  |      | 取得按RR算法调度的实时进程的时间片长度      |
-  | sched_setparam         |      | 设置进程的调度参数                          |
-  | sched_setscheduler     |      | 设置指定进程的调度策略和参数                |
-  | sched_yield            |      | 进程主动让出处理器,并将自己等候调度队列队尾 |
-  | vfork                  |      | 创建一个子进程，以供执行新程序              |
-  | wait                   |      | 等待子进程终止                              |
-  | waitpid                |      | 等待指定子进程终止                          |
-  | capget                 |      | 获取进程权限                                |
-  | capset                 |      | 设置进程权限                                |
-  | getsid                 |      | 获取会晤标识号                              |
-  | setsid                 |      | 设置会晤标识号                              |
-** 文件系统控制
-*** 文件读写操作
-  | 指令名    | %eax | 备注                         |
-  |-----------+------+------------------------------|
-  | fcntl     |      | 文件控制                     |
-  | open      | 5    | 打开文件                     |
-  | creat     | 8    | 创建新文件                   |
-  | close     | 6    | 关闭文件描述字               |
-  | read      | 3    | 读文件                       |
-  | write     | 4    | 写文件                       |
-  | readv     |      | 从文件读入数据到缓冲数组中   |
-  | writev    |      | 将缓冲数组里的数据写入文件   |
-  | pread     |      | 对文件随机读                 |
-  | pwrite    |      | 对文件随机写                 |
-  | lseek     |19    | 移动文件指针                 |
-  | _llseek   |      | 在64位地址空间里移动文件指针 |
-  | dup       |41    | 复制已打开的文件描述字       |
-  | dup2      |      | 按指定条件复制文件描述字     |
-  | flock     |      | 文件加/解锁                  |
-  | poll      |      | I/O多路转换                  |
-  | truncate  |      | 截断文件                     |
-  | ftruncate |      | 参见truncate                 |
-  | umask     |      | 设置文件权限掩码             |
-  | fsync     |      | 把文件在内存中的部分写回磁盘 |
-  |           |      |                              |
-*** 文件系统操作
-  | 指令名   | %eax | 备注                   |
-  |----------+------+------------------------|
-  | access   |      | 确定文件的可存取性     |
-  | chdir    |   12 | 改变当前工作目录       |
-  | fchdir   |      | 参见chdir              |
-  | chmod    |      | 改变文件方式           |
-  | fchmod   |      | 参见chmod              |
-  | chown    |      | 改变文件的属主或用户组 |
-  | fchown   |      | 参见chown              |
-  | lchown   |      | 参见chown              |
-  | chroot   |      | 改变根目录             |
-  | stat     |      | 取文件状态信息         |
-  | lstat    |      | 参见stat               |
-  | fstat    |      | 参见stat               |
-  | statfs   |      | 取文件系统信息         |
-  | fstatfs  |      | 参见statfs             |
-  | readdir  |      | 读取目录项             |
-  | getdents |      | 读取目录项             |
-  | mkdir    |   39 | 创建目录               |
-  | mknod    |      | 创建索引节点           |
-  | rmdir    |      | 删除目录               |
-  | rename   |      | 文件改名               |
-  | link     |      | 创建链接               |
-  | symlink  |      | 创建符号链接           |
-  | unlink   |      | 删除链接               |
-  | readlink |      | 读符号链接的值         |
-  | mount    |      | 安装文件系统           |
-  | umount   |      | 卸下文件系统           |
-  | ustat    |      | 取文件系统信息         |
-  | utime    |      | 改变文件的访问修改时间 |
-  | quotactl |      | 控制磁盘配额           |
-  |          |      |                        |
-** 系统控制
-   
-  | 指令名        | %eax | 备注                                     |
-  | ioctl         |   54 | I/O总控制函数                            |
-  | _sysctl       |      | 读/写系统参数                            |
-  | acct          |      | 启用或禁止进程记账                       |
-  | getrlimit     |      | 获取系统资源上限                         |
-  | setrlimit     |      | 设置系统资源上限                         |
-  | getrusage     |      | 获取系统资源使用情况                     |
-  | uselib        |      | 选择要使用的二进制函数库                 |
-  | ioperm        |      | 设置端口I/O权限                          |
-  | iopl          |      | 改变进程I/O权限级别                      |
-  | outb          |      | 低级端口操作                             |
-  | reboot        |      | 重新启动                                 |
-  | swapon        |      | 打开交换文件和设备                       |
-  | swapoff       |      | 关闭交换文件和设备                       |
-  | bdflush       |      | 控制bdflush守护进程                      |
-  | sysfs         |      | 取核心支持的文件系统类型                 |
-  | sysinfo       |      | 取得系统信息                             |
-  | adjtimex      |      | 调整系统时钟                             |
-  | alarm         |      | 设置进程的闹钟                           |
-  | getitimer     |      | 获取计时器值                             |
-  | setitimer     |      | 设置计时器值                             |
-  | gettimeofday  |      | 取时间和时区                             |
-  | settimeofday  |      | 设置时间和时区                           |
-  | stime         |      | 设置系统日期和时间                       |
-  | time          |      | 取得系统时间                             |
-  | times         |      | 取进程运行时间                           |
-  | uname         |      | 获取当前UNIX系统的名称、版本和主机等信息 |
-  | vhangup       |      | 挂起当前终端                             |
-  | nfsservctl    |      | 对NFS守护进程进行控制                    |
-  | vm86          |      | 进入模拟8086模式                         |
-  | create_module |      | 创建可装载的模块项                       |
-  | delete_module |      | 删除可装载的模块项                       |
-  | init_module   |      | 初始化模块                               |
-  | query_module  |      | 查询模块信息                             |
-** 内存管理
-   
-  | 指令名      | %eax | 备注                         |
-  | brk         |45    | 改变数据段空间的分配         |
-  | mlock       |      | 内存页面加锁                 |
-  | munlock     |      | 内存页面解锁                 |
-  | mlockall    |      | 调用进程所有内存页面加锁     |
-  | munlockall  |      | 调用进程所有内存页面解锁     |
-  | mmap        |      | 映射虚拟内存页               |
-  | munmap      |      | 去除内存页映射               |
-  | mremap      |      | 重新映射虚拟内存地址         |
-  | msync       |      | 将映射内存中的数据写回磁盘   |
-  | mprotect    |      | 设置内存映像保护             |
-  | getpagesize |      | 获取页面大小                 |
-  | sync        |      | 将内存缓冲区数据写回硬盘     |
-  | cacheflush  |      | 将指定缓冲区中的内容写回磁盘 |
-  |             |      |                              |
-** 网络管理
-   getdomainname	取域名
-   setdomainname	设置域名
-   gethostid	获取主机标识号
-   sethostid	设置主机标识号
-   gethostname	获取本主机名称
-   sethostname	设置主机名称
-** socket控制
-   socketcall	socket系统调用
-   socket	建立socket
-   bind	绑定socket到端口
-   connect	连接远程主机
-   accept	响应socket连接请求
-   send	通过socket发送信息
-   sendto	发送UDP信息
-   sendmsg	参见send
-   recv	通过socket接收信息
-   recvfrom	接收UDP信息
-   recvmsg	参见recv
-   listen	监听socket端口
-   select	对多路同步I/O进行轮询
-   shutdown	关闭socket上的连接
-   getsockname	取得本地socket名字
-   getpeername	获取通信对方的socket名字
-   getsockopt	取端口设置
-   setsockopt	设置端口参数
-   sendfile	在文件或端口间传输数据
-   socketpair	创建一对已联接的无名socket
-** 用户管理
-   getuid	获取用户标识号
-   setuid	设置用户标志号
-   getgid	获取组标识号
-   setgid	设置组标志号
-   getegid	获取有效组标识号
-   setegid	设置有效组标识号
-   geteuid	获取有效用户标识号
-   seteuid	设置有效用户标识号
-   setregid	分别设置真实和有效的的组标识号
-   setreuid	分别设置真实和有效的用户标识号
-   getresgid	分别获取真实的,有效的和保存过的组标识号
-   setresgid	分别设置真实的,有效的和保存过的组标识号
-   getresuid	分别获取真实的,有效的和保存过的用户标识号
-   setresuid	分别设置真实的,有效的和保存过的用户标识号
-   setfsgid	设置文件系统检查时使用的组标识号
-   setfsuid	设置文件系统检查时使用的用户标识号
-   getgroups	获取后补组标志清单
-   setgroups	设置后补组标志清单
-** 进程间通信
-   ipc	进程间通信总控制调用
-*** 信号
-    sigaction	设置对指定信号的处理方法
-    sigprocmask	根据参数对信号集中的信号执行阻塞/解除阻塞等操作
-    sigpending	为指定的被阻塞信号设置队列
-    sigsuspend	挂起进程等待特定信号
-    signal	参见signal
-    kill	向进程或进程组发信号
-    *sigblock	向被阻塞信号掩码中添加信号,已被sigprocmask代替
-    *siggetmask	取得现有阻塞信号掩码,已被sigprocmask代替
-    *sigsetmask	用给定信号掩码替换现有阻塞信号掩码,已被sigprocmask代替
-    *sigmask	将给定的信号转化为掩码,已被sigprocmask代替
-    *sigpause	作用同sigsuspend,已被sigsuspend代替
-    sigvec	为兼容BSD而设的信号处理函数,作用类似sigaction
-    ssetmask	ANSI C的信号处理函数,作用类似sigaction
-*** 消息
-    msgctl	消息控制操作
-    msgget	获取消息队列
-    msgsnd	发消息
-    msgrcv	取消息
-*** 管道
-    | pipe | 42 | 创建管道 |
-    |      |    |          |
-*** 信号量
-    semctl	信号量控制
-    semget	获取一组信号量
-    semop	信号量操作
-*** 共享内存
-    shmctl	控制共享内存
-    shmget	获取共享内存
-    shmat	连接共享内存
-    shmdt	拆卸共享内存
-
 * linux汇编
-  gcc -c -gstabs+ -m32 -o 
-  as --gstabs -o 
-  ld -m elf_i386 -o
+** 工具 
+*** 编译程序片段代码 
+    gcc -c -gstabs+ -m32 -o
+*** 汇编程序片段代码 
+    as --gstabs -o
+    nasm
+*** 链接所有程序片段对象  ld -m elf_i386 -o
+*** 编译链接一体话 
+    make
+*** 虚拟磁盘创建工具
+    dd
+*** 磁盘挂载工具
+    mount 磁盘设备读取工具
+
 ** 第一个程序[[file:~/project/linuxasm/first.s][first]]  
 ** 求最大数[[file:~/project/linuxasm/maximum.S][maximum]] 
 ** 使用函数[[file:~/project/linuxasm/function.S][function]] 
-   
-* 内存操作
-** 直接操作内存 
-   mov 内存地址，%eax 或
-   mov %eax，内存地址
-** 间接操作内存
-    Intel 语法:
-    地址 section:[base+index*scale+displacement]
-  
-    AT&T 语法:
-    地址 section:displacement(base,index,scale)
+* linux ebx, ecx, edx, esi和edi按照顺序存放前五个参数,返回值 eax  
+** 基本结构
+   #+begin_src asm
+         # Hello World ～
+       .data
+       msg:
+         .ascii "Hello world, hello AT&T asm!\n"
+         len = . - msg
+
+       .text
+       .global _start
+
+       _start:
+         movl	$len,	%edx	# 显示的字符数
+         movl	$msg,	%ecx	# 缓冲区指针
+         movl	$1,	%ebx	# 文件描述符
+         movl	$4,	%eax	# 系统调用号，_write
+         int	$0x80		# 系统调用
+
+         ## ssize_t write(int fd, const void *buf, size_t count);
+
+         movl	%eax,	%ebx	# 传给_exit的参数, 这里是write的返回值，打印的数量
+         movl	$1,	%eax	# 系统调用号，_exit
+         int	$0x80		# 系统调用
+
+   #+end_src
+
+   #+begin_src asm
+       # 输出CPUID：
+       # cpuid.s Sample program to extract the processor Vendor ID
+       .section .data
+       output:
+       .ascii "The processor Vendor ID is 'XXXXXXXXXXXX'\n"
+
+       .section .text
+       .global _start
+
+       _start:
+       movl	$0,	%eax		# The CPUID output option(the Vendor ID string)	
+         cpuid #cpuid 指令根据不同的 eax,输出不同的值 
+       movl	$output,%edi
+       movl	%ebx, 	28(%edi)
+       movl	%edx,	32(%edi)
+       movl	%ecx,	36(%edi)
+
+       movl	$42,	%edx	# 显示的字符数
+       movl	$output,%ecx	# 缓冲区指针
+       movl	$1,	%ebx	# 文件描述符
+       movl	$4,	%eax	# 系统调用号，_write
+       int	$0x80		# 系统调用
+
+       movl	$0,	%ebx	# 传给_exit的参数
+       movl	$1,	%eax	# 系统调用号，_exit
+       int	$0x80		# 系统调用
+	  
+   #+end_src
+** 64位系统下汇编32位汇编程序的做法是：
+    as --32 –o output_file.o input_file.s
+    ld –m elf_i386 –dynamic-linker /lib/ld-linux.so.2 –o output_file –L/path –llibname input_file.s
+    
+    或者
+    gcc –m32 –nostdlib –o output_file –L/path –llibname input_file.s
+
+** 调用C函数
+   汇编调用C函数，方法很简单：
+*** 1）调用就是使用call 指令
+*** 2）参数传递方法为将规定数目的参数压栈。
+    void func(int a, int b);
+    若调用上面的函数，需要两个参数，而压栈顺序为从右到左，故
+
+    pushl %ebx
+    pushl %ecx
+
+    则调用过程中func 中得到的b为ebx，a为ecx的值。
+*** 3）函数返回值保存在eax中
+*** 4）调用结束后，调用放回堆栈，addl 参数个数*4,  %esp
+*** 则printf的调用如下所示：
+    #+begin_src asm
+        # print the CPUID Vendor ID by C library calls
+
+        .section .data
+        output:
+          # .asciz 与ascii 不同在于，.asciz会在末尾添加空字符（0）
+          .asciz	"The processor Vendor ID is '%s'\n"
+
+        .section .bss
+          .lcomm	buffer, 12
+
+        .section .text
+
+        .global	_start
+
+        _start:
+          nop
+          movl	$0,		%eax
+          cpuid
+
+          movl	$buffer,%edi
+          movl	%ebx,	(%edi)
+          movl	%edx,	4(%edi)
+          movl	%ecx,	8(%edi)
+
+          pushl	$buffer
+          pushl	$output
+          call	printf
+
+          addl	$8,		%esp
+          pushl	$0
+          call	exit
+    #+end_src
+    
+    #+begin_src makefile
+      all: cpuid_use_printf
+
+      cpuid_use_printf: cpuid_use_printf.o
+      ld -dynamic-linker /lib/ld-linux.so.2 -o $@ -lc $<
+
+      cpuid_use_printf.o: cpuid_use_printf.s
+      as -o $@ $<
+
+      clean:
+      rm ./cpuid_use_printf ./cpuid_use_printf.o ./cpuid_use_printf.s~
+
+    #+end_src
+
+    链接：
+    1）使用动态链接可减小程序大小及节约内存，需要指定运行时加载动态库
+
+    ld -dynamic-linker /lib/ld-linux.so.2
+
+    2）用-l参数指定连接库
+    -lc
+** 处理字符串
+一.传送字符串
+把字符串从一个内存位置复制到另一个内存位置。
+
+
+
+1.MOVS
+3种格式：
+MOVSB：传送单一字节
+MOVSW：传送一个字（2字节）
+MOVSL：传送一个双字（4字节）
+MOVS使用隐含的源（ESI）、目的（EDI）操作数。
+两种加载ESI、EDI值的方式：
+1）间接寻址：
+movl $output, %edi
+2）lea指令加载一个对象的有效地址
+leal output, %esi
+
+每次执行MOVS指令时，数据传送后，ESI和EDI寄存器会自动改变，为另一次传送做准备。
+ESI、EDI可能递增也可能递减，这取决于EFLAGS中的DF标志。如果DF被清零则递增，DF被设置，则递减。
+CLD将DF清零
+STD设置DF标志
+示例：
+# An example of the MOVS instructions
+.section .data
+str:
+	.ascii	"Hi AT&T.\n"
  
+.section .bss
+	.lcomm	output, 9
+ 
+.section .text
+.global _start
+ 
+_start:
+	nop
+ 
+	leal	str,	%esi
+	leal	output,	%edi
+ 
+	movsb
+	movsw
+	movsl
+ 
+	movl	$1,		%eax
+	movl	$0,		%ebx
+	int		$0x80
+调试：
+liury@liury-laptop:~/program/asm/working_with_string/movs_example$ make
+as -gstabs -o movs_example.o movs_example.s
+ld -o movs_example movs_example.o
+liury@liury-laptop:~/program/asm/working_with_string/movs_example$ ls
+makefile  movs_example  movs_example.o  movs_example.s
+liury@liury-laptop:~/program/asm/working_with_string/movs_example$ gdb ./movs_example 
+GNU gdb (GDB) 7.1-ubuntu
+Copyright (C) 2010 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "i486-linux-gnu".
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>...
+Reading symbols from /home/liury/program/asm/working_with_string/movs_example/movs_example...done.
+(gdb) l
+1 # An example of the MOVS instructions
+2 .section .data
+3 str:
+4 .ascii "Hi AT&T.\n"
+5 
+6 .section .bss
+7 .lcomm output, 9
+8 
+9 .section .text
+10 .global _start
+(gdb) b *_start+1
+Breakpoint 1 at 0x8048075: file movs_example.s, line 15.
+(gdb) r
+Starting program: /home/liury/program/asm/working_with_string/movs_example/movs_example 
+
+Breakpoint 1, _start () at movs_example.s:15
+15 leal str, %esi
+(gdb) n
+16 leal output, %edi
+(gdb) print /x $esi
+$1 = 0x8049094
+(gdb) print /x str
+$2 = 0x41206948
+(gdb) print /x &str
+$3 = 0x8049094
+(gdb) n
+18 movsb
+(gdb) x /9cb &output
+0x80490a0 <output>: 0 '\000'0 '\000' 0 '\000'0 '\000' 0 '\000'0 '\000' 0 '\000'0 '\000'
+0x80490a8 <output+8>: 0 '\000'
+(gdb) x /s &output
+0x80490a0 <output>: ""
+(gdb) n
+19 movsw
+(gdb) x /s &output
+0x80490a0 <output>: "H"
+(gdb) n
+20 movsl
+(gdb) x /s &output
+0x80490a0 <output>: "Hi "
+(gdb) n
+22 movl $1, %eax
+(gdb) x /s &output
+0x80490a0 <output>: "Hi AT&T"
+(gdb) c
+Continuing.
+
+Program exited normally.
+(gdb) q
+
+对于要传送大型字符串，可用循环：
+	leal	datas,	%esi
+	leal	output,	%edi
+	mvol	$100,	%ecx
+	cld
+loop_cp:
+	movsb
+	loop	loop_cp
+
+2.REP
+可更简单地传送大型字符串。它自己并不执行什么操作，这条指令用于按照特定次数重复执行字符串指令，由ECX寄存器中的值进行控制。例如
+	leal	datas,	%esi
+	leal	output,	%edi
+	mvol	$100,	%ecx
+	cld
+	rep		movsb
+
+MOVSW,MOVSL传送大型字符串效率更高，但小心不能除尽的情况。
+
+有些REP指令除监视ECX外还监视ZF（零标志）的状态。
+--------------------------------------------------
+指令 描述
+-------------------------------------------
+REPE 等于时重复
+REPNE 不等于时重复
+REPNZ 不为0时重复
+REPZ 为0时重复
+---------------------------------------------------
+
+二.存储和加载字符串
+
+
+1.LODS
+用于把内存中的字符串传送到EAX。三种形式：
+LODSB：把一个字节加载到AL
+LODSW：把一个字加载到AX
+LODSL：把一个双字加载到EAX
+
+LODS指令使用ESI寄存器作为隐含的源操作数。ESI必须包含要加载的字符串所在的内存地址。
+同样加载后ESI递增或递减取决于DF标志。
+
+2.STOS
+把字符串从EAX放到一个内存地址。
+STOSB：存储AL中一个字节数据
+STOSW：存储AX中一个字数据
+STOSL：存储EAX中一个双字数据
+
+STOS指令使用EDI作为隐含的目标操作数。可方便地与REP配合：
+leal	space,	%esi
+leal	buffer,	%edi
+movl	$256,	%ecx
+cld
+lodsb
+rep		stosb
+
+字符串处理示例，小写变大写：
+# Converting lower to upper case
+ 
+.section .data
+str1:
+	.asciz	"This is a TEST, of the program, hello AT&R!\n"
+len:
+	.int	. - str1
+ 
+.section .text
+.global	_start
+ 
+_start:
+	nop
+	leal	str1,	%esi
+	movl	%esi,	%edi
+	movl	len,	%ecx
+	cld
+1:
+	lodsb
+ 
+	cmpb	$'a',	%al
+	jl		skipb
+	cmpb	$'z',	%al
+	jg		skipb
+ 
+	subb	$0x20,	%al
+ 
+skipb:
+	stosb
+	loop	1b
+ 
+end:
+	pushl	$str1
+	call	printf
+ 
+	addl	$4,		%esp
+ 
+	pushl	$0
+	call	exit
+结果：
+liury@liury-laptop:~/program/asm/working_with_string/str_process$ ./convert 
+THIS IS A TEST, OF THE PROGRAM, HELLO AT&R!
+
+三.比较字符串
+
+
+1.CMPS
+三种格式：CMPSB，CMPSW，CMPSL
+隐含的源和目的操作数同样存储在ESI和EDI寄存器中。每次执行CMPS时，根据DF的设置，ESI和EDI递增或递减
+CMPS指令从源字符串减去目标字符串，并且适当地设置EFLAGS的寄存器的进位、符号、溢出、零、奇偶校验和辅助进位标志。后面可跟跳转指令。
+
+2.CMPS和REP一起使用
+示例：
+# An example of using the REPE CMPS instruction
+.section .data
+output:
+	.asciz	"The len is %d.\n"
+str1:
+	.ascii	"This is a test of the cmps instructions."
+str2:
+	.ascii	"This is a test of the CMPS instructions."
+len:
+	.int	. - str2
+ 
+.section .text
+.global _start
+ 
+_start:
+	nop
+	movl	len,	%ecx
+	pushl	%ecx
+	pushl	$output
+	call	printf
+	addl	$8,		%esp
+ 
+	leal	str1,	%esi
+	leal	str2,	%edi
+	movl	len,	%ecx
+	movl	$1,		%eax
+ 
+	cld	
+	repe	cmpsb
+	je		equal
+	movl	%ecx,	%ebx
+	int		$0x80
+ 
+equal:
+	movl	$0,		%ebx
+	int		$0x80
+运行结果：
+liury@liury-laptop:~/program/asm/working_with_string/cmps_rep$ make
+as -gstabs -o cmps_rep.o cmps_rep.s
+ld -dynamic-link /lib/ld-linux.so.2 -lc -o cmps_rep cmps_rep.o
+liury@liury-laptop:~/program/asm/working_with_string/cmps_rep$ ./cmps_rep 
+The len is 40.
+liury@liury-laptop:~/program/asm/working_with_string/cmps_rep$ echo $?
+17
+解析：
+上面的代码首先尝试来'.'运算符作为当前地址，求字符串长度的方法，为验证其正确性，程序开始处打印来一下即40。
+然后比较两个字符串，直到第一个不相同的字符结束，即‘cmps’与‘CMPS’中的c处。
+系统调用结束，调用号保存在EAX中，返回值保存在EBX中。则该程序的返回值若比较结束，即所有字符都相同则返回0，若不同则返回ECX（传到EBX返回）的值，本例为17（通过echo $?打印），17为从后往前数，第一个不同的字符的位置，即c的位置。
+
+四.扫描字符串
+
+
+1.SCAS
+用于扫描字符串搜索一个或多个字符。三种形式：
+SCASB，SCASW，SCASL，分别比较内存中的一个自己、字、双字和AL、AX、EAX的值。
+SCAS使用EDI作为隐含的目标操作数。EDI必须包含要扫描的字符串的内存地址。指令执行时EDI按DF值递增或递减。
+进行比较时会相应地设置EFLAGS标志。
+可与REPE，REPNE一起使用：
+REPE：扫描字符串，查找不匹配搜索字符的位置
+REPNE：扫描字符串，查找匹配搜索字符的位置
+示例：
+# An example of the SCAS instruction
+.section .data
+str:
+	.ascii	"Hello AT&T!"
+len:
+	.int	. - str
+char:
+	.ascii	"&"
+ 
+.section .text
+.global _start
+ 
+_start:
+	nop
+	leal	str,	%edi
+	leal	char,	%esi
+	movl	len,	%ecx
+	
+	lodsb
+	cld
+	repne	scasb
+	jne		notfound
+	
+	subw	len,	%cx		# len是长度，cx值为找到的位置距离末尾的位置，
+							# 则%cx - len为正着数位置的负数
+	neg		%cx				# neg 为求补指令，即负数变正数
+	movl	%ecx,	%ebx	# 作为中断的返回值，可在程序退出后echo $?查看
+	movl	$1,		%eax
+	int		$0x80
+ 
+notfound:
+	movl	$1,		%eax
+	movl	$0,		%ebx
+	int		$0x80
+结果：
+liury@liury-laptop:~/program/asm/working_with_string/find_char$ make
+as -gstabs -o find_char.o find_char.s
+ld -o find_char find_char.o
+liury@liury-laptop:~/program/asm/working_with_string/find_char$ ./find_char 
+liury@liury-laptop:~/program/asm/working_with_string/find_char$ echo $?
+9
+
+2.搜索多个字符
+SCASW，SCASL可以搜索2或4个字符的序列，但他们不会逐字符比较，而是每次递增2或4.
+如在“abctestaaabb”中搜索用SCASL搜索“test”会用“test”与第一个串中的"abct", "esta", "aabb"依次比较，而不会逐字符增减寻找"test" 所以结果是找不到。
+
+3.计算字符串的长度
+SCAS指令的一个非常有用的功能是确定0结尾的字符串的长度。
+示例：
+# Finding the len of a string useing the SCAS instruction
+.section .data
+output:
+	.asciz	"The len of the str is : %d.\n"
+str:
+	.asciz	"I am learning AT&T assembly language."
+len:
+	.int	. - str - 1			# 减一表示去掉最后的'0'
+ 
+.section .text
+.global _start
+ 
+_start:
+	nop
+ 
+	pushl	len
+	pushl	$output
+	call	printf
+	addl	$8,		%esp
+	
+	leal	str,	%edi
+	movl	$0xffff,%ecx	# 支持的最大长度0xfffff = 65535
+	movb	$0,		%al
+ 
+	cld
+	repne	scasb			# 每次迭代ECX递减
+	jne		notfound
+ 
+	subw	$0xffff,%cx		# %cx-0xffff为进行了多少次迭代的负数
+	neg		%cx				# 求补，即负数变整数
+	dec		%cx				# 减去‘0’，即字符串长度不包含最后的‘0’
+	movl	$1,		%eax
+	movl	%ecx,	%ebx
+	int		$0x80
+ 
+notfound:
+	movl	$1,		%eax
+	movl	$0,		%ebx
+	int		$0x80
+运行：
+liury@liury-laptop:~/program/asm/working_with_string/str_len$ make
+as -o str_len.o str_len.s
+ld -dynamic-linker /lib/ld-linux.so.2 -lc -o str_len str_len.o
+liury@liury-laptop:~/program/asm/working_with_string/str_len$ ./str_len 
+The len of the str is : 37.
+liury@liury-laptop:~/program/asm/working_with_string/str_len$ echo $?
+37
+用两种方法求得字符串的长度，两者相等。
+** GNU C内联汇编（AT&T语法）
+内联汇编提供了可以在C或C++代码中创建汇编语言代码，不必连接额外的库或程序。这种方
+法对最终程序在汇编语言级别如何实现特定的函数，给予程序员更多的控制权。
+
+
+1.基本的内联汇编
+1）asm格式
+GNU的C编译器使用asm关键字指出使用汇编语言编写的源代码段落。基本格式：
+asm("assembly code");
+括号中的汇编格式：指令必须在引号里；指令超过一条，必须使用新行字符分隔。如：
+asm ( "movl	$1,	%eax\n\t"
+	  "movl	$0,	%ebx\n\t"
+	  "int	$0x80" );
+
+2）使用全局C变量
+
+如何将数据传递和传出汇编语言呢？一种方法是使用C语言的全局变量，并且只有全局的变
+量才能在基本的内联汇编代码内使用。
+
+示例：
+/*************************************************************************
+	> File:		use_global_var.c
+	> Author:	孤舟钓客
+	> Mail:		guzhoudiaoke@126.com 
+	> Time:		2012年12月23日 星期日 11时33分25秒
+ ************************************************************************/
+ 
+#include<stdio.h>
+ 
+int a = 11;
+int b = 22;
+int result;
+ 
+int main()
+{
+	asm ( "pusha\n\t"
+		  "movl		a,		%eax\n\t"
+		  "movl		b,		%ebx\n\t"
+		  "imull	%ebx,	%eax\n\t"
+		  "movl		%eax,	result\n\t"
+		  "popa" );
+	printf ("The answer is %d\n", result);
+	return 0;
+}
+
+运行结果：
+liury@liury-laptop:~/program/asm/inline_assembly/use_global_var$ ls
+use_global_var.c
+liury@liury-laptop:~/program/asm/inline_assembly/use_global_var$ gcc -o use_global_var use_global_var.c 
+liury@liury-laptop:~/program/asm/inline_assembly/use_global_var$ ./use_global_var 
+The answer is 242
+
+注释：
+反汇编：
+
+可以发现a和b在.data段中，并且类型、对齐方式等的设置。result没有初始化，故声明为.comm值。
+注意开头和结尾的PUSHA，POPA。因为后面的C代码可能用到寄存器，而内联汇编中可能改变了它们，会发生不可预料的后果，故要在开始的位置保存它们，最后恢复它们。
+
+
+3）volatile修饰符
+编译器会试图优化生成的汇编代码以提高性能。但对内联汇编来说，优化有时并不是好事。如果不希望编译器处理内联汇编代码，可以明确地说明。用volatile修饰符可以完成这个请求：
+asm volatile ("assembly code");
+
+
+4）__asm__替换关键字
+ANSI C 规范把关键字asm用于其他用途，不能将它用于内联汇编语句。如果希望使用ANSI C 约定编写代码，必须使用关键字__asm__替换一般的关键字asm。汇编代码段则与asm一样。__asm__可以使用__volatile__进行修饰。
+
+
+2.扩展的asm
+基本的asm格式简单，但有局限：所有输入输出必须使用全局C变量；必须注意不改变任何寄存器的值。
+扩展格式提供附加选项。
+
+
+1）扩展asm格式
+扩展asm提供附加的特性，格式：
+asm ("assembly code" : output locations : input operands : changed registers);
+assembly code:汇编代码，同基本的asm
+output locations：输出位置，包含内联汇编代码的输出值的寄存器和内存位置的列表
+input operands: 输入操作数，包含内联汇编代码的输入值的寄存器和内存位置的列表
+changed registers：改动的寄存器，内联代码改变的任何其他寄存器列表
+若不生成输出值：asm ("assembly code" : : input operands : changed registers);
+若不改动任何寄存器: asm ("assembly code" : output locations : input operands);
+.file	"use_global_var.c"
+.globl a
+	.data
+	.align 4
+	.type	a, @object
+	.size	a, 4
+a:
+	.long	11
+.globl b
+	.align 4
+	.type	b, @object
+	.size	b, 4
+b:
+	.long	22
+	.comm	result,4,4
+	.section	.rodata
+.LC0:
+	.string	"The answer is %d\n"
+	.text
+.globl main
+	.type	main, @function
+main:
+	pushl	%ebp
+	movl	%esp, %ebp
+	andl	$-16, %esp
+	subl	$16, %esp
+#APP
+# 16 "use_global_var.c" 1
+	pusha
+	movl		a,		%eax
+	movl		b,		%ebx
+	imull	%ebx,	%eax
+	movl		%eax,	result
+	popa
+# 0 "" 2
+#NO_APP
+	movl	result, %edx
+	movl	$.LC0, %eax
+	movl	%edx, 4(%esp)
+	movl	%eax, (%esp)
+	call	printf
+	movl	$0, %eax
+	leave
+	ret
+	.size	main, .-main
+	.ident	"GCC: (Ubuntu 4.4.3-4ubuntu5.1) 4.4.3"
+	.section	.note.GNU-stack,"",@progbits
+
+2）指定输入和输出
+扩展格式中，可从寄存器和内存位置给输入、输出赋值，输入、输出列表的格式：
+"constraint" (variable)
+variable 是C变量。扩展asm中，局部和全局变量都可以用。约束（constraint）定义把变量存放在哪里（对于输入值）或者从哪里传送变量（对于输出值）。使用它定义把变量存放在寄存器还是内存位置中。
+约束是单一字符的代码，定义如下：
+------------------------------------------------------------------------
+约束 描述
+--------------------------------------------------------------------
+a Use the %eax, %ax, or %al registers.
+b Use the %ebx, %bx, or %bl registers.
+c Use the %ecx, %cx, or %cl registers.
+d Use the %edx, %dx, or $dl registers.
+S Use the %esi or %si registers.
+D Use the %edi or %di registers.
+r Use any available general-purpose register.
+q Use either the %eax, %ebx, %ecx, or %edx register.
+A Use the %eax and the %edx registers for a 64-bit value.
+m Use the variable\u2019s memory location.
+o Use an offset memory location.
+V Use only a direct memory location.
+i Use an immediate integer value.
+n Use an immediate integer value with a known value.
+g Use any register or memory location available.
+-------------------------------------------------------------------------
+除了这些约束外，输出值还包含一个约束修饰符，它指示编译器如何处理输出值：
+---------------------------------------------------------------------
+输出修饰符 描述
+---------------------------------------------------------------
++ 可以读取和写入操作数
+= 只能写入操作数
+% 如果必要，操作数可以和下一个操作数切换
+& 在内联函数完成前，可以删除或者重新使用操作数
+----------------------------------------------------------------------
+示例：
+asm ("assembly code" : "=a"(result) : "d"(data1) : "c"(data2));
+把C语言变量data1放到EDX中，data2放到ECX中，结果存放到EAX中然后传送给result。
+
+3）使用寄存器
+如果输入值和输出变量被赋值给寄存器，那么在内联汇编中几乎可以像平常一样使用寄存器。
+示例：
+/*************************************************************************
+	> File:		use_registers.c
+	> Author:	孤舟钓客
+	> Mail:		guzhoudiaoke@126.com 
+	> Time:		2012年12月23日 星期日 13时56分38秒
+ ************************************************************************/
+ 
+#include<stdio.h>
+ 
+int main()
+{
+	int data1 = 11;
+	int data2 = 22;
+	int result;
+ 
+	__asm__ ("imull	%%edx,	%%ecx\n\t"
+			 "movl	%%ecx,	%%eax"
+			 : "=a"(result)
+			 : "d"(data1), "c"(data2));
+ 
+ 
+	printf("The result is %d\n", result);
+}
+
+运行：
+liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ gcc -o use_registers use_registers.c
+liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ ls
+use_registers  use_registers.c  use_registers.s
+liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ ./use_registers 
+The result is 242
+
+注释：
+为了使用占位符见下面，使用寄存器时要写两个%
+"=a" 使用等号符号修饰输出寄存器表明汇编代码只能写入它，这是对内联汇编代码中所有输出值的要求。
+反汇编：
+	movl	$11, 28(%esp)
+	movl	$22, 24(%esp)
+	movl	28(%esp), %eax
+	movl	24(%esp), %ecx
+	movl	%eax, %edx
+#APP
+# 16 "use_registers.c" 1
+	imull	%edx,	%ecx
+	movl	%ecx,	%eax
+# 0 "" 2
+#NO_APP
+	movl	%eax, 20(%esp)
+
+可见，编译器把C局部变量栈上的值加载到了寄存器中，并通过把EAX中的结果输出给栈上的变量result。
+
+不一定要在内联汇编中指定输出值，一些汇编指令已经假设输入值包含输出值。比如MOVS指令输入值包含输出位置。
+示例：
+/*************************************************************************
+	> File:		only_input.c
+	> Author:	孤舟钓客
+	> Mail:		guzhoudiaoke@126.com 
+	> Time:		2012年12月23日 星期日 14时15分12秒
+ ************************************************************************/
+ 
+#include<stdio.h>
+ 
+int main()
+{
+	char input[30] = "Hello inline assembly.\n";
+	char output[30];
+	int len = 24;
+ 
+	__asm__ __volatile__ (
+			"cld\n\t"
+			"rep	movsb"
+			:
+			: "S"(input), "D"(output), "c"(len));
+ 
+ 
+	printf("%s", output);
+	return 0;
+}
+
+运行：
+liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ gcc -o only_input only_input.c 
+liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ ./only_input 
+Hello inline assembly.
+
+注释：
+程序把MOVS 需要的三个输入值作为输入，要复制的字符串的位置存放在ESI中，目标位置存放在EDI中，要复制的字符串长度存放在ECX中，
+输出值已被定义为输入值之一，所以在扩展格式中没有专门定义输出值。
+此时volatile很重要，否则编译器或许会认为这个asm段是不必要的而删除它，因为它不生成输出。
+
+4）使用占位符
+当有很多输入值时，上面的方法有点麻烦，于是提供了占位符（placeholder），可以在内联汇编中使用它引入输入和输出。这样可以在对于编译器方便的任何寄存器或者内存位置中声明输入和输出。
+占位符是前面加%的数字。按照内联汇编中列出的每个输入值和输出值在列表中的顺序，每个值被赋予一个从0开始的数字，然后可以在汇编代码中使用占位符表示值。如：
+asm ("assembly code"
+	 : "=r"(result)
+	 : "r"(data1), "r"(data2));
+
+将生成如下的占位符：
+%0: 表示包含变量值result的寄存器
+%1: 表示包含变量值data1的寄存器
+%2: 表示包含变量值data2的寄存器
+使用占位符：
+imull	%1,	%2
+movl	%2,	%0
+
+5）引用占位符
+如果内联汇编代码中的输入和输出共享C变量，可以指定占位符作为约束值，可减少代码中需要的寄存器数量：
+asm ("imull	%1,	%0"
+	 : "=r"(data2)
+	 : "r"(data1), "0"(data2));
+0标记通知编译器使用第一个命名的寄存器存放输出值data2.
+
+6）替换占位符
+当输入输出很多时，数字型的占位符会很混乱，新的（3.1开始）GNU编译器允许声明替换的名称作为占位符，格式：
+%[name] "constraint" (variable)
+示例：
+asm ("imull	%[val1], %[val2]"
+	 : [val2] "=r"(data2)
+	 : [val1] "r"(data1), "0"(data2));
+
+7）改动的寄存器列表
+前面的例子中没有指定改动的寄存器，为何？ 编译器默认输入值和输出值使用的寄存器都会被改动，并做了相应处理，所以不需要指定这些是改动了的寄存器，而若指定了，会产生错误信息
+正确方法：如果内联汇编代码使用了没有被初始地声明为输入输出的任何其他寄存器，则要通知编译器。编译器必须知道这些寄存器，以便避免使用它们。
+示例：
+asm ("movl	%1,		%%eax\n\t"
+	 "addl	%%eax,	%0"
+	 : "=r"(result)
+	 : "r"(data1), "0"(result)
+	 : "%eax" );
+
+在改变的寄存器中指明要使用%eax，则当用"r"指定要使用一个寄存器时就不会选%eax了。
+如果在内联汇编中使用了没有在输入输出中定义的任何内存位置，必须标记为被破坏的。在改动的寄存器列表中使用”memory“通知编译器这个内存位置在内联汇编中被改动。
+
+8）使用内存位置
+在内联汇编代码中使用寄存器比较快，但也可以直接使用C变量的内存位置。约束m用于引用输入输出的内存位置。
+示例：
+asm ("divb	%2\n\t"
+	 "movl	%eax,	%0"
+	 : "=m"(result)
+	 : "a"(dividend), "m"(divisor));
+
+9）跳转
+内联汇编代码中也可以包含定义位置标签，实现跳转。
+示例：
+int a = 11;
+int b = 22;
+int result;
+ 
+asm ("cmp	%1,	%2\n\t"
+	 "jge	greater\n\t"
+	 "movl	%1,	%0\n\t"
+	 "jmp	end\n"
+	 "greater:\n\t"
+	 "movl	%2,	%0\n"
+	 "end:"
+	 : "=r"(result)
+	 : "r"(a), "r"(b) );
+
+内联汇编中使用标签的两个限制：
+只能跳转到相同的asm段内的标签；
+内联汇编也被编码到最终的汇编代码中，如果有另一个asm段，就不能再次使用相同的标签，否则会出错。另外如果试图整合使用C关键字（如函数名称或全局变量）的标签，也会出错。
+解决办法：
+在不同的asm段中也不用用过的标签；
+使用局部标签。
+条件分支和无条件分支都运行指定一个数字加上方向标志作为标签，方向标志指出处理器应该向哪个方向查找数字型标签，第一个遇到的标签会被采用。
+示例：
+asm ("cmp	%1,	%2\n\t"
+	 "jge	0f\n\t"
+	 "movl	%1,	%0\n\t"
+	 "jmp	1f\n"
+	 "0:\n\t"
+	 "movl	%2,	%0\n"
+	 "1:"
+	 : "=r"(result)
+	 : "r"(a), "r"(b) );
+
+其中f（forward）指出从跳转指令向前（即到后面的代码）查找标签，b（backword）则相反，到向后（到前面的代码）找标签。
+
+3.内联汇编用作宏函数
+1）C宏函数
+#define NAME	expression
+示例：
+#define SUM(a, b, result) \
+	((result) = (a) + (b))
+
+2）内联汇编宏函数
+示例：
+#define GREATER(a, b, result) ( { asm ( \
+			"cmp	%1,		%2\n\t"	\
+			"jge	0f\n\t"			\
+			"movl	%1,		%0\n\t"	\
+			"jmp	1f\n\t"			\
+			"0:\n\t"				\
+			"movl	%2,		%0\n\t"	\
+			"1:\n\t"				\
+			: "=r"(result)			\
+			: "r"(a), "r"(b) ); })
+** INT 0x10
+
+2.通过功能号0x09探究色彩控制
+上面的显示为什么是红色呢？我们可以通过实验来看一下颜色控制。
+
+------------------------------------------------------------------------
+			INT 0x10功能0x09
+-------------------------------------------------------------------
+描述：
+	显示字符并设置其属性
+接受参数：
+	AH			0x09
+	AL			字符的ASCII码
+	BH			视频页
+	BL			属性值
+	CX			重复次数
+返回值：
+	无
+注意：
+	在显示字符之后并不前进光标。在文本和图形模式下均可调用该功能
+	显示完字符后，如果还要继续显示字符，必须调用INT 0x10功能0x02前进光标
+-------------------------------------------------------------------------
+ 
+------------------------------------------------------------------------
+			INT 0x10功能0x02
+-------------------------------------------------------------------
+描述：
+	把光标定位在选定视频页的特定行列位置
+接受参数：
+	AH			0x02
+	DH，DL		行、列值
+	BH			视频页
+返回值：
+	无
+注意：
+	在80x25模式下，DH范围0～24，DL范围0～79
+-------------------------------------------------------------------------
+
+示例：
+
+实现一个从第4行～7行，第8列～71列，显示‘A’～‘Z’的程序，共显示256个字符，使用
+BL（0～255）
+
+C 伪代码：
+cx = 0x04;
+bh = 0x00;
+ 
+dh = 0x04;
+dl = 0x08;
+al = 'A';
+ 
+for (bl = 0; bl < 256; bl++)
+{
+	print_char();
+	
+	al++;
+	if (al == 'Z')
+		al = 'A';
+	
+	dl++;
+	if (dl == 72)
+	{
+		dh++;
+		dl = 4;
+	}
+	
+	set_cursor();
+}
+汇编代码：
+# A bootsect, which print a colorful chars by BIOS INT 0x10, 0x09
+ 
+.section .text
+.global _start
+.code16
+ 
+_start:
+	movw	%cx,	%ax
+	movw	%ax,	%ds
+	movw	%ax,	%es
+ 
+	movw	$0x01,	%cx		# 字符显示重复次数
+	movb	$0x00,	%bh		# 视频页
+	
+	movb	$0x04,	%dh		# 显示起始行
+	movb	$0x08,	%dl		# 显示起始列
+	
+	movb	$'A',	%al		# 显示字符
+	movb	$0x00,	%bl		# 属性值
+ 
+1:
+	call	print_char
+	incb	%al
+	cmpb	$'Z',	%al
+	jne		2f
+	movb	$'A',	%al
+2:	
+	incb	%dl
+	cmpb	$72,	%dl
+	jne		3f
+	movb	$8,		%dl
+	incb	%dh
+3:
+	call	set_cursor
+	incb	%bl
+	cmp		$256,	%bl
+	jne		1b
+	jmp		1f
+ 
+print_char:
+	movb	$0x09,	%ah
+	int		$0x10
+	ret
+ 
+set_cursor:
+	movb	$0x02,	%ah
+	int		$0x10
+	ret
+ 
+1:
+	jmp		1b
+ 
+	.org	0x1fe,	0x90
+	.word	0xaa55
+
+结果：
+
+
+可以显式地验证色彩控制BL：
+7		6		5		4		3		2		1		0
+I       R		G		B		I		R		G		B
+闪烁    R		G		B		I		R		G		B
+
+如上图所示，7～4位为背景色，I表示高亮，RGB表示红绿蓝，若显卡支持闪烁，则位7表示是否闪烁。
+色彩混合：
+-----------------------------------------------------------
+混合的三种基色		不开启亮度位		开启亮度位
+-------------------------------------------------------
+红+绿+蓝			浅灰				白色
+绿+蓝				青色				浅青
+红+蓝				洋红				浅洋红
+红+绿				棕色				黄色
+无色彩				黑色				暗灰
+-----------------------------------------------------------
+
+3.清屏
+可以发现屏幕上有许多Bochs的打印信息，看着不爽，想办法去掉它们。
+
+利用0x06号功能，上卷全部行，则可清屏。
+
+-----------------------------------------------------------
+INT 0x10 功能0x06
+------------------------------------------------------
+描述：
+上卷窗口
+参数：
+AH 6
+AL 上卷的行数（0表示全部）
+BH 空白区域的视频属性
+CH，CL 窗口左上角的行列位置
+DH，DL 窗口右下角的行列位置
+返回值：
+无
+------------------------------------------------------------
+示例：
+
+# A bootsect, which print a colorful chars by BIOS INT 0x10, 0x09
+ 
+.section .text
+.global _start
+.code16
+ 
+_start:
+	movw	%cx,	%ax
+	movw	%ax,	%ds
+	movw	%ax,	%es
+ 
+	call	clear_screen	# 清屏
+ 
+	movw	$0x01,	%cx		# 字符显示重复次数
+	movb	$0x00,	%bh		# 视频页
+	
+	movb	$0x04,	%dh		# 显示起始行
+	movb	$0x08,	%dl		# 显示起始列
+	
+	movb	$'A',	%al		# 显示字符
+	movb	$0x00,	%bl		# 属性值
+ 
+1:
+	call	print_char		# 打印字符
+	incb	%al				# 下一个字符
+	cmpb	$'Z',	%al		# 是否该重新从‘A’开始
+	jne		2f
+	movb	$'A',	%al
+2:	
+	incb	%dl				# 下一个位置
+	cmpb	$72,	%dl		# 是否到下一行
+	jne		3f
+	movb	$8,		%dl
+	incb	%dh
+3:
+	call	set_cursor		# 设置光标位置
+	incb	%bl				# 下一种属性
+	cmp		$0,		%bl		# 是否256种属性用完
+	jne		1b
+	jmp		1f				# 结束
+ 
+clear_screen:				# 清屏函数
+	movb	$0x06,	%ah		# 功能号0x06
+	movb	$0,		%al		# 上卷全部行，即清屏
+	movb	$0,		%ch		# 左上角行
+	movb	$0,		%ch		# 左上角列	
+	movb	$24,	%dh		# 右下角行
+	movb	$79,	%dl		# 右下角列
+	movb	$0x07,	%bh		# 空白区域属性
+	int		$0x10
+	ret
+ 
+print_char:
+	movb	$0x09,	%ah		# 功能号0x09
+	int		$0x10
+	ret
+ 
+set_cursor:
+	movb	$0x02,	%ah		# 功能号0x02
+	int		$0x10
+	ret
+ 
+1:
+	jmp		1b
+ 
+	.org	0x1fe,	0x90
+	.word	0xaa55
+
+结果：
+
+
+4.直接写显存绘制字符串：
+示例：
+#---------------------------------------------------------------
+# 直接写显存显示一些文字函数：
+#	显示计算机当前工作的显示模式	
+draw_some_text:
+	# 设置ES，DS的值
+	movw	$VIDEO_SEG_TEXT,%ax
+	movw	%ax,			%es
+	xorw	%ax,			%ax
+	movw	%ax,			%ds
+ 
+ 
+	# 计算字符显示位置的显存地址(目标地址)
+	movw	$((80*TEXT_ROW+TEXT_COL) * 2),	%di
+	
+	# 源字符串地址
+	leaw	msgstr,			%si
+	
+	movb	$TEXT_COLOR,	%al		# 属性值（颜色）
+	movw	len,			%cx		# 显示的字符个数
+ 
+ 
+draw_a_char:			
+	movsb
+	stosb
+	loop	draw_a_char
+ 
+ 
+	ret
+** babyos （二）——使用BIOS以及直接写显存绘制图形
+2012年12月25日 02:00:15 孤舟钓客 阅读数：4866
+ 版权声明：本文为博主原创文章，未经博主允许不得转载。	https://blog.csdn.net/guzhou_diaoke/article/details/8428311
+注：以下程序系由相应的Intel格式汇编改编而来，略有修改，若发现bug，欢迎指正。若有问题，欢迎交流。若能帮助一二访客，幸甚。
+
+
+
+一年前仿照Skelix 写过一个简单的内核，并命名为BabyOS。当时代码大部分用的Skelix的，终究有些遗憾，所以想趁今年寒假--工作前最后一个假期，重新实现一下BabyOS，力求尽量用自己的代码实现。所以前几天学习了一下AT&T 汇编、内联汇编及C与汇编的相互调用。下一个问题就是显示，经过许多考虑，这次准备尝试一下图形界面的系统（因为看上去更有趣些），或许有点舍本求末的嫌疑，但我写个OS kernel主要是好玩，从未想有正式应用，所以怎么好玩就怎么来。
+
+昨晚研究了下BIOS INT 0x10显示字符，今晚决定不管有用没有先学习一下BIOS INT 0x10及实模式下写显存来显示图形的知识。
+
+1.绘制像素
+-----------------------------------------------------------------------
+						INT 0x10可识别的视频图形模式
+--------------------------------------------------------------------
+模式			分辨率（列*行，像素）	  颜色数
+6					640x200					2
+0DH					320x200					16
+0EH					640x350					16
+0FH					640x350					2
+10H					640x200					16
+11H					640x480					2
+12H					640x480					16
+13H					320x200					256
+6AH					800x600					16
+-----------------------------------------------------------------------
+当视频控制器处于图形模式时，INT 0x10的功能0CH在屏幕上绘制一个像素点。（功能0CH执行的相当慢）
+
+-----------------------------------------------------------------------
+						INT 0x10 功能0CH
+---------------------------------------------------------------
+描述：
+	写像素
+接受参数：
+	AH			0CH
+	AL			像素值
+	BH			视频页
+	CX			X坐标
+	DX			Y坐标
+返回值：
+	无
+注意：
+	视频显示必须处于图形模式下。像素值的范围和坐标范围与当前的图形模式有关。
+	如果AL的位7置位，新的像素同当前像素的内容进行异或运算。
+-------------------------------------------------------------------------
+
+示例，画线程序：
+# This program draws a straight line in graphics mode.
+# 2012-12-24 20:42
+# guzhoudiaoke@126.com
+ 
+.section .text
+.global _start
+.code16
+ 
+_start:
+	jmp		main
+ 
+clear_screen:				# 清屏函数
+	movb	$0x06,	%ah		# 功能号0x06
+	movb	$0,		%al		# 上卷全部行，即清屏
+	movb	$0,		%ch		# 左上角行
+	movb	$0,		%ch		# 左上角列	
+	movb	$24,	%dh		# 右下角行
+	movb	$79,	%dl		# 右下角列
+	movb	$0x07,	%bh		# 空白区域属性
+	int		$0x10
+	ret
+ 
+main:
+	movw	%cx,	%ax
+	movw	%ax,	%ds
+	movw	%ax,	%es
+ 
+	call	clear_screen	# 清屏
+ 
+	# 设置成图形模式，0x6a为800x600, 16种颜色
+	movb	$0,		%ah		# 功能号0x0
+	movb	$0x6a,	%al		# 显示模式
+	int		$0x10
+ 
+	# 画一条直线
+	movb	$0x0,	%bh		# 视频页
+	movw	$300,	%dx		# y坐标
+	movw	$100,	%cx		# x坐标
+	movb	$0x0c,	%ah		# 功能号
+	movb	$9,		%al		# 像素值（颜色）
+1:	
+	int		$0x10
+	incw	%cx				# 下一个像素
+	cmpw	$700,	%cx		# 是否到了结束位置
+	jne		1b
+ 
+1:
+	jmp		1b
+ 
+	.org	0x1fe,	0x90
+	.word	0xaa55
+
+结果：
+
+
+2.图形模式用功能0x13显示字符串
+# This program draws text and a straight line in graphics mode.
+# 2012-12-24 20:42
+# guzhoudiaoke@126.com
+ 
+.section .text
+.global _start
+.code16
+ 
+_start:
+	jmp		main
+ 
+clear_screen:				# 清屏函数
+	movb	$0x06,	%ah		# 功能号0x06
+	movb	$0,		%al		# 上卷全部行，即清屏
+	movb	$0,		%ch		# 左上角行
+	movb	$0,		%ch		# 左上角列	
+	movb	$24,	%dh		# 右下角行
+	movb	$79,	%dl		# 右下角列
+	movb	$0x07,	%bh		# 空白区域属性
+	int		$0x10
+	ret
+ 
+main:
+	movw	%cx,	%ax
+	movw	%ax,	%ds
+	movw	%ax,	%es
+ 
+	call	clear_screen	# 清屏
+ 
+	# 设置成图形模式，0x6a为800x600, 16种颜色
+	movb	$0,		%ah		# 功能号0x0
+	movb	$0x6a,	%al		# 显示模式
+	int		$0x10
+ 
+	# 显示文字
+	movw	$msgstr,%ax
+	movw	%ax,	%bp
+	movw	len,	%cx
+	movb	$0x13,	%ah
+	movb	$0,		%al
+	movb	$0x04,	%bl
+	movb	$0x0,	%bh
+	movb	$0x02,	%dh
+	movb	$0x04,	%dl
+	int		$0x10
+ 
+	# 画一条直线
+	movb	$0x0,	%bh		# 视频页
+	movw	$300,	%dx		# y坐标
+	movw	$100,	%cx		# x坐标
+	movb	$0x0c,	%ah		# 功能号
+	movb	$9,		%al		# 像素值（颜色）
+1:	
+	int		$0x10
+	incw	%cx				# 下一个像素
+	cmpw	$700,	%cx		# 是否到了结束位置
+	jne		1b
+ 
+1:
+	jmp		1b
+ 
+msgstr:
+	.asciz	"line: start(100, 300), end(700, 300)\n"
+len:
+	.int	. - msgstr
+ 
+	.org	0x1fe,	0x90
+	.word	0xaa55
+
+结果：
+
+
+3.内存映射图形
+对于内存映射图形视频模式0x13最容易使用。这时屏幕像素映射为一个字节数组，每个像素一个字节。
+共有320*200个像素，因为有256种颜色，所以每个像素一个字节。左上角像素对应地址0xa0000。
+模式0x13中，每个整数色彩值表示调色板的色彩表的索引。调色板中每个项都由三个独立的整数（0～63）构成，称为RGB值。调色板的第0项控制着屏幕的背景色。
+有两个输出端口用于控制视频调色板：送往端口0x3c8的值表示要修改的调色板表项，送往端口0x3c9的是要修改的颜色值。
+示例：
+# This program draws color pixels at mode 0x13
+# 2012-12-24 21:31
+# guzhoudiaoke@126.com
+ 
+.section .text
+.global _start
+.code16
+ 
+_start:
+	jmp		main
+ 
+#--------------------------------------------------------------
+# 清屏函数：
+#	设置屏幕背景色，调色板的索引0指代的颜色为背景色
+clear_screen:				# 清屏函数
+	movb	$0x06,	%ah		# 功能号0x06
+	movb	$0,		%al		# 上卷全部行，即清屏
+	movb	$0,		%ch		# 左上角行
+	movb	$0,		%ch		# 左上角列	
+	movb	$24,	%dh		# 右下角行
+	movb	$79,	%dl		# 右下角列
+	movb	$0x07,	%bh		# 空白区域属性
+	int		$0x10
+	ret
+ 
+#----------------------------------------------------------------
+# 设置显示模式函数
+set_video_mode:
+	movb	$0,			%ah			# 功能号0x0
+	movb	$MODE_0X13,	%al			# 显示模式
+	int		$0x10
+	ret
+ 
+#---------------------------------------------------------------
+# 显示一些文字函数：
+#	使用INT 0x10中断0x13功能，显示计算机当前工作的显示模式
+draw_some_text:
+	movw	$msg_str,	%bp			# ES：BP为字符串地址
+	movw	msg_len,	%cx			# 显示字符数
+	movb	$0x13,		%ah			# 功能号
+	movb	$0,			%al			# 显示模式
+	movb	$TEXT_COLOR,%bl			# 属性值
+	movb	$0,			%bh			# 视频页
+	movb	$TEXT_ROW,	%dh			# 显示起始行
+	movb	$TEXT_COL,	%dl			# 显示起始列
+	int		$0x10
+ 
+	ret
+ 
+#----------------------------------------------------------------
+# 设置背景颜色为深蓝色
+set_screen_bk_color:
+	movw	$VIDEO_PALLETE_PORT,	%dx
+	movb	$PA_INDEX_BACKGROUND,	%al
+	outb	%al,					%dx
+ 
+	movw	$COLOR_SELECTION_PORT,	%dx
+	movb	$0,						%al		# 红
+	outb	%al,					%dx
+	movb	$0,						%al		# 绿
+	outb	%al,					%dx
+	movb	$18,					%al		# 蓝（亮度18/63）
+	outb	%al,					%dx
+	ret
+ 
+#----------------------------------------------------------------
+# 通过写显存绘制一些像素点：
+#	首先设置调色板索引1处的颜色为白色
+#	然后通过写显存的方式，向ES：DI写入数据（PA_INDEX_WHITE）
+draw_some_pixels:
+	# 把索引1处的颜色改为白色（63，63，63）
+	movw	$VIDEO_PALLETE_PORT,	%dx
+	movb	$PA_INDEX_WHITE,		%al
+	outb	%al,					%dx
+	movw	$COLOR_SELECTION_PORT,	%dx
+	movb	$63,					%al		# 红
+	outb	%al,					%dx
+	movb	$63,					%al		# 绿
+	outb	%al,					%dx
+	movb	$63,					%al		# 蓝
+	outb	%al,					%dx
+ 
+	# 设置ES的值
+	movw	$VIDEO_SEG_GRAPHIC,		%ax
+	movw	%ax,					%es
+ 
+	# 设置要显示的像素位置的显存地址（目的地址）
+	movw	$(PIXEL_ROW_ST*320 + PIXEL_COL_ST),	%di
+	movb	$PA_INDEX_WHITE,		%al
+	movw	$PIXEL_COUNT,			%cx
+ 
+draw_a_pixel:
+	stosb
+	addw	$5,						%di
+	loop	draw_a_pixel
+ 
+	ret
+ 
+main:
+	movw	%cx,	%ax
+	movw	%ax,	%ds
+	movw	%ax,	%es
+ 
+	call	clear_screen		# 清屏
+	call	set_video_mode		# 设置显示模式
+	call	set_screen_bk_color	# 设置背景颜色
+	call	draw_some_text		# 绘制字符串
+	call	draw_some_pixels	# 绘制像素
+ 
+1:
+	jmp		1b
+ 
+# 常量定义：
+	VIDEO_SEG_TEXT		= 0xb800
+	VIDEO_SEG_GRAPHIC	= 0xa000
+ 
+	VIDEO_PALLETE_PORT	= 0x3c8
+	COLOR_SELECTION_PORT= 0x3c9
+	
+	MODE_0X13			= 0x13
+ 
+	PA_INDEX_BACKGROUND	= 0x0
+	PA_INDEX_WHITE		= 0x1
+ 
+	TEXT_ROW			= 0x01
+	TEXT_COL			= 0x00
+	TEXT_COLOR			= 0x04
+ 
+	PIXEL_ROW_ST		= 100
+	PIXEL_COL_ST		= 160-5*10
+	PIXEL_COUNT			= 20
+ 
+msg_str:
+msg_mode:
+	.asciz	"video mode: 0x13"
+	.org	msg_mode+40,		0
+msg_scr_res:
+	.asciz	"screen resolution:320x200"
+	.org	msg_scr_res+40,		0
+msg_color_num:
+	.asciz	"color num:256"
+	.org	msg_color_num+40*4,	0
+msg_babyos:
+	.asciz	"The new Baby OS will have a GUI,but now it can only draw some pixels, haha..And merry Christmas!"
+msg_len:
+	.int	. - msg_str - 1
+ 
+	.org	0x1fe,	0x90
+	.word	0xaa55
+
+结果:
+
+
+
+注释：
+
+文字是用的BIOS INT 0x10显示的，VGA的0x13模式下显示的文字为40列x25行，字符框8x8，看上去有点丑，以后再研究下超级VGA（SVGA）吧～
+** babyos （三）——利用BIOS INT 0x13读取软盘
+2012年12月26日 02:24:43 孤舟钓客 阅读数：6498
+ 版权声明：本文为博主原创文章，未经博主允许不得转载。	https://blog.csdn.net/guzhou_diaoke/article/details/8436037
+注：以下程序为原创，若发现任何BUG，欢迎指正；若有问题，欢迎交流；权利归原作者所有，若转载，请注明出处；若能有益于一二访客，幸甚。
+
+昨天学习了VGA显示的一些东西，今天准备学习一下读取软盘的知识。
+
+
+1.babyos将使用的引导过程
+1）系统上电或reset时，处理器执行一些初始化，CPU处于实模式
+2）处理器会执行一个位于已知位置处的代码，PC中这个位置位于BIOS，它保存在主板上的闪存中
+3）控制权交给BIOS后，它寻找一个可引导的设备（软盘、硬盘等），BIOS读取引导扇区（512字节）到内存0x7c00处，并跳转到该地址执行
+4）引导扇区中存放的指令可以使用BIOS中断，它将会读取软盘中内核部分到一个临时地址（如0x10000，不覆盖0x7c00处的boot代码即可）
+5）将内核前512字节（load.s, 它主要负责将内核剩余部分拷贝到load.s后面)移动到0x0处，将GDT拷贝到0x80000处。为什么不一次全部将内核放到0x0处呢？因为内核可能较大，会覆盖掉0x7c00处的代码。
+6）开启A20总线，置位CR0的bit 0，开启保护模式，加载GDT到GDTR，跳转到GDT第二项（第一项为空GDT），即load.s处执行
+7）load.s将内核剩余部分移动到load.s后面，即0x200开始的地址处。然后执行初始化代码。
+8）初始化代码，至此系统启动成功。
+
+所以首当其冲的问题就是如何读软盘。
+
+2.软盘的结构
+3.5寸1.44M 软盘，如图floppy_struct.png 所示,有两个磁头，正反两面各一个；80个磁道（即80个圆圈）；每个磁道有18个扇区；每个扇区为512字节。
+容量 = 512字节/扇区 * 2面 * 80磁道（柱面）/面 * 18扇区/磁道 = 1440 KB
+
+磁头，即面：编号[0, 1]
+80个磁道，即柱面（圆圈）：编号[0, 79]
+18个扇区：编号[1, 18]
+
+相对扇区号[0, 2879]：
+相对扇区号按照柱面排序，即从最外头的圆圈到最里头的圆圈。
+0柱面正面（即磁头号为0）的1-18扇区为0-17号相对扇区，0柱面反面（即磁头号为2）的1-18扇区为18-35号相对扇区，然后是1柱面，2柱面，直到79柱面。如下：
+0柱面，0磁头，1扇区			0
+0柱面，0磁头，2扇区			1
+……
+0柱面，0磁头，18扇区		17
+0柱面，1磁头，1扇区			18
+……
+0柱面，1磁头，18扇区		35
+1柱面，0磁头，1扇区			36
+……
+1柱面，0磁头，18扇区		53
+1柱面，1磁头，1扇区			54
+……
+1柱面，1磁头，18扇区		71
+2柱面，0磁头，1扇区			72
+……
+
+3.利用BIOS 中断读取软盘
+-------------------------------------------------------------------
+					INT 0x13，功能02
+-----------------------------------------------------------
+参数：
+	AH		02
+	AL		读取扇区数
+	CH		柱面[0, 79]
+	CL		扇区[1, 18]
+	DH		磁头[0, 1]
+	DL		驱动器（0x0 ~ 0x7f表示软盘，0x80 ~ 0xff表示硬盘）
+	ES：BX	缓冲区地址，即数据读到这里
+返回值：
+	CF = 0表示操作成功，此时AH=0，AL=传输的扇区数
+	CF = 1即carry位置位（可用JC表示跳转）表示操作失败，AH=状态代码
+--------------------------------------------------------------------
+4.相对扇区号的计算
+1）知道柱面号，磁头号，扇区号计算相对扇区号
+由上面可知0号柱面包含了相对扇区号[0,35]，1号柱面包含相对扇区号[36,71]，依次类推。
+设相对扇区号为N，则
+柱面号CH = N / 36；
+令x = N % 36；
+则x范围为[0,35]，其中[0,17] 为磁头号0， [18,35]为磁头号1.
+则磁头号DH = x / 18；
+零y = x % 18; y范围[0, 17]
+则扇区号CL = y + 1。
+
+2）知道相对扇区号，计算柱面号、磁头号、扇区号
+N = 36*CH + 18*DH + CL;
+由此式子，也可计算：
+CH = N / 36
+DH = (N % 36) / 18
+CL = (N % 36) % 18 + 1
+
+5.读取一个扇区
+实验：将一些数据写入软盘的第二个扇区（第一个扇区是引导扇区），然后用BIOS 中断读取该扇区的数据，并显示在屏幕上。然后看读取的数据是否与写入的数据相同。注：第二个扇区相对扇区号为1.
+写数据的C代码：
+/*************************************************************************
+	> File:		write_data.c
+	> Author:	孤舟钓客
+	> Mail:		guzhoudiaoke@126.com 
+	> Time:		2012年12月26日 星期三 01时20分26秒
+ ************************************************************************/
+ 
+#include <stdio.h>
+#include <string.h>
+ 
+int main()
+{
+	FILE *fp;
+	fp = fopen("./data", "wb");
+	
+	int i;
+	char *str = "baby os, guzhoudiaoke@126.com ";
+	int len = strlen(str);
+	
+	for (i = 0; i < len; i++)
+		fprintf(fp, "%c", str[i]);
+ 
+	for (i = 512-len; i > 0; i--)
+		fprintf(fp, "%c", i % 26 + 'A');
+ 
+	return 0;
+}
+ 
+汇编代码：
+# This program draws color pixels at mode 0x13
+# 2012-12-26 01:31
+# guzhoudiaoke@126.com
+ 
+.include "boot.inc"
+ 
+.section .text
+.global _start
+.code16
+ 
+_start:
+	jmp		main
+ 
+#--------------------------------------------------------------
+# 清屏函数：
+#	设置屏幕背景色，调色板的索引0指代的颜色为背景色
+clear_screen:				# 清屏函数
+	movb	$0x06,	%ah		# 功能号0x06
+	movb	$0,		%al		# 上卷全部行，即清屏
+	movb	$0,		%ch		# 左上角行
+	movb	$0,		%ch		# 左上角列	
+	movb	$24,	%dh		# 右下角行
+	movb	$79,	%dl		# 右下角列
+	movb	$0x07,	%bh		# 空白区域属性
+	int		$0x10
+	ret
+ 
+#---------------------------------------------------------------
+# 直接写显存显示一些文字函数：
+#	调用前需要设置DS：SI为源地址，DI为显示位置，
+#	CX 为显示的字符个数, AL为颜色属性
+draw_some_text:
+	# ES:DI is the dst address, DS:SI is the src address
+	movw	$VIDEO_SEG_TEXT,	%bx
+	movw	%bx,				%es
+	
+copy_a_char:
+	movsb
+	stosb
+	loop	copy_a_char
+	ret
+ 
+#----------------------------------------------------------------
+# 读取软盘第二个扇区：
+#	使用BIOS INT 0x13中断，使用前需要设置ES：BX作为缓冲区
+read_one_sect:
+	movb	$0x02,	%ah		# 功能号
+	movb	$0x01,	%al		# 读取扇区数
+	movb	$0x00,	%ch		# 柱面号
+	movb	$0x02,	%cl		# 扇区号
+	movb	$0x00,	%dh		# 磁头号
+	movb	$0x00,	%dl		# 驱动器号
+ 
+re_read:					# 若调用失败则重新调用
+	int		$0x13
+	jc		re_read			# 若进位位（CF）被置位，表示调用失败
+	
+	ret
+ 
+main:
+	movw	%cx,	%ax
+	movw	%ax,	%ds
+	movw	%ax,	%es
+ 
+	call	clear_screen		# 清屏
+ 
+	movw	$0,			%ax
+	movw	%ax,		%ds
+	leaw	msg_str,	%si
+	xorw	%di,		%di
+	movw	msg_len,	%cx
+	movb	$TEXT_COLOR,%al
+	call	draw_some_text		# 绘制字符串
+ 
+	movw	$BUFFER_SEG,%ax		
+	movw	%ax,		%es		# ES:BX 为缓冲区地址
+	xorw	%bx,		%bx
+	call	read_one_sect
+ 
+	# 下面调用绘制函数，在屏幕上显示读取的信息
+	movw	$BUFFER_SEG,%ax
+	movw	%ax,		%ds		# ds:si 为源地址
+	xorw	%si,		%si
+	movw	$160,		%di		# 第一行已经打印了msg_str，从第二行开始显示
+	movw	$512,		%cx		# 显示512个字符
+	movb	$0x01,		%al
+	call	draw_some_text
+ 
+1:
+	jmp		1b
+ 
+msg_str:
+	.asciz	"The data of the second sect of the floppy (sect 1):"
+msg_len:
+	.int	. - msg_str - 1
+ 
+	.org	0x1fe,	0x90
+	.word	0xaa55
+实验结果：
+
+
+
+
+6.读取任意扇区（给定相对扇区号）
+实验，写用C语言写入文件，该文件包含512个‘a’，512个1……512个‘z’, 循环50次，将该文件写入软盘（相对扇区号1～50*26），然后读取给定的相对扇区号的扇区，将读取的内容打印到屏幕上。并与写入的数据比较，验证读取的正确性。
+
+C代码用于写文件：
+/*************************************************************************
+	> File:		write_data.c
+	> Author:	孤舟钓客
+	> Mail:		guzhoudiaoke@126.com 
+	> Time:		2012年12月26日 星期三 20时16分45秒
+ ************************************************************************/
+ 
+#include <stdio.h>
+#include <string.h>
+ 
+int main(int argc, char *argv[])
+{
+	if (argc != 2)
+	{
+		printf("usage: ./write_data file_name");
+		exit(0);
+	}
+ 
+	FILE *fp;
+	fp = fopen(argv[1], "wb");
+	
+	int i, j, k;
+ 
+	for (i = 0; i < 50; i++)
+	{
+		for (j = 'a'; j <= 'z'; j++)
+		{
+			for (k = 0; k < 512; k++)
+			{
+				fprintf(fp, "%c", (char)j);
+			}
+		}
+	}
+ 
+	return 0;
+}
+ 
+汇编代码：
+# This program draws color pixels at mode 0x13
+# 2012-12-26 20:23:42
+# guzhoudiaoke@126.com
+ 
+.include "boot.inc"
+ 
+.section .text
+.global _start
+.code16
+ 
+_start:
+	jmp		main
+ 
+#--------------------------------------------------------------
+# 清屏函数：
+#	设置屏幕背景色，调色板的索引0指代的颜色为背景色
+clear_screen:				# 清屏函数
+	movb	$0x06,	%ah		# 功能号0x06
+	movb	$0,		%al		# 上卷全部行，即清屏
+	movb	$0,		%ch		# 左上角行
+	movb	$0,		%ch		# 左上角列	
+	movb	$24,	%dh		# 右下角行
+	movb	$79,	%dl		# 右下角列
+	movb	$0x07,	%bh		# 空白区域属性
+	int		$0x10
+	
+	ret
+ 
+#---------------------------------------------------------------
+# 直接写显存显示一些文字函数：
+#	调用前需要设置DS：SI为源地址，DI为在屏幕上的显示位置，
+#	CX 为显示的字符个数, AL为颜色属性
+draw_some_text:
+	# ES:DI is the dst address, DS:SI is the src address
+	movw	$VIDEO_SEG_TEXT,	%bx
+	movw	%bx,				%es
+	
+copy_a_char:
+	movsb
+	stosb
+	loop	copy_a_char
+ 
+	ret
+ 
+#----------------------------------------------------------------
+# 读取软盘一个扇区：
+#	使用BIOS INT 0x13中断，使用前需要设置ES：BX作为缓冲区
+#	AX为相对扇区号
+read_one_sect:
+	movb	$36,	%dl
+	divb	%dl
+	movb	%al,	%ch		# 柱面号=N / 36, 假设x = N % 36
+	
+	movb	%ah,	%al		# AL = N % 36
+	movb	$0,		%ah		# AX = N % 36
+	movb	$18,	%dl
+	divb	%dl
+	movb	%al,	%dh		# 磁头号DH = x / 18
+	movb	%ah,	%cl		
+	incb	%cl				# 扇区号CL = x % 18 + 1
+ 
+	movb	$0x00,	%dl		# 驱动器号DL
+ 
+	movb	$0x02,	%ah		# 功能号
+	movb	$0x01,	%al		# 读取扇区数
+ 
+re_read:					# 若调用失败则重新调用
+	int		$0x13
+	jc		re_read			# 若进位位（CF）被置位，表示调用失败
+	
+	ret
+ 
+#-------------------------------------------------------------------
+# 该函数读取指定的若干扇区号
+#	需要指定ES：BX作为缓冲区
+read_sects:
+	movw	$0x00,			%si		# 已经读取的扇区数
+	leaw	sect_no,		%di
+1:	
+	movw	(%di),			%ax		# 获取相对扇区号
+	addw	$2,				%di
+	
+	call	read_one_sect
+	
+ 
+	incw	%si
+	incw	%bx
+	cmpw	num_to_read,	%si
+	jne		1b
+ 
+	ret
+ 
+main:
+	movw	%cx,	%ax
+	movw	%ax,	%ds
+	movw	%ax,	%es
+ 
+	call	clear_screen		# 清屏
+ 
+	# 显示提示信息
+	movw	$0,			%ax
+	movw	%ax,		%ds
+	leaw	msg_str,	%si
+	xorw	%di,		%di
+	movw	msg_len,	%cx
+	movb	$TEXT_COLOR,%al
+	call	draw_some_text		# 绘制字符串
+ 
+	# 读取软盘
+	movw	$BUFFER_SEG,		%ax		
+	movw	%ax,				%es		# ES:BX 为缓冲区地址
+	xorw	%bx,				%bx
+	call	read_sects
+	
+# 在屏幕上显示读取的信息
+#	movw	$BUFFER_SEG,%ax
+#	movw	%ax,		%ds		# ds:si 为源地址
+#	movw	$0,			%si
+#	movw	$320,		%di		# 第一行已经打印了msg_str，从第二行开始显示
+#	movw	$512,		%cx		# 显示字符数
+#	movb	$0x01,		%al
+#	call	draw_some_text
+	
+	# 将缓冲区中前data_len个字节拷贝到data_save
+	xorw	%ax,		%ax
+	movw	%ax,		%ds
+	movw	num_to_read,%cx
+	
+	movw	$BUFFER_SEG,%ax
+	movw	%ax,		%ds
+	xorw	%ax,		%ax
+	movw	%ax,		%es
+	movw	$0,			%si
+	movw	$data_save,	%di
+ 
+	cld
+	rep		movsb
+ 
+	# 下面调用绘制函数，在屏幕上显示读取的信息
+	xorw	%ax,		%ax
+	movw	%ax,		%ds		# ds:si 为源地址
+	leaw	data_save,	%si
+	movw	$160,		%di		# 第一行已经打印了msg_str，从第二行开始显示
+	movw	num_to_read,%cx		# 显示字符数
+	movb	$0x01,		%al
+	call	draw_some_text
+ 
+1:
+	jmp		1b
+ 
+msg_str:
+	.asciz	"The data read from floppy:"
+msg_len:
+	.short	. - msg_str - 1
+ 
+sect_no:
+	# 下面的扇区数据为："babyosguzhoudiaoke"
+	# sect:	2+26*1,		1+26*2,		2+26*3,		25+26*4,	15+26*5,	19+26*6,	
+	#		7+26*11,	21+26*12,	26+26*13,	8+26*14,	15+26*15,	21+26*16,
+	#		4+26*31,	9+26*32,	1+26*33,	15+26*34,	11+26*35,	5+26*36
+	.short	28,			53,			80,			129,		145,		175	
+	.short	293,		333,		364,		372,		379,		411
+	.short	810,		841,		859,		899,		921,		941
+num_to_read:
+	.short	18
+ 
+data_save:
+	.asciz	"XXXXXXXXXXXXXXXXXX"
+	
+	.org	0x1fe,	0x90
+	.word	0xaa55
+** babyos （四）—— SVGA、VBE基础与切换到髙分辨率模式
+2012年12月29日 15:42:32 孤舟钓客 阅读数：5468
+ 版权声明：本文为博主原创文章，未经博主允许不得转载。	https://blog.csdn.net/guzhou_diaoke/article/details/8450689
+注：以下程序系原创，若有bug欢迎指正，若有问题欢迎交流，转载请注明出处。若能有益于一二访客，幸甚。
+
+
+
+1.VGA
+VGA（Video Graphics Array）即视频图形阵列，是IBM在1987年随PS/2机推出的。
+VGA主要由七大块组成：图形控制器、显示存储器、定序器、CRT控制器、数据串行发生器、属性控制器和数模转换器DAC。
+
+2.VBE
+IBM的VGA标准是显示卡发展史上的一块丰碑。但后来无法满足人们的需要，于是市场上出现了TVGA、S3系列、Cirrus Logic、ET等为首的一批显示卡，提供了比VGA分辨率更高，颜色更丰富的显示模式，又兼容VGA显示卡，它们被统称为Super VGA（SVGA）。
+各种不同的SVGA之间的显示控制各不相同，带来软件兼容性问题，为此视频电子学标准协会VESA（Video Electronics Standards Association）提出了一组附加的BIOS功能调用借口——VBE（VESA BIOS EXTENSION）标准，从而在软件接口层次上实现了各种SVGA显示卡之间的兼容性。时至今日，所有的显示卡OEM厂商都提供了符合VESA SUPER标准的扩展BIOS。通过一组INT 10H中断调用（AH=4FH），可以方便地使用VESA SVGA的扩展功能而不必了解各种显示卡的硬件细节。
+Super VGA的扩充显示能力关键取决于对较大显示存储器的寻址能力。
+各Super VGA 卡提供的分辨率远高于VGA，VESA VBE均赋予一个标准的16位模式号（实际上是9位，其他各位为标志位或留给以后扩充）。
+
+3.VBE功能调用和返回值
+VBE功能调用的共同点：
+1）AH必须等于4FH，表明是VBE标准；
+2）AL等于VBE功能号，0<= AL <= 0BH；
+3）BL等于子功能号，也可以没有子功能；
+4）调用INT 10H；
+5）返回值
+
+VBE返回值一般在AX中：
+1）AL=4FH：支持该功能
+2）AL!=4FH：不支持该功能；
+3）AH=00H：调用成功；
+4）AH=01H：调用失败；
+5）AH=02H：当前硬件配置不支持该功能；
+6）AH=03H：当前的显示模式不支持该功能；
+
+4.VBE 功能
+-----------------------------------------------------------
+				功能0x00：返回VBE信息
+------------------------------------------------------
+入口：
+	AX			0x4F00
+	ES：DI		指向VBE信息块的指针
+出口：
+	AX			VBE返回值
+------------------------------------------------------------
+ 
+-----------------------------------------------------------
+			功能0x01：返回VBE特定模式信息
+------------------------------------------------------
+入口：
+	AX			0x4F01
+	CX			模式号
+	ES：DI		指向VBE特定模式信息块的指针
+出口：
+	AX			VBE返回值
+------------------------------------------------------------
+ 
+-----------------------------------------------------------
+			功能0x02：设置VESA VBE 模式
+------------------------------------------------------
+入口：
+	AX			0x4F02
+	BX			模式号
+出口：
+	AX			VBE返回值
+------------------------------------------------------------
+当设置模式失败时，返回错误代码，一般返回AH=01H
+ 
+VESA 2.0以上增加了BX中D14，D15的位定义，完整定义如下：
+BX = 模式号
+	D0～D8：9位模式号
+	D9～D13：保留，必须为0
+	D14 = 0：使用普通的窗口页面缓存模式，用VBE功能05H切换显示页面
+		= 1：使用大的线性缓存区，其地址可从VBE功能01H的返回信息ModeInfo获得
+	D15 = 0：清除显示内存
+		= 1：不清除显示内存
+------------------------------------------------------------
+
+5.示例
+检查VBE可否使用、版本、模式0x103，并切换到模式0x103（800*600， 256色）：
+
+# 本程序测试VBE（VESA BIOS EXTENSION）显示模式,然后切换到1024*768 256色模式，
+# 并通过软盘读取Baby OS 的简单LOGO，显示在屏幕上
+# 2012-12-28 21:03
+# guzhoudiaoke@126.com
+ 
+.section .text
+.global _start
+.code16
+ 
+_start:
+	jmp		main
+ 
+#--------------------------------------------------------------
+# 清屏函数：
+#	设置屏幕背景色，调色板的索引0指代的颜色为背景色
+clear_screen:				# 清屏函数
+	movb	$0x06,	%ah		# 功能号0x06
+	movb	$0,		%al		# 上卷全部行，即清屏
+	movb	$0,		%ch		# 左上角行
+	movb	$0,		%ch		# 左上角列	
+	movb	$24,	%dh		# 右下角行
+	movb	$79,	%dl		# 右下角列
+	movb	$0x07,	%bh		# 空白区域属性
+	int		$0x10
+	ret
+ 
+#----------------------------------------------------------------
+# 设置VGA 0x13显示模式函数
+set_video_mode_0x13:
+	movb	$0,			%ah			# 功能号0x0
+	movb	$MODE_0x13,	%al			# 显示模式
+	int		$0x10
+ 
+	movw	$0x13,		video_mode
+	movw	$320,		screen_x
+	movw	$200,		screen_y
+	movl	$0xb8000,	video_ram
+	
+	ret
+ 
+#----------------------------------------------------------------
+# 设置VBE 0x103显示模式
+#	因第一次写此类程序，只考虑了可读性，未考虑效率，比如al、ah分开赋值等
+set_video_mode_vbe_0x103:
+	# 确认VBE是否存在
+	movw	$BUFFER_SEG,		%ax
+	movw	%ax,				%es
+	movw	%ax,				%ds
+	xorw	%di,				%di
+	
+	# 下面检查是否支持VBE及VBE版本
+	movb	$0x4f,				%ah			# VBE标准
+	movb	$0x00,				%al			# 功能号
+	int		$0x10
+ 
+	cmp		$0x004f,			%ax			# 若有VBE，AX应该为0x004f
+	jne		1f
+	movw	0x04(%di),			%ax
+	cmp		$0x0200,			%ax			# 若VBE版本不是2.0以上，不能使用髙分辨率
+	jb		1f
+ 
+	# 下面检查MODE_VBE_0x13的参数
+	movw	$MODE_VBE_0x103,	%cx
+	movb	$0x4f,				%ah			# 表明VBE标准
+	movb	$0x01,				%al			# 子功能号
+	int		$0x10
+ 
+	cmpb	$0x00,				%ah			# 是否调用成功
+	jne		1f
+	cmpb	$0x4f,				%al			# 是否支持该模式
+	jne		1f
+	cmpb	$8,					0x19(%di)	# 颜色是否占8bit
+	jne		1f
+	cmpb	$4,					0x1b(%si)	# 颜色的指定方法是否为4，即调色板方式
+	jne		1f
+	movw	(%di),				%ax
+	andw	$0x0080,			%ax
+	jz		1f								# AX第7个比特是否为1，该位表示线性帧缓存是否有效
+ 
+	# 下面设置模式
+	movw	$MODE_VBE_0x103,	%bx
+	addw	$0x4000,			%bx			# BX第14个比特表示是否使用大的线性缓存区，故置位
+	movb	$0x4f,				%ah			# 表示使用VBE标准
+	movb	$0x02,				%al			# 功能号，表示设置模式
+	int		$0x10
+ 
+	# 下面记录切换到的模式的一些参数信息
+	movw	$MODE_VBE_0x103,	video_mode
+	movw	0x12(%di),			%ax
+	movw	%ax,				screen_x
+	movw	0x02(%di),			%ax
+	movw	%ax,				screen_y
+	movl	0x28(%di),			%eax
+	movl	%eax,				video_ram
+	movw	$1,					%ax
+	ret
+1:
+	movw	$0,					%ax
+	ret
+ 
+	
+#----------------------------------------------------------------
+# 设置背景颜色为深蓝色
+set_screen_bk_color:
+	movw	$VIDEO_PALLETE_PORT,	%dx
+	movb	$PA_INDEX_BACKGROUND,	%al
+	outb	%al,					%dx
+ 
+	movw	$COLOR_SELECTION_PORT,	%dx
+	movb	$0,						%al		# 红
+	outb	%al,					%dx
+	movb	$0,						%al		# 绿
+	outb	%al,					%dx
+	movb	$18,					%al		# 蓝（亮度18/63）
+	outb	%al,					%dx
+	ret
+ 
+#----------------------------------------------------------------
+# 通过写显存绘制一些像素点：
+#	首先设置调色板索引1处的颜色为白色
+#	然后通过写显存的方式，向ES：DI写入数据（PA_INDEX_WHITE）
+draw_some_pixels:
+	# 把索引1处的颜色改为白色（63，63，63）
+	movw	$VIDEO_PALLETE_PORT,	%dx
+	movb	$PA_INDEX_WHITE,		%al
+	outb	%al,					%dx
+	movw	$COLOR_SELECTION_PORT,	%dx
+	movb	$63,					%al		# 红
+	outb	%al,					%dx
+	movb	$63,					%al		# 绿
+	outb	%al,					%dx
+	movb	$63,					%al		# 蓝
+	outb	%al,					%dx
+ 
+	# 设置ES的值
+	movw	$VIDEO_SEG_GRAPHIC,		%ax
+	movw	%ax,					%es
+ 
+	# 设置要显示的像素位置的显存地址（目的地址）
+	movw	$(800*5),				%di		# 从第五行像素开始开始
+	movb	$PA_INDEX_WHITE,		%al
+	movw	$800,					%cx		# 画800个连续像素即一条直线
+ 
+draw_a_pixel:
+	stosb
+	#addl	$799,					%edi
+	loop	draw_a_pixel
+ 
+	ret
+ 
+main:
+	movw	%cx,	%ax
+	movw	%ax,	%ds
+	movw	%ax,	%es
+ 
+	call	clear_screen					# 清屏
+	call	set_video_mode_vbe_0x103		# 设置显示模式
+ 
+	cmpw	$0,		%ax
+	jne		1f
+	call	set_video_mode_0x13
+1:
+	call	set_screen_bk_color	# 设置背景颜色
+	call	draw_some_pixels	# 绘制像素
+ 
+1:
+	jmp		1b
+ 
+# 常量定义：
+	VIDEO_SEG_TEXT		= 0x0e00
+	VIDEO_SEG_GRAPHIC	= 0xa000
+	BUFFER_SEG			= 0x800
+ 
+	VIDEO_PALLETE_PORT	= 0x3c8
+	COLOR_SELECTION_PORT= 0x3c9
+	
+	MODE_0x13			= 0x13
+	MODE_VBE_0x105		= 0x0105
+	MODE_VBE_0x103		= 0x0103
+ 
+	PA_INDEX_BACKGROUND	= 0x0
+	PA_INDEX_WHITE		= 0x1
+ 
+video_mode:
+	.short	0
+screen_x:
+	.short	0
+screen_y:
+	.short	0
+video_ram:
+	.long	0
+ 
+	.org	0x1fe,	0x90
+	.word	0xaa55
+
+
+
+
+
+
+ 
+
+想对作者说点什么
+在linux命令行下切换到vesa模式, 使用VBE进行绘图 02-21 这是一个在linux命令行下使用VBE进行绘图的测试程序 用libx86实现在real mode下的vesa模式设定和图形显示功能 实现在linux的保护模式, 文本命令行下切换到vesa模式，再画个 下载
+显卡的vbe标准
+阅读数 1342
+
+显卡的vbe标准 转自：http://blog.csdn.net/jcicheng/archive/2006/05/24/753649.aspx现在的显卡几乎全部支持VESA（电子视频标准协会）制定的... 博文 来自：	Alex Xu's blog
+显卡的vbe标准
+阅读数 3083
+
+现在的显卡几乎全部支持VESA（电子视频标准协会）制定的标准，该标准的英文全称为VESABIOSEXTENSION，简写VBE。这个标准经过1.0、1.1、1.2、2.0、2.0Pro、3.0的升级，... 博文 来自：	程先的专栏
+简单的VGA字符模式驱动（一）
+阅读数 2863
+
+进入保护模式后，我们就彻底与BIOS例程说再见了。BIOS下的几乎所有中断例程都是实模式的代码。int10h的显示功能自然也是如此。如今我们已经处于保护模式，因此为了在屏幕上显示东西，我们只有自己通过... 博文 来自：	满天星专栏
+babyos 
+** babyos （五）—— 跳转到保护模式并显示一个LOGO
+2012年12月31日 00:54:47 孤舟钓客 阅读数：4139
+ 版权声明：本文为博主原创文章，未经博主允许不得转载。	https://blog.csdn.net/guzhou_diaoke/article/details/8454049
+注：本程序为原创，若发现bug，万望指出，若有问题，欢迎交流，转载请指明出处。若能有助于一二访客，幸甚。
+
+
+
+以下为结果截图，显示的LOGO为小篆字体的欢迎 baby os 加载完成...几个字。
+
+
+
+
+
+保护模式
+参考资料：
+《Intel 64 and IA-32 Architectures Software Developer's Manual》
+《Orange's 一个操作系统的实现'》
+《X86/X64 体系探测及编程》
+《30天自制操作系统》
+《Linux 内核完全剖析》
+
+
+0.概述
+Intel IA 32下，CUP有两种工作模式：实模式和保护模式。打开PC，开始时CPU工作在实模式下，即此前几篇东西写的代码都是在实模式下的。
+实模式下有16位的寄存器、16位的数据总线、及20位的地址总线，1MB的寻址能力。物理地址的计算方法：
+物理地址（Physical Address） = 段值（Segment）* 16 + 偏移值(Offset) 其中段和偏移都是16位的。
+从80386开始，Intel的CPU 进入32位时代，80386有32位地址总线，寻址能力达到4GB.
+保护模式保护处理器的某些资源不能被随意访问，如处理器的硬件资源和系统的软件资源，如CR0等控制寄存器，GDT、IDT等系统级的数据结构，OS kernel的代码和数据等。
+x86的segmentation和paging即分段和分页机制是实施保护措施的手段。分段和分页实行了不同的内存管理模式和访问控制。
+
+1.权限和环境
+4个权限级别：0～3，0为最高级别。
+3种权限类型：CPL、DPL、RPL：
+1）CPL（current privilege level）：当前的权限级别，指示当前代码在哪个权限级别，CPL的值存放在CS寄存器Selector域的RPL。（另外，SS寄存器的Selector的RPL总等于CPL）。
+2）DPL（Descriptor Privilege Level）：DPL存放在描述符Descriptor（包括段描述符Segment Descriptor和门描述符Gate Descriptor）里的DPL域，它指示访问这些segment所需要的权限级别
+3）RPL（Requested Privilege Level）：存放在访问者所使用的选择子Selector的Bit0和Bit1，指示发起访问的访问者使用什么样的权限对目标进行访问。
+若CPL > DPL表示当前运行的代码的权限级别不足，不能对segment或gate进行访问。
+
+从实模式进入保护模式，段式管理机制必须建立，分页机制是可选的，当分页机制关闭时，从段式内存管理中得到的线性地址（linear address）就是物理地址。
+
+2.段式管理所使用的资源
+硬件资源：
+1）CR0、CR4
+2）GDTR、LDTR（可选）、IDTR、TR
+3）段选择子寄存器：ES、CS、SS、DS、FS、GS寄存器
+
+数据结构：
+1）GDT、LDT（可选）、IDT
+2）TSS
+3）段描述符（Segment Descriptor）：系统(System)段描述符、代码(Code)/数据(Data)段描述符
+4）门描述符（Gate Descriptor）：包括调用门（Call-gate），中断/陷阱门（Interrupt/Trap-gate）和任务门（Task-gate）
+5）选择子（Selector）：存放在段寄存器里。
+
+分段机制的内存管理职责：从逻辑地址（Logic address）转换为处理器的线性地址(Linear address).
+
+3.分页机制使用的资源：
+1）控制寄存器：CR0、CR2、CR3、CR4
+2）IA32_EFER
+页转换表：
+1）PDPT（Page Directory Pointer Table）
+2）PDT（Page Directory Table）
+3）PT（Page Table）
+
+分页机制内存管理职责：从处理器的线性地址（即virtual address）映射到物理地址。
+
+read/write的内存设备RAM（DRAM）、read-only的内存设备ROM（EPROM），及memory mapped I/O设备都可以映射到物理地址空间上。
+典型的ROM设备映射到物理地址空间的高端和低端，Video和IGD设备的buffer映射到A0000H到BFFFFH的物理地址空间，PCIe等设备映射到物理地址空间的E0000000位置上，I/O APIC 设备映射到FEC00000以上的位置，等等。
+经过页式转换形成的物理地址，可以映射到DRAM或外部存储设备Disk上。
+
+4.段式内存管理
+两方面的管理：
+1）内存管理：为地址的转换提供基础
+Linear Address = base + offset
+与实模式下的原理是一致的，实模式下段的base = selector << 4; 保护模式下，base从segment descriptor里加载而来。
+2）保护措施：对访问行为的控制
+对段的limit、type、privilege检查
+
+5.段式管理的数据结构
+1）段选择子（Segment Selector）
+RPL：bit0～bit1，请求访问者所使用的权限级别
+TI：Table Indicator，描述符表索引位,bit2, TI=0表示GDT，TI=1表示LDT。
+Index：Descriptor Index，它是Descriptor在GDT/LDT中的序号。bit3~bit15,13位，范围0～8191，即可寻址8192个descriptor。
+
+2）描述符表（Descriptor Table）
+Segment Selector用于在Descriptor Table中查找descriptor。
+描述符表由描述符表寄存器进行定位，对应GDT，LDT，IDT有GDTR，LDTR，IDTR。在IA32中，这三个寄存器都是48位，包括低16位为Limit和髙32位为Base，加载描述符表方法为lgdt, lldt, lidt。
+其中Limit用于检查Selector是否超出GDT的limit，如同数组的长度一样，判断数组是否越界。
+
+3）段描述符（Segment Descriptor）
+段描述符要么存放在描述符表里，要么被加载到段寄存器里。被加载到段寄存器后，它所描述的段变成了active状态。
+描述符有两大类：段描述符和门描述符。
+
+6.切换到保护模式
+Intel推荐的步骤：
+1）关中断，包括可屏蔽中断和不可屏蔽中断
+2）使用lgdt加载GDTR
+3）置cr0 的PE位，切换到保护模式
+4）使用far jmp/call，提供一个同级权限的CS Selector更新CS寄存器
+5）若需要使用LDT，用lldt加载LDTR
+6）使用ltr加载TR
+7）更新SS、DS寄存器
+8）使用lidt加载IDTR
+9）开中断
+
+
+程序源码：
+
+boot.s:
+
+#--------------------------------------------------------------
+# 文件：boot.s
+# 描述：1.清屏
+#		2.设置显示模式为0x103（800*600，256色）
+#		3.读取软盘，将内核加载到内存
+#		4.将内核第一个扇区(load.s)移动到内存0x0000位置
+#		5.将引导扇区中的GDT及新显示模式的一些参数移动到指定位置
+#		6.开启A20总线，置位cr0寄存器的PE位，进入保护模式
+# 时间：2012-12-29 21:47:12
+# 作者：guzhoudiaoke@126.com
+#--------------------------------------------------------------
+ 
+.include "include/kernel.inc"
+ 
+.section .text
+.global _start
+.code16
+ 
+_start:
+	jmp		main
+ 
+#---------------------------------------------------------------
+# 清屏：
+#	设置屏幕背景色，调色板的索引0指代的颜色为背景色
+#	先不考虑效率，只考虑可读性，故ah，al分开赋值
+#---------------------------------------------------------------
+clear_screen:				# 清屏函数
+	movb	$0x06,	%ah		# 功能号0x06
+	movb	$0,		%al		# 上卷全部行，即清屏
+	movb	$0,		%ch		# 左上角行
+	movb	$0,		%ch		# 左上角列	
+	movb	$24,	%dh		# 右下角行
+	movb	$79,	%dl		# 右下角列
+	movb	$0x07,	%bh		# 空白区域属性
+	int		$0x10
+	
+	ret
+ 
+#--------------------------------------------------------------------
+# 设置显示模式：
+#	1.检查VBE是否存在，即显卡是否支持VESA BIOS EXTENSION
+#	2.检查VBE版本，是否为2.0以上
+#	3.检查要设置的mode的一些参数，看是否符合要求
+#	4.设置显示模式为VBE 0x103（800*600，256色）
+#	5.记录新显示模式的一些参数
+#	6.若上面检查或设置失败，则设置显示模式为VGA 0x13（320*200，256色）
+#--------------------------------------------------------------------
+set_video_mode:
+	movw	$0x800,				%ax
+	movw	%ax,				%es
+	movw	%ax,				%ds
+	xorw	%di,				%di
+check_vbe:
+	movb	$0x4f,				%ah			# 表示使用VBE标准
+	movb	$0x00,				%al			# 功能号
+	int		$0x10
+	cmp		$0x004f,			%ax			# 若有VBE，AX应该为0x004f
+	jne		set_mode_vga_0x13
+	movw	0x04(%di),			%ax
+	cmp		$0x0200,			%ax			# 若VBE版本不是2.0以上
+	jb		set_mode_vga_0x13
+check_vbe_mode:								# 检查MODE_VBE_0x13的参数
+	movw	$VIDEO_MODE_0x103,	%cx
+	movb	$0x4f,				%ah			# 表明VBE标准
+	movb	$0x01,				%al			# 子功能号
+	int		$0x10
+	cmpb	$0x00,				%ah			# 是否调用成功
+	jne		set_mode_vga_0x13
+	cmpb	$0x4f,				%al			# 是否支持该模式
+	jne		set_mode_vga_0x13
+	cmpb	$8,					0x19(%di)	# 颜色是否占8bit
+	jne		set_mode_vga_0x13
+	cmpb	$4,					0x1b(%di)	# 颜色的指定方法为4(调色板方式)
+	jne		set_mode_vga_0x13
+	movw	(%di),				%ax
+	andw	$0x0080,			%ax
+	jz		set_mode_vga_0x13				# AX第bit7是否为1(线性帧缓存是否有效)
+set_mode_vbe:								# 下面设置模式
+	movw	$VIDEO_MODE_0x103,	%bx
+	addw	$0x4000,			%bx			# BX第14个比特表示是否使用大的线性缓存区
+	movb	$0x4f,				%ah			# 表示使用VBE标准
+	movb	$0x02,				%al			# 功能号，表示设置模式
+	int		$0x10
+save_video_mode_info:						# 记录切换到的模式的一些参数信息
+	movw	$VIDEO_MODE_0x103,	video_mode
+	movw	0x12(%di),			%ax
+	movw	%ax,				screen_x
+	movw	0x14(%di),			%ax
+	movw	%ax,				screen_y
+	movl	0x28(%di),			%eax
+	movl	%eax,				video_ram
+	movw	$1,					%ax
+	ret
+set_mode_vga_0x13:							# 若不支持VBE则设置为VGA 0x13 mode
+	movb	$0,					%ah			# 功能号0x0
+	movb	$VIDEO_MODE_0x13,	%al			# 显示模式
+	int		$0x10
+	movw	$0x13,				video_mode
+	movw	$320,				screen_x
+	movw	$200,				screen_y
+	movl	$0xb8000,			video_ram
+	
+	ret
+#----------------------------------------------------------------
+# 读取软盘一个扇区：
+#	使用BIOS INT 0x13中断读软盘，使用前需要设置ES：BX作为缓冲区
+#	AX为相对扇区号，基于相对扇区号，为学习软盘的知识，使用了由
+#	相对扇区号来读软盘的方式，也可以直接设置读取扇区数而读连续的
+#	多个扇区。但好像有不能跨越磁道、不能超过64KB等限制，要小心。
+#	柱面号、磁头号、扇区号计算公式如下：
+#	柱面号CH = N / 36，令x = N % 36
+#	磁头号DH = x / 18，扇区号CL = x % 18 + 1（因为从1开始，故加1）
+#-----------------------------------------------------------------
+read_a_sect:
+	movb	$36,	%dl
+	divb	%dl
+	movb	%al,	%ch		# 柱面号=N / 36, 假设x = N % 36
+	movb	%ah,	%al		# AL = N % 36
+	xorb	%ah,	%ah		# AH = 0, 则AX = AL = N % 36
+	movb	$18,	%dl
+	divb	%dl
+	movb	%al,	%dh		# 磁头号DH = x / 18
+	movb	%ah,	%cl		# CL = x % 18
+	incb	%cl				# 扇区号CL = x % 18 + 1
+ 
+	movb	$0x00,	%dl		# 驱动器号DL = 0，表示第一个软盘即floppya
+	movb	$0x02,	%ah		# 功能号0x02表示读软盘
+	movb	$0x01,	%al		# 读取一个扇区数
+ 
+re_read:					# 若调用失败（可能是软盘忙损坏等）则重新调用
+	int		$0x13
+	jc		re_read			# 若进位位（CF）被置位，表示调用失败
+	
+	ret
+ 
+#-------------------------------------------------------------------
+# 读取内核到内存
+#	该函数读取baby OS 的内核到内存，第一个扇区为引导扇区，需要读取
+#	的是从第二个扇区（相对扇区号1）开始的KERNEL_SECT_NUM个扇区
+#	ES：BX为缓冲区，为读取内核的临时位置0x10000
+#-------------------------------------------------------------------
+read_kernel:
+	movw	$0x1000,			%ax		
+	movw	%ax,				%es		# ES:BX 为缓冲区地址
+	xorw	%bx,				%bx
+	movw	$0x00,				%si		# 已经读取的扇区数
+	movw	$0x01,				%di		# 相对扇区号
+1:	
+	movw	%di,				%ax		# 将相对扇区号传给AX作为参数
+	call	read_a_sect
+ 
+	incw	%si
+	incw	%di
+	addw	$512,				%bx
+	cmpw	$KERNEL_SECT_NUM,	%si
+	jne		1b
+ 
+	ret
+ 
+#--------------------------------------------------------------------
+# 移动内核第一个扇区：
+#	内核从软盘读取到内存的一个临时位置，现在将第一个扇区移动到内存
+#	0x0000处，第一个扇区即load.s，它将会把内核剩余部分移动到它的后面，
+#	之所以分两次移动，是因为若内核较大，一次移动会覆盖0x7c00处的代码，
+#	即引导扇区的代码，导致运行出错。
+#--------------------------------------------------------------------
+move_first_sect_of_kernel:
+	cli									# 指明SI，DI递增
+	movw	$0x1000,			%ax
+	movw	%ax,				%ds		# DS:SI 为源地址
+	xorw	%si,				%si
+	movw	$0x00,				%ax
+	movw	%ax,				%es		# ES:DI 为目标地址
+	xorw	%di,				%di
+	movw	$512 >> 2,			%cx		# 移动512/4 次
+	rep		movsl						# 每次移动4个byte
+ 
+	ret
+ 
+ 
+#--------------------------------------------------------------------
+# 移动GDT及新显示模式的参数信息到指定位置
+#	该函数把GDT及参数信息移动到指定的位置，以便于以后使用
+#--------------------------------------------------------------------
+move_gdt_and_video_info:
+	xorw	%ax,						%ax
+	movw	%ax,						%ds		# DS:SI 为源地址
+	leaw	gdt,						%si
+	movw	$GDT_ADDR >> 4,				%ax		# 由要保存的地址来计算段基址
+	movw	%ax,						%es		# ES:DI 为目的地址
+	xorw	%di,						%di
+	movw	$GDT_SIZE+VIDEO_INFO_SIZE,	%cx		# 移动的双字个数
+	rep		movsb
+ 
+	ret
+ 
+#--------------------------------------------------------------------
+# 开启保护模式：	
+#	1.关中断
+#	2.加载GDT
+#	3.开启A20总线，置cr0的PE位，切换到保护模式
+#	4.far jmp/call，用一个CS Selector 更新CS 寄存器，开始执行新代码
+#--------------------------------------------------------------------
+enter_protected_mode:
+	cli									# 关中断
+	lgdt	gdt_ptr						# 加载GDT
+ 
+enable_a20:	
+	inb		$0x64,			%al			# 从端口0x64读取数据
+	testb	$0x02,			%al			# 测试读取数据第二个bit
+	jnz		enable_a20					# 忙等待
+ 
+	movb	$0xdf,			%al
+	outb	%al,			$0x64		# 将0xdf写入端口0x60
+ 
+	movl	%cr0,			%eax		# 读取cr0寄存器
+	orl		$0x01,			%eax		# 置位最后以为即PE位
+	movl	%eax,			%cr0		# 写cr0寄存器
+ 
+	ljmp	$CODE_SELECTOR,	$0x00		# 跳转到代码段，即load.s处开始执行
+	
+	ret 
+ 
+#--------------------------------------------------------------------
+# 开始执行后，会跳转到此处开始执行
+#--------------------------------------------------------------------	
+main:
+	movw	%cx,		%ax
+	movw	%ax,		%ds
+	movw	%ax,		%es
+	movw	%ax,		%ss
+	movw	$0x1000,	%sp
+ 
+	call	clear_screen				# 清屏
+	call	set_video_mode				# 设置显示模式
+	call	read_kernel					# 从软盘读取内核
+	call	move_first_sect_of_kernel	# 将内核第一个扇区load.s移动到0x0000
+	call	move_gdt_and_video_info		# 将GDT和显示模式信息保存起来
+	call	enter_protected_mode		# 进入包含模式
+ 
+1:
+	jmp		1b
+ 
+gdt:
+	.quad	0x0000000000000000			# 空描述符
+	.quad	0x00cf9a000000ffff			# 代码段描述符
+	.quad	0x00cf92000000ffff			# 数据段描述符
+	.quad	000000000000000000			# 留待以后使用
+	.quad	000000000000000000			# 留待以后使用
+video_mode:								# 显示模式
+	.short	0
+screen_x:								# 水平分辨率
+	.short	0 
+screen_y:								# 垂直分辨率
+	.short	0	
+video_ram:								# video_ram地址
+	.long	0
+gdt_ptr:								# 用与lgdt 加载GDT
+	.word	screen_x - gdt - 1			# GDT段限长
+	.long	GDT_ADDR					# GDT基地址
+ 
+	.org	0x1fe,	0x90				# 用nop 指令填充
+	.word	0xaa55						# 引导扇区标志
+
+load.s:
+#*************************************************************************
+#	> File:		load.s
+#	> Desc:		1.设置新的数据段等
+#				2.将内核剩余部分移动到load.s后面
+#				3.显示babyos 加载成功的Logo
+#	> Author:	孤舟钓客
+#	> Mail:		guzhoudiaoke@126.com 
+#	> Time:		2012年12月30日 星期日 22时23分55秒
+#*************************************************************************
+ 
+.include "include/kernel.inc"
+ 
+.section .text
+.global	_start
+ 
+.org	0
+ 
+_start:
+	movl	$DATA_SELECTOR,			%eax
+	movw	%ax,					%ds
+	movw	%ax,					%es
+	movw	%ax,					%fs
+	movw	%ax,					%gs
+	movw	%ax,					%ss
+	movl	$STACK_BOTTOM,			%esp
+ 
+load_lefted_kernel:
+	cld
+	movl	$0x10200,				%esi
+	movl	$0x200,					%edi
+	movl	$(KERNEL_SECT_NUM-1)<<7,%ecx
+	rep		movsl
+ 
+show_logo:
+	movl	$0xe0000000,			%edi
+	addl	$272 + 800*10,			%edi
+	movl	$0x400,					%esi
+ 
+	movl	$128,					%ebx
+	movl	$1,						%eax
+1:	
+	movl	$256,					%ecx
+set_line_mem:	
+	cmpb	$255,					(%esi)
+	je		2f
+	movb	%al,					(%edi)
+2:
+	inc		%esi
+	inc		%edi
+	loop	set_line_mem
+	
+	addl	$800-256,				%edi
+	decl	%ebx
+	jnz		1b
+ 
+3:	
+	jmp		3b
+ 
+	.org	512,	0x90	
+
+baby os 暂时使用下面的简单logo：
+** babyos （六）—— 显示ASCII字符和汉字
+2013年01月02日 20:17:12 孤舟钓客 阅读数：4227
+ 版权声明：本文为博主原创文章，未经博主允许不得转载。	https://blog.csdn.net/guzhou_diaoke/article/details/8459541
+注：本程序为原创，若发现bug，万望指出，若有问题，欢迎交流，转载请指明出处。若能有助于一二访客，幸甚。
+
+本以为要在裸机上显示个汉字是极难的，没想到亲自动手做一下，也不甚难做。“天下事有难易乎？为之，则难者亦易矣，不为，则易者亦难亦” 古人诚不我欺。
+
+参考：
+
+http://blog.sina.com.cn/s/blog_8c7bf19701010rhn.html
+
+《30天自制操作系统》
+
+
+
+0.实验结果：
+
+
+
+
+1.测试点阵字体ASC16和HZK16
+关于点阵字体ASC16、HZK16详见上述参考的博客，此一篇足矣。
+
+下面是我的测试代码（当时只为测试，随手写的）：
+
+
+/*************************************************************************
+	> File:		test.c
+	> Describe:	尝试使用点阵字体显示ASCII 码和汉字
+	> Author:	孤舟钓客
+	> Mail:		guzhoudiaoke@126.com 
+	> Time:		2013年01月01日 星期二 00时47分17秒
+ ************************************************************************/
+ 
+#include <stdio.h>
+ 
+unsigned char font_asc[4096];
+unsigned char font_hzk[267616];
+ 
+int load_asc()
+{
+	FILE *fp;
+	
+	fp = fopen("./resource/font/ASC16", "rb");
+	if (fp == NULL)
+	{
+		printf ("read ASC16 file failed!");
+		return 0;
+	}
+ 
+	fread(font_asc, 1, 4096, fp);
+	fclose(fp);
+ 
+	return 1;
+}
+ 
+int load_hzk()
+{
+	FILE *fp;
+	
+	fp = fopen("./resource/font/HZK16", "rb");
+	if (fp == NULL)
+	{
+		printf ("read HZK16 file failed!");
+		return 0;
+	}
+ 
+	fread(font_hzk, 1, 267616, fp);
+	fclose(fp);
+ 
+	return 1;
+}
+ 
+int disp_asc(unsigned char c)
+{
+	unsigned char *pc = font_asc + (int)c * 16;
+ 
+	int i, j;
+	for (i = 0; i < 16; i++)
+	{
+		unsigned char test_bit = 128;
+		for (j = 0; j < 8; j++)
+		{
+			if (*pc & test_bit)
+				printf("*");
+			else
+				printf(" ");
+ 
+			test_bit >>= 1;
+		}
+		printf("\n");
+		pc++;
+	}
+ 
+	return 1;
+}
+ 
+int disp_hzk(unsigned char ch[3])
+{
+	unsigned char qu_no	 = ch[0] - 0xa0;
+	unsigned char wei_no = ch[1] - 0xa0;
+	unsigned long offset = (94*(qu_no-1) + (wei_no-1)) * 32;
+	unsigned char *pc = font_hzk + offset;
+	
+	int i, j;
+	for (i = 0; i < 32; i++)
+	{
+		unsigned char test_bit = 128;
+		for (j = 0; j < 8; j++)
+		{
+			if (*pc & test_bit)
+				printf("@");
+			else
+				printf(" ");
+ 
+			test_bit >>= 1;
+		}
+ 
+		pc++;
+		if (i & 1)
+			printf("\n");
+	}
+	
+	return 1;
+}
+ 
+int main()
+{
+	if (!load_asc() || !load_hzk())
+	{
+		printf("load font error!");
+		return 0;
+	}
+ 
+	unsigned char c = 'G';
+	disp_asc(c);
+ 
+	unsigned char hz[3] = "钓";
+	disp_hzk(hz);
+	disp_hzk("客");
+ 
+	return 0;
+}
+结果：
+
+
+
+
+
+2.增加Babyos kernel 扇区数，将点阵字体加载到内存
+本blog只为记录开发过程，以供日后参考，所以不会每次贴所有代码，只贴新的内容，前面若有更改，会指出。
+
+在此过程中，修改两个地方：
+
+1）增加kernel扇区后发现系统不能正常运行。后又发现最多只能支持128个扇区。经bochs单步调试若干次，最后发现每读一个扇区后bx增加512，会导致读入128个扇区后溢出，也就是超出了一个段64KB寻址的能力，所以导致后面的内容覆盖前面的内容，以至于系统不能正常运行。改为每次增加es：
+
+
+read_kernel:
+	movw	$0x1000,			%si		
+	movw	%si,				%es		# ES:BX 为缓冲区地址
+	xorw	%bx,				%bx
+	movw	$0x01,				%di		# 相对扇区号
+1:	
+	movw	%di,				%ax		# 将相对扇区号传给AX作为参数
+	call	read_a_sect
+ 
+	addw	$512>>4,			%si
+	movw	%si,				%es
+	incw	%di
+	cmpw	$KERNEL_SECT_NUM+1,	%di
+	jne		1b
+ 
+	ret
+2）在init.c中简单定一个了一个指向前面的VIDEO_INFO的结构体指针，发现结果不对。调试发现结构体内存对齐问题。于是简单增加了两个显示模式的参数。
+
+video_mode:								# 显示模式
+	.short	0
+screen_x:								# 水平分辨率
+	.short	0 
+screen_y:								# 垂直分辨率
+	.short	0	
+bits_per_pixel:
+	.byte	0
+memory_model:
+	.byte	0
+video_ram:								# video_ram地址
+	.long	0
+当然，也可以修改init.c中结构体的定义中的内存对齐方式。
+
+
+3.显示
+load.s中最后调用init，进入C语言文件init.c中定义的init()函数。
+
+init.c本不应有下面的代码，但目前只为测试正确性，所以没有考虑代码的组织，后面这部分代码将会重新组织到其他文件中。
+
+
+/*************************************************************************
+	> File:		init.c
+	> Author:	孤舟钓客
+	> Describe:	主要完成初始化工作
+				0.绘制矩形，测试C直接写显存以及测试保存的VIDEO_INFO正确性
+				1.测试显示ASCI字符
+				2.测试显示汉字
+				3.显示ASCII与汉字混合的字符串
+	> Mail:		guzhoudiaoke@126.com 
+	> Time:		2013年01月01日 星期二 17时25分24秒
+ ************************************************************************/
+ 
+#include "include/types.h"
+#include "include/kernel.h"
+ 
+typedef struct struct_video_info {
+	WORD	video_mode;
+	WORD	screen_x;
+	WORD	screen_y;
+	BYTE	bits_per_pixel;
+	BYTE	memory_model;
+	BYTE*	p_vram;
+} struct_video_info;
+ 
+const struct_video_info* p_video_info = (struct_video_info*)(VIDEO_INFO_ADDR);
+COLOR current_color = 6;
+ 
+ 
+static void fill_rectangle(WORD left, WORD right, WORD top, WORD bottom)
+{
+	BYTE* p_vram = p_video_info->p_vram + top*p_video_info->screen_x;
+ 
+	int row, col;
+	for (row = top; row < bottom; row++) 
+	{
+		for (col = left; col < right; col++)
+			p_vram[col] = current_color;
+		p_vram += 800;
+	}
+}
+ 
+void display_asc(char ch, int x, int y)
+{
+	BYTE* p_asc = (BYTE*)(FONT_ASC_ADDR) + ch * 16;
+	BYTE* p_vram = p_video_info->p_vram + y*p_video_info->screen_x;
+ 
+	int i, j;
+	for (i = 0; i < 16; i++)
+	{
+		BYTE test_bit = 128;
+		BYTE* p_cur_vram = p_vram+x;
+		
+		for (j = 0; j < 8; j++)
+		{
+			if (*p_asc & test_bit)
+				p_cur_vram[j] = 3;
+			else
+				p_cur_vram[j] = 0;
+ 
+			test_bit >>= 1;
+		}
+		
+		p_asc++;
+		p_vram += p_video_info->screen_x;
+	}
+}
+ 
+void display_hzk(char ch[3], int x, int y)
+{
+	BYTE qu_no  = (BYTE)ch[0] - 0xa0;
+	BYTE wei_no = (BYTE)ch[1] - 0xa0;
+	DWORD offset= (94*(qu_no-1) + (wei_no-1)) * 32;
+ 
+	BYTE* p_hzk = (BYTE*)(FONT_HZK_ADDR) + offset;
+	BYTE* p_vram = p_video_info->p_vram + y*p_video_info->screen_x;
+ 
+	int i, j, k;
+	for (i = 0; i < 16; i++)
+	{
+		for (j = 0; j < 2; j++)
+		{
+			BYTE test_bit = 128;
+			BYTE* p_cur_vram = p_vram+x+j*8;
+		
+			for (k = 0; k < 8; k++)
+			{
+				if (*p_hzk & test_bit)
+					p_cur_vram[k] = 3;
+				else
+					p_cur_vram[k] = 0;
+ 
+				test_bit >>= 1;
+			}
+		
+			p_hzk++;
+		}
+		p_vram += p_video_info->screen_x;
+	}
+}
+ 
+void test_vram(void)
+{
+	int i;
+	BYTE* p = p_video_info->p_vram;
+	for (i = 800*15; i < 800*20; i++)
+		*(p+i) = 2;
+}
+ 
+ 
+void show_logo(int x, int y)
+{
+	BYTE* p_vram = p_video_info->p_vram + y*p_video_info->screen_x;
+	BYTE* p_logo = (BYTE*)(LOGO_ADDR);
+	
+	int i, j;
+	for (i = 0; i < LOGO_CY; i++)
+	{
+		BYTE* p_cur = p_vram + x;
+		for (j = 0; j < LOGO_CX; j++)
+		{
+			if (p_logo[j] != 0xff)
+				p_cur[j] = 4;
+			else
+				p_cur[j] = 0;
+		}
+		p_vram += p_video_info->screen_x;
+		p_logo += LOGO_CX;
+	}
+}
+ 
+/* 实现一个简陋的打印字符串程序，暂不能只能换行，过几天重写 */
+void display_string(char* str, int x, int y)
+{
+	char* p = str;
+	WORD cur_x = x, cur_y = y;
+	char hzk[3];
+	hzk[2] = '\0';
+ 
+	while (*p != '\0')
+	{
+		if ((*p & 0x80) == 0)
+		{
+			display_asc(*p, cur_x, cur_y);
+			cur_x += 8;
+			p++;
+		}
+		else
+		{
+			hzk[0] = *p++;
+			hzk[1] = *p++;
+			display_hzk(hzk, cur_x, cur_y);
+			cur_x += 16;
+		}
+	}
+}
+ 
+void init(void)
+{
+	test_vram();
+	
+	show_logo(400-128, 20);
+ 
+	fill_rectangle(256, 512, 150, 200);
+ 
+	display_asc('B', 300 + 8*0, 200);
+	display_asc('a', 300 + 8*1, 200);
+	display_asc('b', 300 + 8*2, 200);
+	display_asc('y', 300 + 8*3, 200);
+	display_asc(' ', 300 + 8*4, 200);
+	display_asc('O', 300 + 8*5, 200);
+	display_asc('S', 300 + 8*6, 200);
+ 
+	display_hzk("孤", 358 + 16*0, 200);
+	display_hzk("舟", 358 + 16*1, 200);
+	display_hzk("钓", 358 + 16*2, 200);
+	display_hzk("客", 358 + 16*3, 200);
+ 
+	display_string("测试display_string 能不能行～", 300, 220);
+ 
+	display_string("天下风云出我辈，", 300, 250+18*0);
+	display_string("一入江湖岁月催。", 300, 250+18*1);
+	display_string("皇图霸业谈笑中，", 300, 250+18*2);
+	display_string("不胜人生一场醉。", 300, 250+18*3);
+	display_string("只叹尘事如潮，",   300, 250+18*4);
+	display_string("人如水！何时归！", 300, 250+18*5);
+	display_string("提剑跨骑挥鬼蜮，", 300, 250+18*6);
+	display_string("白骨如山鸟惊飞。", 300, 250+18*7);
+	display_string("尘事如潮人如水，", 300, 250+18*8);
+	display_string("只叹江湖几人回。", 300, 250+18*9);
+	display_string("夜雨八方战孤城，", 300, 250+18*10);
+	display_string("平明剑气看刀声。", 300, 250+18*11);
+	display_string("侠骨千年寻不见，", 300, 250+18*12);
+	display_string("碧血红叶醉秋风。", 300, 250+18*13);
+}
+
+胡思乱想一下后面的任务——憧憬一下而已，实现顺序没仔细考虑，能否实现也没考虑：
+1）绘制一个简单的界面
+
+2）重新组织这些代码
+
+3）实现一个稍微优雅些的kprintf 函数
+
+4）中断和异常
+
+5）键盘、鼠标、时钟中断
+
+6）任务切换
+
+7）输入（要实现输入中文难道要自己写个输入法？？这个毕业后去搜狗干两年该容易了。。。）
+
+8）内存管理
+
+9）系统调用
+
+10）文件系统
+
+11）终端
+
+12）几个简单应用程序（写过好几次的拼图游戏一定得实现一个！）
+
+13）其他待定
+
+
+
+^_^，路曼曼其修远兮～慢慢来，Just for fun。在此中收获一份成就感，收获一份喜悦，足矣。
+** babyos （七）—— 简易图形库
+2013年01月04日 02:29:01 孤舟钓客 阅读数：3785
+ 版权声明：本文为博主原创文章，未经博主允许不得转载。	https://blog.csdn.net/guzhou_diaoke/article/details/8462880
+注：以下代码为原创，若发现bug，万望指出，若有问题，欢迎交流，转载请指明出处。若能有助于一二访客，幸甚。
+
+与裸机做斗争真是其乐无穷啊～～
+
+终究是能画点、线、矩形、圆、填充矩形、字符、汉字、LOGO了。且做了目前我能做到的最好的代码组织。下一步就是用这些函数实现一个简单的界面。
+
+
+
+
+
+
+
+整理绘图功能的函数，组织成一个简易的图形库
+
+1.绘制点直线、圆、矩形、填充矩形的函数放到graphic.c中
+
+/*************************************************************************
+	> File:		graphics.c
+	> Describe:      实现基本绘图功能
+	> Author:	       孤舟钓客
+	> Mail:		guzhoudiaoke@126.com 
+	> Time:		2013年01月02日 星期三 22时21分31秒
+ ************************************************************************/
+ 
+#include <graphics.h>
+#include <kernel.h>
+#include <math.h>
+ 
+static video_info_t* p_video_info = (video_info_t*)(VIDEO_INFO_ADDR);
+static u32 screen_cx = 0;
+static u32 screen_cy = 0;
+ 
+static color8 current_color = 0;
+static u32 current_x = 0;
+static u32 current_y = 0;
+ 
+static u8* p_vram_base;
+ 
+BOOL init_video()
+{
+	screen_cx = p_video_info->resolution_cx;
+	screen_cy = p_video_info->resolution_cy;
+ 
+	current_x = 0;
+	current_y = 0;
+	current_color = 0;
+ 
+	p_vram_base = p_video_info->p_vram_base;
+ 
+	return TRUE;
+}
+ 
+static BOOL set_color8(color8 color)
+{
+	current_color = color;
+	return TRUE;
+}
+ 
+BOOL set_pixel(s32 x, s32 y)
+{
+	/* 超出屏幕范围 */
+	if (x < 0 || y < 0 || (u32)x >= screen_cx || (u32)y >= screen_cy)
+		return FALSE;
+	
+	*(p_vram_base + y*screen_cx + x) = current_color;
+ 
+	return TRUE;
+}
+ 
+/* Bresenham line algorithm */
+static BOOL bresenham_line(s32 start_x, s32 start_y, s32 end_x, s32 end_y)
+{
+	s32 dx, dy, x, y, p, k;
+ 
+	dx = abs(end_x - start_x);
+	dy = abs(end_y - start_y);
+	k  = (end_x-start_x) * (end_y-start_y);
+ 
+	if (dx >= dy)
+	{
+		p = 2*dy - dx;
+		if (start_x < end_x)
+		{
+			x = start_x;
+			y = start_y;
+		}
+		else
+		{
+			y = end_y;
+			x = end_x;
+			end_x = start_x;
+		}
+ 
+		while (x < end_x)
+		{
+			set_pixel(x, y);
+			++x;
+ 
+			if (p < 0)
+				p += 2*dy;
+			else
+			{
+				if (k > 0) ++y;
+				else --y;
+ 
+				p += 2*dy - 2*dx;
+			}
+		}
+	}
+	else
+	{
+		p = 2*dx - dy;
+		if (start_y < end_y)
+		{
+			x = start_x;
+			y = start_y;
+		}
+		else
+		{
+			y = end_y;
+			x = end_x;
+			end_y = start_y;
+		}
+ 
+		while (y < end_y)
+		{
+			set_pixel(x, y);
+			++y;
+ 
+			if (p < 0)
+				p += 2*dx;
+			else
+			{
+				if (k > 0) ++x;
+				else --x;
+ 
+				p += 2*dx - 2*dy;
+			}
+		}
+	}
+ 
+	return TRUE;
+}
+ 
+BOOL draw_line(s32 start_x, s32 start_y, s32 end_x, s32 end_y)
+{
+	return bresenham_line(start_x, start_y, end_x, end_y);
+}
+ 
+BOOL draw_circle(s32 center_x, s32 center_y, u32 radius)
+{
+	s32 x, y, p;
+	x = 0, y = radius, p = 1-radius;
+ 
+	while (x < y)
+	{
+		set_pixel(center_x + x, center_y + y);
+		set_pixel(center_x - x, center_y + y);
+		set_pixel(center_x - x, center_y - y);
+		set_pixel(center_x + x, center_y - y);
+		set_pixel(center_x + y, center_y + x);
+		set_pixel(center_x - y, center_y + x);
+		set_pixel(center_x - y, center_y - x);
+		set_pixel(center_x + y, center_y - x);
+ 
+		x++;
+		if (p < 0) p += 2*x + 1;
+		else
+		{
+			y--;
+			p += 2*x - 2*y + 1;
+		}
+	}
+ 
+	return TRUE;
+}
+ 
+BOOL draw_rectangle(s32 left, s32 top, u32 width, u32 height)
+{
+	u8* p_vram1;
+	u8* p_vram2;
+	s32 right, bottom, x, y;
+	
+	right = left + width;
+	bottom = top + height;
+ 
+	if (left < 0) left = 0;
+	if (top  < 0) top  = 0;
+	if ((u32)left >= screen_cx || (u32)top >= screen_cy)
+		return FALSE;
+ 
+	if (right < 0 || bottom < 0)
+		return FALSE;
+ 
+	if ((u32)right  > screen_cx) right  = screen_cx;
+	if ((u32)bottom > screen_cy) bottom = screen_cy;
+ 
+	p_vram1 = p_vram_base + top*screen_cx + left;
+	p_vram2 = p_vram_base + top*screen_cx + right;
+	for (y = top; y < bottom; y++) 
+	{
+		*p_vram1 = current_color;
+		*p_vram2 = current_color;
+ 
+		p_vram1 += screen_cx;
+		p_vram2 += screen_cx;
+	}
+ 
+	p_vram1 = p_vram_base + top*screen_cx + left;
+	p_vram2 = p_vram_base + bottom*screen_cx + left;
+	for (x = left; x < right; x++)
+	{
+		*(p_vram1++) = current_color;
+		*(p_vram2++) = current_color;
+	}
+	
+	return TRUE;
+}
+ 
+BOOL fill_rectangle(s32 left, s32 top, u32 width, u32 height)
+{
+	u8* p_vram;
+	s32 right, bottom, x, y;
+	
+	right	= left + width;
+	bottom	= top  + height;
+ 
+	/* 超出边界，截取在屏幕中的部分 */
+	if (left < 0) left = 0;
+	if (top  < 0)  top = 0;
+ 
+	/* 完全在屏幕外 */
+	if ((u32)left >= screen_cx || (u32)top >= screen_cy)
+		return FALSE;
+ 
+	/* 完全在屏幕外 */
+	if (right < 0 || bottom < 0)
+		return FALSE;
+ 
+	/* 超出边界，截取在屏幕中的部分 */
+	if ((u32)right  > screen_cx)  right = screen_cx;
+	if ((u32)bottom > screen_cy) bottom = screen_cy;
+ 
+	p_vram = p_vram_base + top*screen_cx;
+ 
+	for (y = top; y < bottom; y++) 
+	{
+		for (x = left; x < right; x++)
+			p_vram[x] = current_color;
+		
+		p_vram += screen_cx;
+	}
+ 
+	return TRUE;
+}
+ 
+ 
+BOOL set_color(color8 color)
+{
+	return set_color8(color);
+}
+
+2.绘制字符和汉字的函数放到font.c中
+
+/*************************************************************************
+	> File:		font.c
+	> Author:	孤舟钓客
+	> Mail:		guzhoudiaoke@126.com 
+	> Time:		2013年01月03日 星期四 16时40分52秒
+ ************************************************************************/
+ 
+#include <font.h>
+#include <kernel.h>
+#include <graphics.h>
+ 
+static u8* p_font_asc16_base = (u8*)(FONT_ASC_ADDR);
+static u8* p_font_hzk16_base = (u8*)(FONT_HZK_ADDR);
+ 
+static BOOL draw_asc16(char ch, s32 left, s32 top)
+{
+	u8* p_asc;
+	s32 x, y;
+ 
+	p_asc = p_font_asc16_base + ch * FONT_ASC16_SIZE;
+	for (y = 0; y < FONT_ASC16_HEIGHT; y++)
+	{
+		u8 test_bit = 1 << 7;
+		
+		for (x = 0; x < FONT_ASC16_WIDTH; x++)
+		{
+			if (*p_asc & test_bit)
+				set_pixel(left+x, top+y);
+ 
+			test_bit >>= 1;
+		}
+		
+		p_asc++;
+	}
+ 
+	return TRUE;
+}
+ 
+static BOOL draw_hzk16(char ch[3], s32 left, s32 top)
+{
+	u8 qu_no, wei_no;
+	u32 offset;
+	s32 y, x;
+	u8* p_hzk;
+ 
+	qu_no  = (u8)ch[0] - 0xa0;
+	wei_no = (u8)ch[1] - 0xa0;
+	offset= (94*(qu_no-1) + (wei_no-1)) * FONT_HZK16_SIZE;
+	p_hzk = p_font_hzk16_base + offset;
+ 
+	for (y = 0; y < FONT_HZK16_HEIGHT; y++)
+	{
+		u8 test_bit = 1 << 7;
+		
+		for (x = 0; x < FONT_HZK16_WIDTH; x++)
+		{
+			if (*(p_hzk + (x & 8 ? 1 : 0)) & test_bit)
+				set_pixel(left+x, top+y);	
+ 
+			if ((test_bit >>= 1) == 0)
+				test_bit = 1 << 7;
+		}
+		p_hzk += 2;
+	}
+ 
+	return TRUE;
+}
+ 
+/* 实现一个简陋的打印字符串程序 */
+static BOOL draw_string16(char* str, s32 left, s32 top)
+{
+	char* p = str;
+	char hzk[3];
+	s32 cur_x, cur_y;
+ 
+	hzk[2] = '\0';
+	cur_x = left;
+	cur_y = top;
+ 
+	while (*p != '\0')
+	{
+		if ((*p & 0x80) == 0)
+		{
+			draw_asc16(*p, cur_x, cur_y);
+			cur_x += 8;
+			p++;
+		}
+		else
+		{
+			hzk[0] = *p++;
+			hzk[1] = *p++;
+			draw_hzk16(hzk, cur_x, cur_y);
+			cur_x += 16;
+		}
+	}
+ 
+	return TRUE;
+}
+ 
+BOOL draw_asc(char ch, int left, int top)
+{
+	return draw_asc16(ch, left, top);
+}
+ 
+BOOL draw_hzk(char ch[3], int left, int top)
+{
+	return draw_hzk16(ch, left, top);
+}
+ 
+BOOL draw_string(char *str, int left, int top)
+{
+	return draw_string16(str, left, top);
+}
+
+3.绘制logo的函数放到logo.c中
+
+/*************************************************************************
+	> File:		logo.c
+	> Describe: 显示那个可爱的小篆字体的LOGO	
+	> Author:	孤舟钓客
+	> Mail:		guzhoudiaoke@126.com 
+	> Time:		2013年01月03日 星期四 17时05分11秒
+ ************************************************************************/
+ 
+#include <logo.h>
+#include <kernel.h>
+#include <graphics.h>
+ 
+ 
+static u8* p_logo_base = (u8*)(LOGO_ADDR);
+static u32 logo_cx = (u32)(LOGO_CX);
+static u32 logo_cy = (u32)(LOGO_CY);
+ 
+ 
+BOOL draw_logo(s32 left, s32 top)
+{
+	u32 y, x;
+	u8* p_logo = p_logo_base;
+ 
+	for (y = 0; y < logo_cy; y++)
+	{
+		for (x = 0; x < logo_cx; x++)
+		{
+			if (p_logo[x] != 0xff)
+				set_pixel(left+x, top+y);
+		}
+		p_logo += logo_cx;
+	}
+ 
+	return TRUE;
+}
+** babyos （八）—— 简单图形界面
+2013年01月05日 18:20:40 孤舟钓客 阅读数：3062
+ 版权声明：本文为博主原创文章，未经博主允许不得转载。	https://blog.csdn.net/guzhou_diaoke/article/details/8470023
+注：以下代码为原创，若发现bug，万望指出，若有问题，欢迎交流，转载请指明出处。若能有助于一二访客，幸甚。
+
+欢迎关注babyos 的成长历程和宝贝计划：https://github.com/guzhoudiaoke/babyos/wiki
+
+
+
+前面已经实现了一个简易的图形库，那么实现一个简单的图形界面是理所当然的事。
+
+babyos走的是好玩、可爱、漂亮的路线，怎么好玩怎么来，怎么漂亮怎么来，所以这个图形界面还是着实费了一番功夫的，属于高级山寨。虽然没有什么技术含量，但画面着实焕然一新，也算作一点进步。
+
+系统已经定名为babyos，翻译作宝贝/宝宝操作系统，则她画出来的界面叫做“涂鸦”也是情理之中的事儿，当然这是高级山寨涂鸦喽～
+
+图形界面暂时定名为graffiti，译作“涂鸦”，虽然是髙仿真Ubuntu Gnome的一种情景模式，但实现方法与它毫无关系（当然是水的多了）。
+
+注：此前babyos已经切换到800x600 24bit颜色显示模式——不为别的，只为与《30天》不同，或者内心深处希望比鬼子做的好一点，所以界面是髙仿真linux以与《30天》低仿真windows做比较～o(∩∩)o...哈哈
+
+实验结果：
+
+
+
+
+
+主要代码：
+
+
+/*************************************************************************
+	> File:		graffiti.c
+	> Describe: 系统叫baby，其界面名曰graffiti，取儿童涂鸦之意
+	> Author:	孤舟钓客
+	> Mail:		guzhoudiaoke@126.com 
+	> Time:		2013年01月05日 星期六 00时29分31秒
+ ************************************************************************/
+#include <graffiti.h>
+ 
+static u32 screen_cx;
+static u32 screen_cy;
+ 
+ 
+static BOOL init_graffiti()
+{
+	screen_cx = get_screen_width();
+	screen_cy = get_screen_height();
+ 
+	return TRUE;
+}
+ 
+ 
+/* 绘制桌面背景 */
+BOOL draw_background()
+{
+	color24 old_color = set_color(RGB(background_color.r, background_color.g, background_color.b));
+	fill_rectangle(0, 0, screen_cx, screen_cy);
+	set_color(old_color);
+ 
+	return TRUE;
+}
+ 
+/* position 暂时只支持0或1，0表示在屏幕最上面画，1表示在最下面 */
+BOOL draw_panel(u8 position)
+{
+	s32 top, bottom, y;
+	color24 old_color;
+ 
+	if (position == 0)
+	{
+		top = 0; bottom = PANEL_HEIGHT;
+	}
+	else
+	{
+		bottom = screen_cy; top = bottom-PANEL_HEIGHT;
+	}
+ 
+	old_color = get_current_color();
+	
+	for (y = top; y < bottom; y++)
+	{
+		set_color_t(panel_color[y-top]);
+		fill_rectangle(0, y, screen_cx, 1);
+	}
+	
+	set_color(old_color);
+ 
+	return position;
+}
+ 
+/* 绘制一个窗口 */
+BOOL draw_window(s32 left, s32 top, u32 width, u32 height)
+{
+	s32 right, bottom, y, i;
+	color24 old_color;
+ 
+	if (width < MIN_WINDOW_WIDTH) 
+		width = MIN_WINDOW_WIDTH;
+ 
+	right = left + width;
+	bottom = top + height + W_HEAD_HEIGHT;
+	
+	y = top;
+	i = 0;
+	old_color = get_current_color();
+	
+	/* 窗体头 */
+	for (i = 0; i < W_ROUND_RECT_HEIGHT; i++)
+	{
+		set_color_t(w_head_color[i]);
+		fill_rectangle(left+w_round_rect_width[i], y++, width-w_round_rect_width[i]*2, 1);
+	}
+		
+	set_color_t(w_head_color[0]);
+	for (i = 0; i < W_ROUND_RECT_POINT_NUM; i++)
+	{
+		set_pixel(left+w_round_rect_border_points[i].x, top+w_round_rect_border_points[i].y);
+		set_pixel(right-w_round_rect_border_points[i].x-1, top+w_round_rect_border_points[i].y);
+	}
+ 
+	for (; i < W_HEAD_HEIGHT; i++)
+	{
+		set_color_t(w_head_color[i]);
+		fill_rectangle(left, y++, width, 1);
+	}
+ 
+	/* 窗体 */
+	set_color_t(w_boday_color);
+	fill_rectangle(left, top+W_HEAD_HEIGHT, width, height-W_ROUND_RECT_HEIGHT);
+ 
+	y = bottom - 1;
+	for (i = 0; i < W_ROUND_RECT_HEIGHT; i++)
+	{
+		fill_rectangle(left+w_round_rect_width[i], y--, width-w_round_rect_width[i]*2, 1);
+	}
+ 
+	set_color_t(w_bottom_color);
+	for (i = 0; i < W_ROUND_RECT_POINT_NUM; i++)
+	{
+		set_pixel(left+w_round_rect_border_points[i].x, bottom-w_round_rect_border_points[i].y-1);
+		set_pixel(right-w_round_rect_border_points[i].x-1, bottom-w_round_rect_border_points[i].y-1);
+	}
+ 
+	/* 窗体边框 */
+	set_color_t(w_bottom_color);
+	fill_rectangle(left+w_round_rect_border_points[0].x, bottom-1, width-w_round_rect_border_points[0].x*2, 1);
+ 
+	for (i = 0; i < W_BORDER_WIDTH; i++)
+	{
+		set_color_t(w_border_color[i]);
+		fill_rectangle(left+i, top+W_HEAD_HEIGHT, 1, height-W_ROUND_RECT_HEIGHT);
+		fill_rectangle(right-i-1, top+W_HEAD_HEIGHT, 1, height-W_ROUND_RECT_HEIGHT);
+	}
+ 
+	/* 关闭按钮 */
+ 
+	set_color(old_color);
+	
+	return TRUE;
+}
+ 
+ 
+/* 安装graffiti界面 */
+BOOL install_graffiti()
+{
+	init_graffiti();
+	
+	draw_background();
+	
+	draw_panel(0);
+	draw_panel(1);
+ 
+	return TRUE;
+** babyos （九） —— 显示bitmap
+2013年01月06日 16:09:11 孤舟钓客 阅读数：2327 标签： babyos Bitmap bitmap BitMap  更多
+个人分类： BabyOS
+ 版权声明：本文为博主原创文章，未经博主允许不得转载。	https://blog.csdn.net/guzhou_diaoke/article/details/8473446
+注：以下代码为原创，若发现bug，万望指出，若有问题，欢迎交流，转载请指明出处。若能有助于一二访客，幸甚。
+
+
+
+上次完成了基本图形界面的绘制，但没有关闭、最小化、最大化按钮，终究是不爽，而试着用直线、矩形绘制了一个，感觉不好看，于是就到了让baby能够绘制bitmap图像的时候了～
+
+结果如下，就是把我现在用的Ubuntu Gnome的一种主题模式的三个按钮截了个图，加载到内存，然后绘制在窗口上了。
+
+
+
+
+
+实现方法也不太难，就是写的时候只考虑了前两个结构体的内存对齐，没有考虑bitmap_t的内存对齐，于是不能绘制，bochs调试一番未果，于是实现了一个在屏幕上绘制16进制数的简单代码，用于调试，打印变量信息若干，才发现问题。
+
+注：只考虑了24位位图、倒立的。
+
+
+/*************************************************************************
+	> File:		bitmap.c
+	> Describe:	识别和显示bmp图像
+	> Author:	孤舟钓客
+	> Mail:		guzhoudiaoke@126.com 
+	> Time:		2013年01月05日 星期六 22时57分16秒
+ ************************************************************************/
+ 
+#include <bitmap.h>
+#include <graphics.h>
+#include <font.h>
+#include <math.h>
+ 
+BOOL draw_bitmap24(bitmap_t* p_bmp, s32 dst_x, s32 dst_y, u32 width, u32 height, s32 src_x, s32 src_y)
+{
+	s32 x, y, bmp_cx, bmp_cy, bmp_x, bmp_y, line_byte_count;
+	color24 old_color;
+ 
+	u8* p_bmp_data_base = (u8*)p_bmp + sizeof(p_bmp->file_head) + sizeof(p_bmp->info_head);
+	u8* p_data;
+ 
+	/* 不是24位位图 */
+	if (p_bmp->info_head.bi_bit_count != 24)
+		return FALSE;
+ 
+	/* 图像的宽、髙 */
+	bmp_cx = abs(p_bmp->info_head.bi_width);
+	bmp_cy = abs(p_bmp->info_head.bi_height);
+ 
+	if (src_x > bmp_cx || src_y > bmp_cy || (s32)(src_x+width) < 0 || (s32)(src_y+height) < 0)
+		return FALSE;
+ 
+	line_byte_count = (((bmp_cx*p_bmp->info_head.bi_bit_count + 31) >> 5) << 2);
+	old_color = get_current_color();
+ 
+	for (y = dst_y; y < (s32)(dst_y + height); y++)
+	{
+		bmp_y = src_y + height - 1 + dst_y - y;
+		
+		if (bmp_y < 0) continue;
+		if (bmp_y == bmp_cy) break;
+ 
+		for (x = dst_x; x < (s32)(dst_x + width); x++)
+		{
+			bmp_x = src_x + x - dst_x;
+			if (bmp_x < 0) continue;
+			if (bmp_x == bmp_cx) break;
+			
+			p_data = p_bmp_data_base + line_byte_count*bmp_y + 3*bmp_x;
+ 
+			set_color(RGB(p_data[2], p_data[1], p_data[0]));
+			set_pixel(x, y);
+		}
+	}
+ 
+	set_color(old_color);
+ 
+	return TRUE;
+}
+ 
+BOOL draw_bitmap(bitmap_t* p_bmp, s32 dst_x, s32 dst_y, u32 width, u32 height, s32 src_x, s32 src_y)
+{
+	return draw_bitmap24(p_bmp, dst_x, dst_y, width, height, src_x, src_y);
+}
+** babyos （十） —— 通过IO端口读取硬盘扇区
+2013年01月07日 23:05:58 孤舟钓客 阅读数：7346
+ 版权声明：本文为博主原创文章，未经博主允许不得转载。	https://blog.csdn.net/guzhou_diaoke/article/details/8479033
+注：以下代码为原创，若发现bug，万望指出，若有问题，欢迎交流，转载请指明出处。若能有助于一二访客，幸甚。
+
+欢迎关注babyos 的成长历程和宝贝计划：https://github.com/guzhoudiaoke/babyos/wiki
+
+
+
+上次实现了显示bitmap的功能，却只显示了几个按钮，很不爽，但引导软盘只有1.44M，实在装不下太大的图片。而要想做个桌面背景，需要读取800x600的图片。所以是时候让baby 学会读硬盘扇区了。当然只是通过IO端口读取硬盘扇区，而不会设计文件的概念。
+
+
+
+1.硬盘长什么样
+硬盘拆开盖，如下图所示：
+
+
+2.物理结构
+一个简单的物理模型：
+
+
+3.磁头、磁道、柱面、扇区
+1）磁头：如上图所示，它是硬盘中最贵的部分了，读写操作就靠它，它通过感应旋转的盘片上磁场的变化来读取数据，通过改变盘片上的磁场来写入数据。磁头从0开始编号。
+一个硬盘有很多个盘片（一个盘片有两个盘面），它们垂直排列成圆柱，所以也有很多个磁头来读写不同的盘面。
+2）磁道：硬盘转动时磁头是不动的，动的是盘片。则磁头会在盘片上划出一个个圆形轨迹，这些轨迹就是磁道。磁道由外向内编号，编号从0开始。
+3）柱面：硬盘有很多个盘片，从上到下排成柱状，不同盘片，相同磁道，组成的就叫柱面（cylinder）。
+
+柱面从0开始编号，柱面号即磁道号。
+4）扇区：磁盘上每个磁道被等分成若干个弧段，这些弧段就是扇区。
+一个扇区通常512byte，扇区从1开始编号。
+
+
+
+4.寻址
+如何找到我们想要的数据呢？即如何在硬盘上找到任意一个物理地址。
+1）CHS模式（Cylinder/Head/Sector）
+就是给定柱面号、磁头号、扇区号。柱面号给定在哪一个圆环上，磁头号指定了在哪一层，扇区号指定了圆上的位置，于是就定位到了一个准确的扇区了。
+2）LBA（Logical Block Addressing，逻辑块寻址）
+就是只给一个逻辑号码，根据硬盘的柱面数、每个柱面的磁头数、每个磁道的扇区数来计算柱面号、磁头号、扇区号。
+编号方法：
+按照柱面、磁头、扇区顺序来编，即编完0号柱面0号磁头所在磁道的若干扇区后，再编0号柱面1号磁头所在磁道的所以扇区，编完0号柱面的所有磁头后再编1号柱面。
+
+3）相互转换
+LBA = （柱面号 * 一个柱面的磁头数 + 磁头号） * 一个磁道上的扇区数 + （扇区号-1）
+
+柱面号 = LBA / （一个柱面的磁头数 * 每个磁道扇区数）
+令   x = LBA % （一个柱面的磁头数 * 每个磁道扇区数）
+磁头号 = x / 每个磁道上的扇区数
+扇区号 = x % 每个磁道上的扇区数 + 1
+
+5.硬盘操作
+CPU与外设、存储器的连接和数据交换都需要通过接口设备来实现。
+每个连接到I/O总线上的设备都由自己的I/O地址集，即所谓的I/O端口（I/O port）。
+每个设备的I/O端口都被组织成一组专用的寄存器，CPU可给控制寄存器发命令对设备进行控制、从状态寄存器读取设备状态、可以向输出寄存器写入数据来把数据输出到设备、可通过读取输入寄存器的内容来从设备取得数据。
+总之就是通过读写端口来控制设备。
+
+一个普通的PC主板上通常有两个IDE口，分别对应两个IDE通道:primary和secondary有时也成IDE0和IDE1。
+每个IDE通道又能连接两个设备，称为主设备（Master）和从设备（Slave），对不同的IDE通道的访问是通过I/O端口来区分的。
+IDE（integrated drive electronics）即电子集成驱动器，主要接硬盘和光驱。
+接到主设备上的硬盘称为0号硬盘。
+
+与0号硬盘有关的I/O端口：
+1F0H　　 0号硬盘数据寄存器
+1F1H　　 0号硬盘错误寄存器（读时）、0号硬盘Features寄存器（写时）
+1F2H　　 0号硬盘数据扇区计数
+
+1F3H　　 0号硬盘扇区数
+1F4H　　 0号硬盘柱面（低字节）
+1F5H　　 0号硬盘柱面（高字节）
+1F6H　　 0号硬盘驱动器/磁头寄存器
+
+1F7H　　 0号硬盘状态寄存器（读时）、0号硬盘命令寄存器（写时）
+
+注：下图来自于渊《Orange‘s 一个操作系统的实现》，他使用的是LBA方式，babyos暂时使用CHS方式，故bit0～bit3表示磁头号，bit4为驱动器号为0，bit6为0，表示使用CHS方式。
+/*	
+|  7  |  6  |  5  |  4  |  3  |  2  |  1  |  0  |
++-----+-----+-----+-----+-----+-----+-----+-----+
+|  1  |  L  |  1  | DRV | HS3 | HS2 | HS1 | HS0 |
++-----+-----+-----+-----+-----+-----+-----+-----+
+		|           |   \_____________________/
+		|           |              |
+		|           |              `------------ If L=0, Head Select.
+        |           |                                   These four bits select the head number.
+        |           |                                   HS0 is the least significant.
+        |           |                            If L=1, HS0 through HS3 contain bit 24-27 of the LBA.
+        |           `--------------------------- Drive. When DRV=0, drive 0 (master) is selected. 
+        |                                               When DRV=1, drive 1 (slave) is selected.
+        `--------------------------------------- LBA mode. This bit selects the mode of operation.
+                                                        When L=0, addressing is by 'CHS' mode.
+                                                        When L=1, addressing is by 'LBA' mode.
+*/
+
+即：
+可以从端口0x1F0读取数据；
+若发生错误可以从0x1F1读取错误；
+若要从硬盘读数据可以从0x1F2指定读取的扇区数，0x1F3、0x1F4、0x1F5、0x1F6指定CHS（也可以是LBA，此处暂时不研究）
+可以从0x1F7读取硬盘状态或向硬盘发送命令。
+
+接口控制方式：
+1）程序查询方式：CPU通过I/O指令询问指定外设当前状态，如果外设准备就绪，进行操作，否则CPU等待，循环查询。
+2）中断处理方式：外设数据交换准备就绪，向CPU提出服务请求。
+3）DMA（直接存储器存取）：采用一个专门的控制器来控制内存与外设直接的数据交流，无须CPU介入。
+
+下面将要使用的方式是程序查询方式，因为babyos 还没有实现中断。
+
+6.读取若干个扇区
+现在只学习最简单的硬盘操作——从硬盘读取若干个扇区，其他功能以后学习文件系统时再研究。
+步骤：
+1）通过状态寄存器查询硬盘状态，看是否空闲，若忙，则等待
+2）把读取扇区的个数、CHS写入相应端口
+3）通过命令寄存器向硬盘发送读命令
+4）从数据寄存器读取数据
+
+注：
+babyos目前只想从硬盘读若干个扇区，不想实现高级的硬盘操作功能和文件系统；
+只考虑主硬盘；
+暂时使用CHS方式，但会实现一个LBA到CHS的转换方法；
+/*************************************************************************
+	> File:		harddisk.c
+	> Describe: 实现基本硬盘操作功能
+	> Author:	孤舟钓客
+	> Mail:		guzhoudiaoke@126.com 
+	> Time:		2013年01月06日 星期日 17时40分32秒
+ ************************************************************************/
+ 
+#include <harddisk.h>
+#include <io.h>
+#include <font.h>
+#include <graphics.h>
+ 
+ 
+BOOL harddisk_read(u32 lba, u32 sects_to_read, u8* buffer)
+{
+	u32 cylinder_no, head_no, sect_no, temp;
+	u32 num_of_dwords;
+ 
+	cylinder_no = lba / (HD0_HEAD_PER_CYLINDER * HD0_SECT_PER_TRACK);
+	temp		= lba % (HD0_HEAD_PER_CYLINDER * HD0_SECT_PER_TRACK);
+	head_no		= temp / HD0_SECT_PER_TRACK;
+	sect_no		= temp % HD0_SECT_PER_TRACK + 1;
+ 
+	/* 检查硬盘是否忙，忙则等待 */
+	while ((inb(HD_PORT_STATUS) & 0x80) != 0)
+		;
+	/* 设置读取的扇区数和CHS，
+	   HD_PORT_DRIVE_HEAD端口bit7、bit5需要为1，bit6为0时bit0～bit3表示磁头号，
+	   bit4为驱动器号，0 表示HD0，故下面head_no要或操作10100000即0xa0 */
+	outb(sects_to_read, HD_PORT_SECT_COUNT);
+	outb(sect_no, HD_PORT_SECT_NO);
+	outb(cylinder_no, HD_PORT_CYLINDER_LOW);
+ 
+	cylinder_no >>= 8;
+	outb((cylinder_no), HD_PORT_CYLINDER_HIGH);
+ 
+	head_no |= 0xa0;
+	outb((head_no), HD_PORT_DRIVE_HEAD);
+ 
+	/* 发送读命令 */
+	outb(HD_CMD_READ, HD_PORT_COMMAND);
+ 
+	num_of_dwords = (sects_to_read << 7);
+ 
+	/* 从HD_PORT_DATA读取数据，每个扇区512字节，即sects_to_read << 7个双字 */
+	insl(HD_PORT_DATA, buffer, num_of_dwords);
+ 
+	return TRUE;
+}
+
+
+

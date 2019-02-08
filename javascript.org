@@ -1,73 +1,9 @@
-* Javascript
-** 对象构造
-   #+BEGIN_SRC javascript
-     function person(firstname,lastname,age,eyecolor)
-     {
-         this.firstname=firstname;
-         this.lastname=lastname;
-         this.age=age;
-         this.eyecolor=eyecolor;
-     }
-   #+END_SRC
-
-   #+BEGIN_SRC 
-  JavaScript for...in 语句循环遍历对象的属性, 数组。
-  数组 concat() join() sort() Array()
-  RegExp 对象有 3 个方法：test()、exec() 以及 compile()。
-  #+END_SRC
-** 事件(多接口对象才有事件)
-   document.getElementById("btnTest").onclick=thisTest; //给button的onclick事件注册一个函数
-*** 事件类型
- #+BEGIN_SRC 
-   页面或图像载入
-  鼠标悬浮于页面的某个热点之上
-  在表单中选取输入框
-  确认表单
-  键盘按键
-  onload 和 onUnload 当用户进入或离开页面时就会触发 onload 和 onUnload 事件。
-  onFocus, onBlur 和 onChange onFocus、onBlur 和 onChange 事件通常相互配合用来验证表单。
-  onSubmit onSubmit 用于在提交表单之前验证所有的表单域。
-  onMouseOver 和 onMouseOut onMouseOver 和 onMouseOut 用来创建“动态的”按钮。
- #+END_SRC 
-** Try...Catch 语句
-   #+BEGIN_SRC js
-     try
-     {
-         //在此运行代码
-     }
-     catch(err)
-     {
-         //在此处理错误
-     }
-   #+END_SRC
-   #+BEGIN_SRC html
-     <html>
-       <head>
-         <script type="text/javascript">
-           var txt=""
-           function message()
-           {
-           try
-           {
-           adddlert("Welcome guest!")
-           }
-           catch(err)
-           {
-           txt="此页面存在一个错误。\n\n"
-           txt+="错误描述: " + err.description + "\n\n"
-           txt+="点击OK继续。\n\n"
-           alert(txt)
-           }
-           }
-         </script>
-       </head>
-
-       <body>
-         <input type="button" value="View message" onclick="message()" />
-       </body>
-     </html>
-     #+END_SRC
-** json
+* Javascript 
+  :  learn project /home/wuming/git/lang/javascript/javascript-tutorial/
+** 对象
+*** 东西
+    数字，文字
+*** 新建对象
    名字：值（类型）
  #+BEGIN_SRC json
  {
@@ -109,79 +45,102 @@
  ]
 
  #+END_SRC
-** 定时器 
- 执行一次 setTimeout
- 重复执行 setInterval
- #+BEGIN_SRC html 
-   <html>
-     <head>
-       <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-       <title>无标题文档</title>
-       <script language="JavaScript" type="text/javascript">
-         var str = "这个是测试用的范例文字";
-         var seq = 0;
-         var second=1000; //间隔时间1秒钟
-         function scroll() {
-         msg = str.substring(0, seq+1);
-         document.getElementByIdx_x_x('word').innerHTML = msg;
-         seq++;
-         if (seq >= str.length) seq = 0;
-         }
-       </script>
-     </head>
-     <body onload="setInterval('scroll()',second)">
-       <div id="word"></div><br/><br/>
-     </body>
-   </html>
- <p>页面上显示时钟：</p>
- <p id="demo"></p>
- <button onclick="myStopFunction()">停止时钟</button>
- <script>
- var myVar=setInterval(function(){myTimer()},1000);
- function myTimer(){
-	 var d=new Date();
-	 var t=d.toLocaleTimeString();
-	 document.getElementById("demo").innerHTML=t;
- }
- function myStopFunction(){
-	 clearInterval(myVar);
- }
- </script>
+*** 东西起名字(变量) 
+    var a=东西;
+** 行为
+*** 起名字
+    #+begin_src javascript
+      function doAdd(a,b) {
+          return a + b;
+      }
+    #+end_src
+*** 匿名函数
+    #+begin_src javascript
 
+      var doEcho = function() {
+          console.log('你好');
+      }
+    #+end_src
+*** 纯动作
+    #+begin_src javascript
 
- #+END_SRC
-** 原型
-#+BEGIN_SRC js
-  小写转大写
-    Array.prototype.myUcase=function(){
-        for (i=0;i<this.length;i++){
-            this[i]=this[i].toUpperCase();
-        }
-    }
-#+END_SRC
-** 函数库(对象库)
+      function addLater(a,b,callback) {
+          setTimeout(function() {
+              var sum = a+b;
+              callback(sum);
+          },1000);
+      }
+    #+end_src
+** 可视对象行为（事件)
+   行为绑定 document.getElementById("btnTest").onclick=thisTest; //给button的onclick事件注册一个函数
+   
+   - 行为类型
+     - 页面或图像对象 载入行为 onload 和 onUnload 
+     - 表单对象 onFocus, onBlur 和 onChange
+     - 鼠标对象 onMouseOver 和 onMouseOut
+     - 提交对象 onSubmit 
+** 错误对象捕捉 
+*** Try...Catch 
+    #+BEGIN_SRC js
+      try
+      {
+          //在此运行代码
+      }
+      catch(err)
+      {
+          //在此处理错误
+      }
+    #+END_SRC
+    #+BEGIN_SRC html
+      <html>
+        <head>
+          <script type="text/javascript">
+            var txt=""
+            function message()
+            {
+            try
+            {
+            adddlert("Welcome guest!")
+            }
+            catch(err)
+            {
+            txt="此页面存在一个错误。\n\n"
+            txt+="错误描述: " + err.description + "\n\n"
+            txt+="点击OK继续。\n\n"
+            alert(txt)
+            }
+            }
+          </script>
+        </head>
+
+        <body>
+          <input type="button" value="View message" onclick="message()" />
+        </body>
+      </html>
+      #+END_SRC
+** 对象库
 *** Date对象
- #+BEGIN_SRC js
-         日期 Date() getTime() setFullYear() toUTString getDay()
-         new Date() // 当前日期和时间
-         new Date(milliseconds) //返回从 1970 年 1 月 1 日至今的毫秒数
-         new Date(dateString)
-         new Date(year, month, day, hours, minutes, seconds, milliseconds)
+    #+BEGIN_SRC js
+      日期 Date() getTime() setFullYear() toUTString getDay()
+      new Date() // 当前日期和时间
+      new Date(milliseconds) //返回从 1970 年 1 月 1 日至今的毫秒数
+      new Date(dateString)
+      new Date(year, month, day, hours, minutes, seconds, milliseconds)
 
       milliseconds 毫秒（0-999） 1秒=1000毫秒
-         var today = new Date()
-         var d1 = new Date("October 13, 1975 11:13:00")
-         var d2 = new Date(79,5,24)
-         var d3 = new Date(79,5,24,11,33,0)
-          设置日期
-         var myDate=new Date();
-         myDate.setFullYear(2010,0,14);
+      var today = new Date()
+      var d1 = new Date("October 13, 1975 11:13:00")
+      var d2 = new Date(79,5,24)
+      var d3 = new Date(79,5,24,11,33,0)
+      设置日期
+      var myDate=new Date();
+      myDate.setFullYear(2010,0,14);
 
-         设置日期为5天后
-         var myDate=new Date();
-         myDate.setDate(myDate.getDate()+5);
-   getTime 获取毫秒时间
- #+END_SRC
+      设置日期为5天后
+      var myDate=new Date();
+      myDate.setDate(myDate.getDate()+5);
+      getTime 获取毫秒时间
+    #+END_SRC
 *** Math
     abs 绝对值
     E 自然对数
@@ -195,322 +154,395 @@
     ceil 上
     floor 下
     round 四舍五入
-*** json 函数
-   var strify = JSON.stringify(arr);
-   var arrParse = JSON.parse(strify);
-*** 正则
+*** 对象与字符串转换
+    对象字符串化   var strify = JSON.stringify(arr);
+    字符串对象话  var arrParse = JSON.parse(strify);
+*** 字符正则查找
     #+BEGIN_SRC js
-           var s="helo world";
-           var i=s.search(/wo/i);
+      var s="helo world";
+      var i=s.search(/wo/i);
       i: 不区分大小写
     #+END_SRC
-*** Array
+*** 对象数列 Array
     数组创建
+    var arr1 = new Array(); //创建一个空数组
+    var arr2 = new Array(20); // 创建一个包含20项的数组
+    var arr3 = new Array("lily","lucy","Tom"); // 创建一个包含3个字符串的数组
+    创建数组的第二种基本方式是使用数组字面量表示法：
 
-JavaScript中创建数组有两种方式，第一种是使用 Array 构造函数：
+    var arr4 = []; //创建一个空数组
+    var arr5 = [20]; // 创建一个包含1项的数组
+    var arr6 = ["lily","lucy","Tom"]; // 创建一个包含3个字符串的数组
+    在读取和设置数组的值时，要使用方括号并提供相应值的基于 0 的数字索引：
 
-var arr1 = new Array(); //创建一个空数组
-var arr2 = new Array(20); // 创建一个包含20项的数组
-var arr3 = new Array("lily","lucy","Tom"); // 创建一个包含3个字符串的数组
-创建数组的第二种基本方式是使用数组字面量表示法：
+    var arr6 = ["lily","lucy","Tom"]; // 创建一个包含3个字符串的数组
+    alert(arr6[0]); //lily
+    arr6[1] = "mary"; //修改第二项为mary
+    arr6[3] = "sean"; //增加第四项为sean
+    JavaScript中数组的length属性是可以修改的，看下面的示例：
 
-var arr4 = []; //创建一个空数组
-var arr5 = [20]; // 创建一个包含1项的数组
-var arr6 = ["lily","lucy","Tom"]; // 创建一个包含3个字符串的数组
-在读取和设置数组的值时，要使用方括号并提供相应值的基于 0 的数字索引：
+    var arr = ["lily","lucy","Tom"]; // 创建一个包含3个字符串的数组
+    arr[arr.length] = "sean"; //在下标为3处（也就是数组尾部）添加一项"sean"
+    arr.length = arr.length-1; //将数组的最后一项删除
+    如果需要判断一个对象是不是数组对象，在ECMAScript 5之前，我们可以通过 instanceof Array去判断，但是instanceof 操作符的问题在于，它假定只有一个全局执行环境。如果网页中包含多个框架，那实际上就存在两个以上不同的全局执行环境，从而存在两个以上不同版本的 Array 构造函数。如果你从一个框架向另一个框架传入一个数组，那么传入的数组与在第二个框架中原生创建的数组分别具有各自不同的构造函数。
 
-var arr6 = ["lily","lucy","Tom"]; // 创建一个包含3个字符串的数组
-alert(arr6[0]); //lily
-arr6[1] = "mary"; //修改第二项为mary
-arr6[3] = "sean"; //增加第四项为sean
-JavaScript中数组的length属性是可以修改的，看下面的示例：
+    ECMAScript 5 新增了 Array.isArray()方法。这个方法的目的是最终确定某个值到底是不是数组，而不管它是在哪个全局执行环境中创建的。
 
-var arr = ["lily","lucy","Tom"]; // 创建一个包含3个字符串的数组
-arr[arr.length] = "sean"; //在下标为3处（也就是数组尾部）添加一项"sean"
-arr.length = arr.length-1; //将数组的最后一项删除
-如果需要判断一个对象是不是数组对象，在ECMAScript 5之前，我们可以通过 instanceof Array去判断，但是instanceof 操作符的问题在于，它假定只有一个全局执行环境。如果网页中包含多个框架，那实际上就存在两个以上不同的全局执行环境，从而存在两个以上不同版本的 Array 构造函数。如果你从一个框架向另一个框架传入一个数组，那么传入的数组与在第二个框架中原生创建的数组分别具有各自不同的构造函数。
+    数组方法
 
-ECMAScript 5 新增了 Array.isArray()方法。这个方法的目的是最终确定某个值到底是不是数组，而不管它是在哪个全局执行环境中创建的。
+    下面开始介绍数组的方法，数组的方法有数组原型方法，也有从object对象继承来的方法，这里我们只介绍数组的原型方法，数组原型方法主要有以下这些：
 
-数组方法
+    join()
+    push()和pop()
+    shift() 和 unshift()
+    sort()
+    reverse()
+    concat()
+    slice()
+    splice()
+    indexOf()和 lastIndexOf() （ES5新增）
+    forEach() （ES5新增）
+    map() （ES5新增）
+    filter() （ES5新增）
+    every() （ES5新增）
+    some() （ES5新增）
+    reduce()和 reduceRight() （ES5新增）
+    针对ES5新增的方法浏览器支持情况：
 
-下面开始介绍数组的方法，数组的方法有数组原型方法，也有从object对象继承来的方法，这里我们只介绍数组的原型方法，数组原型方法主要有以下这些：
+    Opera 11+ 
+    Firefox 3.6+ 
+    Safari 5+ 
+    Chrome 8+ 
+    Internet Explorer 9+
 
-join()
-push()和pop()
-shift() 和 unshift()
-sort()
-reverse()
-concat()
-slice()
-splice()
-indexOf()和 lastIndexOf() （ES5新增）
-forEach() （ES5新增）
-map() （ES5新增）
-filter() （ES5新增）
-every() （ES5新增）
-some() （ES5新增）
-reduce()和 reduceRight() （ES5新增）
-针对ES5新增的方法浏览器支持情况：
+    对于支持的浏览器版本，可以通过Array原型扩展来实现。下面详细介绍一下各个方法的基本功能。
 
-Opera 11+ 
-Firefox 3.6+ 
-Safari 5+ 
-Chrome 8+ 
-Internet Explorer 9+
+    1、join()
 
-对于支持的浏览器版本，可以通过Array原型扩展来实现。下面详细介绍一下各个方法的基本功能。
+    join(separator): 将数组的元素组起一个字符串，以separator为分隔符，省略的话则用默认用逗号为分隔符，该方法只接收一个参数：即分隔符。
 
-1、join()
+    var arr = [1,2,3];
+    console.log(arr.join()); // 1,2,3
+    console.log(arr.join("-")); // 1-2-3
+    console.log(arr); // [1, 2, 3]（原数组不变）
+    通过join()方法可以实现重复字符串，只需传入字符串以及重复的次数，就能返回重复后的字符串，函数如下：
 
-join(separator): 将数组的元素组起一个字符串，以separator为分隔符，省略的话则用默认用逗号为分隔符，该方法只接收一个参数：即分隔符。
+    function repeatString(str, n) {
+    return new Array(n + 1).join(str);
+    }
+    console.log(repeatString("abc", 3)); // abcabcabc
+    console.log(repeatString("Hi", 5)); // HiHiHiHiHi
+    2、push()和pop()
 
-var arr = [1,2,3];
-console.log(arr.join()); // 1,2,3
-console.log(arr.join("-")); // 1-2-3
-console.log(arr); // [1, 2, 3]（原数组不变）
-通过join()方法可以实现重复字符串，只需传入字符串以及重复的次数，就能返回重复后的字符串，函数如下：
+    push(): 可以接收任意数量的参数，把它们逐个添加到数组末尾，并返回修改后数组的长度。 
+    pop()：数组末尾移除最后一项，减少数组的 length 值，然后返回移除的项。
 
-function repeatString(str, n) {
-return new Array(n + 1).join(str);
-}
-console.log(repeatString("abc", 3)); // abcabcabc
-console.log(repeatString("Hi", 5)); // HiHiHiHiHi
-2、push()和pop()
+    var arr = ["Lily","lucy","Tom"];
+    var count = arr.push("Jack","Sean");
+    console.log(count); // 5
+    console.log(arr); // ["Lily", "lucy", "Tom", "Jack", "Sean"]
+    var item = arr.pop();
+    console.log(item); // Sean
+    console.log(arr); // ["Lily", "lucy", "Tom", "Jack"]
+    3、shift() 和 unshift()
 
-push(): 可以接收任意数量的参数，把它们逐个添加到数组末尾，并返回修改后数组的长度。 
-pop()：数组末尾移除最后一项，减少数组的 length 值，然后返回移除的项。
+    shift()：删除原数组第一项，并返回删除元素的值；如果数组为空则返回undefined 。 
+    unshift:将参数添加到原数组开头，并返回数组的长度 。
 
-var arr = ["Lily","lucy","Tom"];
-var count = arr.push("Jack","Sean");
-console.log(count); // 5
-console.log(arr); // ["Lily", "lucy", "Tom", "Jack", "Sean"]
-var item = arr.pop();
-console.log(item); // Sean
-console.log(arr); // ["Lily", "lucy", "Tom", "Jack"]
-3、shift() 和 unshift()
+    这组方法和上面的push()和pop()方法正好对应，一个是操作数组的开头，一个是操作数组的结尾。
 
-shift()：删除原数组第一项，并返回删除元素的值；如果数组为空则返回undefined 。 
-unshift:将参数添加到原数组开头，并返回数组的长度 。
+    var arr = ["Lily","lucy","Tom"];
+    var count = arr.unshift("Jack","Sean");
+    console.log(count); // 5
+    console.log(arr); //["Jack", "Sean", "Lily", "lucy", "Tom"]
+    var item = arr.shift();
+    console.log(item); // Jack
+    console.log(arr); // ["Sean", "Lily", "lucy", "Tom"]
+    4、sort()
 
-这组方法和上面的push()和pop()方法正好对应，一个是操作数组的开头，一个是操作数组的结尾。
+    sort()：按升序排列数组项——即最小的值位于最前面，最大的值排在最后面。
 
-var arr = ["Lily","lucy","Tom"];
-var count = arr.unshift("Jack","Sean");
-console.log(count); // 5
-console.log(arr); //["Jack", "Sean", "Lily", "lucy", "Tom"]
-var item = arr.shift();
-console.log(item); // Jack
-console.log(arr); // ["Sean", "Lily", "lucy", "Tom"]
-4、sort()
+    在排序时，sort()方法会调用每个数组项的 toString()转型方法，然后比较得到的字符串，以确定如何排序。即使数组中的每一项都是数值， sort()方法比较的也是字符串，因此会出现以下的这种情况：
 
-sort()：按升序排列数组项——即最小的值位于最前面，最大的值排在最后面。
+    var arr1 = ["a", "d", "c", "b"];
+    console.log(arr1.sort()); // ["a", "b", "c", "d"]
+    arr2 = [13, 24, 51, 3];
+    console.log(arr2.sort()); // [13, 24, 3, 51]
+    console.log(arr2); // [13, 24, 3, 51](元数组被改变)
+    为了解决上述问题，sort()方法可以接收一个比较函数作为参数，以便我们指定哪个值位于哪个值的前面。比较函数接收两个参数，如果第一个参数应该位于第二个之前则返回一个负数，如果两个参数相等则返回 0，如果第一个参数应该位于第二个之后则返回一个正数。以下就是一个简单的比较函数：
 
-在排序时，sort()方法会调用每个数组项的 toString()转型方法，然后比较得到的字符串，以确定如何排序。即使数组中的每一项都是数值， sort()方法比较的也是字符串，因此会出现以下的这种情况：
+    function compare(value1, value2) {
+    if (value1 < value2) {
+    return -1;
+    } else if (value1 > value2) {
+    return 1;
+    } else {
+    return 0;
+    }
+    }
+    arr2 = [13, 24, 51, 3];
+    console.log(arr2.sort(compare)); // [3, 13, 24, 51]
+    如果需要通过比较函数产生降序排序的结果，只要交换比较函数返回的值即可：
 
-var arr1 = ["a", "d", "c", "b"];
-console.log(arr1.sort()); // ["a", "b", "c", "d"]
-arr2 = [13, 24, 51, 3];
-console.log(arr2.sort()); // [13, 24, 3, 51]
-console.log(arr2); // [13, 24, 3, 51](元数组被改变)
-为了解决上述问题，sort()方法可以接收一个比较函数作为参数，以便我们指定哪个值位于哪个值的前面。比较函数接收两个参数，如果第一个参数应该位于第二个之前则返回一个负数，如果两个参数相等则返回 0，如果第一个参数应该位于第二个之后则返回一个正数。以下就是一个简单的比较函数：
+    function compare(value1, value2) {
+    if (value1 < value2) {
+    return 1;
+    } else if (value1 > value2) {
+    return -1;
+    } else {
+    return 0;
+    }
+    }
+    arr2 = [13, 24, 51, 3];
+    console.log(arr2.sort(compare)); // [51, 24, 13, 3]
 
-function compare(value1, value2) {
-if (value1 < value2) {
-return -1;
-} else if (value1 > value2) {
-return 1;
-} else {
-return 0;
-}
-}
-arr2 = [13, 24, 51, 3];
-console.log(arr2.sort(compare)); // [3, 13, 24, 51]
-如果需要通过比较函数产生降序排序的结果，只要交换比较函数返回的值即可：
+    5、reverse()
 
-function compare(value1, value2) {
-if (value1 < value2) {
-return 1;
-} else if (value1 > value2) {
-return -1;
-} else {
-return 0;
-}
-}
-arr2 = [13, 24, 51, 3];
-console.log(arr2.sort(compare)); // [51, 24, 13, 3]
+    reverse()：反转数组项的顺序。
 
-5、reverse()
+    var arr = [13, 24, 51, 3];
+    console.log(arr.reverse()); //[3, 51, 24, 13]
+    console.log(arr); //[3, 51, 24, 13](原数组改变)
+    6、concat()
 
-reverse()：反转数组项的顺序。
+    concat() ：将参数添加到原数组中。这个方法会先创建当前数组一个副本，然后将接收到的参数添加到这个副本的末尾，最后返回新构建的数组。在没有给 concat()方法传递参数的情况下，它只是复制当前数组并返回副本。
 
-var arr = [13, 24, 51, 3];
-console.log(arr.reverse()); //[3, 51, 24, 13]
-console.log(arr); //[3, 51, 24, 13](原数组改变)
-6、concat()
+    var arr = [1,3,5,7];
+    var arrCopy = arr.concat(9,[11,13]);
+    console.log(arrCopy); //[1, 3, 5, 7, 9, 11, 13]
+    console.log(arr); // [1, 3, 5, 7](原数组未被修改)
+    从上面测试结果可以发现：传入的不是数组，则直接把参数添加到数组后面，如果传入的是数组，则将数组中的各个项添加到数组中。但是如果传入的是一个二维数组呢？
 
-concat() ：将参数添加到原数组中。这个方法会先创建当前数组一个副本，然后将接收到的参数添加到这个副本的末尾，最后返回新构建的数组。在没有给 concat()方法传递参数的情况下，它只是复制当前数组并返回副本。
+    var arrCopy2 = arr.concat([9,[11,13]]);
+    console.log(arrCopy2); //[1, 3, 5, 7, 9, Array[2]]
+    console.log(arrCopy2[5]); //[11, 13]
+    上述代码中，arrCopy2数组的第五项是一个包含两项的数组，也就是说concat方法只能将传入数组中的每一项添加到数组中，如果传入数组中有些项是数组，那么也会把这一数组项当作一项添加到arrCopy2中。
 
-var arr = [1,3,5,7];
-var arrCopy = arr.concat(9,[11,13]);
-console.log(arrCopy); //[1, 3, 5, 7, 9, 11, 13]
-console.log(arr); // [1, 3, 5, 7](原数组未被修改)
-从上面测试结果可以发现：传入的不是数组，则直接把参数添加到数组后面，如果传入的是数组，则将数组中的各个项添加到数组中。但是如果传入的是一个二维数组呢？
+    7、slice()
 
-var arrCopy2 = arr.concat([9,[11,13]]);
-console.log(arrCopy2); //[1, 3, 5, 7, 9, Array[2]]
-console.log(arrCopy2[5]); //[11, 13]
-上述代码中，arrCopy2数组的第五项是一个包含两项的数组，也就是说concat方法只能将传入数组中的每一项添加到数组中，如果传入数组中有些项是数组，那么也会把这一数组项当作一项添加到arrCopy2中。
+    slice()：返回从原数组中指定开始下标到结束下标之间的项组成的新数组。slice()方法可以接受一或两个参数，即要返回项的起始和结束位置。在只有一个参数的情况下， slice()方法返回从该参数指定位置开始到当前数组末尾的所有项。如果有两个参数，该方法返回起始和结束位置之间的项——但不包括结束位置的项。
 
-7、slice()
+    var arr = [1,3,5,7,9,11];
+    var arrCopy = arr.slice(1);
+    var arrCopy2 = arr.slice(1,4);
+    var arrCopy3 = arr.slice(1,-2);
+    var arrCopy4 = arr.slice(-4,-1);
+    console.log(arr); //[1, 3, 5, 7, 9, 11](原数组没变)
+    console.log(arrCopy); //[3, 5, 7, 9, 11]
+    console.log(arrCopy2); //[3, 5, 7]
+    console.log(arrCopy3); //[3, 5, 7]
+    console.log(arrCopy4); //[5, 7, 9]
+    arrCopy只设置了一个参数，也就是起始下标为1，所以返回的数组为下标1（包括下标1）开始到数组最后。 
+    arrCopy2设置了两个参数，返回起始下标（包括1）开始到终止下标（不包括4）的子数组。 
+    arrCopy3设置了两个参数，终止下标为负数，当出现负数时，将负数加上数组长度的值（6）来替换该位置的数，因此就是从1开始到4（不包括）的子数组。 
+    arrCopy4中两个参数都是负数，所以都加上数组长度6转换成正数，因此相当于slice(2,5)。
 
-slice()：返回从原数组中指定开始下标到结束下标之间的项组成的新数组。slice()方法可以接受一或两个参数，即要返回项的起始和结束位置。在只有一个参数的情况下， slice()方法返回从该参数指定位置开始到当前数组末尾的所有项。如果有两个参数，该方法返回起始和结束位置之间的项——但不包括结束位置的项。
+    8、splice()
 
-var arr = [1,3,5,7,9,11];
-var arrCopy = arr.slice(1);
-var arrCopy2 = arr.slice(1,4);
-var arrCopy3 = arr.slice(1,-2);
-var arrCopy4 = arr.slice(-4,-1);
-console.log(arr); //[1, 3, 5, 7, 9, 11](原数组没变)
-console.log(arrCopy); //[3, 5, 7, 9, 11]
-console.log(arrCopy2); //[3, 5, 7]
-console.log(arrCopy3); //[3, 5, 7]
-console.log(arrCopy4); //[5, 7, 9]
-arrCopy只设置了一个参数，也就是起始下标为1，所以返回的数组为下标1（包括下标1）开始到数组最后。 
-arrCopy2设置了两个参数，返回起始下标（包括1）开始到终止下标（不包括4）的子数组。 
-arrCopy3设置了两个参数，终止下标为负数，当出现负数时，将负数加上数组长度的值（6）来替换该位置的数，因此就是从1开始到4（不包括）的子数组。 
-arrCopy4中两个参数都是负数，所以都加上数组长度6转换成正数，因此相当于slice(2,5)。
+    splice()：很强大的数组方法，它有很多种用法，可以实现删除、插入和替换。
 
-8、splice()
+    删除：可以删除任意数量的项，只需指定 2 个参数：要删除的第一项的位置和要删除的项数。例如， splice(0,2)会删除数组中的前两项。
+    插入：可以向指定位置插入任意数量的项，只需提供 3 个参数：起始位置、 0（要删除的项数）和要插入的项。例如，splice(2,0,4,6)会从当前数组的位置 2 开始插入4和6。
+    替换：可以向指定位置插入任意数量的项，且同时删除任意数量的项，只需指定 3 个参数：起始位置、要删除的项数和要插入的任意数量的项。插入的项数不必与删除的项数相等。例如，splice (2,1,4,6)会删除当前数组位置 2 的项，然后再从位置 2 开始插入4和6。
+    splice()方法始终都会返回一个数组，该数组中包含从原始数组中删除的项，如果没有删除任何项，则返回一个空数组。
 
-splice()：很强大的数组方法，它有很多种用法，可以实现删除、插入和替换。
+    var arr = [1,3,5,7,9,11];
+    var arrRemoved = arr.splice(0,2);
+    console.log(arr); //[5, 7, 9, 11]
+    console.log(arrRemoved); //[1, 3]
+    var arrRemoved2 = arr.splice(2,0,4,6);
+    console.log(arr); // [5, 7, 4, 6, 9, 11]
+    console.log(arrRemoved2); // []
+    var arrRemoved3 = arr.splice(1,1,2,4);
+    console.log(arr); // [5, 2, 4, 4, 6, 9, 11]
+    console.log(arrRemoved3); //[7]
+    9、indexOf()和 lastIndexOf()
 
-删除：可以删除任意数量的项，只需指定 2 个参数：要删除的第一项的位置和要删除的项数。例如， splice(0,2)会删除数组中的前两项。
-插入：可以向指定位置插入任意数量的项，只需提供 3 个参数：起始位置、 0（要删除的项数）和要插入的项。例如，splice(2,0,4,6)会从当前数组的位置 2 开始插入4和6。
-替换：可以向指定位置插入任意数量的项，且同时删除任意数量的项，只需指定 3 个参数：起始位置、要删除的项数和要插入的任意数量的项。插入的项数不必与删除的项数相等。例如，splice (2,1,4,6)会删除当前数组位置 2 的项，然后再从位置 2 开始插入4和6。
-splice()方法始终都会返回一个数组，该数组中包含从原始数组中删除的项，如果没有删除任何项，则返回一个空数组。
+    indexOf()：接收两个参数：要查找的项和（可选的）表示查找起点位置的索引。其中， 从数组的开头（位置 0）开始向后查找。 
+    lastIndexOf：接收两个参数：要查找的项和（可选的）表示查找起点位置的索引。其中， 从数组的末尾开始向前查找。
 
-var arr = [1,3,5,7,9,11];
-var arrRemoved = arr.splice(0,2);
-console.log(arr); //[5, 7, 9, 11]
-console.log(arrRemoved); //[1, 3]
-var arrRemoved2 = arr.splice(2,0,4,6);
-console.log(arr); // [5, 7, 4, 6, 9, 11]
-console.log(arrRemoved2); // []
-var arrRemoved3 = arr.splice(1,1,2,4);
-console.log(arr); // [5, 2, 4, 4, 6, 9, 11]
-console.log(arrRemoved3); //[7]
-9、indexOf()和 lastIndexOf()
+    这两个方法都返回要查找的项在数组中的位置，或者在没找到的情况下返回1。在比较第一个参数与数组中的每一项时，会使用全等操作符。
 
-indexOf()：接收两个参数：要查找的项和（可选的）表示查找起点位置的索引。其中， 从数组的开头（位置 0）开始向后查找。 
-lastIndexOf：接收两个参数：要查找的项和（可选的）表示查找起点位置的索引。其中， 从数组的末尾开始向前查找。
+    var arr = [1,3,5,7,7,5,3,1];
+    console.log(arr.indexOf(5)); //2
+    console.log(arr.lastIndexOf(5)); //5
+    console.log(arr.indexOf(5,2)); //2
+    console.log(arr.lastIndexOf(5,4)); //2
+    console.log(arr.indexOf("5")); //-1
+    10、forEach()
 
-这两个方法都返回要查找的项在数组中的位置，或者在没找到的情况下返回1。在比较第一个参数与数组中的每一项时，会使用全等操作符。
+    forEach()：对数组进行遍历循环，对数组中的每一项运行给定函数。这个方法没有返回值。参数都是function类型，默认有传参，参数分别为：遍历的数组内容；第对应的数组索引，数组本身。
 
-var arr = [1,3,5,7,7,5,3,1];
-console.log(arr.indexOf(5)); //2
-console.log(arr.lastIndexOf(5)); //5
-console.log(arr.indexOf(5,2)); //2
-console.log(arr.lastIndexOf(5,4)); //2
-console.log(arr.indexOf("5")); //-1
-10、forEach()
+    var arr = [1, 2, 3, 4, 5];
+    arr.forEach(function(x, index, a){
+    console.log(x + '|' + index + '|' + (a === arr));
+    });
+    // 输出为：
+    // 1|0|true
+    // 2|1|true
+    // 3|2|true
+    // 4|3|true
+    // 5|4|true
+    11、map()
 
-forEach()：对数组进行遍历循环，对数组中的每一项运行给定函数。这个方法没有返回值。参数都是function类型，默认有传参，参数分别为：遍历的数组内容；第对应的数组索引，数组本身。
+    map()：指“映射”，对数组中的每一项运行给定函数，返回每次函数调用的结果组成的数组。
 
-var arr = [1, 2, 3, 4, 5];
-arr.forEach(function(x, index, a){
-console.log(x + '|' + index + '|' + (a === arr));
-});
-// 输出为：
-// 1|0|true
-// 2|1|true
-// 3|2|true
-// 4|3|true
-// 5|4|true
-11、map()
+    下面代码利用map方法实现数组中每个数求平方。
 
-map()：指“映射”，对数组中的每一项运行给定函数，返回每次函数调用的结果组成的数组。
+    var arr = [1, 2, 3, 4, 5];
+    var arr2 = arr.map(function(item){
+    return item*item;
+    });
+    console.log(arr2); //[1, 4, 9, 16, 25]
+    12、filter()
 
-下面代码利用map方法实现数组中每个数求平方。
+    filter()：“过滤”功能，数组中的每一项运行给定函数，返回满足过滤条件组成的数组。
 
-var arr = [1, 2, 3, 4, 5];
-var arr2 = arr.map(function(item){
-return item*item;
-});
-console.log(arr2); //[1, 4, 9, 16, 25]
-12、filter()
+    var arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    var arr2 = arr.filter(function(x, index) {
+    return index % 3 === 0 || x >= 8;
+    }); 
+    console.log(arr2); //[1, 4, 7, 8, 9, 10]
+    13、every()
 
-filter()：“过滤”功能，数组中的每一项运行给定函数，返回满足过滤条件组成的数组。
+    every()：判断数组中每一项都是否满足条件，只有所有项都满足条件，才会返回true。
 
-var arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-var arr2 = arr.filter(function(x, index) {
-return index % 3 === 0 || x >= 8;
-}); 
-console.log(arr2); //[1, 4, 7, 8, 9, 10]
-13、every()
+    var arr = [1, 2, 3, 4, 5];
+    var arr2 = arr.every(function(x) {
+    return x < 10;
+    }); 
+    console.log(arr2); //true
+    var arr3 = arr.every(function(x) {
+    return x < 3;
+    }); 
+    console.log(arr3); // false
+    14、some()
 
-every()：判断数组中每一项都是否满足条件，只有所有项都满足条件，才会返回true。
+    some()：判断数组中是否存在满足条件的项，只要有一项满足条件，就会返回true。
 
-var arr = [1, 2, 3, 4, 5];
-var arr2 = arr.every(function(x) {
-return x < 10;
-}); 
-console.log(arr2); //true
-var arr3 = arr.every(function(x) {
-return x < 3;
-}); 
-console.log(arr3); // false
-14、some()
+    var arr = [1, 2, 3, 4, 5];
+    var arr2 = arr.some(function(x) {
+    return x < 3;
+    }); 
+    console.log(arr2); //true
+    var arr3 = arr.some(function(x) {
+    return x < 1;
+    }); 
+    console.log(arr3); // false
+    15、reduce()和 reduceRight()
 
-some()：判断数组中是否存在满足条件的项，只要有一项满足条件，就会返回true。
+    这两个方法都会实现迭代数组的所有项，然后构建一个最终返回的值。reduce()方法从数组的第一项开始，逐个遍历到最后。而 reduceRight()则从数组的最后一项开始，向前遍历到第一项。
 
-var arr = [1, 2, 3, 4, 5];
-var arr2 = arr.some(function(x) {
-return x < 3;
-}); 
-console.log(arr2); //true
-var arr3 = arr.some(function(x) {
-return x < 1;
-}); 
-console.log(arr3); // false
-15、reduce()和 reduceRight()
+    这两个方法都接收两个参数：一个在每一项上调用的函数和（可选的）作为归并基础的初始值。
 
-这两个方法都会实现迭代数组的所有项，然后构建一个最终返回的值。reduce()方法从数组的第一项开始，逐个遍历到最后。而 reduceRight()则从数组的最后一项开始，向前遍历到第一项。
+    传给 reduce()和 reduceRight()的函数接收 4 个参数：前一个值、当前值、项的索引和数组对象。这个函数返回的任何值都会作为第一个参数自动传给下一项。第一次迭代发生在数组的第二项上，因此第一个参数是数组的第一项，第二个参数就是数组的第二项。
 
-这两个方法都接收两个参数：一个在每一项上调用的函数和（可选的）作为归并基础的初始值。
+    下面代码用reduce()实现数组求和，数组一开始加了一个初始值10。
 
-传给 reduce()和 reduceRight()的函数接收 4 个参数：前一个值、当前值、项的索引和数组对象。这个函数返回的任何值都会作为第一个参数自动传给下一项。第一次迭代发生在数组的第二项上，因此第一个参数是数组的第一项，第二个参数就是数组的第二项。
+    var values = [1,2,3,4,5];
+    var sum = values.reduceRight(function(prev, cur, index, array){
+    return prev + cur;
+    },10);
+    console.log(sum); //25
+*** 时钟对象
+    执行一次 setTimeout
+    重复执行 setInterval
+    #+BEGIN_SRC html 
+      <html>
+        <head>
+          <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+          <title>无标题文档</title>
+          <script language="JavaScript" type="text/javascript">
+            var str = "这个是测试用的范例文字";
+            var seq = 0;
+            var second=1000; //间隔时间1秒钟
+            function scroll() {
+            msg = str.substring(0, seq+1);
+            document.getElementByIdx_x_x('word').innerHTML = msg;
+            seq++;
+            if (seq >= str.length) seq = 0;
+            }
+          </script>
+        </head>
+        <body onload="setInterval('scroll()',second)">
+          <div id="word"></div><br/><br/>
+        </body>
+      </html>
+      <p>页面上显示时钟：</p>
+      <p id="demo"></p>
+      <button onclick="myStopFunction()">停止时钟</button>
+      <script>
+        var myVar=setInterval(function(){myTimer()},1000);
+        function myTimer(){
+        var d=new Date();
+        var t=d.toLocaleTimeString();
+        document.getElementById("demo").innerHTML=t;
+        }
+        function myStopFunction(){
+        clearInterval(myVar);
+        }
+      </script>
 
-下面代码用reduce()实现数组求和，数组一开始加了一个初始值10。
 
-var values = [1,2,3,4,5];
-var sum = values.reduceRight(function(prev, cur, index, array){
-return prev + cur;
-},10);
-console.log(sum); //25
-* DOM 外观
-*** window(窗体)
-**** 状态
- closed 	      返回窗口是否已被关闭
- defaultStatus 	设置或返回窗口状态栏中的默认文本
- innerheight 	  返回窗口的文档显示区的高度。
- innerwidth 	  返回窗口的文档显示区的宽度。
- length 	      设置或返回窗口中的框架数量。
- location 	    用于窗口或框架的 Location 对象。请参阅 Location 对象。 
- name 	        设置或返回窗口的名称。
- outerheight 	  返回窗口的外部高度。 
- outerwidth 	  返回窗口的外部宽度。 
- pageXOffset 	  设置或返回当前页面相对于窗口显示区左上角的 X 位置。
- pageYOffset 	  设置或返回当前页面相对于窗口显示区左上角的 Y 位置。
- parent 	      返回父窗口。 	
- self 	        返回对当前窗口的引用。等价于 Window 属性。 	
- status 	      设置窗口状态栏的文本。
- top 	          返回最顶层的先辈窗口。
- screenLeft     IE、Safari 和 Opera 支持 screenLeft 和 screenTop
- screenTop
- screenX        Firefox 和 Safari 支持 screenX 和 screenY。   
- screenY        只读整数。声明了窗口的左上角在屏幕上的的 x 坐标和 y 坐标。
- onload
+    #+END_SRC
+** 对象的模板 类 最新ES6语法
+*** ES5模拟类  
+    #+begin_src javascript
+      function PersonES5(p) {
+          this.age = p.age;
+          this.name = p.name;
+          this.sex = p.sex;
+      }
+
+      PersonES5.prototype.showInfo = function() {
+          console.log(this);
+      };
+
+      var person = new PersonES5({
+          age:18,
+          name:'tom',
+          sex:'boy'
+      });
+
+      person.showInfo();
+ #+end_src
+*** ES6
+    #+begin_src js
+      class PersonES6 {
+          constructor(p) {
+              this.age = p.age;
+              this.name = p.name;
+              this.sex = p.sex;
+          }
+          showInfo() {
+              console.log(this);
+          }
+      }
+
+
+      var person = new PersonES6({
+          age:18,
+          name:'tom',
+          sex:'boy'
+      });
+
+      person.showInfo();
+    #+end_src
+* 外观对象 DOM (树型排列）
+*** 窗口(最外层的html)  window
+**** 对象状态
+    | 窗口是否已被关闭               | closed      |
+    | 文档显示区高度                 | innerHeight |
+    | 文档显示区宽度                 | innerwidth  |
+    | 设置或返回框架数量             | length      |
+    | 设置或返回窗口的名称           | name        |
+    | 返回窗口的外部高度。           | outerheight |
+    | 返回窗口的外部宽度。           | outerwidth  |
+    | 返回父窗口。                   | parent      |
+    | 返回对当前窗口的引用           | self        |
+    | 设置窗口状态栏的文本           | status      |
+    | 返回最顶层的先辈窗口           | top         |
+    | 窗口的左上角在屏幕上的的y 坐标 | screenY     |
 **** 动作
  alert() 	           显示带有一段消息和一个确认按钮的警告框。
  blur() 	           把键盘焦点从顶层窗口移开。
@@ -533,34 +565,34 @@ window.open("http://www.baidu.com", "_blank");
  scrollTo() 	       把内容滚动到指定的坐标。
  setInterval() 	     按照指定的周期（以毫秒计）来调用函数或计算表达式。
  setTimeout() 	     在指定的毫秒数后调用函数或计算表达式。
-*** navigator 浏览器
+*** 浏览器 navigator
 **** 属性
-appCodeName 	        返回浏览器的代码名。 
-appMinorVersion 	    返回浏览器的次级版本。
-appName 	            返回浏览器的名称。 
-appVersion 	        返回浏览器的平台和版本信息。
-browserLanguage 	    返回当前浏览器的语言。
-cookieEnabled 	      返回指明浏览器中是否启用 cookie 的布尔值。
-cpuClass 	          返回浏览器系统的 CPU 等级。 
-onLine 	            返回指明系统是否处于脱机模式的布尔值。
-platform 	          返回运行浏览器的操作系统平台。 
-systemLanguage 	    返回 OS 使用的默认语言。
-language
-userAgent 	          返回由客户机发送服务器的 user-agent 头部的值。 
-userLanguage 	      返回 OS 的自然语言设置。
+    | 代码名。               | appCodeName     |
+    | 次级版本。             | appMinorVersion |
+    | 名称。                 | appName         |
+    | 平台和版本信息。       | appVersion      |
+    | 语言                   | browserLanguage |
+    | 是否启用 cookie 。     | cookieEnabled   |
+    | CPU 等级。             | cpuClass        |
+    | 是否处于脱机模式       | onLine          |
+    | 操作系统               | platform        |
+    | 默认语言               | systemLanguage  |
+    |                        | language        |
+    | user-agent 头部的值    | userAgent       |
+    | 返回 OS 的自然语言设置 | userLanguage    |
 **** 方法
- javaEnabled() 	      规定浏览器是否启用 Java。
- taintEnabled() 	    规定浏览器是否启用数据污点 (data tainting)
-*** screen
+     javaEnabled() 	      规定浏览器是否启用 Java。
+     taintEnabled() 	    规定浏览器是否启用数据污点 (data tainting)
+*** 屏幕 screen
 **** 状态
- availHeight 	     返回显示屏幕的高度 (除 Windows 任务栏之外)。
- availWidth 	     返回显示屏幕的宽度 (除 Windows 任务栏之外)。 
- bufferDepth 	     设置或返回在 off-screen bitmap buffer 中调色板的比特深度。
- colorDepth 	     返回目标设备或缓冲器上的调色板的比特深度。
- deviceYDPI 	     返回显示屏幕的每英寸垂直点数。 
- height 	         返回显示屏幕的高度。 
- pixelDepth 	     返回显示屏幕的颜色分辨率（比特每像素）
- width 	           返回显示器屏幕的宽度。 
+     availHeight 	     返回显示屏幕的高度 (除 Windows 任务栏之外)。
+     availWidth 	     返回显示屏幕的宽度 (除 Windows 任务栏之外)。 
+     bufferDepth 	     设置或返回在 off-screen bitmap buffer 中调色板的比特深度。
+     colorDepth 	     返回目标设备或缓冲器上的调色板的比特深度。
+     deviceYDPI 	     返回显示屏幕的每英寸垂直点数。 
+     height 	         返回显示屏幕的高度。 
+     pixelDepth 	     返回显示屏幕的颜色分辨率（比特每像素）
+     width 	           返回显示器屏幕的宽度。 
 *** history
 **** 属性
      length            返回浏览器历史列表中的 URL 数量
@@ -582,7 +614,7 @@ go() 	            加载 history 列表中的某个具体页面 [Num|URL] e: -1 
  assign() 	        加载新的文档。
  reload() 	        重新加载当前文档。
  replace() 	        用新的文档替换当前文档。 
-*** document
+*** document  显示区域 body
 **** 属性
      body    	          提供对 <body> 元素的直接访问。对于定义了框架集的文档，该属性引用最外层的 <frameset>。 	  	  	  	 
      cookie 	          设置或返回与当前文档有关的所有 cookie。
@@ -768,238 +800,110 @@ function createNewDoc()
       onabort
       onplay
 ***** onmousedown、onmouseup 以及 onclick 事件
-* javascript layer
-** 特点  
-   - 多个后端可供选择 ： tern 和 LSP
-   - 智能代码折叠
-   - 反射 ：用 js2-refactor
-   - 自动完成，帮助文档
-   - 可交互的 用过 skewer-mode 和 livid-mode
-   - 美化 web-beautify
-   - 代码检查
-** 代码折叠
-[, z e]
-| Key Binding | Description              |
-|-------------+--------------------------|
-| ~SPC m z c~ | hide element             |
-| ~SPC m z o~ | show element             |
-| ~SPC m z r~ | show all element         |
-| ~SPC m z e~ | toggle hide/show element |
-| ~SPC m z F~ | toggle hide functions    |
-| ~SPC m z C~ | toggle hide comments     |
-
-** 自动完成
-   auto-completion and documention: tern
-*** 注释
-   | Key Binding   | Description                               |
-   |---------------+-------------------------------------------|
-   | ~SPC m r d b~ | js文件的说明注释                          |
-   | ~SPC m r d f~ | 函数注释insert JSDoc comment for function |
-   | ~SPC m r d t~ | 插入tag注释 insert tag to comment         |
-   | ~SPC m r d h~ | 显示tag的用法 show list of available jsdoc tags |
-*** 代码导航(先要生成tag文件)
-    | Key Binding   | Description                                                                              |
-    |---------------+------------------------------------------------------------------------------------------|
-    | ~SPC m C-g~   | 返回　brings you back to last place you were when you pressed M-..                          |
-    | ~SPC m g g~   | 跳到定义处jump to the definition of the thing under the cursor                                |
-    | ~SPC m g G~   | 跳到你要的定义处jump to definition for the given name                                            |
-    | ~SPC m h d~   | 帮助文档find docs of the thing under the cursor. Press again to open the associated URL (if any) |
-    | ~SPC m h t~   | 显示光标处的类型find the type of the thing under the cursor                                      |
-    | ~SPC m r r V~ | 重命名变量 rename variable under the cursor using tern                                        |
-
-** Get the path to a JSON value with [[https://github.com/Sterlingg/json-snatcher][json-snatcher]]
-** 交互
-   空白页 run-skewer   
-   注入自己的页面 Greasemonkey 
-
-   通过 [[https://github.com/skeeto/skewer-mode][skewer-mode]] 和 [[https://github.com/pandeiro/livid-mode][livid-mode (输出　skewer.log)]]
-   会打开两个交互，一个是控制台，一个是浏览器，都可以交互
-   控制台：skewer.log
-   浏览器：console.log 
-   | Key Binding | Description                                                                        |
-   |-------------+------------------------------------------------------------------------------------|
-   | ~SPC m e e~ | 选区, 求最后表达式evaluates the last expression                                    |
-   | ~SPC m e E~ | evaluates and inserts the result of the last expression at point                   |
-   |-------------+------------------------------------------------------------------------------------|
-   | ~SPC m s b~ | 执行buffer中 send current buffer contents to the skewer REPL                       |
-   | ~SPC m s B~ | send current buffer contents to the skewer REPL and switch to it in insert state   |
-   | ~SPC m s f~ | 发送函数给解释器send current function at point to the skewer REPL                  |
-   | ~SPC m s F~ | send current function at point to the skewer REPL and switch to it in insert state |
-   | ~SPC m s i~ | starts/switch to the skewer REPL                                                   |
-   | ~SPC m s r~ | send current region to the skewer REPL                                             |
-   | ~SPC m s R~ | send current region to the skewer REPL and switch to it in insert state            |
-   | ~SPC m s s~ | 切换到命令行的repl窗口                                                             |
-
-** 代码检查
-   $ npm install -g eslint
-   $ npm install -g jshint
-** 选择后端
-   (javascript :variables javascript-backend 'tern)
-   如果想自定义后端，可以在项目的根目录文件 =.dir-locals.el= 下定义本地变量
-   ;;; 定义本地变量，选择项目的后端 
-   ((js2-mode (javascript-backend . lsp)))
-** 选择格式化工具
-   添加 web-beautify层
-  (javascript :variables javascript-fmt-tool 'web-beautify)
-
-   也可以自定义项目自身的格式化工具
-    ;;;定义格式化工具 
-    ((js2-mode (javascript-fmt-tool . prettier)))
-** 后端工具
-*** tern 
-    安装 $ npm install -g tern
-    并且 =~/.spacemacs= 加入配置 tern
-    
-    如果想每个对话都使用当前服务, 需如下配置
-    (tern :variables tern-disable-port-files nil)
-*** 安装语言服务协议 npm i -g typescript javascript-typescript-langserver
-*** 配置Project configuration
-    A .tern-project file is a JSON file in a format like this:
-#+BEGIN_SRC json
-
-{
-  "libs": [
-    "browser",
-    "jquery"
-  ],
-  "loadEagerly": [
-    "importantfile.js"
-  ],
-  "plugins": {
-    "requirejs": {
-      "baseURL": "./",
-      "paths": {}
-    }
-  }
-}
-#+END_SRC
-
-The libs property refers to the JSON type descriptions that should be loaded into the environment for this project.
- See the defs/ directory for examples. The strings given here will be suffixed with .json, and searched for first in the project’s own dir, and then in the defs/ directory of the Tern distribution.
-libs 表示要载入的预定义插件
-
-包含 node, jquery, webpack, requirejs, angular, 
-By default, local files are loaded into the Tern server when queries are run on them in the editor. loadEagerly allows you to force some files to always be loaded, it may be an array of filenames or glob patterns (i.e. foo/bar/*.js). The dontLoad option can be used to prevent Tern from loading certain files. It also takes an array of file names or glob patterns.
-
-The plugins field may hold object used to load and configure Tern plugins. The names of the properties refer to files that implement plugins, either in the project dir or under plugin/ in the Tern directory. Their values are configuration objects that will be passed to the plugins. You can leave them at {} when you don’t need to pass any options.
-
-You can specify an ecmaVersion field to configure the version of ECMAScript that Tern parses. The default is 6, and leaving it at that should be safe even for ECMAScript 5 code, but you can set it to 5 as well.
-
-To configure the amount of work Tern is prepared to do to load a single dependency, the dependencyBudget option can be added to a project file. It indicates the maximum size of the files loaded in response to a single dependency (through plugins that load dependencies, such as the node and RequireJS plugins), counted in expressions. The default value is 20 000. Files loaded as dependencies of dependencies count towards the budget of the original dependency.
-
-* jquery
-** 源  
+* 树节点(对象)查询 jquery
+** 插件源  
    <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.js">
 ** 选择节点
-** 确定当前的conext
-   在任何事件内部，this引用的都是Dom对象
-   在任何插件内部，this引用的都是当前的jquery对象
-   在$(…).each方法中，this引用的都是Dom或正被遍历的元素对象
-   在ajax事件中，this默认指向的是调用本次AJAX请求时传递的options参数，可以通过设定ajax options的context参数进行修改;
+   $('') 
+  节点名
+  节点class属性
+  节点ID属性
+*** 确定当前的conext
+    在任何事件内部，this引用的都是Dom对象
+    在任何插件内部，this引用的都是当前的jquery对象
+    在$(…).each方法中，this引用的都是Dom或正被遍历的元素对象
    
-   转为Dom对象
-   var $v =$("#v");    //jQuery对象
-   var v=$v[0];       //DOM对象 
-   var v=$v.get(0);   //DOM对象 
-** 属性访问
-   名称	使用场合
-   $(…).attr	访问自定义属性
-   $(…).prop	访问html规范定义的属性
-   假如有下面的dom元素需要操作：
-
-   <input id="chk1" type="checkbox" />是否可见
-   <input id="chk2" type="checkbox" checked="checked" />是否可见
-   分别用prop和attr的操作结果如下：
-   $("#chk1").prop("checked") == false
-   $("#chk2").prop("checked") == true
-
-   $("#chk1").attr("checked") == undefined
-   $("#chk2").attr("checked") == "checked"
-** Dom漫游
-   名称	功能
-   $.parent(expr)	找父元素
-   $.parents(expr)	找到所有祖先元素，不限于父元素
-   $.children(expr)	查找所有子元素，只会找到直接的孩子节点，不会返回所有子孙
-   $.prev()	查找上一个兄弟节点，不是所有的兄弟节点
-   $.prevAll()	查找所有之前的兄弟节点
-   $.next()	查找下一个兄弟节点，不是所有的兄弟节点
-   $.nextAll()	查找所有之后的兄弟节点
-   $.siblings()	查找兄弟节点，不分前后
-** 两种存在差异的Dom过滤查找
-   名称	含义
-   jQuery.find(expr)	不会有初始集合中的内容
-   jQuery.filter(expr)	从初始的jQuery对象集合中筛选出一部分
-   $("p").find("span");//是从元素p的后代开始找，等于$("p span")
-** 定义事件的常见方式
-   基本只需要使用on、once、off三个即可 
-   尽可能使用命名空间（bootstrap比较常见）
+    在ajax事件中，this默认指向的是调用本次AJAX请求时传递的options参数，可以通过设
+    定ajax options的context参数进行修改;
    
-   $("#main").on("click.test",function(){
-   this;//指向当前的Dom元素
-   });
+    转为Dom对象
+    var $v =$("#v");    //jQuery对象
+    var v=$v[0];       //DOM对象 
+    var v=$v.get(0);   //DOM对象 
+*** 节点过滤查找
+    jQuery.find(expr)	不会有初始集合中的内容
+    jQuery.filter(expr)	从初始的jQuery对象集合中筛选出一部分
+    $("p").find("span");//是从元素p的后代开始找，等于$("p span")
+** 节点对象属性 
+*** 属性值
+    $(…).attr	属性值
+    $(…).prop	访问html规范定义的属性
+
+    <input id="chk1" type="checkbox" />是否可见
+    <input id="chk2" type="checkbox" checked="checked" />是否可见
+    分别用prop和attr的操作结果如下：
+    $("#chk1").prop("checked") == false
+    $("#chk2").prop("checked") == true
+
+    $("#chk1").attr("checked") == undefined
+    $("#chk2").attr("checked") == "checked"
+*** 节点漫游
+    $.parent(expr)	找父元素
+    $.parents(expr)	找到所有祖先元素，不限于父元素
+    $.children(expr)	查找所有子元素，只会找到直接的孩子节点，不会返回所有子孙
+    $.prev()	查找上一个兄弟节点，不是所有的兄弟节点
+    $.prevAll()	查找所有之前的兄弟节点
+    $.next()	查找下一个兄弟节点，不是所有的兄弟节点
+    $.nextAll()	查找所有之后的兄弟节点
+    $.siblings()	查找兄弟节点，不分前后
+*** 节点定义事件
+    基本只需要使用on、once、off三个即可 
+    尽可能使用命名空间（bootstrap比较常见）
    
-灵活运用事件委托，利用时间冒泡机制，将事件绑定到祖先元素
-$("#parent").on("click.test",function(event){
-    var $target=$(event.target);
-    if($target.is("#child1")){//是否为child1
-    //...
-    }
-    if($target.is("#child2")){//是否为child2
-    //...
-    }
-    return false;//=event.stopPropagation();event.preventDefault();
-});
+    $("#main").on("click.test",function(){
+    this;//指向当前的Dom元素
+    });
+   
+ 灵活运用事件委托，利用时间冒泡机制，将事件绑定到祖先元素
+ $("#parent").on("click.test",function(event){
+     var $target=$(event.target);
+     if($target.is("#child1")){//是否为child1
+     //...
+     }
+     if($target.is("#child2")){//是否为child2
+     //...
+     }
+     return false;//=event.stopPropagation();event.preventDefault();
+ });
 
-使用命名函数代替匿名函数可以解决事件重复绑定问题，因为同一个命名函数绑定同一个事件只会绑定一次。
-** 动态创建元素
-$('<input />',{
-             type:"checkbox",
-             name:"cbox",
-             val:"1",
-             checked:"checked"
-         }).appendTo("body");
-** jquery的遍历
-$.each(data,function(index,item){})
-$.each(data,function(k,v,object){})
-** Ajax和XmlHttpRequest
-   //用Form传递表单数据
-   var formData=new FormData();//方式1，new一个FormData
-   formData.append("username","张三");
+ 使用命名函数代替匿名函数可以解决事件重复绑定问题，因为同一个命名函数绑定同一个事
+ 件只会绑定一次。
+*** 动态创建节点
+    #+begin_src js
+      $('<input />',{
+          type:"checkbox",
+          name:"cbox",
+          val:"1",
+          checked:"checked"
+      }).appendTo("body");
+    #+end_src
+*** 遍历
+    $.each(data,function(index,item){})
+    $.each(data,function(k,v,object){})
+*** 表单对象
+    //用Form传递表单数据
+    var formData=new FormData();//方式1，new一个FormData
+    formData.append("username","张三");
 
-   var form=document.getElementById("myForm");
-   var formData=new FormData(form);//方式2，根据Form创建FormData
-   formData.append(...);//添加额外内容
-   //xhr.open("POST",form.action);
-   //xhr.send(formData);//使用xhr发送数据
+    var form=document.getElementById("myForm");
+    var formData=new FormData(form);//方式2，根据Form创建FormData
+    formData.append(...);//添加额外内容
+    //xhr.open("POST",form.action);
+    //xhr.send(formData);//使用xhr发送数据
 
-   $.ajax({//使用jquery发送数据
-   url:"example.php",
-   type:"POST",
-   data=formData,
-   processData:false,//告诉jquery不要处理待发送的数据
-   contentType:false//告诉jquery不要设置Content-Type请求头，默认为“application/x-www-form-urlencoded”
-   });
-** Promise defer的高级用法
-   Promise标准：想要改变promise对象的状态，只要在then的参数回调中返回相应的值
-
-   返回值	含义
-   普通值	成功
-   throw	失败
-   另一个promise	代表透值
-   jQuery的具体实现
-
-   返回值	含义
-   普通值	在done的分支里为[成功,x值]，在fail的分支里为[失败，x值]
-   throw	不会改变promise的状态，而是直接throw出去
-   另一个promise	改变promise的状态
-   所以，在jquery中想要扭转promise的状态就只能依靠返回另一种状态的promise对象
+    $.ajax({//使用jquery发送数据
+    url:"example.php",
+    type:"POST",
+    data=formData,
+    processData:false,//告诉jquery不要处理待发送的数据
+    contentType:false//告诉jquery不要设置Content-Type请求头，默认为“application/x-www-form-urlencoded”
+    });
 * 60个很实用的jQuery代码开发技巧收集
 ** 1. 创建一个嵌套的过滤器
 <span class="pun">.filter(":not(:has(.selected))")
  //去掉所有不包含class为.selected的元素
 </span>
 ** 2. 重用你的元素查询
-
     var allItems = $("div.item");  
     var keepList = $("div#container1 div.item");
     $(formToLookAt + " input:checked").each(function() {     keepListkeepList = keepList.filter("." + $(this).attr("name")); });
@@ -1783,11 +1687,12 @@ $("#myform").submit();
  }
  document.body.appendChild(fragment); // one reflow
 
-* echarts npm install echarts
+* echarts
   http://echarts.baidu.com/tutorial.html#5%20%E5%88%86%E9%92%9F%E4%B8%8A%E6%89%8B%20ECharts
 ** 安装
    前端模块加载 <script src="echarts.js"></script>
    CDN库  <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+   npm install echarts
 ** 步骤 
 ***  引入 ECharts
 ***  制作一个图表容器 <div id="main" style="height:400px;"></div>
@@ -1837,22 +1742,26 @@ $("#myform").submit();
       </html>
     #+END_SRC
 ** 阴影的配置
-ECharts 中有一些通用的样式，诸如阴影、透明度、颜色、边框颜色、边框宽度等，这些样式一般都会在系列的 itemStyle 里设置。例如阴影的样式可以通过下面几个配置项设置：
+   ECharts 中有一些通用的样式，诸如阴影、透明度、颜色、边框颜色、边框宽度等，这些样
+   式一般都会在系列的 itemStyle 里设置。例如阴影的样式可以通过下面几个配置项设置：
 
-itemStyle: {
-    normal: {
-        // 阴影的大小
-        shadowBlur: 200,
-        // 阴影水平方向上的偏移
-        shadowOffsetX: 0,
-        // 阴影垂直方向上的偏移
-        shadowOffsetY: 0,
-        // 阴影颜色
-        shadowColor: 'rgba(0, 0, 0, 0.5)'
-    }
-}
+   #+begin_src js
+        itemStyle: {
+        normal: {
+             // 阴影的大小
+             shadowBlur: 200,
+             // 阴影水平方向上的偏移
+             shadowOffsetX: 0,
+             // 阴影垂直方向上的偏移
+             shadowOffsetY: 0,
+             // 阴影颜色
+             shadowColor: 'rgba(0, 0, 0, 0.5)'
+         }
+     }
+   #+end_src
 ** 异步数据加载和更新
-   ECharts 中实现异步数据的更新非常简单，在图表初始化后不管任何时候只要通过 jQuery 等工具异步获取数据后通过 setOption 填入数据和配置项就行。
+   ECharts 中实现异步数据的更新非常简单，在图表初始化后不管任何时候只要通过
+   jQuery 等工具异步获取数据后通过 setOption 填入数据和配置项就行。
    
 #+BEGIN_SRC javascript
 var myChart = echarts.init(document.getElementById('main'));
@@ -1918,11 +1827,14 @@ $.get('data.json').done(function (data) {
 
 #+END_SRC
 ** loading 动画
-   myChart.showLoading();
-   $.get('data.json').done(function (data) {
-    myChart.hideLoading();
-    myChart.setOption(...);
-});
+   #+begin_src js
+        myChart.showLoading();
+
+        $.get('data.json').done(function (data) {
+         myChart.hideLoading();
+         myChart.setOption(...);
+     });
+   #+end_src
 ** 数据的动态更新
    #+BEGIN_SRC javascript
    var base = +new Date(2014, 9, 3);
@@ -1985,3 +1897,4 @@ app.timeTicket = setInterval(function () {
     });
 }, 500);
    #+END_SRC
+

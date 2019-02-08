@@ -279,7 +279,65 @@
  在后边加上 single 回车
  最后按"b"启动，启动后就进入了单用户模式了
  此时已经进入到单用户模式了，你可以更改 root 密码了。更密码的命令为 passwd
+* Linux 版本升级
+现在公司的服务器一般都是linux系统，比如：redhat、centOS、ubuntu、debian等，虽然是不同的发行版，但是里面使用的内核都是一样的，查看方式如下：
+
+cat /proc/version
+
+Linux version 3.16.0-4-amd64 (debian-kernel@lists.debian.org) (gcc version 4.8.4 (Debian 4.8.4-1) ) #1 SMP Debian 3.16.43-2 (2017-04-30)
+
+uname -a
+
+Linux n8-072-035 3.16.0-4-amd64 #1 SMP Debian 3.16.43-2 (2017-04-30) x86_64 GNU/Linux
+
+uname -r
+
+3.16.0-4-amd64
+
+lsb_release -a
+
+No LSB modules are available.
+Distributor ID:	Debian
+Description:	Debian GNU/Linux 8.8 (jessie)
+Release:	8.8
+Codename:	jessie
+
+因为公司机器的系统内核可能会比较早，有一些新的系统功能不支持，需要升级系统内核：
+
+1、下载对应的内核源码：www.kernel.org
+
+2、解压内核文件
+
+tar -jxvf linux-2.6.35.13.tar.bz2
+
+3、清理文件
+
+make distclean
+
+4、复制原系统的配置文件
+
+cp /boot/config-2.6.18-308.el5 .config
+
+5、内核配置(也就是说内核更新的目的可能不是升级，或者可能是更新内核的配置)
+
+make config 或者 make menuconfig
+
+6、编译内核
+
+make all
+
+7、安装
+
+make install
+
+8、修改grub.conf 让引导程序默认从新的内核启动
+
+9、重启系统
+
 * linux0.12
+** 内核分成五个模块：
+   进程调度模块、内存管理模块、文件系统模块、进程间通信模块、网络接口模块
+
 ** 文件系统(货物架)  
    取货权限 permission 读/写/执行权限
 *** 货物架属性
@@ -324,3 +382,17 @@
       };
 
     #+END_SRC
+** 引导程序
+** 初始化阶段 main.c
+   * 首先如何分配使用系统物理内存
+   * 调用内核各个部分的初始化函数分别对内存管理、中断处理、块设备、字符设备、进程管理以及硬盘和软盘等硬件进行初始化
+   * 在完成这些初始化后，系统各部分以及处于可运行状态。
+   * 程序手动移到进程0运行
+   * 进程0调用fork()创建init进程
+
+ * init功能分为四个部分
+  * 安装根文件系统
+  * 显示系统信息
+  * 运行系统初始资源配置rc中的命令
+  * 执行登录shell程序
+
