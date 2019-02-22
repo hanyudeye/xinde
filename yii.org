@@ -1,4 +1,4 @@
-* YII框架 
+* YII 框架 
 ** 安装,启动 
 *** 安装
      基础版 composer create-project --prefer-dist yiisoft/yii2-app-basic basic
@@ -61,7 +61,7 @@ server {
     }
 }
 #+END_SRC
-使用该配置时，你还应该在 php.ini 文件中设置 cgi.fix_pathinfo=0 ，
+使用该配置时，你还应该在 php.ini 文件中设置 cgi.fix_pathinfo=0，
 能避免掉很多不必要的 stat() 系统调用。
 还要注意当运行一个 HTTPS 服务器时，需要添加 fastcgi_param HTTPS on; 一行，
 这样 Yii 才能正确地判断连接是否安全。
@@ -96,7 +96,7 @@ use yii\helpers\Html;
 #+END_SRC
 
 ** 运行
-访问页面： http://hostname/index.php?r=site/say&message=Hello+World
+访问页面：http://hostname/index.php?r=site/say&message=Hello+World
 ** 共用
    头部和尾部是因为 yii\web\Controller::render() 方法会自动把 say 视图执行的结果嵌入称为布局的文件中，
    本例中是 views/layouts/main.php。
@@ -217,7 +217,7 @@ http://hostname/index.php?r=site/entry
 效果说明
 你可能会好奇 HTML 表单暗地里是如何工作的呢， 看起来它可以为每个输入框显示文字标签， 而当你没输入正确的信息时又不需要刷新页面就能给出错误提示，似乎有些神奇。
 
-是的，其实数据首先由客户端 JavaScript 脚本验证，然后才会提交给服务器通过 PHP 验证。 yii\widgets\ActiveForm
+是的，其实数据首先由客户端 JavaScript 脚本验证，然后才会提交给服务器通过 PHP 验证。yii\widgets\ActiveForm
 足够智能到把你在 EntryForm 模型中声明的验证规则转化成客户端 JavaScript 脚本去执行验证。 如果用户浏览器禁用了 JavaScript，
 服务器端仍然会像 actionEntry() 方法里这样验证一遍数据。这保证了任何情况下用户提交的数据都是有效的。
 
@@ -238,15 +238,9 @@ http://hostname/index.php?r=site/entry
 
 在下一章节中，你将学习如何使用数据库，几乎每个应用都需要数据库。
 * Databases
-  使用数据库
-准备数据库
-配置数据库连接
-创建活动记录
-创建动作
-创建视图
-试运行
-总结
-本章节将介绍如何创建一个从数据表 country 中读取国家数据并显示出来的页面。 为了实现这个目标，你将会配置一个数据库连接， 创建一个活动记录类， 并且创建一个操作及一个视图。
+本章节将介绍如何创建一个从数据表 country 中读取国家数据并显示出来的页面。 为了实
+现这个目标，你将会配置一个数据库连接， 创建一个活动记录类， 并且创建一个操作及一
+个视图。
 
 贯穿整个章节，你将会学到：
 
@@ -254,10 +248,15 @@ http://hostname/index.php?r=site/entry
 定义一个活动记录类
 使用活动记录从数据库中查询数据
 以分页方式在视图中显示数据
-请注意，为了掌握本章你应该具备最基本的数据库知识和使用经验。 尤其是应该知道如何创建数据库，如何通过数据库终端执行 SQL 语句。
+
+请注意，为了掌握本章你应该具备最基本的数据库知识和使用经验。 尤其是应该知道如何
+创建数据库，如何通过数据库终端执行 SQL 语句。
 
 准备数据库
-首先创建一个名为 yii2basic 的数据库，应用将从这个数据库中读取数据。 你可以创建 SQLite，MySQL，PostregSQL，MSSQL 或 Oracle 数据库，Yii 内置多种数据库支持。简单起见，后面的内容将以 MySQL 为例做演示。
+
+首先创建一个名为 yii2basic 的数据库，应用将从这个数据库中读取数据。 你可以创建
+SQLite，MySQL，PostregSQL，MSSQL 或 Oracle 数据库，Yii 内置多种数据库支持。简单
+起见，后面的内容将以 MySQL 为例做演示。
 
 然后在数据库中创建一个名为 country 的表并插入简单的数据。可以执行下面的语句：
 
@@ -373,7 +372,7 @@ class CountryController extends Controller
 }
 把上面的代码保存在 controllers/CountryController.php 文件中。
 
-index 操作调用了活动记录 Country::find() 方法，去生成查询语句并从 country 表中取回所有数据。 为了限定每个请求所返回的国家数量，查询在 yii\data\Pagination 对象的帮助下进行分页。 Pagination 对象的使命主要有两点：
+index 操作调用了活动记录 Country::find() 方法，去生成查询语句并从 country 表中取回所有数据。 为了限定每个请求所返回的国家数量，查询在 yii\data\Pagination 对象的帮助下进行分页。Pagination 对象的使命主要有两点：
 
 为 SQL 查询语句设置 offset 和 limit 从句， 确保每个请求只需返回一页数据（本例中每页是 5 行）。
 在视图中显示一个由页码列表组成的分页器， 这点将在后面的段落中解释。
@@ -411,23 +410,25 @@ http://hostname/index.php?r=country/index&page=2
 在这个场景里，Pagination 提供了为数据结果集分页的所有功能：
 
 首先 Pagination 把 SELECT 的子查询 LIMIT 5 OFFSET 0 数据表示成第一页。 因此开头的五条数据会被取出并显示。
-然后小部件 LinkPager 使用 Pagination::createUrl() 方法生成的 URL 去渲染翻页按钮。 URL 中包含必要的参数 page 才能查询不同的页面编号。
-如果你点击按钮 “2”，将会发起一个路由为 country/index 的新请求。 Pagination 接收到 URL 中 的 page 参数把当前的页码设为 2。 新的数据库请求将会以 LIMIT 5 OFFSET 5 查询并显示。
+然后小部件 LinkPager 使用 Pagination::createUrl() 方法生成的 URL 去渲染翻页按钮。URL 中包含必要的参数 page 才能查询不同的页面编号。
+如果你点击按钮 “2”，将会发起一个路由为 country/index 的新请求。Pagination 接收到 URL 中 的 page 参数把当前的页码设为 2。 新的数据库请求将会以 LIMIT 5 OFFSET 5 查询并显示。
 总结
 本章节中你学到了如何使用数据库。你还学到了如何取出并使用 yii\data\Pagination 和 yii\widgets\LinkPager 显示数据。
 
 下一章中你会学到如何使用 Yii 中强大的代码生成器 Gii， 去帮助你实现一些常用的功能需求， 例如增查改删（CRUD）数据表中的数据。 事实上你之前所写的代码全部都可以由 Gii 自动生成。
 * 用 Gii 生成代码（Generating Code with Gii）
-  本章将介绍如何使用 Gii 去自动生成 Web 站点常用功能的代码。使用 Gii 生成代码非常简单， 只要按照 Gii 页面上的介绍输入正确的信息即可。
+  本章将介绍如何使用 Gii 去自动生成 Web 站点常用功能的代码。使用 Gii 生成代码非
+  常简单， 只要按照 Gii 页面上的介绍输入正确的信息即可。
 
-贯穿本章节，你将会学到：
 
 在你的应用中开启 Gii
 使用 Gii 去生成活动记录类
 使用 Gii 去生成数据表操作的增查改删（CRUD）代码
 自定义 Gii 生成的代码
 开始 Gii
-Gii 是 Yii 中的一个模块。 可以通过配置应用的 yii\base\Application::modules 属性开启它。通常来讲在 config/web.php 文件中会有以下配置代码：
+
+Gii 是 Yii 中的一个模块。 可以通过配置应用的 yii\base\Application::modules 属性
+开启它。通常来讲在 config/web.php 文件中会有以下配置代码：
 
 $config = [ ... ];
 

@@ -1,5 +1,36 @@
-* spacemacs 黑板
-** 按键 (粉笔)
+* spacemacs (写字板)
+** 配置 (写字板个性化)
+*** 配置环境变量 (会对一些操作起作用)
+    spacemacs/edit-env 
+    配置文件  ~/.spacemacs.env
+*** .spacemacs 文件
+*** 自动保存
+**** Frequency(频率) of auto-saving
+     By default auto-saving of files is performed every 300 characters and
+     every 30 seconds of idle time which can be changed by setting to a
+     new value the variables =auto-save-interval= and =auto-save-timeout=
+     respectively.
+
+**** Location of auto-saved files
+     Auto-save of modified files can be performed in-place on the original file
+     itself /or/ in the cache directory (in this case the original file will remain
+     unsaved). By default Spacemacs auto-save the file in the cache directory.
+
+     To modify the location set the variable =dotspacemacs-auto-save-file-location=
+     to =original= or =cache=.
+
+     Local files are auto-saved in a sub-directory called =site= in the =cache=
+     directory whereas remote files (i.e. files edited over TRAMP) are auto-saved
+     in a sub-directory called =dist=.
+
+**** Disable auto-save
+     To disable auto-saving set the variable =dotspacemacs-auto-save-file-location=
+     to =nil=.
+
+     You can toggle auto-save in a buffer by calling the command =auto-save-mode=.
+
+** 字符输入 按键 (铅笔)
+*** 26 个字母，格式化键，控制键
 *** 键绑定 (我想用某个按键代表某个功能)
     (evil-leader/set-key "o y" 'copy-to-clipboard)
     全局绑定 会被模式绑定覆盖
@@ -44,7 +75,7 @@
 *** 预留前缀
     ~SPC o~ and ~SPC m o~ are reserved for the user
 *** Vim key bindings
-**** Escaping
+**** Escaping(跳脱键)
      #+BEGIN_SRC emacs-lisp
        (defun dotspacemacs/user-config ()
          (setq-default evil-escape-key-sequence "jj"))
@@ -69,16 +100,13 @@
      | ~%~     | text between =%=           |
      | ~\vert~ | text between =\vert=       |
 
-** unicode (我想写外语，俄语，拉丁语)
-   以某编码打开： M-x revert-buffer-with-coding-system RET（回车）
+** 输入他国语言 unicode 
+   以某编码打开：M-x revert-buffer-with-coding-system RET（回车）
    Ctrl-x 8 Enter 3bb Enter
    $ ＄ 央行网页选用了半角字符 U+00A5 (¥)。另见：人民币符号是「U+FFE5」还是「U+00A5」 ￥
    
-   插入unicode C-q 加8进制类型数字
-** 环境变量 (会对一些操作起作用的配置)
-   spacemacs/edit-env 
-   配置文件  ~/.spacemacs.env
-** 导航 
+   插入 unicode C-q 加 8 进制类型数字
+** 导航 (看字)
 *** 光标
     Navigation is performed using the Vi key bindings ~hjkl~.
 *** 快速跳转 通过 [[https://github.com/abo-abo/avy][avy]] 
@@ -88,7 +116,7 @@
     | ~SPC j l~   | 跳到某个  line |
 
 **** 跳转链接 ace-link 
-     | ~o~         | 默认模式hinitiate ace link mode in =help-mode= and =info-mode= |
+     | ~o~         | 默认模式 hinitiate ace link mode in =help-mode= and =info-mode= |
 
 *** 增强功能绑定 [[https://github.com/tpope/vim-unimpaired][tpope’s vim-unimpaired]].
     | ~[ SPC~     | Insert space above               |
@@ -113,69 +141,14 @@
     | ~] p~       | Paste below current line         |
     | ~g p~       | Select pasted text               |
 
-*** 可以忽略Jumping, Joining and Splitting
+*** Jumping, Joining and Splitting
     The ~SPC j~ prefix is for jumping, joining and splitting.
-
-**** Jumping
-     | ~SPC j 0~   | go to the beginning of line (and set a mark at the previous location in the line) |
-     | ~SPC j $~   | go to the end of line (and set a mark at the previous location in the line)       |
-     | ~SPC j b~   | undo a jump (go back to previous location)                                        |
-     | ~SPC j d~   | jump to a listing of the current directory                                        |
-     | ~SPC j D~   | jump to a listing of the current directory (other window)                         |
-     | ~SPC j f~   | jump to the definition of an Emacs Lisp function                                  |
-     | ~SPC j i~   | jump to a definition in buffer (imenu)                                            |
-     | ~SPC j I~   | jump to a definition in any buffer (imenu)                                        |
-     | ~SPC j j~   | jump to one or more characters in the buffer (works as an evil motion)            |
-     | ~SPC j k~   | jump to next line and indent it using auto-indent rules                           |
-     | ~SPC j l~   | jump to a line with avy (works as an evil motion)                                 |
-     | ~SPC j q~   | show the dumb-jump quick look tooltip                                             |
-     | ~SPC j u~   | jump to a URL in the current buffer                                               |
-     | ~SPC j v~   | jump to the definition/declaration of an Emacs Lisp variable                      |
-     | ~SPC j w~   | jump to a word in the current buffer (works as an evil motion)                    |
-
-**** Joining and splitting
-     | ~J~         | join the current line with the next line                                 |
-     | ~SPC j k~   | go to next line and indent it using auto-indent rules                    |
-     | ~SPC j n~   | split the current line at point, insert a new line and auto-indent       |
-     | ~SPC j o~   | split the current line at point but let point on current line            |
-     | ~SPC j s~   | split a quoted string or s-expression in place                           |
-     | ~SPC j S~   | split a quoted string or s-expression, insert a new line and auto-indent |
-
 *** 窗口操作 SPC w 
     黄金分割 golden-ratio
-
 *** 缓存和文件　Buffers and Files
 **** Buffers manipulation key bindings
      Buffer manipulation commands (start with ~b~):
-
-     | Key Binding     | Description                                                              |
-     |-----------------+--------------------------------------------------------------------------|
-     | ~SPC TAB~       | switch to alternate buffer in the current window (switch back and forth) |
-     | ~SPC b b~       | switch to a buffer                                                       |
-     | ~SPC b d~       | kill the current buffer (does not delete the visited file)               |
-     | ~SPC u SPC b d~ | kill the current buffer and window (does not delete the visited file)    |
-     | ~SPC b D~       | kill a visible buffer using [[https://github.com/abo-abo/ace-window][ace-window]]                                   |
-     | ~SPC u SPC b D~ | kill a visible buffer and its window using [[https://github.com/abo-abo/ace-window][ace-window]]                    |
-     | ~SPC b C-d~     | kill other buffers                                                       |
-     | ~SPC b C-D~     | kill buffers using a regular expression                                  |
-     | ~SPC b e~       | erase the content of the buffer (ask for confirmation)                   |
-     | ~SPC b h~       | open =*spacemacs*= home buffer                                           |
-     | ~SPC b H~       | open or select the =*Help*= buffer                                       |
-     | ~SPC b n~       | switch to next buffer avoiding special buffers                           |
-     | ~SPC b m~       | open =*Messages*= buffer                                                 |
-     | ~SPC u SPC b m~ | kill all buffers and windows except the current one                      |
-     | ~SPC b M~       | kill all buffers matching the regexp                                     |
-     | ~SPC b p~       | switch to previous buffer avoiding special buffers                       |
-     | ~SPC b P~       | copy clipboard and replace buffer (useful when pasting from a browser)   |
-     | ~SPC b R~       | revert the current buffer (reload from disk)                             |
-     | ~SPC b s~       | switch to the =*scratch*= buffer (create it if needed)                   |
-     | ~SPC b u~       | reopen the most recently killed file buffer                              |
-     | ~SPC b w~       | toggle read-only (writable state)                                        |
-     | ~SPC b x~       | kill the current buffer and window (does not delete the visited file)    |
-     | ~SPC b Y~       | copy whole buffer to clipboard (useful when copying to a browser)        |
-     | ~z f~           | Make current function or comments visible in buffer as much as possible  |
-
-**** 文件操作
+**** 文件操作 SPC f 
 **** 框架操作 Frame manipulation commands (start with ~F~): 
 **** 配置文件操作 SPC f e
      Convenient key bindings are located under the prefix ~SPC f e~ to quickly
@@ -219,39 +192,13 @@
     | ~C-c C-c~   | toggle display text and image display    |
     | ~C-c C-t~   | open new buffer with doc’s text contents |
 
-** 自动保存
-*** Frequency of auto-saving
-    By default auto-saving of files is performed every 300 characters and
-    every 30 seconds of idle time which can be changed by setting to a
-    new value the variables =auto-save-interval= and =auto-save-timeout=
-    respectively.
-
-*** Location of auto-saved files
-    Auto-save of modified files can be performed in-place on the original file
-    itself /or/ in the cache directory (in this case the original file will remain
-    unsaved). By default Spacemacs auto-save the file in the cache directory.
-
-    To modify the location set the variable =dotspacemacs-auto-save-file-location=
-    to =original= or =cache=.
-
-    Local files are auto-saved in a sub-directory called =site= in the =cache=
-    directory whereas remote files (i.e. files edited over TRAMP) are auto-saved
-    in a sub-directory called =dist=.
-
-*** Disable auto-save
-    To disable auto-saving set the variable =dotspacemacs-auto-save-file-location=
-    to =nil=.
-
-    You can toggle auto-save in a buffer by calling the command =auto-save-mode=.
-
-** 搜索SPC s
+** 查找 SPC s
 *** 搜索工具
-**** 有用的功能
      | ~SPC r l~              | 重新显示上次的搜索结果                                       |
      | ~SPC r s~ or ~SPC s l~ | resume search buffer (completion or converted search buffer) |
      | ~SPC s `~              | 返回原来的地方            |
-*** 通过语义列出符号 Listing symbols by semantic SPC s j
-** 编辑
+*** 通过语义列出符号  SPC s j
+** 编辑 (铅笔更正)
 *** 粘贴文本
 **** 上下文粘贴
      打开配置　 =dotspacemacs-enable-paste-transient-state= to =t=
@@ -261,7 +208,7 @@
      | ~C-k~      | 粘贴下一个 |
 
 **** 自动缩进粘贴文本
-     默认是自动缩进的，如不需要，可以加universal argument
+     默认是自动缩进的，如不需要，可以加 universal argument
 
      配置变量 =spacemacs-indent-sensitive-modes= 
 *** 文本操作 (start with ~x~)
@@ -365,7 +312,7 @@
 
     To disable the trash you can set the variable =delete-by-moving-to-trash= to
     =nil= in your =~/.spacemacs=.
-*** 编辑Lisp code
+*** 编辑 Lisp code
     Editing of lisp code is provided by [[https://github.com/syl20bnr/evil-lisp-state][evil-lisp-state]].
 
     Commands will set the current state to =lisp state= where different commands
@@ -471,7 +418,7 @@
    To customize your editorconfig experience, read [[https://github.com/editorconfig/editorconfig-emacs/blob/master/README.md#customize][the editorconfig-emacs package’s
    documentation]].
 
-** Emacs 服务
+** 写字服务
 *** 连接服务 emacsclient -c
 *** 保证服务不关闭
     #+BEGIN_SRC emacs-lisp
@@ -493,11 +440,6 @@
       (setq-default dotspacemacs-enable-server nil)
     #+END_SRC
 
-** 调试
-*** 加载有错误
-    emacs --debug-init
-*** 更新包后有错，要重新编译安装包
-    spacemacs/recompile-elpa
 ** 编程功能
 *** 代码折叠
     zm      折叠
@@ -511,15 +453,15 @@
     zd      删除 (delete) 在光标下的折叠。仅当 'foldmethod' 设为 "manual" 或 "marker" 时有效。
     zD     循环删除 (Delete) 光标下的折叠，即嵌套删除折叠。
     zE     除去 (Eliminate) 窗口里“所有”的折叠。
+** 调试
+*** 加载有错误
+    emacs --debug-init
+*** 更新包后有错，要重新编译安装包
+    spacemacs/recompile-elpa
 ** 帮助
 *** 手册 SPC h m 
-* 扩展layers
+* 扩展 layers
 ** pdf layer
-*** 特征:
- - Searching and slicing with =occur=.
- - Show document headings in outline buffer.
- - Manipulate annotations.(注释)
- - Fit PDF to screen.(全屏)
 *** Key bindings
   If you use Emacs editing style, check the key bindings at the [[https://github.com/politza/pdf-tools#some-keybindings][pdf-tools page]].
 **** PDF View
@@ -598,7 +540,6 @@
   | ~SPC m p~             | Display print version                     |
 
 **** Outline buffer mode
-
   | *Key Binding* | *Description*                                         |
   |---------------+-------------------------------------------------------|
   | ~S-tab~       | Expand all trees                                      |
@@ -615,7 +556,6 @@
   Note that you can use also typical Vim keys such as ~j~ and ~G~.
 
 **** Annotation list mode
-
   | Key Binding | Description                   |
   |-------------+-------------------------------|
   | ~d~         | Mark for deletion             |
@@ -624,7 +564,6 @@
   | ~q~         | Quit                          |
 
 **** Occur mode
-
   | Key Binding | Description    |
   |-------------+----------------|
   | ~q~         | Quit           |
@@ -632,8 +571,6 @@
   | ~r~         | Refresh buffer |
 
 ** epub layers
- | Key Binding | Description         |
- |-------------+---------------------|
  | ~<TAB>~     | Next link           |
  | ~<BACKTAB>~ | Previous link       |
  | ~H~ or ~[~  | Previous chapter    |
@@ -693,7 +630,7 @@
  | ~SPC e x~ | explain the error at point                                   |
 ** search engine
 *** 配置默认浏览器  
-    在 dotspacemacs/user-config段:
+    在 dotspacemacs/user-config 段:
 
 #+BEGIN_SRC emacs-lisp
   (setq browse-url-browser-function 'browse-url-generic
@@ -713,180 +650,171 @@
 ** chrome
 *** 实时预览 markdown 文件  flymd-flyit(不工作)
 ** asm layers
-  语言高亮
-  自动缩进
-  自动完成
-  查找文档 
-  智能菜单 Imenu integration SPC s j 
-| ~SPC m h h~ |查找命令文档 Look up the documentation for instruction at point |
-
 ** java layers
-*** 集成开发工具ensime   
+*** 集成开发工具 ensime   
     1.在工程下执行 sbt ensimeConfig 生成项目
     2.emacs 打开服务并连接服务 ensime 就可以了, 多连接几次，可能在下载依赖
     下面这个可以放在第一个
-    3.如要要用build 功能, 需配置，可以创建一个project/build.properties
+    3.如要要用 build 功能, 需配置，可以创建一个 project/build.properties
     #+BEGIN_SRC scala
     sbt.version=1.2.6  
     #+END_SRC
     查看版本，可以在 sbt 命令行下，执行 sbtVersion
     这样就可以 build , 和执行了
-*** 交互式构建工具 sbt 
-    echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
-    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
-    sudo apt-get update
-    sudo apt-get install sbt
-    sbt repositories
-*** 选择后端
-    我选的是 ensime, 此工具可以管理好多类工程
-**** sbt工程 
-     安装 sbt
+**** 交互式构建工具 sbt 
+     echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
+     sudo apt-get update
+     sudo apt-get install sbt
+     sbt repositories
+**** 选择后端
+***** sbt 工程 
+      安装 sbt
      
-    #+BEGIN_SRC shell
-      nix-env --install sbt
-    #+END_SRC
-**** gradle工程
-     Refer to the [[https://ensime.org/build_tools/gradle/][Ensime installation instructions]] to install the =ensime-gradle=
-**** 配置
-     Follow [[https://ensime.github.io/build_tools/sbt/][the ENSIME configuration instructions]]. Spacemacs uses
-**** 使用
-     ~SPC SPC spacemacs/ensime-gen-and-restart~ or ~SPC m D r~ generates a new config
- for a project and starts the server. Afterwards ~SPC SPC ensime~ or ~SPC m D s~
- will suffice do the trick.
-**** 注意
-     ENSIME is originally built for Scala, so support for java is not complete, in
-     particular refactoring doesn't work.
-     ensime 原来是为 scala 语言服务的，Java不完善
+     #+BEGIN_SRC shell
+       nix-env --install sbt
+     #+END_SRC
+***** gradle 工程
+      Refer to the [[https://ensime.org/build_tools/gradle/][Ensime installation instructions]] to install the =ensime-gradle=
+***** 配置
+      Follow [[https://ensime.github.io/build_tools/sbt/][the ENSIME configuration instructions]]. Spacemacs uses
+***** 使用
+      ~SPC SPC spacemacs/ensime-gen-and-restart~ or ~SPC m D r~ generates a new config
+  for a project and starts the server. Afterwards ~SPC SPC ensime~ or ~SPC m D s~
+  will suffice do the trick.
+***** 注意
+      ENSIME is originally built for Scala, so support for java is not complete, in
+      particular refactoring doesn't work.
+      ensime 原来是为 scala 语言服务的，Java 不完善
 
-*** Ensime key bindings
-**** Search
-  | Key Binding | Description                                         |
-  |-------------+-----------------------------------------------------|
-  | ~SPC m /~   | incremental search using =ensime-scalex= major mode |
-  | ~SPC m ?~   | incremental search in all live buffers              |
+**** Ensime key bindings
+***** Search
+   | Key Binding | Description                                         |
+   |-------------+-----------------------------------------------------|
+   | ~SPC m /~   | incremental search using =ensime-scalex= major mode |
+   | ~SPC m ?~   | incremental search in all live buffers              |
 
-**** Ensime Search Mode
-  | Key Binding | Description                                                       |
-  |-------------+-------------------------------------------------------------------|
-  | ~C-j~       | Move to next match                                                |
-  | ~C-k~       | Move to previous match                                            |
-  | ~C-i~       | Insert at point import of current result                          |
-  | ~RET~       | Jump to the target of the currently selected ensime-search-result |
-  | ~C-q~       | Quit ensime search                                                |
+***** Ensime Search Mode
+   | Key Binding | Description                                                       |
+   |-------------+-------------------------------------------------------------------|
+   | ~C-j~       | Move to next match                                                |
+   | ~C-k~       | Move to previous match                                            |
+   | ~C-i~       | Insert at point import of current result                          |
+   | ~RET~       | Jump to the target of the currently selected ensime-search-result |
+   | ~C-q~       | Quit ensime search                                                |
 
-**** sbt
-  | Key Binding | Description         |
-  |-------------+---------------------|
-  | ~SPC m b .~ | sbt transient state |
-  | ~SPC m b b~ | sbt command         |
-  | ~SPC m b c~ | compile             |
-  | ~SPC m b C~ | clean command       |
-  | ~SPC m b i~ | switch to sbt shell |
-  | ~SPC m b p~ | package command     |
-  | ~SPC m b r~ | run command         |
+***** sbt
+   | Key Binding | Description         |
+   |-------------+---------------------|
+   | ~SPC m b .~ | sbt transient state |
+   | ~SPC m b b~ | sbt command         |
+   | ~SPC m b c~ | compile             |
+   | ~SPC m b C~ | clean command       |
+   | ~SPC m b i~ | switch to sbt shell |
+   | ~SPC m b p~ | package command     |
+   | ~SPC m b r~ | run command         |
 
-**** Typecheck
-  | Key Binding | Description                     |
-  |-------------+---------------------------------|
-  | ~SPC m c t~ | type check the current file     |
-  | ~SPC m c T~ | type check all the open buffers |
+***** Typecheck
+   | Key Binding | Description                     |
+   |-------------+---------------------------------|
+   | ~SPC m c t~ | type check the current file     |
+   | ~SPC m c T~ | type check all the open buffers |
 
-**** Debug
-  | Key Binding | Description                 |
-  |-------------+-----------------------------|
-  | ~SPC m d A~ | Attach to a remote debugger |
-  | ~SPC m d b~ | set breakpoint              |
-  | ~SPC m d B~ | clear breakpoint            |
-  | ~SPC m d C~ | clear all breakpoints       |
-  | ~SPC m d c~ | continue                    |
-  | ~SPC m d i~ | inspect value at point      |
-  | ~SPC m d n~ | next                        |
-  | ~SPC m d o~ | step out                    |
-  | ~SPC m d q~ | quit                        |
-  | ~SPC m d r~ | run                         |
-  | ~SPC m d s~ | step                        |
-  | ~SPC m d t~ | backtrace                   |
+***** Debug
+   | Key Binding | Description                 |
+   |-------------+-----------------------------|
+   | ~SPC m d A~ | Attach to a remote debugger |
+   | ~SPC m d b~ | set breakpoint              |
+   | ~SPC m d B~ | clear breakpoint            |
+   | ~SPC m d C~ | clear all breakpoints       |
+   | ~SPC m d c~ | continue                    |
+   | ~SPC m d i~ | inspect value at point      |
+   | ~SPC m d n~ | next                        |
+   | ~SPC m d o~ | step out                    |
+   | ~SPC m d q~ | quit                        |
+   | ~SPC m d r~ | run                         |
+   | ~SPC m d s~ | step                        |
+   | ~SPC m d t~ | backtrace                   |
 
-  *Note:* These key bindings need a transient-state, PR welcome :-)
+   *Note:* These key bindings need a transient-state, PR welcome :-)
 
-**** Errors
+***** Errors
 
-  | Key Binding | Description                                        |
-  |-------------+----------------------------------------------------|
-  | ~SPC m e e~ | print error at point                               |
-  | ~SPC m e l~ | show all errors and warnings                       |
-  | ~SPC m e s~ | switch to buffer containing the stack trace parser |
+   | Key Binding | Description                                        |
+   |-------------+----------------------------------------------------|
+   | ~SPC m e e~ | print error at point                               |
+   | ~SPC m e l~ | show all errors and warnings                       |
+   | ~SPC m e s~ | switch to buffer containing the stack trace parser |
 
-**** Goto
+***** Goto
 
-  | Key Binding | Description          |
-  |-------------+----------------------|
-  | ~SPC m g g~ | go to definition     |
-  | ~SPC m g i~ | go to implementation |
-  | ~SPC m g t~ | go to test           |
+   | Key Binding | Description          |
+   |-------------+----------------------|
+   | ~SPC m g g~ | go to definition     |
+   | ~SPC m g i~ | go to implementation |
+   | ~SPC m g t~ | go to test           |
 
-**** Print and yank types
+***** Print and yank types
 
-  |-------------+--------------------------------|
-  | ~SPC m h T~ | print full type name at point  |
-  | ~SPC m h t~ | print short type name at point |
-  | ~SPC m y T~ | yank full type name at point   |
-  | ~SPC m y t~ | yank short type name at point  |
+   |-------------+--------------------------------|
+   | ~SPC m h T~ | print full type name at point  |
+   | ~SPC m h t~ | print short type name at point |
+   | ~SPC m y T~ | yank full type name at point   |
+   | ~SPC m y t~ | yank short type name at point  |
 
-**** Documentation, Inspect
+***** Documentation, Inspect
 
-  | Key Binding | Description                            |
-  |-------------+----------------------------------------|
-  | ~SPC m h h~ | show documentation for symbol at point |
-  | ~SPC m h u~ | show uses for symbol at point          |
-  | ~SPC m i i~ | inspect type at point                  |
-  | ~SPC m i I~ | inspect type in other frame            |
-  | ~SPC m i p~ | inspect project package                |
+   | Key Binding | Description                            |
+   |-------------+----------------------------------------|
+   | ~SPC m h h~ | show documentation for symbol at point |
+   | ~SPC m h u~ | show uses for symbol at point          |
+   | ~SPC m i i~ | inspect type at point                  |
+   | ~SPC m i I~ | inspect type in other frame            |
+   | ~SPC m i p~ | inspect project package                |
 
-**** Server
+***** Server
 
-  | Key Binding | Description                                            |
-  |-------------+--------------------------------------------------------|
-  | ~SPC m D f~ | reload open files                                      |
-  | ~SPC m D r~ | regenerate the =.ensime= and restart the ensime server |
-  | ~SPC m D s~ | start ensime server                                    |
+   | Key Binding | Description                                            |
+   |-------------+--------------------------------------------------------|
+   | ~SPC m D f~ | reload open files                                      |
+   | ~SPC m D r~ | regenerate the =.ensime= and restart the ensime server |
+   | ~SPC m D s~ | start ensime server                                    |
 
-**** Refactoring
+***** Refactoring
 
-  | Key Binding | Description                                                          |
-  |-------------+----------------------------------------------------------------------|
-  | ~SPC m r a~ | add type annotation                                                  |
-  | ~SPC m r f~ | format source                                                        |
-  | ~SPC m r d~ | get rid of an intermediate variable (=ensime-refactor-inline-local=) |
-  | ~SPC m r D~ | get rid of an intermediate variable (=ensime-undo-peek=)             |
-  | ~SPC m r i~ | organize imports                                                     |
-  | ~SPC m r m~ | extract a range of code into a method                                |
-  | ~SPC m r r~ | rename a symbol project wide                                         |
-  | ~SPC m r t~ | import type at point                                                 |
-  | ~SPC m r v~ | extract a range of code into a variable                              |
-  | ~SPC m z~   | expand/contract region                                               |
+   | Key Binding | Description                                                          |
+   |-------------+----------------------------------------------------------------------|
+   | ~SPC m r a~ | add type annotation                                                  |
+   | ~SPC m r f~ | format source                                                        |
+   | ~SPC m r d~ | get rid of an intermediate variable (=ensime-refactor-inline-local=) |
+   | ~SPC m r D~ | get rid of an intermediate variable (=ensime-undo-peek=)             |
+   | ~SPC m r i~ | organize imports                                                     |
+   | ~SPC m r m~ | extract a range of code into a method                                |
+   | ~SPC m r r~ | rename a symbol project wide                                         |
+   | ~SPC m r t~ | import type at point                                                 |
+   | ~SPC m r v~ | extract a range of code into a variable                              |
+   | ~SPC m z~   | expand/contract region                                               |
 
-**** Tests
+***** Tests
 
-  | Key Binding | Description              |
-  |-------------+--------------------------|
-  | ~SPC m t a~ | test command (sbt)       |
-  | ~SPC m t r~ | test quick command (sbt) |
-  | ~SPC m t t~ | test only (sbt)          |
+   | Key Binding | Description              |
+   |-------------+--------------------------|
+   | ~SPC m t a~ | test command (sbt)       |
+   | ~SPC m t r~ | test quick command (sbt) |
+   | ~SPC m t t~ | test only (sbt)          |
 
-**** REPL
+***** REPL
 
-  | Key Binding | Description                                                         |
-  |-------------+---------------------------------------------------------------------|
-  | ~SPC m s a~ | ask for a file to be loaded in the REPL                             |
-  | ~SPC m s b~ | send buffer to the REPL                                             |
-  | ~SPC m s B~ | send buffer to the REPL and focus the REPL buffer in =insert state= |
-  | ~SPC m s i~ | start or switch to the REPL inferior process                        |
-  | ~SPC m s r~ | send region to the REPL                                             |
-  | ~SPC m s R~ | send region to the REPL and focus the REPL buffer in =insert state= |
+   | Key Binding | Description                                                         |
+   |-------------+---------------------------------------------------------------------|
+   | ~SPC m s a~ | ask for a file to be loaded in the REPL                             |
+   | ~SPC m s b~ | send buffer to the REPL                                             |
+   | ~SPC m s B~ | send buffer to the REPL and focus the REPL buffer in =insert state= |
+   | ~SPC m s i~ | start or switch to the REPL inferior process                        |
+   | ~SPC m s r~ | send region to the REPL                                             |
+   | ~SPC m s R~ | send region to the REPL and focus the REPL buffer in =insert state= |
 *** LSP Java
 **** Code intelligence shorcuts
-
  | Key binding   | Description                           |
  |---------------+---------------------------------------|
  | ~SPC m g g~   | Go to definition                      |
@@ -968,7 +896,6 @@
  | ~SPC m d w b~ | list breakpoints                |
 
 *** Maven
-
  | Key binding     | Description                                          |
  |-----------------+------------------------------------------------------|
  | ~SPC m m c c~   | Compile                                              |
@@ -983,7 +910,6 @@
  | ~SPC m m t t~   | Run a specific test                                  |
 
 *** Gradle
-
  | Key binding   | Description              |
  |---------------+--------------------------|
  | ~SPC m l c c~ | Compile                  |
@@ -993,6 +919,9 @@
  | ~SPC m l t b~ | Run current buffer tests |
  | ~SPC m l t t~ | Run a specific test      |
  | ~SPC m l x~   | Execute a Gradle task    |
+*** meghanada
+    meghanada 默认只能识别 maven 或 gradle 工程
+    要识别非工程的,需要在目录加入 .meghanada.conf 配置文件
 ** emacs lisp layers
 *** 执行 ，e f
 *** 调试  
@@ -1004,7 +933,7 @@
 
   Press ~a~ to stop debugging.
 
-*** 格式化代码(美化)
+*** semantic 格式化代码(美化)
  The [[https://github.com/syl20bnr/spacemacs/blob/develop/layers/%2Bemacs/semantic/README.org][semantic]] layer should be installed for these key bindings to become active.
 
  | Key Binding | Description             |
@@ -1176,7 +1105,7 @@
 *** 特点:
     拉取请求 
     git 功能 
-    浏览gist
+    浏览 gist
     地址生成
     克隆仓库 
    
@@ -1468,7 +1397,7 @@
 *** 键盘绑定
 **** 待办 
  | ~SPC a o #~   | 显示过期的代办                                                            |
- | ~SPC a o /~   | 查找 在org代办中                                                          |
+ | ~SPC a o /~   | 查找 在 org 代办中                                                          |
  | ~SPC a o a~   | 显示代办 list                                                             |
  | ~SPC a o c~   | 抓取到代办中 org capture                                                  |
  | ~SPC a o e~   | 保存代办视图 org store agenda views                                       |
@@ -1482,7 +1411,7 @@
  | ~SPC a o C o~ | org clock out                                                             |
  | ~SPC a o C r~ | org resolve clocks                                                        |
  | ~SPC a o l~   | org store link                                                            |
- | ~SPC a o m~   | tags视图 org tags view                                                      |
+ | ~SPC a o m~   | tags 视图 org tags view                                                      |
  | ~SPC a o o~   | org agenda                                                                |
  | ~SPC a o s~   | org search view                                                           |
  | ~SPC a o t~   | 代办列表 list                                                         |
@@ -1507,7 +1436,7 @@
  | Key binding   | Description                              |
  |---------------+------------------------------------------|
  | ~gj~ / ~gk~   | 同级导航 Next/previous element (heading) |
- | ~gh~ / ~gl~   | 上级导航Parent/child element (heading)   |
+ | ~gh~ / ~gl~   | 上级导航 Parent/child element (heading)   |
  | ~gH~          | 最顶层 Root heading                         |
  | ~ae~          | Element text object                      |
  | ~ar~          | Subtree text object                      |
@@ -1873,7 +1802,7 @@
  | ~f~         | Find/visit another entry to visualize |
  | ~r~         | Rename this, or another, entry        |
  |             |                                       |
-** 代码跳转　gtags
+** gtags
 *** 安装
 **** GNU Global (gtags)
      To use gtags, you first have to install [[https://www.gnu.org/software/global/download.html][GNU Global]].
@@ -2039,27 +1968,27 @@
 *** 注释
     | ~SPC m r d b~ | 文件注释      |
     | ~SPC m r d f~ | 函数注释      |
-    | ~SPC m r d t~ | tag注释       |
-    | ~SPC m r d h~ | 显示tag的用法 |
+    | ~SPC m r d t~ | tag 注释       |
+    | ~SPC m r d h~ | 显示 tag 的用法 |
 *** 代码导航
      | ~SPC m C-g~   | 返回　brings you back to last place you were when you pressed M-..                          |
-     | ~SPC m g g~   | 跳到定义处jump to the definition of the thing under the cursor                                |
-     | ~SPC m g G~   | 跳到你要的定义处jump to definition for the given name                                            |
-     | ~SPC m h d~   | 帮助文档find docs of the thing under the cursor. Press again to open the associated URL (if any) |
-     | ~SPC m h t~   | 显示光标处的类型find the type of the thing under the cursor                                      |
+     | ~SPC m g g~   | 跳到定义处 jump to the definition of the thing under the cursor                                |
+     | ~SPC m g G~   | 跳到你要的定义处 jump to definition for the given name                                            |
+     | ~SPC m h d~   | 帮助文档 find docs of the thing under the cursor. Press again to open the associated URL (if any) |
+     | ~SPC m h t~   | 显示光标处的类型 find the type of the thing under the cursor                                      |
      | ~SPC m r r V~ | 重命名变量 rename variable under the cursor using tern                                        |
 *** 调试
     : 开一个服务对象，把代码发给浏览器解释器，解释器求值后，发给服务    
 
     - 空白页 run-skewer   
-    - 注入自己的页面 点击右上角三角Greasemonkey(多试两次) 
+    - 注入自己的页面 点击右上角三角 Greasemonkey(多试两次) 
     
     | ~SPC m e e~ | 求最后表达式                                                            |
-    | ~SPC m s b~ | 执行buffer                                                              |
+    | ~SPC m s b~ | 执行 buffer                                                              |
     | ~SPC m s f~ | 发送函数给解释器                                                        |
     | ~SPC m s r~ | send current region to the skewer REPL                                  |
     | ~SPC m s R~ | send current region to the skewer REPL and switch to it in insert state |
-    | ~SPC m s s~ | 切换到skewer-repl buffer                                                |
+    | ~SPC m s s~ | 切换到 skewer-repl buffer                                                |
 *** 工具配置
 **** 后端解释程序配置
      (javascript :variables javascript-backend 'tern)
@@ -2067,7 +1996,7 @@
      ;;; 定义本地变量，选择项目的后端 
      ((js2-mode (javascript-backend . lsp)))
 **** 代码格式化工具
-     添加 web-beautify层
+     添加 web-beautify 层
      (javascript :variables javascript-fmt-tool 'web-beautify)
 
      也可以自定义项目自身的格式化工具
@@ -2081,7 +2010,7 @@
       如果想每个对话都使用当前服务, 需如下配置
       (tern :variables tern-disable-port-files nil)
 ***** 安装语言服务协议 npm i -g typescript javascript-typescript-langserver
-***** 配置Project configuration
+***** 配置 Project configuration
       A .tern-project file is a JSON file in a format like this:
   #+BEGIN_SRC json
 
@@ -2128,6 +2057,8 @@
   | 跳到定义  | ~SPC m g g~              |
   | jump back | ~C-t~                    |
 
+  phpcbf  代码格式化工具
+  phpunit php 单元测试工具
 ** debug layer
  | ~SPC m d d~ | open cmd buffer |
  | ~bb~        | set break            |
@@ -2155,12 +2086,12 @@
   | 显示*SQL*buffer| ~SPC m b b~ |
   | 显示数据库中的表 | ~SPC m l a~ |
   | 显示表信息       | ~SPC m l t~ |
-  | 发送buffer执行   | ~SPC m s b~ |
+  | 发送 buffer 执行   | ~SPC m s b~ |
   | 发送选区执行     | ~SPC m s r~ |
 
 ** html layer
 *** 键盘绑定
-**** Web文件
+**** Web 文件
      | 实时预览     | ~SPC m i~   |
      | 到对应标签   | ~SPC m g b~ |
      | 到子标签     | ~SPC m g c~ |

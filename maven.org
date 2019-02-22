@@ -1,0 +1,1014 @@
+* maven 项目管理工具，可以对 Java 项目进行构建、依赖管理
+** Maven 安装
+*** 安装 Jdk
+    测试 java -version
+*** 安装 Maven 
+    Maven 下载地址：http://maven.apache.org/download.cgi
+    # wget http://mirrors.hust.edu.cn/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
+    # tar -xvf  apache-maven-3.3.9-bin.tar.gz
+    # sudo mv -f apache-maven-3.3.9 /usr/local/
+
+    在 /etc/profile 
+    export MAVEN_HOME=/usr/local/apache-maven-3.3.9
+    export PATH=${PATH}:${MAVEN_HOME}/bin
+
+    # source /etc/profile
+    # mvn -v
+** 目录约定
+| pom.xml                  |                                                                            |
+| /src/main/java           | 项目的 java 源代码                                                         |
+| /src/main/resources      | 项目的资源，比如说 property 文件，springmvc.xml                            |
+| /src/test/java           | 项目的测试类，比如说 Junit 代码                                            |
+| /src/test/resources      | 测试用的资源                                                               |
+| /src/main/webapp/WEB-INF | web 应用文件目录，web 项目的信息，比如存放 web.xml、本地图片、jsp 视图页面 |
+| /target                  | 打包输出目录                                                               |
+| /target/classes          | 编译输出目录                                                               |
+| /target/test-classes     | 测试编译输出目录                                                           |
+| ~/.m2/repository         | Maven 默认的本地仓库目录位置                                               |
+ 
+** Maven 仓库 http://search.maven.org
+** 常用命令
+   mvn help:effective-pom 查看 Super POM 默认配置
+
+   mvn archetype:generate 创建 Maven 项目(有配置文件 pom.xml)
+   mvn archetype:generate -DgroupId=com.yano -DartifactId=MavenJavaTest -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+   mvn archetype:generate -DgroupId=com.companyname.bank -DartifactId=consumerBanking -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+
+   mvn clean install 生成 jar 程序
+   java -jar target/test-1.0.0-BUILD-SNAPSHOT.jar  执行 jar 程序
+
+   mvn compile 编译源代码
+   mvn deploy 发布项目
+   mvn test-compile 编译测试源代码
+   mvn test 运行应用程序中的单元测试
+   mvn site 生成项目相关信息的网站
+   mvn clean 清除项目目录中的生成结果
+   mvn package 根据项目生成的 jar
+   mvn install 在本地 Repository 中安装 jar
+   mvn eclipse:eclipse 生成 eclipse 项目文件
+   mvnjetty:run 启动 jetty 服务
+   mvntomcat:run 启动 tomcat 服务
+   mvn clean package -Dmaven.test.skip=true:清除以前的包后重新打包，跳过测试类
+** Maven POM(项目对象模型)
+** Maven 构建生命周期
+validate	检查工程配置是否正确，完成构建过程的所有必要信息是否能够获取到。
+initialize	初始化构建状态，例如设置属性。
+generate-sources	生成编译阶段需要包含的任何源码文件。
+process-sources	处理源代码，例如，过滤任何值（filter any value）。
+generate-resources	生成工程包中需要包含的资源文件。
+process-resources	拷贝和处理资源文件到目的目录中，为打包阶段做准备。
+compile	编译工程源码。
+process-classes	处理编译生成的文件，例如 Java Class 字节码的加强和优化。
+generate-test-sources	生成编译阶段需要包含的任何测试源代码。
+process-test-sources	处理测试源代码，例如，过滤任何值（filter any values)。
+test-compile	编译测试源代码到测试目的目录。
+process-test-classes	处理测试代码文件编译后生成的文件。
+test	使用适当的单元测试框架（例如 JUnit）运行测试。
+prepare-package	在真正打包之前，为准备打包执行任何必要的操作。
+package	获取编译后的代码，并按照可发布的格式进行打包，例如 JAR、WAR 或者 EAR 文件。
+pre-integration-test	在集成测试执行之前，执行所需的操作。例如，设置所需的环境变量。
+integration-test	处理和部署必须的工程包到集成测试能够运行的环境中。
+post-integration-test	在集成测试被执行后执行必要的操作。例如，清理环境。
+verify	运行检查操作来验证工程包是有效的，并满足质量要求。
+install	安装工程包到本地仓库中，该仓库可以作为本地其他工程的依赖。
+deploy	拷贝最终的工程包到远程仓库中，以共享给其他开发人员和工程。
+** Maven 仓库
+Maven 仓库有三种类型：
+
+本地（local） .m2/respository/
+中央（central） 由 Maven 社区提供 http://search.maven.org/#browse
+远程（remote）开发人员自己定制仓库
+
+** Maven 构建 & 项目测试
+进入 C:/MVN 文件夹下，打开 consumerBanking 文件夹。你将看到有一个 pom.xml 文件，
+代码如下：
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.companyname.bank</groupId>
+  <artifactId>consumerBanking</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>consumerBanking</name>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+</project>
+从以上 xml 代码中，可知 Maven 已经添加了 JUnit 作为测试框架。
+
+默认情况下 Maven 添加了一个源码文件
+C:\MVN\consumerBanking\src\main\java\com\companyname\bank\App.java 和一个测试文
+件 C:\MVN\consumerBanking\src\test\java\com\companyname\bank\AppTest.java。
+
+打开命令控制台，跳转到 C:\MVN\consumerBanking 目录下，并执行以下 mvn 命令开始构建项目：
+
+C:\MVN\consumerBanking>mvn clean package
+[INFO] Scanning for projects...
+[INFO] -------------------------------------------------------------------
+[INFO] Building consumerBanking
+[INFO]    task-segment: [clean, package]
+[INFO] -------------------------------------------------------------------
+[INFO] [clean:clean {execution: default-clean}]
+[INFO] Deleting directory C:\MVN\consumerBanking\target
+...
+...
+...
+[INFO] [jar:jar {execution: default-jar}]
+[INFO] Building jar: C:\MVN\consumerBanking\target\
+consumerBanking-1.0-SNAPSHOT.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 2 seconds
+[INFO] Finished at: Tue Jul 10 16:52:18 IST 2012
+[INFO] Final Memory: 16M/89M
+[INFO] ------------------------------------------------------------------------
+执行完后，我们已经构建了自己的项目并创建了最终的 jar 文件，下面是要学习的关键概念：
+
+我们给了 maven 两个目标，首先清理目标目录（clean），然后打包项目构建的输出为 jar
+（package）文件。
+
+打包好的 jar 文件可以在 consumerBanking\target 中获得，名称为
+consumerBanking-1.0-SNAPSHOT.jar。
+
+测试报告存放在 consumerBanking\target\surefire-reports 文件夹中。
+Maven 编译源码文件，以及测试源码文件。
+接着 Maven 运行测试用例。
+最后 Maven 创建项目包。
+C:\MVN\consumerBanking\target\classes>java com.companyname.bank.App
+你可以看到结果：
+
+Hello World! 添加 Java 源文件
+
+接下来我们看看如何添加其他的 Java 文件到项目中。打开
+C:\MVN\consumerBanking\src\main\java\com\companyname\bank 文件夹，在其中创建
+Util 类 Util.java。
+
+Util.java
+package com.companyname.bank;
+ 
+public class Util 
+{
+   public static void printMessage(String message){
+       System.out.println(message);
+   }
+}
+更新 App 类来使用 Util 类:
+
+App.java
+package com.companyname.bank;
+ 
+/**
+ * Hello world!
+ *
+ */
+public class App 
+{
+    public static void main( String[] args )
+    {
+        Util.printMessage("Hello World!");
+    }
+}
+现在打开命令控制台，跳转到 C:\MVN\consumerBanking 目录下，并执行下面的 mvn 命令。
+
+C:\MVN\consumerBanking>mvn clean compile
+在 Maven 构建成功之后，跳转到 C:\MVN\consumerBanking\target\classes 目录下，并执行下面的 java 命令。
+
+C:\MVN\consumerBanking\target\classes>java -cp com.companyname.bank.App
+你可以看到结果：
+
+Hello World!
+** Maven 引入外部依赖
+如果我们需要引入第三库文件到项目，该怎么操作呢？
+
+pom.xml 的 dependencies 列表列出了我们的项目需要构建的所有外部依赖项。
+
+要添加依赖项，我们一般是先在 src 文件夹下添加 lib 文件夹，然后将你工程需要的 jar 文件复制到 lib 文件夹下。我们使用的是 ldapjdk.jar，它是为 LDAP 操作的一个帮助库：
+
+
+
+然后添加以下依赖到 pom.xml 文件中：
+
+<dependencies>
+    <!-- 在这里添加你的依赖 -->
+    <dependency>
+        <groupId>ldapjdk</groupId>  <!-- 库名称，也可以自定义 -->
+        <artifactId>ldapjdk</artifactId>    <!--库名称，也可以自定义-->
+        <version>1.0</version> <!--版本号-->
+        <scope>system</scope> <!--作用域-->
+        <systemPath>${basedir}\src\lib\ldapjdk.jar</systemPath> <!--项目根目录下的 lib 文件夹下-->
+    </dependency> 
+</dependencies>
+pom.xml 文件完整代码如下：
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+   http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>com.companyname.bank</groupId>
+   <artifactId>consumerBanking</artifactId>
+   <packaging>jar</packaging>
+   <version>1.0-SNAPSHOT</version>
+   <name>consumerBanking</name>
+   <url>http://maven.apache.org</url>
+ 
+   <dependencies>
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <version>3.8.1</version>
+         <scope>test</scope>
+      </dependency>
+ 
+      <dependency>
+         <groupId>ldapjdk</groupId>
+         <artifactId>ldapjdk</artifactId>
+         <scope>system</scope>
+         <version>1.0</version>
+         <systemPath>${basedir}\src\lib\ldapjdk.jar</systemPath>
+      </dependency>
+   </dependencies>
+ 
+</project>
+** Maven 项目模板
+Maven 使用 archetype(原型) 来创建自定义的项目结构，形成 Maven 项目模板。
+
+在前面章节我们学到 Maven 使用下面的命令来快速创建 java 项目：
+
+mvn archetype:generate
+什么是 archetype？
+archetype 也就是原型，是一个 Maven 插件，准确说是一个项目模板，它的任务是根据模板创建一个项目结构。我们将使用 quickstart 原型插件创建一个简单的 java 应用程序。
+
+使用项目模板
+让我们打开命令控制台，跳转到 C:\> MVN 目录并执行以下 mvn 命令:
+
+C:\MVN> mvn archetype:generate 
+Maven 将开始处理，并要求选择所需的原型:
+
+[INFO] Scanning for projects...
+[INFO] Searching repository for plugin with prefix: 'archetype'.
+[INFO] -------------------------------------------------------------------
+[INFO] Building Maven Default Project
+[INFO]task-segment: [archetype:generate] (aggregator-style)
+[INFO] -------------------------------------------------------------------
+[INFO] Preparing archetype:generate
+...
+600: remote -> org.trailsframework:trails-archetype (-)
+601: remote -> org.trailsframework:trails-secure-archetype (-)
+602: remote -> org.tynamo:tynamo-archetype (-)
+603: remote -> org.wicketstuff.scala:wicket-scala-archetype (-)
+604: remote -> org.wicketstuff.scala:wicketstuff-scala-archetype 
+Basic setup for a project that combines Scala and Wicket,
+depending on the Wicket-Scala project. 
+Includes an example Specs test.)
+605: remote -> org.wikbook:wikbook.archetype (-)
+606: remote -> org.xaloon.archetype:xaloon-archetype-wicket-jpa-glassfish (-)
+607: remote -> org.xaloon.archetype:xaloon-archetype-wicket-jpa-spring (-)
+608: remote -> org.xwiki.commons:xwiki-commons-component-archetype 
+(Make it easy to create a maven project for creating XWiki Components.)
+609: remote -> org.xwiki.rendering:xwiki-rendering-archetype-macro 
+(Make it easy to create a maven project for creating XWiki Rendering Macros.)
+610: remote -> org.zkoss:zk-archetype-component (The ZK Component archetype)
+611: remote -> org.zkoss:zk-archetype-webapp (The ZK wepapp archetype)
+612: remote -> ru.circumflex:circumflex-archetype (-)
+613: remote -> se.vgregion.javg.maven.archetypes:javg-minimal-archetype (-)
+614: remote -> sk.seges.sesam:sesam-annotation-archetype (-)
+Choose a number or apply filter 
+(format: [groupId:]artifactId, case sensitive contains): 203:
+按下 Enter 选择默认选项 (203:maven-archetype-quickstart)。
+
+Maven 将询问原型的版本
+Choose org.apache.maven.archetypes:maven-archetype-quickstart version:
+1: 1.0-alpha-1
+2: 1.0-alpha-2
+3: 1.0-alpha-3
+4: 1.0-alpha-4
+5: 1.0
+6: 1.1
+Choose a number: 6:
+按下 Enter 选择默认选项 (6:maven-archetype-quickstart:1.1)
+
+Maven 将询问项目细节。按要求输入项目细节。如果要使用默认值则直接按 Enter 键。你也可以输入自己的值。
+
+Define value for property 'groupId': : com.companyname.insurance
+Define value for property 'artifactId': : health
+Define value for property 'version': 1.0-SNAPSHOT
+Define value for property 'package': com.companyname.insurance
+Maven 将要求确认项目细节，按 Enter 或按 Y
+
+Confirm properties configuration:
+groupId: com.companyname.insurance
+artifactId: health
+version: 1.0-SNAPSHOT
+package: com.companyname.insurance
+Y:
+现在 Maven 将开始创建项目结构，显示如下:
+
+[INFO] -----------------------------------------------------------------------
+[INFO] Using following parameters for creating project 
+from Old (1.x) Archetype: maven-archetype-quickstart:1.1
+[INFO] -----------------------------------------------------------------------
+[INFO] Parameter: groupId, Value: com.companyname.insurance
+[INFO] Parameter: packageName, Value: com.companyname.insurance
+[INFO] Parameter: package, Value: com.companyname.insurance
+[INFO] Parameter: artifactId, Value: health
+[INFO] Parameter: basedir, Value: C:\MVN
+[INFO] Parameter: version, Value: 1.0-SNAPSHOT
+[INFO] project created from Old (1.x) Archetype in dir: C:\MVN\health
+[INFO] -----------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] -----------------------------------------------------------------------
+[INFO] Total time: 4 minutes 12 seconds
+[INFO] Finished at: Fri Jul 13 11:10:12 IST 2012
+[INFO] Final Memory: 20M/90M
+[INFO] -----------------------------------------------------------------------
+创建的项目
+现在转到 C:\ > MVN 目录。你会看到一个名为 health 的 java 应用程序项目，就像在项目创建的时候建立的 artifactId 名称一样。Maven 将创建一个有标准目录布局的项目，如下所示:
+
+
+
+创建 pom.xml
+Maven 为项目自动生成一个 pom.xml 文件，如下所示:
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+  http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.companyname.insurance</groupId>
+  <artifactId>health</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>health</name>
+  <url>http://maven.apache.org</url>
+  <properties>
+     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <dependencies>
+     <dependency>
+     <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>3.8.1</version>
+        <scope>test</scope>
+     </dependency>
+  </dependencies>
+</project>
+App.java
+Maven 会自动生成一个测试的 java 文件 App.java。
+
+路径：C:\MVN\consumerBanking\src\main\java\com\companyname\bank
+
+package com.companyname.insurance;
+ 
+/**
+ * Hello world!
+*
+*/
+public class App 
+{
+    public static void main( String[] args )
+    {
+        System.out.println( "Hello World!" );
+    }
+}
+AppTest.java
+Maven 会自动生成一个 java 文件 AppTest.java。
+
+路径为：C:\MVN\consumerBanking\src\test\java\com\companyname\bank
+
+package com.companyname.insurance;
+ 
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+ 
+/**
+ * Unit test for simple App.
+*/
+public class AppTest 
+   extends TestCase
+{
+   /**
+   * Create the test case
+   *
+   * @param testName name of the test case
+   */
+  public AppTest( String testName )
+  {
+      super( testName );
+  }
+ 
+  /**
+  * @return the suite of tests being tested
+  */
+  public static Test suite()
+  {
+      return new TestSuite( AppTest.class );
+  }
+ 
+  /**
+  * Rigourous Test :-)
+  */
+  public void testApp()
+  {
+      assertTrue( true );
+  }
+}
+就这样。现在你可以看到 Maven 的强大之处。你可以用 maven 简单的命令创建任何类型的项目，并且可以启动您的开发。
+** Maven 项目文档
+本章节我们主要学习如何创建 Maven 项目文档。
+
+比如我们在 C:/MVN 目录下，创建了 consumerBanking 项目，Maven 使用下面的命令来快速创建 java 项目：
+
+mvn archetype:generate -DgroupId=com.companyname.bank -DartifactId=consumerBanking -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+修改 pom.xml，添加以下配置（如果没有的话）：
+
+<project>
+  ...
+<build>
+<pluginManagement>
+    <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>2.7</version>
+        </plugin>
+    </plugins>
+    </pluginManagement>
+</build>
+ ...
+</project>
+不然运行 mvn site 命令时出现 java.lang.NoClassDefFoundError: org/apache/maven/doxia/siterenderer/DocumentContent 的问题， 这是由于 maven-site-plugin 版本过低，升级到 3.3+ 即可。
+
+打开 consumerBanking 文件夹并执行以下 mvn 命令。
+
+C:\MVN\consumerBanking> mvn site
+Maven 开始生成文档：
+
+[INFO] Scanning for projects...
+[INFO] -------------------------------------------------------------------
+[INFO] Building consumerBanking
+[INFO]task-segment: [site]
+[INFO] -------------------------------------------------------------------
+[INFO] [site:site {execution: default-site}]
+[INFO] artifact org.apache.maven.skins:maven-default-skin: 
+checking for updates from central
+[INFO] Generating "About" report.
+[INFO] Generating "Issue Tracking" report.
+[INFO] Generating "Project Team" report.
+[INFO] Generating "Dependencies" report.
+[INFO] Generating "Continuous Integration" report.
+[INFO] Generating "Source Repository" report.
+[INFO] Generating "Project License" report.
+[INFO] Generating "Mailing Lists" report.
+[INFO] Generating "Plugin Management" report.
+[INFO] Generating "Project Summary" report.
+[INFO] -------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] -------------------------------------------------------------------
+[INFO] Total time: 16 seconds
+[INFO] Finished at: Wed Jul 11 18:11:18 IST 2012
+[INFO] Final Memory: 23M/148M
+[INFO] -------------------------------------------------------------------
+
+
+打开 C:\MVN\consumerBanking\target\site 文件夹。点击 index.html 就可以看到文档了。
+
+
+
+Maven 使用一个名为 Doxia 的文档处理引擎来创建文档，它能将多种格式的源码读取成一种通用的文档模型。要为你的项目撰写文档，你可以将内容写成下面几种常用的，可被 Doxia 转化的格式。
+
+格式名	描述	参考
+Apt	纯文本文档格式	http://maven.apache.org/doxia/references/apt-format.html
+Xdoc	Maven 1.x 的一种文档格式	http://jakarta.apache.org/site/jakarta-site2.html
+FML	FAQ 文档适用	http://maven.apache.org/doxia/references/fml-format.html
+XHTML	可扩展的 HTML 文档	http://en.wikipedia.org/wiki/XHTML
+** Maven 快照(SNAPSHOT)
+一个大型的软件应用通常包含多个模块，并且通常的场景是多个团队开发同一应用的不同模块。举个例子，设想一个团队开发应用的前端，项目为 app-ui(app-ui.jar:1.0)，而另一个团队开发应用的后台，使用的项目是 data-service(data-service.jar:1.0)。
+
+现在可能出现的情况是开发 data-service 的团队正在进行快节奏的 bug 修复或者项目改进，并且他们几乎每隔一天就要发布库到远程仓库。 现在如果 data-service 团队每隔一天上传一个新版本，那么将会出现下面的问题：
+
+data-service 团队每次发布更新的代码时都要告知 app-ui 团队。
+app-ui 团队需要经常地更新他们 pom.xml 文件到最新版本。
+为了解决这种情况，快照的概念派上了用场。
+
+什么是快照?
+快照是一种特殊的版本，指定了某个当前的开发进度的副本。不同于常规的版本，Maven 每次构建都会在远程仓库中检查新的快照。 现在 data-service 团队会每次发布更新代码的快照到仓库中，比如说 data-service:1.0-SNAPSHOT 来替代旧的快照 jar 包。
+
+项目快照 vs 版本
+对于版本，如果 Maven 以前下载过指定的版本文件，比如说 data-service:1.0，Maven 将不会再从仓库下载新的可用的 1.0 文件。若要下载更新的代码，data-service 的版本需要升到 1.1。
+
+快照的情况下，每次 app-ui 团队构建他们的项目时，Maven 将自动获取最新的快照(data-service:1.0-SNAPSHOT)。
+
+app-ui 项目的 pom.xml 文件
+app-ui 项目使用的是 data-service 项目的 1.0 快照。
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+   http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>app-ui</groupId>
+   <artifactId>app-ui</artifactId>
+   <version>1.0</version>
+   <packaging>jar</packaging>
+   <name>health</name>
+   <url>http://maven.apache.org</url>
+   <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+   </properties>
+   <dependencies>
+      <dependency>
+      <groupId>data-service</groupId>
+         <artifactId>data-service</artifactId>
+         <version>1.0-SNAPSHOT</version>
+         <scope>test</scope>
+      </dependency>
+   </dependencies>
+</project>
+data-service 项目的 pom.xml 文件
+data-service 项目为每次小的改动发布 1.0 快照。
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+   http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>data-service</groupId>
+   <artifactId>data-service</artifactId>
+   <version>1.0-SNAPSHOT</version>
+   <packaging>jar</packaging>
+   <name>health</name>
+   <url>http://maven.apache.org</url>
+   <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+   </properties>
+</project>
+虽然，快照的情况下，Maven 在日常工作中会自动获取最新的快照， 你也可以在任何 maven 命令中使用 -U 参数强制 maven 现在最新的快照构建。
+
+mvn clean package -U
+让我们打开命令控制台，去到 C:\ > MVN > app-ui 目录，然后执行下面的 mvn 命令。
+
+C:\MVN\app-ui>mvn clean package -U
+Maven 将在下载 data-service 最新的快照之后，开始构建项目。
+
+[INFO] Scanning for projects...
+[INFO] -------------------------------------------------------------------
+[INFO] Building consumerBanking
+[INFO]    task-segment: [clean, package]
+[INFO] -------------------------------------------------------------------
+[INFO] Downloading data-service:1.0-SNAPSHOT
+[INFO] 290K downloaded.
+[INFO] [clean:clean {execution: default-clean}]
+[INFO] Deleting directory C:\MVN\app-ui\target
+[INFO] [resources:resources {execution: default-resources}]
+[WARNING] Using platform encoding (Cp1252 actually) to copy filtered resources,
+i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory C:\MVN\app-ui\src\main\
+resources
+[INFO] [compiler:compile {execution: default-compile}]
+[INFO] Compiling 1 source file to C:\MVN\app-ui\target\classes
+[INFO] [resources:testResources {execution: default-testResources}]
+[WARNING] Using platform encoding (Cp1252 actually) to copy filtered resources,
+i.e. build is platform dependent!
+[INFO] skip non existing resourceDirectory C:\MVN\app-ui\src\test\
+resources
+[INFO] [compiler:testCompile {execution: default-testCompile}]
+[INFO] Compiling 1 source file to C:\MVN\app-ui\target\test-classes
+[INFO] [surefire:test {execution: default-test}]
+[INFO] Surefire report directory: C:\MVN\app-ui\target\
+surefire-reports
+-------------------------------------------------------
+ T E S T S
+-------------------------------------------------------
+Running com.companyname.bank.AppTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 sec
+
+Results :
+
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] [jar:jar {execution: default-jar}]
+[INFO] Building jar: C:\MVN\app-ui\target\
+app-ui-1.0-SNAPSHOT.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 2 seconds
+[INFO] Finished at: Tue Jul 10 16:52:18 IST 2012
+[INFO] Final Memory: 16M/89M
+[INFO] ------------------------------------------------------------------------
+** 自动化构建定义了这样一种场景: 在一个项目成功构建完成后，其相关的依赖工程即开始构建，这样可以保证其依赖项目的稳定。
+
+比如一个团队正在开发一个项目 bus-core-api， 并且有其他两个项目 app-web-ui 和
+app-desktop-ui 依赖于这个项目。
+
+app-web-ui 项目使用的是 bus-core-api 项目的 1.0 快照：
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+   http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>app-web-ui</groupId>
+   <artifactId>app-web-ui</artifactId>
+   <version>1.0</version>
+   <packaging>jar</packaging>
+   <dependencies>
+      <dependency>
+      <groupId>bus-core-api</groupId>
+         <artifactId>bus-core-api</artifactId>
+         <version>1.0-SNAPSHOT</version>
+      </dependency>
+   </dependencies>
+</project>
+app-desktop-ui 项目使用的是 bus-core-api 项目的 1.0 快照：
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+   http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>app-desktop-ui</groupId>
+   <artifactId>app-desktop-ui</artifactId>
+   <version>1.0</version>
+   <packaging>jar</packaging>
+   <dependencies>
+      <dependency>
+      <groupId>bus-core-api</groupId>
+         <artifactId>bus-core-api</artifactId>
+         <version>1.0-SNAPSHOT</version>
+      </dependency>
+   </dependencies>
+</project>
+bus-core-api 项目：
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+   http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>bus-core-api</groupId>
+   <artifactId>bus-core-api</artifactId>
+   <version>1.0-SNAPSHOT</version>
+   <packaging>jar</packaging>   
+</project>
+现在 app-web-ui 和 app-desktop-ui 项目的团队要求不管 bus-core-api 项目何时变化，他们的构建过程都应当可以启动。
+
+使用快照可以确保最新的 bus-core-api 项目被使用，但要达到上面的要求，我们还需要做一些额外的工作。
+
+可以使用两种方式：
+
+在 bus-core-api 项目的 pom 文件中添加一个 post-build 目标操作来启动 app-web-ui 和 app-desktop-ui 项目的构建。
+使用持续集成（CI） 服务器，比如 Hudson，来自行管理构建自动化。
+使用 Maven
+修改 bus-core-api 项目的 pom.xml 文件。
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+   http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>bus-core-api</groupId>
+   <artifactId>bus-core-api</artifactId>
+   <version>1.0-SNAPSHOT</version>
+   <packaging>jar</packaging>
+   <build>
+   <plugins>
+   <plugin>
+      <artifactId>maven-invoker-plugin</artifactId>
+      <version>1.6</version>
+      <configuration>
+         <debug>true</debug>
+         <pomIncludes>
+            <pomInclude>app-web-ui/pom.xml</pomInclude>
+            <pomInclude>app-desktop-ui/pom.xml</pomInclude> 
+         </pomIncludes>
+      </configuration>
+      <executions>
+         <execution>
+            <id>build</id>
+            <goals>
+               <goal>run</goal>
+            </goals>
+         </execution>
+      </executions>
+   </plugin>
+   </plugins>
+   <build>
+</project>
+打开命令控制台，切换到 C:\ > MVN > bus-core-api 目录下，然后执行以下命令。
+
+C:\MVN\bus-core-api>mvn clean package -U
+执行完命令后，Maven 将开始构建项目 bus-core-api。
+
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------
+[INFO] Building bus-core-api
+[INFO]    task-segment: [clean, package]
+[INFO] ------------------------------------------------------------------
+...
+[INFO] [jar:jar {execution: default-jar}]
+[INFO] Building jar: C:\MVN\bus-core-ui\target\
+bus-core-ui-1.0-SNAPSHOT.jar
+[INFO] ------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------
+bus-core-api 构建成功后，Maven 将开始构建 app-web-ui 项目。
+
+[INFO] ------------------------------------------------------------------
+[INFO] Building app-web-ui 
+[INFO]    task-segment: [package]
+[INFO] ------------------------------------------------------------------
+...
+[INFO] [jar:jar {execution: default-jar}]
+[INFO] Building jar: C:\MVN\app-web-ui\target\
+app-web-ui-1.0-SNAPSHOT.jar
+[INFO] ------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------
+app-web-ui 构建成功后，Maven 将开始构建 app-desktop-ui 项目。
+
+[INFO] ------------------------------------------------------------------
+[INFO] Building app-desktop-ui 
+[INFO]    task-segment: [package]
+[INFO] ------------------------------------------------------------------
+...
+[INFO] [jar:jar {execution: default-jar}]
+[INFO] Building jar: C:\MVN\app-desktop-ui\target\
+app-desktop-ui-1.0-SNAPSHOT.jar
+[INFO] -------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] -------------------------------------------------------------------
+使用持续集成服务器（CI）
+如果使用 CI 服务器更，我们每次的一个新项目，比如说实例中的 app-mobile-ui，添加为依赖 bus-core-api 项目时，开发者就不需要更新 bus-core-api 项目的 pom。Hudson 将会借助 Maven 的依赖管理功能实现工程的自动化创建。
+
+
+
+Hudson 把每个项目构建当成一次任务。在一个项目的代码提交到 SVN（或者任何映射到 Hudson 的代码管理工具）后，Hudson 将开始项目的构建任务，并且一旦此构建任务完成，Hudson 将自动启动其他依赖的构建任务（其他依赖项目的构建）。
+
+在上面的例子中，当 bus-core-ui 源代码在 SVN 更新后，Hudson 开始项目构建。一旦构建成功，Hudson 自动地查找依赖的项目，然后开始构建 app-web-ui 和 app-desktop-ui 项目。
+** Maven 依赖管理
+Maven 一个核心的特性就是依赖管理。当我们处理多模块的项目（包含成百上千个模块或者
+子项目），模块间的依赖关系就变得非常复杂，管理也变得很困难。针对此种情形，Maven
+提供了一种高度控制的方法。
+
+可传递性依赖发现
+一种相当常见的情况，比如说 A 依赖于其他库 B。如果，另外一个项目 C 想要使用 A，那么 C 项目也需要使用库 B。
+
+Maven 可以避免去搜索所有所需库的需求。Maven 通过读取项目文件（pom.xml），找出它们项目之间的依赖关系。
+
+我们需要做的只是在每个项目的 pom 中定义好直接的依赖关系。其他的事情 Maven 会帮我们搞定。
+
+通过可传递性的依赖，所有被包含的库的图形会快速的增长。当有重复库时，可能出现的情形将会持续上升。Maven 提供一些功能来控制可传递的依赖的程度。
+
+功能	功能描述
+依赖调节	决定当多个手动创建的版本同时出现时，哪个依赖版本将会被使用。 如果两个依赖版本在依赖树里的深度是一样的时候，第一个被声明的依赖将会被使用。
+依赖管理	直接的指定手动创建的某个版本被使用。例如当一个工程 C 在自己的以来管理模块包含工程 B，即 B 依赖于 A， 那么 A 即可指定在 B 被引用时所使用的版本。
+依赖范围	包含在构建过程每个阶段的依赖。
+依赖排除	任何可传递的依赖都可以通过 "exclusion" 元素被排除在外。举例说明，A 依赖 B，B 依赖 C，因此 A 可以标记 C 为 "被排除的"。
+依赖可选	任何可传递的依赖可以被标记为可选的，通过使用 "optional" 元素。例如：A 依赖 B，B 依赖 C。因此，B 可以标记 C 为可选的， 这样 A 就可以不再使用 C。
+依赖范围
+传递依赖发现可以通过使用如下的依赖范围来得到限制：
+
+范围	描述
+编译阶段	该范围表明相关依赖是只在项目的类路径下有效。默认取值。
+供应阶段	该范围表明相关依赖是由运行时的 JDK 或者 网络服务器提供的。
+运行阶段	该范围表明相关依赖在编译阶段不是必须的，但是在执行阶段是必须的。
+测试阶段	该范围表明相关依赖只在测试编译阶段和执行阶段。
+系统阶段	该范围表明你需要提供一个系统路径。
+导入阶段	该范围只在依赖是一个 pom 里定义的依赖时使用。同时，当前项目的 POM 文件的 部分定义的依赖关系可以取代某特定的 POM。
+依赖管理
+通常情况下，在一个共通的项目下，有一系列的项目。在这种情况下，我们可以创建一个公共依赖的 pom 文件，该 pom 包含所有的公共的依赖关系，我们称其为其他子项目 pom 的 pom 父。 接下来的一个例子可以帮助你更好的理解这个概念。
+
+
+
+接下来是上面依赖图的详情说明：
+
+App-UI-WAR 依赖于 App-Core-lib 和 App-Data-lib。
+
+Root 是 App-Core-lib 和 App-Data-lib 的父项目。
+
+Root 在它的依赖部分定义了 Lib1、lib2 和 Lib3 作为依赖。
+
+App-UI-WAR 的 pom.xml 文件代码如下：
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+   http://maven.apache.org/xsd/maven-4.0.0.xsd">
+      <modelVersion>4.0.0</modelVersion>
+      <groupId>com.companyname.groupname</groupId>
+      <artifactId>App-UI-WAR</artifactId>
+      <version>1.0</version>
+      <packaging>war</packaging>
+      <dependencies>
+         <dependency>
+            <groupId>com.companyname.groupname</groupId>
+            <artifactId>App-Core-lib</artifactId>
+            <version>1.0</version>
+         </dependency>
+      </dependencies>  
+      <dependencies>
+         <dependency>
+            <groupId>com.companyname.groupname</groupId>
+            <artifactId>App-Data-lib</artifactId>
+            <version>1.0</version>
+         </dependency>
+      </dependencies>  
+</project>
+App-Core-lib 的 pom.xml 文件代码如下：
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+   http://maven.apache.org/xsd/maven-4.0.0.xsd">
+      <parent>
+         <artifactId>Root</artifactId>
+         <groupId>com.companyname.groupname</groupId>
+         <version>1.0</version>
+      </parent>
+      <modelVersion>4.0.0</modelVersion>
+      <groupId>com.companyname.groupname</groupId>
+      <artifactId>App-Core-lib</artifactId>
+      <version>1.0</version> 
+      <packaging>jar</packaging>
+</project>
+App-Data-lib 的 pom.xml 文件代码如下：
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+   http://maven.apache.org/xsd/maven-4.0.0.xsd">
+      <parent>
+         <artifactId>Root</artifactId>
+         <groupId>com.companyname.groupname</groupId>
+         <version>1.0</version>
+      </parent>
+      <modelVersion>4.0.0</modelVersion>
+      <groupId>com.companyname.groupname</groupId>
+      <artifactId>App-Data-lib</artifactId>
+      <version>1.0</version>   
+      <packaging>jar</packaging>
+</project>
+Root 的 pom.xml 文件代码如下：
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+   http://maven.apache.org/xsd/maven-4.0.0.xsd">
+      <modelVersion>4.0.0</modelVersion>
+      <groupId>com.companyname.groupname</groupId>
+      <artifactId>Root</artifactId>
+      <version>1.0</version>
+      <packaging>pom</packaging>
+      <dependencies>
+         <dependency>
+            <groupId>com.companyname.groupname1</groupId>
+            <artifactId>Lib1</artifactId>
+            <version>1.0</version>
+         </dependency>
+      </dependencies>  
+      <dependencies>
+         <dependency>
+            <groupId>com.companyname.groupname2</groupId>
+            <artifactId>Lib2</artifactId>
+            <version>2.1</version>
+         </dependency>
+      </dependencies>  
+      <dependencies>
+         <dependency>
+            <groupId>com.companyname.groupname3</groupId>
+            <artifactId>Lib3</artifactId>
+            <version>1.1</version>
+         </dependency>
+      </dependencies>  
+</project>
+现在当我们构建 App-UI-WAR 项目时，Maven 将通过遍历依赖关系图找到所有的依赖关系，并且构建该应用程序。
+
+通过上面的例子，我们可以学习到以下关键概念：
+
+公共的依赖可以使用 pom 父的概念被统一放在一起。App-Data-lib 和 App-Core-lib 项目的依赖在 Root 项目里列举了出来（参考 Root 的包类型，它是一个 POM）.
+没有必要在 App-UI-W 里声明 Lib1, lib2, Lib3 是它的依赖。Maven 通过使用可传递的依赖机制来实现该细节。
+* mvn
+mvn deploy -Dmaven.test.skip=true
+Maven 依赖查询：
+
+http://mvnrepository.com/
+
+Maven 常用命令： 
+1. 创建 Maven 的普通 java 项目： 
+   mvn archetype:create 
+   -DgroupId=packageName 
+   -DartifactId=projectName  
+2. 创建 Maven 的 Web 项目：   
+    mvn archetype:create 
+    -DgroupId=packageName    
+    -DartifactId=webappName 
+    -DarchetypeArtifactId=maven-archetype-webapp    
+3. 编译源代码：mvn compile 
+4. 编译测试代码：mvn test-compile    
+5. 运行测试：mvn test   
+6. 产生 site：mvn site   
+7. 打包：mvn package   
+8. 在本地 Repository 中安装 jar：mvn install 
+9. 清除产生的项目：mvn clean   
+10. 生成 eclipse 项目：mvn eclipse:eclipse  
+11. 生成 idea 项目：mvn idea:idea  
+12. 组合使用 goal 命令，如只打包不测试：mvn -Dtest package   
+13. 编译测试的内容：mvn test-compile  
+14. 只打 jar 包: mvn jar:jar  
+15. 只测试而不编译，也不测试编译：mvn test -skipping compile -skipping test-compile 
+      ( -skipping 的灵活运用，当然也可以用于其他组合命令)  
+16. 清除 eclipse 的一些系统设置:mvn eclipse:clean  
+
+ps： 
+
+一般使用情况是这样，首先通过 cvs 或 svn 下载代码到本机，然后执行 mvn eclipse:eclipse 生成 ecllipse 项目文件，然后导入到 eclipse 就行了；修改代码后执行 mvn compile 或 mvn test 检验，也可以下载 eclipse 的 maven 插件。 
+
+mvn -version/-v  显示版本信息 
+mvn archetype:generate        创建 mvn 项目 
+mvn archetype:create -DgroupId=com.oreilly -DartifactId=my-app   创建 mvn 项目 
+
+mvn package            生成 target 目录，编译、测试代码，生成测试报告，生成 jar/war 文件 
+mvn jetty:run            运行项目于 jetty 上, 
+mvn compile                    编译 
+mvn test                    编译并测试 
+mvn clean                    清空生成的文件 
+mvn site                    生成项目相关信息的网站 
+mvn -Dwtpversion=1.0 eclipse:eclipse        生成 Wtp 插件的 Web 项目 
+mvn -Dwtpversion=1.0 eclipse:clean        清除 Eclipse 项目的配置信息(Web 项目) 
+mvn eclipse:eclipse                将项目转化为 Eclipse 项目 
+
+在应用程序用使用多个存储库 
+<repositories>    
+    <repository>      
+        <id>Ibiblio</id>      
+        <name>Ibiblio</name>      
+        <url>http://www.ibiblio.org/maven/</url>    
+    </repository>    
+    <repository>      
+        <id>PlanetMirror</id>      
+        <name>Planet Mirror</name>      
+        <url>http://public.planetmirror.com/pub/maven/</url>    
+    </repository>  
+</repositories> 
+
+
+mvn deploy:deploy-file -DgroupId=com -DartifactId=client -Dversion=0.1.0 -Dpackaging=jar -Dfile=d:\client-0.1.0.jar -DrepositoryId=maven-repository-inner -Durl=ftp://xxxxxxx/opt/maven/repository/ 
+
+
+发布第三方 Jar 到本地库中： 
+
+mvn install:install-file -DgroupId=com -DartifactId=client -Dversion=0.1.0 -Dpackaging=jar -Dfile=d:\client-0.1.0.jar 
+
+
+-DdownloadSources=true 
+
+-DdownloadJavadocs=true 
+
+mvn -e            显示详细错误 信息. 
+
+mvn validate        验证工程是否正确，所有需要的资源是否可用。 
+mvn test-compile    编译项目测试代码。 。 
+mvn integration-test     在集成测试可以运行的环境中处理和发布包。 
+mvn verify        运行任何检查，验证包是否有效且达到质量标准。     
+mvn generate-sources    产生应用需要的任何额外的源代码，如 xdoclet。 
+
+本文来自 CSDN 博客，转载请标明出处：http://blog.csdn.net/lifxue/archive/2009/10/14/4662902.aspx 
+
+常用命令： 
+mvn -v 显示版本 
+mvn help:describe -Dplugin=help 使用 help 插件的  describe 目标来输出 Maven Help 插件的信息。 
+mvn help:describe -Dplugin=help -Dfull 使用 Help 插件输出完整的带有参数的目标列 
+mvn help:describe -Dplugin=compiler -Dmojo=compile -Dfull 获取单个目标的信息,设置  mojo 参数和  plugin 参数。此命令列出了 Compiler 插件的 compile 目标的所有信息 
+mvn help:describe -Dplugin=exec -Dfull 列出所有 Maven Exec 插件可用的目标 
+mvn help:effective-pom 看这个“有效的 (effective)”POM，它暴露了 Maven 的默认设置 
+
+mvn archetype:create -DgroupId=org.sonatype.mavenbook.ch03 -DartifactId=simple -DpackageName=org.sonatype.mavenbook 创建 Maven 的普通 java 项目，在命令行使用 Maven Archetype 插件 
+mvn exec:java -Dexec.mainClass=org.sonatype.mavenbook.weather.Main Exec 插件让我们能够在不往 classpath 载入适当的依赖的情况下，运行这个程序 
+mvn dependency:resolve 打印出已解决依赖的列表 
+mvn dependency:tree 打印整个依赖树 
+
+mvn install -X 想要查看完整的依赖踪迹，包含那些因为冲突或者其它原因而被拒绝引入的构件，打开 Maven 的调试标记运行 
+mvn install -Dmaven.test.skip=true 给任何目标添加 maven.test.skip 属性就能跳过测试 
+mvn install assembly:assembly 构建装配 Maven Assembly 插件是一个用来创建你应用程序特有分发包的插件 
+
+mvn jetty:run 调用 Jetty 插件的 Run 目标在 Jetty Servlet 容器中启动 web 应用 
+mvn compile 编译你的项目 
+mvn clean install 删除再编译 
+
+mvn hibernate3:hbm2ddl 使用 Hibernate3 插件构造数据库

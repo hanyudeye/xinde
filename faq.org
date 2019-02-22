@@ -1,0 +1,21 @@
+* java lsp
+** Server jdtls: status:starting exited with status exit. Do you want to restart it
+   1.Delete workspace `lsp-java-workspace-dir`
+   2.Delete server installation from `lsp-java-server-install-dir`
+   3.Evaluating `lsp-java--ls-command` will give you the command that is used for starting JDT LS - you could then start it outside of emacs
+* ntfs 执行权限
+  fstab 配置
+  UUID=0005D5040006FBE9   /media/d        ntfs-3g defaults,locale=zh_CN.UTF-8     0       0
+* ubuntu 释放 cache 内存
+写了个简单的脚本：
+
+#!/bin/bash                                                                                                                                                                                                 
+
+sync && echo 1 | sudo tee /proc/sys/vm/drop_caches
+sync && echo 2 | sudo tee /proc/sys/vm/drop_caches
+sync && echo 3 | sudo tee /proc/sys/vm/drop_caches
+然后加到 crontab 里，每小时执行一次，定时释放 cache。。。 
+几天以后，发现脚本没有起作用。。。每次查看内存使用情况，发现 cache 并没有释放。。。该死机还是死机。。。 
+想了想，/proc/sys/vm/drop_caches 这个路径，普通账号应该是没有权限去操作的。。。 
+果断将这个脚本添加到 root 的 crontab 里，每小时跑一次。发现起作用了。。。 
+距上次强制重启已经两周，完美解决。。

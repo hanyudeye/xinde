@@ -3,7 +3,7 @@
    export JAVA_HOME=/usr/lib/jvm/jdk-11.0.1
    export CLASSPATH=.:${JAVA_HOME}/lib
 
-   JAVA_HOME 指定jdk的安装目录
+   JAVA_HOME 指定 jdk 的安装目录
    CLASSPATH 指定 java 执行的程序所在目录，一般当前目录在最前
 ** 编译 javac 
    | classpath Path | 指定要加载类的路径     |
@@ -18,17 +18,7 @@
    java [options] -jar filename [args]
 ** 文档生成器 javadoc 
    javadoc [options...] [package names...] [source filenames...]
-   #+BEGIN_SRC java
-     $ javadoc net.multitool.Payback
-         -public -protected -package -private
-         -sourcepath      and -classpath -verbose     and -quiet
-         -doclet starting_class
-
-     /** This is a C-style comment, but it
-         is also a Javadoc comment. */
-   #+END_SRC
-
-*** 文档注释
+*** 注释样式,支持 HTML 格式
     /** 开始 */ 结束
     javadoc 文件名
     @see 放入链接
@@ -40,7 +30,7 @@
 ** 反编译 javap
 ** 构建工具
 *** ant
-*** maven
+*** maven[[file:spring.org][spring]] 
 * java 
 ** 数据类型
 *** 基本类型
@@ -49,7 +39,7 @@
     char
     short
     int
-    float f = 1.1f;  1.1 是double类型
+    float f = 1.1f;  1.1 是 double 类型
     long
     double
 *** 扩展类型
@@ -60,76 +50,66 @@
 *** 访问性
     private protected public
 *** 抽象类与接口
-****  抽象类
+**** 抽象类
      抽象类和抽象方法都使用 abstract 关键字进行声明。
-     
-     ```java
-     public abstract class AbstractClassExample {
+#+begin_src java     
+  public abstract class AbstractClassExample {
 
-     protected int x;
-     private int y;
+      protected int x;
+      private int y;
 
-     public abstract void func1();
+      public abstract void func1();
 
-     public void func2() {
-         System.out.println("func2");
-     }
- }
- ```
+      public void func2() {
+          System.out.println("func2");
+      }
+  }
 
- ```java
- public class AbstractExtendClassExample extends AbstractClassExample {
-     @Override
-     public void func1() {
-         System.out.println("func1");
-     }
- }
- ```
-
- ```java
- // AbstractClassExample ac1 = new AbstractClassExample(); // 'AbstractClassExample' is abstract; cannot be instantiated
- AbstractClassExample ac2 = new AbstractExtendClassExample();
- ac2.func1();
- ```
+  public class AbstractExtendClassExample extends AbstractClassExample {
+      @Override
+      public void func1() {
+          System.out.println("func1");
+      }
+  }
+  // AbstractClassExample ac1 = new AbstractClassExample(); // 'AbstractClassExample' is abstract; cannot be instantiated
+  AbstractClassExample ac2 = new AbstractExtendClassExample();
+  ac2.func1();
+  #+end_src
 **** 接口
      接口的成员（字段 + 方法）默认都是 public 的，并且不允许定义为 private 或者 protected。
 
      接口的字段默认都是 static 和 final 的。
 
- ```java
- public interface InterfaceExample {
+#+begin_src java     
+  public interface InterfaceExample {
 
-     void func1();
+      void func1();
 
-     default void func2(){
-         System.out.println("func2");
-     }
+      default void func2(){
+          System.out.println("func2");
+      }
 
-     int x = 123;
-     // int y;               // Variable 'y' might not have been initialized
-     public int z = 0;       // Modifier 'public' is redundant for interface fields
-     // private int k = 0;   // Modifier 'private' not allowed here
-     // protected int l = 0; // Modifier 'protected' not allowed here
-     // private void fun3(); // Modifier 'private' not allowed here
- }
- ```
+      int x = 123;
+      // int y;               // Variable 'y' might not have been initialized
+      public int z = 0;       // Modifier 'public' is redundant for interface fields
+      // private int k = 0;   // Modifier 'private' not allowed here
+      // protected int l = 0; // Modifier 'protected' not allowed here
+      // private void fun3(); // Modifier 'private' not allowed here
+  }
 
- ```java
- public class InterfaceImplementExample implements InterfaceExample {
-     @Override
-     public void func1() {
-         System.out.println("func1");
-     }
- }
- ```
+  public class InterfaceImplementExample implements InterfaceExample {
+      @Override
+      public void func1() {
+          System.out.println("func1");
+      }
+  }
 
- ```java
- // InterfaceExample ie1 = new InterfaceExample(); // 'InterfaceExample' is abstract; cannot be instantiated
- InterfaceExample ie2 = new InterfaceImplementExample();
- ie2.func1();
- System.out.println(InterfaceExample.x);
- ```
-****  super
+  // InterfaceExample ie1 = new InterfaceExample(); // 'InterfaceExample' is abstract; cannot be instantiated
+  InterfaceExample ie2 = new InterfaceImplementExample();
+  ie2.func1();
+  System.out.println(InterfaceExample.x);
+  #+end_src
+**** super
 
  - 访问父类的构造函数：可以使用 super() 函数访问父类的构造函数，从而委托父类完成
    一些初始化的工作。
@@ -137,50 +117,44 @@
  - 访问父类的成员：如果子类重写了父类的某个方法，可以通过使用 super 关键字来引用
    父类的方法实现。
 
- ```java
- public class SuperExample {
+#+begin_src java     
+  public class SuperExample {
 
-     protected int x;
-     protected int y;
+      protected int x;
+      protected int y;
 
-     public SuperExample(int x, int y) {
-         this.x = x;
-         this.y = y;
-     }
+      public SuperExample(int x, int y) {
+          this.x = x;
+          this.y = y;
+      }
 
-     public void func() {
-         System.out.println("SuperExample.func()");
-     }
- }
- ```
+      public void func() {
+          System.out.println("SuperExample.func()");
+      }
+  }
 
- ```java
- public class SuperExtendExample extends SuperExample {
+  public class SuperExtendExample extends SuperExample {
 
-     private int z;
+      private int z;
 
-     public SuperExtendExample(int x, int y, int z) {
-         super(x, y);
-         this.z = z;
-     }
+      public SuperExtendExample(int x, int y, int z) {
+          super(x, y);
+          this.z = z;
+      }
 
-     @Override
-     public void func() {
-         super.func();
-         System.out.println("SuperExtendExample.func()");
-     }
- }
- ```
+      @Override
+      public void func() {
+          super.func();
+          System.out.println("SuperExtendExample.func()");
+      }
+  }
 
- ```java
- SuperExample e = new SuperExtendExample(1, 2, 3);
- e.func();
- ```
+  SuperExample e = new SuperExtendExample(1, 2, 3);
+  e.func();
 
- ```html
- SuperExample.func()
- SuperExtendExample.func()
- ```
+  SuperExample.func();
+  SuperExtendExample.func();
+  #+end_src
 *** 重写与重载
 ****  重写（Override）
 
@@ -225,7 +199,8 @@
          public T get() { return t; }
      }
    #+END_SRC
-** 注解 元信息
+** 注解 annotations 元信息
+   
 * java IO
 ** 磁盘操作
 
@@ -787,3 +762,4 @@
     - [NIO 与传统 IO 的区别](http://blog.csdn.net/shimiso/article/details/24990499)
     - [Decorator Design Pattern](http://stg-tud.github.io/sedc/Lecture/ws13-14/5.3-Decorator.html#mode=document)
     - [Socket Multicast](http://labojava.blogspot.com/2012/12/socket-multicast.html)
+* 进程线程

@@ -1,0 +1,109 @@
+* vuejs
+** 安装
+vue init <template-name> <project-name>
+也可以使用 vue list 来查看官方模板列表。
+
+目前可用的模板包括：
+
+browserify–全功能的 Browserify + vueify，包括热加载，静态检测，单元测试
+browserify-simple–一个简易的 Browserify + vueify，以便于快速开始。
+webpack–全功能的 Webpack + vueify，包括热加载，静态检测，单元测试
+webpack-simple–一个简易的 Webpack + vueify，以便于快速开始。
+simple - 单个 HTML 文件中最简单的 Vue 设置
+
+第一步 生成项目
+我们的项目选择 webpack,使用以下命令
+
+vue init webpack vue-todos
+第二步 运行项目
+输入下面的命令就可以运行这个项目了。
+
+cd vue-todos
+npm install
+npm run dev
+
+** 初始化 Vue 项目环境
+#+begin_src html
+  <script>
+    new Vue({
+        el: '#app'
+    })
+  </script>
+#+end_src
+
+实例化 app 对象
+以上通过构造函数的形式创建了一个 Vue 的作用域环境，并绑定了一个父节点 ID 为'#app'的 DOM 元素节点。
+el: '#app' == document.querySelect('#app');
+*** 初始化主环境的多种实现方式
+**** 1）el 绑定主环境
+
+ ```
+ new Vue({
+     el: '#app'
+ })
+ ```
+****  2)$mount 手动挂载
+
+ ```
+ new Vue({
+
+ }).$mount('#app');
+ ```
+****  3)实例$mount 挂载
+
+ ```
+ let app = new Vue({
+
+ });
+
+ app.$mount('#app');
+ ```
+** 创建第一个 Vue 应用
+
+```
+<div id="app">{{test}}</div>
+<script>
+new Vue({
+    el: '#app',
+    data: {
+        test: 'Hello World !'
+    }
+})
+</script>
+```
+
+** 定义数据 data 
+** 定义方法
+   #+begin_src js
+
+     new Vue({
+         el: '#app',
+         methods: {
+             fun(){
+                 alert(1);
+             }
+         }
+     })
+#+end_src
+** 事件绑定指令
+
+       <div id="app">
+        <input type="button" value="点击我" v-on:click="fun()">
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            methods: {
+                fun(){
+                    alert('Hello World !');
+                }
+            }
+        })
+    </script> 
+** v-on 指令还有较方便的简写方式 @
+   <input type="button" value="点击我" @:click="fun()">
+** v-model 用于非成对 DOM 的数据绑定({{}}模板数据绑定只适合成对标签)
+<input type="input" v-model="">
+** v-show 用于显示或隐藏 DOM 元素，配合布尔值表示显示状态，使用场景较多
+
+
