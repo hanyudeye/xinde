@@ -1,0 +1,419 @@
+* android 
+** 创建应用程序和 Activity 
+ 3.1 Android 应用程序的组成部分 46
+ 3.2 应用程序 Manifest 文件简介 47
+ 3.3 使用 Manifest 编辑器 54
+ 3.4 分离资源 55
+ 3.4.1 创建资源 55
+ 3.4.2 使用资源 63
+ 3.4.3 为不同的语言和硬件创建资源 66
+ 3.4.4 运行时配置更改 68
+ 3.5 Android 应用程序生命周期 70
+ 3.6 理解应用程序的优先级和进程状态 70
+ 3.7 Android Application 类简介 72
+ 3.7.1 扩展和使用 Application 类 72
+ 3.7.2 重写应用程序的生命周期事件 73
+ 3.8 深入探讨 Android Activity 74
+ 3.8.1 创建 Activity 74
+ 3.8.2 Activity 的生存期 76
+ 3.8.3 Android Activity 类 81
+**  第 4 章 创建用户界面 83
+ 4.1 Android UI 基本设计 84
+ 4.2 Android UI 的基础知识 84
+ 4.3 布局简介 85
+ 4.3.1 定义布局 86
+ 4.3.2 使用布局创建设备无关的 UI 87
+ 4.3.3 优化布局 90
+ 4.4 To-Do List 示例 93
+ 4.5 Fragment 介绍 100
+ 4.5.1 创建新的 Fragment 101
+ 4.5.2 Fragment 的生命周期 101
+ 4.5.3 Fragment Manager 介绍 105
+ 4.5.4 向 Activity 中添加 Fragment 105
+ 4.5.5 Fragment 和 Activity 之间的接口 110
+ 4.5.6 没有用户界面的 Fragment 111
+ 4.5.7 Android Fragment 类 112
+ 4.5.8 对 To-Do List 示例使用 Fragment 112
+ 4.6 Android widget 工具箱 116
+ 4.7 创建新视图 117
+ 4.7.1 修改现有的视图 118
+ 4.7.2 创建复合控件 122
+ 4.7.3 使用布局创建简单的复合控件 124
+ 4.7.4 创建定制的视图 124
+ 4.7.5 使用定制的控件 137
+ 4.8 Adapter 简介 137
+ 4.8.1 部分原生 Adapter 简介 138
+ 4.8.2 定制 ArrayAdapter 138
+ 4.8.3 使用 Adapter 绑定数据到视图 139
+** 第 5 章 Intent 和 Broadcast Receiver 145
+ 5.1 Intent 简介 145
+ 5.1.1 使用 Intent 来启动 Activity 146
+ 5.1.2 Linkify 简介 153
+ 5.1.3 使用 Intent 广播事件 155
+ 5.1.4 Local Broadcast Manager 159
+ 5.1.5 Pending Intent 简介 160
+ 5.2 创建 Intent Filter 和 Broadcast Receiver 161
+ 5.2.1 使用 Intent Filter 为隐式 Intent 提供服务 161
+ 5.2.2 使用 Intent Filter 作为插件和扩展 170
+ 5.2.3 监听本地 Broadcast Intent 173
+ 5.2.4 使用 Broadcast Intent 监控设备的状态变化 174
+ 5.2.5 在运行时管理 Manifest Receiver 176
+** 第 6 章 使用 Internet 资源 177
+ 6.1 下载和分析 Internet 资源 177
+ 6.1.1 连接 Internet 资源 178
+ 6.1.2 使用 XML Pull Parser 分析 XML 179
+ 6.1.3 创建一个地震查看器 180
+ 6.2 使用 Download Manager 186
+ 6.2.1 下载文件 186
+ 6.2.2 自定义 Download Manager Notification 187
+ 6.2.3 指定下载位置 188
+ 6.2.4 取消和删除下载 189
+ 6.2.5 查询 Download Manager 189
+ 6.3 使用 Internet 服务 192
+ 6.4 连接到 Google App Engine 192
+ 6.5 下载数据而不会耗尽电量的最佳实践 194
+** 第 7 章 文件、保存状态和首选项 195
+ 7.1 保存简单的应用程序数据 195
+ 7.2 创建并保存 Shared Preference 196
+ 7.3 检索 Shared Preference 197
+ 7.4 为地震查看器创建一个设置 Activity 197
+ 7.5 首选项框架和 Preference Activity 概述 205
+ 7.5.1 在 XML 中定义一个 Preference Screen 布局 206
+ 7.5.2 Preference Fragment 简介 208
+ 7.5.3 使用 Preference Header 定义 Preference Fragment 的层次结构 208
+ 7.5.4 Preference Activity 简介 209
+ 7.5.5 向后兼容性与 Preference Screen 210
+ 7.5.6 找到并使用 Preference Screen 设置的 Shared Preference 210
+ 7.5.7 Shared Preference Change Listener 简介 211
+ 7.6 为地震查看器创建一个标准的 Preference Activity 211
+ 7.7 持久化应用程序实例的状态 215
+ 7.7.1 使用 Shared Preference 保存 Activity 状态 215
+ 7.7.2 使用生命周期处理程序保存和还原 Activity 实例 215
+ 7.7.3 使用生命周期处理程序保存和还原 Fragment 实例状态 216
+ 7.8 将静态文件作为资源添加 218
+ 7.9 在文件系统下工作 218
+ 7.9.1 文件管理工具 218
+ 7.9.2 使用特定于应用程序的文件夹存储文件 219
+ 7.9.3 创建私有的应用程序文件 219
+ 7.9.4 使用应用程序文件缓存 220
+ 7.9.5 存储公共可读的文件 220
+** 第 8 章 数据库和 Content Provider 223
+ 8.1 Android 数据库简介 223
+ 8.1.1 SQLite 数据库简介 224
+ 8.1.2 Content Provider 简介 224
+ 8.2 SQLite 简介 224
+ 8.3 Content Value 和 Cursor 225
+ 8.4 使用 SQLite 数据库 225
+ 8.4.1 SQLiteOpenHelper 简介 226
+ 8.4.2 在不使用 SQLiteOpenHelper 的情况下打开和创建数据库 228
+ 8.4.3 Android 数据库设计注意事项 228
+ 8.4.4 查询数据库 228
+ 8.4.5 从 Cursor 中提取值 229
+ 8.4.6 添加、更新和删除行 230
+ 8.5 创建 Content Provider 232
+ 8.5.1 注册 Content Provider 233
+ 8.5.2 发布 Content Provider 的 URI 地址 233
+ 8.5.3 创建 Content Provide 的数据库 234
+ 8.5.4 实现 Content Provider 查询 235
+ 8.5.5 Content Provider 事务 236
+ 8.5.6 在 Content Provider 中存储文件 239
+ 8.5.7 一个 Content Provider 的实现框架 240
+ 8.6 使用 Content Provider 244
+ 8.6.1 Content Resolver 简介 244
+ 8.6.2 查询 Content Provider 244
+ 8.6.3 使用 Cursor Loader 异步查询内容 247
+ 8.6.4 添加、删除和更新内容 249
+ 8.6.5 访问 Content Provider 中存储的文件 251
+ 8.6.6 创建一个 To-Do List 数据库和 Content Provider 253
+ 8.7 将搜索功能添加到应用程序中 260
+ 8.7.1 使 Content Provider 可搜索 261
+ 8.7.2 为应用程序创建一个搜索 Activity 261
+ 8.7.3 将搜索 Activity 设置为应用程序的默认搜索 Provider 263
+ 8.7.4 使用搜索视图微件 266
+ 8.7.5 由 Content Provider 支持搜索建议 267
+ 8.7.6 在快速搜索框中显示搜索结果 270
+ 8.8 创建可搜索的地震 Content Provider 270
+ 8.8.1 创建 Content Provider 270
+ 8.8.2 使用地震 Content Provider 276
+ 8.8.3 搜索 EarthquakeContent Provider 279
+ 8.9 本地 Android Content Provider 285
+ 8.9.1 使用 Media StoreContent Provider 285
+ 8.9.2 使用 Contacts Contract Content Provider 286
+ 8.9.3 使用 Calendar Content Provider 293
+** 第 9 章 在后台操作 297
+ 9.1 Service 简介 298
+ 9.1.1 创建和控制 Service 298
+ 9.1.2 将 Service 绑定到 Activity 302
+ 9.1.3 地震监控 Service 示例 304
+ 9.1.4 创建前台 Service 308
+ 9.2 使用后台线程 309
+ 9.2.1 使用 AsyncTask 运行异步任务 310
+ 9.2.2 Intent Service 简介 312
+ 9.2.3 Loader 简介 313
+ 9.2.4 手动创建线程和 GUI 线程同步 313
+ 9.3 使用 Alarm 315
+ 9.3.1 创建、设置和取消 Alarm 316
+ 9.3.2 设置重复 Alarm 317
+ 9.3.3 使用重复 Alarm 调度网络刷新 318
+ 9.4 使用 Intent Service 简化 Earthquake 更新 Service 320
+** 第 10 章 扩展用户体验 323
+ 10.1 操作栏简介 324
+ 10.1.1 自定义操作栏 325
+ 10.1.2 自定义操作栏来控制应用程序的导航行为 328
+ 10.1.3 操作栏操作简介 333
+ 10.2 向地震监控程序添加一个操作栏 333
+ 10.3 创建并使用菜单和操作栏操作项 339
+ 10.3.1 Android 菜单系统简介 340
+ 10.3.2 创建菜单 341
+ 10.3.3 指定操作栏的操作 342
+ 10.3.4 菜单项选项 343
+ 10.3.5 添加操作 View 和操作提供程序 344
+ 10.3.6 在 Fragment 中添加菜单项 345
+ 10.3.7 使用 XML 定义菜单层次结构 345
+ 10.3.8 动态更新菜单项 347
+ 10.3.9 处理菜单选择 347
+ 10.3.10 子菜单和上下文菜单简介 348
+ 10.4 更新地震监控程序 351
+ 10.5 全屏显示 353
+ 10.6 对话框简介 355
+ 10.6.1 创建一个对话框 356
+ 10.6.2 使用 AlertDialog 类 356
+ 10.6.3 使用专门的输入对话框 357
+ 10.6.4 通过 Dialog Fragment 管理和显示对话框 358
+ 10.6.5 通过 Activity 事件处理程序管理和显示对话框 360
+ 10.6.6 将 Activity 用作对话框 361
+ 10.7 创建 Toast 361
+ 10.7.1 自定义 Toast 362
+ 10.7.2 在工作线程中使用 Toast 364
+ 10.8 Notification 简介 365
+ 10.8.1 Notification Manager 简介 366
+ 10.8.2 创建 Notification 366
+ 10.8.3 设置和自定义通知托盘 UI 369
+ 10.8.4 配置持续和连续的 Notification 373
+ 10.8.5 触发、更新和取消 Notification 374
+ 10.9 向地震监控程序中添加 Notification 和对话框 376
+** 第 11 章 高级用户体验 381
+ 11.1 为每个屏幕尺寸和分辨率做设计 382
+ 11.1.1 分辨率无关 382
+ 11.1.2 为不同的屏幕大小提供支持和优化 383
+ 11.1.3 创建可缩放的图形资源 386
+ 11.1.4 创建优化的、自适应的、动态的设计 390
+ 11.1.5 反复测试 390
+ 11.2 确保可访问性 391
+ 11.2.1 为非触屏设备提供导航 391
+ 11.2.2 为每个 View 提供文本描述 391
+ 11.3 Android Text-to-Speech 简介 392
+ 11.4 使用语音识别 394
+ 11.4.1 使用语音识别进行语音输入 395
+ 11.4.2 使用语音识别进行搜索 396
+ 11.5 控制设备振动 396
+ 11.6 使用动画 397
+ 11.6.1 补间 View 动画 397
+ 11.6.2 创建和使用逐帧动画 400
+ 11.6.3 插值属性动画 400
+ 11.7 强化 View 404
+ 11.7.1 高级 Canvas 绘图 404
+ 11.7.2 硬件加速 419
+ 11.7.3 Surface View 简介 420
+ 11.7.4 创建交互式控件 423
+ 11.8 高级 Drawable 资源 428
+ 11.9 复制、粘贴和剪贴板 431
+ 11.9.1 向剪贴板中复制数据 431
+ 11.9.2 粘贴剪贴板数据 431
+** 第 12 章 硬件传感器 433
+ 12.1 使用传感器和传感器管理器 433
+ 12.1.1 受支持的 Android 传感器 434
+ 12.1.2 虚拟传感器简介 435
+ 12.1.3 查找传感器 435
+ 12.1.4 监视传感器 436
+ 12.1.5 解释传感器值 438
+ 12.2 监视设备的移动和方向 439
+ 12.2.1 确定设备的自然方向 440
+ 12.2.2 加速计简介 441
+ 12.2.3 检测加速度变化 442
+ 12.2.4 创建一个重力计 443
+ 12.2.5 确定设备方向 446
+ 12.2.6 创建一个指南针和人工地平仪 450
+ 12.2.7 陀螺仪传感器简介 453
+ 12.3 环境传感器简介 454
+ 12.3.1 使用气压计传感器 454
+ 12.3.2 创建气象站 455
+** 第 13 章 地图、地理编码和基于位置的服务 461
+ 13.1 使用基于位置的服务 461
+ 13.2 在模拟器中使用基于位置的服务 462
+ 13.2.1 更新模拟器位置提供器中的位置 463
+ 13.2.2 配置模拟器来测试基于位置的服务 463
+ 13.3 选择一个位置提供器 464
+ 13.3.1 查找位置提供器 464
+ 13.3.2 通过指定条件查找位置提供器 464
+ 13.3.3 确定位置提供器的能力 465
+ 13.4 确定当前位置 466
+ 13.4.1 位置的隐私性 466
+ 13.4.2 找出上一次确定的位置 466
+ 13.4.3 Where Am I 示例 466
+ 13.4.4 刷新当前位置 469
+ 13.4.5 在 Where Am I 中跟踪位置 472
+ 13.4.6 请求单独一次位置更新 473
+ 13.5 位置更新的最佳实践 474
+ 13.6 使用近距离提醒 477
+ 13.7 使用地理编码器 478
+ 13.7.1 反向地理编码 479
+ 13.7.2 前向地理编码 480
+ 13.7.3 对“Where Am I”示例进行地理编码 481
+ 13.8 创建基于地图的 Activity 482
+ 13.8.1 MapView 和 MapActivity 简介 482
+ 13.8.2 获得地图的 API key 483
+ 13.8.3 创建一个基于地图的 Activity 483
+ 13.8.4 地图和 Fragment 485
+ 13.8.5 配置和使用 MapView 486
+ 13.8.6 使用 MapController 486
+ 13.8.7 对“Where Am I”示例使用地图 487
+ 13.8.8 创建和使用覆盖（Overlay）490
+ 13.8.9 MyLocationOverlay 简介 497
+ 13.8.10 ItemizedOverlay 和 OverlayItem 简介 498
+ 13.8.11 将视图固定到地图和地图的某个位置上 500
+ 13.9 对 Earthquake 示例添加地图功能 501
+** 第 14 章 个性化主屏幕 507
+ 14.1 主屏幕 Widget 简介 507
+ 14.2 创建 App Widgets 509
+ 14.2.1 创建 Widget 的 XML 布局资源 509
+ 14.2.2 定义 Widget 设置 511
+ 14.2.3 创建 Widget Broadcast Receiver 并将其添加到应用程序的 manifest 文件中 512
+ 14.2.4 AppWidgetManager 和 RemoteView 简介 513
+ 14.2.5 刷新 Widget 518
+ 14.2.6 创建并使用 Widget 配置 Activity 521
+ 14.3 创建地震 Widget 522
+ 14.4 Collection View Widget 简介 528
+ 14.4.1 创建 Collection View Widget 的布局 529
+ 14.4.2 创建 RemoteViewsService 530
+ 14.4.3 创建一个 RemoteViews-Factory 531
+ 14.4.4 使用 RemoteViewsService 填充 CollectionViewWidget 533
+ 14.4.5 向 Collection View Widget 中的项添加交互性 534
+ 14.4.6 将 Collection View Widget 绑定到 Content Provider 535
+ 14.4.7 刷新 Collection View Widget 537
+ 14.4.8 创建 Earthquake Collection View Widget 537
+ 14.5 Live Folder 简介 543
+ 14.5.1 创建 Live Folder 544
+ 14.5.2 创建 Earthquake Live Folder 548
+ 14.6 使用快速搜索框显示应用程序搜索结果 551
+ 14.6.1 在快速搜索框中显示搜索结果 551
+ 14.6.2 将 Earthquake 示例的搜索结果添加到快速搜索框中 552
+ 14.7 创建 Live Wallpaper 553
+ 14.7.1 创建 Live Wallpaper 定义资源 553
+ 14.7.2 创建 Wallpaper Service 554
+ 14.7.3 创建 Wallpaper Service 引擎 555
+** 第 15 章 音频、视频以及摄像头的使用 557
+ 15.1 播放音频和视频 558
+ 15.1.1 Media Player 简介 559
+ 15.1.2 准备音频播放 559
+ 15.1.3 准备视频播放 560
+ 15.1.4 控制 Media Player 的播放 564
+ 15.1.5 管理媒体播放输出 566
+ 15.1.6 响应音量控制 566
+ 15.1.7 响应 Media 播放控件 567
+ 15.1.8 请求和管理音频焦点 569
+ 15.1.9 当音频输出改变时暂停播放 571
+ 15.1.10 Remote Control Client 简介 572
+ 15.2 操作原始音频 574
+ 15.2.1 使用 AudioRecord 录制声音 574
+ 15.2.2 使用 AudioTrack 播放音频 575
+ 15.3 创建一个 Sound Pool 577
+ 15.4 使用音效 578
+ 15.5 使用摄像头拍摄照片 579
+ 15.5.1 使用 Intent 拍摄照片 579
+ 15.5.2 直接控制摄像头 581
+ 15.5.3 读取并写入 JPEG EXIF 图像详细信息 588
+ 15.6 录制视频 589
+ 15.6.1 使用 Intent 录制视频 589
+ 15.6.2 使用 MediaRecorder 录制视频 590
+ 15.7 使用媒体效果 593
+ 15.8 向媒体库中添加新媒体 594
+ 15.8.1 使用媒体扫描仪插入媒体 594
+ 15.8.2 手动插入媒体 595
+** 第 16 章 蓝牙、NFC、网络和 Wi-Fi 597
+ 16.1 使用蓝牙 597
+ 16.1.1 管理本地蓝牙设备适配器 598
+ 16.1.2 可发现性和远程设备发现 600
+ 16.1.3 蓝牙通信 604
+ 16.2 管理网络和 Internet 连接 609
+ 16.2.1 Connectivity Manager 简介 609
+ 16.2.2 支持用户首选项以进行后台数据传输 609
+ 16.2.3 查找和监视网络连接 611
+ 16.3 管理 Wi-Fi 612
+ 16.3.1 监视 Wi-Fi 连接 613
+ 16.3.2 监视活动的 Wi-Fi 连接的详细信息 613
+ 16.3.3 扫描热点 613
+ 16.3.4 管理 Wi-Fi 配置 614
+ 16.3.5 创建 Wi-Fi 网络配置 615
+ 16.4 使用 Wi-Fi Direct 传输数据 615
+ 16.4.1 初始化 Wi-Fi Direct 框架 615
+ 16.4.2 启用 Wi-Fi Direct 并监视其状态 617
+ 16.4.3 发现对等设备 618
+ 16.4.4 连接对等设备 618
+ 16.4.5 在对等设备之间传输数据 620
+ 16.5 近场通信 621
+ 16.5.1 读取 NFC 标签 622
+ 16.5.2 使用前台分派系统 623
+ 16.5.3 Android Beam 简介 625
+** 第 17 章 电话服务和 SMS 629
+ 17.1 电话服务的硬件支持 629
+ 17.1.1 将电话功能指定为必需的硬件功能 629
+ 17.1.2 检查电话硬件 630
+ 17.2 使用电话服务 630
+ 17.2.1 启动电话呼叫 630
+ 17.2.2 替换本机拨号程序 631
+ 17.2.3 访问电话服务的属性及状态 632
+ 17.2.4 使用 PhoneStateListener 监视电话状态的变化 635
+ 17.2.5 使用 Intent Receiver 监视传入的电话呼叫 639
+ 17.3 SMS 和 MMS 简介 640
+ 17.3.1 在应用程序中使用 SMS 和 MMS 640
+ 17.3.2 使用 Intent 从应用程序中发送 SMS 和 MMS 640
+ 17.3.3 使用 SMS Manager 发送 SMS 消息 641
+ 17.3.4 监听传入的 SMS 消息 644
+ 17.3.5 紧急响应程序 SMS 示例 646
+ 17.3.6 自动紧急响应程序 654
+ 17.4 SIP 和 VOIP 简介 662
+** 第 18 章 Android 高级开发 663
+ 18.1 Android 的安全性 664
+ 18.1.1 Linux 内核安全 664
+ 18.1.2 权限简介 664
+ 18.2 Cloud to Device Messaging 简介 666
+ 18.2.1 C2DM 的局限性 667
+ 18.2.2 注册使用 C2DM 667
+ 18.2.3 在 C2DM 服务器上注册设备 667
+ 18.2.4 向设备发送 C2DM 消息 670
+ 18.2.5 接收 C2DM 消息 672
+ 18.3 使用 License Verification Library 实现版权保护 673
+ 18.3.1 安装 License Verification Library 673
+ 18.3.2 获得 License Verification 公钥 673
+ 18.3.3 配置 License Validation Policy 674
+ 18.3.4 执行许可验证检查 674
+ 18.4 应用程序内收费 675
+ 18.4.1 应用程序内收费的局限性 676
+ 18.4.2 安装 IAB 库 676
+ 18.4.3 获得公钥和定义可购买的物品 676
+ 18.4.4 开始 IAB 交易 677
+ 18.4.5 处理 IAB 购买请求的响应 678
+ 18.5 使用 Wake Lock 679
+ 18.6 使用 AIDL 支持 Service 的 IPC 680
+ 18.7 处理不同硬件和软件的可用性 686
+ 18.7.1 指定硬件的要求 686
+ 18.7.2 确认硬件可用性 687
+ 18.7.3 构建向后兼容的应用程序 687
+ 18.8 利用 STRICT 模式优化 UI 性能 689
+** 第 19 章 推广和发布应用程序并从中获利 691
+ 19.1 签名和发布应用程序 691
+ 19.2 发布应用程序 693
+ 19.2.1 Google Play 简介 693
+ 19.2.2 开始使用 Google Play 694
+ 19.2.3 发布应用程序 695
+ 19.2.4 开发者控制台上的应用程序报告 697
+ 19.2.5 查看应用程序错误报告 697
+ 19.3 如何通过应用程序赚钱 698
+ 19.4 应用程序销售、推广和分发的策略 699
+ 19.4.1 应用程序的起步策略 699
+ 19.4.2 在 Google Play 上推广 700
+ 19.4.3 国际化 700
+ 19.5 分析数据和跟踪推荐人 701
+ 19.5.1 使用移动应用程序的 Google Analytics 702
+ 19.5.2 使用 Google Analytics 追踪推荐 703
