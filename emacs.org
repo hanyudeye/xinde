@@ -1,125 +1,105 @@
-* emacs （黑板） 
-** 选项
+* emacs
+  
+  ( 操作整合工具 )
+  
+** 工具功能选项
    | +<行号>         | 将光标移动到制定行号的行；                             |
    | q               | 不加载初始化文件                                       |
    | u<用户>         | 加载指定用户的初始化文件；                             |
-   | f<函数>         | 执行指定lisp（广泛应用于人工智能领域的编程语言）函数； |
-   | l<lisp代码文件> | 加载指定的lisp代码文件                                 |
-   | batch           | 以批处理模式运行emacs编辑器                            |
+   | f<函数>         | 执行指定 lisp（广泛应用于人工智能领域的编程语言）函数； |
+   | l<lisp 代码文件> | 加载指定的 lisp 代码文件                                 |
+   | batch           | 以批处理模式运行 emacs 编辑器                            |
    | debug-init      | 程序启动时，加载调试器                                 |
    | script=file     | 执行文件                                               |
    | insert=file     | 插入文件                                               |
-** 扩展(黑板辅助, 添加中断)
-*** 扩展列表 list-packages
+** 扩展新工具
+                                 -------> 包属性
+   ( 扩展 包 's)           -------> 操作包
+                                 -------> 包功能
+
+*** 列出扩展 list-packages
 *** 加载扩展
     require <sysbol name>
+    
     load load-path
-    autoload
     
-    `autoload`告诉emacs某个地方有一个定义好的函数，并且告诉emacs，先别加载，只要
-    记住在调用这个函数时去哪里寻找它的定义即可
-*** 包管理器 elpa(Emacs package system)
-    方法 (load 'auto-complete-autoloads)
-*** 服务 程序调用程序     
-    调用编辑程序, 由环境变量 EDITOR 控制, 如果 是 emacs 会开启一个新进程，就不能
-    共享缓存，命令历史和其他信息那么，把emacs 设置层 edit server,因为服务是一直
-    开着的，监视edit请求
+    autoload (调用时加载)
     
-    方法：1. 在emacs 中 server-start, 或放在init file中
-    2.用 --daemon 作为启动emacs 的参数
-    
-    先要开服务
-    然后调用emacs客户端形式emacsclient -c 创建一个新的frame  (tells a running Emacs to visit a file)
-    
-    也能创建多个不同名字的emacs 服务
-    先设置服务名
-    
-    For example, M-x set-variable <RET> server-name <RET> "foo" <RET> sets the server name to ‘foo’. The emacsclient program can specify a server by name, using the ‘-s’ option (see emacsclient Options).
-    
-    TCP Emacs server: Listening to a TCP socket.
-    Invoking emacsclient: Connecting to the Emacs server.
-    emacsclient Options: Emacs client startup options.
-    [1] Some programs use a different environment variable; for example, to make TeX use ‘emacsclient’, set the TEXEDIT environment variable to ‘emacsclient +%d %s’.
-
-** 开发理念
-*** 屏幕
-*** 用户输入（键盘，鼠标)
-*** 按键的用法
-*** 命令 按键绑定的命名函数
-*** 打开
-*** 关闭
-** 基本功能
-** 文本操作
-*** 选中文本
-**** 标记 Mark
-***** 做标记 set-mark-command 或者鼠标 
-***** 标记对象 word, list, paragraph, page
-***** 操作标记
-****** 删除 kill 
-****** 拷贝 yank
-****** 大小转化
-****** 替换
-****** 缩进
-****** 填充
-****** 拼写检查
-****** 求值（lisp代码）
-****** 保存到寄存器 registers
-***** 标记环 mark ring (凡做标记的操作point会存储到环中)
-      全局 mark ring pop-global-mark
-***** shift键辅助标记
-      一些光标移动+ shift键会直接标记光标下的文本
-**** 矩形标记 rectangles
-*** Killing环   (删除文本到kill环中)
-    在图形编辑器中，还会拷贝到系统clipboard
-**** 删除命令(存在kill 环) 
-     kill-line kill-word kill-page
-**** delete命令（不会存在killing 环)
-     delete-char delete-backward-char delete-line
-*** 暂存器 Registers (大小写字符或数字都可) 
-**** 创建暂存器 
-***** position registers 
-    记录位置 point-to-register
-    跳转到位置 jump-to-register
-***** text registers
-     Copy region into register R (‘copy-to-register’).
-     Insert text from register R (‘insert-register’). 
-     append-to-register <RET> R
-***** rectangle registers
-      copy-rectangle-to-register
-      insert-register
-***** number registers
-      ‘C-u NUMBER C-x r n R’                                   
-      Store NUMBER into register R (‘number-to-register’).
+    (load 'auto-complete-autoloads)
+    包管理器 elpa(Emacs package system)
+** 作为服务工具 ( 共享资源 ) 会监视 edit 请求
+- 开启服务
+  1. 在 emacs 中 server-start, 或放在 init file 中,
+  2.用 --daemon 作为启动 emacs 的参数
+- 设置客户端
+  EDITOR=emacsclient -c
+** 功能
+*** 文本操作
+**** 选中文本
+***** 标记 Mark
+****** 做标记 set-mark-command 或者鼠标 
+****** 标记对象 word, list, paragraph, page
+****** 操作标记
+******* 删除 kill 
+******* 拷贝 yank
+******* 大小转化
+******* 替换
+******* 缩进
+******* 填充
+******* 拼写检查
+******* 求值（lisp 代码）
+******* 保存到寄存器 registers
+****** 标记环 mark ring (凡做标记的操作 point 会存储到环中)
+       全局 mark ring pop-global-mark
+****** shift 键辅助标记
+       一些光标移动+ shift 键会直接标记光标下的文本
+***** 矩形标记 rectangles
+**** Killing 环   (删除文本到 kill 环中)
+     在图形编辑器中，还会拷贝到系统 clipboard
+***** 删除命令(存在 kill 环) 
+      kill-line kill-word kill-page
+***** delete 命令（不会存在 killing 环)
+      delete-char delete-backward-char delete-line
+**** 暂存器 Registers (大小写字符或数字都可) 
+***** 创建暂存器 
+****** position registers 
+     记录位置 point-to-register
+     跳转到位置 jump-to-register
+****** text registers
+      Copy region into register R (‘copy-to-register’).
+      Insert text from register R (‘insert-register’). 
+      append-to-register <RET> R
+****** rectangle registers
+       copy-rectangle-to-register
+       insert-register
+****** number registers
+       ‘C-u NUMBER C-x r n R’                                   
+       Store NUMBER into register R (‘number-to-register’).
       
-      ‘C-x r i R’                                          
-      Insert the number from register R into the buffer.
-***** file registers
-***** keyboard macro registers
-      ‘C-x r j R’
+       ‘C-x r i R’                                          
+       Insert the number from register R into the buffer.
+****** file registers
+****** keyboard macro registers
+       ‘C-x r j R’
 
-**** 显示 view-registers
-*** Display界面 
-*** 搜索 替换 
-*** 有用的命令 
-**** 大小转化 
-     M-l 小写
-     M-u 大写
-     M-c 首字母大写
-*** 键盘宏
+***** 显示 view-registers
+**** Display 界面 
+**** 搜索 替换 
+**** 有用的命令 
+***** 大小转化 
+      M-l 小写
+      M-u 大写
+      M-c 首字母大写
+**** 键盘宏
 
-** Emacs结构
-*** Files::               All about handling files.
-*** Buffers::             Multiple buffers; editing several files at once.
-*** Windows::             Viewing multiple pieces of text in one frame.
-*** Frames::              Using multiple windows on your display.
-*** 国际化International::       Using non-ASCII character sets.
-**** International Chars::    键盘只能数100个字
-     emacs 有自己的编码（类unicode的编码)
-***** 编码输入 C-x 8 <RET> 🔔 16进制
+*** 国际化 International::       Using non-ASCII character sets.
+**** International Chars::    键盘只能数 100 个字
+     emacs 有自己的编码（类 unicode 的编码)
+***** 编码输入 C-x 8 <RET> 🔔 16 进制
 ***** 显示编码 C-x =
       详细信息 C-u C-x =
 **** 语言环境 把编码显示某国语言(超出某国的会乱码)
-***** 设置语言环境 set-language-environment 用sdcv 测试
+***** 设置语言环境 set-language-environment 用 sdcv 测试
       
 **** Input Methods::           Entering text characters not on your keyboard.
 **** Select Input Method::     Specifying your choice of input methods.      
@@ -148,7 +128,7 @@
 **** Unibyte Mode::            You can pick one European character set       
 **** Charsets::                How Emacs groups its internal character codes.
 **** Bidirectional Editing::   Support for right-to-left scripts.           
-** 高级特性Advanced Features
+** 高级特性 Advanced Features
 *** Modes::               Major and minor modes alter Emacs’s basic behavior.
 *** Indentation::         Editing the white space at the beginnings of lines.
 *** Text::                Commands and modes for editing human languages.
@@ -176,11 +156,3 @@
 *** Amusements::          Various games and hacks.
 *** Packages::            Installing additional features.
 *** Customization::       Modifying the behavior of Emacs.
-
-** Recovery from Problems
-*** Quitting::            Quitting and aborting.
-*** Lossage::             What to do if Emacs is hung or malfunctioning.
-*** Bugs::                How and when to report a bug.
-*** Contributing::        How to contribute improvements to Emacs.
-*** Service::             How to get help for your own Emacs needs.
-    

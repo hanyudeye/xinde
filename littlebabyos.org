@@ -1,460 +1,5 @@
-* linux ebx, ecx, edx, esi 和 edi 按照顺序存放前五个参数,返回值 eax  
-** 调用 C 函数
-   汇编调用 C 函数，方法很简单：
-*** 1）调用就是使用 call 指令
-*** 2）参数传递方法为将规定数目的参数压栈。
-    void func(int a, int b);
-    若调用上面的函数，需要两个参数，而压栈顺序为从右到左，故
-
-    pushl %ebx
-    pushl %ecx
-
-    则调用过程中 func 中得到的 b 为 ebx，a 为 ecx 的值。
-*** 3）函数返回值保存在 eax 中
-*** 4）调用结束后，调用放回堆栈，addl 参数个数*4,  %esp
-*** 则 printf 的调用如下所示：
-    #+begin_src asm
-        # print the CPUID Vendor ID by C library calls
-
-        .section .data
-        output:
-          # .asciz 与 ascii 不同在于，.asciz 会在末尾添加空字符（0）
-          .asciz	"The processor Vendor ID is '%s'\n"
-
-        .section .bss
-          .lcomm	buffer, 12
-
-        .section .text
-
-        .global	_start
-
-        _start:
-          nop
-          movl	$0,		%eax
-          cpuid
-
-          movl	$buffer,%edi
-          movl	%ebx,	(%edi)
-          movl	%edx,	4(%edi)
-          movl	%ecx,	8(%edi)
-
-          pushl	$buffer
-          pushl	$output
-          call	printf
-
-          addl	$8,		%esp
-          pushl	$0
-          call	exit
-    #+end_src
-    
-    #+begin_src makefile
-      all: cpuid_use_printf
-
-      cpuid_use_printf: cpuid_use_printf.o
-      ld -dynamic-linker /lib/ld-linux.so.2 -o $@ -lc $<
-
-      cpuid_use_printf.o: cpuid_use_printf.s
-      as -o $@ $<
-
-      clean:
-      rm ./cpuid_use_printf ./cpuid_use_printf.o ./cpuid_use_printf.s~
-
-    #+end_src
-
-    链接：
-    1）使用动态链接可减小程序大小及节约内存，需要指定运行时加载动态库
-
-    ld -dynamic-linker /lib/ld-linux.so.2
-
-    2）用-l 参数指定连接库
-    -lc
-** 处理字符串
-   一.传送字符串
-   把字符串从一个内存位置复制到另一个内存位置。
-
-
-
-   1.MOVS
-   3 种格式：
-   MOVSB：传送单一字节
-   MOVSW：传送一个字（2 字节）
-   MOVSL：传送一个双字（4 字节）
-   MOVS 使用隐含的源（ESI）、目的（EDI）操作数。
-   两种加载 ESI、EDI 值的方式：
-   1）间接寻址：
-   movl $output, %edi
-   2）lea 指令加载一个对象的有效地址
-   leal output, %esi
-
-   每次执行 MOVS 指令时，数据传送后，ESI 和 EDI 寄存器会自动改变，为另一次传送做准备。
-   ESI、EDI 可能递增也可能递减，这取决于 EFLAGS 中的 DF 标志。如果 DF 被清零则递增，DF 被设置，则递减。
-   CLD 将 DF 清零
-   STD 设置 DF 标志
-   示例：
-   # An example of the MOVS instructions
-   .section .data
-   str:
-	 .ascii	"Hi AT&T.\n"
- 
-   .section .bss
-	 .lcomm	output, 9
- 
-   .section .text
-   .global _start
- 
-   _start:
-	 nop
- 
-	 leal	str,	%esi
-	 leal	output,	%edi
- 
-	 movsb
-	 movsw
-	 movsl
- 
-	 movl	$1,		%eax
-	 movl	$0,		%ebx
-	 int		$0x80
-   调试：
-   liury@liury-laptop:~/program/asm/working_with_string/movs_example$ make
-   as -gstabs -o movs_example.o movs_example.s
-   ld -o movs_example movs_example.o
-   liury@liury-laptop:~/program/asm/working_with_string/movs_example$ ls
-   makefile  movs_example  movs_example.o  movs_example.s
-   liury@liury-laptop:~/program/asm/working_with_string/movs_example$ gdb ./movs_example 
-   GNU gdb (GDB) 7.1-ubuntu
-   Copyright (C) 2010 Free Software Foundation, Inc.
-   License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
-   This is free software: you are free to change and redistribute it.
-   There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
-   and "show warranty" for details.
-   This GDB was configured as "i486-linux-gnu".
-   For bug reporting instructions, please see:
-   <http://www.gnu.org/software/gdb/bugs/>...
-   Reading symbols from /home/liury/program/asm/working_with_string/movs_example/movs_example...done.
-   (gdb) l
-   1 # An example of the MOVS instructions
-   2 .section .data
-   3 str:
-   4 .ascii "Hi AT&T.\n"
-   5 
-   6 .section .bss
-   7 .lcomm output, 9
-   8 
-   9 .section .text
-   10 .global _start
-   (gdb) b *_start+1
-   Breakpoint 1 at 0x8048075: file movs_example.s, line 15.
-   (gdb) r
-   Starting program: /home/liury/program/asm/working_with_string/movs_example/movs_example 
-
-   Breakpoint 1, _start () at movs_example.s:15
-   15 leal str, %esi
-   (gdb) n
-   16 leal output, %edi
-   (gdb) print /x $esi
-   $1 = 0x8049094
-   (gdb) print /x str
-   $2 = 0x41206948
-   (gdb) print /x &str
-   $3 = 0x8049094
-   (gdb) n
-   18 movsb
-   (gdb) x /9cb &output
-   0x80490a0 <output>: 0 '\000'0 '\000' 0 '\000'0 '\000' 0 '\000'0 '\000' 0 '\000'0 '\000'
-   0x80490a8 <output+8>: 0 '\000'
-   (gdb) x /s &output
-   0x80490a0 <output>: ""
-   (gdb) n
-   19 movsw
-   (gdb) x /s &output
-   0x80490a0 <output>: "H"
-   (gdb) n
-   20 movsl
-   (gdb) x /s &output
-   0x80490a0 <output>: "Hi "
-   (gdb) n
-   22 movl $1, %eax
-   (gdb) x /s &output
-   0x80490a0 <output>: "Hi AT&T"
-   (gdb) c
-   Continuing.
-
-   Program exited normally.
-   (gdb) q
-
-   对于要传送大型字符串，可用循环：
-	 leal	datas,	%esi
-	 leal	output,	%edi
-	 mvol	$100,	%ecx
-	 cld
-   loop_cp:
-	 movsb
-	 loop	loop_cp
-
-   2.REP
-   可更简单地传送大型字符串。它自己并不执行什么操作，这条指令用于按照特定次数重复执行字符串指令，由 ECX 寄存器中的值进行控制。例如
-	 leal	datas,	%esi
-	 leal	output,	%edi
-	 mvol	$100,	%ecx
-	 cld
-	 rep		movsb
-
-   MOVSW,MOVSL 传送大型字符串效率更高，但小心不能除尽的情况。
-
-   有些 REP 指令除监视 ECX 外还监视 ZF（零标志）的状态。
-   --------------------------------------------------
-   指令 描述
-   -------------------------------------------
-   REPE 等于时重复
-   REPNE 不等于时重复
-   REPNZ 不为 0 时重复
-   REPZ 为 0 时重复
-   ---------------------------------------------------
-
-   二.存储和加载字符串
-
-
-   1.LODS
-   用于把内存中的字符串传送到 EAX。三种形式：
-   LODSB：把一个字节加载到 AL
-   LODSW：把一个字加载到 AX
-   LODSL：把一个双字加载到 EAX
-
-   LODS 指令使用 ESI 寄存器作为隐含的源操作数。ESI 必须包含要加载的字符串所在的内存地址。
-   同样加载后 ESI 递增或递减取决于 DF 标志。
-
-   2.STOS
-   把字符串从 EAX 放到一个内存地址。
-   STOSB：存储 AL 中一个字节数据
-   STOSW：存储 AX 中一个字数据
-   STOSL：存储 EAX 中一个双字数据
-
-   STOS 指令使用 EDI 作为隐含的目标操作数。可方便地与 REP 配合：
-   leal	space,	%esi
-   leal	buffer,	%edi
-   movl	$256,	%ecx
-   cld
-   lodsb
-   rep		stosb
-
-   字符串处理示例，小写变大写：
-   # Converting lower to upper case
- 
-   .section .data
-   str1:
-	 .asciz	"This is a TEST, of the program, hello AT&R!\n"
-   len:
-	 .int	. - str1
- 
-   .section .text
-   .global	_start
- 
-   _start:
-	 nop
-	 leal	str1,	%esi
-	 movl	%esi,	%edi
-	 movl	len,	%ecx
-	 cld
-   1:
-	 lodsb
- 
-	 cmpb	$'a',	%al
-	 jl		skipb
-	 cmpb	$'z',	%al
-	 jg		skipb
- 
-	 subb	$0x20,	%al
- 
-   skipb:
-	 stosb
-	 loop	1b
- 
-   end:
-	 pushl	$str1
-	 call	printf
- 
-	 addl	$4,		%esp
- 
-	 pushl	$0
-	 call	exit
-   结果：
-   liury@liury-laptop:~/program/asm/working_with_string/str_process$ ./convert 
-   THIS IS A TEST, OF THE PROGRAM, HELLO AT&R!
-
-   三.比较字符串
-
-
-   1.CMPS
-   三种格式：CMPSB，CMPSW，CMPSL
-   隐含的源和目的操作数同样存储在 ESI 和 EDI 寄存器中。每次执行 CMPS 时，根据 DF 的设置，ESI 和 EDI 递增或递减
-   CMPS 指令从源字符串减去目标字符串，并且适当地设置 EFLAGS 的寄存器的进位、符号、溢出、零、奇偶校验和辅助进位标志。后面可跟跳转指令。
-
-   2.CMPS 和 REP 一起使用
-   示例：
-   # An example of using the REPE CMPS instruction
-   .section .data
-   output:
-	 .asciz	"The len is %d.\n"
-   str1:
-	 .ascii	"This is a test of the cmps instructions."
-   str2:
-	 .ascii	"This is a test of the CMPS instructions."
-   len:
-	 .int	. - str2
- 
-   .section .text
-   .global _start
- 
-   _start:
-	 nop
-	 movl	len,	%ecx
-	 pushl	%ecx
-	 pushl	$output
-	 call	printf
-	 addl	$8,		%esp
- 
-	 leal	str1,	%esi
-	 leal	str2,	%edi
-	 movl	len,	%ecx
-	 movl	$1,		%eax
- 
-	 cld	
-	 repe	cmpsb
-	 je		equal
-	 movl	%ecx,	%ebx
-	 int		$0x80
- 
-   equal:
-	 movl	$0,		%ebx
-	 int		$0x80
-   运行结果：
-   liury@liury-laptop:~/program/asm/working_with_string/cmps_rep$ make
-   as -gstabs -o cmps_rep.o cmps_rep.s
-   ld -dynamic-link /lib/ld-linux.so.2 -lc -o cmps_rep cmps_rep.o
-   liury@liury-laptop:~/program/asm/working_with_string/cmps_rep$ ./cmps_rep 
-   The len is 40.
-   liury@liury-laptop:~/program/asm/working_with_string/cmps_rep$ echo $?
-   17
-   解析：
-   上面的代码首先尝试来'.'运算符作为当前地址，求字符串长度的方法，为验证其正确性，程序开始处打印来一下即 40。
-   然后比较两个字符串，直到第一个不相同的字符结束，即‘cmps’与‘CMPS’中的 c 处。
-   系统调用结束，调用号保存在 EAX 中，返回值保存在 EBX 中。则该程序的返回值若比较结束，即所有字符都相同则返回 0，若不同则返回 ECX（传到 EBX 返回）的值，本例为 17（通过 echo $?打印），17 为从后往前数，第一个不同的字符的位置，即 c 的位置。
-
-   四.扫描字符串
-
-
-   1.SCAS
-   用于扫描字符串搜索一个或多个字符。三种形式：
-   SCASB，SCASW，SCASL，分别比较内存中的一个自己、字、双字和 AL、AX、EAX 的值。
-   SCAS 使用 EDI 作为隐含的目标操作数。EDI 必须包含要扫描的字符串的内存地址。指令执行时 EDI 按 DF 值递增或递减。
-   进行比较时会相应地设置 EFLAGS 标志。
-   可与 REPE，REPNE 一起使用：
-   REPE：扫描字符串，查找不匹配搜索字符的位置
-   REPNE：扫描字符串，查找匹配搜索字符的位置
-   示例：
-   # An example of the SCAS instruction
-   .section .data
-   str:
-	 .ascii	"Hello AT&T!"
-   len:
-	 .int	. - str
-   char:
-	 .ascii	"&"
- 
-   .section .text
-   .global _start
- 
-   _start:
-	 nop
-	 leal	str,	%edi
-	 leal	char,	%esi
-	 movl	len,	%ecx
-	
-	 lodsb
-	 cld
-	 repne	scasb
-	 jne		notfound
-	
-	 subw	len,	%cx		# len 是长度，cx 值为找到的位置距离末尾的位置，
-	 # 则%cx - len 为正着数位置的负数
-	 neg		%cx				# neg 为求补指令，即负数变正数
-	 movl	%ecx,	%ebx	# 作为中断的返回值，可在程序退出后 echo $?查看
-	 movl	$1,		%eax
-	 int		$0x80
- 
-   notfound:
-	 movl	$1,		%eax
-	 movl	$0,		%ebx
-	 int		$0x80
-   结果：
-   liury@liury-laptop:~/program/asm/working_with_string/find_char$ make
-   as -gstabs -o find_char.o find_char.s
-   ld -o find_char find_char.o
-   liury@liury-laptop:~/program/asm/working_with_string/find_char$ ./find_char 
-   liury@liury-laptop:~/program/asm/working_with_string/find_char$ echo $?
-   9
-
-   2.搜索多个字符
-   SCASW，SCASL 可以搜索 2 或 4 个字符的序列，但他们不会逐字符比较，而是每次递增 2 或 4.
-   如在“abctestaaabb”中搜索用 SCASL 搜索“test”会用“test”与第一个串中的"abct", "esta", "aabb"依次比较，而不会逐字符增减寻找"test" 所以结果是找不到。
-
-   3.计算字符串的长度
-   SCAS 指令的一个非常有用的功能是确定 0 结尾的字符串的长度。
-   示例：
-   # Finding the len of a string useing the SCAS instruction
-   .section .data
-   output:
-	 .asciz	"The len of the str is : %d.\n"
-   str:
-	 .asciz	"I am learning AT&T assembly language."
-   len:
-	 .int	. - str - 1			# 减一表示去掉最后的'0'
- 
-   .section .text
-   .global _start
- 
-   _start:
-	 nop
- 
-	 pushl	len
-	 pushl	$output
-	 call	printf
-	 addl	$8,		%esp
-	
-	 leal	str,	%edi
-	 movl	$0xffff,%ecx	# 支持的最大长度 0xfffff = 65535
-	 movb	$0,		%al
- 
-	 cld
-	 repne	scasb			# 每次迭代 ECX 递减
-	 jne		notfound
- 
-	 subw	$0xffff,%cx		# %cx-0xffff 为进行了多少次迭代的负数
-	 neg		%cx				# 求补，即负数变整数
-	 dec		%cx				# 减去‘0’，即字符串长度不包含最后的‘0’
-	 movl	$1,		%eax
-	 movl	%ecx,	%ebx
-	 int		$0x80
- 
-   notfound:
-	 movl	$1,		%eax
-	 movl	$0,		%ebx
-	 int		$0x80
-   运行：
-   liury@liury-laptop:~/program/asm/working_with_string/str_len$ make
-   as -o str_len.o str_len.s
-   ld -dynamic-linker /lib/ld-linux.so.2 -lc -o str_len str_len.o
-   liury@liury-laptop:~/program/asm/working_with_string/str_len$ ./str_len 
-   The len of the str is : 37.
-   liury@liury-laptop:~/program/asm/working_with_string/str_len$ echo $?
-   37
-   用两种方法求得字符串的长度，两者相等。
+* os
 ** GNU C 内联汇编（AT&T 语法）
-   内联汇编提供了可以在 C 或 C++代码中创建汇编语言代码，不必连接额外的库或程序。这种方
-   法对最终程序在汇编语言级别如何实现特定的函数，给予程序员更多的控制权。
-
-
    1.基本的内联汇编
    1）asm 格式
    GNU 的 C 编译器使用 asm 关键字指出使用汇编语言编写的源代码段落。基本格式：
@@ -815,9 +360,12 @@
 	 "1:\n\t"				\
 	 : "=r"(result)			\
 	 : "r"(a), "r"(b) ); })
-** babyos（二）——使用 BIOS 以及直接写显存绘制图形
+** 使用 BIOS 以及直接写显存绘制图形
    3.内存映射图形
-   对于内存映射图形视频模式 0x13 最容易使用。这时屏幕像素映射为一个字节数组，每个像素一个字节。
+   
+   对于内存映射图形视频模式 0x13 最容易使用。这时屏幕像素映射为一个字节数组，每
+   个像素一个字节。
+   
    共有 320*200 个像素，因为有 256 种颜色，所以每个像素一个字节。左上角像素对应地址 0xa0000。
    模式 0x13 中，每个整数色彩值表示调色板的色彩表的索引。调色板中每个项都由三个独立的整数（0～63）构成，称为 RGB 值。调色板的第 0 项控制着屏幕的背景色。
    有两个输出端口用于控制视频调色板：送往端口 0x3c8 的值表示要修改的调色板表项，送往端口 0x3c9 的是要修改的颜色值。
@@ -978,8 +526,9 @@
 
    注释：
 
-   文字是用的 BIOS INT 0x10 显示的，VGA 的 0x13 模式下显示的文字为 40 列 x25 行，字符框 8x8，看上去有点丑，以后再研究下超级 VGA（SVGA）吧～
-** babyos（三）——利用 BIOS INT 0x13 读取软盘
+   文字是用的 BIOS INT 0x10 显示的，VGA 的 0x13 模式下显示的文字为 40 列 x25 行，
+   字符框 8x8，看上去有点丑，以后再研究下超级 VGA（SVGA）吧～
+** 利用 BIOS INT 0x13 读取软盘
    昨天学习了 VGA 显示的一些东西，今天准备学习一下读取软盘的知识。
 
    1.babyos 将使用的引导过程
@@ -1403,22 +952,34 @@
 	
 	 .org	0x1fe,	0x90
 	 .word	0xaa55
-** babyos（四）—— SVGA、VBE 基础与切换到髙分辨率模式
-   2012 年 12 月 29 日 15:42:32 孤舟钓客 阅读数：5468
-   版权声明：本文为博主原创文章，未经博主允许不得转载。	https://blog.csdn.net/guzhou_diaoke/article/details/8450689
-   注：以下程序系原创，若有 bug 欢迎指正，若有问题欢迎交流，转载请注明出处。若能有益于一二访客，幸甚。
-
-
-
+** SVGA、VBE 基础与切换到髙分辨率模式
    1.VGA
    VGA（Video Graphics Array）即视频图形阵列，是 IBM 在 1987 年随 PS/2 机推出的。
-   VGA 主要由七大块组成：图形控制器、显示存储器、定序器、CRT 控制器、数据串行发生器、属性控制器和数模转换器 DAC。
+   
+   VGA 主要由七大块组成：图形控制器、显示存储器、定序器、CRT 控制器、数据串行发
+   生器、属性控制器和数模转换器 DAC。
 
    2.VBE
-   IBM 的 VGA 标准是显示卡发展史上的一块丰碑。但后来无法满足人们的需要，于是市场上出现了 TVGA、S3 系列、Cirrus Logic、ET 等为首的一批显示卡，提供了比 VGA 分辨率更高，颜色更丰富的显示模式，又兼容 VGA 显示卡，它们被统称为 Super VGA（SVGA）。
-   各种不同的 SVGA 之间的显示控制各不相同，带来软件兼容性问题，为此视频电子学标准协会 VESA（Video Electronics Standards Association）提出了一组附加的 BIOS 功能调用借口——VBE（VESA BIOS EXTENSION）标准，从而在软件接口层次上实现了各种 SVGA 显示卡之间的兼容性。时至今日，所有的显示卡 OEM 厂商都提供了符合 VESA SUPER 标准的扩展 BIOS。通过一组 INT 10H 中断调用（AH=4FH），可以方便地使用 VESA SVGA 的扩展功能而不必了解各种显示卡的硬件细节。
-   Super VGA 的扩充显示能力关键取决于对较大显示存储器的寻址能力。
-   各 Super VGA 卡提供的分辨率远高于 VGA，VESA VBE 均赋予一个标准的 16 位模式号（实际上是 9 位，其他各位为标志位或留给以后扩充）。
+   
+   IBM 的 VGA 标准是显示卡发展史上的一块丰碑。但后来无法满足人们的需要，于是市场
+   上出现了 TVGA、S3 系列、Cirrus Logic、ET 等为首的一批显示卡，提供了比 VGA 分
+   辨率更高，颜色更丰富的显示模式，又兼容 VGA 显示卡，它们被统称为 Super
+   VGA（SVGA）。
+   
+   各种不同的 SVGA 之间的显示控制各不相同，带来软件兼容性问题，为此视频电子学标
+   
+   准协会 VESA（Video Electronics Standards Association）提出了一组附加的 BIOS
+   
+   功能调用借口——VBE（VESA BIOS EXTENSION）标准，从而在软件接口层次上实现了各种
+   
+   SVGA 显示卡之间的兼容性。时至今日，所有的显示卡 OEM 厂商都提供了符合 VESA
+   
+   SUPER 标准的扩展 BIOS。通过一组 INT 10H 中断调用（AH=4FH），可以方便地使用
+   
+   VESA SVGA 的扩展功能而不必了解各种显示卡的硬件细节。
+   
+   各 Super VGA 卡提供的分辨率远高于 VGA，VESA VBE 均赋予一个标准的 16 位模式号
+   （实际上是 9 位，其他各位为标志位或留给以后扩充）。
 
    3.VBE 功能调用和返回值
    VBE 功能调用的共同点：
@@ -1677,28 +1238,6 @@
 	 .org	0x1fe,	0x90
 	 .word	0xaa55
 
-
-
-
-
-
- 
-
-   想对作者说点什么
-   在 linux 命令行下切换到 vesa 模式, 使用 VBE 进行绘图 02-21 这是一个在 linux 命令行下使用 VBE 进行绘图的测试程序 用 libx86 实现在 real mode 下的 vesa 模式设定和图形显示功能 实现在 linux 的保护模式, 文本命令行下切换到 vesa 模式，再画个 下载
-   显卡的 vbe 标准
-   阅读数 1342
-
-   显卡的 vbe 标准 转自：http://blog.csdn.net/jcicheng/archive/2006/05/24/753649.aspx 现在的显卡几乎全部支持 VESA（电子视频标准协会）制定的... 博文 来自：	Alex Xu's blog
-   显卡的 vbe 标准
-   阅读数 3083
-
-   现在的显卡几乎全部支持 VESA（电子视频标准协会）制定的标准，该标准的英文全称为 VESABIOSEXTENSION，简写 VBE。这个标准经过 1.0、1.1、1.2、2.0、2.0Pro、3.0 的升级，... 博文 来自：	程先的专栏
-   简单的 VGA 字符模式驱动（一）
-   阅读数 2863
-
-   进入保护模式后，我们就彻底与 BIOS 例程说再见了。BIOS 下的几乎所有中断例程都是实模式的代码。int10h 的显示功能自然也是如此。如今我们已经处于保护模式，因此为了在屏幕上显示东西，我们只有自己通过... 博文 来自：	满天星专栏
-   babyos 
 ** babyos（五）—— 跳转到保护模式并显示一个 LOGO
    保护模式
    参考资料：
@@ -2123,11 +1662,8 @@
 
    baby os 暂时使用下面的简单 logo：
 ** babyos（六）—— 显示 ASCII 字符和汉字
-   2013 年 01 月 02 日 20:17:12 孤舟钓客 阅读数：4227
-   版权声明：本文为博主原创文章，未经博主允许不得转载。	https://blog.csdn.net/guzhou_diaoke/article/details/8459541
-   注：本程序为原创，若发现 bug，万望指出，若有问题，欢迎交流，转载请指明出处。若能有助于一二访客，幸甚。
-
-   本以为要在裸机上显示个汉字是极难的，没想到亲自动手做一下，也不甚难做。“天下事有难易乎？为之，则难者亦易矣，不为，则易者亦难亦” 古人诚不我欺。
+   本以为要在裸机上显示个汉字是极难的，没想到亲自动手做一下，也不甚难做。“天下
+   事有难易乎？为之，则难者亦易矣，不为，则易者亦难亦” 古人诚不我欺。
 
    参考：
 
@@ -3386,3 +2922,5 @@
    }
 
 
+
+   

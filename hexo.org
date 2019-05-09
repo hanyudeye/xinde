@@ -5,15 +5,15 @@
    hexo server -p 5000 设定端口
    hexo d -g #生成并上传
 ** 绑定域名
-   域名配置最常见有2种方式，CNAME和A记录，CNAME填写域名，A记录填写IP，
-   由于不带www方式只能采用A记录，所以必须先ping一下你的用户名.github.io的IP，
-   然后到你的域名DNS设置页，将A记录指向你ping出来的IP，将CNAME指向你的用户名.github.io，
-   这样可以保证无论是否添加www都可以访问
+   域名配置最常见有 2 种方式，CNAME 和 A 记录，CNAME 填写域名，A 记录填写 IP，
+   由于不带 www 方式只能采用 A 记录，所以必须先 ping 一下你的用户名.github.io 的 IP，
+   然后到你的域名 DNS 设置页，将 A 记录指向你 ping 出来的 IP，将 CNAME 指向你的用户名.github.io，
+   这样可以保证无论是否添加 www 都可以访问
   [[file:image/cname.png][示例]] 
-** 配置sshkey
+** 配置 sshkey
    因为直接用用户名和密码太不安全
    
-   检查本机存在的ssh秘钥  存在则有 ~/.ssh 
+   检查本机存在的 ssh 秘钥  存在则有 ~/.ssh 
    生成 ssh-keygen -t rsa -C "邮件地址"
    公钥 复制到 git .ssh\id_rsa.pub
    进入个人设置 -> SSH and GPG keys -> New SSH key
@@ -21,8 +21,8 @@
    $ ssh -T git@github.com # 注意邮箱地址不用改
    
    此时你还需要配置：
-$ git config --global user.name "liuxianan"// 你的github用户名，非昵称
-$ git config --global user.email  "xxx@qq.com"// 填写你的github注册邮箱
+$ git config --global user.name "liuxianan"// 你的 github 用户名，非昵称
+$ git config --global user.email  "xxx@qq.com"// 填写你的 github 注册邮箱
 ** 安装
    $ npm install hexo-cli -g
    $ npm install -g hexo
@@ -38,10 +38,10 @@ $ git config --global user.email  "xxx@qq.com"// 填写你的github注册邮箱
 ** 发布
    hexo d -g #生成并上传
    deploy
-** 清理 hexo clean来清理一下public的内容，然后再来重新生成和发布。
-** 上传到github
-首先，ssh key肯定要配置好。
-其次，配置_config.yml中有关deploy的部分：
+** 清理 hexo clean 来清理一下 public 的内容，然后再来重新生成和发布。
+** 上传到 github
+首先，ssh key 肯定要配置好。
+其次，配置_config.yml 中有关 deploy 的部分：
 
 正确写法：
 #+BEGIN_SRC yml
@@ -54,22 +54,22 @@ deploy:
 npm install hexo-deployer-git --save
 
 hexo d
-** 保留CNAME、README.md等文件
-   一些非md文件可以把他们放到source文件夹下，这里的所有文件都会原样复制（除了md文件）到public目录的：
-   由于hexo默认会把所有md文件都转换成html，包括README.md，所有需要每次生成之后、上传之前，手动将README.md复制到public目录，并删除README.html。
-   保留CNAME、README.md等文件 这一节，
-   只要在_config.yml做如下配置就好了：
+** 保留 CNAME、README.md 等文件
+   一些非 md 文件可以把他们放到 source 文件夹下，这里的所有文件都会原样复制（除了 md 文件）到 public 目录的：
+   由于 hexo 默认会把所有 md 文件都转换成 html，包括 README.md，所有需要每次生成之后、上传之前，手动将 README.md 复制到 public 目录，并删除 README.html。
+   保留 CNAME、README.md 等文件 这一节，
+   只要在_config.yml 做如下配置就好了：
    skip_render: README.md
 ** 常用命令
 常见命令
 
 hexo new "postName" #新建文章
 hexo new page "pageName" #新建页面
-hexo generate #生成静态页面至public目录
-hexo server #开启预览访问端口（默认端口4000，'ctrl + c'关闭server）
-hexo deploy #部署到GitHub
+hexo generate #生成静态页面至 public 目录
+hexo server #开启预览访问端口（默认端口 4000，'ctrl + c'关闭 server）
+hexo deploy #部署到 GitHub
 hexo help  # 查看帮助
-hexo version  #查看Hexo的版本
+hexo version  #查看 Hexo 的版本
 缩写：
 
 hexo n == hexo new
@@ -81,23 +81,23 @@ hexo d == hexo deploy
 hexo s -g #生成并本地预览
 hexo d -g #生成并上传
 * 资源文件夹
-  资源（Asset）代表 source 文件夹中除了文章以外的所有文件，例如图片、CSS、JS 文件等。比方说，如果你的Hexo项目中只有少量图片，那最简单的方法就是将它们放在 source/images 文件夹中。然后通过类似于 ![](/images/image.jpg) 的方法访问它们。
+  资源（Asset）代表 source 文件夹中除了文章以外的所有文件，例如图片、CSS、JS 文件等。比方说，如果你的 Hexo 项目中只有少量图片，那最简单的方法就是将它们放在 source/images 文件夹中。然后通过类似于 ![](/images/image.jpg) 的方法访问它们。
   文章资源文件夹
-  对于那些想要更有规律地提供图片和其他资源以及想要将他们的资源分布在各个文章上的人来说，Hexo也提供了更组织化的方式来管理资源。这个稍微有些复杂但是管理资源非常方便的功能可以通过将 config.yml 文件中的 post_asset_folder 选项设为 true 来打开。
+  对于那些想要更有规律地提供图片和其他资源以及想要将他们的资源分布在各个文章上的人来说，Hexo 也提供了更组织化的方式来管理资源。这个稍微有些复杂但是管理资源非常方便的功能可以通过将 config.yml 文件中的 post_asset_folder 选项设为 true 来打开。
 
   _config.yml
   post_asset_folder: true
-  当资源文件管理功能打开后，Hexo将会在你每一次通过 hexo new [layout] <title> 命令创建新文章时自动创建一个文件夹。这个资源文件夹将会有与这个 markdown 文件一样的名字。将所有与你的文章有关的资源放在这个关联文件夹中之后，你可以通过相对路径来引用它们，这样你就得到了一个更简单而且方便得多的工作流。
+  当资源文件管理功能打开后，Hexo 将会在你每一次通过 hexo new [layout] <title> 命令创建新文章时自动创建一个文件夹。这个资源文件夹将会有与这个 markdown 文件一样的名字。将所有与你的文章有关的资源放在这个关联文件夹中之后，你可以通过相对路径来引用它们，这样你就得到了一个更简单而且方便得多的工作流。
 
   相对路径引用的标签插件
-  通过常规的 markdown 语法和相对路径来引用图片和其它资源可能会导致它们在存档页或者主页上显示不正确。在Hexo 2时代，社区创建了很多插件来解决这个问题。但是，随着Hexo 3 的发布，许多新的标签插件被加入到了核心代码中。这使得你可以更简单地在文章中引用你的资源。
+  通过常规的 markdown 语法和相对路径来引用图片和其它资源可能会导致它们在存档页或者主页上显示不正确。在 Hexo 2 时代，社区创建了很多插件来解决这个问题。但是，随着 Hexo 3 的发布，许多新的标签插件被加入到了核心代码中。这使得你可以更简单地在文章中引用你的资源。
 
   {% asset_path slug %}
   {% asset_img slug [title] %}
   {% asset_link slug [title] %}
   比如说：当你打开文章资源文件夹功能后，你把一个 example.jpg 图片放在了你的资源文件夹中，如果通过使用相对路径的常规 markdown 语法 ![](/example.jpg) ，它将 不会 出现在首页上。（但是它会在文章中按你期待的方式工作）
 
-  正确的引用图片方式是使用下列的标签插件而不是 markdown ：
+  正确的引用图片方式是使用下列的标签插件而不是 markdown：
 
   {% asset_img example.jpg This is an example image %}
   通过这种方式，图片将会同时出现在文章和主页以及归档页中。
@@ -125,7 +125,7 @@ hexo d -g #生成并上传
             $ mkdir themes/next
             $ curl -s https://api.github.com/repos/theme-next/hexo-theme-next/releases/latest | grep tarball_url | cut -d '"' -f 4 | wget -i - -O- | tar -zx -C themes/next --strip-components=1
      #+END_SRC
-**** 2.指定branch 使用 git 安装：
+**** 2.指定 branch 使用 git 安装：
      $ git clone --branch v6.0.0 https://github.com/theme-next/hexo-theme-next themes/next
 **** 3.下载最新 master 分支
      $ git clone https://github.com/theme-next/hexo-theme-next themes/next
@@ -152,31 +152,31 @@ $ git checkout master
 **** 完成配置
      在 hexo 根配置文件 _config.yml 中设置你的主题：
      theme: next
-*** Hexo的Next主题配置
-    使用Next主题
-  将下载的代码放在myBlog/next目录下
-  设置站点myBlog/_config.yml的theme字段值为next
-  生成新页面hexo g
-  开启服务hexo s --debug
-  发布代码hexo d
-  注：此时登录网站，发现是空白的，打开控制台，提示很多vendors目录下的文件404，解决办法是将next主题下即myBlog/themes/next/source下的vendors目录名改为lib，并修改myBlog/themes/next/_config.yml的_internal: vendors改为_internal: lib。
+*** Hexo 的 Next 主题配置
+    使用 Next 主题
+  将下载的代码放在 myBlog/next 目录下
+  设置站点 myBlog/_config.yml 的 theme 字段值为 next
+  生成新页面 hexo g
+  开启服务 hexo s --debug
+  发布代码 hexo d
+  注：此时登录网站，发现是空白的，打开控制台，提示很多 vendors 目录下的文件 404，解决办法是将 next 主题下即 myBlog/themes/next/source 下的 vendors 目录名改为 lib，并修改 myBlog/themes/next/_config.yml 的_internal: vendors 改为_internal: lib。
 
-  参考：iissnan的回答
+  参考：iissnan 的回答
 
   主题配置
   主题风格设定
-  通过修改next主题下的_config.yml的scheme字段，配置不同的风格。
+  通过修改 next 主题下的_config.yml 的 scheme 字段，配置不同的风格。
 
   # Schemes
   scheme: Muse
   #scheme: Mist
   #scheme: Pisces
-  本站点使用的是默认的Muse，显示效果如下：
+  本站点使用的是默认的 Muse，显示效果如下：
 
 
 
   菜单设置
-  通过修改next主题下的_config.yml的menu字段，选定显示的菜单项。
+  通过修改 next 主题下的_config.yml 的 menu 字段，选定显示的菜单项。
 
   menu:
     home: /
@@ -185,22 +185,22 @@ $ git checkout master
     archives: /archives
     tags: /tags
     #commonweal: /404.html
-  其中，home代表主页，categories代表分类页，about代表关于页面，archives代表归档页，commonweal代表404页面（page not found时候显示的页面）。
+  其中，home 代表主页，categories 代表分类页，about 代表关于页面，archives 代表归档页，commonweal 代表 404 页面（page not found 时候显示的页面）。
 
-  菜单项文本修改是在对next主题下的language文件夹下的文件进行修改，若当前语言是简体中文，直接修改language/zh-Hans.yml里的对应字段即可。
+  菜单项文本修改是在对 next 主题下的 language 文件夹下的文件进行修改，若当前语言是简体中文，直接修改 language/zh-Hans.yml 里的对应字段即可。
 
   本站点显示主页，分类页，关于页面和归档页。
 
   头像设置
-  在主题下的source/images/下放置头像文件avatar.gif即可。
+  在主题下的 source/images/下放置头像文件 avatar.gif 即可。
 
   设置文章代码主题
-  Next主题总共支持5种主题，默认主题是白色的normal。通过修改next主题下的_config.yml的highlight字段，来设置代码主题。
+  Next 主题总共支持 5 种主题，默认主题是白色的 normal。通过修改 next 主题下的_config.yml 的 highlight 字段，来设置代码主题。
 
-  本站点使用的是night主题。即令highlight为night。
+  本站点使用的是 night 主题。即令 highlight 为 night。
 
   添加标签页面
-  前面通过修改next主题下的_config.yml文件中的menu选项，可以在主页面的菜单栏添加标签选项，但是此时点击标签，跳转的页面会显示page not found。
+  前面通过修改 next 主题下的_config.yml 文件中的 menu 选项，可以在主页面的菜单栏添加标签选项，但是此时点击标签，跳转的页面会显示 page not found。
 
   添加标签页面的具体方法是：
 
@@ -209,21 +209,21 @@ $ git checkout master
 
   $ cd myBlog
   $ hexo new page tags
-  输入命令后，在myBlog/source下会新生成一个新的文件夹tags，在该文件夹下会有一个index.md文件。
+  输入命令后，在 myBlog/source 下会新生成一个新的文件夹 tags，在该文件夹下会有一个 index.md 文件。
 
   设置页面类型
-  在上步新生成的myBlog/source/tags/index.md中添加type: "tags"，index.md文件内容如下：
+  在上步新生成的 myBlog/source/tags/index.md 中添加 type: "tags"，index.md 文件内容如下：
 
   ---
   title: tags
   date: 2016-11-15 19:10:05
   type: "tags"
   ---
-  设置具体文章的tags
-  当要为某一篇文章添加标签，只需在myBlog/source/_post目录下的具体文章的tags中添加标签即可，如：
+  设置具体文章的 tags
+  当要为某一篇文章添加标签，只需在 myBlog/source/_post 目录下的具体文章的 tags 中添加标签即可，如：
 
   ---
-  title: 基于Hexo和Github搭建博客
+  title: 基于 Hexo 和 Github 搭建博客
   date: 2016-11-09
   tags: [npm, hexo, github]
   categories: 搭建博客
@@ -240,21 +240,21 @@ $ git checkout master
 
   $ cd myBlog
   $ hexo new page categories
-  输入命令后，在myBlog/source下会新生成一个新的文件夹categories，在该文件夹下会有一个index.md文件。
+  输入命令后，在 myBlog/source 下会新生成一个新的文件夹 categories，在该文件夹下会有一个 index.md 文件。
 
   设置页面类型
-  在上步新生成的myBlog/source/categories/index.md中添加type: "categories"，index.md文件内容如下：
+  在上步新生成的 myBlog/source/categories/index.md 中添加 type: "categories"，index.md 文件内容如下：
 
   ---
   title: categories
   date: 2016-11-15 19:11:13
   type: "categories"
   ---
-  设置具体文章的categories
-  当要为某一篇文章添加分类，只需在myBlog/source/_post目录下的具体文章的categories中添加分类即可，如：
+  设置具体文章的 categories
+  当要为某一篇文章添加分类，只需在 myBlog/source/_post 目录下的具体文章的 categories 中添加分类即可，如：
 
   ---
-  title: 基于Hexo和Github搭建博客
+  title: 基于 Hexo 和 Github 搭建博客
   date: 2016-11-09
   tags: [npm, hexo, github]
   categories: 搭建博客
@@ -269,10 +269,10 @@ $ git checkout master
   新建页面
   $ cd myBlog
   $ hexo new page about
-  输入命令后，在myBlog/source下会新生成一个新的文件夹about，在该文件夹下会有一个index.md文件。
+  输入命令后，在 myBlog/source 下会新生成一个新的文件夹 about，在该文件夹下会有一个 index.md 文件。
 
-  修改about/index.md
-  本站点index.md如下：
+  修改 about/index.md
+  本站点 index.md 如下：
 
   ---
   title: about
@@ -297,10 +297,10 @@ $ git checkout master
   登录多说，填写表单，创建站点
 
 
-  图片中红框圈中的框中内容就是下一步duoshuo_shortname字段的值
+  图片中红框圈中的框中内容就是下一步 duoshuo_shortname 字段的值
 
-  添加duoshuo_shortname
-  在站点的myBlog/_config.yml中加入duoshuo_shortname字段，值为第一步红框里的内容
+  添加 duoshuo_shortname
+  在站点的 myBlog/_config.yml 中加入 duoshuo_shortname 字段，值为第一步红框里的内容
 
   加入评论后效果如下：
 
@@ -309,20 +309,20 @@ $ git checkout master
   加入分享功能
   本站点使用的是多说。加入分享功能的步骤如下：
 
-  在站点的myBlog/_config.yml中加入duoshuo_share字段，值为true。
+  在站点的 myBlog/_config.yml 中加入 duoshuo_share 字段，值为 true。
 
   加入分享后效果如下：
 
 
   加入站点内容搜索功能
-  本站点使用的是Local Search。加入站点内容搜索功能步骤如下：
+  本站点使用的是 Local Search。加入站点内容搜索功能步骤如下：
 
-  安装hexo-generator-searchdb
+  安装 hexo-generator-searchdb
   $ npm install hexo-generator-searchdb --save
-  注意：安装时应在站点根目录下，即myBlog目录下
+  注意：安装时应在站点根目录下，即 myBlog 目录下
 
-  添加search字段
-  在站点myBlog/_config.yml中添加search字段，如下：
+  添加 search 字段
+  在站点 myBlog/_config.yml 中添加 search 字段，如下：
 
   search:
     path: search.xml
@@ -340,21 +340,21 @@ $ git checkout master
   在这里注册站长账号，并填写信息，网站域名和网站首页以下图为例来填写，注册完成后并登陆。
 
 
-  在跳转的页面中会显示下图，复制hm.js后的id值
+  在跳转的页面中会显示下图，复制 hm.js 后的 id 值
 
 
-  添加baidu_analytics字段
+  添加 baidu_analytics 字段
 
-  在站点myBlog/_config.yml中添加search字段，值为上步复制的id值
+  在站点 myBlog/_config.yml 中添加 search 字段，值为上步复制的 id 值
 
-  至此，该功能已成功加入，大约过20min后在百度统计上可以看到站点的访问情况，如下图：
+  至此，该功能已成功加入，大约过 20min 后在百度统计上可以看到站点的访问情况，如下图：
 
 *** 提交合并请求
 
 提交合并请求前，请再次确认您已经查看了[你需要了解的](#before-submitting-an-issue)内容，避免提交重复的合并请求。确定相关仓库后，创建合并请求。更多详细操作过程可以查看[帮助文档](https://help.github.com/articles/creating-a-pull-request/)。
 
 1. 进入 [hexo-theme-next](https://github.com/theme-next/hexo-theme-next) 源仓库，点击`Fork`。
-2. 进入到已经`Fork`的个人仓库（`https://github.com/username/hexo-theme-next`），点击 **Clone or download** 并复制该仓库地址。选择本地文件夹，并打开 Git Bash ，输入如下命令并回车，即可完成仓库克隆。
+2. 进入到已经`Fork`的个人仓库（`https://github.com/username/hexo-theme-next`），点击 **Clone or download** 并复制该仓库地址。选择本地文件夹，并打开 Git Bash，输入如下命令并回车，即可完成仓库克隆。
     ```bash
     $ git clone git@github.com:username/hexo-theme-next.git
     ```
@@ -386,7 +386,7 @@ $ git checkout master
 引用块
 在文章中插入引言，可包含作者、来源和标题。
 
-别号： quote
+别号：quote
 
 {% blockquote [author[, source]] [link] [source_link_title] %}
 content
@@ -426,7 +426,7 @@ Seth GodinWelcome to Island Marketing
 代码块
 在文章中插入代码。
 
-别名： code
+别名：code
 
 {% codeblock [title] [lang:language] [url] [link text] %}
 code snippet
@@ -520,21 +520,21 @@ Raw
 content
 {% endraw %}
 ** 资源文件夹
-   资源（Asset）代表 source 文件夹中除了文章以外的所有文件，例如图片、CSS、JS 文件等。比方说，如果你的Hexo项目中只有少量图片，那最简单的方法就是将它们放在 source/images 文件夹中。然后通过类似于 ![](/images/image.jpg) 的方法访问它们。
+   资源（Asset）代表 source 文件夹中除了文章以外的所有文件，例如图片、CSS、JS 文件等。比方说，如果你的 Hexo 项目中只有少量图片，那最简单的方法就是将它们放在 source/images 文件夹中。然后通过类似于 ![](/images/image.jpg) 的方法访问它们。
 
 文章资源文件夹
-对于那些想要更有规律地提供图片和其他资源以及想要将他们的资源分布在各个文章上的人来说，Hexo也提供了更组织化的方式来管理资源。这个稍微有些复杂但是管理资源非常方便的功能可以通过将 config.yml 文件中的 post_asset_folder 选项设为 true 来打开。
+对于那些想要更有规律地提供图片和其他资源以及想要将他们的资源分布在各个文章上的人来说，Hexo 也提供了更组织化的方式来管理资源。这个稍微有些复杂但是管理资源非常方便的功能可以通过将 config.yml 文件中的 post_asset_folder 选项设为 true 来打开。
 
 _config.yml
 post_asset_folder: true
-当资源文件管理功能打开后，Hexo将会在你每一次通过 hexo new [layout] <title> 命令创建新文章时自动创建一个文件夹。
+当资源文件管理功能打开后，Hexo 将会在你每一次通过 hexo new [layout] <title> 命令创建新文章时自动创建一个文件夹。
 这个资源文件夹将会有与这个 markdown 文件一样的名字。
 将所有与你的文章有关的资源放在这个关联文件夹中之后，
 你可以通过相对路径来引用它们，这样你就得到了一个更简单而且方便得多的工作流。
 
 相对路径引用的标签插件
 通过常规的 markdown 语法和相对路径来引用图片和其它资源可能会导致它们在存档页或者主页上显示不正确。
-在Hexo 2时代，社区创建了很多插件来解决这个问题。但是，随着Hexo 3 的发布，许多新的标签插件被加入到了核心代码中。
+在 Hexo 2 时代，社区创建了很多插件来解决这个问题。但是，随着 Hexo 3 的发布，许多新的标签插件被加入到了核心代码中。
 这使得你可以更简单地在文章中引用你的资源。
 
 {% asset_path slug %}
@@ -544,7 +544,7 @@ post_asset_folder: true
 如果通过使用相对路径的常规 markdown 语法 ![](/example.jpg) ，
 它将 不会 出现在首页上。（但是它会在文章中按你期待的方式工作）
 
-正确的引用图片方式是使用下列的标签插件而不是 markdown ：
+正确的引用图片方式是使用下列的标签插件而不是 markdown：
 
 {% asset_img example.jpg This is an example image %}
 通过这种方式，图片将会同时出现在文章和主页以及归档页中。
@@ -673,7 +673,7 @@ page.link	文章的外部链接（用于链接文章）
 文章 (post): 和 page 布局类似，但是添加了下列变量。
 
 Variable	Description
-page.published	如果该文章已发布则为True
+page.published	如果该文章已发布则为 True
 page.categories	该文章的所有分类
 page.tags	该文章的所有标签
 首页（index）
@@ -693,8 +693,8 @@ page.path	当前页面的路径（不含根目录）。我们通常在主题中�
 
 变量	描述
 page.archive	等于 true
-page.year	年份归档 (4位)
-page.month	月份归档 (没有前导零的2位数)
+page.year	年份归档 (4 位)
+page.month	月份归档 (没有前导零的 2 位数)
 分类 (category)：与 index 布局相同，但新增以下变量。
 
 变量	描述
@@ -1201,33 +1201,33 @@ $ npm install
 ** 更多
 <!-- more -->
 ** 前言
-本篇文章是在已经搭建好gitpage+hexo的博客的前提下（不懂怎么搭建的可以参考我的另一篇博文：了解githubPages+hexo搭建博客的原理 或者利用Gitpage+hexo开发自己的博客，这两篇博文都比较详细的教大家最基础的怎么将博客搭建起来。本篇博文是使用next主题的进击版本，主要是有以下内容
+本篇文章是在已经搭建好 gitpage+hexo 的博客的前提下（不懂怎么搭建的可以参考我的另一篇博文：了解 githubPages+hexo 搭建博客的原理 或者利用 Gitpage+hexo 开发自己的博客，这两篇博文都比较详细的教大家最基础的怎么将博客搭建起来。本篇博文是使用 next 主题的进击版本，主要是有以下内容
 
-域名绑定，将github博客和你的独有域名绑定
-添加更多的menu内容
+域名绑定，将 github 博客和你的独有域名绑定
+添加更多的 menu 内容
 添加头像
-定义网站个性logo
+定义网站个性 logo
 自定义样式，重写默认样式，个性化定制你的博客
 炫酷动态背景制作
 添加网易云音乐
 添加网易云跟帖
-添加leancloud阅读次数统计功能
-添加wordcount页面字数统计
-添加fork me on github功能
-要想最快的知道这些功能的效果，请移步我的个人博客：http://cherryblog.site/ ，顺便求个fork，大爷们看过可以评论一下，试一下新加上的网易云跟帖效果怎么样ヽ(●´ε｀●)ノ
+添加 leancloud 阅读次数统计功能
+添加 wordcount 页面字数统计
+添加 fork me on github 功能
+要想最快的知道这些功能的效果，请移步我的个人博客：http://cherryblog.site/ ，顺便求个 fork，大爷们看过可以评论一下，试一下新加上的网易云跟帖效果怎么样ヽ(●´ε｀●)ノ
 
-首先要说一下我使用的版本，这个是很重要的，我的博客最先创建于2016年的9月份，距离现在已经有大半年了，所以好多版本都已经进行了更新，特别是next主题集成了更多的插件，简直不要太爽＼（＠￣∇￣＠）／
+首先要说一下我使用的版本，这个是很重要的，我的博客最先创建于 2016 年的 9 月份，距离现在已经有大半年了，所以好多版本都已经进行了更新，特别是 next 主题集成了更多的插件，简直不要太爽＼（＠￣∇￣＠）／
 
 hexo v3.2.2
 next v5.1.0
 node v4.5.0
 
-在改成自己想要的效果之后，对整体的hexo的next主题我有了一个大概的了解，其实next主题的最新版（5.1）已经集成了大部分我们需要的插件，只需要在主题配置文件中将默认的false改为true即可，但是我们也仍然需要知道都有哪些新的功能，最有效的方法是直接去查看官网的api：next官网这里写图片描述
+在改成自己想要的效果之后，对整体的 hexo 的 next 主题我有了一个大概的了解，其实 next 主题的最新版（5.1）已经集成了大部分我们需要的插件，只需要在主题配置文件中将默认的 false 改为 true 即可，但是我们也仍然需要知道都有哪些新的功能，最有效的方法是直接去查看官网的 api：next 官网这里写图片描述
 
 授之于鱼不如授之于渔
 希望我们都能够理解其源码，制作出属于自己专属的个性化博客(•̀ᴗ•́)
 
-我们需要改的文件其实也就那么几个，大部分是不需要更改，next都已经帮我们配置好了~
+我们需要改的文件其实也就那么几个，大部分是不需要更改，next 都已经帮我们配置好了~
 默认目录结构：
 
 .
@@ -1241,28 +1241,28 @@ node v4.5.0
 ├── themes
 ├── _config.yml
 └── package.json
-deploy：执行hexo deploy命令部署到GitHub上的内容目录
-public：执行hexo generate命令，输出的静态网页内容目录
-scaffolds：layout模板文件目录，其中的md文件可以添加编辑
-scripts：扩展脚本目录，这里可以自定义一些javascript脚本
-source：文章源码目录，该目录下的markdown和html文件均会被hexo处理。该页面对应repo的根目录，404文件、favicon.ico文件，CNAME文件等都应该放这里，该目录下可新建页面目录。
+deploy：执行 hexo deploy 命令部署到 GitHub 上的内容目录
+public：执行 hexo generate 命令，输出的静态网页内容目录
+scaffolds：layout 模板文件目录，其中的 md 文件可以添加编辑
+scripts：扩展脚本目录，这里可以自定义一些 javascript 脚本
+source：文章源码目录，该目录下的 markdown 和 html 文件均会被 hexo 处理。该页面对应 repo 的根目录，404 文件、favicon.ico 文件，CNAME 文件等都应该放这里，该目录下可新建页面目录。
 drafts：草稿文章
 posts：发布文章
 themes：主题文件目录
 _config.yml：全局配置文件，大多数的设置都在这里
-package.json：应用程序数据，指明hexo的版本等信息，类似于一般软件中的关于按钮
-我们最先修改的应该是在hexo根目录下的配置文件_config.yml文件，这里是配置整个站点的配置信息，在文章的最后贴出我的配置文件，有兴趣的朋友可以参考一下~
+package.json：应用程序数据，指明 hexo 的版本等信息，类似于一般软件中的关于按钮
+我们最先修改的应该是在 hexo 根目录下的配置文件_config.yml 文件，这里是配置整个站点的配置信息，在文章的最后贴出我的配置文件，有兴趣的朋友可以参考一下~
 其次就是我们的主题配置文件
-在对应的主题下的_config.yml 因为我使用的是next主题，所以目录的路径为C:\Hexo\themes\next\_config.yml 这里配置的是使用主题的配置文件，这个配置文件的东西就有点多了，我们大部分的修改也是在这个文件下完成的。比如说使用集成的第三方插件，默认为false，我们需要将其改为true并且配置相应的app_key就可以使用该插件了~有木有很方便(^ ◕ᴥ◕ ^)
-然后我们需要修改样式的话是需要设置css和甚至是修改模板，
-页面展现的全部逻辑都在每个主题中控制，源代码在hexo\themes\你使用的主题\中，以next主题为例：
+在对应的主题下的_config.yml 因为我使用的是 next 主题，所以目录的路径为 C:\Hexo\themes\next\_config.yml 这里配置的是使用主题的配置文件，这个配置文件的东西就有点多了，我们大部分的修改也是在这个文件下完成的。比如说使用集成的第三方插件，默认为 false，我们需要将其改为 true 并且配置相应的 app_key 就可以使用该插件了~有木有很方便(^ ◕ᴥ◕ ^)
+然后我们需要修改样式的话是需要设置 css 和甚至是修改模板，
+页面展现的全部逻辑都在每个主题中控制，源代码在 hexo\themes\你使用的主题\中，以 next 主题为例：
 
-├── .github            #git信息
+├── .github            #git 信息
 ├── languages          #多语言
 |   ├── default.yml    #默认语言
 |   └── zh-Hans.yml      #简体中文
 |   └── zh-tw.yml      #繁体中文
-├── layout             #布局，根目录下的*.ejs文件是对主页，分页，存档等的控制
+├── layout             #布局，根目录下的*.ejs 文件是对主页，分页，存档等的控制
 |   ├── _custom        #可以自己修改的模板，覆盖原有模板
 |   |   ├── _header.swig    #头部样式
 |   |   ├── _sidebar.swig   #侧边栏样式
@@ -1279,70 +1279,70 @@ package.json：应用程序数据，指明hexo的版本等信息，类似于一�
 |   ├── _layout.swig   #主页面模板
 |   ├── index.swig     #主页面模板
 |   ├── page           #页面模板
-|   └── tag.swig       #tag模板
-├── scripts            #script源码
-|   ├── tags           #tags的script源码
+|   └── tag.swig       #tag 模板
+├── scripts            #script 源码
+|   ├── tags           #tags 的 script 源码
 |   ├── marge.js       #页面模板
 ├── source             #源码
-|   ├── css            #css源码
-|   |   ├── _common    #*.styl基础css
-|   |   ├── _custom    #*.styl局部css
-|   |   └── _mixins    #mixins的css
+|   ├── css            #css 源码
+|   |   ├── _common    #*.styl 基础 css
+|   |   ├── _custom    #*.styl 局部 css
+|   |   └── _mixins    #mixins 的 css
 |   ├── fonts          #字体
 |   ├── images         #图片
 |   ├── uploads        #添加的文件
-|   └── js             #javascript源代码
+|   └── js             #javascript 源代码
 ├── _config.yml        #主题配置文件
-└── README.md          #用GitHub的都知道
+└── README.md          #用 GitHub 的都知道
 绑定域名
 绑定域名的思路如下：
 
-在万网购买自己喜欢的域名（.com的会贵一点，.site和.xyz的相对便宜一些，有的只需要几块钱一年就可以）
-解析DNS
-在hexo中添加CNAME文件
+在万网购买自己喜欢的域名（.com 的会贵一点，.site 和.xyz 的相对便宜一些，有的只需要几块钱一年就可以）
+解析 DNS
+在 hexo 中添加 CNAME 文件
 购买域名
-之前没有买域名的时候我想使用网易云跟帖，发现在注册网易云跟帖的时候使用原来的域名提示“url已被使用”，这是因为网易云跟帖不认可二级域名，所以要自己买域名。
-我选择的是万网，阿里下面的。我选择了一个.site的域名，原价8元，使用阿里云app支付还优惠5元，等于3元到手一个域名（一年）~
+之前没有买域名的时候我想使用网易云跟帖，发现在注册网易云跟帖的时候使用原来的域名提示“url 已被使用”，这是因为网易云跟帖不认可二级域名，所以要自己买域名。
+我选择的是万网，阿里下面的。我选择了一个.site 的域名，原价 8 元，使用阿里云 app 支付还优惠 5 元，等于 3 元到手一个域名（一年）~
 按照官网的步骤一步一来就可以了~
 
-解析DNS
-购买完域名之后我们需要解析DNS地址，在管理控制台中的左侧有域名选项，然后找到你的域名，点击后面的“解析”
+解析 DNS
+购买完域名之后我们需要解析 DNS 地址，在管理控制台中的左侧有域名选项，然后找到你的域名，点击后面的“解析”
 这里写图片描述
 
-点击添加解析，记录类型选A或CNAME，
+点击添加解析，记录类型选 A 或 CNAME，
 
-A记录的记录值就是ip地址，github(官方文档)提供了两个IP地址，192.30.252.153和192.30.252.154，这两个IP地址为github的服务器地址，两个都要填上，
-解析记录设置两个www和@，线路就默认就行了，CNAME记录值填你的github博客网址。如我的是sunshine940326.github.io。
+A 记录的记录值就是 ip 地址，github(官方文档)提供了两个 IP 地址，192.30.252.153 和 192.30.252.154，这两个 IP 地址为 github 的服务器地址，两个都要填上，
+解析记录设置两个 www 和@，线路就默认就行了，CNAME 记录值填你的 github 博客网址。如我的是 sunshine940326.github.io。
 
-在hexo中添加CNAME文件
-接下来在你的hexo文件夹下source文件夹下新建一个CANME文件,里面加上你刚刚购买的域名比如我的cherryblog.site
+在 hexo 中添加 CNAME 文件
+接下来在你的 hexo 文件夹下 source 文件夹下新建一个 CANME 文件,里面加上你刚刚购买的域名比如我的 cherryblog.site
 这里写图片描述
-然后你就可以hexo clean,hexo g，hexo d 发布你的博客看看效果啦~
+然后你就可以 hexo clean,hexo g，hexo d 发布你的博客看看效果啦~
 这里写图片描述
-在这里我出现一个问题，就是单独输入域名是可以访问的，但是前面加上www之后就访问不聊了= =了，我感觉应该是可以的，但是不行，再等几天看看效果= =
+在这里我出现一个问题，就是单独输入域名是可以访问的，但是前面加上 www 之后就访问不聊了= =了，我感觉应该是可以的，但是不行，再等几天看看效果= =
 
 添加菜单页
-添加菜单页的思路（添加菜单页就是添加一个页面，有两种方式）：第一种是使用git命令hexo new page "photo" 就直接创建了C:\Hexo\source\photo\index.md文件，然后编辑index.md 文件就可以了~
+添加菜单页的思路（添加菜单页就是添加一个页面，有两种方式）：第一种是使用 git 命令 hexo new page "photo" 就直接创建了 C:\Hexo\source\photo\index.md 文件，然后编辑 index.md 文件就可以了~
 这里写图片描述
 第二种：手动创建上面的文件= =
 
-在主题的配置文件添加menu索引路径（根路径是hexo/source）,所以你如果想要更改页面的内容就去hexo/source下找到对应的文件夹，默认内容是在其index.md文件下
-在hexo的source文件下添加对应的文件夹
-在主题的配置文件添加menu_icon字段设置对应的icon
-修改language文件下zh-hans语言包
-在发表文章的时候添加对应的menu字段就可以看到
-刚开始的时候不理解怎么添加分类页和添加文章的区别，公司有一个项目用到了wordpress，然后发现两者有相似的地方，不同的就是wordpress是有可视化的操作后台，而hexo是需要git bash自己创建首先我们要分清什么是页面，什么是文章，
-在hexo中menu下的内容都是新的页面我们可以通过hexo new page "pagename" 创建，hexo默认的页面只有home,archives,tags 三个，之后我们写的博文就是文章，通过hexo new "name" 创建的name.md 文件在根目录的source\_posts 下，在每一个文章的头部，我们可以配置其tags或者categories内容，相当于文章是页面的下一级
+在主题的配置文件添加 menu 索引路径（根路径是 hexo/source）,所以你如果想要更改页面的内容就去 hexo/source 下找到对应的文件夹，默认内容是在其 index.md 文件下
+在 hexo 的 source 文件下添加对应的文件夹
+在主题的配置文件添加 menu_icon 字段设置对应的 icon
+修改 language 文件下 zh-hans 语言包
+在发表文章的时候添加对应的 menu 字段就可以看到
+刚开始的时候不理解怎么添加分类页和添加文章的区别，公司有一个项目用到了 wordpress，然后发现两者有相似的地方，不同的就是 wordpress 是有可视化的操作后台，而 hexo 是需要 git bash 自己创建首先我们要分清什么是页面，什么是文章，
+在 hexo 中 menu 下的内容都是新的页面我们可以通过 hexo new page "pagename" 创建，hexo 默认的页面只有 home,archives,tags 三个，之后我们写的博文就是文章，通过 hexo new "name" 创建的 name.md 文件在根目录的 source\_posts 下，在每一个文章的头部，我们可以配置其 tags 或者 categories 内容，相当于文章是页面的下一级
 
-在配置文件中添加menu索引路径
-我们可以在主题配置的_config文件下找到相应的字段，字段前加# 表示被注释掉，我们也可以自己添加menu的内容，比如我又新增了两个menulife 和photo
+在配置文件中添加 menu 索引路径
+我们可以在主题配置的_config 文件下找到相应的字段，字段前加# 表示被注释掉，我们也可以自己添加 menu 的内容，比如我又新增了两个 menulife 和 photo
 这里写图片描述
-这里添加的字段其实是加上文件索引的路径，这里hexo设置的根路径是hexo/source 接下来我们在这个根路径下建立相应的文件夹就可以实现点击mune跳转到相应的页面上了
+这里添加的字段其实是加上文件索引的路径，这里 hexo 设置的根路径是 hexo/source 接下来我们在这个根路径下建立相应的文件夹就可以实现点击 mune 跳转到相应的页面上了
 这里写图片描述,
 没有明白什么意思的同学看下图
 
-在source文件添加menu文件夹
-我们需要在这个路径下自己建立对应的页面，比如说我新建了menulife 和photos，然后再source文件夹下面新建两个名字为life 和photo 的文件夹，里面添加一个index.md markdown文件，内容是类似这样的
+在 source 文件添加 menu 文件夹
+我们需要在这个路径下自己建立对应的页面，比如说我新建了 menulife 和 photos，然后再 source 文件夹下面新建两个名字为 life 和 photo 的文件夹，里面添加一个 index.md markdown 文件，内容是类似这样的
 
 title: photo
 date: 2017-04-04 22:14:07
@@ -1351,35 +1351,35 @@ comments: false
 ---
 啦啦啦~
 这里写图片描述
-这是一个markdown文件，你可以自己编写，但是我还不知道怎么把添加html文件= =，回来研究一下
+这是一个 markdown 文件，你可以自己编写，但是我还不知道怎么把添加 html 文件= =，回来研究一下
 
-给menu添加icon
+给 menu 添加 icon
 如果只是上面的步骤，那么你可能会创建出一个新的页面，但是显示的效果会是这样：这里写图片描述
-怎么icon没有换？？？其实hexo中换icon是一个很简单的事情，因为hexo集成了FontAwsome 所以我们只需要在主题的配置文件中加入相应的icon名字即可
+怎么 icon 没有换？？？其实 hexo 中换 icon 是一个很简单的事情，因为 hexo 集成了 FontAwsome 所以我们只需要在主题的配置文件中加入相应的 icon 名字即可
 这里写图片描述
 
-查找FontAwsome icon
-这时候你想要换一个自己喜欢的icon怎么办，这就需要自己动手，丰衣足食了，你需要自己到FontAwsome官网，然后鼠标往下拉，在图标集中选择自己喜欢的icon，然后记住名字，保存在上面的menu_icon字段中就可以啦~
-这里写图片描述tips ：在字段中只需要填写icon-name后面跟的name即可，不需要加上前面的”icon-“
+查找 FontAwsome icon
+这时候你想要换一个自己喜欢的 icon 怎么办，这就需要自己动手，丰衣足食了，你需要自己到 FontAwsome 官网，然后鼠标往下拉，在图标集中选择自己喜欢的 icon，然后记住名字，保存在上面的 menu_icon 字段中就可以啦~
+这里写图片描述 tips：在字段中只需要填写 icon-name 后面跟的 name 即可，不需要加上前面的”icon-“
 
-在language添加zh-hans翻译字段
-上面的步骤完成之后你会发现，在你的博客首页显示的仍然是英文名，而我们想要有一个中文的名字，并且想要个性化定制我们的页面，我们可以在主题的language文件下的zh-hans（中文）语言包下增加相应的字段（做过翻译的童鞋应该都知道什么意思~）还可以修改其他的字段，这样就可以定制我们的博客了呢~
+在 language 添加 zh-hans 翻译字段
+上面的步骤完成之后你会发现，在你的博客首页显示的仍然是英文名，而我们想要有一个中文的名字，并且想要个性化定制我们的页面，我们可以在主题的 language 文件下的 zh-hans（中文）语言包下增加相应的字段（做过翻译的童鞋应该都知道什么意思~）还可以修改其他的字段，这样就可以定制我们的博客了呢~
 这里写图片描述
 
-在发表文章的时候添加对应的menu字段
-在我们写文章的时候只要在头部信息添加相应的字段就在tags页面和categories中显示相应的分类，例如:
+在发表文章的时候添加对应的 menu 字段
+在我们写文章的时候只要在头部信息添加相应的字段就在 tags 页面和 categories 中显示相应的分类，例如:
 
-title: Git使用中的报错情况
+title: Git 使用中的报错情况
 date: 2017-03-11 23:54:11
 tags: [git,实战经验] 
 categories: git
 ---
-tags、categories都是支持数组的形式的，可以添加多个tags、categories。这样我们在tags、categories页面就可以看见相应的分类了
+tags、categories 都是支持数组的形式的，可以添加多个 tags、categories。这样我们在 tags、categories 页面就可以看见相应的分类了
 这里写图片描述
 
 添加头像
 我使用的主题头像是位于侧边栏，显示的效果如下，
-这里写图片描述要添加一个这个的头像要怎么操作呢，其实思路就是将你要上传的头像放在你的文件夹中，然后再配置文件中引用正确的路径即可，当然也可以上传绝对路径。在你的主题配置文件找到avatar字段，然后将你得图片路径写在后面，我是新建了一个uploads文件夹，将图片放在下面
+这里写图片描述要添加一个这个的头像要怎么操作呢，其实思路就是将你要上传的头像放在你的文件夹中，然后再配置文件中引用正确的路径即可，当然也可以上传绝对路径。在你的主题配置文件找到 avatar 字段，然后将你得图片路径写在后面，我是新建了一个 uploads 文件夹，将图片放在下面
 
 # Sidebar Avatar
 # in theme directory(source/images): /images/avatar.jpg
@@ -1387,39 +1387,39 @@ tags、categories都是支持数组的形式的，可以添加多个tags、categ
 avatar: /uploads/avatar.png
 这里写图片描述
 
-设置网站logo
-跟设置头像其实是一个思路，都是在配置文件中引入正确的地址就可以了，不过网站的logo是对图片有要求的，我们需要在Favicon在线制作工具中制作32*32的.ico图片，然后放在source/images下面。然后在主题配置文件下添加主题配置文件中添加：favicon: images/favicon.ico
+设置网站 logo
+跟设置头像其实是一个思路，都是在配置文件中引入正确的地址就可以了，不过网站的 logo 是对图片有要求的，我们需要在 Favicon 在线制作工具中制作 32*32 的.ico 图片，然后放在 source/images 下面。然后在主题配置文件下添加主题配置文件中添加：favicon: images/favicon.ico
 
 自定义样式
-不得不说next还是很人性化的，你可以个性化定制你的网站，你所有的改动（css）需要放在主题文件的source/css/_costum/costum.styl文件中，会覆盖原来的css，所以只要你不想要你修改的样式，只需要删除这个文件夹就可以了，再也不用担心还原不回去了~
+不得不说 next 还是很人性化的，你可以个性化定制你的网站，你所有的改动（css）需要放在主题文件的 source/css/_costum/costum.styl 文件中，会覆盖原来的 css，所以只要你不想要你修改的样式，只需要删除这个文件夹就可以了，再也不用担心还原不回去了~
 这里写图片描述
 
 炫酷动态背景
-2017.5.8更新，具体过程往下看仿知乎动态背景
-之前做过一个类似的canvas-nest的效果。新版本的next已经支持canvas-nest了，但是效果不怎么样，就不用了，但是也介绍一下，毕竟简单，只有两步就可以了。
-添加修改代码next/layout/_layout.swig在</body>之前加上
+2017.5.8 更新，具体过程往下看仿知乎动态背景
+之前做过一个类似的 canvas-nest 的效果。新版本的 next 已经支持 canvas-nest 了，但是效果不怎么样，就不用了，但是也介绍一下，毕竟简单，只有两步就可以了。
+添加修改代码 next/layout/_layout.swig 在</body>之前加上
 
 {% if theme.canvas_nest %}
 <script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
 {% endif %}
-打开next/_config.yml，添加以下代码就可以了：
+打开 next/_config.yml，添加以下代码就可以了：
 
  # Canvas-nest
 canvas_nest: true
-这种虽然简单，但是我认为效果不够好，于是我决定添加原生的js来仿知乎的登录界面做背景，这就需要修改模板来实现了。首先我们要知道next文件的结构，这样我们想改什么就知道在什么位置了~
+这种虽然简单，但是我认为效果不够好，于是我决定添加原生的 js 来仿知乎的登录界面做背景，这就需要修改模板来实现了。首先我们要知道 next 文件的结构，这样我们想改什么就知道在什么位置了~
 这里写图片描述
-所以我们需要在layout下面的_layout.swig 添加一个canvas
+所以我们需要在 layout 下面的_layout.swig 添加一个 canvas
 
-然后使用原生js写一个仿知乎页面,详情script代码可以从github上clone：
+然后使用原生 js 写一个仿知乎页面,详情 script 代码可以从 github 上 clone：
 https://github.com/sunshine940326/canvas-nest
 
 <script>
 class Circle {
     //创建对象
     //以一个圆为对象
-    //设置随机的 x，y坐标，r半径，_mx，_my移动的距离
-    //this.r是创建圆的半径，参数越大半径越大
-    //this._mx,this._my是移动的距离，参数越大移动
+    //设置随机的 x，y 坐标，r 半径，_mx，_my 移动的距离
+    //this.r 是创建圆的半径，参数越大半径越大
+    //this._mx,this._my 是移动的距离，参数越大移动
     constructor(x, y) {
         this.x = x;
         this.y = y;
@@ -1428,7 +1428,7 @@ class Circle {
         this._my = Math.random() ;
     }
     //canvas 画圆和画直线
-    //画圆就是正常的用canvas画一个圆
+    //画圆就是正常的用 canvas 画一个圆
     //画直线是两个圆连线，为了避免直线过多，给圆圈距离设置了一个值，距离很远的圆圈，就不做连线处理
     drawCircle(ctx) {
         ctx.beginPath();
@@ -1478,7 +1478,7 @@ class currentCirle extends Circle {
         ctx.fill();
     }
 }
-//更新页面用requestAnimationFrame替代setTimeout
+//更新页面用 requestAnimationFrame 替代 setTimeout
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 let canvas = document.getElementById('canvas');
 let ctx = canvas.getContext('2d');
@@ -1521,10 +1521,10 @@ window.onmouseout = function () {
 };
 </script>
 仿知乎动态背景
-2017.5.8更新，很多朋友都私信我说这个动态背景没有效果，发现上面的js代码是es6写的，兼容性不好，并且中间也漏了一步添加css样式的，导致好多显示的不完全，特此更新
+2017.5.8 更新，很多朋友都私信我说这个动态背景没有效果，发现上面的 js 代码是 es6 写的，兼容性不好，并且中间也漏了一步添加 css 样式的，导致好多显示的不完全，特此更新
 ，完整步骤如下
 
-1：首先在主题文件的layout中的_layout.swigC:\Hexo\themes\next\layout\_layout.swig中加入
+1：首先在主题文件的 layout 中的_layout.swigC:\Hexo\themes\next\layout\_layout.swig 中加入
 
  <div class="bg_content">
       <canvas id="canvas"></canvas>
@@ -1640,7 +1640,7 @@ window.onmouseout = function () {
        current_circle.x = null;
        current_circle.y = null;
    };
-2：在主题文件的C:\Hexo\themes\next\source\css\_custom\custom.styl文件中加上css代码
+2：在主题文件的 C:\Hexo\themes\next\source\css\_custom\custom.styl 文件中加上 css 代码
 
 /*设置背景*/
 .bg_content{
@@ -1662,9 +1662,9 @@ window.onmouseout = function () {
 在知道了页面的结构之后，你就可以将你的播放器添加在页面的任意位置，开始我是放在了首页，然后发现一上来就自动播放太吵了，于是就放在了侧边栏，想要听得朋友可以手动点击播放，
 我们可以直接在网易云音乐中搜索我们想要插入的音乐，然后点击生成外链播放器
 这里写图片描述
-然后可以根据你得设置生成相应的html代码，将获得的html代码插入到你想要插入的位置即可
+然后可以根据你得设置生成相应的 html 代码，将获得的 html 代码插入到你想要插入的位置即可
 这里写图片描述
-我放在了layout/_macro/sidebar.swig 文件下
+我放在了 layout/_macro/sidebar.swig 文件下
 
 <div id="music163player">
     <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=280 height=86 src="//music.163.com/outchain/player?type=2&id=38358214&auto=0&height=66">
@@ -1675,14 +1675,14 @@ window.onmouseout = function () {
 这里写图片描述
 
 
-#添加Fork me on GitHub
-去网址https://github.com/blog/273-github-ribbons 挑选自己喜欢的样式，并复制代码，添加到themes\next\layout_layout.swig的body标签之内即可
-记得把里面的url换成自己的!
+#添加 Fork me on GitHub
+去网址 https://github.com/blog/273-github-ribbons 挑选自己喜欢的样式，并复制代码，添加到 themes\next\layout_layout.swig 的 body 标签之内即可
+记得把里面的 url 换成自己的!
 
-hexo-wordcount实现统计功能
+hexo-wordcount 实现统计功能
 这里写图片描述
-wordcount可以实现字数统计，阅读时常还有总字数的统计功能
-只需要npm install hexo-wordcount --save 就可以安装wordcount插件，
+wordcount 可以实现字数统计，阅读时常还有总字数的统计功能
+只需要 npm install hexo-wordcount --save 就可以安装 wordcount 插件，
 主要功能
 
 字数统计:WordCount
@@ -1698,7 +1698,7 @@ post_wordcount:
   min2read: true
 ** 生成网易云音乐外链
 把审查的元素插在这个链接后面 http://music.163.com/#
-例如： http://music.163.com/#/outchain/2/254574/
+例如：http://music.163.com/#/outchain/2/254574/
 ** 评论系统 gitment 
 基础使用
 1. 注册 OAuth Application
@@ -1784,18 +1784,18 @@ post	source/_posts
 page	source
 draft	source/_drafts
 不要处理我的文章
-如果你不想你的文章被处理，你可以将 Front-Matter 中的layout: 设为 false 。
+如果你不想你的文章被处理，你可以将 Front-Matter 中的 layout: 设为 false。
 
 文件名称
 Hexo 默认以标题做为文件名称，但您可编辑 new_post_name 参数来改变默认的文件名称，举例来说，设为 :year-:month-:day-:title.md 可让您更方便的通过日期来管理文章。
 
 变量	描述
 :title	标题（小写，空格将会被替换为短杠）
-:year	建立的年份，比如， 2015
-:month	建立的月份（有前导零），比如， 04
-:i_month	建立的月份（无前导零），比如， 4
-:day	建立的日期（有前导零），比如， 07
-:i_day	建立的日期（无前导零），比如， 7
+:year	建立的年份，比如，2015
+:month	建立的月份（有前导零），比如，04
+:i_month	建立的月份（无前导零），比如，4
+:day	建立的日期（有前导零），比如，07
+:i_day	建立的日期（无前导零），比如，7
 草稿
 刚刚提到了 Hexo 的一种特殊布局：draft，这种布局在建立时会被保存到 source/_drafts 文件夹，您可通过 publish 命令将草稿移动到 source/_posts 文件夹，该命令的使用方式与 new 十分类似，您也可在命令中指定 layout 来指定布局。
 
@@ -1838,11 +1838,11 @@ tags:
 - PS3
 - Games
 分类方法的分歧
-如果您有过使用WordPress的经验，就很容易误解Hexo的分类方式。WordPress支持对一篇文章设置多个分类，而且这些分类可以是同级的，也可以是父子分类。但是Hexo不支持指定多个同级分类。下面的指定方法：
+如果您有过使用 WordPress 的经验，就很容易误解 Hexo 的分类方式。WordPress 支持对一篇文章设置多个分类，而且这些分类可以是同级的，也可以是父子分类。但是 Hexo 不支持指定多个同级分类。下面的指定方法：
 categories:
 - Diary
 - Life
-会使分类Life成为Diary的子分类，而不是并列分类。因此，有必要为您的文章选择尽可能准确的分类。
+会使分类 Life 成为 Diary 的子分类，而不是并列分类。因此，有必要为您的文章选择尽可能准确的分类。
 
 JSON Front-matter
 除了 YAML 外，你也可以使用 JSON 来编写 Front-matter，只要将 --- 代换成 ;;; 即可。
@@ -1857,7 +1857,7 @@ JSON Front-matter
 引用块
 在文章中插入引言，可包含作者、来源和标题。
 
-别号： quote
+别号：quote
 
 {% blockquote [author[, source]] [link] [source_link_title] %}
 content
@@ -1897,7 +1897,7 @@ Seth GodinWelcome to Island Marketing
 代码块
 在文章中插入代码。
 
-别名： code
+别名：code
 
 {% codeblock [title] [lang:language] [url] [link text] %}
 code snippet
@@ -1992,24 +1992,24 @@ content
 {% endraw %}
 
 ** 资源文件夹
-资源（Asset）代表 source 文件夹中除了文章以外的所有文件，例如图片、CSS、JS 文件等。比方说，如果你的Hexo项目中只有少量图片，那最简单的方法就是将它们放在 source/images 文件夹中。然后通过类似于 ![](/images/image.jpg) 的方法访问它们。
+资源（Asset）代表 source 文件夹中除了文章以外的所有文件，例如图片、CSS、JS 文件等。比方说，如果你的 Hexo 项目中只有少量图片，那最简单的方法就是将它们放在 source/images 文件夹中。然后通过类似于 ![](/images/image.jpg) 的方法访问它们。
 
 文章资源文件夹
-对于那些想要更有规律地提供图片和其他资源以及想要将他们的资源分布在各个文章上的人来说，Hexo也提供了更组织化的方式来管理资源。这个稍微有些复杂但是管理资源非常方便的功能可以通过将 config.yml 文件中的 post_asset_folder 选项设为 true 来打开。
+对于那些想要更有规律地提供图片和其他资源以及想要将他们的资源分布在各个文章上的人来说，Hexo 也提供了更组织化的方式来管理资源。这个稍微有些复杂但是管理资源非常方便的功能可以通过将 config.yml 文件中的 post_asset_folder 选项设为 true 来打开。
 
 _config.yml
 post_asset_folder: true
-当资源文件管理功能打开后，Hexo将会在你每一次通过 hexo new [layout] <title> 命令创建新文章时自动创建一个文件夹。这个资源文件夹将会有与这个 markdown 文件一样的名字。将所有与你的文章有关的资源放在这个关联文件夹中之后，你可以通过相对路径来引用它们，这样你就得到了一个更简单而且方便得多的工作流。
+当资源文件管理功能打开后，Hexo 将会在你每一次通过 hexo new [layout] <title> 命令创建新文章时自动创建一个文件夹。这个资源文件夹将会有与这个 markdown 文件一样的名字。将所有与你的文章有关的资源放在这个关联文件夹中之后，你可以通过相对路径来引用它们，这样你就得到了一个更简单而且方便得多的工作流。
 
 相对路径引用的标签插件
-通过常规的 markdown 语法和相对路径来引用图片和其它资源可能会导致它们在存档页或者主页上显示不正确。在Hexo 2时代，社区创建了很多插件来解决这个问题。但是，随着Hexo 3 的发布，许多新的标签插件被加入到了核心代码中。这使得你可以更简单地在文章中引用你的资源。
+通过常规的 markdown 语法和相对路径来引用图片和其它资源可能会导致它们在存档页或者主页上显示不正确。在 Hexo 2 时代，社区创建了很多插件来解决这个问题。但是，随着 Hexo 3 的发布，许多新的标签插件被加入到了核心代码中。这使得你可以更简单地在文章中引用你的资源。
 
 {% asset_path slug %}
 {% asset_img slug [title] %}
 {% asset_link slug [title] %}
 比如说：当你打开文章资源文件夹功能后，你把一个 example.jpg 图片放在了你的资源文件夹中，如果通过使用相对路径的常规 markdown 语法 ![](/example.jpg) ，它将 不会 出现在首页上。（但是它会在文章中按你期待的方式工作）
 
-正确的引用图片方式是使用下列的标签插件而不是 markdown ：
+正确的引用图片方式是使用下列的标签插件而不是 markdown：
 
 {% asset_img example.jpg This is an example image %}
 通过这种方式，图片将会同时出现在文章和主页以及归档页中。
@@ -2052,7 +2052,7 @@ $ hexo server -s
 服务器默认运行在 0.0.0.0，您可以覆盖默认的 IP 设置，如下：
 
 $ hexo server -i 192.168.1.1
-指定这个参数后，您就只能通过该IP才能访问站点。例如，对于一台使用无线网络的笔记本电脑，除了指向本机的127.0.0.1外，通常还有一个192.168.*.*的局域网IP，如果像上面那样使用-i参数，就不能用127.0.0.1来访问站点了。对于有公网IP的主机，如果您指定一个局域网IP作为-i参数的值，那么就无法通过公网来访问站点。
+指定这个参数后，您就只能通过该 IP 才能访问站点。例如，对于一台使用无线网络的笔记本电脑，除了指向本机的 127.0.0.1 外，通常还有一个 192.168.*.*的局域网 IP，如果像上面那样使用-i 参数，就不能用 127.0.0.1 来访问站点了。对于有公网 IP 的主机，如果您指定一个局域网 IP 作为-i 参数的值，那么就无法通过公网来访问站点。
 
 Pow
 Pow 是一个 Mac 系统上的零配置 Rack 服务器，它也可以作为一个简单易用的静态文件服务器来使用。
@@ -2084,7 +2084,7 @@ $ hexo deploy --generate
 $ hexo g -d
 $ hexo d -g
 
-** 
+** 部署
 Hexo 提供了快速方便的一键部署功能，让您只需一条命令就能将网站部署到服务器上。
 
 $ hexo deploy
@@ -2100,7 +2100,7 @@ deploy:
 - type: heroku
   repo:
 缩进
-YAML依靠缩进来确定元素间的从属关系。因此，请确保每个deployer的缩进长度相同，并且使用空格缩进。
+YAML 依靠缩进来确定元素间的从属关系。因此，请确保每个 deployer 的缩进长度相同，并且使用空格缩进。
 
 Git
 安装 hexo-deployer-git。
@@ -2117,12 +2117,12 @@ deploy:
 repo	库（Repository）地址
 branch	分支名称。如果您使用的是 GitHub 或 GitCafe 的话，程序会尝试自动检测。
 message	自定义提交信息 (默认为 Site updated: {{ now('YYYY-MM-DD HH:mm:ss') }})
-生成站点文件并推送至远程库。执行hexo clean && hexo deploy命令。前者清除站点文件，后者重新生成站点文件并将之推送到指定的库分支。（如果您的Hexo是局部安装，则需要执行./node_modules/.bin/hexo clean && ./node_modules/.bin/hexo deploy。）
+生成站点文件并推送至远程库。执行 hexo clean && hexo deploy 命令。前者清除站点文件，后者重新生成站点文件并将之推送到指定的库分支。（如果您的 Hexo 是局部安装，则需要执行./node_modules/.bin/hexo clean && ./node_modules/.bin/hexo deploy。）
 
-登入 Github/BitBucket/Gitlab，请在库设置（Repository Settings）中将默认分支设置为_config.yml配置中的分支名称。稍等片刻，您的站点就会显示在您的Github Pages中。
+登入 Github/BitBucket/Gitlab，请在库设置（Repository Settings）中将默认分支设置为_config.yml 配置中的分支名称。稍等片刻，您的站点就会显示在您的 Github Pages 中。
 
 这一切是如何发生的？
-当初次新建一个库的时候，库将自动包含一个master分支。请在这个分支下进行写作和各种配置来完善您的网页。当执行hexo deploy时，Hexo会创建或更新另外一个用于部署的分支，这个分支就是_config.yml配置文件中指定的分支。Hexo会将生成的站点文件推送至该分支下，并且完全覆盖该分支下的已有内容。因此，部署分支应当不同于写作分支。（一个推荐的方式是把master作为写作分支，另外使用public分支作为部署分支。）值得注意的是，hexo deploy并不会对本地或远程的写作分支进行任何操作，因此依旧需要手动推送写作分支的所有改动以实现版本控制。此外，如果您的Github Pages需要使用CNAME文件自定义域名，请将CNAME文件置于写作分支的source_dir目录下，只有这样hexo deploy才能将CNAME文件一并推送至部署分支。
+当初次新建一个库的时候，库将自动包含一个 master 分支。请在这个分支下进行写作和各种配置来完善您的网页。当执行 hexo deploy 时，Hexo 会创建或更新另外一个用于部署的分支，这个分支就是_config.yml 配置文件中指定的分支。Hexo 会将生成的站点文件推送至该分支下，并且完全覆盖该分支下的已有内容。因此，部署分支应当不同于写作分支。（一个推荐的方式是把 master 作为写作分支，另外使用 public 分支作为部署分支。）值得注意的是，hexo deploy 并不会对本地或远程的写作分支进行任何操作，因此依旧需要手动推送写作分支的所有改动以实现版本控制。此外，如果您的 Github Pages 需要使用 CNAME 文件自定义域名，请将 CNAME 文件置于写作分支的 source_dir 目录下，只有这样 hexo deploy 才能将 CNAME 文件一并推送至部署分支。
 
 Heroku
 安装 hexo-deployer-heroku。
@@ -2138,13 +2138,13 @@ deploy:
 repo	Heroku 库（Repository）地址
 message	自定提交信息 (默认为 Site updated: {{ now('YYYY-MM-DD HH:mm:ss') }})
 Netlify
-Netlify 是一个提供网络托管的综合平台。它集持续集成（CI）CDN 自定义域名 HTTPS 持续部署（CD）等诸多功能于一身。您可以通过以下两种方式将Hexo站点部署到Netlify。
+Netlify 是一个提供网络托管的综合平台。它集持续集成（CI）CDN 自定义域名 HTTPS 持续部署（CD）等诸多功能于一身。您可以通过以下两种方式将 Hexo 站点部署到 Netlify。
 
-首先，也是最通用的方式，就是使用Netlify提供的网页端用户界面。前往新建一个网站页面，选择需要关联的 Github/BitBucket/Gitlab 库，然后遵循网站提示。
+首先，也是最通用的方式，就是使用 Netlify 提供的网页端用户界面。前往新建一个网站页面，选择需要关联的 Github/BitBucket/Gitlab 库，然后遵循网站提示。
 
-另一种方式是使用Netlify提供的命令行客户端工具 Node based CLI 管理和部署您的站点。
+另一种方式是使用 Netlify 提供的命令行客户端工具 Node based CLI 管理和部署您的站点。
 
-此外，您还可以在项目的README中增加一个 部署至Netlify按钮，这样其他用户在fork或clone了您的项目之后可以方便快捷地一键部署。
+此外，您还可以在项目的 README 中增加一个 部署至 Netlify 按钮，这样其他用户在 fork 或 clone 了您的项目之后可以方便快捷地一键部署。
 
 Rsync
 安装 hexo-deployer-rsync。
@@ -2169,8 +2169,8 @@ port	端口	22
 delete	删除远程主机上的旧文件	true
 verbose	显示调试信息	true
 ignore_errors	忽略错误	false
-rsync部署模块的工作方式
-需要注意的是，要求您提供的实际上是一个能通过SSH登陆远程主机的Linux用户。Hexo会自动处理关于rsync使用的一切操作。因此，您需要在远程主机上为您的Hexo站点建立一个用户，并允许其通过SSH登陆。不过，这里的port，的确是指rsync监听的端口，请确保防火墙打开了该端口。
+rsync 部署模块的工作方式
+需要注意的是，要求您提供的实际上是一个能通过 SSH 登陆远程主机的 Linux 用户。Hexo 会自动处理关于 rsync 使用的一切操作。因此，您需要在远程主机上为您的 Hexo 站点建立一个用户，并允许其通过 SSH 登陆。不过，这里的 port，的确是指 rsync 监听的端口，请确保防火墙打开了该端口。
 
 OpenShift
 安装 hexo-deployer-openshift。
@@ -2210,8 +2210,8 @@ port	端口	21
 ignore	忽略的文件或目录	
 connections	使用的连接数	1
 verbose	显示调试信息	false
-FTP部署可能出现的问题
-您可能需要预先通过其他方式将所有文件上传到远程主机中。否则初次使用ftpsync插件就可能出现报错。另外，由于FTP协议的特征，它每传送一个文件就需要一次握手，相对速度较慢。
+FTP 部署可能出现的问题
+您可能需要预先通过其他方式将所有文件上传到远程主机中。否则初次使用 ftpsync 插件就可能出现报错。另外，由于 FTP 协议的特征，它每传送一个文件就需要一次握手，相对速度较慢。
 
 SFTP
 安装 hexo-deployer-sftp。
@@ -2235,9 +2235,21 @@ user	使用者名称
 pass	密码	
 remotePath	远程主机的根目录	/
 port	端口	22
-privateKey	ssh私钥的目录地址	
-passphrase	（可省略）ssh私钥的密码短语	
-agent	ssh套接字的目录地址	$SSH_AUTH_SOCK
+privateKey	ssh 私钥的目录地址	
+passphrase	（可省略）ssh 私钥的密码短语	
+agent	ssh 套接字的目录地址	$SSH_AUTH_SOCK
 其他方法
 Hexo 生成的所有文件都放在 public 文件夹中，您可以将它们复制到您喜欢的地方。
 
+** 音频插件 aplay
+ 安装  npm install --save hexo-tag-aplayer
+   https://github.com/MoePlayer/hexo-tag-aplayer
+   使用 {% aplayer title author url [picture_url, narrow, autoplay, width:xxx, lrc:xxx] %}
+
+   {% aplayer "但愿你明白" "杨采妮" "a.mp3" lrc:"understand.lrc"%}
+   
+   {% aplayer "Caffeine" "Jeff Williams" "caffeine.mp3" "picture.jpg" "lrc:caffeine.txt" %}
+* 评论头像
+** Gravatar 
+   请自行登录或注册 Gravatar，然后修改自己的头像。
+   评论的时候，留下在 Gravatar 注册时所使用的邮箱即可。

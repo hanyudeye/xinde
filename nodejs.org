@@ -1,5 +1,7 @@
 * nodejs
-** 程序运行 nodejs nodejsfile 
+** 配置 
+   npm config get registry
+   npm config set registry https://registry.npm.taobao.org/
 ** 模块
 *** 定义模块
     #+begin_src js
@@ -190,152 +192,7 @@ module.exports = function (message) {
 以上例子中分类存放了不同类型的文件，并通过 node_moudles 目录直接使用三方包名加载模块。此外，定义了 package.json 之后，node-echo 目录也可
 被当作一个包来使用。
 
-NPM
-
-NPM 是随同 NodeJS 一起安装的包管理工具，能解决 NodeJS 代码部署上的很多问题，常见的使用场景有以下几种：
-
-  * 允许用户从 NPM 服务器下载别人编写的三方包到本地使用。
-   
-  * 允许用户从 NPM 服务器下载并安装别人编写的命令行程序到本地使用。
-   
-  * 允许用户将自己编写的包或命令行程序上传到 NPM 服务器供别人使用。
-   
-可以看到，NPM 建立了一个 NodeJS 生态圈，NodeJS 开发者和用户可以在里边互通有无。以下分别介绍这三种场景下怎样使用 NPM。
-
-下载三方包
-
-需要使用三方包时，首先得知道有哪些包可用。虽然 npmjs.org 提供了个搜索框可以根据包名来搜索，但如果连想使用的三方包的名字都不确定的话，
-就请百度一下吧。知道了包名后，比如上边例子中的 argv，就可以在工程目录下打开终端，使用以下命令来下载三方包。
-
-$ npm install argv
-...
-argv@0.0.2 node_modules\argv
-
-下载好之后，argv 包就放在了工程目录下的 node_modules 目录中，因此在代码中只需要通过 require('argv')的方式就好，无需指定三方包路径。
-
-以上命令默认下载最新版三方包，如果想要下载指定版本的话，可以在包名后边加上@<version>，例如通过以下命令可下载 0.0.1 版的 argv。
-
-$ npm install argv@0.0.1
-...
-argv@0.0.1 node_modules\argv
-
-如果使用到的三方包比较多，在终端下一个包一条命令地安装未免太人肉了。因此 NPM 对 package.json 的字段做了扩展，允许在其中申明三方包依赖。
-因此，上边例子中的 package.json 可以改写如下：
-
-{
-    "name": "node-echo",
-    "main": "./lib/echo.js",
-    "dependencies": {
-        "argv": "0.0.2"
-    }
-}
-
-这样处理后，在工程目录下就可以使用 npm install 命令批量安装三方包了。更重要的是，当以后 node-echo 也上传到了 NPM 服务器，别人下载这个包时
-，NPM 会根据包中申明的三方包依赖自动下载进一步依赖的三方包。例如，使用 npm install node-echo 命令时，NPM 会自动创建以下目录结构。
-
-- project/
-    - node_modules/
-        - node-echo/
-            - node_modules/
-                + argv/
-            ...
-    ...
-
-如此一来，用户只需关心自己直接使用的三方包，不需要自己去解决所有包的依赖关系。
-
-安装命令行程序
-
-从 NPM 服务上下载安装一个命令行程序的方法与三方包类似。例如上例中的 node-echo 提供了命令行使用方式，只要 node-echo 自己配置好了相关的
-package.json 字段，对于用户而言，只需要使用以下命令安装程序。
-
-$ npm install node-echo -g
-
-参数中的-g 表示全局安装，因此 node-echo 会默认安装到以下位置，并且 NPM 会自动创建好 Linux 系统下需要的软链文件或 Windows 系统下需要的.cmd 文件
-。
-
-- /usr/local/               # Linux 系统下
-    - lib/node_modules/
-        + node-echo/
-        ...
-    - bin/
-        node-echo
-        ...
-    ...
-
-- %APPDATA%\npm\            # Windows 系统下
-    - node_modules\
-        + node-echo\
-        ...
-    node-echo.cmd
-    ...
-
-发布代码
-
-第一次使用 NPM 发布代码前需要注册一个账号。终端下运行 npm adduser，之后按照提示做即可。账号搞定后，接着我们需要编辑 package.json 文件，加
-入 NPM 必需的字段。接着上边 node-echo 的例子，package.json 里必要的字段如下。
-
-{
-    "name": "node-echo",           # 包名，在 NPM 服务器上须要保持唯一
-    "version": "1.0.0",            # 当前版本号
-    "dependencies": {              # 三方包依赖，需要指定包名和版本号
-        "argv": "0.0.2"
-      },
-    "main": "./lib/echo.js",       # 入口模块位置
-    "bin" : {
-        "node-echo": "./bin/node-echo"      # 命令行程序名和主模块位置
-    }
-}
-
-之后，我们就可以在 package.json 所在目录下运行 npm publish 发布代码了。
-
-版本号
-
-使用 NPM 下载和发布代码时都会接触到版本号。NPM 使用语义版本号来管理代码，这里简单介绍一下。
-
-语义版本号分为 X.Y.Z 三位，分别代表主版本号、次版本号和补丁版本号。当代码变更时，版本号按以下原则更新。
-
-+ 如果只是修复 bug，需要更新 Z 位。
-
-+ 如果是新增了功能，但是向下兼容，需要更新 Y 位。
-
-+ 如果有大变动，向下不兼容，需要更新 X 位。
-
-版本号有了这个保证后，在申明三方包依赖时，除了可依赖于一个固定版本号外，还可依赖于某个范围的版本号。例如"argv": "0.0.x"表示依赖于
-0.0.x 系列的最新版 argv。NPM 支持的所有版本号范围指定方式可以查看官方文档。
-
-灵机一点
-
-除了本章介绍的部分外，NPM 还提供了很多功能，package.json 里也有很多其它有用的字段。除了可以在 npmjs.org/doc/查看官方文档外，这里再介绍
-一些 NPM 常用命令。
-
-  * NPM 提供了很多命令，例如 install 和 publish，使用 npm help 可查看所有命令。
-   
-  * 使用 npm help <command>可查看某条命令的详细帮助，例如 npm help install。
-   
-  * 在 package.json 所在目录下使用 npm install . -g 可先在本地安装当前命令行程序，可用于发布前的本地测试。
-   
-  * 使用 npm update <package>可以把当前目录下 node_modules 子目录里边的对应模块更新至最新版本。
-   
-  * 使用 npm update <package> -g 可以把全局安装的对应命令行程序更新至最新版。
-   
-  * 使用 npm cache clear 可以清空 NPM 本地缓存，用于对付使用相同版本号发布新版本代码的人。
-   
-  * 使用 npm unpublish <package>@<version>可以撤销发布自己发布过的某个版本代码。
-   
-小结
-
-本章介绍了使用 NodeJS 编写代码前需要做的准备工作，总结起来有以下几点：
-
-  * 编写代码前先规划好目录结构，才能做到有条不紊。
-   
-  * 稍大些的程序可以将代码拆分为多个模块管理，更大些的程序可以使用包来组织模块。
-   
-  * 合理使用 node_modules 和 NODE_PATH 来解耦包的使用方式和物理路径。
-   
-  * 使用 NPM 加入 NodeJS 生态圈互通有无。
-   
-  * 想到了心仪的包名时请提前在 NPM 上抢注。
-   
+  
 文件操作
 
 让前端觉得如获神器的不是 NodeJS 能做网络编程，而是 NodeJS 能够操作文件。小至文件查找，大至代码编译，几乎没有一个前端工具不操作文件。换个
@@ -2574,99 +2431,9 @@ module.exports = function (message) {
 以上例子中分类存放了不同类型的文件，并通过 node_moudles 目录直接使用三方包名加载模块。此外，定义了 package.json 之后，node-echo 目录也可被当作一个包来使用。
 
 * 文件操作
-NodeJS 提供了基本的文件操作 API，但是像文件拷贝这种高级功能就没有提供，因此我们先
-拿文件拷贝程序练手。与 copy 命令类似，我们的程序需要能接受源文件路径与目标文件路径
-两个参数。
-
-小文件拷贝
-我们使用 NodeJS 内置的 fs 模块简单实现这个程序如下。
-
-var fs = require('fs');
-function copy(src, dst) {
-    fs.writeFileSync(dst, fs.readFileSync(src));
-}
- 
-function main(argv) {
-    copy(argv[0], argv[1]);
-}
- 
-main(process.argv.slice(2));
-
-以上程序使用 fs.readFileSync 从源路径读取文件内容，并使用 fs.writeFileSync 将文件内
-容写入目标路径。
-
-豆知识：process 是一个全局变量，可通过 process.argv 获得命令行参数。由于 argv[0]固
-定等于 NodeJS 执行程序的绝对路径，argv[1]固定等于主模块的绝对路径，因此第一个命令
-行参数从 argv[2]这个位置开始。
-
-大文件拷贝
-上边的程序拷贝一些小文件没啥问题，但这种一次性把所有文件内容都读取到内存中后再一次性写入磁盘的方式不适合拷贝大文件，内存会爆仓。对于大文件，我们只能读一点写一点，直到完成拷贝。因此上边的程序需要改造如下。
-
-var fs = require('fs');
- 
-function copy(src, dst) {
-    fs.createReadStream(src).pipe(fs.createWriteStream(dst));
-}
- 
-function main(argv) {
-    copy(argv[0], argv[1]);
-}
- 
-main(process.argv.slice(2));
-以上程序使用 fs.createReadStream 创建了一个源文件的只读数据流，并使用 fs.createWriteStream 创建了一个目标文件的只写数据流，并且用 pipe 方法把两个数据流连接了起来。连接起来后发生的事情，说得抽象点的话，水顺着水管从一个桶流到了另一个桶。
-
-API 走马观花
-我们先大致看看 NodeJS 提供了哪些和文件操作有关的 API。这里并不逐一介绍每个 API 的使用方法，官方文档已经做得很好了。
-
-Buffer（数据块）
-官方文档：http://nodejs.org/api/buffer.html
-
-JS 语言自身只有字符串数据类型，没有二进制数据类型，因此 NodeJS 提供了一个与 String 对等的全局构造函数 Buffer 来提供对二进制数据的操作。除了可以读取文件得到 Buffer 的实例外，还能够直接构造，例如：
-
-var bin = new Buffer([ 0x68, 0x65, 0x6c, 0x6c, 0x6f ]);
-Buffer 与字符串类似，除了可以用.length 属性得到字节长度外，还可以用[index]方式读取指定位置的字节，例如：
-
-bin[0]; // => 0x68;
-Buffer 与字符串能够互相转化，例如可以使用指定编码将二进制数据转化为字符串：
-
-var str = bin.toString('utf-8'); // => "hello"
-或者反过来，将字符串转换为指定编码下的二进制数据：
-
-var bin = new Buffer('hello', 'utf-8'); // => <buffer 68="" 65="" 6c="" 6f="">
-</buffer>
-Buffer 与字符串有一个重要区别。字符串是只读的，并且对字符串的任何修改得到的都是一个新字符串，原字符串保持不变。至于 Buffer，更像是可以做指针操作的 C 语言数组。例如，可以用[index]方式直接修改某个位置的字节。
-
-bin[0] = 0x48;
-而.slice 方法也不是返回一个新的 Buffer，而更像是返回了指向原 Buffer 中间的某个位置的指针，如下所示。
-
-[ 0x68, 0x65, 0x6c, 0x6c, 0x6f ]
-    ^           ^
-    |           |
-   bin     bin.slice(2)
-因此对.slice 方法返回的 Buffer 的修改会作用于原 Buffer，例如：
-
-var bin = new Buffer([ 0x68, 0x65, 0x6c, 0x6c, 0x6f ]);
-var sub = bin.slice(2);
- 
-sub[0] = 0x65;
-console.log(bin); // => <buffer 68="" 65="" 6c="" 6f="">
-</buffer>
-也因此，如果想要拷贝一份 Buffer，得首先创建一个新的 Buffer，并通过.copy 方法把原 Buffer 中的数据复制过去。这个类似于申请一块新的内存，并把已有内存中的数据复制过去。以下是一个例子。
-
-var bin = new Buffer([ 0x68, 0x65, 0x6c, 0x6c, 0x6f ]);
-var dup = new Buffer(bin.length);
- 
-bin.copy(dup);
-dup[0] = 0x48;
-console.log(bin); // => <buffer 68="" 65="" 6c="" 6f="">
-console.log(dup); // => <buffer 48="" 65="" 6c="" 6f="">
-</buffer></buffer>
-总之，Buffer 将 JS 的数据处理能力从字符串扩展到了任意二进制数据。
-
 Stream（数据流）
-官方文档：http://nodejs.org/api/stream.html
-
-当内存中无法一次装下需要处理的数据时，或者一边读取一边处理更加高效时，我们就需要用到数据流。NodeJS 中通过各种 Stream 来提供对数据流的操作。
+当内存中无法一次装下需要处理的数据时，或者一边读取一边处理更加高效时，我们就需要
+用到数据流。NodeJS 中通过各种 Stream 来提供对数据流的操作。
 
 以上边的大文件拷贝程序为例，我们可以为数据来源创建一个只读数据流，示例如下：
 
@@ -4679,3 +4446,82 @@ Article
 ### 5.3 代码
 
 本章代码参见这里：https://github.com/yunnysunny/nodebook-sample/tree/master/chapter5
+* npm
+** 下载三方包
+   npm install argv
+** 下载指定版本包
+   npm install argv@0.0.1
+** 通过文件下载 npm install
+   package.json
+#+begin_src json
+  {
+      "name": "node-echo",
+      "main": "./lib/echo.js",
+    // 这下面就是下载的包
+      "dependencies": {
+          "argv": "0.0.2"
+      }
+  }
+#+end_src
+** 安装命令行程序
+   npm install node-echo -g
+#+begin_src tree
+
+- /usr/local/               # Linux 系统下
+    - lib/node_modules/
+        + node-echo/
+        ...
+    - bin/
+        node-echo
+        ...
+    ...
+#+end_src
+** 发布代码
+第一次使用 NPM 发布代码前需要注册一个账号。终端下运行 npm adduser，之后按照提示做即可。账号搞定后，接着我们需要编辑 package.json 文件，加
+入 NPM 必需的字段。接着上边 node-echo 的例子，package.json 里必要的字段如下。
+
+{
+    "name": "node-echo",           # 包名，在 NPM 服务器上须要保持唯一
+    "version": "1.0.0",            # 当前版本号
+    "dependencies": {              # 三方包依赖，需要指定包名和版本号
+        "argv": "0.0.2"
+      },
+    "main": "./lib/echo.js",       # 入口模块位置
+    "bin" : {
+        "node-echo": "./bin/node-echo"      # 命令行程序名和主模块位置
+    }
+}
+
+之后，我们就可以在 package.json 所在目录下运行 npm publish 发布代码了。
+** 版本号
+使用 NPM 下载和发布代码时都会接触到版本号。NPM 使用语义版本号来管理代码，这里简单介绍一下。
+
+语义版本号分为 X.Y.Z 三位，分别代表主版本号、次版本号和补丁版本号。当代码变更时，版本号按以下原则更新。
+
++ 如果只是修复 bug，需要更新 Z 位。
+
++ 如果是新增了功能，但是向下兼容，需要更新 Y 位。
+
++ 如果有大变动，向下不兼容，需要更新 X 位。
+
+版本号有了这个保证后，在申明三方包依赖时，除了可依赖于一个固定版本号外，还可依赖于某个范围的版本号。例如"argv": "0.0.x"表示依赖于
+0.0.x 系列的最新版 argv。NPM 支持的所有版本号范围指定方式可以查看官方文档。
+** 灵机一点
+
+除了本章介绍的部分外，NPM 还提供了很多功能，package.json 里也有很多其它有用的字段。除了可以在 npmjs.org/doc/查看官方文档外，这里再介绍
+一些 NPM 常用命令。
+
+  * NPM 提供了很多命令，例如 install 和 publish，使用 npm help 可查看所有命令。
+   
+  * 使用 npm help <command>可查看某条命令的详细帮助，例如 npm help install。
+   
+  * 在 package.json 所在目录下使用 npm install . -g 可先在本地安装当前命令行程序，可用于发布前的本地测试。
+   
+  * 使用 npm update <package>可以把当前目录下 node_modules 子目录里边的对应模块更新至最新版本。
+   
+  * 使用 npm update <package> -g 可以把全局安装的对应命令行程序更新至最新版。
+   
+  * 使用 npm cache clear 可以清空 NPM 本地缓存，用于对付使用相同版本号发布新版本代码的人。
+   
+  * 使用 npm unpublish <package>@<version>可以撤销发布自己发布过的某个版本代码。
+

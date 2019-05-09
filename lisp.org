@@ -1,11 +1,50 @@
-* elisp(橡皮泥)
-** 对象操作
+* elisp
+** 创建语义 
+*** 定义词汇
+**** 全局变量名 (defvar *aa*)
+**** 赋值 setf set setq
+*** 定义方法 (defun name (para) body)
+**** 可选参数
+    (defun foo (a b &optional c d) (list a b c d)) 
+   
+    &optional 后的参数为可选参数，如果不指定将被绑定到 nil
+****  可选参数缺省值
+    (defun foo (a b &optional (c 10) d) (list a b c d)) &optional 后的参数为可选参数，其中 c 的值在不指定的时候为 10。d 的值不指定为 nil
+**** 剩余行参
+    (defun foo (a b &rest values) (list a b values)) &rest 后的参数为剩余参数
+
+    以下是以上函数的输出：
+
+    (foo 1 2 3 4 6 8) => (1 2 (3 4 6 8))
+**** 关键字参数
+    (defun foo (a b &key c d) (list a b c d)) &key 以后的参数为关键字参数，不指定时绑定为 nil
+
+    以下是以上函数的输出：
+
+    (foo 1 2 :c 3 :d 5) => (1 2 3 5)
+
+    (foo 1 2 :c 3 ) => (1 2 3 nil)
+**** 匿名函数
+     定义方式：
+
+     (lambda (parameters) body)
+
+     调用方式：
+
+     (funcall #'(lambda (x y) (+ x y)) 2 3) => 5
+
+     ((lambda (x y) (+ x y)) 2 3) => 5 如果匿名函数在 S 表达式地第一个位置，则可以直接调用
+*** 定义自己的宏
+       基本形式
+       (defmacro name (parameter) 
+           body-form)
+** 词汇语义
 *** 数字写法 
-        - 进制写法    
+     - 数字写法    
       - #xff => 255
       - #o123 => 83
       - #b1101 => 13
-      - 
+      
     - 浮点数写法
       - 1500.0
       - 12.0e2 
@@ -15,11 +54,11 @@
 
      - 正无穷大 1.0e+INF 
      - 负无穷大 -1.0e+INF
-     - 正NaN： 0.0e+NaN 
-     - 负NaN： -0.0e+NaN
+     - 正 NaN：0.0e+NaN 
+     - 负 NaN： -0.0e+NaN
 
-     - 常数e float-e  => 2.718281828459045
-     - 常数pi float-pi  => 3.141592653589793
+     - 常数 e float-e  => 2.718281828459045
+     - 常数 pi float-pi  => 3.141592653589793
 
 *** 算术操作
    - 算术操作
@@ -42,8 +81,8 @@
      - abs
 
    (sin (* 0.5 float-pi)) => 1.0
-   (cos (* 0.5 float-pi)) => 6.123233995736766e-17 #这个不为零应该是pi的精度问题
-   (asin 1.0) => 1.5707963267948966 #约为pi/2
+   (cos (* 0.5 float-pi)) => 6.123233995736766e-17 #这个不为零应该是 pi 的精度问题
+   (asin 1.0) => 1.5707963267948966 #约为 pi/2
    (exp 2) => 7.38905609893065
    (log 7.38) => 1.998773638612381 # 
    (expt 2 3) => 8
@@ -51,21 +90,21 @@
    (sqrt 3) => 1.7320508075688772
 
    - 数字类型判断
-     - floatp x 判断x是否为浮点数
-     - integerp x 判断x是否为整数
-     - numberp x 判断x是否为数字（整数或者浮点）
-     - natnump x 判断x是否为自然数
-     - zerop x 判断x是否为零
-     - isnan x 判断一个浮点数是不是NaN
+     - floatp x 判断 x 是否为浮点数
+     - integerp x 判断 x 是否为整数
+     - numberp x 判断 x 是否为数字（整数或者浮点）
+     - natnump x 判断 x 是否为自然数
+     - zerop x 判断 x 是否为零
+     - isnan x 判断一个浮点数是不是 NaN
 
    - 比较函数
      - = number-or-marker &rest number-or-markers 相等起所有参数是否数字上判断
      - eql value1 value2 当两个值都为数字时，比较数值和类型， 
-     - /= number1 number2 判断两个数值是否相等，不等返回t，相等返回nil
+     - /= number1 number2 判断两个数值是否相等，不等返回 t，相等返回 nil
 
    - 数据转换
-     - float x 将x转换为浮点数
-     - truncate x 把一个浮点数向0截断
+     - float x 将 x 转换为浮点数
+     - truncate x 把一个浮点数向 0 截断
 
 *** 位操作 
     lsh 左移 (lsh 5 2)  5*(2^2)
@@ -77,10 +116,10 @@
 
 *** 字符表示
     6 字符和字符串
-在emacs lisp中，字符常量通过一个问号来引入，比如 ?a 表示字符 a 。其内部表示为一个整数，可以 直接拿它跟一个整数进行比较，如
+在 emacs lisp 中，字符常量通过一个问号来引入，比如 ?a 表示字符 a。其内部表示为一个整数，可以 直接拿它跟一个整数进行比较，如
 
 (= ?a 97) => t
-有些特殊字符可以通过 \ 引入，比如 ?\t 即为tab。常见的特殊字符如下：
+有些特殊字符可以通过 \ 引入，比如 ?\t 即为 tab。常见的特殊字符如下：
 
 ?\b => 8 ;退格键
 ?\t => 9 ; tab
@@ -89,26 +128,26 @@
 ?\s => 32 ; 空格
 ?\\ => 92 ; 反斜杠
 
-另外，对于汉字字符，可通过汉字的Unicode编码来输入，比如 优 的编码为 4F18 ,可用 ?\u4F18 来表示：
+另外，对于汉字字符，可通过汉字的 Unicode 编码来输入，比如 优 的编码为 4F18 ,可用 ?\u4F18 来表示：
 
 (format "%c" ?\u4F18) => "优"
 (format "%c" ?优) => "优"
 汉字的编码范围：
 
 GB2312
-编码范围为0xB0A1 - 0xF7FE , 共6763个汉字
+编码范围为 0xB0A1 - 0xF7FE , 共 6763 个汉字
 GBK
-编码范围为0x8140 - 0xFEFE , 共21886个汉字， 其中
-0xB0A1 - 0xF7FE 为GB2312的所有汉字
-0x8140 - 0xA0FE 为CJK汉字6080个
-0xAA40 - 0xFEA0 为CJK汉字和增补汉字8160个
-注意unicode编码和GBK编码是两个不同的系统。unicode可以用来编码全球所有的文字。而 GBK只用来编码中文，GBK中每个汉字用两个字节来表示，unicode中每个汉字也是两个字节， 但是unicode编码在传输过程中，使用了utf-8编码，这导致每个汉字使用三个字节编码。
+编码范围为 0x8140 - 0xFEFE , 共 21886 个汉字， 其中
+0xB0A1 - 0xF7FE 为 GB2312 的所有汉字
+0x8140 - 0xA0FE 为 CJK 汉字 6080 个
+0xAA40 - 0xFEA0 为 CJK 汉字和增补汉字 8160 个
+注意 unicode 编码和 GBK 编码是两个不同的系统。unicode 可以用来编码全球所有的文字。而 GBK 只用来编码中文，GBK 中每个汉字用两个字节来表示，unicode 中每个汉字也是两个字节， 但是 unicode 编码在传输过程中，使用了 utf-8 编码，这导致每个汉字使用三个字节编码。
 
 unicode
-汉字的unicode编码范围为 0x4e00 － 0x9fa5 ， 更多详细的内容，可以参考这里： http://www.qqxiuzi.cn/zh/hanzi-unicode-bianma.php
+汉字的 unicode 编码范围为 0x4e00 － 0x9fa5， 更多详细的内容，可以参考这里：http://www.qqxiuzi.cn/zh/hanzi-unicode-bianma.php
 拼音编码
-关于拼音的编码，主要是 a,o,e,i,u,ü 这几个字母上各声调的编码，这些编码可以 在unicode的 0x80-0x1fe 这个范围内找到
-字符串是一个定长的字符序列。即数组(array)，数组的长度是固定的，一旦数组被创建就不能被修改。 数组不象C的数组，不会以\0结尾。在emacs lisp中，字符串也是以双引号括起来的。如果字符传种包含 双引号，则使用 \ 来转义其中的双引号，比如 “hello\"” 。
+关于拼音的编码，主要是 a,o,e,i,u,ü 这几个字母上各声调的编码，这些编码可以 在 unicode 的 0x80-0x1fe 这个范围内找到
+字符串是一个定长的字符序列。即数组(array)，数组的长度是固定的，一旦数组被创建就不能被修改。 数组不象 C 的数组，不会以\0 结尾。在 emacs lisp 中，字符串也是以双引号括起来的。如果字符传种包含 双引号，则使用 \ 来转义其中的双引号，比如 “hello\"” 。
 
 *** 字串操作
     string-or-null-p
@@ -128,7 +167,7 @@ unicode
     downcase
 6.1 创建字符串
 make-string count character
-返回包含count个character字符的字符串
+返回包含 count 个 character 字符的字符串
 (make-string 5 ?h) => "hhhhh"
 (make-string 5 ?我) => "我我我我我"
 string &rest characters
@@ -151,26 +190,26 @@ upcase-initials
 (upcase-initials "HELLO world") => "HELLO World"
 6.3 字符串判别函数
 stringp x
-判断x是否为string，否则返回nil
+判断 x 是否为 string，否则返回 nil
 (stringp "hello") => t
 (stringp ?h) => nil
 (stringp 123) => nil
 string-or-null-p x
-判断x是否为string或者nil，否则返回nil
+判断 x 是否为 string 或者 nil，否则返回 nil
 (string-or-null-p "hello") => t
 (string-or-null-p nil) => t
 char-or-string-p x
-判断x是否为string或者字符（即整数），否则返回nil
+判断 x 是否为 string 或者字符（即整数），否则返回 nil
 (char-or-string-p ?p) => t
 (char-or-string-p "hello") => t
 (char-or-string-p 125) => t
 6.4 字符串子串，拼接及分割
 substring string &optional start end
-返回子串，start和end是下标 ， 负的下标表示从后面开始算。如果结束位置指定为nil，则表示一直取到字符串结束的地方。
+返回子串，start 和 end 是下标 ， 负的下标表示从后面开始算。如果结束位置指定为 nil，则表示一直取到字符串结束的地方。
 (substring "helloworld" 0 3) => "hel"
 (substring "helloworld" -3 -1) => "rl"
 substring-no-properties string &optional start end
-和substring一样，只是不返回文本的属性
+和 substring 一样，只是不返回文本的属性
 concat &rest sequence
 字符串连接
 (concat "abc" "def") => "abcdef"
@@ -186,10 +225,10 @@ split-string-default-separators
 使用缺省的分割符分割字符串，通常这个值为"[ \f\t\n\r\v]+"
 6.5 修改字符串
 store-substring string idx obj
-修改string的部分内容，从idx开始的地方，内容替换为obj的内容 ，注意obj的内容必需能够放进这个字符串。否则会出错。
+修改 string 的部分内容，从 idx 开始的地方，内容替换为 obj 的内容 ，注意 obj 的内容必需能够放进这个字符串。否则会出错。
 (store-substring "hello world" 2 "ooo") => "heooo world"
 clear-string string
-将string的内容清空为0并修改字符串的长度
+将 string 的内容清空为 0 并修改字符串的长度
 6.6 字符串比较
 char-equal
 判断字符是否相等
@@ -198,9 +237,9 @@ string=
 string<
 字符串小于 注意，没有 string> 操作符
 string-prefix-p string1 string2 &optional ignore-case
-string2是否以string1开始 ， 可选参数指定是否忽略大小写
+string2 是否以 string1 开始 ， 可选参数指定是否忽略大小写
 string-suffix-p string1 string2 &optional ignore-case
-string2是否以string1结束 ， 可选参数指定是否忽略大小写
+string2 是否以 string1 结束 ， 可选参数指定是否忽略大小写
 (char-equal ?a ?b) => nil
 (char-equal ?a ?a) => t
 (string= "hello" "world") => nil
@@ -210,33 +249,33 @@ string2是否以string1结束 ， 可选参数指定是否忽略大小写
 (string-suffix-p "abc" "abcd") => nil
 6.7 字符串和数字之间的转换
 number-to-string
-将数字转换为字符串,无穷大和NaN也可以进行转换，如下所示：
+将数字转换为字符串,无穷大和 NaN 也可以进行转换，如下所示：
 (number-to-string 123) => "123"
 (number-to-string 123.0) => "123.0"
 (number-to-string -123e12) => "-123000000000000.0"
-(number-to-string #xfff) => "4095" ;; 16进制数转换
+(number-to-string #xfff) => "4095" ;; 16 进制数转换
 (number-to-string float-e) => "2.718281828459045"  ;;e
 (number-to-string 1.0e+INF) => "1.0e+INF"
 (number-to-string -0.0e+NaN) => "-0.0e+NaN"
 string-to-number string &optional base
 字符串转换为数字，可指定进制
 (string-to-number "123") => 123
-(string-to-number "123" 8) => 83  ;;8进制的123
+(string-to-number "123" 8) => 83  ;;8 进制的 123
 (string-to-number "123e4") => 1230000.0
-(string-to-number "12个人") => 12
-(string-to-number "有12个人") => 0
+(string-to-number "12 个人") => 12
+(string-to-number "有 12 个人") => 0
 6.8 字符串格式化
-基本函数是 format ，和其他语言中的格式化结构差不多，如下所示：
+基本函数是 format，和其他语言中的格式化结构差不多，如下所示：
 
-(format "%s，日行%d里" "千里马" 1000) => "千里马，日行1000里"
+(format "%s，日行%d 里" "千里马" 1000) => "千里马，日行 1000 里"
 其中可以使用的格式有：
 
 "%s"	将待格式化对象以打印格式表示，不带双引号
 "%S"	将待格式化对象以打印格式表示，带双引号
-"%o"	整数的8进制表示
-"%d"	整数的10进制表示
-"%x"	整数的16进制表示，小写
-"%X"	整数的16进制表示，大写
+"%o"	整数的 8 进制表示
+"%d"	整数的 10 进制表示
+"%x"	整数的 16 进制表示，小写
+"%X"	整数的 16 进制表示，大写
 "%c"	字符
 "%e"	浮点数的指数表示
 "%f"	浮点表示
@@ -244,14 +283,14 @@ string-to-number string &optional base
 "%%"	打印%号
 6.9 子串搜索替换
 search seq1 seq2
-搜索seq2中是否有seq1, 如下所示
+搜索 seq2 中是否有 seq1, 如下所示
 (search "world" "Hello world") => 6
 (search "World" "Hello world")  => nil
 replace seq1 seq2
-替换seq1中
+替换 seq1 中
 (replace "hello world" "aaaa") => "aaaao world"
 replace-regexp-in-string regexp rep string
-将string中的所有regexp替换成rep
+将 string 中的所有 regexp 替换成 rep
 (replace-regexp-in-string "hello" "goodbye" "helloworld") 
      => "goodbyeworld"
 7
@@ -313,746 +352,606 @@ replace-regexp-in-string regexp rep string
              (print 'true)
            'very-false)
     #+END_SRC
-** 起名字
-*** 东西起名字 全局变量名约定 *开头 *结尾 
-    (defvar *aa*)
-*** 东西赋值
-    setf set setq
-*** 方法起名字 (defun name (para) body)
-    (defun myadd (a b) (+ a b))
-** 交互函数
-   #+BEGIN_SRC elisp
-     (defun fun()
-       " 说明"
-       (interactive "p") ;;添加这一段
-       (message "xxx")
-       )  
-   #+END_SRC
-*** 交互方式
-    (interactive "r")  会将点位所在区域的开始值和结束值作为参量 要选择一个区域，不然取同一个值
-    (interactive "BAppend to buffer:") 提示输入缓冲区名字, 得到的值是缓冲区名
-** 编辑器库对象
-   buffer-name
-   buffer-file-name
-   switch-to-buffer
-   point
-   point-min
-   point-max
-   buffer-size
-   goto-char 
-   push-mark
-   beginning-of-buffer
-   mark-whole-buffer
-   append-to-buffer
-   copy-to-buffer
-* elisp 
- 可选参数
-  (defun foo (a b &optional c d) (list a b c d)) &optional后的参数为可选参数，如果不指定将被绑定到nil
-
-  8.3 可选参数缺省值
-  (defun foo (a b &optional (c 10) d) (list a b c d)) &optional后的参数为可选参数，其中c的值在不指定的时候为10。d的值不指定为nil
-
-  8.4 剩余行参
-  (defun foo (a b &rest values) (list a b values)) &rest后的参数为剩余参数
-
-  以下是以上函数的输出：
-
-  (foo 1 2 3 4 6 8) => (1 2 (3 4 6 8))
-
-  8.5 关键字参数
-  (defun foo (a b &key c d) (list a b c d)) &key以后的参数为关键字参数，不指定时绑定为nil
-
-  以下是以上函数的输出：
-
-  (foo 1 2 :c 3 :d 5) => (1 2 3 5)
-
-  (foo 1 2 :c 3 ) => (1 2 3 nil)
-
-  9 分支及循环
-  9.1 WHEN
-  使if后可跟多条语句
-
-  (defmacro when (condition &rest body)
-      `(if ,condition (progn ,@body)))
-  9.2 COND
-  基本使用方式：
-
-  （cond (x (do-x))
-      (y (do-y))
-      (z (do-z))
-      (t (do-default)))
-  如果前面条件有满足，执行完就退出cond语句。不然，接着往下执行
-
-  9.3 DOLIST和DOTIMES
-  标准形式：
-
-  (dolist (var list-form) body-form)
-
-  (dolist (x `(1 2 3 4)) (print x))
-
-  已知循环次数时：
-
-  (dotimes (x 4) (print i)) ;打印0,1,2,3
-
-  9.4 DO
-  基本形式：
-
-  (do (var init-form step-form) 
-      (end-test-form result-form)
-      statements)
-  注意，因为可能有多个var变量，和let中一样，这里的第一个括号中包含的形式要为多个变量的形式。
-
-  一个实例如下：
-
-  (do ((n 0 (1+ n)))
-      ((>= n 4))
-      (print n))
-  9.5 LOOP
-  最简单的方式：
-
-  (loop 
-      body-form*)
-  每次循环执行body-from，知道用return来中止。下面是一个例子
-
-  (let ((n 0)
-        (sum 0))
-      (loop
-	  (when (> n 10)
-	      (return))
-	  (setf sum (+ sum n))
-	  (incf n))
-      (format t "sum of 1-10 is: ~A~%" sum))
-  10 匿名函数
-  定义方式：
-
-  (lambda (parameters) body)
-
-  调用方式：
-
-  (funcall #'(lambda (x y) (+ x y)) 2 3) => 5
-
-  ((lambda (x y) (+ x y)) 2 3) => 5 如果匿名函数在S表达式地第一个位置，则可以直接调用
-
-  11 点对
-  在介绍列表之前，先介绍以下点对，点对是有两个元素组成的一个结构，如下所示：
-
-  (cons 1 "hello") => (1 . "hello")
-  上面生成的就是一个简单的点对，前一个元素为1, 后一个元素为字符串"hello"。要取出第一个元素， 使用函数 car ， 取出后一个元素，使用函数 cdr （读做“could-er”），如下所示：
-
-  (car (cons 1 "hello")) => 1
-  (cdr (cons 1 "hello")) => "hello"
-  因为点对的元素仍旧可以为点对，所以点对可以嵌套，如下所示：
-
-  (cons 1 (cons 2 (cons 3 4))) => (1 2 3 . 4)
-  (cons 1 (cons 2 (cons 3 nil))) => (1 2 3)
-  如果最后一个点对的cdr元素不为nil，则生成的对象叫点列表。 如果最后一个点对的cdr元素为nil，那生成的对象就是下面的列表。它对应于数据结构中的链表。
-
-  12 列表
-  如点对部分所述，列表对应于数据结构中的链表。链表的每个元素类型可以不同。
-
-  12.1 列表的构造
-  列表的构造方法可以使用点对构造函数 cons ，该函数接受两个参数。也可以用 list 直接构造长的列表，这个函数可以接受任意多的参数以构造大的列表。 list 可以用 ‘ 来简化，并且list也可以嵌套，如下所示：
-
-  (cons 1 (cons 2 (cons 3 nil))) => (1 2 3)
-
-  (list 1 2 3) => (1 2 3)
-  (list 1 2 (list 3 4 5)) => (1 2 (3 4 5))
-  '(1 2 3) => (1 2 3)
-  (list 1 2 '(3 4 5)) => (1 2 (3 4 5))
-  其他的列表构造函数：
-
-  make-list length obj
-  生成一个长为length的列表，每个元素均为obj
-  (make-list 3 "hello") => ("hello" "hello" "hello")
-  append &rest sequences
-  将剩余的参数连接成一个列表
-  (append '(1 2 3) '(4 5)) => (1 2 3 4 5)
-  (append '(1 2 3) 4) => (1 2 3 . 4) ;;这里应该用add-to-list
-  (append '(1 2 3) '(4)) => (1 2 3 4)
-  copy-tree
-  复制点对单元，并且递归复制其指向的其他元素，如果参数不是点对单元，则 简单的返回该参数，因此这个函数和通常意义上的树拷贝概念有些不同
-  (copy-tree '(1 2 3)) => (1 2 3)
-  (copy-tree 1) => 1
-  number-sequence from &optional to sepration
-  构造数字序列
-  (number-sequence 5) => (5)
-  (number-sequence 5 9) => (5 6 7 8 9)
-  (number-sequence 5 9 2) => (5 7 9)
-  12.2 列表相关的判断
-  consp
-  判断一个对象是否为点对
-  atom
-  判断一个对象是否为原子类型
-  listp
-  判断一个对象是否为点对或空，否则返回nil，注意它和consp的区别，
-  nil是一个列表，但不是点对
-
-  nlistp
-  即 not listp
-  null
-  判断一个对象是否为nil
-  (consp (cons 1 2)) => t
-  (listp (cons 1 2)) => t
-  (nlistp (cons 1 2)) => nil
-
-  (consp (list 1 2 3)) => t
-  (listp '(1 2 3)) => t
-  (listp '()) => t
-  (null '()) => t
-  12.3 列表访问
-  car
-  访问列表的前一个元素
-  cdr
-  访问列表的后一个元素 ， 注意列表也是点对单元，它的car为当前元素，cdr为其余的元素。 这一点可以由 cons 构造列表的过程看出来。
-  car-safe
-  首先判断参数是否为一个点对单元，如果是，则返回car，否则返回nil，即
-  (car-safe obj) <=> (let ((x obj)) 
-	                 (if (consp x)
-	                    (car x)
-                          nil))
-  cdr-safe
-  同 car-safe
-  以下是car，cdr的一些使用实例：
-
-  (car '(1 2 3 4)) => 1
-  (cdr '(1 2 3 4)) => (2 3 4)
-  (car-safe 1) => nil
-  (car-safe '(1 2 3)) => 1
-  (cdr-safe 1) => nil
-  nth n list
-  访问list的第n个元素，元素个数从0开始
-  nthcdr n list
-  访问list的第n个cdr元素，即调用cdr n次的返回值
-  (nth 2 '(1 2 3 4 5)) => 3
-  (nthcdr 2 '(1 2 3 4 5)) => (3 4 5)
-  (nthcdr 4 '(1 2 3 4 5)) => (5)
-  (nthcdr 6 '(1 2 3 4 5)) => nil
-  last list &optional n
-  返回列表的最后一个值，如果n不为nil，则返回最后n个元素
-  (last '(1 2 3 4 5)) => (5)
-  (last '(1 2 3 4 5) 3) => (3 4 5)
-  length
-  返回一个列表的长度
-  safe-length
-  返回列表的长度，有时候，遇到环形链表，这个函数不会出现死循环，会返回一个大的值。
-  (length '(1 2 3 4)) => 4
-  (safe-length '(1 2 3 4)) => 4
-  butlast x &optional n
-  返回一个列表，该列表不包含x的最后一个元素，如果给定n，则不包含最后n个元素。
-  nbutlast
-  同上，这个函数会直接修改原列表，而不会新建一个原列表的拷贝
-  (butlast '(1 2 3 4 5)) => (1 2 3 4)
-  (butlast '(1 2 3 4 5) 2) => (1 2 3)
-  12.4 列表修改
-  setcar cons obj
-  修改列表的car
-  (setf *aa* '(1 2 3)) => (1 2 3)
-  (setcar *aa* 10) => 10
-  *aa*  => (10 2 3)
-  setcdr cons obj
-  修改列表的cdr
-  (setf *aa* '(1 2 3)) => (1 2 3)
-  (setcdr *aa* 10) => 10
-  *aa* => (1 . 10)
-  (setcdr *aa* '(10 9)) => (10 9)
-   *aa*  => (1 10 9)
-  pop
-  就是通常意义上的pop，删除原列表的第一个元素，并返回第一个元素
-  push element list
-  (setf *aa* '(1 2 3 4)) => (1 2 3 4)
-  (push 1 *aa*) => (1 1 2 3 4)
-  (pop *aa*) => 1
-  *aa*  => (1 2 3 4)
-  add-to-list symbol element &optional append
-  添加一个元素到符号指定的列表，注意这里的第一个参数为 一个符号，而不是一个列表，另外，如果要添加的元素已经存在于列表中，添加将无效。可选参数append如果不为nil，元 会被添加到列表的末尾，否则会被添加到列表的头部，如下所示：
-  (setf *aa* '(1 2 3 4)) => (1 2 3 4)
-  (add-to-list *aa* 6) ; 类型错误，第一个参数不是符号 
-  (add-to-list '*aa* 6) => (6 1 2 3 4)
-  (add-to-list '*aa* 4) => (6 1 2 3 4)
-  (add-to-list '*aa* 7 t) => (6 1 2 3 4 7)
-  *aa* => (6 1 2 3 4 7)
-  以上的add-to-list并不会把相同的元素添加到列表中，这个行为有些象集合的操作，如果确实需要添加可以使用nconc， 或者使用push，如下所示
-
-  (setf *aa* '(1 2 3 4)) => (1 2 3 4)
-  (push 1 *aa*) => (1 1 2 3 4)
-  (nconc *aa* '(2)) => (1 1 2 3 4 2)
-  nconc &rest lists
-  这个函数可以将参数中的列表连接起来构成一个列表，与append不同的是，这个函数是破坏性的， 它会直接修改 每个 参数的最后一个指针。而append是非破坏性的。
-  (setf *aa* '(1 2 3)) => (1 2 3)
-  (setf *bb* '(4 5)) => (4 5)
-  (nconc *aa* *bb* '(6)) => (1 2 3 4 5 6)
-  *aa* => (1 2 3 4 5 6)
-  *bb*  => (4 5 6)  ;;注意这里的*bb*也被改变了
-  (append *bb* '(7 8)) => (4 5 6 7 8)
-  *bb* => (4 5 6) ;;*bb*并没有被append修改
-  列表上的集合操作
-
-  GNU emacs lisp中没有集合的交并运算函数 union 和 intersection ，但是common lisp中有这两个函数， 可以通过cl-lib来引入相关的函数。
-
-  memq obj list
-  测试obj是否为list的一个成员
-  (memq 1 `(1 2 3)) => (1 2 3)
-  (memq 1 `(2 3 4)) => nil
-  另一个函数 member obj list 和这个函数功能一样。如下所示：
-
-  (member 1 `(1 2 3)) => (1 2 3)
-  (member 1 `(2 3 4)) => nil
-  delq obj list
-  从list中删除obj返回新的列表，如果list中不包含obj，则返回原列表。注意这个函数的行为，它看起来有些奇怪：
-  (delq 1 `(1 2 3 1)) => (2 3)
-  (delq 1 `(2 3 4))  => (2 3 4)
-  (delq 1 `(1))  => nil
-  (delq 1 `()) => nil
-  (setf *aa* `(1 2 3 4)) => (1 2 3 4)
-  (delq 1 *aa*) => (2 3 4)
-  *aa* => (1 2 3 4) ;; 这里是值得注意的地方
-  (delq 3 *aa*) => (1 2 4)
-  *aa*  => (1 2 4)
-  如上所示，delq会修改列表，并返回一个修改过的列表。当删除的元素是中间某个元素的时候，它会直接修改该元素的前一个指针，让该指针指到它 的下一个元素，这样原列表就被修改了。当被删除的元素是第一个元素的时候，它只是简单的返回由第二个元素开始的一个列表，并不会修改第一个元素 后面的指针，因此，此时直接打印原列表会发现这个列表并没有被修改。所以，在调用delq时，最好使用一个新的变量来保存结果列表。否则，自己都会 被绕晕了。
-
-  remq obj list
-  同上，这个版本不会修改原来的列表，如下所示：
-  (setf *aa* `(1 2 3)) => (1 2 3)
-  (remq 2 *aa*) => (1 3)
-  *aa* => (1 2 3)
-  delete-dups list
-  删除列表中的重复元素
-  (delete-dups `(1 1 2 3 4 2 1)) => (1 2 3 4)
-  12.5 关联列表
-  关联列表（Association List）即点对的列表，如下所示：
-
-  `((a . 1) (b . 2) (c . 3)) => ((a . 1) (b . 2) (c . 3))
-  对于点对中的元素，不必限制为简单的数据类型，可以是一个列表，这也是一个合法的关联列表
-
-  `((a . 1) (b 2 3 4) (c . 5)) => ((a . 1) (b 2 3 4) (c . 5))
-  对于第二个元素，该点对的car为b，cdr为列表(2 3 4)。对每个点对元素来说，点对的car元素称为键，cdr元素称为该键的值。关联列表通常简称为alist。
-
-  对于关联列表，由一些专用的函数，如下：
-
-  assoc key alist
-  返回关联列表中第一个键为key的元素，如下所示
-  (assoc 'a `((a . 1) (b . 2))) => (a . 1)
-  (assoc 'c `((a . 1) (b . 2))) => nil
-  assq 具有同样的功能，它和aassoc的区别在于使用的相等运算函数为 eq ， 而不是 equal
-
-  rassoc value alist
-  返回关联列表中第一个值为value的元素，如下所示
-  (rassoc 1 `((a . 1) (b . 2)))  => (a . 1)
-  (rassoc 3 `((a . 1) (b . 2)))  => nil
-  和assq一样，也有rassq这个函数，简单的实例如下：
-
-  (assq 'a `((a . 1) (b . 2))) => (a . 1)
-  (rassq 1 `((a . 1) (b . 2))) => (a . 1)
-  assq-delete-all key alist
-  删除所有键为key的点对
-  (assq-delete-all 'a `((a . 1) (b . 2))) => ((b . 2))
-  rassq-delete-all value alist
-  删除所有值为value的点对
-  (rassq-delete-all 1 `((a . 1) (b . 2))) => ((b . 2))
-  对关联列表的每个点对来说，书写的时候，键和值之间的点不是必需的。比如 ((a 1) (b 2) (c 3)) 也是一个合法的关联列表。
-
-  (setf *aa* '((a 1) (b 2) (c 3))) => ((a 1) (b 2) (c 3))
-  ;;利用关联列表的函数对其进行操作
-  (assoc 'a *aa*) => (a 1)
-  12.6 属性列表
-  属性列表（property list）是一对对元素的列表，其表现形式和关联列表略有不同，如下所示：
-
-  `(a 1 b 2 c 3) => (a 1 b 2 c 3)
-  `(a 1 b (2 3) c 4) => (a 1 b (2 3) c 4)
-  即属性列表中没有明确地把两个元素组合在一起。每对元素的第一个元素叫做属性名字，第二个元素叫做属性的值。上面的a,b,c为 属性名，1, 2, 3和1,(2 3), 4为属性值。
-
-  以下是一些操作属性列表的函数
-
-  plist-get plist property
-  获取属性列表中的给定属性
-  (plist-get `(a 1 b 2 c 3) 'a) => 1
-  plist-put plist property value
-  设置属性列表中的属性值
-  (setf *aa* `(a 1 b 2 c 3)) => (a 1 b 2 c 3)
-  ;;添加属性值
-  (plist-put *aa* 'd 4) => (a 1 b 2 c 3 d 4)
-  *aa*  => (a 1 b 2 c 3 d 4)
-  ;;修改属性值
-  (plist-put *aa* 'a 10) => (a 10 b 2 c 3 d 4)
-  *aa*  => (a 10 b 2 c 3 d 4)
-  (plist-put *aa* 'a nil) => (a nil b 2 c 3 d 4)
-  由以上实例可知，这个函数可以为属性列表添加和修改属性值。
-
-  plist-member plist property
-  判断plist中是否含有属性property
-  (setf *aa* `(a 1 b 2)) => (a 1 b 2)
-  (plist-member *aa* 'a)  => (a 1 b 2)
-  (plist-member *aa* 'c)  => nil
-  对于属性列表而言，其属性名字不一定要是字符串，比如'(1 2 3 4)也是一个合法的属性列表。如下所示：
-
-  (plist-get '(1 2 3 4) 1) => 2
-  在这里，名为1的属性，其值为2 。因此普通的列表和属性列表看起来并没有什么区别，一般的列表也可以当作属性列表来进行处理。
-
-  12.7 序列、数组和向量
-  列表和数组都是序列。而数组是固定长度的。emacs lisp中有四种数组，即字符串strings，向量vector，字符表char-table和布尔向量。它们之间的关系如下所示：
-
-  序列
-  列表
-  数组
-  strings
-  vector
-  char-table
-  bool-vector
-  首先看一些序列函数，这些函数对所有的序列可用：
-
-  sequencep obj
-  判断obj是否为一个序列
-  length sequence
-  返回序列的长度
-  elt sequence index
-  返回序列中序号为index的元素，需要从0开始
-  (elt `(1 2 3) 2) => 3
-  函数 seq-elt 也具有同样的功能。
-
-  copy-sequence sequence
-  序列拷贝
-  reverse sequence
-  新建一个序列，其元素的顺序是原序列的逆序，原序列保持不变。char-table不适用
-  nreverse sequence
-  将一个序列逆序排列，它会修改原序列
-  (nreverse `(1 2 3 4)) => (4 3 2 1)
-  sort sequence predicate
-  对序列进行排序，这个函数会直接修改原列表
-  (sort `(1 3 5 2) '<) => (1 2 3 5)
-  数组
-
-  有四种类型的数组，其中向量和字母表（char-table）可以保存任何类型的数据，字符串只能保存字符，布尔向量只能保存布尔值。 数组的长度是固定的。相关的函数如下：
-
-  arrayp obj
-  判断obj是否为数组
-  (arrayp [1 2]) => t
-  (arrayp 1) => nil
-  aref array index
-  返回数组的序号为index的元素
-  (aref [1 2 3 4] 2)  => 3
-  aset array index obj
-  将数组序号为index的元素的值设为obj
-  (setf *aa* [1 2 3 4]) => [1 2 3 4]
-  (aset *aa* 2 "hello") => "hello"
-  *aa*  => [1 2 "hello" 4]
-  fillarray array obj
-  将array的元素都设为obj
-  (setf *aa* [1 2 3 4]) => [1 2 3 4]
-  (fillarray *aa* 0) => [0 0 0 0]
-  *aa*  => [0 0 0 0]
-  向量
-
-  向量是泛化的数组。其元素可以为任意的lisp对象。 如下所示：
-
-  (setf *aa* [1 two 'three '(1 2 3)]) => [1 two (quote three) (quote (1 2 3))]
-  可用的向量函数如下：
-
-  vectorp obj
-  判断obj是否为向量
-  (vectorp "hello") => nil
-  (arrayp "hello") => t
-  (vectorp ["hello"]) => t
-  vector &rest obj
-  将所有的参数组成一个向量
-  (vector 1 2 "hello" [1 2]) => [1 2 "hello" [1 2]]
-  make-vector length obj
-  创建一个长度为length的向量，向量的每个元素为obj
-  vconcat &rest seq
-  将参数中的序列合并成一个新的向量
-  (setf *aa* `(1 2 3)) => (1 2 3)
-  (setf *bb* `(4 5 6)) => (4 5 6)
-  (vconcat *aa* *bb*) => [1 2 3 4 5 6]
-  字母表
-
-  布尔向量
-
-  13 哈希表
-  哈希表和属性列表关联列表有些相似，但是哈希表对于大的表，其访问速度要快。另外哈希表中的元素 是无序的。
-
-  make-hash-table &rest keyword-args
-  创建一个哈希表
-  hash-table-p obj
-  判断obj是否为一个哈希表
-  hash-table-count table
-  返回哈希表中元素的个数
-  gethash key table &optional default
-  访问哈希表中键值为可key的元素
-  puthash key value table
-  在哈希表中添加一个键值对
-  remhash key table
-  删除哈希表中键为key的元素，如果不存在这个元素，则什么事也不做
-  clrhash table
-  清空哈希表
-  maphash function table
-  对哈希表中的每个元素执行函数function，该函数接受两个参数， 即key和value
-  (setf *aa* (make-hash-table))
-  (puthash 'a 1 *aa*) => 1
-  (puthash 'b 2 *aa*) => 2
-  (hash-table-count *aa*) => 2
-  (gethash 'a *aa*) => 1
-  (gethash 'c *aa*) => nil
-  (remhash 'a *aa*) => nil
-  (gethash 'a *aa*) => nil
-  (clrhash *aa*)
-  14 高阶函数
-  14.1 apply
-  一个函数在定义以后，可以使用 function 获得函数，或者使用#'来获得函数本身，如下所示
-
-  (defun foo (x) (* x 2))
-  (function foo)和#'foo 都可以获得foo函数本身，得到它以后，就可以调用它，调用方法是使用 funcall 或者 apply
-
-  事实上 (foo 1 2 3) === (funcall #'foo 1 2 3) ， 在已知被调用函数参数的时候，使用funcall，funcall的第一个参数是一个函数，其后为要传给函数的参数
-
-  apply的第一个参数是函数，其后是一个列表。它将函数应用在列表的值上。在有多个参数的情况下，只需要最后一个参数是列表就可以了。
-
-  (apply #'plot #'exp list-data) 这个调用中，apply将调用'plot，其第一个参数是一个函数'exp，最后的lisp-data是一个列表，假设list-data的内容为(list 1 2 3 4)，那么实际的调用将成为
-
-  (plot #'exp 1) (plot #'exp 2) (plot #'exp 3) (plot #'exp 4)
-
-  14.2 map系列函数
-  map系列的函数可以将函数分别作用在序列的所有元素之上。
-
-  mapcar function sequence
-  将函数function作用于序列sequence之上。并用一个序列收集计算的结果，其中的序列可以为列表，向量或者字符串。
-  (mapcar #'1+ `(1 2 3)) => (2 3 4)
-  (mapcar #'1+ [1 2 3]) => (2 3 4)
-  mapc function sequence
-  功能同mapcar，不过这个函数并不将计算的结果收集到一个列表中。它的返回值为作为参数的序列，如下所示：
-  (mapc #'1+ `(1 2 3)) => (1 2 3)
-  (mapc #'1+ [1 2 3]) => [1 2 3]
-  maphash function hash
-  对哈希表hash的的每个键值对调用函数function，这个函数总是返回nil。
-  (setf *aa* (make-hash-table))
-  (puthash :a 1 *aa*) => 1
-  (puthash :b 2 *aa*) => 2
-  (puthash :c 3 *aa*) => 3
-  (maphash #'(lambda (k v) (print (format "%s -> %d" k v))) *aa*)
-  ;;以下为输出
-  ":a -> 1"
-  ":b -> 2"
-  ":c -> 3"
-  ;;输出结束
-  14.3 reduce 函数
-  reduce函数的声明是这样的：
-
-  reduce function seq [keyword value] …
-  其中的function函数为两个参数的函数，seq为需要处理的序列。后面可用的关键字参数有
-  :start， :end ， :from-end， :initial-value， :key 。 指定的两参数函数将一次作用于seq上，最后得到一个返回值。 其中各关键字参数的意义如下：
-
-  :start
-  从序列的哪个位置开始处理
-  :end
-  处理在序列的哪个位置结束
-  :from-end
-  是否从序列尾部开始处理， 布尔值
-  :initial-value
-  处理开始之前的初始值
-  :key
-  ???
-  (reduce #'+ [1 2 3 4]) => 10
-  (reduce #'+ [1 2 3 4] :start 1) => 9
-  (reduce #'+ [1 2 3 4] :start 1 :end 2) => 2
-  (reduce #'+ [1 2 3 4] :start 1 :end 2 :initial-value 10) => 12
-  14.4 remove系列函数
-  remove系列函数也是作用于序列上的函数，用于在序列中删除满足某些条件的函数
-
-  remove elt seq
-  删除序列seq中值为elt的元素，返回一个序列
-  (remove 2 `(1 2 3 4)) => (1 3 4)
-  remove-if function seq [keyword value]
-  删除seq中满足条件function的元素，支持的关键字参数有 :key ,
-  :count , :start , :end , :from-end。 这个函数是非破坏性的，不会修改参数序列。 其中
-
-  :count
-  指定需要删除的元素的个数，不会删除更多的满足条件的元素
-  :start
-  从序列的哪个位置开始处理
-  :end
-  处理在序列的哪个位置结束
-  :from-end
-  是否从序列尾部开始处理
-  :key
-  ???
-  (remove-if #'oddp `(1 2 3 4 5 6)) => (2 4 6) 
-  (remove-if #'oddp `(1 2 3 4 5 6) :count 2) => (2 4 5 6)
-  (remove-if #'oddp `(1 2 3 4 5 6) :count 2 :from-end t) => (1 2 4 6)
-  remove-if-not function seq [keyword value]
-  同函数remove-if，意义很明显，就是删除不满足条件function的元素， 关键字的意义亦同。
-  remove-duplicates seq [keyword value]
-  删除序列中的重复元素，支持的关键字参数有
-  :test
-  :test-not
-  :key
-  :start
-  :end
-  :from-end
-  15 动态变量及绑定
-  (let ((a 1) 
-         (b 2) 
-         (c 3)) 
-     (+ a b c))
-
-  (let* ((a 1) 
-         (b (+ a 2)) 
-         (c (+ b 3))) 
-     (+ a b c))
-  let 和 let* 的区别是， let* 中可以使用前面已绑定的值，注意这里的 let 的语法，后面的括号中是一个列表，即使只有一个赋值，也要写成 (let ((a 2)) (format t "~A" a)) 这样的形式，如果写成 (let (a 2) (format t "~A" a)) 是不可以的。
-
-  16 定义自己的宏
-  基本形式
-
-  (defmacro name (parameter) 
-      body-form)
-  17 文件
-  17.1 读文件
-  读取每一行并打印
-
-  (with-open-file (stream "./aa.txt")
-      (loop 
-	  (let ((line (read-line stream nil)))
-	      (cond 
-		  (line (format t "~A~%" line))
-		  (t (return))))))
-  可以把以上的部分写成一个宏，此宏对每行调用给定的函数，调用方式可为 (do-file-lines filename &body)
-
-  17.2 写文件
-  (with-open-file (stream "./bb.txt" :direction :output :if-exists :supersede)
-      (format stream "some text"))
-  18 正则表达式
-  正则表达式要使用cl-ppcre包，参考文档：http://weitz.de/cl-ppcre/，在使用之前需要加载这个库，方法是
-
-  (ql:quickload "cl-ppcre")
-
-  18.1 抽取
-  (cl-ppcre:scan-to-strings "[^b]*b" "aaabd")
-  =>
-  "aaab"
-  #()
-
-  (cl-ppcre:scan-to-strings "([^b])*b" "aaabd")
-  =>
-  "aaab"
-  #("a")
-
-  ;匹配以后进行绑定
-  (cl-ppcre:register-groups-bind (first second third) 
-      ("(a+)(b+)(c+)" "aabbbbccccc")
-      (list first second third))
-  =>
-  ("aa" "bbbb" "ccccc")
-
-
-  ;如果不匹配，则将返回nil，后面的list语句不会执行
-  (cl-ppcre:register-groups-bind (first second third) 
-      ("(a+)(b+)(c+)" "aabbbbddddd")
-      (list first second third))
-  18.2 替换
-  (cl-ppcre:regex-replace "fo+" "foo bar" "frob")
-  =>"frob bar"
-
-  (cl-ppcre:regex-replace-all "fo+" "foo bar" "frob")
-  =>"frob bar"
-  18.3 拆分
-  (cl-ppcre:split "\\s+" "foo bar baz frob")
-  =>("foo" "bar" "baz" "frob")
-
-
-  本文地址: http://www.bagualu.net/wordpress/archives/6596 转载请注明
-
-
-
-
-  分类EMACS
-  发表评论
-  电子邮件地址不会被公开。 必填项已用*标注
-
-  评论
-
-
-  姓名 *
-
-
-  电子邮件 *
-
-
-  站点
-
-
-  文章导航
-  上一篇文章
-  上一
-  股票市场的一些宏观数据下一篇文章
-  下一
-  国内的芯片设计企业
-  功能
-  注册
-  登录
-  文章RSS
-  评论RSS
-  WordPress.org
-  近期评论
-  Miu发表在《搜索求解之启发式搜索策略》
-  Cion发表在《关于美国政治制度》
-  反倒是发表在《vim 多文件搜索并实现自动跳转》
-  beescity发表在《用R画地图》
-  江航发表在《tvmx》
-  分类目录
-  android (17)
-  C/C++ (62)
-  CSS (10)
-  CUDA (4)
-  drupal (19)
-  emacs (40)
-  firefox (22)
-  gdb (12)
-  golang (1)
-  hadoop (25)
-  java (1)
-  javascript (10)
-  latex (8)
-  Linux (148)
-  lisp (16)
-  markdown (15)
-  pdf (4)
-  perl (11)
-  php (13)
-  python (26)
-  ruby (41)
-  R语言 (70)
-  VBA (1)
-  vim (23)
-  windows (21)
-  wordpress (43)
-  中文处理 (26)
-  人工智能 (8)
-  其他备忘 (1)
-  化工 (45)
-  反编译 (4)
-  图形 (24)
-  应用开发 (24)
-  投资 (5)
-  搜索引擎 (19)
-  数学 (16)
-  数据挖掘 (20)
-  数码电子 (8)
-  新站介绍 (1)
-  旅游地理 (5)
-  未分类 (31)
-  杂谈杂感 (12)
-  照片 (2)
-  生化 (2)
-  生活 (22)
-  电力 (3)
-  算法 (1)
-  经济 (2)
-  网站动态 (27)
-  网络 (26)
-  美食 (21)
-  考古 (2)
-  股票 (27)
-  视频 (9)
-  设计 (1)
-  语言参考 (3)
-  量化交易 (9)
-  金属 (1)
-  跟我联系 jianghang at bagualu.net
+*** 交互函数,输入输出函数
+    #+BEGIN_SRC elisp
+      (defun fun()
+        " 说明"
+        (interactive "p") ;;添加这一段
+        (message "xxx")
+        )  
+    #+END_SRC
+**** 交互方式
+     (interactive "r")  会将点位所在区域的开始值和结束值作为参量 要选择一个区域，不然取同一个值
+     (interactive "BAppend to buffer:") 提示输入缓冲区名字, 得到的值是缓冲区名
+*** 分支及循环
+**** WHEN
+     使 if 后可跟多条语句
+
+     (defmacro when (condition &rest body)
+         `(if ,condition (progn ,@body)))
+**** COND
+     基本使用方式：
+
+     （cond (x (do-x))
+         (y (do-y))
+         (z (do-z))
+         (t (do-default)))
+     如果前面条件有满足，执行完就退出 cond 语句。不然，接着往下执行
+**** DOLIST 和 DOTIMES
+     标准形式：
+
+     (dolist (var list-form) body-form)
+
+     (dolist (x `(1 2 3 4)) (print x))
+
+     已知循环次数时：
+
+     (dotimes (x 4) (print i)) ;打印 0,1,2,3
+**** DO
+     基本形式：
+
+     (do (var init-form step-form) 
+         (end-test-form result-form)
+         statements)
+     注意，因为可能有多个 var 变量，和 let 中一样，这里的第一个括号中包含的形式要为多个变量的形式。
+
+     一个实例如下：
+
+     (do ((n 0 (1+ n)))
+         ((>= n 4))
+         (print n))
+     9.5 LOOP
+     最简单的方式：
+
+     (loop 
+         body-form*)
+     每次循环执行 body-from，知道用 return 来中止。下面是一个例子
+
+     (let ((n 0)
+           (sum 0))
+         (loop
+	     (when (> n 10)
+	         (return))
+	     (setf sum (+ sum n))
+	     (incf n))
+         (format t "sum of 1-10 is: ~A~%" sum))
+*** 点对
+     在介绍列表之前，先介绍以下点对，点对是有两个元素组成的一个结构，如下所示：
+
+     (cons 1 "hello") => (1 . "hello")
+     上面生成的就是一个简单的点对，前一个元素为 1, 后一个元素为字符串"hello"。要取出第一个元素， 使用函数 car， 取出后一个元素，使用函数 cdr（读做“could-er”），如下所示：
+
+     (car (cons 1 "hello")) => 1
+     (cdr (cons 1 "hello")) => "hello"
+     因为点对的元素仍旧可以为点对，所以点对可以嵌套，如下所示：
+
+     (cons 1 (cons 2 (cons 3 4))) => (1 2 3 . 4)
+     (cons 1 (cons 2 (cons 3 nil))) => (1 2 3)
+     如果最后一个点对的 cdr 元素不为 nil，则生成的对象叫点列表。 如果最后一个点对的 cdr 元素为 nil，那生成的对象就是下面的列表。它对应于数据结构中的链表。
+*** 列表
+     如点对部分所述，列表对应于数据结构中的链表。链表的每个元素类型可以不同。
+
+     12.1 列表的构造
+     列表的构造方法可以使用点对构造函数 cons，该函数接受两个参数。也可以用 list 直接构造长的列表，这个函数可以接受任意多的参数以构造大的列表。list 可以用 ‘ 来简化，并且 list 也可以嵌套，如下所示：
+
+     (cons 1 (cons 2 (cons 3 nil))) => (1 2 3)
+
+     (list 1 2 3) => (1 2 3)
+     (list 1 2 (list 3 4 5)) => (1 2 (3 4 5))
+     '(1 2 3) => (1 2 3)
+     (list 1 2 '(3 4 5)) => (1 2 (3 4 5))
+     其他的列表构造函数：
+
+     make-list length obj
+     生成一个长为 length 的列表，每个元素均为 obj
+     (make-list 3 "hello") => ("hello" "hello" "hello")
+     append &rest sequences
+     将剩余的参数连接成一个列表
+     (append '(1 2 3) '(4 5)) => (1 2 3 4 5)
+     (append '(1 2 3) 4) => (1 2 3 . 4) ;;这里应该用 add-to-list
+     (append '(1 2 3) '(4)) => (1 2 3 4)
+     copy-tree
+     复制点对单元，并且递归复制其指向的其他元素，如果参数不是点对单元，则 简单的返回该参数，因此这个函数和通常意义上的树拷贝概念有些不同
+     (copy-tree '(1 2 3)) => (1 2 3)
+     (copy-tree 1) => 1
+     number-sequence from &optional to sepration
+     构造数字序列
+     (number-sequence 5) => (5)
+     (number-sequence 5 9) => (5 6 7 8 9)
+     (number-sequence 5 9 2) => (5 7 9)
+     12.2 列表相关的判断
+     consp
+     判断一个对象是否为点对
+     atom
+     判断一个对象是否为原子类型
+     listp
+     判断一个对象是否为点对或空，否则返回 nil，注意它和 consp 的区别，
+     nil 是一个列表，但不是点对
+
+     nlistp
+     即 not listp
+     null
+     判断一个对象是否为 nil
+     (consp (cons 1 2)) => t
+     (listp (cons 1 2)) => t
+     (nlistp (cons 1 2)) => nil
+
+     (consp (list 1 2 3)) => t
+     (listp '(1 2 3)) => t
+     (listp '()) => t
+     (null '()) => t
+     12.3 列表访问
+     car
+     访问列表的前一个元素
+     cdr
+     访问列表的后一个元素 ， 注意列表也是点对单元，它的 car 为当前元素，cdr 为其余的元素。 这一点可以由 cons 构造列表的过程看出来。
+     car-safe
+     首先判断参数是否为一个点对单元，如果是，则返回 car，否则返回 nil，即
+     (car-safe obj) <=> (let ((x obj)) 
+	                    (if (consp x)
+	                       (car x)
+                             nil))
+     cdr-safe
+     同 car-safe
+     以下是 car，cdr 的一些使用实例：
+
+     (car '(1 2 3 4)) => 1
+     (cdr '(1 2 3 4)) => (2 3 4)
+     (car-safe 1) => nil
+     (car-safe '(1 2 3)) => 1
+     (cdr-safe 1) => nil
+     nth n list
+     访问 list 的第 n 个元素，元素个数从 0 开始
+     nthcdr n list
+     访问 list 的第 n 个 cdr 元素，即调用 cdr n 次的返回值
+     (nth 2 '(1 2 3 4 5)) => 3
+     (nthcdr 2 '(1 2 3 4 5)) => (3 4 5)
+     (nthcdr 4 '(1 2 3 4 5)) => (5)
+     (nthcdr 6 '(1 2 3 4 5)) => nil
+     last list &optional n
+     返回列表的最后一个值，如果 n 不为 nil，则返回最后 n 个元素
+     (last '(1 2 3 4 5)) => (5)
+     (last '(1 2 3 4 5) 3) => (3 4 5)
+     length
+     返回一个列表的长度
+     safe-length
+     返回列表的长度，有时候，遇到环形链表，这个函数不会出现死循环，会返回一个大的值。
+     (length '(1 2 3 4)) => 4
+     (safe-length '(1 2 3 4)) => 4
+     butlast x &optional n
+     返回一个列表，该列表不包含 x 的最后一个元素，如果给定 n，则不包含最后 n 个元素。
+     nbutlast
+     同上，这个函数会直接修改原列表，而不会新建一个原列表的拷贝
+     (butlast '(1 2 3 4 5)) => (1 2 3 4)
+     (butlast '(1 2 3 4 5) 2) => (1 2 3)
+     12.4 列表修改
+     setcar cons obj
+     修改列表的 car
+     (setf *aa* '(1 2 3)) => (1 2 3)
+     (setcar *aa* 10) => 10
+     *aa*  => (10 2 3)
+     setcdr cons obj
+     修改列表的 cdr
+     (setf *aa* '(1 2 3)) => (1 2 3)
+     (setcdr *aa* 10) => 10
+     *aa* => (1 . 10)
+     (setcdr *aa* '(10 9)) => (10 9)
+      *aa*  => (1 10 9)
+     pop
+     就是通常意义上的 pop，删除原列表的第一个元素，并返回第一个元素
+     push element list
+     (setf *aa* '(1 2 3 4)) => (1 2 3 4)
+     (push 1 *aa*) => (1 1 2 3 4)
+     (pop *aa*) => 1
+     *aa*  => (1 2 3 4)
+     add-to-list symbol element &optional append
+     添加一个元素到符号指定的列表，注意这里的第一个参数为 一个符号，而不是一个列表，另外，如果要添加的元素已经存在于列表中，添加将无效。可选参数 append 如果不为 nil，元 会被添加到列表的末尾，否则会被添加到列表的头部，如下所示：
+     (setf *aa* '(1 2 3 4)) => (1 2 3 4)
+     (add-to-list *aa* 6) ; 类型错误，第一个参数不是符号 
+     (add-to-list '*aa* 6) => (6 1 2 3 4)
+     (add-to-list '*aa* 4) => (6 1 2 3 4)
+     (add-to-list '*aa* 7 t) => (6 1 2 3 4 7)
+     *aa* => (6 1 2 3 4 7)
+     以上的 add-to-list 并不会把相同的元素添加到列表中，这个行为有些象集合的操作，如果确实需要添加可以使用 nconc， 或者使用 push，如下所示
+
+     (setf *aa* '(1 2 3 4)) => (1 2 3 4)
+     (push 1 *aa*) => (1 1 2 3 4)
+     (nconc *aa* '(2)) => (1 1 2 3 4 2)
+     nconc &rest lists
+     这个函数可以将参数中的列表连接起来构成一个列表，与 append 不同的是，这个函数是破坏性的， 它会直接修改 每个 参数的最后一个指针。而 append 是非破坏性的。
+     (setf *aa* '(1 2 3)) => (1 2 3)
+     (setf *bb* '(4 5)) => (4 5)
+     (nconc *aa* *bb* '(6)) => (1 2 3 4 5 6)
+     *aa* => (1 2 3 4 5 6)
+     *bb*  => (4 5 6)  ;;注意这里的*bb*也被改变了
+     (append *bb* '(7 8)) => (4 5 6 7 8)
+     *bb* => (4 5 6) ;;*bb*并没有被 append 修改
+     列表上的集合操作
+
+     GNU emacs lisp 中没有集合的交并运算函数 union 和 intersection，但是 common lisp 中有这两个函数， 可以通过 cl-lib 来引入相关的函数。
+
+     memq obj list
+     测试 obj 是否为 list 的一个成员
+     (memq 1 `(1 2 3)) => (1 2 3)
+     (memq 1 `(2 3 4)) => nil
+     另一个函数 member obj list 和这个函数功能一样。如下所示：
+
+     (member 1 `(1 2 3)) => (1 2 3)
+     (member 1 `(2 3 4)) => nil
+     delq obj list
+     从 list 中删除 obj 返回新的列表，如果 list 中不包含 obj，则返回原列表。注意这个函数的行为，它看起来有些奇怪：
+     (delq 1 `(1 2 3 1)) => (2 3)
+     (delq 1 `(2 3 4))  => (2 3 4)
+     (delq 1 `(1))  => nil
+     (delq 1 `()) => nil
+     (setf *aa* `(1 2 3 4)) => (1 2 3 4)
+     (delq 1 *aa*) => (2 3 4)
+     *aa* => (1 2 3 4) ;; 这里是值得注意的地方
+     (delq 3 *aa*) => (1 2 4)
+     *aa*  => (1 2 4)
+     如上所示，delq 会修改列表，并返回一个修改过的列表。当删除的元素是中间某个元素的时候，它会直接修改该元素的前一个指针，让该指针指到它 的下一个元素，这样原列表就被修改了。当被删除的元素是第一个元素的时候，它只是简单的返回由第二个元素开始的一个列表，并不会修改第一个元素 后面的指针，因此，此时直接打印原列表会发现这个列表并没有被修改。所以，在调用 delq 时，最好使用一个新的变量来保存结果列表。否则，自己都会 被绕晕了。
+
+     remq obj list
+     同上，这个版本不会修改原来的列表，如下所示：
+     (setf *aa* `(1 2 3)) => (1 2 3)
+     (remq 2 *aa*) => (1 3)
+     *aa* => (1 2 3)
+     delete-dups list
+     删除列表中的重复元素
+     (delete-dups `(1 1 2 3 4 2 1)) => (1 2 3 4)
+     12.5 关联列表
+     关联列表（Association List）即点对的列表，如下所示：
+
+     `((a . 1) (b . 2) (c . 3)) => ((a . 1) (b . 2) (c . 3))
+     对于点对中的元素，不必限制为简单的数据类型，可以是一个列表，这也是一个合法的关联列表
+
+     `((a . 1) (b 2 3 4) (c . 5)) => ((a . 1) (b 2 3 4) (c . 5))
+     对于第二个元素，该点对的 car 为 b，cdr 为列表(2 3 4)。对每个点对元素来说，点对的 car 元素称为键，cdr 元素称为该键的值。关联列表通常简称为 alist。
+
+     对于关联列表，由一些专用的函数，如下：
+
+     assoc key alist
+     返回关联列表中第一个键为 key 的元素，如下所示
+     (assoc 'a `((a . 1) (b . 2))) => (a . 1)
+     (assoc 'c `((a . 1) (b . 2))) => nil
+     assq 具有同样的功能，它和 aassoc 的区别在于使用的相等运算函数为 eq， 而不是 equal
+
+     rassoc value alist
+     返回关联列表中第一个值为 value 的元素，如下所示
+     (rassoc 1 `((a . 1) (b . 2)))  => (a . 1)
+     (rassoc 3 `((a . 1) (b . 2)))  => nil
+     和 assq 一样，也有 rassq 这个函数，简单的实例如下：
+
+     (assq 'a `((a . 1) (b . 2))) => (a . 1)
+     (rassq 1 `((a . 1) (b . 2))) => (a . 1)
+     assq-delete-all key alist
+     删除所有键为 key 的点对
+     (assq-delete-all 'a `((a . 1) (b . 2))) => ((b . 2))
+     rassq-delete-all value alist
+     删除所有值为 value 的点对
+     (rassq-delete-all 1 `((a . 1) (b . 2))) => ((b . 2))
+     对关联列表的每个点对来说，书写的时候，键和值之间的点不是必需的。比如 ((a 1) (b 2) (c 3)) 也是一个合法的关联列表。
+
+     (setf *aa* '((a 1) (b 2) (c 3))) => ((a 1) (b 2) (c 3))
+     ;;利用关联列表的函数对其进行操作
+     (assoc 'a *aa*) => (a 1)
+     12.6 属性列表
+     属性列表（property list）是一对对元素的列表，其表现形式和关联列表略有不同，如下所示：
+
+     `(a 1 b 2 c 3) => (a 1 b 2 c 3)
+     `(a 1 b (2 3) c 4) => (a 1 b (2 3) c 4)
+     即属性列表中没有明确地把两个元素组合在一起。每对元素的第一个元素叫做属性名字，第二个元素叫做属性的值。上面的 a,b,c 为 属性名，1, 2, 3 和 1,(2 3), 4 为属性值。
+
+     以下是一些操作属性列表的函数
+
+     plist-get plist property
+     获取属性列表中的给定属性
+     (plist-get `(a 1 b 2 c 3) 'a) => 1
+     plist-put plist property value
+     设置属性列表中的属性值
+     (setf *aa* `(a 1 b 2 c 3)) => (a 1 b 2 c 3)
+     ;;添加属性值
+     (plist-put *aa* 'd 4) => (a 1 b 2 c 3 d 4)
+     *aa*  => (a 1 b 2 c 3 d 4)
+     ;;修改属性值
+     (plist-put *aa* 'a 10) => (a 10 b 2 c 3 d 4)
+     *aa*  => (a 10 b 2 c 3 d 4)
+     (plist-put *aa* 'a nil) => (a nil b 2 c 3 d 4)
+     由以上实例可知，这个函数可以为属性列表添加和修改属性值。
+
+     plist-member plist property
+     判断 plist 中是否含有属性 property
+     (setf *aa* `(a 1 b 2)) => (a 1 b 2)
+     (plist-member *aa* 'a)  => (a 1 b 2)
+     (plist-member *aa* 'c)  => nil
+     对于属性列表而言，其属性名字不一定要是字符串，比如'(1 2 3 4)也是一个合法的属性列表。如下所示：
+
+     (plist-get '(1 2 3 4) 1) => 2
+     在这里，名为 1 的属性，其值为 2。因此普通的列表和属性列表看起来并没有什么区别，一般的列表也可以当作属性列表来进行处理。
+
+     12.7 序列、数组和向量
+     列表和数组都是序列。而数组是固定长度的。emacs lisp 中有四种数组，即字符串 strings，向量 vector，字符表 char-table 和布尔向量。它们之间的关系如下所示：
+
+     序列
+     列表
+     数组
+     strings
+     vector
+     char-table
+     bool-vector
+     首先看一些序列函数，这些函数对所有的序列可用：
+
+     sequencep obj
+     判断 obj 是否为一个序列
+     length sequence
+     返回序列的长度
+     elt sequence index
+     返回序列中序号为 index 的元素，需要从 0 开始
+     (elt `(1 2 3) 2) => 3
+     函数 seq-elt 也具有同样的功能。
+
+     copy-sequence sequence
+     序列拷贝
+     reverse sequence
+     新建一个序列，其元素的顺序是原序列的逆序，原序列保持不变。char-table 不适用
+     nreverse sequence
+     将一个序列逆序排列，它会修改原序列
+     (nreverse `(1 2 3 4)) => (4 3 2 1)
+     sort sequence predicate
+     对序列进行排序，这个函数会直接修改原列表
+     (sort `(1 3 5 2) '<) => (1 2 3 5)
+     数组
+
+     有四种类型的数组，其中向量和字母表（char-table）可以保存任何类型的数据，字符串只能保存字符，布尔向量只能保存布尔值。 数组的长度是固定的。相关的函数如下：
+
+     arrayp obj
+     判断 obj 是否为数组
+     (arrayp [1 2]) => t
+     (arrayp 1) => nil
+     aref array index
+     返回数组的序号为 index 的元素
+     (aref [1 2 3 4] 2)  => 3
+     aset array index obj
+     将数组序号为 index 的元素的值设为 obj
+     (setf *aa* [1 2 3 4]) => [1 2 3 4]
+     (aset *aa* 2 "hello") => "hello"
+     *aa*  => [1 2 "hello" 4]
+     fillarray array obj
+     将 array 的元素都设为 obj
+     (setf *aa* [1 2 3 4]) => [1 2 3 4]
+     (fillarray *aa* 0) => [0 0 0 0]
+     *aa*  => [0 0 0 0]
+     向量
+
+     向量是泛化的数组。其元素可以为任意的 lisp 对象。 如下所示：
+
+     (setf *aa* [1 two 'three '(1 2 3)]) => [1 two (quote three) (quote (1 2 3))]
+     可用的向量函数如下：
+
+     vectorp obj
+     判断 obj 是否为向量
+     (vectorp "hello") => nil
+     (arrayp "hello") => t
+     (vectorp ["hello"]) => t
+     vector &rest obj
+     将所有的参数组成一个向量
+     (vector 1 2 "hello" [1 2]) => [1 2 "hello" [1 2]]
+     make-vector length obj
+     创建一个长度为 length 的向量，向量的每个元素为 obj
+     vconcat &rest seq
+     将参数中的序列合并成一个新的向量
+     (setf *aa* `(1 2 3)) => (1 2 3)
+     (setf *bb* `(4 5 6)) => (4 5 6)
+     (vconcat *aa* *bb*) => [1 2 3 4 5 6]
+     字母表
+
+     布尔向量
+*** 哈希表
+     哈希表和属性列表关联列表有些相似，但是哈希表对于大的表，其访问速度要快。另外
+     哈希表中的元素 是无序的。
+
+     make-hash-table &rest keyword-args
+     创建一个哈希表
+    
+     hash-table-p obj
+     判断 obj 是否为一个哈希表
+    
+     hash-table-count table
+     返回哈希表中元素的个数
+    
+     gethash key table &optional default
+     访问哈希表中键值为可 key 的元素
+    
+     puthash key value table
+     在哈希表中添加一个键值对
+     remhash key table
+     删除哈希表中键为 key 的元素，如果不存在这个元素，则什么事也不做
+     clrhash table
+     清空哈希表
+     maphash function table
+     对哈希表中的每个元素执行函数 function，该函数接受两个参数， 即 key 和 value
+     (setf *aa* (make-hash-table))
+     (puthash 'a 1 *aa*) => 1
+     (puthash 'b 2 *aa*) => 2
+     (hash-table-count *aa*) => 2
+     (gethash 'a *aa*) => 1
+     (gethash 'c *aa*) => nil
+     (remhash 'a *aa*) => nil
+     (gethash 'a *aa*) => nil
+     (clrhash *aa*)
+*** 高阶函数
+**** apply
+      一个函数在定义以后，可以使用 function 获得函数，或者使用#'来获得函数本身，如下所示
+
+      (defun foo (x) (* x 2))
+      (function foo)和#'foo 都可以获得 foo 函数本身，得到它以后，就可以调用它，调用方法是使用 funcall 或者 apply
+
+      事实上 (foo 1 2 3) === (funcall #'foo 1 2 3) ， 在已知被调用函数参数的时候，使用 funcall，funcall 的第一个参数是一个函数，其后为要传给函数的参数
+
+      apply 的第一个参数是函数，其后是一个列表。它将函数应用在列表的值上。在有多个参数的情况下，只需要最后一个参数是列表就可以了。
+
+      (apply #'plot #'exp list-data) 这个调用中，apply 将调用'plot，其第一个参数是一个函数'exp，最后的 lisp-data 是一个列表，假设 list-data 的内容为(list 1 2 3 4)，那么实际的调用将成为
+
+      (plot #'exp 1) (plot #'exp 2) (plot #'exp 3) (plot #'exp 4)
+**** map 系列函数
+      map 系列的函数可以将函数分别作用在序列的所有元素之上。
+
+      mapcar function sequence
+      将函数 function 作用于序列 sequence 之上。并用一个序列收集计算的结果，其中的序列可以为列表，向量或者字符串。
+      (mapcar #'1+ `(1 2 3)) => (2 3 4)
+      (mapcar #'1+ [1 2 3]) => (2 3 4)
+      mapc function sequence
+      功能同 mapcar，不过这个函数并不将计算的结果收集到一个列表中。它的返回值为作为参数的序列，如下所示：
+      (mapc #'1+ `(1 2 3)) => (1 2 3)
+      (mapc #'1+ [1 2 3]) => [1 2 3]
+      maphash function hash
+      对哈希表 hash 的的每个键值对调用函数 function，这个函数总是返回 nil。
+      (setf *aa* (make-hash-table))
+      (puthash :a 1 *aa*) => 1
+      (puthash :b 2 *aa*) => 2
+      (puthash :c 3 *aa*) => 3
+      (maphash #'(lambda (k v) (print (format "%s -> %d" k v))) *aa*)
+      ;;以下为输出
+      ":a -> 1"
+      ":b -> 2"
+      ":c -> 3"
+      ;;输出结束
+**** reduce 函数
+       reduce 函数的声明是这样的：
+
+       reduce function seq [keyword value] …
+       其中的 function 函数为两个参数的函数，seq 为需要处理的序列。后面可用的关键字参数有
+       :start， :end， :from-end， :initial-value， :key。 指定的两参数函数将一次作用于 seq 上，最后得到一个返回值。 其中各关键字参数的意义如下：
+
+       :start
+       从序列的哪个位置开始处理
+       :end
+       处理在序列的哪个位置结束
+       :from-end
+       是否从序列尾部开始处理， 布尔值
+       :initial-value
+       处理开始之前的初始值
+       :key
+       ???
+       (reduce #'+ [1 2 3 4]) => 10
+       (reduce #'+ [1 2 3 4] :start 1) => 9
+       (reduce #'+ [1 2 3 4] :start 1 :end 2) => 2
+       (reduce #'+ [1 2 3 4] :start 1 :end 2 :initial-value 10) => 12
+       14.4 remove 系列函数
+       remove 系列函数也是作用于序列上的函数，用于在序列中删除满足某些条件的函数
+
+       remove elt seq
+       删除序列 seq 中值为 elt 的元素，返回一个序列
+       (remove 2 `(1 2 3 4)) => (1 3 4)
+       remove-if function seq [keyword value]
+       删除 seq 中满足条件 function 的元素，支持的关键字参数有 :key ,
+       :count , :start , :end , :from-end。 这个函数是非破坏性的，不会修改参数序列。 其中
+
+       :count
+       指定需要删除的元素的个数，不会删除更多的满足条件的元素
+       :start
+       从序列的哪个位置开始处理
+       :end
+       处理在序列的哪个位置结束
+       :from-end
+       是否从序列尾部开始处理
+       :key
+       ???
+       (remove-if #'oddp `(1 2 3 4 5 6)) => (2 4 6) 
+       (remove-if #'oddp `(1 2 3 4 5 6) :count 2) => (2 4 5 6)
+       (remove-if #'oddp `(1 2 3 4 5 6) :count 2 :from-end t) => (1 2 4 6)
+       remove-if-not function seq [keyword value]
+       同函数 remove-if，意义很明显，就是删除不满足条件 function 的元素， 关键字的意义亦同。
+       remove-duplicates seq [keyword value]
+       删除序列中的重复元素，支持的关键字参数有
+       :test
+       :test-not
+       :key
+       :start
+       :end
+       :from-end
+*** 动态变量及绑定
+       (let ((a 1) 
+              (b 2) 
+              (c 3)) 
+          (+ a b c))
+
+       (let* ((a 1) 
+              (b (+ a 2)) 
+              (c (+ b 3))) 
+          (+ a b c))
+       let 和 let* 的区别是，let* 中可以使用前面已绑定的值，注意这里的 let 的语法，后面的括号中是一个列表，即使只有一个赋值，也要写成 (let ((a 2)) (format t "~A" a)) 这样的形式，如果写成 (let (a 2) (format t "~A" a)) 是不可以的。
+** 语义库
+*** 编辑器库函数
+    buffer-name
+    buffer-file-name
+    switch-to-buffer
+    point
+    point-min
+    point-max
+    buffer-size
+    goto-char 
+    push-mark
+    beginning-of-buffer
+    mark-whole-buffer
+    append-to-buffer
+    copy-to-buffer
+*** 文件
+**** 读文件
+      读取每一行并打印
+
+      (with-open-file (stream "./aa.txt")
+          (loop 
+	      (let ((line (read-line stream nil)))
+	          (cond 
+		      (line (format t "~A~%" line))
+		      (t (return))))))
+      可以把以上的部分写成一个宏，此宏对每行调用给定的函数，调用方式可为 (do-file-lines filename &body)
+****  写文件
+      (with-open-file (stream "./bb.txt" :direction :output :if-exists :supersede)
+          (format stream "some text"))
+*** 正则表达式
+      正则表达式要使用 cl-ppcre 包，参考文档：http://weitz.de/cl-ppcre/，在使用之
+      前需要加载这个库，方法是
+
+      (ql:quickload "cl-ppcre")
+**** 抽取
+      (cl-ppcre:scan-to-strings "[^b]*b" "aaabd")
+      =>
+      "aaab"
+      #()
+
+      (cl-ppcre:scan-to-strings "([^b])*b" "aaabd")
+      =>
+      "aaab"
+      #("a")
+
+      ;匹配以后进行绑定
+      (cl-ppcre:register-groups-bind (first second third) 
+          ("(a+)(b+)(c+)" "aabbbbccccc")
+          (list first second third))
+      =>
+      ("aa" "bbbb" "ccccc")
+
+
+      ;如果不匹配，则将返回 nil，后面的 list 语句不会执行
+      (cl-ppcre:register-groups-bind (first second third) 
+          ("(a+)(b+)(c+)" "aabbbbddddd")
+          (list first second third))
+****  18.2 替换
+      (cl-ppcre:regex-replace "fo+" "foo bar" "frob")
+      =>"frob bar"
+
+      (cl-ppcre:regex-replace-all "fo+" "foo bar" "frob")
+      =>"frob bar"
+****  拆分
+      (cl-ppcre:split "\\s+" "foo bar baz frob")
+      =>("foo" "bar" "baz" "frob")
+
+* demo
+** 插入当前时间
+   #+begin_src lisp
+     (defun insert-current-time ()
+       (interactive)
+       (insert (format-time-string "%Y-%m-%d %H:%M:%S" (current-time))))
+   #+end_src

@@ -1,151 +1,491 @@
 * Thinkphp 
+  
+  (url)------> (thinkphp)-------->(html)
+
+  ( 入口  public/index.php )
+                 ||
+     (  引导 start.php )
+                 ||
+   注册自动加载 (加载库)
+                 ||
+   注册错误和异常处理机制  
+                 ||
+   应用初始化  （加载项目配置)
+                 ||
+   URL 访问检测 （检测请求 URL)
+                 ||
+   路由检测 （url_route_on)
+                 ||
+            分发请求
+                 ||
+           响应输出 
+                 ||
+           应用结束
+
 ** 安装运行
 *** 安装
      composer	create-project	topthink/think	tp5		--prefer-dist
      应用项目: https://github.com/top-think/think
      核心框架: https://github.com/top-think/framework
+     
+    [ 码云 ]
+    应用项目: https://git.oschina.net/liu21st/thinkphp5.git
+    核心框架: https://git.oschina.net/liu21st/framework.git
+    
+    [github]   
+    首先克隆下载应用项目仓库
+    git clone https://github.com/top-think/think tp5
+    然后切换到 tp5 目录下面,再克隆核心框架仓库:
+    git clone https://github.com/top-think/framework thinkphp
+    两个仓库克隆完成后,就完成了 ThinkPHP5.0 的 Git 方式下载,如果需要更新核心框架的时候,只需要
+    切换到 thinkphp 核心目录下面,然后执行:
+    git pull https://github.com/top-think/framework
+
 *** 运行
-    router.php用于php自带webserver支持,可用于快速测试
-    public/router.php
-    启动命令:php	-S	localhost:8888	router.php
-** 环境变量 
-   //获取环境变量，如果不存在则使用默认值 root
-   Env::get('database.username', 'root');
-** 引用库
-   实例化内置类库时, 或第三方没命名空间的类库时，加上\   $class = new \stdClass();
-   外部库 定义路径 define('EXTEND_PATH','../vendor/');  那么引用时  $Test= new \my\Test(); 文件位于 ../vendor/my/Test.php
-   #+BEGIN_SRC php
-     namespace my;
-     class Test{}
-   #+END_SRC
-*** 自动加载 use namespacename;
-*** 手动加载 Loader::import('org.util.arr');
-#+BEGIN_SRC php
- 扩展 Loader::import('qrcode',	EXTEND_PATH);
-//	引入	extend/wechat-sdk/wechat.class.php
-Loader::import('wechat-sdk.wechat',	EXTEND_PATH,	'.class.php');
-//	助手函数
-import('wechat-sdk.wechat',	EXTEND_PATH,	'.class.php');
+    启动服务:php	-S	localhost:8888	router.php
+    运行 localhost:8888/模块/控制器类名/类方法
+** 架构
+*** url 访问 
+    路径形式
+    http://serverName/index.php(或者其它应用入口文件)/模块/控制器/操作/[参数名/参数值...]
+    
+    普通形式
+    php.exe index.php(或者其它应用入口文件) 模块/控制器/操作?参数名=参数值&...
+    
+    兼容模式
+    php.exe index.php(或者其它应用入口文件) 模块/控制器/操作?参数名=参数值&...
+*** url 大小写 (不区分)
+#+begin_src php
+// 关闭 URL 中控制器和操作名的自动转换
+'url_convert' => false,
+#+end_src
+*** 隐藏入口文件
+    apache 配置
+    1、httpd.conf 配置文件中加载了 mod_rewrite.so 模块
+    2、AllowOverride None 将 None 改为 All
+    3、在应用入口文件同级目录添加 .htaccess 文件,内容如下:
+    <IfModule mod_rewrite.c>
+    Options +FollowSymlinks -Multiviews
+    RewriteEngine on
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]
+    </IfModule>
+*** 模块和控制器隐藏
+    // 绑定当前访问到 index 模块
+    define('BIND_MODULE','index');
+    http://serverName/index.php/控制器/操作/[参数名/参数值...]
 
-#+END_SRC
-*** 跨模块调用, 写模块名
-use app\mobile\controller\Deviceapi;
-** 路由 \think\Route
-   1.不路由 index.php/module/controller
-   2.强制路由 必须按照路由规则来
-   #+BEGIN_SRC php
-     'url_route_on'										=>		true,
-     'url_route_must'								=>		true,
-          首页路由
-               Route::get('/',function(){
-                    return	'Hello,world!';
-               });
-   #+END_SRC
-   3.混合模式
-   动态注册
-#+BEGIN_SRC php
-   use	think\Route;
-   //	注册路由到index模块的News控制器的read操作
-  Route::rule('new/:id','index/News/read');
+    // 绑定当前访问到 index 模块的 index 控制器
+    define('BIND_MODULE','index/index');
+    http://serverName/index.php/操作/[参数名/参数值...]
+*** 手动注册
+    \think\Loader::addNamespace('my','../application/extend/my/');
 
-  则 http://serverName/new/5
-    会转到 http://serverName/index/news/read/id/5
+    如果要同时注册多个根命名空间,可以使用:
+    \think\Loader::addNamespace([
+    'my' => '../application/extend/my/',
+    'org' => '../application/extend/org/',
+    ]);
+*** 类库导入 (没有命名空间)
+
+    Loader::import('org.util.array');
+    Loader::import('@.util.upload');
+    
+    // 引入 extend/qrcode.php
+    Loader::import('qrcode', EXTEND_PATH);
+    // 助手函数
+import('qrcode', EXTEND_PATH);
+// 引入 extend/wechat-sdk/wechat.class.php
+Loader::import('wechat-sdk.wechat', EXTEND_PATH, '.class.php');
+// 助手函数
+import('wechat-sdk.wechat', EXTEND_PATH, '.class.php');
 
 
-#+END_SRC
-** Session(临时会话）
-   {$Think.session.user_id}	//	输出$_SESSION['user_id']变量
-   Session::set('name','thinkphp');
-   Session::get('name');
-   //	判断(当前作用域)是否赋值
-   Session::has('name');
-   //	判断think作用域下面是否赋值
-   Session::has('name','think');
-   清空
-   //	清除session(当前作用域)
-   Session::clear();
-   //	清除think作用域
-   Session::clear('think');
+    @: 当前模块类库
+** 配置
+*** 配置目录 APP_PATH
+    config.php 应用配置文件
+    database.php 数据库配置文件
+    route.php 路由配置文件
+    
 
-   {if	condition="($name	==	1)	OR	($name	>	100)	"}	value1
-   {elseif	condition="$name	eq	2"/}value2
-   {else	/}	value3
-   {/if}
+    // 定义配置文件目录和应用目录同级
+    define('CONF_PATH', __DIR__.'/../config/');
 
-获取请求信息 $request = Request::instance();
-$request->domain() 获取当前域名
-$request->baseFile() 当前URL地址
-url(),baseUrl(),root,pathinfo(),path(),ext()
-module(),controller(),action() 获取模块/控制器/操作
-isAjax(),param() only(['name'])仅包含name except(['name']排除name
-检测变量 has('id','get') has('id','post')  
-或具体的 get() / post()
-server()/session()/cookie()/head()
-还可以对input进行过滤 filter('filter_method') 这是全局的
-单独的 Request::instance()->param('username','','method1,method2')
-变量修饰 input('get.id/d')
-|s|强制转换为字符串|
-|d|整型|
-|b|布尔|
-|a|数组|
-|f|浮点|
-参数绑定方式:1.按参数名2. 按参数顺序
-定义缓存 Route::get('new/:id','News/read',['cache'=>3600]); //设置3600秒的缓存
-** 日志 \think\Log 完成
-*** 初始化
-#+BEGIN_SRC php
-Log::init([
-				'type'		=>		'File',
-				'path'		=>		APP_PATH.'logs/'
-]);
-#+END_SRC
-*** 手动记录
-Log::record('测试日志信息,这是警告级别','notice');
-#+BEGIN_SRC 
-log	常规日志,用于记录日志
-error	错误,一般会导致程序的终止
-notice	警告,程序可以运行但是还不够完美的错误
-#+END_SRC
-*** 清空
-Log::clear();
-** 请求 Request
-#+BEGIN_SRC php
-  use \think\Request;
+*** 配置格式  数组方式
+    
+    #+begin_src php
+      return [
+          // 应用命名空间
+          'app_namespace'          => 'app'
+      ];
+    #+end_src
+*** 配置加载 自动
+    其他目录 Config::load('配置文件名');
+
+*** 读取配置
+    #+begin_src php
+      use think\Config;
+      echo config('配置参数 1');
+
+      Config::has('配置参数 2');
+      // 或者 config('?配置参数 2');
+
+      echo Config::get('配置参数.二级参数');
+      echo config('配置参数.二级参数');
+    #+end_src
+
+*** 动态配置
+    #+begin_src php
+      Config::set([
+          '配置参数 1'=>'配置值',
+          '配置参数 2'=>'配置值'
+      ]);
+      // 或者使用助手函数
+      config([
+          '配置参数 1'=>'配置值',
+          '配置参数 2'=>'配置值'
+      ]);
+    #+end_src
+
+*** 独立配置
+*** 配置作用域  (作用域隔离)
+    #+begin_src php
+      // 导入 my_config.php 中的配置参数,并纳入 user 作用域
+      Config::load('my_config.php','','user');
+      // 解析并导入 my_config.ini 中的配置参数,读入 test 作用域
+      Config::parse('my_config.ini','ini','test');
+      // 设置 user_type 参数,并纳入 user 作用域
+      Config::set('user_type',1,'user');
+      // 批量设置配置参数,并纳入 test 作用域
+      Config::set($config,'test');
+      // 读取 user 作用域的 user_type 配置参数
+      echo Config::get('user_type','user');
+      // 读取 user 作用域下面的所有配置参数
+      dump(Config::get('','user'));
+      dump(config('',null,'user')); // 同上
+      // 判断在 test 作用域下面是否存在 user_type 参数
+      Config::has('user_type','test');
+
+    #+end_src
+*** 环境变量配置
+    配置文件 ROOT/.env
+    格式,不支持数组 
+    #+begin_src ini
+app_debug = true
+app_trace = true
+
+database_username = root
+database_password = 123456
+
+[database]
+username = root
+password = 123456
+     #+end_src
+
+     //获取环境变量，如果不存在则使用默认值 root
+    Env::get('database.username', 'root');
+** 路由
+*** 路由模式
+*** 路由定义
+    Route::rule('路由表达式','路由地址','请求类型','路由参数(数组)','变量规则(数组)');
+    
+    #+begin_src php
+    use think\Route;
+    // 注册路由到 index 模块的 News 控制器的 read 操作
+    Route::rule('new/:id','index/News/read');
+    #+end_src
+    访问 http://serverName/new/5
+    路由到 http://serverName/index/news/read/id/5
+
+
+    可以在 rule 方法中指定请求类型,不指定的话默认为任何请求类型,例如:
+    Route::rule('new/:id','News/update','POST');
+    
+    系统提供了为不同的请求类型定义路由规则的简化方法,例如:
+    Route::get('new/:id','News/read'); // 定义 GET 请求路由规则
+    Route::post('new/:id','News/update'); // 定义 POST 请求路由规则
+    Route::put('new/:id','News/update'); // 定义 PUT 请求路由规则
+    Route::delete('new/:id','News/delete'); // 定义 DELETE 请求路由规则
+    Route::any('new/:id','News/read'); // 所有请求都支持的路由规则
+    如果要定义 get 和 post 请求支持的路由规则,也可以用:
+    Route::rule('new/:id','News/read','GET|POST');
+
+*** 批量注册
+*** 变量规则
+*** 组合变量
+*** 路由参数
+*** 路由地址
+*** 资源路由
+*** 快捷路由
+*** 路由别名
+*** 路由分组
+*** MISS 路由
+*** 闭包支持
+*** 路由绑定
+*** 绑定模型
+*** 域名路由
+*** URL 生成
+** 控制器
+*** 控制器定义
+*** 控制器初始化
+    #+begin_src php
+      namespace app\index\controller;
+      use think\Controller;
+      class Index extends Controller
+      {
+          public function _initialize()
+          {
+              echo 'init<br/>';
+          }
+          public function hello()
+          {
+              return 'hello';
+          }
+      }
+      public function data()
+      {
+          return 'data';
+      }
+
+    #+end_src
+*** 前置操作
+*** 跳转和重定向
+    #+begin_src php
+      $this->success('新增成功', 'User/list');
+      $this->error('新增失败');
+      $this->redirect('News/category', ['cate_id' => 2]);
+      //重定向到指定的 URL 地址 并且使用 302
+      $this->redirect('http://thinkphp.cn/blog/2',302);
+
+    #+end_src
+
+*** 空操作
+*** 空控制器
+*** 多级控制器
+*** 分层控制器
+*** Rest 控制器
+*** 自动定位控制器
+*** 资源控制器
+** 请求
+*** 请求信息
+    #+begin_src php
+      $request = Request::instance();
+      // 或
+      $request = request();
+    #+end_src
+
+    #+begin_src php
+      $request = Request::instance();
+      // 获取当前域名
+      echo 'domain: ' . $request->domain() . '<br/>';
+      // 获取当前入口文件
+      echo 'file: ' . $request->baseFile() . '<br/>';
+      // 获取当前 URL 地址 不含域名
+      echo 'url: ' . $request->url() . '<br/>';
+      // 获取包含域名的完整 URL 地址
+      echo 'url with domain: ' . $request->url(true) . '<br/>';
+      // 获取当前 URL 地址 不含 QUERY_STRING
+      echo 'url without query: ' . $request->baseUrl() . '<br/>';
+      // 获取 URL 访问的 ROOT 地址
+      echo 'root:' . $request->root() . '<br/>';
+      // 获取 URL 访问的 ROOT 地址
+      echo 'root with domain: ' . $request->root(true) . '<br/>';
+      // 获取 URL 地址中的 PATH_INFO 信息
+      echo 'pathinfo: ' . $request->pathinfo() . '<br/>';
+      // 获取 URL 地址中的 PATH_INFO 信息 不含后缀
+      echo 'pathinfo: ' . $request->path() . '<br/>';
+      // 获取 URL 地址中的后缀信息
+      echo 'ext: ' . $request->ext() . '<br/>';
+
+    #+end_src
+    
+#+begin_src php
+    //设置/获取 模块/控制器/操作名称
+    $request = Request::instance();
+    echo "当前模块名称是" . $request->module();
+    echo "当前控制器名称是" . $request->controller();
+    echo "当前操作名称是" . $request->action();
+
+  //获取请求参数
   $request = Request::instance();
-  或
-      $request= request();
-$request->domain(); url/baseFile, root, pathinfo, path, ext, type(资源类型), type, ip, isAjax()(是否是Ajax请求), param, route 
-#+END_SRC
+  echo '请求方法:' . $request->method() . '<br/>';
+  echo '资源类型:' . $request->type() . '<br/>';
+  echo '访问地址:' . $request->ip() . '<br/>';
+  echo '是否 AJax 请求:' . var_export($request->isAjax(), true) . '<br/>';
+  echo '请求参数:';
+  dump($request->param());
+  echo '请求参数:仅包含 name';
+  dump($request->only(['name']));
+  echo '请求参数:排除 name';
+  dump($request->except(['name']));
 
-检测是否设置
-#+BEGIN_SRC php
-  Request::instance()->has('id','get');
-  Request::instance()->has('name','post');
-  或者使用助手函数
-  input('?get.id');
-  input('?post.name');
-#+END_SRC
+#+end_src
+*** 输入变量
+    #+begin_src php
+      // 获取当前请求的 name 变量
+      Request::instance()->param('name');
+      // 获取当前请求的所有变量(经过过滤)
+      Request::instance()->param();
+      // 获取当前请求的所有变量(原始数据)
+      Request::instance()->param(false);
+      // 获取当前请求的所有变量(包含上传文件)
+      Request::instance()->param(true);
 
-获取参数
-#+BEGIN_SRC php
-    //	获取当前请求的name变量
-    Request::instance()->param('name');
-    //	获取当前请求的所有变量(经过过滤)
-    Request::instance()->param();
-    //	获取当前请求的所有变量(原始数据)
-    Request::instance()->param(false);
-    //	获取当前请求的所有变量(包含上传文件)
-    Request::instance()->param(true);
-    也可以 把 get/post 分开
+      //使用助手函数实现:
+      input('param.name');
+      input('param.');
+      //或者
+      input('name');
+      input('');
 
-  input('request.id');
-  input('server.PHP_SELF');
-  input('session.user_id');
+    #+end_src
+    
+#+begin_src php
+  //获取 GET 变量
+  Request::instance()->get('id'); // 获取某个 get 变量
+  Request::instance()->get('name'); // 获取 get 变量
+  Request::instance()->get(); // 获取所有的 get 变量(经过过滤的数组)
+  Request::instance()->get(false); // 获取所有的 get 变量(原始数组)
+  //助手函数
+  input('get.id');
+  input('get.name');
+  input('get.');
+
+#+end_src
+
+
+#+begin_src php
+  //获取 Cookie 变量
+  Request::instance()->cookie('user_id'); // 获取某个 cookie 变量
+  Request::instance()->cookie(); // 获取全部的 cookie 变量
+  //使用助手函数实现:
   input('cookie.user_id');
+  input('cookie.');
+#+end_src
+*** 更改变量
+*** 请求类型
+    #+begin_src php
+// 是否为 GET 请求
+if (Request::instance()->isGet()) echo "当前为 GET 请求";
+// 是否为 POST 请求
+if (Request::instance()->isPost()) echo "当前为 POST 请求";
+// 是否为 PUT 请求
+if (Request::instance()->isPut()) echo "当前为 PUT 请求";
+// 是否为 DELETE 请求
+if (Request::instance()->isDelete()) echo "当前为 DELETE 请求";
+// 是否为 Ajax 请求
+if (Request::instance()->isAjax()) echo "当前为 Ajax 请求";
+// 是否为 Pjax 请求
+if (Request::instance()->isPjax()) echo "当前为 Pjax 请求";
+// 是否为手机访问
+if (Request::instance()->isMobile()) echo "当前为手机访问";
+// 是否为 HEAD 请求
+if (Request::instance()->isHead()) echo "当前为 HEAD 请求";
+// 是否为 Patch 请求
+if (Request::instance()->isPatch()) echo "当前为 PATCH 请求";
+// 是否为 OPTIONS 请求
+if (Request::instance()->isOptions()) echo "当前为 OPTIONS 请求";
+// 是否为 cli
+if (Request::instance()->isCli()) echo "当前为 cli";
+// 是否为 cgi
+if (Request::instance()->isCgi()) echo "当前为 cgi";
+//助手函数
+// 是否为 GET 请求
+if (request()->isGet()) echo "当前为 GET 请求";
 
-头部信息 $agent	=	Request::instance()->header('user-agent');
+    #+end_src
+*** 请求伪装
+*** HTTP 头信息
+    #+begin_src php
+$info = Request::instance()->header();
+echo $info['accept'];
+echo $info['accept-encoding'];
+echo $info['user-agent'];
 
-#+END_SRC
+    #+end_src
+*** 伪静态
+*** 方法注入
+*** 属性注入
+*** 参数绑定
+*** 依赖注入
+*** 请求缓存
+** 数据库
+*** 连接数据库
+*** 基本使用
+*** 查询构造器
+*** 查询数据
+*** 添加数据
+*** 更新数据
+*** 删除数据
+*** 查询方法
+*** 查询语法
+*** 链式操作
+*** where
+*** table
+*** alias
+*** field
+*** order
+*** limit
+*** page
+*** group
+*** having
+*** join
+*** union
+*** distinct
+*** lock
+*** cache
+*** comment
+*** fetchSql
+*** force
+*** bind
+*** partition
+*** strict
+*** failException
+*** sequence
+*** 聚合查询
+*** 时间查询
+*** 高级查询
+*** 视图查询
+*** 子查询
+*** 原生查询
+*** 查询事件
+*** 事务操作
+*** 监听 SQL
+*** 存储过程
+*** 数据集
+*** 分布式数据库
+*** 模型
+*** 定义
+*** 模型初始化
+*** 新增
+*** 更新
+*** 删除
+*** 查询
+*** 聚合
+*** 获取器
+*** 修改器
+*** 时间戳
+*** 只读字段
+*** 软删除
+*** 类型转换
+*** 数据完成
+*** 查询范围
+*** 模型分层
+*** 数组访问和转换
+*** JSON 序列化
+*** 事件
+*** 关联
+*** 一对一关联
+*** 一对多关联
+*** 远程一对多
+*** 多对多关联
+*** 多态关联
+*** 动态属性
+*** 关联预载入
+*** 关联统计
+*** 聚合模型
 ** 数据库操作    
 *** 原生操作
     #+BEGIN_SRC php
@@ -165,26 +505,26 @@ $request->domain(); url/baseFile, root, pathinfo, path, ext, type(资源类型),
               //
           }
       });
-      //或者交给回调方法myUserIterator处理
+      //或者交给回调方法 myUserIterator 处理
       Db::table('think_user')->chunk(100, 'myUserIterator');
 
-      JSON类型数据查询(mysql V5.0.1 )
-          //查询JSON类型字段(info字段为json类型)
+      JSON 类型数据查询(mysql V5.0.1 )
+          //查询 JSON 类型字段(info 字段为 json 类型)
           Db::table('think_user')->where('info$.email', 'thinkphp@qq.com')->find();
 
       $map['id']		=	['>',1];
       $map['mail']		=	['like','%thinkphp@qq.com%'];
 
       Db::table('think_user')->alias('a')->join('__DEPT__	b	','b.user_id=	a.id')->select();
-      字段中使用函数Db::table('think_user')->field('id'=>'ID',SUM(score)')->select();
-        字段排除　 Db::table('think_user')->field('id', true)->select(); 排除id
+      字段中使用函数 Db::table('think_user')->field('id'=>'ID',SUM(score)')->select();
+        字段排除　 Db::table('think_user')->field('id', true)->select(); 排除 id
               Db::table('think_article')->limit('10,25')->select();
 
-              page方法还可以和limit方法配合使用,例如:
+              page 方法还可以和 limit 方法配合使用,例如:
                   Db::table('think_article')->limit(25)->page(3)->select();
               它会自己计算
 
-                  返回单条不重复的distinct(true)
+                  返回单条不重复的 distinct(true)
                   这里可以用本地缓存方法 Db::table('think_user')->where('id=5')->cache(true)->find();
               $result	=	Db::table('think_user')->cache('key',60)->find();
               外部可以获取了
@@ -201,14 +541,14 @@ $request->domain(); url/baseFile, root, pathinfo, path, ext, type(资源类型),
                   2 hours,
                   区间查询
 
-                  构建子查询,就是返回sql语句而不执行
+                  构建子查询,就是返回 sql 语句而不执行
                   1.select(false)
                   2.fetchSql(true)
                   3.buildSql();
 
       #+END_SRC
 *** 添加　insert/getLastInsID()/insertGetId($data)/insertAll
-*** 更新　update /setField('name', 'val')更新字段/setInc/setDec('字段’)或setDec('字段', 5) 减5
+*** 更新　update /setField('name', 'val')更新字段/setInc/setDec('字段’)或 setDec('字段', 5) 减 5
 *** 删除　delete
 *** 获取表信息
 #+BEGIN_SRC php
@@ -224,7 +564,7 @@ Db::getTableInfo('think_user',	'pk');
 *** cache ->cache(true, 60)
     可以指定缓存标志 cache('key', 60)
 获取 \think\Cache::get('key')
-*** fetchSql 返回SQL
+*** fetchSql 返回 SQL
 $result = Db::table('t')->fetchSql(true)->find(1);
 *** partition 水平分表
 *** 聚合统计
@@ -234,3 +574,195 @@ count() 数量 max(arg)字段最大值 min(arg) avg(arg)字段平均 sum(arg) �
     where('createTime', 'between time', ['2017-1-1', '2018-1-1']);
     或 whereTime
     'month'
+** 视图
+*** 视图实例化
+*** 模板引擎
+*** 模板赋值
+*** 模板渲染
+*** 输出替换
+** 模型
+*** 初始化 
+    #+begin_src php
+      namespace app\index\model;
+      use think\Model;
+      class Index extends Model
+      {
+      }
+      //自定义初始化
+      protected function initialize()
+      {
+          //需要调用`Model`的`initialize`方法
+          parent::initialize();
+          //TODO:自定义的初始化
+      }
+    #+end_src
+*** 新增数据
+    #+begin_src php
+      //第一种是实例化模型对象后赋值并保存:
+      $user = new User;
+      $user->name = 'thinkphp';
+      $user->email = 'thinkphp@qq.com';
+      $user->save();
+      //也可以使用 data 方法批量赋值:
+      $user = new User;
+      $user->data([
+          'name' => 'thinkphp',
+          'email' => 'thinkphp@qq.com'
+      ]);
+      $user->save();
+      //或者直接在实例化的时候传入数据
+      $user = new User([
+          'name' => 'thinkphp',
+          'email' => 'thinkphp@qq.com'
+      ]);
+      $user->save();
+
+    #+end_src
+
+** 模板
+*** 模板定位
+*** 模板标签
+*** 变量输出
+*** 系统变量
+*** 请求参数
+*** 使用函数
+*** 使用默认值
+*** 使用运算符
+*** 三元运算
+*** 原样输出
+*** 模板注释
+*** 模板布局
+*** 模板继承
+*** 包含文件
+*** 标签库
+*** 内置标签
+*** 循环输出标签
+*** 比较标签
+*** 条件判断
+*** 资源文件加载
+*** 标签嵌套
+*** 原生 PHP
+*** 定义标签
+** 日志
+*** 介绍
+*** 日志 \think\Log 
+*** 初始化
+    #+BEGIN_SRC php
+      Log::init([
+          'type'		=>		'File',
+          'path'		=>		APP_PATH.'logs/'
+      ]);
+    #+END_SRC
+*** 手动记录
+    Log::record('测试日志信息,这是警告级别','notice');
+    #+BEGIN_SRC ini 
+log	常规日志,用于记录日志
+error	错误,一般会导致程序的终止
+notice	警告,程序可以运行但是还不够完美的错误
+    #+END_SRC
+*** 清空
+    Log::clear();
+*** 日志驱动
+*** 日志写入
+*** 独立日志
+*** 日志清空
+*** 写入授权
+** 错误和调试
+*** 调试模式
+    APP_DEBUG = true
+*** 异常处理
+*** 抛出异常
+*** Trace 调试
+*** 变量调试
+*** 性能调试
+*** SQL 调试
+*** 远程调试
+*** 404 页面
+** 验证
+*** 验证器
+*** 验证规则
+*** 错误信息
+*** 验证场景
+*** 控制器验证
+*** 模型验证
+*** 内置规则
+*** 静态调用
+*** 表单令牌
+** 安全
+*** 输入安全
+*** 数据库安全
+*** 上传安全
+*** 其它安全建议
+** 杂项
+*** 缓存
+*** Session(临时会话）
+    {$Think.session.user_id}	//	输出$_SESSION['user_id']变量
+    Session::set('name','thinkphp');
+    Session::get('name');
+    //	判断(当前作用域)是否赋值
+    Session::has('name');
+    //	判断 think 作用域下面是否赋值
+    Session::has('name','think');
+    清空
+    //	清除 session(当前作用域)
+    Session::clear();
+    //	清除 think 作用域
+    Session::clear('think');
+
+    {if	condition="($name	==	1)	OR	($name	>	100)	"}	value1
+    {elseif	condition="$name	eq	2"/}value2
+    {else	/}	value3
+    {/if}
+
+    获取请求信息 $request = Request::instance();
+    $request->domain() 获取当前域名
+    $request->baseFile() 当前 URL 地址
+    url(),baseUrl(),root,pathinfo(),path(),ext()
+    module(),controller(),action() 获取模块/控制器/操作
+    isAjax(),param() only(['name'])仅包含 name except(['name']排除 name
+    检测变量 has('id','get') has('id','post')  
+    或具体的 get() / post()
+    server()/session()/cookie()/head()
+    还可以对 input 进行过滤 filter('filter_method') 这是全局的
+    单独的 Request::instance()->param('username','','method1,method2')
+    变量修饰 input('get.id/d')
+    |s|强制转换为字符串|
+    |d|整型|
+    |b|布尔|
+    |a|数组|
+    |f|浮点|
+    参数绑定方式:1.按参数名 2. 按参数顺序
+    定义缓存 Route::get('new/:id','News/read',['cache'=>3600]); //设置 3600 秒的缓存
+*** Cookie
+*** 多语言
+*** 分页
+*** 上传
+*** 验证码
+*** 图像处理
+*** 文件处理
+*** 单元测试
+*** 扩展
+*** 函数
+*** 类库
+*** 行为
+*** 驱动
+*** Composer 包
+*** Time
+*** 数据库迁移工具
+*** Workerman
+*** MongoDb
+*** SAE
+*** 标签扩展
+** 命令行
+*** 自动生成目录结构
+*** 创建类库文件
+*** 生成类库映射文件
+*** 生成路由缓存
+*** 清除缓存文件
+*** 生成配置缓存文件
+*** 生成数据表字段缓存
+*** 自定义命令行
+** 部署
+*** 虚拟主机环境
+*** Linux 主机环境
+*** URL 重写

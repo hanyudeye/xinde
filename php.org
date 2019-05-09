@@ -1,5 +1,5 @@
 * PHP
-** 安装与配置
+** 安装工具并配置
 *** 安装核心
     apt-get install php5-common libapache2-mod-php5 php5-cli
     或者
@@ -67,10 +67,9 @@
     -s/--syntax-highlight             Output HTML syntax highlighted source
     -S addr:port  /--server addr:port/ Start built-in web server on the given local address and port
 
-** 语言基础
-*** 解释器识别 tag 
-   最好<?php 标记没有结束标记，因为?> 后面有空格或空行会发生错误
-*** 包含文件
+** 语言规范
+*** 文件头部单边 <?php  tag 
+*** 同功能聚合 包含文件
     require 
     include_once()
     require_once()
@@ -166,10 +165,11 @@
          print_r($lamp);                                 //输出：Array ( [a] => Web [b] => Web [c] => Web [d] => Web )
  ?>
 
-***** 函数 array_map() 
- 与上一个 array_walk()函数相比，array_map()函数将更加灵活，并且可以处理多个数组。将回调函数作用到给定数
- 组的元素上，返回用户自定义函数作用后的数组。array_map()是任意参数列表函数，回调函数接受的参数数目应该
- 和传递给 array_map()函数的数组数目一致。其函数的原型如下：
+***** array_map() 
+ 与上一个 array_walk()函数相比，array_map()函数将更加灵活，并且可以处理多个数组。
+ 将回调函数作用到给定数组的元素上，返回用户自定义函数作用后的数组。array_map()是
+ 任意参数列表函数，回调函数接受的参数数目应该和传递给 array_map()函数的数组数目
+ 一致。其函数的原型如下：
 ***** 多维数组的排序 
   array_multisort()  对多个数组或多维数组进行排序  
   PHP 也允许在多维数组上执行一些比较复杂的排序。例如，首先对一个嵌套数组使用一个普通的键值进行排序，然
@@ -954,6 +954,7 @@ while($rs=mysql_fetch_array($query)){
 
 ** 错误
 *** basic
+     ini_set("display_errors","On");
     error_reporting(E_ALL); //-1 是关闭
 *** php7 
      try{}
@@ -1149,7 +1150,7 @@ foreach ($generator as $value) {
 	 readdir()	返回目录句柄中的条目。
 	 rewinddir()	重置目录句柄。
 	 scandir()	返回指定目录中的文件和目录的数组。
-** PHP 过滤器用于对来自非安全来源的数据（比如用户输入）进行验证和过滤。
+** PHP 过滤器用于对来自非安全来源的数据（比如用户输入）进行验证和过滤
 	 filter_has_var() 	检查是否存在指定输入类型的变量。 	
 	 filter_id() 	返回指定过滤器的 ID 号。 	
 	 filter_input() 	从脚本外部获取输入，并进行过滤。 	
@@ -1157,12 +1158,12 @@ foreach ($generator as $value) {
 	 filter_list() 	返回包含所有得到支持的过滤器的一个数组。 	
 	 filter_var_array() 	获取多项变量，并进行过滤。 	
 	 filter_var() 	获取一个变量，并进行过滤。
-** HTTP 函数允许您在其他输出被发送之前，对由 Web 服务器发送到浏览器的信息进行操作。
+** HTTP 函数允许您在其他输出被发送之前，对由 Web 服务器发送到浏览器的信息进行操作
 	 header() 	向客户端发送原始的 HTTP 报头。
 	 headers_list() 	返回已发送的（或待发送的）响应头部的一个列表。
 	 headers_sent() 	检查 HTTP 报头是否发送/已发送到何处。
 	 setcookie() 	定义与 HTTP 报头的其余部分一共发送的 cookie。
-	 setrawcookie() 	定义与 HTTP 报头的其余部分一共发送的 cookie（不进行 URL 编码）。
+	 setrawcookie() 	定义与 HTTP 报头的其余部分一共发送的 cookie（不进行 URL 编码）
 
 ** 数学 (Math) 函数能处理 integer 和 float 范围内的值。
 	 abs() 	绝对值。 	

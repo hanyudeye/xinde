@@ -1,14 +1,14 @@
-* i3wm在Arch Linux上的配置
-Next，你便可以开始尝试配置~/.xinitrc并使用startx或者直接使用显示管理器（登录管理
-器）来启动i3并根据需要进行更新i3配置文件来调整i3的使用方式……
+* i3wm 在 Arch Linux 上的配置
+Next，你便可以开始尝试配置~/.xinitrc 并使用 startx 或者直接使用显示管理器（登录管理
+器）来启动 i3 并根据需要进行更新 i3 配置文件来调整 i3 的使用方式……
 
-不过，如果你希望用好i3的话，还得好好熟悉熟悉i3的运作和i3配置文件里的组织和配置方式……
+不过，如果你希望用好 i3 的话，还得好好熟悉熟悉 i3 的运作和 i3 配置文件里的组织和配置方式……
 
 #+begin_src config
 
 ========== ~/.config/i3/config ==========
 
-# i3 窗口调整与切换的主使用键：Mod1 <=> Meta(Alt) | Mod4 <=> (Windows键，Supper键)
+# i3 窗口调整与切换的主使用键：Mod1 <=> Meta(Alt) | Mod4 <=> (Windows 键，Supper 键)
 set $mod Mod4
 
 font pango:DejaVu Sans Mono 10
@@ -42,7 +42,7 @@ exec --no-startup-id xset dpms 90 300
 # 为了在 i3bar 上显示那种桌面环境面板上的托盘图标，你需要调整`xrandr`的输出（可以尝试运行`xrandr`获取）的……
 #exec --no-starup-id xrandr --output eDP-1 --primary
 
-# 如果你不想使用i3bar，可以使用其它桌面环境的面板来替代，比如 xfce4 的:
+# 如果你不想使用 i3bar，可以使用其它桌面环境的面板来替代，比如 xfce4 的:
 #exec --no-startup-id xfce4-panel --disable-wm-check
 exec --no-startup-id xfce4-terminal&>/dev/null&
 
@@ -261,7 +261,7 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Exit i3?' -b 'Yes' 'i3-msg e
 
 #+end_src
 
-如果你计划使用startx来启动i3，首先配置好~/.xinitrc……
+如果你计划使用 startx 来启动 i3，首先配置好~/.xinitrc……
 
 #+begin_src shell
 
@@ -282,8 +282,8 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'Exit i3?' -b 'Yes' 'i3-msg e
   exec i3 
 #+end_src
 
-  如果你希望在i3中使用其它样式的光标，首先安装它或者直接放到正确的位置，然后尝试
-  使用lxappearance进行调整或者直接在~/.Xresources中配置并在~/.xinitrc中使用xrab
+  如果你希望在 i3 中使用其它样式的光标，首先安装它或者直接放到正确的位置，然后尝试
+  使用 lxappearance 进行调整或者直接在~/.Xresources 中配置并在~/.xinitrc 中使用 xrab
   引入……
 
   #+begin_src config
@@ -304,20 +304,20 @@ Xcursor.size: 25
 
 #+end_src
 
-  如果你使用的是startx启动i3并希望在i3中调整默认Gtk2程序（比如pcmanfm、
-  thunar……）、Gtk3程序(firefox，RhythmCat、xfce4-terminal……）的外观（比如图
-  标，字体……），可以尝试手动更新Gtk+程序对应的用户级配置文件或者直接使用
-  lxappearance进行调整……
+  如果你使用的是 startx 启动 i3 并希望在 i3 中调整默认 Gtk2 程序（比如 pcmanfm、
+  thunar……）、Gtk3 程序(firefox，RhythmCat、xfce4-terminal……）的外观（比如图
+  标，字体……），可以尝试手动更新 Gtk+程序对应的用户级配置文件或者直接使用
+  lxappearance 进行调整……
 
   Warning：
 
-  lxappearance程序在调整gtk2程序外观时将会把Gtk2程序用户级配置文件之一的~/.gtkrc-2.0清空！
+  lxappearance 程序在调整 gtk2 程序外观时将会把 Gtk2 程序用户级配置文件之一的~/.gtkrc-2.0 清空！
 
 Note：
-  不管你希望手动调整还是直接使用lxappearance调整，你都需要重启X和i3后才能见到效果！
+  不管你希望手动调整还是直接使用 lxappearance 调整，你都需要重启 X 和 i3 后才能见到效果！
 
   #+begin_src shell
-======== Gtk2程序用户级配置文件：~/.gtkrc-2.0 =======
+======== Gtk2 程序用户级配置文件：~/.gtkrc-2.0 =======
 
 # Any customization should be done in ~/.gtkrc-2.0.mine instead.
 
@@ -356,15 +356,15 @@ widget_class "*XfdesktopIconView*" style "xfdesktop-icon-view"
 #}
 #
 #class "GtkWidget" style "gtk-font-set"
-========== Gtk3程序用户级配置文件：~/.config/gtk-3.0/settings.ini ==========
+========== Gtk3 程序用户级配置文件：~/.config/gtk-3.0/settings.ini ==========
 
 # `Gtk3`的用户级配置文件配置和`Gtk2`的相同……
 
 #+end_src
 
-如果你希望知道更多的Gtk程序配置，可以参考Arch Linux Wiki 的Gtk+条目……
+如果你希望知道更多的 Gtk 程序配置，可以参考 Arch Linux Wiki 的 Gtk+条目……
 
-关于锁屏，我用的是xtrlock；而亮度调节，系统挂起等，直接简单粗暴地用的底层接口；声音控制，则是用的alsamixer……
+关于锁屏，我用的是 xtrlock；而亮度调节，系统挂起等，直接简单粗暴地用的底层接口；声音控制，则是用的 alsamixer……
 
 # 系统挂起，唤醒之后运行`xtrlock`……
 sleep 1;echo mem | sudo tee /sys/power/state &>/dev/null;xtrlock &
@@ -372,6 +372,13 @@ sleep 1;echo mem | sudo tee /sys/power/state &>/dev/null;xtrlock &
 # 调整屏幕亮度……
 echo 35 | sudo tee /sys/class/backlight/intel_backlight/brightness&>/dev/null
 
+* 分割窗口
+先水平，再移动
 * 常见参数
 ** --no-startup-id 程序有自带启动屏幕的不用加
-  
+* 分割窗口
+横排两个窗口
+切换到水平切割 Mod1+Mod2+H
+打开窗口 3
+切换到水平切割 Mod1+Mod2+H
+打开窗口 4

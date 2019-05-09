@@ -1,54 +1,32 @@
-* vuejs
-** 安装
-vue init <template-name> <project-name>
-也可以使用 vue list 来查看官方模板列表。
+* vuejs                                                      :javascript 框架:
+** vue 工具选项  
+| init   | generate a new project from a template |
+| list   | list available official templates      |
+| build  | prototype a new project                |
+| create | (for v3 warning only)                  |
 
-目前可用的模板包括：
-
-browserify–全功能的 Browserify + vueify，包括热加载，静态检测，单元测试
-browserify-simple–一个简易的 Browserify + vueify，以便于快速开始。
-webpack–全功能的 Webpack + vueify，包括热加载，静态检测，单元测试
-webpack-simple–一个简易的 Webpack + vueify，以便于快速开始。
-simple - 单个 HTML 文件中最简单的 Vue 设置
-
-第一步 生成项目
-我们的项目选择 webpack,使用以下命令
-
-vue init webpack vue-todos
-第二步 运行项目
-输入下面的命令就可以运行这个项目了。
-
-cd vue-todos
-npm install
-npm run dev
+** 安装使用
+ 生成项目  vue init <template-name> <project-name>
+ vue init webpack vue-todos
+ 
+ 运行项目
+ cd vue-todos
+ npm install
+ npm run dev
 
 ** 初始化 Vue 项目环境
-#+begin_src html
-  <script>
-    new Vue({
-        el: '#app'
-    })
-  </script>
-#+end_src
-
-实例化 app 对象
-以上通过构造函数的形式创建了一个 Vue 的作用域环境，并绑定了一个父节点 ID 为'#app'的 DOM 元素节点。
-el: '#app' == document.querySelect('#app');
 *** 初始化主环境的多种实现方式
-**** 1）el 绑定主环境
-
- ```
- new Vue({
+**** el 绑定主环境
+     ```
+     new Vue({
      el: '#app'
- })
+     })
  ```
 ****  2)$mount 手动挂载
+     new Vue({
 
- ```
- new Vue({
-
- }).$mount('#app');
- ```
+     }).$mount('#app');
+     
 ****  3)实例$mount 挂载
 
  ```
@@ -106,4 +84,108 @@ new Vue({
 <input type="input" v-model="">
 ** v-show 用于显示或隐藏 DOM 元素，配合布尔值表示显示状态，使用场景较多
 
+* vue
+  ( view )
+  模板语法
+  
+** 渲染  
+  #+begin_src html
+    < div  id = “app” >
+      {{message}} 
+    </ div >
+  #+end_src
+
+ #+begin_src javascript
+   var app = new Vue（{ 
+       el：'＃app'，
+       data：{ 
+           message：'Hello Vue！'
+       } 
+   }）
+ #+end_src
+*** DOM 设置属性
+    #+begin_src html
+      <div id="app-2">
+        <span v-bind:title="message">
+          将鼠标悬停在我身上几秒钟 ，看看我动态绑定的标题！
+        </span>
+      </div>
+        #+end_src
+** 条件和循环
+   #+begin_src html
+     <div id="app-3">
+          <span v-if="seen">Now you see me</span>
+     </div>
+   #+end_src
+
+   #+begin_src html
+     <div id="app-4">
+       <ol>
+         <li v-for="todo in todos">
+           {{ todo.text }}
+         </li>
+       </ol>
+     </div>
+   #+end_src
+   
+   #+begin_src js
+     var app4 = new Vue({
+         el: '#app-4',
+         data: {
+             todos: [
+                 { text: 'Learn JavaScript' },
+                 { text: 'Learn Vue' },
+                 { text: 'Build something awesome' }
+             ]
+         }
+     })
+#+end_src
+** 事件
+   
+#+begin_src html
+<div id="app-5">
+  <p>{{ message }}</p>
+  <button v-on:click="reverseMessage">Reverse Message</button>
+</div>
+#+end_src
+
+#+begin_src js
+var app5 = new Vue({
+  el: '#app-5',
+  data: {
+    message: 'Hello Vue.js!'
+  },
+  methods: {
+    reverseMessage: function () {
+      this.message = this.message.split('').reverse().join('')
+    }
+  }
+})
+#+end_src
+** 组件
+   #+begin_src js
+     // Define a new component called todo-item
+     Vue.component('todo-item', {
+         template: '<li>This is a todo</li>'
+     })
+#+end_src
+
+Now you can compose it in another component’s template:
+
+
+#+begin_src html
+  <ol>
+    <!-- Create an instance of the todo-item component -->
+    <todo-item></todo-item>
+  </ol>
+#+end_src
+
+* 库地址
+   #+begin_src html
+     <！ - 开发版，包括有用的控制台警告 - > 
+       < script  src = “https://cdn.jsdelivr.net/npm/vue/dist/vue.js” ></ script >
+
+       <！ - 生产版本，针对大小和速度进行了优化 - > 
+         < script  src = “https://cdn.jsdelivr.net/npm/vue” ></ script >
+   #+end_src
 

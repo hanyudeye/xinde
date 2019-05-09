@@ -1,13 +1,7 @@
 * SQL 对象属性表存储
-** 手册 file:///home/wuming/.local/share/Zeal/Zeal/docsets/MySQL.docset/Contents/Resources/Documents/index.html
-** 对象
-   库对象 
-   表对象
-   表中行对象
-   对象值
 ** 对象处理
 *** 库操作 
-**** 库创建与使用：
+**** 库创建与使用
      #+begin_src sql
        CREATE DATABASE test;
        USE test;
@@ -345,7 +339,6 @@
    select @ret;
    ```
 *** 游标
-
    在存储过程中使用游标可以对一个结果集进行移动遍历。
 
    游标主要用于交互式应用，其中用户需要对数据集中的任意行进行浏览和修改。
@@ -357,7 +350,7 @@
    3. 取出数据；
    4. 关闭游标；
 
-   ```sql
+   #+begin_src sql
    delimiter //
    create procedure myprocedure(out ret int)
        begin
@@ -378,25 +371,28 @@
            close mycursor;
        end //
     delimiter ;
-   ```
+   #+end_src
+    
 *** 触发器
-
    触发器会在某个表执行以下语句时而自动执行：DELETE、INSERT、UPDATE。
 
-   触发器必须指定在语句执行之前还是之后自动执行，之前执行使用 BEFORE 关键字，之后执行使用 AFTER 关键字。BEFORE 用于数据验证和净化，AFTER 用于审计跟踪，将修改记录到另外一张表中。
+   触发器必须指定在语句执行之前还是之后自动执行，之前执行使用 BEFORE 关键字，之
+   后执行使用 AFTER 关键字。BEFORE 用于数据验证和净化，AFTER 用于审计跟踪，将修
+   改记录到另外一张表中。
 
    INSERT 触发器包含一个名为 NEW 的虚拟表。
 
-   ```sql
+   #+begin_src sql
    CREATE TRIGGER mytrigger AFTER INSERT ON mytable
    FOR EACH ROW SELECT NEW.col into @result;
 
    SELECT @result; -- 获取结果
-   ```
+   #+end_src
 
    DELETE 触发器包含一个名为 OLD 的虚拟表，并且是只读的。
 
-   UPDATE 触发器包含一个名为 NEW 和一个名为 OLD 的虚拟表，其中 NEW 是可以被修改的，而 OLD 是只读的。
+   UPDATE 触发器包含一个名为 NEW 和一个名为 OLD 的虚拟表，其中 NEW 是可以被修改
+   的，而 OLD 是只读的。
 
    MySQL 不允许在触发器中使用 CALL 语句，也就是不能调用存储过程。
 *** 事务管理
@@ -515,7 +511,7 @@
    ```
 
 **** 无密码登录
-    $HOME/.my.cnf文件来读取特定的启动命令和设置。
+    $HOME/.my.cnf 文件来读取特定的启动命令和设置。
     [client]
     password = test
     $ chmod 400 .my.cnf
@@ -547,12 +543,12 @@ select* from tabs
 ** 安装
 *** Import the public repository GPG keys:
    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-*** 添加到仓库列表Register the Microsoft SQL Server Ubuntu repository:
+*** 添加到仓库列表 Register the Microsoft SQL Server Ubuntu repository:
     sudo add-apt-repository "$(wget -qo- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"
 *** 安装
     sudo apt-get update
     sudo apt-get install -y mssql-server
-*** 设置sa的密码
+*** 设置 sa 的密码
     sudo /opt/mssql/bin/mssql-conf setup
 *** 运行
     systemctl status mssql-server
