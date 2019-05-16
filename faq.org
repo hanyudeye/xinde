@@ -28,3 +28,59 @@ sync && echo 3 | sudo tee /proc/sys/vm/drop_caches
    最后按"b"启动，启动后就进入了单用户模式了
    此时已经进入到单用户模式了，你可以更改 root 密码了。更密码的命令为 passwd
 * CGI 服务器调用脚本语言
+* 终端下使用 lantern 代理
+  1，在 linux 上安装蓝灯（lantern），只能在浏览器上访问外网，不能在终端下访问外网，
+ 
+  2，在本地终端命令行下访问外网：
+
+       export http_proxy=http://127.0.0.1:42428
+       export https_proxy=https://127.0.0.1:42428
+       
+       # 127.0.0.1:40695
+      用 curl google.com 测试下，不会出现连接被拒绝的情况
+      也可以将 这两行命令写入到  ~/.bashrc 文件中，这样就不用每次打开一个窗口，都要 export 一下
+
+
+3，在服务器端下命令行下访问外网
+     服务器可以利用本地机器访问外网，不过，这两个网络要在同一个局域网中
+     
+     在本地终端下 
+     cd  ~/.lantern
+     vi  settings.yaml
+     修改 addr: 127.0.0.1:X  为  addr:本地机器 ip:X
+
+     在服务器端下：
+     export  http_proxy=http://本地机器 ip:X
+     export  https_proxy=http://本地机器 ip:X
+* 客户机如何使用宿主机 lantern 代理上网
+  ip route show
+  # 查看 route
+  http_proxy="http://10.0.2.2:50067"
+  # virtualbox 默认路由 10.0.2.2
+  # lantern 端口 50067
+* google 翻译
+  就 Google 翻译，可以改用 http://translate.google.cn 14 ，这个网址在大陆一直都
+  可以访问，且如果用 google-translate 2 的话，可以用以下的命令把 .com 改成 .cn:
+  #+begin_src lisp
+    (eval-after-load 'google-translate-core
+      '(setq google-translate-base-url "http://translate.google.cn/translate_a/single"
+             google-translate-listen-url "http://translate.google.cn/translate_tts"))
+
+    (eval-after-load 'google-translate-tk
+      '(setq google-translate--tkk-url "http://translate.google.cn/"))
+#+end_src
+* OpenSSL SSL_connect: SSL_ERROR_SYSCALL in connection to proxy
+  git config --global http.proxy http://proxy.server.com:8080
+  git config --global https.proxy https://proxy.server.com:8080
+* 站立办公，脚跟疼 [ 体重，鞋子,重心移向前脚掌,边运动边工作,深蹲,拉伸臀部 ]
+* ABI [应用二进制接口,]
+  两程序模块间的接口；通常其中一个程序模块会是库或操作系统所提供的服务，而另一边的
+  模块则是用户所运行的程序。
+
+一个 ABI 定义了机器代码如何访问数据结构与运算程序，此处所定义的界面相当低级并且
+相依于硬件。而类似概念的 API 则在源代码定义这些，则较为高端，并不直接相依于硬件，
+通常会是人类可阅读的代码。一个 ABI 常见的样貌即是调用约定：数据怎么成为计算程序
+的输入或者从中得到输出；x86 的调用约定即是一个 ABI 的例子。
+* 根
+  高等植物茎干下部长在土里的部分，主要功能是把植物固定在土地上，吸收土壤里的水分
+  和养料，有的还能储藏养料。

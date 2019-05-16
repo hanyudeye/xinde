@@ -1,4 +1,4 @@
-* 版本控制
+* 版本控制  [ 银行账户出入金记账 ]
 ** 快进式合并
    "快进式合并"（fast-farward merge），会直接将 master 分支指向合并的分支，这种模式
    下进行分支合并会丢失分支信息，也就不能在分支历史上看出分支信息。
@@ -26,8 +26,22 @@
 * git 
 ** 配置
    git config [--system,--global]
-   user.name = "用户名或者用户 ID"
-   user.email = "邮箱"
+   必须的
+   用户名 user.name = "用户名或者用户 ID"
+   邮箱 user.email = "邮箱"
+   
+   非必须 
+   - 配置颜色
+      git config --global color.branch auto
+      git config --global color.diff auto
+      git config --global color.interactive auto
+      git config --global color.status auto
+
+
+
+   列出配置 git config --list
+   配置 git config --global color.ui auto
+   
 *** 配置 SSH 传输
        Git 仓库和 Github 中心仓库之间的传输是通过 SSH 加密。
 
@@ -42,11 +56,11 @@
        : 测试是否能够连接 ssh -T git@github.com
 
 ** 功能
-*** 初始化 init
-*** 暂存功能 
-**** 加入暂存区东西 git add <modified files>/git add .
-**** 删除暂存区东西 git rm --cached <file>  
-**** 取消暂存区的东西 
+*** 初始化 [ init ]
+*** 暂存区
+**** 加入暂存区 [ git add <modified files>/git add . ]
+**** 删除暂存区 [ git rm --cached <file> ]  
+**** 取消暂存区
      和暂存区删除文件差别不大, 删除会把索引也删除
      git reset HEAD <file>
      git rm --cached 
@@ -64,11 +78,12 @@
      git checkout HEAD <file>
 **** 用两次确认的恢复草稿
      此次操作之前和之后的 commit 和 history 都会保留，并且把这次撤销作为一次最新的提交
-*** 仓库功能
-**** 保存到本地版本库(当前分支)
-     git commit -m "msg"
+*** 本地库
+**** 保存到本地库 [ git commit -m "msg" ]
      也可以将 git add 与 git commit 用一个指令完成
      git commit -a -m "msg"
+**** 撤销 [ 恢复到修改前] git checkout <file>
+     从另一个分支恢复修改 git checkout <branch>  <file>
 **** 反转(用本地版本库的东西替换掉本地的文件,再执行一次反过来)
      git revert HEAD                  撤销前一次 commit
      git revert HEAD^               撤销前前一次 commit
@@ -157,6 +172,12 @@
      是你也可以用 --until 和 --after。
 **** 某次提交的内容 
      git show # 显示某次提交的内容 git show $id
+*** 处理发布 [tag]
+    定义版本 git tag 1.0  [branch]
+*** 把分支合并到 master 分支
+    git checkout master 
+    git rebase  [developversion]
+    git brancd -d [developversion] 删除[developversion]分支
 ** gitignore
    以斜杠“/”开头表示目录； 
    以星号“*”通配多个字符；
@@ -416,6 +437,9 @@
 他
  生成一个可供发布的压缩包
  git archive
+** 帮助 
+   git help <command>
+** 日志 [git log]
 * svn
 ** svn 重新验证证书 ->会在用户名和密码错误的情况下重新验证 
    Error:  “Server certificate verification failed: issuer is not trusted”

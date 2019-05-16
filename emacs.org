@@ -1,8 +1,5 @@
-* emacs
-  
-  ( 操作整合工具 )
-  
-** 工具功能选项
+* emacs [ 大编辑器 ]
+** 选项
    | +<行号>         | 将光标移动到制定行号的行；                             |
    | q               | 不加载初始化文件                                       |
    | u<用户>         | 加载指定用户的初始化文件；                             |
@@ -12,28 +9,36 @@
    | debug-init      | 程序启动时，加载调试器                                 |
    | script=file     | 执行文件                                               |
    | insert=file     | 插入文件                                               |
-** 扩展新工具
-                                 -------> 包属性
-   ( 扩展 包 's)           -------> 操作包
-                                 -------> 包功能
+** 屏幕组织 
+*** frame [ 框架 ] 
+    - 框架
+      - 菜单 (顶部)
+      - 工具栏(顶部)
+      - 窗口 (中部) [ 多个 ]
+        - 滚动条
+        - 模式行
+      - echo area (底部)
+*** point [ 光标,每个 buffer 记录 point ]  
+*** The Mode Line [ 状态栏 ]
+*** The Echo Area [ 信息栏 ]
+** 用户输入 [ 主用键盘,鼠标, 控制键与字符键结合 ]
+** 按键 [ 按键组合,命令 ]
+   - 键序列
+     - 完整键
+     - 前缀键
+** 命令 [ 命名命令,函数 ]
+*** 输入文本 
+    特殊字符 
+    C-q 八进制数字
+    C-q 101  --->'A'
 
-*** 列出扩展 list-packages
-*** 加载扩展
-    require <sysbol name>
+    C-q 控制键
     
-    load load-path
-    
-    autoload (调用时加载)
-    
-    (load 'auto-complete-autoloads)
-    包管理器 elpa(Emacs package system)
-** 作为服务工具 ( 共享资源 ) 会监视 edit 请求
-- 开启服务
-  1. 在 emacs 中 server-start, 或放在 init file 中,
-  2.用 --daemon 作为启动 emacs 的参数
-- 设置客户端
-  EDITOR=emacsclient -c
-** 功能
+    unicode
+    C-x 8 十六进制/或名称
+*** 空行
+    头部插入空行    C-o 
+    删除空行 C-x C-o  [ 不用选择，只要当前光标是空行 ]
 *** 文本操作
 **** 选中文本
 ***** 标记 Mark
@@ -92,7 +97,7 @@
       M-c 首字母大写
 **** 键盘宏
 
-*** 国际化 International::       Using non-ASCII character sets.
+*** 国际化 
 **** International Chars::    键盘只能数 100 个字
      emacs 有自己的编码（类 unicode 的编码)
 ***** 编码输入 C-x 8 <RET> 🔔 16 进制
@@ -128,7 +133,24 @@
 **** Unibyte Mode::            You can pick one European character set       
 **** Charsets::                How Emacs groups its internal character codes.
 **** Bidirectional Editing::   Support for right-to-left scripts.           
-** 高级特性 Advanced Features
+** 服务
+- 开启服务
+  1. 在 emacs 中 server-start, 或放在 init file 中,
+  2.用 --daemon 作为启动 emacs 的参数
+- 设置客户端
+  EDITOR=emacsclient -c
+** package
+*** 列出扩展 list-packages
+*** 加载扩展
+    require <sysbol name>
+    
+    load load-path
+    
+    autoload (调用时加载)
+    
+    (load 'auto-complete-autoloads)
+    包管理器 elpa(Emacs package system)
+** 高级特性 
 *** Modes::               Major and minor modes alter Emacs’s basic behavior.
 *** Indentation::         Editing the white space at the beginnings of lines.
 *** Text::                Commands and modes for editing human languages.

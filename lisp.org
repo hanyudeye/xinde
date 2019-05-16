@@ -1,3 +1,10 @@
+* small function
+** 插入当前时间
+   #+begin_src lisp
+     (defun insert-current-time ()
+       (interactive)
+       (insert (format-time-string "%Y-%m-%d %H:%M:%S" (current-time))))
+   #+end_src
 * elisp
 ** 创建语义 
 *** 定义词汇
@@ -947,11 +954,57 @@ replace-regexp-in-string regexp rep string
 ****  拆分
       (cl-ppcre:split "\\s+" "foo bar baz frob")
       =>("foo" "bar" "baz" "frob")
+** 错误
+*** 错误反馈  [ report-emacs-bug ]
+** 数据类型 [ 对象的属性,自我识别 ]
+*** 原始类型
+**** integer [ 范围 ，机器决定 ]
+**** float
+**** cons [ 列表 ]
+     (A 2 "A")            ; A list of three elements.
+     ("A ()")             ; A list of one element: the string ‘"A ()"’.
+**** 数组 [ 索引 ]
+     vector [ 任意类型 ]
+     bool-vector [ 只包含't'或'nil' ]
+**** symbol
+**** string [ "号包含 ]
+     特殊字符  -》 用 \   转义
+     \ 又代表跳脱符  --》 在字符串末尾会忽略换行符
+     \ t,\ C-a  \ M-
+    : 不包含 alt 和 super 字符 
+     
+     #+begin_src lisp
+       "hello \
+       world
+       "
 
-* demo
-** 插入当前时间
-   #+begin_src lisp
-     (defun insert-current-time ()
-       (interactive)
-       (insert (format-time-string "%Y-%m-%d %H:%M:%S" (current-time))))
-   #+end_src
+      ⇒"hello world
+       "
+     #+end_src
+
+     
+     ascii 表示不了的字符 
+     Unicode ==>'\ uNNNN'或'\ U00NNNNNN'
+     输入法
+     
+
+     修改字符串
+     #+begin_src lisp
+       ;;修改 x 第二个字符为 a
+       ;; aset 返回成功的字符
+       (setq x "asdfasfd")
+       (aset  x 1 ?a)
+
+       (setq w [foo bar baz])
+       ⇒ [foo bar baz]
+       (aset w 0 'fu)
+       ⇒ fu
+     #+end_src
+     
+     字符串比较 
+**** vector
+**** hash-table
+**** subr
+**** byte-code function
+**** record
+**** buffer

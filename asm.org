@@ -1,215 +1,10 @@
-* AT&A 语言 
-** 高级功能
-*** gnu 内联汇编的语法:
-    asm 或__asm__("汇编代码");
-    指令必须包含在引号里
-    如果包含的指令超过一行 必须使用新行分隔符分隔
-       
-    使用 c 全局变量, 不能在内联汇编中使用局部变量, 注意在汇编语言代码中值被用
-    做内存位置, 而不是立即数值
-    
-    如果不希望优化内联汇编, 则可以 volatile 修饰符如:__asm__ volatile("code");
-*** GCC 内联汇编的扩展语法
-         __asm__("assembly code":output locations:input operands:changed registers);
-         第一部分是汇编代码
-         第二部分是输出位置, 包含内联汇编代码的输出值的寄存器和内存位置列表
-         第三部分是输入操作数,包含内联汇编代码输入值的寄存器和内存位置的列表
-         第四部分是改动的寄存器, 内联汇编改变的任何其他寄存器的列表
-         这几个部分可以不全有, 但是没有的还必须使用:分隔
-         1, 指定输入值和输出值, 输入值和输出值的列表格式为:
-       
-         "constraint"(variable), 其中 variable 是程序中声明的 c 变量, 在扩展 asm
-         格式中, 局部和全局变量都可以使用,使用 constrant(约束)
-       
-         定义把变量存放到哪(输入)或从哪里传送变量(输出)
-       
-         约束使用单一的字符, 如下:
-         约束 描述
-         a 使用%eax, %ax, %al 寄存器
-         b 使用%ebx, %bx, %bl 寄存器
-         c 使用%ecx, %cx, %cl 寄存器
-         d 使用%edx, %dx, %dl 寄存器
-         S 使用%esi, %si 寄存器
-         D 使用%edi, %di 寄存器
-         r 使用任何可用的通用寄存器
-         q 使用%eax, %ebx, %ecx,%edx 之一
-         A 对于 64 位值使用%eax, %edx 寄存器
-         f 使用浮点寄存器
-         t 使用第一个(顶部)的浮点寄存器
-         u 使用第二个浮点寄存器
-         m 使用变量的内存位置
-         o 使用偏移内存位置
-         V 只使用直接内存位置
-         i 使用立即整数值
-         n 使用值已知的立即整数值
-         g 使用任何可用的寄存器和内存位置
-         除了这些约束之外, 输出值还包含一个约束修饰符:
-         输出修饰符 描述
-         + 可以读取和写入操作数
-         = 只能写入操作数
-         % 如果有必要操作数可以和下一个操作数切换
-         & 在内联函数完成之前, 可以删除和重新使用操作数
-         如:
-         __asm__("assembly code": "=a"(result):"d"(data1),"c"(data2));
-       
-         把 c 变量 data1 存放在 edx 寄存器中, 把 c 变量 data2 存放到 ecx 寄存器中,
-         内联汇编的结果将存放在 eax 寄存器中, 然后传送给变量 result
-       
-         在扩展的 asm 语句块中如果要使用寄存器必须使用两个百分号符号
-       
-         不一定总要在内联汇编代码中指定输出值, 一些汇编指令假定输入值包含输出值,
-         如 movs 指令
-*** 其他扩展内联汇编知识:
-**** 使用占位符
-          输入值存放在内联汇编段中声明的特定寄存器中, 并且在汇编指令中专门使用这些寄存器.虽然这种方式能够很好的处理只有几个输入值的情
-          况, 但对于需要很多输入值的情况, 这中方式显的有点繁琐. 为了帮助解决这个问题, 扩展 asm 格式提供了占位符, 可以在内联汇编代码中使
-          用它引用输入和输出值.
-          占位符是前面加上百分号的数字, 按照内联汇编中列出的每个输入和输出值在列表中的位置,每个值被赋予从 0 开始的地方. 然后就可以在汇
-          编代码中引用占位符来表示值。
-          如果内联汇编代码中的输入和输出值共享程序中相同的 c 变量, 则可以指定使用占位符作为约束值, 如:
-          __asm__("imull %1, %0"
-          : "=r"(data2)
-          : "r"(data1), "0"(data2));
-          如输入输出值中共享相同的变量 data2, 而在输入变量中则可以使用标记 0 作为输入参数的约束
-**** 替换占位符
-          如果处理很多输入和输出值, 数字型的占位符很快就会变的很混乱, 为了使条理清晰 ,GNU 汇编器(从版本 3.1 开始)允许声明替换的名称作为
-          占位符.替换的名称在声明输入值和输出值的段中定义, 格式如下:
-          %[name]"constraint"(variable)
-          定义的值 name 成为内联汇编代码中变量的新的占位符号标识, 如下面的例子:
-          __asm__("imull %[value1], %[value2]"
-          : [value2] "=r"(data2)
-          : [value1] "r"(data1), "0"(data2));
-**** 改动寄存器列表
-       
-          编译器假设输入值和输出值使用的寄存器会被改动, 并且相应的作出处理。程序员
-          不需要在改动的寄存器列表中包含这些值, 如果这样做了, 就
-       
-          会产生错误消息. 注意改动的寄存器列表中的寄存器使用完整的寄存器名称, 而不像输入和输出寄存器定义的那样仅仅是单一字母。 在寄存器
-          名称前面使用百分号符号是可选的。
-          改动寄存器列表的正确使用方法是, 如果内联汇编代码使用了没有被初始化地声明为输入或者输出值的其他任何寄存器 , 则要通知编译器。编
-          译器必须知道这些寄存器, 以避免使用他们。如:
-          int main(void) {
-          int data1 = 10;
-          int result = 20;
-          __asm__("movl %1, %%eax\n\t"
-          "addl %%eax, %0"
-          : "=r"(result)
-          : "r"(data1), "0"(result)
-          : "%eax");
-          printf("The result is %d\n", result);
-          return 0;
-          }
-**** 使用内存位置
-          虽然在内联汇编代码中使用寄存器比较快, 但是也可以直接使用 c 变量的内存位置。 约束 m 用于引用输入值和输出值中的内存位置。 记住, 对
-          于要求使用寄存器的汇编指令, 仍然必须使用寄存器, 所以不得不定义保存数据的中间寄存器。如:
-          int main(void) {
-          int dividentd = 20;
-          int divisor = 5;
-          int result;
-          __asm__("divb %2\n\t"
-          "movl %%eax, %0"
-          : "=m"(result)
-          : "a"(dividend), "m"(divisor));
-          printf("The result is %d\n", result);
-          return 0;
-          }
-**** 处理跳转
-          内联汇编语言代码也可以包含定义其中位置的标签。 可以实现一般的汇编条件分支和无条件分支, 如:
-          int main(void) {
-          int a = 10;
-          int b = 20;
-          int result;
-          __asm__("cmp %1, %2\n\t"
-          "jge greater\n\t"
-          "movl %1, %0\n\t"
-          "jmp end\n"
-          "greater:\n\t"
-          "movl %2, %0\n"
-          "end:"
-          :"=r"(result)
-          :"r"(a), "r"(b));
-          printf("The larger value is %d\n", result);
-          return 0;
-          }
-          在内联汇编代码中使用标签时有两个限制。 第一个限制是只能跳转到相同的 asm 段内的标签,不能从-个 asm 段跳转到另一个 asm 段中的
-          标签。第二个限制更加复杂一点。 以上程序使用标签 greater 和 end。 但是, 这样有个潜在的问题, 查看汇编后的代码清单, 可以发现内联
-          汇编标签也被编码到了最终汇编后的代码中。 这意味着如果在 c 代码中还有另一个 asm 段, 就不能再次使用相同的标签, 否则会因为标签重
-          复使用而导致错误消息。还有如果试图整合使用 c 关键字(比如函数名称或者全局变量)的标签也会导致错误。
-** 优化代码
-   GNU 编译器提供-O 选项供程序优化使用:
-   -O 提供基础级别的优化
-   -O2 提供更加高级的代码优化
-   -O3 提供最高级的代码优化
-  
-   不同的优化级别使用的优化技术也可以单独的应用于代码。 可以使用-f 命令行选项引用
-   每个单独的优化技术。
-*** 编译器优化级别 1
-        在优化的第一个级别执行基础代码的优化。 这个级别试图执行 9 种单独的优化功能:
-        -fdefer-pop: 这种优化技术与汇编语言代码在函数完成时如何进行操作有关。 一般情况下, 函数的输入值被保存在堆栈种并且被函数访问。
-        函数返回时, 输入值还在堆栈种。 一般情况下, 函数返回之后, 输入值被立即弹出堆栈。这样做会使堆栈种的内容有些杂乱。
-        -fmerge-constans: 使用这种优化技术, 编译器试图合并相同的常量. 这一特性有时候会导致很长的编译时间, 因为编译器必须分析 c 或者
-        c++程序中用到的每个常量,并且相互比较他们.
-        -fthread-jumps: 使用这种优化技术与编译器如果处理汇编代码中的条件和非条件分支有关。 在某些情况下, 一条跳转指令可能转移到另一
-        条分支语句。 通过一连串跳转, 编译器确定多个跳转之间的最终目标并且把第一个跳转重新定向到最终目标。
-        -floop-optimize: 通过优化如何生成汇编语言中的循环, 编译器可以在很大程序上提高应用程序的性能。 通常, 程序由很多大型且复杂的循
-        环构成。 通过删除在循环内没有改变值的变量赋值操作, 可以减少循环内执行指令的数量, 在很大程度上提高性能。 此外优化那些确定何时离
-        开循环的条件分支, 以便减少分支的影响。
-        -fif-conversion: if-then 语句应该是应用程序中仅次于循环的最消耗时间的部分。简单的 if-then 语句可能在最终的汇编语言代码中产生众多
-        的条件分支。 通过减少或者删除条件分支, 以及使用条件传送 设置标志和使用运算技巧来替换他们, 编译器可以减少 if-then 语句中花费的时
-        间量。
-        -fif-conversion2: 这种技术结合更加高级的数学特性, 减少实现 if-then 语句所需的条件分支。
-        -fdelayed-branch: 这种技术试图根据指令周期时间重新安排指令。 它还试图把尽可能多的指令移动到条件分支前, 以便最充分的利用处理
-        器的治理缓存。
-        -fguess-branch-probability: 就像其名称所暗示的, 这种技术试图确定条件分支最可能的结果, 并且相应的移动指令, 这和延迟分支技术类
-        似。因为在编译时预测代码的安排,所以使用这一选项两次编译相同的 c 或者 c++代码很可能会产生不同的汇编语言代码, 这取决于编译时
-        编译器认为会使用那些分支。 因为这个原因, 很多程序员不喜欢采用这个特性, 并且专门地使用-fno-guess-branch-probability 选项关闭这
-        个特性
-        -fcprop-registers: 因为在函数中把寄存器分配给变量, 所以编译器执行第二次检查以便减少调度依赖性(两个段要求使用相同的寄存器)并
-        且删除不必要的寄存器复制操作。
-*** 编译器优化级别 2
-        结合了第一个级别的所有优化技术, 再加上一下一些优化:
-        -fforce-mem: 这种优化再任何指令使用变量前, 强制把存放再内存位置中的所有变量都复制到寄存器中。 对于只涉及单一指令的变量, 这样
-        也许不会有很大的优化效果. 但是对于再很多指令(必须数学操作)中都涉及到的变量来说, 这会时很显著的优化, 因为和访问内存中的值相比 ,
-        处理器访问寄存器中的值要快的多。
-        -foptimize-sibling-calls: 这种技术处理相关的和/或者递归的函数调用。 通常, 递归的函数调用可以被展开为一系列一般的指令, 而不是
-        使用分支。 这样处理器的指令缓存能够加载展开的指令并且处理他们, 和指令保持为需要分支操作的单独函数调用相比, 这样更快。
-        -fstrength-reduce: 这种优化技术对循环执行优化并且删除迭代变量。 迭代变量是捆绑到循环计数器的变量, 比如使用变量, 然后使用循环
-        计数器变量执行数学操作的 for-next 循环。
-        -fgcse: 这种技术对生成的所有汇编语言代码执行全局通用表达式消除历程。 这些优化操作试图分析生成的汇编语言代码并且结合通用片段,
-         消除冗余的代码段。如果代码使用计算性的 goto, gcc 指令推荐使用-fno-gcse 选项。
-        -fcse-follow-jumps: 这种特别的通用子表达式消除技术扫描跳转指令, 查找程序中通过任何其他途径都不会到达的目标代码。这种情况最常
-        见的例子就式 if-then-else 语句的 else 部分。
-        -frerun-cse-after-loop: 这种技术在对任何循环已经进行过优化之后重新运行通用子表达式消除例程。这样确保在展开循环代码之后更进一
-        步地优化还编代码。
-        -fdelete-null-pointer-checks: 这种优化技术扫描生成的汇编语言代码, 查找检查空指针的代码。 编译器假设间接引用空指针将停止程序。
-        如果在间接引用之后检查指针, 它就不可能为空。
-        -fextensive-optimizations: 这种技术执行从编译时的角度来说代价高昂的各种优化技术,但是它可能对运行时的性能产生负面影响。
-        -fregmove: 编译器试图重新分配 mov 指令中使用的寄存器, 并且将其作为其他指令操作数, 以便最大化捆绑的寄存器的数量。
-        -fschedule-insns: 编译器将试图重新安排指令, 以便消除等待数据的处理器。 对于在进行浮点运算时有延迟的处理器来说, 这使处理器在
-        等待浮点结果时可以加载其他指令。
-        -fsched-interblock: 这种技术使编译器能够跨越指令块调度指令。 这可以非常灵活地移动指令以便等待期间完成的工作最大化。
-        -fcaller-saves: 这个选项指示编译器对函数调用保存和恢复寄存器, 使函数能够访问寄存器值, 而且不必保存和恢复他们。 如果调用多个函
-        数, 这样能够节省时间, 因为只进行一次寄存器的保存和恢复操作, 而不是在每个函数调用中都进行。
-        -fpeephole2: 这个选项允许进行任何计算机特定的观察孔优化。
-        -freorder-blocks: 这种优化技术允许重新安排指令块以便改进分支操作和代码局部性。
-        -fstrict-aliasing: 这种技术强制实行高级语言的严格变量规则。 对于 c 和 c++程序来说, 它确保不在数据类型之间共享变量. 例如, 整数变
-        量不和单精度浮点变量使用相同的内存位置。
-         -funit-at-a-time: 这种优化技术指示编译器在运行优化例程之前读取整个汇编语言代码。 这使编译器可以重新安排不消耗大量时间的代码以
-         便优化指令缓存。 但是, 这会在编译时花费相当多的内存, 对于小型计算机可能是一个问题。
-         -falign-functions: 这个选项用于使函数对准内存中特定边界的开始位置。 大多数处理器按照页面读取内存,并且确保全部函数代码位于单
-         一内存页面内, 就不需要叫化代码所需的页面。
-         -fcrossjumping: 这是对跨越跳转的转换代码处理, 以便组合分散在程序各处的相同代码。 这样可以减少代码的长度, 但是也许不会对程
-         序性能有直接影响。
-*** 编译器优化级别 3
-         它整合了第一和第二级别中的左右优化技巧, 还包括一下优化:
-         -finline-functions: 这种优化技术不为函数创建单独的汇编语言代码, 而是把函数代码包含在调度程序的代码中。 对于多次被调用的函数
-         来说, 为每次函数调用复制函数代码。 虽然这样对于减少代码长度不利, 但是通过最充分的利用指令缓存代码, 而不是在每次函数调用时进行
-         分支操作, 可以提高性能。
-         -fweb: 构建用于保存变量的伪寄存器网络。 伪寄存器包含数据, 就像他们是寄存器一样, 但是可以使用各种其他优化技术进行优化, 比如 cse
-         和 loop 优化技术。
-         -fgcse-after-reload: 这中技术在完全重新加载生成的且优化后的汇编语言代码之后执行第二次 gcse 优化,帮助消除不同优化方式创建的
-         任何冗余段。
-* 汇编语言
+* 机器语言 [ 天书 ]
+  010010
+  011011
+  110010
+  010011
+  010110
+* 汇编语言 [ 特定机器语言释义 ]
 ** 基本结构
    #+begin_src asm
        # Hello World ～
@@ -462,30 +257,9 @@
       loope/loopz 循环直到 ecx 寄存器为 0 或者没有设置 ZF 标志
       loopne/loopnz 循环直到 ecx 为 0 或者设置了 ZF 标志
       指令格式为: loopxx address 注意循环指令只支持 8 位偏移地址
-**** 数字操作
-     IA-32 平台中存储超过一字节的数都被存储为小尾数的形式但是把数字传递给寄存
-     器时, 寄存器里面保存是按照大尾数的形式存储
-       
-     把无符号数转换成位数更大的值时, 必须确保所有的高位部分都被设置为零
-     把有符号数转换成位数更大的数时:
-       
-     intel 提供了 movsx 指令它允许扩展带符号数并保留符号, 它与 movzx 相似, 但
-     是它假设要传送的字节是带符号数形式
-***** 浮点数:
-      fld 指令用于把浮点数字传送入和传送出 FPU 寄存器, 格式:
-      fld source
-      其中 source 可以为 32 64 或者 80 位整数值
-       
-      IA-32 使用 FLD 指令用于把存储在内存中的单精度和双精度浮点值 FPU 寄存器堆
-      栈中, 为了区分这两种长度 GNU 汇编器使用
-       
-      FLDS 加载单精度浮点数, FLDL 加载双精度浮点数
-       
-      类似 FST 用于获取 FPU 寄存器堆栈中顶部的值, 并且把这个值放到内存位置中,
-      对于单精度使用 FSTS, 对于双精度使用 FSTL
-**** 基本数学运算
+**** 数学运算
 ***** 加法
-      ADD source, destination 把两个整数相加
+      ADD source, destination 
       其中 source 可以是立即数内存或者寄存器, destination 可以是内存或者寄存器, 但是两者不能同时都是内存位置
       ADC 和 ADD 相似进行加法运算, 但是它把前一个 ADD 指令的产生进位标志的值包含在其中, 在处理位数大于 32(如 64)
       位的整数时, 该指令非常有用
@@ -517,6 +291,18 @@
       DX:AX 32 位 AX DX
       EDX:EAX 64 位 EAX EDX
       idiv divisor 执行有符号数的除法运算, 方式和 div 一样
+***** 浮点数:
+      fld 指令用于把浮点数字传送入和传送出 FPU 寄存器, 格式:
+      fld source
+      其中 source 可以为 32 64 或者 80 位整数值
+       
+      IA-32 使用 FLD 指令用于把存储在内存中的单精度和双精度浮点值 FPU 寄存器堆
+      栈中, 为了区分这两种长度 GNU 汇编器使用
+       
+      FLDS 加载单精度浮点数, FLDL 加载双精度浮点数
+       
+      类似 FST 用于获取 FPU 寄存器堆栈中顶部的值, 并且把这个值放到内存位置中,对
+      于单精度使用 FSTS, 对于双精度使用 FSTL
 ***** 左移位:
       sal 向左移位
       sal destination 把 destination 向左移动 1 位
@@ -596,1502 +382,589 @@
      cwd -- sign-extend word in %ax to long in %dx:%ax;
      cdq -- sign-extend dword in %eax to quad in %edx:%eax;
      对应的 AT&T 语法的指令为 cbtw,cwtl,cwtd,cltd。
-**** linux 系统调用 
-      linux 系统调用的中断向量为 0x80
-      1, 系统调用标识存放在%eax 中
-      2, 系统调用输入值:
-      EBX 第一个参数
-      ECX 第二个参数
-      EDX 第三个参数
-      ESI 第四个参数
-      EDI 第五个参数
-       
-      需要输入超过 6 个输入参数的系统调用, EBX 指针用于保存指向输入参数内存位置
-      的指针, 输入参数按照连续的的顺序存储, 系统调用的返回值存放在 EAX 中
 *** 伪指令
-* 构建工具
-** 编译汇编文件到目标文件 as  
-   as --gstabs -o
-*** 64 位系统下汇编 32 位汇编程序
-    as --32 –o output_file.o input_file.s
-    ld –m elf_i386 –dynamic-linker /lib/ld-linux.so.2 –o output_file –L/path –llibname input_file.s
-    
-    或者
-    gcc –m32 –nostdlib –o output_file –L/path –llibname input_file.s
-*** 选项
-    -ac：忽略失败条件；
-    -ad：忽略调试指令；
-    -ah：包括高级源；
-    -al：包括装配；
-    -am：包括宏扩展；
-    -an：忽略形式处理；
-    -as：包括符号；
-    =file：设置列出文件的名字；
-    --alternate：以交互宏模式开始；
-    -f：跳过空白和注释预处理；
-    -g：产生调试信息；
-    -J：对于有符号溢出不显示警告信息；
-    -L：在符号表中保留本地符号；
-    -o：指定要生成的目标文件；
-    --statistics：打印汇编所用的最大空间和总时间。
-** 编译 C 文件到汇编文件 gcc
-       gcc -c -gstabs+ -m32 -o
-    
-       -o：指定生成的输出文件；
-       -E：仅执行编译预处理；
-       -S：将 C 代码转换为汇编代码；
-       -wall：显示警告信息；
-       -c：仅执行编译操作，不进行连接操作。
+** 内联汇编
+   1.基本的内联汇编
+   1）asm 格式
+   GNU 的 C 编译器使用 asm 关键字指出使用汇编语言编写的源代码段落。基本格式：
+   asm("assembly code");
+   括号中的汇编格式：指令必须在引号里；指令超过一条，必须使用新行字符分隔。如：
+   asm ( "movl	$1,	%eax\n\t"
+	 "movl	$0,	%ebx\n\t"
+	 "int	$0x80" );
+
+   2）使用全局 C 变量
+
+   如何将数据传递和传出汇编语言呢？一种方法是使用 C 语言的全局变量，并且只有全局的变
+   量才能在基本的内联汇编代码内使用。
+
+   示例：
+   /*************************************************************************
+	 > File:		use_global_var.c
+	 > Author:	孤舟钓客
+	 > Mail:		guzhoudiaoke@126.com 
+	 > Time:		2012 年 12 月 23 日 星期日 11 时 33 分 25 秒
+   ************************************************************************/
  
-** 链接目标文件到可执行文件 ld
-    ld -m elf_i386 -o
-	  ld --oformat binary -N -Ttext 0x7c00 -o $@ $<
-*** 选项
-       $ ld -o output /lib/crt0.o hello.o -lc
-       它 告诉 ld 生成 一个 叫做 output 的 文件 , 其中 连接了 文件 /lib/crt0.o 和 hello.o 以
-       及 库文件 libc.a (在 标准搜索目录下).
-
-      -b input-format
-              指定  输入目标文件 的 二进制格式, 目标文件 在 命令行 上 给出, 放在 这个选项 的
-              后面. 一般 不需要 指定 这个选项, ld 的 缺省输入格式 配置为 各个机器 上  最常用
-              的  格式. input-format 是 字符串, BFD 库 支持的 格式 名称. 选项 -format input-
-              format 起 相同的 作用, 脚本命令 TARGET 也是 一样.
-
-              连接 某些 不寻常的 二进制文件 时 需要 这个选项. 或者 使用 -b 选项 强调  格式切
-              换 (连接 不同格式 的 目标文件), 比如说, 在 每组 特定格式 的 目标文件 前面 使用
-              -b input-format 选项.
-
-              环境变量 GNUTARGET 用于 指定 缺省格式. 也可以 在 脚本文件 中 用 TARGET 命令 定
-              义 输入格式.
-
-       -Bstatic
-              禁止 连接 共享库. 这个选项 只在 支持 共享库 的 平台 上 有意义.
-
-       -Bdynamic
-              连接  动态库. 这个选项 只在 支持 共享库 的 平台 上 有意义, 一般说来 它 是 缺省
-              选项.
-
-       -Bsymbolic
-              当 创建 共享库 的 时候, 只要 有可能, 在 共享库 内 编联(bind reference)  全局符
-              号  和 定义(definition). 一般说来, 允许 连接了 某个 共享库 的 程序 覆盖 共享库
-              内 的 定义. 这个选项 只在 支持 共享库 的 ELF 平台 上 有意义.
-
-       -c commandfile
-              告诉 ld 从 文件 commandfile 中 读取 连接 命令. 这些 命令 彻底的 覆盖 ld 的  缺
-              省 连接 格式 (而不是 添加); commandfile 必须 详尽的 描述 目标格式 的 所有细节.
-
-              你 也可以 在 命令行 上 直接嵌入 连接命令, 把 脚本 嵌在 大括弧 `{' 和 `}' 中间.
-
-       --cref 输出 交叉引用表(cross reference).  如果 创建了 连接映像(linker map) 文件, 交叉
-              引用表 就 输出到 映像文件 中, 否则 送往 标准输出.
-
-       -d
-
-       -dc
-
-       -dp    这 三个选项 是 一回事, 为了 兼容 其他 linker 而 同时提供.  即使 已经  指定  ld
-              生成 可重定位文件 (-r), 它们 能为 公共符号(common symbol) 分配 空间.  脚本命令
-              FORCE_COMMON_ALLOCATION 起 同样作用.
-
-       -defsym symbol = expression
-              在 输出文件 中 创建 一个 全局符号, 它 含有 expression 给出的 绝对地址. 可以 在
-              命令行  使用 多个 这样的 选项. 这个 expression 只能 使用 有限的 数学形式: 十六
-              进制常数, 已经存在 的 符号名字.  或者 使用 + 和 - 加减 十六进制常数  或  符号.
-              如果 需要 更复杂的 表达式, 考虑 使用 命令语言脚本.
-
-       --demangle
-
-       --no-demangle
-              这些选项  控制 是否在 出错信息 和 其他信息 中, 输出 可读的(demangle) 符号名称.
-              如果 使用了 demangle 选项, linker 尽量使 符号名称 容易理解: 去掉 领头的 下划线
-              (如果  被 目标文件格式 采用); 把 C++ 难懂的 符号名称 (symbol name) 转换成 可读
-              的  名称.  缺省情况下  linker  输出  可读的  符号名称,  除非  设置了  环境变量
-              COLLECT_NO_DEMANGLE .  这些选项 能够 覆盖 缺省行为.
-
-       -e entry
-              使用  entry (入口) 标识符 作为 程序 执行 的 开始端, 而不是 缺省入口. 关于 缺省
-              入口 和 其他 设置 入口 的 方法 参见 `info' 的 ld' 项.
-
-       -embedded-relocs
-              这个选项 仅用于 连接 MIPS 上 嵌入的 PIC  代码,  GNU  的  编译器  和  汇编器  用
-              -membedded-pic 选项 能够 生成 这种代码. 它使 linker 创建 一张 表格, 用于 在 运
-              行的时候, 重定位 任何 被 静态初始化 为 指针值 的 数据. 详见 testsuite/ld-empic
-              的 代码.
-
-       -E
-
-       -export-dynamic
-              当  创建 ELF 文件 时, 把 所有 符号 加入 动态符号表.  一般说来, 动态符号表 只包
-              含 动态目标库(dynamic object) 需要的 符号. 用 dlopen 的 时候 需要 这个 选项.
-
-       -f name
-
-       --auxiliary name
-              创建 ELF 共享目标库 时, 把 内部的 DT_AUXILIARY 字段 设置为 name.  它  告诉  动
-              态 linker,  把 该 共享目标库 的 符号表 用做 共享目标 name 的 符号表 的 辅助过滤
-              器.
-
-       -F name
-
-       --filter name
-              创建 ELF 共享目标库 时, 把 内部的 DT_FILTER 字段  设置为  name.   它  告诉  动
-              态 linker,  把 该 共享目标库 的 符号表 用做 共享目标 name 的 符号表 的 辅助过滤
-              器.
-
-       -format input-format
-              等同于 -b input-format.
-
-       -g     虚设项; 用于 兼容 其他 工具.
-
-       -G size
-              把 使用 GP 寄存器 优化的 目标(文件) 大小 限制为 size .  用于 MIPS ECOFF, 对 其
-              他 目标文件格式 无效.
-
-       -h name
-
-       -soname name
-              创建  ELF 共享目标库 时, 把 内部的 DT_SONAME 字段 设置为 name.  如果 某个 可执
-              行文件 连接了 含有 DT_SONAME 字段 的  共享目标库,  当  该程序  运行  时,  动态
-              linker 试图 根据 DT_SONAME 字段 调入 共享的 目标库, 而 不使用 提供给 linker 的
-              文件名.
-
-       --help 在 标准输出 显示 命令行选项 的 摘要, 然后 结束. 这个选项 和 --version 选项  使
-              用了  两个  短横线, 不是 一个, 目的是 兼容 其他 GNU 程序.  只用 一个 短横线 的
-              选项 是为了 兼容 其他 linker.
-
-       -i     执行 增量连接(incremental link), 等同于 -r 选项.
-
-       -lar   在 连接文件 列表 中 增加 归档库文件 ar.  可以 多次 使用 这个选项. 凡指定  一项
-              ar , ld 就会 在 路径列表 中 增加 一项 对 libar.a 的 搜索.
-
-       -Lsearchdir
-              这个选项 将 路径 searchdir 添加 到 路径列表 中去, ld 在 这个 列表 中 搜索 归档
-              库. 可以 多次 使用 这个选项.
-
-              缺省的 搜索路径集 (不使用 -L 时) 取决于 ld 使用的 模拟模式(emulation) 及其  配
-              置.  在 连接脚本 中, 可以 用 SEARCH_DIR 命令 指定 路径.
-
-       -M     在  标准输出 显示  连接映像 — 有关 ld 把 符号 映射到 何处 的 诊断信息, 以及 全
-              局公共存储器 的 分配 信息.
-
-       -Map mapfile
-              把 连接映像 输出到 mapfile 文件 中 — 有关 ld 把 符号 映射到 何处 的  诊断信息,
-              以及 全局公共存储器 的 分配 信息.
-
-       -m emulation
-              模仿 emulation 连接器.  可以 用 --verbose 或 -V 选项 列出 有效的 模拟项.  这个
-              选项 覆盖 编译 进去 的 缺省项.
-
-       -N     指定 可读写 的 正文 和 数据 节(section). 如果 输出格式  支持  Unix  风格的  幻
-              数(magic number), 则 输出文件 标记为 OMAGIC.
-
-              当 使用 `-N' 选项 时, linker 不做 数据段 的 页对齐(page-align).
-
-       -n     设置 正文段 为 只读, 如果 有可能, NMAGIC 为 可写.
-
-       -noinhibit-exec
-              一般说来,  如果 连接的 时候 发生 错误, linker 不会 产生 输出文件.  使用了 这个
-              标志选项, 只要 不出 致命差错, 仍能够 产生 输出文件.
-
-       -no-keep-memory
-              linker 通常 牺牲 内存, 优化 速度, 它 把 输入文件 的 符号表 缓冲在 内存中.   这
-              个选项  使 linker 必要时 重复读取 符号表, 以便 优化 内存使用. 连接 大型 可执行
-              文件 的 时候, linker 有可能 内存 不够, 此时 可以 试试 这个选项.
-
-       -no-warn-mismatch
-              一般情况下, 如果 试图 连接 某些 不匹配 的 输入文件, 比如说, 按 不同 处理器  编
-              译 的, 或者 具有 不同的 字节顺序(endianness), linker 就会 报错.  这个选项 告诉
-              linker 默许 这种 错误. 要 小心使用 这个选项, 除非 你 正在做 某些 特殊 操作, 而
-              且 能够 确定 不需要 linker 报错.
-
-       -o output
-              output  用来  指定  ld  生成的  程序名;  如果  没有 使用 这个选项, 缺省名字 是
-              `a.out'.  脚本命令 OUTPUT 起 同样 作用.
-
-       -Olevel
-              生成 优化的 输出文件. 这个选项 占用 比较多 的 时间, 因此 仅 常用于 最终文件 的
-              生成.  level 是 数值参数. 任何 大于零 的 参数 意味着 要求 优化.
-
-       -oformat output-format
-              指定  输出目标文件 的 二进制格式. 一般 不需要 指定 这个选项, ld 的 缺省 输出格
-              式 配置为 各个机器 上 最常用 的 格式. output-format 是 一个 字符串, BFD 库  支
-              持的  格式 名称. 脚本命令 OUTPUT_FORMAT 也可以 指定 输出格式, 但是 这个选项 能
-              够 覆盖 掉 它.
-
-       -R filename
-              从 文件 filename 中 读取 符号名称 及其 地址, 但是 不做 重定位,  不传送到  输出
-              端.  它 可以 使 输出文件 符号引用 其他程序中 定义的 绝对地址.
-
-       -relax 这个选项 的 效果 取决于 机器, 目前 只支持 H8/300.
-
-              在 某些 平台 上 可以 使用 这个选项 做 全局优化, 它 让 linker 解决 程序中 的 地
-              址处理, 例如 在 输出目标文件 中 缓和(relax) 地址模式 以及 合成 (synthesize) 新
-              指令.
-
-              其他平台 也接受 `-relax' 选项, 但是 不起作用.
-
-       -r     生成  可重定位  输出 — 就是说, 生成的 输出文件 能够 依次 成为 ld 的 输入, 一般
-              称之为 不完全(partial) 连接. 它 有 一个 副效应, 在 支持 标准  Unix  幻数(magic
-              number) 的 环境 中, 这个选项 把 输出文件 的 幻数 设置成 OMAGIC. 如果 没有 指定
-              这个选项, linker 生成 绝对定位 的 文件.  连接 C++ 程序时, 这个选项 不会   解析
-              出 对 构造子(constructor) 的 引用(reference); 不妨 改用 -Ur 选项.
-
-              这个选项 的 效果 和 -i 一样.
-
-       -rpath directory
-              增加 一条 对 运行时(runtime)库 的 搜索路径. 这个选项 用于 连接 ELF 可执行 文件
-              和 共享目标库. 所有 -rpath 选项 的 参数 被 合并,  然后  一起  传递  给  运行时
-              linker,  运行时 linker 在 运行 的 时候 使用 这些 路径 寻找 共享目标库.  -rpath
-              也可以 用来 定位 共享目标库 引用的 共享目标库; 参见 对 -rpath-link 选项 的  叙
-              述.  如果 连接 ELF 可执行文件 时 没有 指定 -rpath 选项, linker 就使用 环境变量
-              LD_RUN_PATH 的 内容 — 只要 这个 环境变量 存在.
-
-              -rpath 选项 能够 用在 SunOS 上, 缺省状况下, linker 可以 根据 给出的 -L 选项 形
-              成  运行时 搜索路径.  如果 使用了 -rpath 选项, 运行时 搜索路径 从 -rpath 中 产
-              生, 而 忽略 -L 选项.  这一点 有利于 使用 gcc, 在 NFS 文件系统 上, gcc 可能  产
-              生 许多 -L 选项.
-
-       -rpath-link directory
-              使用  ELF  或 SunOS 的 时候, 某些 共享库 可能 需要 其他 共享库.  这种情况 一般
-              发生在 某个 ld -shared 连接 中, 输入文件 包含了 共享库.
-
-              如果 linker 遇到 这样的 依赖情况, 当 它 执行 非共享, 不可重定位  的  连接  时,
-              linker  将 自动 寻找 所需的 共享库, 如果 它们 没有 被 显明 包含, 就 把 它们 包
-              含到 连接 中. 在 这种情况下, -rpath-link 选项  指定了  最先  搜索  的  目录集.
-              -rpath-link 能够 指定 一批 目录, 目录 用 冒号 隔开. 也可以 用 这些 目录名 作为
-              参数, 重复 使用 这个 选项.
-
-              如果 没有 找到 需要的 共享库, linker 产生 一个 警告, 但是 继续 连接.
-
-       -S     去掉 输出文件 中的 调试符号信息 (但不是 所有符号).
-
-       -s     去掉 输出文件 中的 全部 符号信息.
-
-       -shared
-              创建 一个 共享库. 目前 只支持 ELF 和 SunOS 平台 (在 SunOS 上, 这个选项 不是 必
-              须的, 如果 没有 使用 -e 选项, 而且 存在 不确定 的 符号, linker 将 自动 创建 共
-              享库).
-
-       -sort-common
-              ld 通常 把 全局公共符号 放到 适当的 输出节, 按照 大小 排序.   首先是  单字节符
-              号, 然后是 双字节, 接下来是 四字节, 随后是 其他的.  它的 目的是 防止 符号间 因
-              为 排布限制 出现 间隙.  使用 这个选项 可以 禁止 排序.
-
-       -split-by-reloc count
-              在 输出文件 中 创建 附加节(extra section), 使得 输出文件 中, 没有 某一个  输出
-              节 包含 大于 count 个 重定位项. 它 用于 产生 大型 可重定位 COFF 目标文件, 可以
-              插入到 某些 实时内核 中; 因为 COFF 不能 在 单一节内 存放 65535  以上的  重定位
-              项.   注意,  有些 目标文件格式 不支持 任意 分节, 此时 这个选项 将会 操作 失败.
-              此外, linker 不能够 分割 输入节, 然后 重新分配, 因此  如果  某个  输入节  包含
-              count 以上的 重定位项, 相应的 输出节 将 包含 同样多的 重定位项.
-
-       -split-by-file
-              类似于 -split-by-reloc , 但是 它为 每个 输入文件 建立一个 新的 输出节.
-
-       -Tbss org
-
-       -Tdata org
-
-       -Ttext org
-              把  org 作为 输出文件 的 段 起始地址 — 特别是 — bss, data, 或 text 段.  org 必
-              须是 十六进制整数.
-
-       -T commandfile
-              等同于 -c commandfile; 用于 兼容 其他工具.
-
-       -t     在 ld 处理 输入文件 的 时候 显示 文件名.
-
-       -u sym 把 sym 作为 未定义(undefined) 的 符号 送入 输出文件.  这样做 可以, 例如,  促使
-              linker  从 标准库 连接 某个 附加的模块.  允许 使用 多个 -u 选项 输入 多个 未定
-              义 符号.
-
-       -Ur    对于 除 C++ 以外的 任何 程序, 这个选项 等同于 -r: 生成 可重定位 的 输出 — 就是
-              说,  能够 依次 输入 ld 的 输出文件. 连接 C++ 程序 的 时候, -Ur 将 解析 对 构造
-              子(constructor) 的 引用(reference), 这一点 和 -r 不同.
-
-       --verbose
-              显示 ld 的 版本号, 列出 支持的 模拟项(emulation). 显示 哪些 输入文件  能够  打
-              开, 哪些 不能,
-
-       -v, -V 显示 ld 的 版本号.  此外 -V 选项 能够 列出 支持的 模拟项.
-
-       --version
-              显示 ld 的 版本号 然后 结束.
-
-       -warn-common
-              当 公共符号 和 其他 公共符号 合并 时, 或者 和 某个 符号定义 合并 时, linker 就
-              发出 警告. Unix 系统的 linker 允许 这种 有些 草率 的 做法, 其他 操作系统 则 不
-              行. 这个选项 帮助你 在 合并 全局符号 的 时候 发现 潜在问题.
-
-       -warn-constructors
-              如果  使用了 全局构造子(global constructor), linker 就发出 警告.  它 只对 某些
-              目标文件结构 有用, 对于 如 COFF 或 ELF, 此 linker 不能够 检测 全局构造子 的 使
-              用情况.
-
-       -warn-multiple-gp
-              如果  输出文件 需要 多个 全局指针值, linker 就发出 警告. 这个选项 只能 用于 某
-              些 处理器, 如 Alpha.
-
-       -warn-once
-              对 每个 未定义符号 只 警告 一次, 而不是 每次 引用 这个符号 都 警告.
-
-       -warn-section-align
-              如果 某个 输出节(section) 的 地址 因为 边界对齐 而 发生 改变, linker 就发出 警
-              告. 典型情况下 由 输入节 设置 边界, 只有 不做 明确指定 的 时候 地址 才会 改变;
-              就是说, SECTIONS 命令 没有 指出 该节 的 开始地址.
-
-       --whole-archive
-              对于 命令行 上 --whole-archive 选项 提到的 每个 归档库, 连接时 连入 归档库  的
-              全部  目标文件, 而不是 在 归档库 中 搜索 所需的 目标文件. 一般用于 把 归档库文
-              件 转变成 共享库文件, 迫使 全部 目标文件 进入 共享库.
-
-       --no-whole-archive
-              关闭 --whole-archive 选项 对 归档库 的 影响.
-
-       --wrap symbol
-              对 symbol 使用 包装函数(wrapper function).  任何  对  symbol  未定义  的  引用
-              (undefined  reference)  将 解析为 __wrap_symbol.  任何 对 __real_symbol 未定义
-              的 引用 将 解析为 symbol.
-
-       -X     删除 全部 临时的 局部符号. 大多数 目的文件 中, 这些 局部符号 的 名字 用 `L' 做
-              开头.
-
-       -x     删除 全部 局部符号.
-
-** dd 
-	 dd if=boot of=boot.img bs=512 count=1
+   #include<stdio.h>
+ 
+   int a = 11;
+   int b = 22;
+   int result;
+ 
+   int main()
+   {
+	 asm ( "pusha\n\t"
+	 "movl		a,		%eax\n\t"
+	 "movl		b,		%ebx\n\t"
+	 "imull	%ebx,	%eax\n\t"
+	 "movl		%eax,	result\n\t"
+	 "popa" );
+	 printf ("The answer is %d\n", result);
+	 return 0;
+   }
+
+   运行结果：
+   liury@liury-laptop:~/program/asm/inline_assembly/use_global_var$ ls
+   use_global_var.c
+   liury@liury-laptop:~/program/asm/inline_assembly/use_global_var$ gcc -o use_global_var use_global_var.c 
+   liury@liury-laptop:~/program/asm/inline_assembly/use_global_var$ ./use_global_var 
+   The answer is 242
+
+   注释：
+   反汇编：
+
+   可以发现 a 和 b 在.data 段中，并且类型、对齐方式等的设置。result 没有初始化，故声明为.comm 值。
+   注意开头和结尾的 PUSHA，POPA。因为后面的 C 代码可能用到寄存器，而内联汇编中可能改变了它们，会发生不可预料的后果，故要在开始的位置保存它们，最后恢复它们。
+
+
+   3）volatile 修饰符
+   编译器会试图优化生成的汇编代码以提高性能。但对内联汇编来说，优化有时并不是好事。如果不希望编译器处理内联汇编代码，可以明确地说明。用 volatile 修饰符可以完成这个请求：
+   asm volatile ("assembly code");
+
+
+   4）__asm__替换关键字
+   ANSI C 规范把关键字 asm 用于其他用途，不能将它用于内联汇编语句。如果希望使用 ANSI C 约定编写代码，必须使用关键字__asm__替换一般的关键字 asm。汇编代码段则与 asm 一样。__asm__可以使用__volatile__进行修饰。
+
+
+   2.扩展的 asm
+   基本的 asm 格式简单，但有局限：所有输入输出必须使用全局 C 变量；必须注意不改变任何寄存器的值。
+   扩展格式提供附加选项。
+
+
+   1）扩展 asm 格式
+   扩展 asm 提供附加的特性，格式：
+   asm ("assembly code" : output locations : input operands : changed registers);
+   assembly code:汇编代码，同基本的 asm
+   output locations：输出位置，包含内联汇编代码的输出值的寄存器和内存位置的列表
+   input operands: 输入操作数，包含内联汇编代码的输入值的寄存器和内存位置的列表
+   changed registers：改动的寄存器，内联代码改变的任何其他寄存器列表
+   若不生成输出值：asm ("assembly code" : : input operands : changed registers);
+   若不改动任何寄存器: asm ("assembly code" : output locations : input operands);
+   .file	"use_global_var.c"
+   .globl a
+	 .data
+	 .align 4
+	 .type	a, @object
+	 .size	a, 4
+   a:
+	 .long	11
+   .globl b
+	 .align 4
+	 .type	b, @object
+	 .size	b, 4
+   b:
+	 .long	22
+	 .comm	result,4,4
+	 .section	.rodata
+   .LC0:
+	 .string	"The answer is %d\n"
+	 .text
+   .globl main
+	 .type	main, @function
+   main:
+	 pushl	%ebp
+	 movl	%esp, %ebp
+	 andl	$-16, %esp
+	 subl	$16, %esp
+   #APP
+   # 16 "use_global_var.c" 1
+	 pusha
+	 movl		a,		%eax
+	 movl		b,		%ebx
+	 imull	%ebx,	%eax
+	 movl		%eax,	result
+	 popa
+   # 0 "" 2
+   #NO_APP
+	 movl	result, %edx
+	 movl	$.LC0, %eax
+	 movl	%edx, 4(%esp)
+	 movl	%eax, (%esp)
+	 call	printf
+	 movl	$0, %eax
+	 leave
+	 ret
+	 .size	main, .-main
+	 .ident	"GCC: (Ubuntu 4.4.3-4ubuntu5.1) 4.4.3"
+	 .section	.note.GNU-stack,"",@progbits
+
+   2）指定输入和输出
+   扩展格式中，可从寄存器和内存位置给输入、输出赋值，输入、输出列表的格式：
+   "constraint" (variable)
+   variable 是 C 变量。扩展 asm 中，局部和全局变量都可以用。约束（constraint）定义把变量存放在哪里（对于输入值）或者从哪里传送变量（对于输出值）。使用它定义把变量存放在寄存器还是内存位置中。
+   约束是单一字符的代码，定义如下：
+   ------------------------------------------------------------------------
+   约束 描述
+   --------------------------------------------------------------------
+   a Use the %eax, %ax, or %al registers.
+   b Use the %ebx, %bx, or %bl registers.
+   c Use the %ecx, %cx, or %cl registers.
+   d Use the %edx, %dx, or $dl registers.
+   S Use the %esi or %si registers.
+   D Use the %edi or %di registers.
+   r Use any available general-purpose register.
+   q Use either the %eax, %ebx, %ecx, or %edx register.
+   A Use the %eax and the %edx registers for a 64-bit value.
+   m Use the variable\u2019s memory location.
+   o Use an offset memory location.
+   V Use only a direct memory location.
+   i Use an immediate integer value.
+   n Use an immediate integer value with a known value.
+   g Use any register or memory location available.
+   -------------------------------------------------------------------------
+   除了这些约束外，输出值还包含一个约束修饰符，它指示编译器如何处理输出值：
+   ---------------------------------------------------------------------
+   输出修饰符 描述
+   ---------------------------------------------------------------
+   + 可以读取和写入操作数
+   = 只能写入操作数
+   % 如果必要，操作数可以和下一个操作数切换
+   & 在内联函数完成前，可以删除或者重新使用操作数
+   ----------------------------------------------------------------------
+   示例：
+   asm ("assembly code" : "=a"(result) : "d"(data1) : "c"(data2));
+   把 C 语言变量 data1 放到 EDX 中，data2 放到 ECX 中，结果存放到 EAX 中然后传送给 result。
+
+   3）使用寄存器
+   如果输入值和输出变量被赋值给寄存器，那么在内联汇编中几乎可以像平常一样使用寄存器。
+   示例：
+   /*************************************************************************
+	 > File:		use_registers.c
+	 > Author:	孤舟钓客
+	 > Mail:		guzhoudiaoke@126.com 
+	 > Time:		2012 年 12 月 23 日 星期日 13 时 56 分 38 秒
+   ************************************************************************/
+ 
+   #include<stdio.h>
+ 
+   int main()
+   {
+	 int data1 = 11;
+	 int data2 = 22;
+	 int result;
+ 
+	 __asm__ ("imull	%%edx,	%%ecx\n\t"
+	 "movl	%%ecx,	%%eax"
+	 : "=a"(result)
+	 : "d"(data1), "c"(data2));
+ 
+ 
+	 printf("The result is %d\n", result);
+   }
+
+   运行：
+   liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ gcc -o use_registers use_registers.c
+   liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ ls
+   use_registers  use_registers.c  use_registers.s
+   liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ ./use_registers 
+   The result is 242
+
+   注释：
+   为了使用占位符见下面，使用寄存器时要写两个%
+   "=a" 使用等号符号修饰输出寄存器表明汇编代码只能写入它，这是对内联汇编代码中所有输出值的要求。
+   反汇编：
+	 movl	$11, 28(%esp)
+	 movl	$22, 24(%esp)
+	 movl	28(%esp), %eax
+	 movl	24(%esp), %ecx
+	 movl	%eax, %edx
+   #APP
+   # 16 "use_registers.c" 1
+	 imull	%edx,	%ecx
+	 movl	%ecx,	%eax
+   # 0 "" 2
+   #NO_APP
+	 movl	%eax, 20(%esp)
+
+   可见，编译器把 C 局部变量栈上的值加载到了寄存器中，并通过把 EAX 中的结果输出给栈上的变量 result。
+
+   不一定要在内联汇编中指定输出值，一些汇编指令已经假设输入值包含输出值。比如 MOVS 指令输入值包含输出位置。
+   示例：
+   /*************************************************************************
+	 > File:		only_input.c
+	 > Author:	孤舟钓客
+	 > Mail:		guzhoudiaoke@126.com 
+	 > Time:		2012 年 12 月 23 日 星期日 14 时 15 分 12 秒
+   ************************************************************************/
+ 
+   #include<stdio.h>
+ 
+   int main()
+   {
+	 char input[30] = "Hello inline assembly.\n";
+	 char output[30];
+	 int len = 24;
+ 
+	 __asm__ __volatile__ (
+	 "cld\n\t"
+	 "rep	movsb"
+	 :
+	 : "S"(input), "D"(output), "c"(len));
+ 
+ 
+	 printf("%s", output);
+	 return 0;
+   }
+
+   运行：
+   liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ gcc -o only_input only_input.c 
+   liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ ./only_input 
+   Hello inline assembly.
+
+   注释：
+   程序把 MOVS 需要的三个输入值作为输入，要复制的字符串的位置存放在 ESI 中，目标位置存放在 EDI 中，要复制的字符串长度存放在 ECX 中，
+   输出值已被定义为输入值之一，所以在扩展格式中没有专门定义输出值。
+   此时 volatile 很重要，否则编译器或许会认为这个 asm 段是不必要的而删除它，因为它不生成输出。
+
+   4）使用占位符
+   当有很多输入值时，上面的方法有点麻烦，于是提供了占位符（placeholder），可以在内联汇编中使用它引入输入和输出。这样可以在对于编译器方便的任何寄存器或者内存位置中声明输入和输出。
+   占位符是前面加%的数字。按照内联汇编中列出的每个输入值和输出值在列表中的顺序，每个值被赋予一个从 0 开始的数字，然后可以在汇编代码中使用占位符表示值。如：
+   asm ("assembly code"
+	 : "=r"(result)
+	 : "r"(data1), "r"(data2));
+
+   将生成如下的占位符：
+   %0: 表示包含变量值 result 的寄存器
+   %1: 表示包含变量值 data1 的寄存器
+   %2: 表示包含变量值 data2 的寄存器
+   使用占位符：
+   imull	%1,	%2
+   movl	%2,	%0
+
+   5）引用占位符
+   如果内联汇编代码中的输入和输出共享 C 变量，可以指定占位符作为约束值，可减少代码中需要的寄存器数量：
+   asm ("imull	%1,	%0"
+	 : "=r"(data2)
+	 : "r"(data1), "0"(data2));
+   0 标记通知编译器使用第一个命名的寄存器存放输出值 data2.
+
+   6）替换占位符
+   当输入输出很多时，数字型的占位符会很混乱，新的（3.1 开始）GNU 编译器允许声明替换的名称作为占位符，格式：
+   %[name] "constraint" (variable)
+   示例：
+   asm ("imull	%[val1], %[val2]"
+	 : [val2] "=r"(data2)
+	 : [val1] "r"(data1), "0"(data2));
+
+   7）改动的寄存器列表
+   前面的例子中没有指定改动的寄存器，为何？ 编译器默认输入值和输出值使用的寄存器都会被改动，并做了相应处理，所以不需要指定这些是改动了的寄存器，而若指定了，会产生错误信息
+   正确方法：如果内联汇编代码使用了没有被初始地声明为输入输出的任何其他寄存器，则要通知编译器。编译器必须知道这些寄存器，以便避免使用它们。
+   示例：
+   asm ("movl	%1,		%%eax\n\t"
+	 "addl	%%eax,	%0"
+	 : "=r"(result)
+	 : "r"(data1), "0"(result)
+	 : "%eax" );
+
+   在改变的寄存器中指明要使用%eax，则当用"r"指定要使用一个寄存器时就不会选%eax 了。
+   如果在内联汇编中使用了没有在输入输出中定义的任何内存位置，必须标记为被破坏的。在改动的寄存器列表中使用”memory“通知编译器这个内存位置在内联汇编中被改动。
+
+   8）使用内存位置
+   在内联汇编代码中使用寄存器比较快，但也可以直接使用 C 变量的内存位置。约束 m 用于引用输入输出的内存位置。
+   示例：
+   asm ("divb	%2\n\t"
+	 "movl	%eax,	%0"
+	 : "=m"(result)
+	 : "a"(dividend), "m"(divisor));
+
+   9）跳转
+   内联汇编代码中也可以包含定义位置标签，实现跳转。
+   示例：
+   int a = 11;
+   int b = 22;
+   int result;
+ 
+   asm ("cmp	%1,	%2\n\t"
+	 "jge	greater\n\t"
+	 "movl	%1,	%0\n\t"
+	 "jmp	end\n"
+	 "greater:\n\t"
+	 "movl	%2,	%0\n"
+	 "end:"
+	 : "=r"(result)
+	 : "r"(a), "r"(b) );
+
+   内联汇编中使用标签的两个限制：
+   只能跳转到相同的 asm 段内的标签；
+   内联汇编也被编码到最终的汇编代码中，如果有另一个 asm 段，就不能再次使用相同的标签，否则会出错。另外如果试图整合使用 C 关键字（如函数名称或全局变量）的标签，也会出错。
+   解决办法：
+   在不同的 asm 段中也不用用过的标签；
+   使用局部标签。
+   条件分支和无条件分支都运行指定一个数字加上方向标志作为标签，方向标志指出处理器应该向哪个方向查找数字型标签，第一个遇到的标签会被采用。
+   示例：
+   asm ("cmp	%1,	%2\n\t"
+	 "jge	0f\n\t"
+	 "movl	%1,	%0\n\t"
+	 "jmp	1f\n"
+	 "0:\n\t"
+	 "movl	%2,	%0\n"
+	 "1:"
+	 : "=r"(result)
+	 : "r"(a), "r"(b) );
+
+   其中 f（forward）指出从跳转指令向前（即到后面的代码）查找标签，b（backword）则相反，到向后（到前面的代码）找标签。
+
+   3.内联汇编用作宏函数
+   1）C 宏函数
+   #define NAME	expression
+   示例：
+   #define SUM(a, b, result) \
+	 ((result) = (a) + (b))
+
+   2）内联汇编宏函数
+   示例：
+   #define GREATER(a, b, result) ( { asm ( \
+	 "cmp	%1,		%2\n\t"	\
+	 "jge	0f\n\t"			\
+	 "movl	%1,		%0\n\t"	\
+	 "jmp	1f\n\t"			\
+	 "0:\n\t"				\
+	 "movl	%2,		%0\n\t"	\
+	 "1:\n\t"				\
+	 : "=r"(result)			\
+	 : "r"(a), "r"(b) ); })
+** 高级功能
+*** gnu 内联汇编的语法:
+    asm 或__asm__("汇编代码");
+    指令必须包含在引号里
+    如果包含的指令超过一行 必须使用新行分隔符分隔
+       
+    使用 c 全局变量, 不能在内联汇编中使用局部变量, 注意在汇编语言代码中值被用
+    做内存位置, 而不是立即数值
+    
+    如果不希望优化内联汇编, 则可以 volatile 修饰符如:__asm__ volatile("code");
+*** GCC 内联汇编的扩展语法
+         __asm__("assembly code":output locations:input operands:changed registers);
+         第一部分是汇编代码
+         第二部分是输出位置, 包含内联汇编代码的输出值的寄存器和内存位置列表
+         第三部分是输入操作数,包含内联汇编代码输入值的寄存器和内存位置的列表
+         第四部分是改动的寄存器, 内联汇编改变的任何其他寄存器的列表
+         这几个部分可以不全有, 但是没有的还必须使用:分隔
+         1, 指定输入值和输出值, 输入值和输出值的列表格式为:
+       
+         "constraint"(variable), 其中 variable 是程序中声明的 c 变量, 在扩展 asm
+         格式中, 局部和全局变量都可以使用,使用 constrant(约束)
+       
+         定义把变量存放到哪(输入)或从哪里传送变量(输出)
+       
+         约束使用单一的字符, 如下:
+         约束 描述
+         a 使用%eax, %ax, %al 寄存器
+         b 使用%ebx, %bx, %bl 寄存器
+         c 使用%ecx, %cx, %cl 寄存器
+         d 使用%edx, %dx, %dl 寄存器
+         S 使用%esi, %si 寄存器
+         D 使用%edi, %di 寄存器
+         r 使用任何可用的通用寄存器
+         q 使用%eax, %ebx, %ecx,%edx 之一
+         A 对于 64 位值使用%eax, %edx 寄存器
+         f 使用浮点寄存器
+         t 使用第一个(顶部)的浮点寄存器
+         u 使用第二个浮点寄存器
+         m 使用变量的内存位置
+         o 使用偏移内存位置
+         V 只使用直接内存位置
+         i 使用立即整数值
+         n 使用值已知的立即整数值
+         g 使用任何可用的寄存器和内存位置
+         除了这些约束之外, 输出值还包含一个约束修饰符:
+         输出修饰符 描述
+         + 可以读取和写入操作数
+         = 只能写入操作数
+         % 如果有必要操作数可以和下一个操作数切换
+         & 在内联函数完成之前, 可以删除和重新使用操作数
+         如:
+         __asm__("assembly code": "=a"(result):"d"(data1),"c"(data2));
+       
+         把 c 变量 data1 存放在 edx 寄存器中, 把 c 变量 data2 存放到 ecx 寄存器中,
+         内联汇编的结果将存放在 eax 寄存器中, 然后传送给变量 result
+       
+         在扩展的 asm 语句块中如果要使用寄存器必须使用两个百分号符号
+       
+         不一定总要在内联汇编代码中指定输出值, 一些汇编指令假定输入值包含输出值,
+         如 movs 指令
+*** 其他扩展内联汇编知识:
+**** 使用占位符
+          输入值存放在内联汇编段中声明的特定寄存器中, 并且在汇编指令中专门使用这些寄存器.虽然这种方式能够很好的处理只有几个输入值的情
+          况, 但对于需要很多输入值的情况, 这中方式显的有点繁琐. 为了帮助解决这个问题, 扩展 asm 格式提供了占位符, 可以在内联汇编代码中使
+          用它引用输入和输出值.
+          占位符是前面加上百分号的数字, 按照内联汇编中列出的每个输入和输出值在列表中的位置,每个值被赋予从 0 开始的地方. 然后就可以在汇
+          编代码中引用占位符来表示值。
+          如果内联汇编代码中的输入和输出值共享程序中相同的 c 变量, 则可以指定使用占位符作为约束值, 如:
+          __asm__("imull %1, %0"
+          : "=r"(data2)
+          : "r"(data1), "0"(data2));
+          如输入输出值中共享相同的变量 data2, 而在输入变量中则可以使用标记 0 作为输入参数的约束
+**** 替换占位符
+          如果处理很多输入和输出值, 数字型的占位符很快就会变的很混乱, 为了使条理清晰 ,GNU 汇编器(从版本 3.1 开始)允许声明替换的名称作为
+          占位符.替换的名称在声明输入值和输出值的段中定义, 格式如下:
+          %[name]"constraint"(variable)
+          定义的值 name 成为内联汇编代码中变量的新的占位符号标识, 如下面的例子:
+          __asm__("imull %[value1], %[value2]"
+          : [value2] "=r"(data2)
+          : [value1] "r"(data1), "0"(data2));
+**** 改动寄存器列表
+       
+          编译器假设输入值和输出值使用的寄存器会被改动, 并且相应的作出处理。程序员
+          不需要在改动的寄存器列表中包含这些值, 如果这样做了, 就
+       
+          会产生错误消息. 注意改动的寄存器列表中的寄存器使用完整的寄存器名称, 而不像输入和输出寄存器定义的那样仅仅是单一字母。 在寄存器
+          名称前面使用百分号符号是可选的。
+          改动寄存器列表的正确使用方法是, 如果内联汇编代码使用了没有被初始化地声明为输入或者输出值的其他任何寄存器 , 则要通知编译器。编
+          译器必须知道这些寄存器, 以避免使用他们。如:
+          int main(void) {
+          int data1 = 10;
+          int result = 20;
+          __asm__("movl %1, %%eax\n\t"
+          "addl %%eax, %0"
+          : "=r"(result)
+          : "r"(data1), "0"(result)
+          : "%eax");
+          printf("The result is %d\n", result);
+          return 0;
+          }
+**** 使用内存位置
+          虽然在内联汇编代码中使用寄存器比较快, 但是也可以直接使用 c 变量的内存位置。 约束 m 用于引用输入值和输出值中的内存位置。 记住, 对
+          于要求使用寄存器的汇编指令, 仍然必须使用寄存器, 所以不得不定义保存数据的中间寄存器。如:
+          int main(void) {
+          int dividentd = 20;
+          int divisor = 5;
+          int result;
+          __asm__("divb %2\n\t"
+          "movl %%eax, %0"
+          : "=m"(result)
+          : "a"(dividend), "m"(divisor));
+          printf("The result is %d\n", result);
+          return 0;
+          }
+**** 处理跳转
+          内联汇编语言代码也可以包含定义其中位置的标签。 可以实现一般的汇编条件分支和无条件分支, 如:
+          int main(void) {
+          int a = 10;
+          int b = 20;
+          int result;
+          __asm__("cmp %1, %2\n\t"
+          "jge greater\n\t"
+          "movl %1, %0\n\t"
+          "jmp end\n"
+          "greater:\n\t"
+          "movl %2, %0\n"
+          "end:"
+          :"=r"(result)
+          :"r"(a), "r"(b));
+          printf("The larger value is %d\n", result);
+          return 0;
+          }
+          在内联汇编代码中使用标签时有两个限制。 第一个限制是只能跳转到相同的 asm 段内的标签,不能从-个 asm 段跳转到另一个 asm 段中的
+          标签。第二个限制更加复杂一点。 以上程序使用标签 greater 和 end。 但是, 这样有个潜在的问题, 查看汇编后的代码清单, 可以发现内联
+          汇编标签也被编码到了最终汇编后的代码中。 这意味着如果在 c 代码中还有另一个 asm 段, 就不能再次使用相同的标签, 否则会因为标签重
+          复使用而导致错误消息。还有如果试图整合使用 c 关键字(比如函数名称或者全局变量)的标签也会导致错误。
+** 优化代码
+   GNU 编译器提供-O 选项供程序优化使用:
+   -O 提供基础级别的优化
+   -O2 提供更加高级的代码优化
+   -O3 提供最高级的代码优化
   
-     | bs=<字节数>    | 将输入与输出设成指定的字节数   |
-     | cbs=<字节数>   | 转换时，每次只转换指定的字节数 |
-     | conv=<关键字>  | 指定文件转换的方式             |
-     | count=<区块数> | 仅读取指定的区块数             |
-     | ibs=<字节数>   | 每次读取的字节数               |
-     | obs=<字节数>   | 每次输出的字节数               |
-     | of=<文件>      | 输出到文件                     |
-     | seek=<区块数>  | 一开始输出时，跳过指定的区块数 |
-     | skip=<区块数>  | 一开始读取时，跳过指定的区块数 |
-
-** qemu
-   qemu-system-x86_64 -hda archlinux.vmdk -boot d -cdrom /home/wuming/soft/tar/archlinux-2017.03.01-dual.iso -m 512
-   
-** gdb
-*** 调试：
-  (gdb) b *_start+1
-   Breakpoint 1 at 0x8048075: file movs_example.s, line 15.
-   (gdb) r
-   (gdb) n
-   (gdb) print /x $esi
-   (gdb) print /x str
-   (gdb) print /x &str
-   (gdb) n
-   (gdb) x /9cb &output
-   (gdb) x /s &output
-   (gdb) n
-   (gdb) x /s &output
-   (gdb) n
-   (gdb) x /s &output
-   (gdb) n
-   (gdb) x /s &output
-   (gdb) c
-   (gdb) q
-*** 调试利器
-1.1. 启动 gdb
-对 C/C++程序的调试，需要在编译前就加上-g 选项:
-
-$g++ -g hello.cpp -o hello
-调试可执行文件:
-
-$gdb <program>
-program 也就是你的执行文件，一般在当前目录下。
-
-调试 core 文件(core 是程序非法执行后 core dump 后产生的文件):
-
-$gdb <program> <core dump file>
-$gdb program core.11127
-调试服务程序:
-
-$gdb <program> <PID>
-$gdb hello 11127
-如果你的程序是一个服务程序，那么你可以指定这个服务程序运行时的进程 ID。gdb 会自动 attach 上去，并调试他。program 应该在 PATH 环境变量中搜索得到。
-
-1.2. gdb 交互命令
-启动 gdb 后，进入到交互模式，通过以下命令完成对程序的调试；注意高频使用的命令一般都会有缩写，熟练使用这些缩写命令能提高调试的效率；
-
-运行
-run：简记为 r，其作用是运行程序，当遇到断点后，程序会在断点处停止运行，等待用户输入下一步的命令。
-continue（简写 c）：继续执行，到下一个断点处（或运行结束）
-next：（简写 n），单步跟踪程序，当遇到函数调用时，也不进入此函数体；此命令同 step 的主要区别是，step 遇到用户自定义的函数，将步进到函数中去运行，而 next 则直接调用函数，不会进入到函数体内。
-step（简写 s）：单步调试如果有函数调用，则进入函数；与命令 n 不同，n 是不进入调用的函数的
-until：当你厌倦了在一个循环体内单步跟踪时，这个命令可以运行程序直到退出循环体。
-until+行号： 运行至某行，不仅仅用来跳出循环
-finish： 运行程序，直到当前函数完成返回，并打印函数返回时的堆栈地址和返回值及参数值等信息。
-call 函数(参数)：调用程序中可见的函数，并传递“参数”，如：call gdb_test(55)
-quit：简记为 q，退出 gdb
-设置断点
-break n（简写 b n）:在第 n 行处设置断点
-（可以带上代码路径和代码名称：b OAGUPDATE.cpp:578）
-b fn1 if a＞b：条件断点设置
-break func（break 缩写为 b）：在函数 func()的入口处设置断点，如：break cb_button
-delete 断点号 n：删除第 n 个断点
-disable 断点号 n：暂停第 n 个断点
-enable 断点号 n：开启第 n 个断点
-clear 行号 n：清除第 n 行的断点
-info b（info breakpoints） ：显示当前程序的断点设置情况
-delete breakpoints：清除所有断点：
-查看源代码
-list：简记为 l，其作用就是列出程序的源代码，默认每次显示 10 行。
-list 行号：将显示当前文件以“行号”为中心的前后 10 行代码，如：list 12
-list 函数名：将显示“函数名”所在函数的源代码，如：list main
-list：不带参数，将接着上一次 list 命令的，输出下边的内容。
-打印表达式
-print 表达式：简记为 p，其中“表达式”可以是任何当前正在被测试程序的有效表达式，比如当前正在调试 C 语言的程序，那么“表达式”可以是任何 C 语言的有效表达式，包括数字，变量甚至是函数调用。
-print a：将显示整数 a 的值
-print ++a：将把 a 中的值加 1,并显示出来
-print name：将显示字符串 name 的值
-print gdb_test(22)：将以整数 22 作为参数调用 gdb_test() 函数
-print gdb_test(a)：将以变量 a 作为参数调用 gdb_test() 函数
-display 表达式：在单步运行时将非常有用，使用 display 命令设置一个表达式后，它将在每次单步进行指令后，紧接着输出被设置的表达式及值。如：display a
-watch 表达式：设置一个监视点，一旦被监视的“表达式”的值改变，gdb 将强行终止正在被调试的程序。如：watch a
-whatis：查询变量或函数
-info function： 查询函数
-扩展 info locals： 显示当前堆栈页的所有变量
-查询运行信息
-where/bt：当前运行的堆栈列表；
-bt backtrace 显示当前调用堆栈
-up/down 改变堆栈显示的深度
-set args 参数:指定运行时的参数
-show args：查看设置好的参数
-info program： 来查看程序的是否在运行，进程号，被暂停的原因。
-分割窗口
-layout：用于分割窗口，可以一边查看代码，一边测试：
-layout src：显示源代码窗口
-layout asm：显示反汇编窗口
-layout regs：显示源代码/反汇编和 CPU 寄存器窗口
-layout split：显示源代码和反汇编窗口
-Ctrl + L：刷新窗口
-注解
-
-交互模式下直接回车的作用是重复上一指令，对于单步调试非常方便；
-
-1.3. 更强大的工具
-cgdb
-cgdb 可以看作 gdb 的界面增强版,用来替代 gdb 的 gdb -tui。cgdb 主要功能是在调试时进行代码的同步显示，这无疑增加了调试的方便性，提高了调试效率。界面类似 vi，符合 unix/linux 下开发人员习惯;如果熟悉 gdb 和 vi，几乎可以立即使用 cgdb。
-*** 常用命令
-    break 加断点
-    run 运行
-    next 单步运行
-    info registers 显示所有寄存器的值
-    print 显示特定寄存器的值
-    print /d 显示十进制的值
-    print /t 显示二进制的值
-    print /x 显示十六进制的值
-    x 显示特定内存地址的内容
-    x /nyz
-    n 是要显示的字段数，y 是输出格式：
-    c 用于字符
-    d 十进制
-    x 十六进制
-    z 是要显示的字段长度
-    b 字节 8 位
-    h 16 位
-    w 32 位字
-
-** ldd 查看程序依赖库
-ldd
-作用：用来查看程式运行所需的共享库,常用来解决程式因缺少某个库文件而不能运行的一些问题。
-示例：查看 test 程序运行所依赖的库:
-
-/opt/app/todeav1/test$ldd test
-libstdc++.so.6 => /usr/lib64/libstdc++.so.6 (0x00000039a7e00000)
-libm.so.6 => /lib64/libm.so.6 (0x0000003996400000)
-libgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00000039a5600000)
-libc.so.6 => /lib64/libc.so.6 (0x0000003995800000)
-/lib64/ld-linux-x86-64.so.2 (0x0000003995400000)
-第一列：程序需要依赖什么库
-第二列: 系统提供的与程序需要的库所对应的库
-第三列：库加载的开始地址
-通过上面的信息，我们可以得到以下几个信息：
-
-通过对比第一列和第二列，我们可以分析程序需要依赖的库和系统实际提供的，是否相匹配
-通过观察第三列，我们可以知道在当前的库中的符号在对应的进程的地址空间中的开始位置
-如果依赖的某个库找不到，通过这个命令可以迅速定位问题所在；
-
-注解
-
-原理：ldd 不是个可执行程式，而只是个 shell 脚本；ldd 显示可执行模块的 dependency 的工作原理，其实质是通过 ld-linux.so（elf 动态库的装载器）来实现的。ld-linux.so 模块会先于 executable 模块程式工作，并获得控制权，因此当上述的那些环境变量被设置时，ld-linux.so 选择了显示可执行模块的 dependency。
-** ar 建立或修改备存文件，或是从备存文件中抽取文件
-   ar：支持的目标：elf64-x86-64 elf32-i386 elf32-x86-64 a.out-i386-linux
-   pei-i386 pei-x86-64 elf64-l1om elf64-k1om elf64-little elf64-big
-   elf32-little elf32-big plugin srec symbolsrec verilog tekhex binary ihex
-*** 选项
-     d            - 从归档文件中删除文件
-m[ab]        - 在归档文件中移动文件
-p            - 打印在归档文件中找到的文件
-q[f]         - 将文件快速追加到归档文件中
-r[ab][f][u]  - 替换归档文件中已有的文件或加入新文件
-s            - act as ranlib
-t            - 显示归档文件的内容
-x[o]         - 从归档文件中分解文件
-特定命令修饰符：
-[a]          - 将文件置于 [成员名] 之后
-[b]          - 将文件置于 [成员名] 之前 (于 [i] 相同)
-[D]          - use zero for timestamps and uids/gids
-[U]          - use actual timestamps and uids/gids (default)
-[N]          - use instance [count] of name
-[f]          - truncate inserted file names
-[P]          - 在匹配时使用完整的路径名
-[o]          - 保留原来的日期
-[u]          - 只替换比当前归档内容更新的文件
-通用修饰符：
-[c]          - 不在必须创建库的时候给出警告
-[s]          - 创建归档索引 (cf. ranlib)
-[S]          - 不要创建符号表
-[T]          - 做一个压缩档案
-[v]          - 输出较多信息
-[V]          - 显示版本号
-@<file>      - 从<file>读取选项
---target=BFDNAME - 将目标对象格式指定为 BFDNAME
-** lsof 一切皆文件
-lsof（list open files）是一个查看当前系统文件的工具。在 linux 环境下，任何事物都以文件的形式存在，通过文件不仅仅可以访问常规数据，还可以访问网络连接和硬件。如传输控制协议 (TCP) 和用户数据报协议 (UDP) 套接字等，系统在后台都为该应用程序分配了一个文件描述符，该文件描述符提供了大量关于这个应用程序本身的信息。
-
-lsof 打开的文件可以是：
-
-普通文件
-目录
-网络文件系统的文件
-字符或设备文件
-(函数)共享库
-管道，命名管道
-符号链接
-网络文件（例如：NFS file、网络 socket，unix 域名 socket）
-还有其它类型的文件，等等
-3.1. 命令参数
--a 列出打开文件存在的进程
--c<进程名> 列出指定进程所打开的文件
--g 列出 GID 号进程详情
--d<文件号> 列出占用该文件号的进程
-+d<目录> 列出目录下被打开的文件
-+D<目录> 递归列出目录下被打开的文件
--n<目录> 列出使用 NFS 的文件
--i<条件> 列出符合条件的进程。（4、6、协议、:端口、 @ip）
--p<进程号> 列出指定进程号所打开的文件
--u 列出 UID 号进程详情
--h 显示帮助信息
--v 显示版本信息
-3.2. 使用实例
-实例 1：无任何参数
-$lsof| more
-COMMAND     PID      USER   FD      TYPE             DEVICE SIZE/OFF       NODE NAME
-init          1      root  cwd       DIR              253,0     4096          2 /
-init          1      root  rtd       DIR              253,0     4096          2 /
-init          1      root  txt       REG              253,0   150352    1310795 /sbin/init
-init          1      root  mem       REG              253,0    65928    5505054 /lib64/libnss_files-2.12.so
-init          1      root  mem       REG              253,0  1918016    5521405 /lib64/libc-2.12.so
-init          1      root  mem       REG              253,0    93224    5521440 /lib64/libgcc_s-4.4.6-20120305.so.1
-init          1      root  mem       REG              253,0    47064    5521407 /lib64/librt-2.12.so
-init          1      root  mem       REG              253,0   145720    5521406 /lib64/libpthread-2.12.so
-...
-说明：
-
-lsof 输出各列信息的意义如下：
-
-COMMAND：进程的名称
-
-PID：进程标识符
-
-PPID：父进程标识符（需要指定-R 参数）
-
-USER：进程所有者
-
-PGID：进程所属组
-
-FD：文件描述符，应用程序通过文件描述符识别该文件。如 cwd、txt 等:
-
-（1）cwd：表示 current work dirctory，即：应用程序的当前工作目录，这是该应用程序启动的目录，除非它本身对这个目录进行更改
-（2）txt：该类型的文件是程序代码，如应用程序二进制文件本身或共享库，如上列表中显示的 /sbin/init 程序
-（3）lnn：library references (AIX);
-（4）er：FD information error (see NAME column);
-（5）jld：jail directory (FreeBSD);
-（6）ltx：shared library text (code and data);
-（7）mxx：hex memory-mapped type number xx.
-（8）m86：DOS Merge mapped file;
-（9）mem：memory-mapped file;
-（10）mmap：memory-mapped device;
-（11）pd：parent directory;
-（12）rtd：root directory;
-（13）tr：kernel trace file (OpenBSD);
-（14）v86  VP/ix mapped file;
-（15）0：表示标准输入
-（16）1：表示标准输出
-（17）2：表示标准错误
-一般在标准输出、标准错误、标准输入后还跟着文件状态模式：r、w、u 等
-（1）u：表示该文件被打开并处于读取/写入模式
-（2）r：表示该文件被打开并处于只读模式
-（3）w：表示该文件被打开并处于
-（4）空格：表示该文件的状态模式为 unknow，且没有锁定
-（5）-：表示该文件的状态模式为 unknow，且被锁定
-同时在文件状态模式后面，还跟着相关的锁
-（1）N：for a Solaris NFS lock of unknown type;
-（2）r：for read lock on part of the file;
-（3）R：for a read lock on the entire file;
-（4）w：for a write lock on part of the file;（文件的部分写锁）
-（5）W：for a write lock on the entire file;（整个文件的写锁）
-（6）u：for a read and write lock of any length;
-（7）U：for a lock of unknown type;
-（8）x：for an SCO OpenServer Xenix lock on part      of the file;
-（9）X：for an SCO OpenServer Xenix lock on the      entire file;
-（10）space：if there is no lock.
-TYPE：文件类型，如 DIR、REG 等，常见的文件类型:
-
-（1）DIR：表示目录
-（2）CHR：表示字符类型
-（3）BLK：块设备类型
-（4）UNIX：UNIX 域套接字
-（5）FIFO：先进先出 (FIFO) 队列
-（6）IPv4：网际协议 (IP) 套接字
-DEVICE：指定磁盘的名称
-
-SIZE：文件的大小
-
-NODE：索引节点（文件在磁盘上的标识）
-
-NAME：打开文件的确切名称
-
-实例 2：查找某个文件相关的进程
-$lsof /bin/bash
-COMMAND     PID USER  FD   TYPE DEVICE SIZE/OFF    NODE NAME
-mysqld_sa  2169 root txt    REG  253,0   938736 4587562 /bin/bash
-ksmtuned   2334 root txt    REG  253,0   938736 4587562 /bin/bash
-bash      20121 root txt    REG  253,0   938736 4587562 /bin/bash
-实例 3：列出某个用户打开的文件信息
-   $lsof -u username
-
--u 选项，u 是 user 的缩写
-实例 4：列出某个程序进程所打开的文件信息
-$lsof -c mysql
--c 选项将会列出所有以 mysql 这个进程开头的程序的文件，其实你也可以写成 lsof | grep mysql, 但是第一种方法明显比第二种方法要少打几个字符；
-
-实例 5：列出某个用户以及某个进程所打开的文件信息
-$lsof  -u test -c mysql
-实例 6：通过某个进程号显示该进程打开的文件
-$lsof -p 11968
-实例 7：列出所有的网络连接
-$lsof -i
-实例 8：列出所有 tcp 网络连接信息
-$lsof -i tcp
-
-$lsof -n -i tcp
-COMMAND     PID  USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
-svnserve  11552 weber    3u  IPv4 3799399      0t0  TCP *:svn (LISTEN)
-redis-ser 25501 weber    4u  IPv4  113150      0t0  TCP 127.0.0.1:6379 (LISTEN)
-实例 9：列出谁在使用某个端口
-$lsof -i :3306
-实例 10：列出某个用户的所有活跃的网络端口
-$lsof -a -u test -i
-实例 11：根据文件描述列出对应的文件信息
-$lsof -d description(like 2)
-示例:
-
-$lsof -d 3 | grep PARSER1
-tail      6499 tde    3r   REG    253,3   4514722     417798 /opt/applog/open/log/HOSTPARSER1_ERROR_141217.log.001
-说明：0 表示标准输入，1 表示标准输出，2 表示标准错误，从而可知：所以大多数应用程序所打开的文件的 FD 都是从 3 开始
-
-实例 12：列出被进程号为 1234 的进程所打开的所有 IPV4 network files
-$lsof -i 4 -a -p 1234
-实例 13：列出目前连接主机 nf5260i5-td 上端口为：20，21，80 相关的所有文件信息，且每隔 3 秒重复执行
-lsof -i @nf5260i5-td:20,21,80 -r 3
-** ps 进程查看器
-Linux 中的 ps 命令是 Process Status 的缩写。ps 命令用来列出系统中当前运行的那些进程。ps 命令列出的是当前那些进程的快照，就是执行 ps 命令的那个时刻的那些进程，如果想要动态的显示进程信息，就可以使用 top 命令。
-
-要对进程进行监测和控制，首先必须要了解当前进程的情况，也就是需要查看当前进程，而 ps 命令就是最基本同时也是非常强大的进程查看命令。使用该命令可以确定有哪些进程正在运行和运行的状态、进程是否结束、进程有没有僵死、哪些进程占用了过多的资源等等。总之大部分信息都是可以通过执行该命令得到的。
-
-ps 为我们提供了进程的一次性的查看，它所提供的查看结果并不动态连续的；如果想对进程时间监控，应该用 top linux 下的任务管理器 工具。
-
-注：kill 命令用于杀死进程。
-
-linux 上进程有 5 种状态:
-
-运行(正在运行或在运行队列中等待)
-中断(休眠中, 受阻, 在等待某个条件的形成或接受到信号)
-不可中断(收到信号不唤醒和不可运行, 进程必须等待直到有中断发生)
-僵死(进程已终止, 但进程描述符存在, 直到父进程调用 wait4()系统调用后释放)
-停止(进程收到 SIGSTOP, SIGTSTP, SIGTTIN, SIGTTOU 信号后停止运行运行)
-ps 工具标识进程的 5 种状态码:
-
-D 不可中断 uninterruptible sleep (usually IO)
-R 运行 runnable (on run queue)
-S 中断 sleeping
-T 停止 traced or stopped
-Z 僵死 a defunct (”zombie”) process
-4.1. 命令参数
-a 显示所有进程
--a 显示同一终端下的所有程序
--A 显示所有进程
-c 显示进程的真实名称
--N 反向选择
--e 等于“-A”
-e 显示环境变量
-f 显示程序间的关系
--H 显示树状结构
-r 显示当前终端的进程
-T 显示当前终端的所有程序
-u 指定用户的所有进程
--au 显示较详细的资讯
--aux 显示所有包含其他使用者的行程
--C<命令> 列出指定命令的状况
-–lines<行数> 每页显示的行数
-–width<字符数> 每页显示的字符数
-–help 显示帮助信息
-–version 显示版本显示
-4.2. 输出列的含义
-F 代表这个程序的旗标 (flag)，4 代表使用者为 super user
-S 代表这个程序的状态 (STAT)，关于各 STAT 的意义将在内文介绍
-UID 程序被该 UID 所拥有
-PID 进程的 ID
-PPID 则是其上级父程序的 ID
-C CPU 使用的资源百分比
-PRI 这个是 Priority (优先执行序) 的缩写，详细后面介绍
-NI 这个是 Nice 值，在下一小节我们会持续介绍
-ADDR 这个是 kernel function，指出该程序在内存的那个部分。如果是个 running 的程序，一般就是 “-“
-SZ 使用掉的内存大小
-WCHAN 目前这个程序是否正在运作当中，若为 - 表示正在运作
-TTY 登入者的终端机位置
-TIME 使用掉的 CPU 时间。
-CMD 所下达的指令为何
-4.3. 使用实例
-实例 1：显示所有进程信息
-[root@localhost test6]# ps -A
-PID TTY          TIME CMD
-1 ?        00:00:00 init
-2 ?        00:00:01 migration/0
-3 ?        00:00:00 ksoftirqd/0
-4 ?        00:00:01 migration/1
-5 ?        00:00:00 ksoftirqd/1
-6 ?        00:29:57 events/0
-7 ?        00:00:00 events/1
-8 ?        00:00:00 khelper
-49 ?        00:00:00 kthread
-54 ?        00:00:00 kblockd/0
-55 ?        00:00:00 kblockd/1
-56 ?        00:00:00 kacpid
-217 ?        00:00:00 cqueue/0
-……省略部分结果
-实例 2：显示指定用户信息
-[root@localhost test6]# ps -u root
-PID TTY          TIME CMD
-1 ?        00:00:00 init
-2 ?        00:00:01 migration/0
-3 ?        00:00:00 ksoftirqd/0
-4 ?        00:00:01 migration/1
-5 ?        00:00:00 ksoftirqd/1
-6 ?        00:29:57 events/0
-7 ?        00:00:00 events/1
-8 ?        00:00:00 khelper
-49 ?        00:00:00 kthread
-54 ?        00:00:00 kblockd/0
-55 ?        00:00:00 kblockd/1
-56 ?        00:00:00 kacpid
-……省略部分结果
-实例 3：显示所有进程信息，连同命令行
-[root@localhost test6]# ps -ef
-UID        PID  PPID  C STIME TTY          TIME CMD
-root         1     0  0 Nov02 ?        00:00:00 init [3]
-root         2     1  0 Nov02 ?        00:00:01 [migration/0]
-root         3     1  0 Nov02 ?        00:00:00 [ksoftirqd/0]
-root         4     1  0 Nov02 ?        00:00:01 [migration/1]
-root         5     1  0 Nov02 ?        00:00:00 [ksoftirqd/1]
-root         6     1  0 Nov02 ?        00:29:57 [events/0]
-root         7     1  0 Nov02 ?        00:00:00 [events/1]
-root         8     1  0 Nov02 ?        00:00:00 [khelper]
-root        49     1  0 Nov02 ?        00:00:00 [kthread]
-root        54    49  0 Nov02 ?        00:00:00 [kblockd/0]
-root        55    49  0 Nov02 ?        00:00:00 [kblockd/1]
-root        56    49  0 Nov02 ?        00:00:00 [kacpid]
-实例 4：ps 与 grep 组合使用，查找特定进程
-[root@localhost test6]# ps -ef|grep ssh
-root      2720     1  0 Nov02 ?        00:00:00 /usr/sbin/sshd
-root     17394  2720  0 14:58 ?        00:00:00 sshd: root@pts/0
-root     17465 17398  0 15:57 pts/0    00:00:00 grep ssh
-实例 5：将与这次登入的 PID 与相关信息列示出来
-[root@localhost test6]# ps -l
-F S   UID   PID  PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
-4 S     0 17398 17394  0  75   0 - 16543 wait   pts/0    00:00:00 bash
-4 R     0 17469 17398  0  77   0 - 15877 -      pts/0    00:00:00 ps
-实例 6：列出目前所有的正在内存中的程序
-[root@localhost test6]# ps aux
-USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-root         1  0.0  0.0  10368   676 ?        Ss   Nov02   0:00 init [3]
-root         2  0.0  0.0      0     0 ?        S<   Nov02   0:01 [migration/0]
-root         3  0.0  0.0      0     0 ?        SN   Nov02   0:00 [ksoftirqd/0]
-root         4  0.0  0.0      0     0 ?        S<   Nov02   0:01 [migration/1]
-root         5  0.0  0.0      0     0 ?        SN   Nov02   0:00 [ksoftirqd/1]
-root         6  0.0  0.0      0     0 ?        S<   Nov02  29:57 [events/0]
-root         7  0.0  0.0      0     0 ?        S<   Nov02   0:00 [events/1]
-root         8  0.0  0.0      0     0 ?        S<   Nov02   0:00 [khelper]
-root        49  0.0  0.0      0     0 ?        S<   Nov02   0:00 [kthread]
-root        54  0.0  0.0      0     0 ?        S<   Nov02   0:00 [kblockd/0]
-root        55  0.0  0.0      0     0 ?        S<   Nov02   0:00 [kblockd/1]
-root        56  0.0  0.0      0     0 ?        S<   Nov02   0:00 [kacpid]
-** strace 跟踪进程中的系统调用
-strace 常用来跟踪进程执行时的系统调用和所接收的信号。 在 Linux 世界，进程不能直接访问硬件设备，当进程需要访问硬件设备(比如读取磁盘文件，接收网络数据等等)时，必须由用户态模式切换至内核态模式，通过系统调用访问硬件设备。strace 可以跟踪到一个进程产生的系统调用,包括参数，返回值，执行消耗的时间。
-
-6.1. 输出参数含义
-每一行都是一条系统调用，等号左边是系统调用的函数名及其参数，右边是该调用的返回值。strace 显示这些调用的参数并返回符号形式的值。strace 从内核接收信息，而且不需要以任何特殊的方式来构建内核。
-
-$strace cat /dev/null
-execve("/bin/cat", ["cat", "/dev/null"], [/* 22 vars */]) = 0
-brk(0)                                  = 0xab1000
-access("/etc/ld.so.nohwcap", F_OK)      = -1 ENOENT (No such file or directory)
-mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f29379a7000
-access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
-...
-6.2. 参数
--c 统计每一系统调用的所执行的时间,次数和出错的次数等.
--d 输出 strace 关于标准错误的调试信息.
--f 跟踪由 fork 调用所产生的子进程.
--ff 如果提供-o filename,则所有进程的跟踪结果输出到相应的 filename.pid 中,pid 是各进程的进程号.
--F 尝试跟踪 vfork 调用.在-f 时,vfork 不被跟踪.
--h 输出简要的帮助信息.
--i 输出系统调用的入口指针.
--q 禁止输出关于脱离的消息.
--r 打印出相对时间关于,,每一个系统调用.
--t 在输出中的每一行前加上时间信息.
--tt 在输出中的每一行前加上时间信息,微秒级.
--ttt 微秒级输出,以秒了表示时间.
--T 显示每一调用所耗的时间.
--v 输出所有的系统调用.一些调用关于环境变量,状态,输入输出等调用由于使用频繁,默认不输出.
--V 输出 strace 的版本信息.
--x 以十六进制形式输出非标准字符串
--xx 所有字符串以十六进制形式输出.
--a column
-设置返回值的输出位置.默认 为 40.
--e expr
-指定一个表达式,用来控制如何跟踪.格式如下:
-[qualifier=][!]value1[,value2]...
-qualifier 只能是 trace,abbrev,verbose,raw,signal,read,write 其中之一.value 是用来限定的符号或数字.默认的 qualifier 是 trace.感叹号是否定符号.例如:
--eopen 等价于 -e trace=open,表示只跟踪 open 调用.而-etrace!=open 表示跟踪除了 open 以外的其他调用.有两个特殊的符号 all 和 none.
-注意有些 shell 使用!来执行历史记录里的命令,所以要使用\\.
--e trace=set
-只跟踪指定的系统 调用.例如:-e trace=open,close,rean,write 表示只跟踪这四个系统调用.默认的为 set=all.
--e trace=file
-只跟踪有关文件操作的系统调用.
--e trace=process
-只跟踪有关进程控制的系统调用.
--e trace=network
-跟踪与网络有关的所有系统调用.
--e strace=signal
-跟踪所有与系统信号有关的 系统调用
--e trace=ipc
-跟踪所有与进程通讯有关的系统调用
--e abbrev=set
-设定 strace 输出的系统调用的结果集.-v 等与 abbrev=none.默认为 abbrev=all.
--e raw=set
-将指 定的系统调用的参数以十六进制显示.
--e signal=set
-指定跟踪的系统信号.默认为 all.如 signal=!SIGIO(或者 signal=!io),表示不跟踪 SIGIO 信号.
--e read=set
-输出从指定文件中读出 的数据.例如:
--e read=3,5
--e write=set
-输出写入到指定文件中的数据.
--o filename
-将 strace 的输出写入文件 filename
--p pid
-跟踪指定的进程 pid.
--s strsize
-指定输出的字符串的最大长度.默认为 32.文件名一直全部输出.
--u username
-以 username 的 UID 和 GID 执行被跟踪的命令
-6.3. 命令实例
-跟踪可执行程序
-strace -f -F -o ~/straceout.txt myserver
--f -F 选项告诉 strace 同时跟踪 fork 和 vfork 出来的进程，-o 选项把所有 strace 输出写到~/straceout.txt 里 面，myserver 是要启动和调试的程序。
-
-跟踪服务程序
-strace -o output.txt -T -tt -e trace=all -p 28979
-跟踪 28979 进程的所有系统调用（-e trace=all），并统计系统调用的花费时间，以及开始时间（并以可视化的时分秒格式显示），最后将记录结果存在 output.txt 文件里面。
-** elf 文件格式分析 readelf 
-这个工具和 objdump 命令提供的功能类似，但是它显示的信息更为具体，并且它不依赖 BFD 库(BFD 库是一个 GNU 项目，它的目标就是希望通过一种统一的接口来处理不同的目标文件）；
-
-ELF 文件类型
-ELF(Executable and Linking Format)是一种对象文件的格式，用于定义不同类型的对象文件(Object files)中都放了什么东西、以及都以什么样的格式去放这些东西。它自最早在 System V 系统上出现后，被 xNIX 世界所广泛接受，作为缺省的二进制文件格式来使用。可以说，ELF 是构成众多 xNIX 系统的基础之一。
-ELF 文件有三种类型：
-
-可重定位的对象文件(Relocatable file)
-由汇编器汇编生成的 .o 文件
-可执行的对象文件(Executable file)
-可执行应用程序
-可被共享的对象文件(Shared object file)
-动态库文件，也即 .so 文件
-.text section 里装载了可执行代码；
-.data section 里面装载了被初始化的数据；
-.bss section 里面装载了未被初始化的数据；
-以 .rec 打头的 sections 里面装载了重定位条目；
-.symtab 或者 .dynsym section 里面装载了符号信息；
-.strtab 或者 .dynstr section 里面装载了字符串信息；
-13.1. 参数说明
--a –all 全部 Equivalent to: -h -l -S -s -r -d -V -A -I
-
--h –file-header 文件头 Display the ELF file header
-
--l –program-headers 程序 Display the program headers
-
-–segments An alias for –program-headers
-
--S –section-headers 段头 Display the sections’ header
-
---sections	
-An alias for –section-headers
-
--e –headers 全部头 Equivalent to: -h -l -S
-
--s –syms 符号表 Display the symbol table
-
---symbols	
-An alias for –syms
-
--n –notes 内核注释 Display the core notes (if present)
-
--r –relocs 重定位 Display the relocations (if present)
-
--u –unwind Display the unwind info (if present)
-
--d –dynamic 动态段 Display the dynamic segment (if present)
-
--V –version-info 版本 Display the version sections (if present)
-
--A –arch-specific CPU 构架 Display architecture specific information (if any).
-
--D –use-dynamic 动态段 Use the dynamic section info when displaying symbols
-
--x –hex-dump=<number> 显示 段内内容 Dump the contents of section <number>
-
--w[liaprmfFso] or
-
--I –histogram Display histogram of bucket list lengths
-
--W –wide 宽行输出 Allow output width to exceed 80 characters
-
--H –help Display this information
-
--v –version Display the version number of readelf
-
-13.2. 示例
-想知道一个应用程序的可运行的架构平台:
-
-$readelf -h main| grep Machine
--h 选项将显示文件头的概要信息，从里面可以看到，有很多有用的信息：
-
-$readelf -h main
-ELF Header:
-Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00
-Class:                             ELF64
-Data:                              2 s complement, little endian
-Version:                           1 (current)
-OS/ABI:                            UNIX - System V
-ABI Version:                       0
-Type:                              EXEC (Executable file)
-Machine:                           Advanced Micro Devices X86-64
-Version:                           0x1
-Entry point address:               0x400790
-Start of program headers:          64 (bytes into file)
-Start of section headers:          5224 (bytes into file)
-Flags:                             0x0
-Size of this header:               64 (bytes)
-Size of program headers:           56 (bytes)
-Number of program headers:         8
-Size of section headers:           64 (bytes)
-Number of section headers:         29
-Section header string table index: 26
-一个编译好的应用程序，想知道其编译时是否使用了-g 选项（加入调试信息）:
-
-$readelf -S main| grep debug
-用-S 选项是显示所有段信息；如果编译时使用了-g 选项，则会有 debug 段;
-
-查看.o 文件是否编入了调试信息（编译的时候是否加了-g):
-
-$readelf -S Shpos.o | grep debug
-13.3. 完整输出
-readelf 输出的完整内容:
-
-$readelf -all a.out
-ELF Header:
-  Magic:   7f 45 4c 46 01 01 01 00 00 00 00 00 00 00 00 00
-  Class:                             ELF32
-  Data:                              2's complement, little endian
-  Version:                           1 (current)
-  OS/ABI:                            UNIX - System V
-  ABI Version:                       0
-  Type:                              EXEC (Executable file)
-  Machine:                           Intel 80386
-  Version:                           0x1
-  Entry point address:               0x8048330
-  Start of program headers:          52 (bytes into file)
-  Start of section headers:          4412 (bytes into file)
-  Flags:                             0x0
-  Size of this header:               52 (bytes)
-  Size of program headers:           32 (bytes)
-  Number of program headers:         9
-  Size of section headers:           40 (bytes)
-  Number of section headers:         30
-  Section header string table index: 27
-
-Section Headers:
-  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al
-  [ 0]                   NULL            00000000 000000 000000 00      0   0  0
-  [ 1] .interp           PROGBITS        08048154 000154 000013 00   A  0   0  1
-  [ 2] .note.ABI-tag     NOTE            08048168 000168 000020 00   A  0   0  4
-  [ 3] .note.gnu.build-i NOTE            08048188 000188 000024 00   A  0   0  4
-  [ 4] .gnu.hash         GNU_HASH        080481ac 0001ac 000020 04   A  5   0  4
-  [ 5] .dynsym           DYNSYM          080481cc 0001cc 000050 10   A  6   1  4
-  [ 6] .dynstr           STRTAB          0804821c 00021c 00004c 00   A  0   0  1
-  [ 7] .gnu.version      VERSYM          08048268 000268 00000a 02   A  5   0  2
-  [ 8] .gnu.version_r    VERNEED         08048274 000274 000020 00   A  6   1  4
-  [ 9] .rel.dyn          REL             08048294 000294 000008 08   A  5   0  4
-  [10] .rel.plt          REL             0804829c 00029c 000018 08   A  5  12  4
-  [11] .init             PROGBITS        080482b4 0002b4 00002e 00  AX  0   0  4
-  [12] .plt              PROGBITS        080482f0 0002f0 000040 04  AX  0   0 16
-  [13] .text             PROGBITS        08048330 000330 00018c 00  AX  0   0 16
-  [14] .fini             PROGBITS        080484bc 0004bc 00001a 00  AX  0   0  4
-  [15] .rodata           PROGBITS        080484d8 0004d8 000011 00   A  0   0  4
-  [16] .eh_frame_hdr     PROGBITS        080484ec 0004ec 000034 00   A  0   0  4
-  [17] .eh_frame         PROGBITS        08048520 000520 0000c4 00   A  0   0  4
-  [18] .ctors            PROGBITS        08049f14 000f14 000008 00  WA  0   0  4
-  [19] .dtors            PROGBITS        08049f1c 000f1c 000008 00  WA  0   0  4
-  [20] .jcr              PROGBITS        08049f24 000f24 000004 00  WA  0   0  4
-  [21] .dynamic          DYNAMIC         08049f28 000f28 0000c8 08  WA  6   0  4
-  [22] .got              PROGBITS        08049ff0 000ff0 000004 04  WA  0   0  4
-  [23] .got.plt          PROGBITS        08049ff4 000ff4 000018 04  WA  0   0  4
-  [24] .data             PROGBITS        0804a00c 00100c 000008 00  WA  0   0  4
-  [25] .bss              NOBITS          0804a014 001014 000008 00  WA  0   0  4
-  [26] .comment          PROGBITS        00000000 001014 00002a 01  MS  0   0  1
-  [27] .shstrtab         STRTAB          00000000 00103e 0000fc 00      0   0  1
-  [28] .symtab           SYMTAB          00000000 0015ec 000410 10     29  45  4
-  [29] .strtab           STRTAB          00000000 0019fc 0001f9 00      0   0  1
-Key to Flags:
-  W (write), A (alloc), X (execute), M (merge), S (strings)
-  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)
-  O (extra OS processing required) o (OS specific), p (processor specific)
-
-There are no section groups in this file.
-
-Program Headers:
-  Type           Offset   VirtAddr   PhysAddr   FileSiz MemSiz  Flg Align
-  PHDR           0x000034 0x08048034 0x08048034 0x00120 0x00120 R E 0x4
-  INTERP         0x000154 0x08048154 0x08048154 0x00013 0x00013 R   0x1
-      [Requesting program interpreter: /lib/ld-linux.so.2]
-  LOAD           0x000000 0x08048000 0x08048000 0x005e4 0x005e4 R E 0x1000
-  LOAD           0x000f14 0x08049f14 0x08049f14 0x00100 0x00108 RW  0x1000
-  DYNAMIC        0x000f28 0x08049f28 0x08049f28 0x000c8 0x000c8 RW  0x4
-  NOTE           0x000168 0x08048168 0x08048168 0x00044 0x00044 R   0x4
-  GNU_EH_FRAME   0x0004ec 0x080484ec 0x080484ec 0x00034 0x00034 R   0x4
-  GNU_STACK      0x000000 0x00000000 0x00000000 0x00000 0x00000 RW  0x4
-  GNU_RELRO      0x000f14 0x08049f14 0x08049f14 0x000ec 0x000ec R   0x1
-
- Section to Segment mapping:
-  Segment Sections...
-   00
-   01     .interp
-   02     .interp .note.ABI-tag .note.gnu.build-id .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_r .rel.dyn .rel.plt .init .plt .text .fini .rodata .eh_frame_hdr .eh_frame
-   03     .ctors .dtors .jcr .dynamic .got .got.plt .data .bss
-   04     .dynamic
-   05     .note.ABI-tag .note.gnu.build-id
-   06     .eh_frame_hdr
-   07
-   08     .ctors .dtors .jcr .dynamic .got
-
-Dynamic section at offset 0xf28 contains 20 entries:
-  Tag        Type                         Name/Value
- 0x00000001 (NEEDED)                     Shared library: [libc.so.6]
- 0x0000000c (INIT)                       0x80482b4
- 0x0000000d (FINI)                       0x80484bc
- 0x6ffffef5 (GNU_HASH)                   0x80481ac
- 0x00000005 (STRTAB)                     0x804821c
- 0x00000006 (SYMTAB)                     0x80481cc
- 0x0000000a (STRSZ)                      76 (bytes)
- 0x0000000b (SYMENT)                     16 (bytes)
- 0x00000015 (DEBUG)                      0x0
- 0x00000003 (PLTGOT)                     0x8049ff4
- 0x00000002 (PLTRELSZ)                   24 (bytes)
- 0x00000014 (PLTREL)                     REL
- 0x00000017 (JMPREL)                     0x804829c
- 0x00000011 (REL)                        0x8048294
- 0x00000012 (RELSZ)                      8 (bytes)
- 0x00000013 (RELENT)                     8 (bytes)
- 0x6ffffffe (VERNEED)                    0x8048274
- 0x6fffffff (VERNEEDNUM)                 1
- 0x6ffffff0 (VERSYM)                     0x8048268
- 0x00000000 (NULL)                       0x0
-
-Relocation section '.rel.dyn' at offset 0x294 contains 1 entries:
- Offset     Info    Type            Sym.Value  Sym. Name
-08049ff0  00000206 R_386_GLOB_DAT    00000000   __gmon_start__
-
-Relocation section '.rel.plt' at offset 0x29c contains 3 entries:
- Offset     Info    Type            Sym.Value  Sym. Name
-0804a000  00000107 R_386_JUMP_SLOT   00000000   printf
-0804a004  00000207 R_386_JUMP_SLOT   00000000   __gmon_start__
-0804a008  00000307 R_386_JUMP_SLOT   00000000   __libc_start_main
-
-There are no unwind sections in this file.
-
-Symbol table '.dynsym' contains 5 entries:
-   Num:    Value  Size Type    Bind   Vis      Ndx Name
-     0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND
-     1: 00000000     0 FUNC    GLOBAL DEFAULT  UND printf@GLIBC_2.0 (2)
-     2: 00000000     0 NOTYPE  WEAK   DEFAULT  UND __gmon_start__
-     3: 00000000     0 FUNC    GLOBAL DEFAULT  UND __libc_start_main@GLIBC_2.0 (2)
-     4: 080484dc     4 OBJECT  GLOBAL DEFAULT   15 _IO_stdin_used
-
-Symbol table '.symtab' contains 65 entries:
-   Num:    Value  Size Type    Bind   Vis      Ndx Name
-     0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND
-     1: 08048154     0 SECTION LOCAL  DEFAULT    1
-     2: 08048168     0 SECTION LOCAL  DEFAULT    2
-     3: 08048188     0 SECTION LOCAL  DEFAULT    3
-     4: 080481ac     0 SECTION LOCAL  DEFAULT    4
-     5: 080481cc     0 SECTION LOCAL  DEFAULT    5
-     6: 0804821c     0 SECTION LOCAL  DEFAULT    6
-     7: 08048268     0 SECTION LOCAL  DEFAULT    7
-     8: 08048274     0 SECTION LOCAL  DEFAULT    8
-     9: 08048294     0 SECTION LOCAL  DEFAULT    9
-    10: 0804829c     0 SECTION LOCAL  DEFAULT   10
-    11: 080482b4     0 SECTION LOCAL  DEFAULT   11
-    12: 080482f0     0 SECTION LOCAL  DEFAULT   12
-    13: 08048330     0 SECTION LOCAL  DEFAULT   13
-    14: 080484bc     0 SECTION LOCAL  DEFAULT   14
-    15: 080484d8     0 SECTION LOCAL  DEFAULT   15
-    16: 080484ec     0 SECTION LOCAL  DEFAULT   16
-    17: 08048520     0 SECTION LOCAL  DEFAULT   17
-    18: 08049f14     0 SECTION LOCAL  DEFAULT   18
-    19: 08049f1c     0 SECTION LOCAL  DEFAULT   19
-    20: 08049f24     0 SECTION LOCAL  DEFAULT   20
-    21: 08049f28     0 SECTION LOCAL  DEFAULT   21
-    22: 08049ff0     0 SECTION LOCAL  DEFAULT   22
-    23: 08049ff4     0 SECTION LOCAL  DEFAULT   23
-    24: 0804a00c     0 SECTION LOCAL  DEFAULT   24
-    25: 0804a014     0 SECTION LOCAL  DEFAULT   25
-    26: 00000000     0 SECTION LOCAL  DEFAULT   26
-    27: 00000000     0 FILE    LOCAL  DEFAULT  ABS crtstuff.c
-    28: 08049f14     0 OBJECT  LOCAL  DEFAULT   18 __CTOR_LIST__
-    29: 08049f1c     0 OBJECT  LOCAL  DEFAULT   19 __DTOR_LIST__
-    30: 08049f24     0 OBJECT  LOCAL  DEFAULT   20 __JCR_LIST__
-    31: 08048360     0 FUNC    LOCAL  DEFAULT   13 __do_global_dtors_aux
-    32: 0804a014     1 OBJECT  LOCAL  DEFAULT   25 completed.6086
-    33: 0804a018     4 OBJECT  LOCAL  DEFAULT   25 dtor_idx.6088
-    34: 080483c0     0 FUNC    LOCAL  DEFAULT   13 frame_dummy
-    35: 00000000     0 FILE    LOCAL  DEFAULT  ABS crtstuff.c
-    36: 08049f18     0 OBJECT  LOCAL  DEFAULT   18 __CTOR_END__
-    37: 080485e0     0 OBJECT  LOCAL  DEFAULT   17 __FRAME_END__
-    38: 08049f24     0 OBJECT  LOCAL  DEFAULT   20 __JCR_END__
-    39: 08048490     0 FUNC    LOCAL  DEFAULT   13 __do_global_ctors_aux
-    40: 00000000     0 FILE    LOCAL  DEFAULT  ABS a.c
-    41: 08049f14     0 NOTYPE  LOCAL  DEFAULT   18 __init_array_end
-    42: 08049f28     0 OBJECT  LOCAL  DEFAULT   21 _DYNAMIC
-    43: 08049f14     0 NOTYPE  LOCAL  DEFAULT   18 __init_array_start
-    44: 08049ff4     0 OBJECT  LOCAL  DEFAULT   23 _GLOBAL_OFFSET_TABLE_
-    45: 08048480     2 FUNC    GLOBAL DEFAULT   13 __libc_csu_fini
-    46: 08048482     0 FUNC    GLOBAL HIDDEN    13 __i686.get_pc_thunk.bx
-    47: 0804a00c     0 NOTYPE  WEAK   DEFAULT   24 data_start
-    48: 00000000     0 FUNC    GLOBAL DEFAULT  UND printf@@GLIBC_2.0
-    49: 0804a014     0 NOTYPE  GLOBAL DEFAULT  ABS _edata
-    50: 080484bc     0 FUNC    GLOBAL DEFAULT   14 _fini
-    51: 08049f20     0 OBJECT  GLOBAL HIDDEN    19 __DTOR_END__
-    52: 0804a00c     0 NOTYPE  GLOBAL DEFAULT   24 __data_start
-    53: 00000000     0 NOTYPE  WEAK   DEFAULT  UND __gmon_start__
-    54: 0804a010     0 OBJECT  GLOBAL HIDDEN    24 __dso_handle
-    55: 080484dc     4 OBJECT  GLOBAL DEFAULT   15 _IO_stdin_used
-    56: 00000000     0 FUNC    GLOBAL DEFAULT  UND __libc_start_main@@GLIBC_
-    57: 08048410    97 FUNC    GLOBAL DEFAULT   13 __libc_csu_init
-    58: 0804a01c     0 NOTYPE  GLOBAL DEFAULT  ABS _end
-    59: 08048330     0 FUNC    GLOBAL DEFAULT   13 _start
-    60: 080484d8     4 OBJECT  GLOBAL DEFAULT   15 _fp_hw
-    61: 0804a014     0 NOTYPE  GLOBAL DEFAULT  ABS __bss_start
-    62: 080483e4    40 FUNC    GLOBAL DEFAULT   13 main
-    63: 00000000     0 NOTYPE  WEAK   DEFAULT  UND _Jv_RegisterClasses
-    64: 080482b4     0 FUNC    GLOBAL DEFAULT   11 _init
-
-Histogram for `.gnu.hash' bucket list length (total of 2 buckets):
- Length  Number     % of total  Coverage
-      0  1          ( 50.0%)
-      1  1          ( 50.0%)    100.0%
-
-Version symbols section '.gnu.version' contains 5 entries:
- Addr: 0000000008048268  Offset: 0x000268  Link: 5 (.dynsym)
-  000:   0 (*local*)       2 (GLIBC_2.0)     0 (*local*)       2 (GLIBC_2.0)
-  004:   1 (*global*)
-
-Version needs section '.gnu.version_r' contains 1 entries:
- Addr: 0x0000000008048274  Offset: 0x000274  Link: 6 (.dynstr)
-  000000: Version: 1  File: libc.so.6  Cnt: 1
-  0x0010:   Name: GLIBC_2.0  Flags: none  Version: 2
-
-Notes at offset 0x00000168 with length 0x00000020:
-  Owner                 Data size   Description
-  GNU                  0x00000010   NT_GNU_ABI_TAG (ABI version tag)
-    OS: Linux, ABI: 2.6.15
-
-Notes at offset 0x00000188 with length 0x00000024:
-  Owner                 Data size   Description
-  GNU                  0x00000014   NT_GNU_BUILD_ID (unique build ID bitstring)
-    Build ID: 17fb9651029b6a8543bfafec9eea23bd16454e65
-** readelf 用于显示 elf 格式文件的信息 
-     -a 
-     --all 显示全部信息,等价于 -h -l -S -s -r -d -V -A -I. 
-
-     -h 
-     --file-header 显示 elf 文件开始的文件头信息. 
-
-     -l 
-     --program-headers  
-     --segments 显示程序头（段头）信息(如果有的话)。 
-
-     -S 
-     --section-headers  
-     --sections 显示节头信息(如果有的话)。 
-
-     -g 
-     --section-groups 显示节组信息(如果有的话)。 
-     
-     -t 
-     --section-details 显示节的详细信息(-S 的)。 
-
-     -s 
-     --syms        
-     --symbols 显示符号表段中的项（如果有的话）。 
-
--e 
---headers 显示全部头信息，等价于: -h -l -S 
-
--n 
---notes 显示 note 段（内核注释）的信息。 
-
--r 
---relocs 显示可重定位段的信息。 
-
--u 
---unwind 显示 unwind 段信息。当前只支持 IA64 ELF 的 unwind 段信息。 
-
--d 
---dynamic 显示动态段的信息。 
-
--V 
---version-info 显示版本段的信息。 
-
--A 
---arch-specific 显示 CPU 构架信息。 
-
--D 
---use-dynamic 使用动态段中的符号表显示符号，而不是使用符号段。 
-
--x <number or name> 
---hex-dump=<number or name> 以 16 进制方式显示指定段内内容。number 指定段表中段的索引,或字符串指定文件中的段名。 
-
--w[liaprmfFsoR] or 
---debug-dump[=line,=info,=abbrev,=pubnames,=aranges,=macro,=frames,=frames-interp,=str,=loc,=Ranges] 显示调试段中指定的内容。 
-
--I 
---histogram 显示符号的时候，显示 bucket list 长度的柱状图。 
-
--v 
---version 显示 readelf 的版本信息。 
-
--H 
---help 显示 readelf 所支持的命令行选项。 
-
--W 
---wide 宽行输出。 
-
-@file 可以将选项集中到一个文件中，然后使用这个@file 选项载入。 
-** free 查询可用内存
-free 工具用来查看系统可用内存:
-
-/opt/app/tdev1$free
-             total       used       free     shared    buffers     cached
-Mem:       8175320    6159248    2016072          0     310208    5243680
--/+ buffers/cache:     605360    7569960
-Swap:      6881272      16196    6865076
-解释一下 Linux 上 free 命令的输出。
-
-下面是 free 的运行结果，一共有 4 行。为了方便说明，我加上了列号。这样可以把 free 的输出看成一个二维数组 FO(Free Output)。例如:
-
-FO[2][1] = 24677460
-FO[3][2] = 10321516
-
-                   1          2          3          4          5          6
-1              total       used       free     shared    buffers     cached
-2 Mem:      24677460   23276064    1401396          0     870540   12084008
-3 -/+ buffers/cache:   10321516   14355944
-4 Swap:     25151484     224188   24927296
-free 的输出一共有四行，第四行为交换区的信息，分别是交换的总量（total），使用量（used）和有多少空闲的交换区（free），这个比较清楚，不说太多。
-
-free 输出地第二行和第三行是比较让人迷惑的。这两行都是说明内存使用情况的。第一列是总量（total），第二列是使用量（used），第三列是可用量（free）。
-
-　　第一行的输出时从操作系统（OS）来看的。也就是说，从 OS 的角度来看，计算机上一共有:
-
-24677460KB（缺省时 free 的单位为 KB）物理内存，即 FO[2][1]； 在这些物理内存中有 23276064KB（即 FO[2][2]）被使用了； 还用 1401396KB（即 FO[2][3]）是可用的；
-
-这里得到第一个等式：
-
-FO[2][1] = FO[2][2] + FO[2][3]
-
-FO[2][4]表示被几个进程共享的内存的，现在已经 deprecated，其值总是 0（当然在一些系统上也可能不是 0，主要取决于 free 命令是怎么实现的）。
-
-FO[2][5]表示被 OS buffer 住的内存。FO[2][6]表示被 OS cache 的内存。在有些时候 buffer 和 cache 这两个词经常混用。不过在一些比较低层的软件里是要区分这两个词的，看老外的洋文:
-
-A buffer is something that has yet to be "written" to disk.
-A cache is something that has been "read" from the disk and stored for later use.
-也就是说 buffer 是用于存放要输出到 disk（块设备）的数据的，而 cache 是存放从 disk 上读出的数据。这二者是为了提高 IO 性能的，并由 OS 管理。
-
-Linux 和其他成熟的操作系统（例如 windows），为了提高 IO read 的性能，总是要多 cache 一些数据，这也就是为什么 FO[2][6]（cached memory）比较大，而 FO[2][3]比较小的原因。我们可以做一个简单的测试:
-
-释放掉被系统 cache 占用的数据:
-
-echo 3>/proc/sys/vm/drop_caches
-读一个大文件，并记录时间；
-关闭该文件；
-重读这个大文件，并记录时间；
-第二次读应该比第一次快很多。原来我做过一个 BerkeleyDB 的读操作，大概要读 5G 的文件，几千万条记录。在我的环境上，第二次读比第一次大概可以快 9 倍左右。
-
-free 输出的第二行是从一个应用程序的角度看系统内存的使用情况。
-
-对于 FO[3][2]，即-buffers/cache，表示一个应用程序认为系统被用掉多少内存；
-对于 FO[3][3]，即+buffers/cache，表示一个应用程序认为系统还有多少内存；
-因为被系统 cache 和 buffer 占用的内存可以被快速回收，所以通常 FO[3][3]比 FO[2][3]会大很多。
-
-这里还用两个等式:
-
-FO[3][2] = FO[2][2] - FO[2][5] - FO[2][6]
-FO[3][3] = FO[2][3] + FO[2][5] + FO[2][6]
-这二者都不难理解。
-
-free 命令由 procps.*.rpm 提供（在 Redhat 系列的 OS 上）。free 命令的所有输出值都是从/proc/meminfo 中读出的。
-
-在系统上可能有 meminfo(2)这个函数，它就是为了解析/proc/meminfo 的。procps 这个包自己实现了 meminfo()这个函数。可以下载一个 procps 的 tar 包看看具体实现，现在最新版式 3.2.8。
-** nm 目标文件格式分析
-nm 命令显示关于指定 File 中符号的信息，文件可以是对象文件、可执行文件或对象文件库。如果文件没有包含符号信息，nm 命令报告该情况，但不把它解释为出错条件。nm 命令缺省情况下报告十进制符号表示法下的数字值。
-
-$nm myProgrammer
-08049f28 d _DYNAMIC
-08049ff4 d _GLOBAL_OFFSET_TABLE_
-080484dc R _IO_stdin_used
-         w _Jv_RegisterClasses
-08049f18 d __CTOR_END__
-08049f14 d __CTOR_LIST__
-08049f20 D __DTOR_END__
-08049f1c d __DTOR_LIST__
-080485e0 r __FRAME_END__
-08049f24 d __JCR_END__
-08049f24 d __JCR_LIST__
-0804a014 A __bss_start
-0804a00c D __data_start
-08048490 t __do_global_ctors_aux
-08048360 t __do_global_dtors_aux
-0804a010 D __dso_handle
-         w __gmon_start__
-08048482 T __i686.get_pc_thunk.bx
-08049f14 d __init_array_end
-08049f14 d __init_array_start
-08048480 T __libc_csu_fini
-08048410 T __libc_csu_init
-         U __libc_start_main@@GLIBC_2.0
-0804a014 A _edata
-0804a01c A _end
-080484bc T _fini
-080484d8 R _fp_hw
-080482b4 T _init
-08048330 T _start
-0804a014 b completed.6086
-0804a00c W data_start
-0804a018 b dtor_idx.6088
-080483c0 t frame_dummy
-080483e4 T main
-         U printf@@GLIBC_2.0
-这些包含可执行代码的段称为正文段。同样地，数据段包含了不可执行的信息或数据。另一种类型的段，称为 BSS 段，它包含以符号数据开头的块。对于 nm 命令列出的每个符号，它们的值使用十六进制来表示（缺省行为），并且在该符号前面加上了一个表示符号类型的编码字符。
-
-可以将目标文件中所包含的不同的部分划分为段。段可以包含可执行代码、符号名称、初始数据值和许多其他类型的数据。有关这些类型的数据的详细信息，可以阅读 UNIX 中 nm 的 man 页面，其中按照该命令输出中的字符编码分别对每种类型进行了描述。
-
-15.1. 选项说明
--a 或–debug-syms：显示所有的符号，包括 debugger-only symbols。
--B：等同于–format=bsd，用来兼容 MIPS 的 nm。
--C 或–demangle：将低级符号名解析(demangle)成用户级名字。这样可以使得 C++函数名具有可读性。
-–no-demangle：默认的选项，不需要将低级符号名解析成用户级名。
--D 或–dynamic：显示动态符号。该任选项仅对于动态目标(例如特定类型的共享库)有意义。
--f format：使用 format 格式输出。format 可以选取 bsd、sysv 或 posix，该选项在 GNU 的 nm 中有用。默认为 bsd。
--g 或–extern-only：仅显示外部符号。
--n、-v 或–numeric-sort：按符号对应地址的顺序排序，而非按符号名的字符顺序。
--p 或–no-sort：按目标文件中遇到的符号顺序显示，不排序。
--P 或–portability：使用 POSIX.2 标准输出格式代替默认的输出格式。等同于使用任选项-f posix。
--s 或–print-armap：当列出库中成员的符号时，包含索引。索引的内容包含：哪些模块包含哪些名字的映射。
--r 或–reverse-sort：反转排序的顺序(例如，升序变为降序)。
-–size-sort：按大小排列符号顺序。该大小是按照一个符号的值与它下一个符号的值进行计算的。
-–target=bfdname：指定一个目标代码的格式，而非使用系统的默认格式。
--u 或–undefined-only：仅显示没有定义的符号(那些外部符号)。
-–defined-only:仅显示定义的符号。
--l 或–line-numbers：对每个符号，使用调试信息来试图找到文件名和行号。
--V 或–version：显示 nm 的版本号。
-–help：显示 nm 的选项。
-15.2. 符号说明
-对于每一个符号来说，其类型如果是小写的，则表明该符号是 local 的；大写则表明该符号是 global(external)的。
-
-A 该符号的值是绝对的，在以后的链接过程中，不允许进行改变。这样的符号值，常常出现在中断向量表中，例如用符号来表示各个中断向量函数在中断向量表中的位置。
-B 该符号的值出现在非初始化数据段(bss)中。例如，在一个文件中定义全局 static int test。则该符号 test 的类型为 b，位于 bss section 中。其值表示该符号在 bss 段中的偏移。一般而言，bss 段分配于 RAM 中。
-C 该符号为 common。common symbol 是未初始话数据段。该符号没有包含于一个普通 section 中。只有在链接过程中才进行分配。符号的值表示该符号需要的字节数。例如在一个 c 文件中，定义 int test，并且该符号在别的地方会被引用，则该符号类型即为 C。否则其类型为 B。
-D 该符号位于初始化数据段中。一般来说，分配到 data section 中。
-例如：定义全局 int baud_table[5] = {9600, 19200, 38400, 57600, 115200}，会分配到初始化数据段中。
-G 该符号也位于初始化数据段中。主要用于 small object 提高访问 small data object 的一种方式。
-I 该符号是对另一个符号的间接引用。
-N 该符号是一个 debugging 符号。
-R 该符号位于只读数据区。
-例如定义全局 const int test[] = {123, 123};则 test 就是一个只读数据区的符号。
-值得注意的是，如果在一个函数中定义 const char *test = “abc”, const char test_int = 3。使用 nm 都不会得到符号信息，但是字符串”abc”分配于只读存储器中，test 在 rodata section 中，大小为 4。
-S 符号位于非初始化数据区，用于 small object。
-T 该符号位于代码区 text section。
-U 该符号在当前文件中是未定义的，即该符号的定义在别的文件中。
-例如，当前文件调用另一个文件中定义的函数，在这个被调用的函数在当前就是未定义的；但是在定义它的文件中类型是 T。但是对于全局变量来说，在定义它的文件中，其符号类型为 C，在使用它的文件中，其类型为 U。
-V 该符号是一个 weak object。
-W The symbol is a weak symbol that has not been specifically tagged as a weak object symbol.
-? 该符号类型没有定义
-库或对象名 如果您指定了 -A 选项，则 nm 命令只报告与该文件有关的或者库或者对象名。
-
-15.3. 示例
-寻找特殊标识
-有时会碰到一个编译了但没有链接的代码，那是因为它缺失了标识符；这种情况，可以用 nm 和 objdump、readelf 命令来查看程序的符号表；所有这些命令做的工作基本一样；
-
-比如连接器报错有未定义的标识符；大多数情况下，会发生在库的缺失或企图链接一个错误版本的库的时候；浏览目标代码来寻找一个特殊标识符的引用:
-
-nm -uCA *.o | grep foo
--u 选项限制了每个目标文件中未定义标识符的输出。-A 选项用于显示每个标识符的文件名信息；对于 C++代码，常用的还有-C 选项，它也为解码这些标识符；
-
-注解
-
-objdump、readld 命令可以完成同样的任务。等效命令为： $objdump -t $readelf -s
-
-列出 a.out 对象文件的静态和外部符:
-
-$nm -e a.out
-以十六进制显示符号大小和值并且按值排序符号:
-
-$nm -xv a.out
-显示 libc.a 中所有 64 位对象符号，忽略所有 32 位对象:
-
-$nm -X64 /usr/lib/libc.a
-** objdump
-** make
-	  ld --oformat binary -N -Ttext 0x7c00 -o $@ $<
-    $@ 目标
-    $<  依赖
-
-    #+begin_src makefile
-      ROOT=b
-      SRC=$(ROOT).S
-      OBJ=$(ROOT).o
-      OUT=$(ROOT).out
-
-      run:$(OUT	)
-        qemu-system-i386  $<
-      $(OUT):$(OBJ)
-        ld --oformat binary -Ttext 0x7c00 -o $@ $<
-      $(OBJ):$(SRC)
-        as -o $@ $<
-    #+end_src
+   不同的优化级别使用的优化技术也可以单独的应用于代码。 可以使用-f 命令行选项引用
+   每个单独的优化技术。
+*** 编译器优化级别 1
+        在优化的第一个级别执行基础代码的优化。 这个级别试图执行 9 种单独的优化功能:
+        -fdefer-pop: 这种优化技术与汇编语言代码在函数完成时如何进行操作有关。 一般情况下, 函数的输入值被保存在堆栈种并且被函数访问。
+        函数返回时, 输入值还在堆栈种。 一般情况下, 函数返回之后, 输入值被立即弹出堆栈。这样做会使堆栈种的内容有些杂乱。
+        -fmerge-constans: 使用这种优化技术, 编译器试图合并相同的常量. 这一特性有时候会导致很长的编译时间, 因为编译器必须分析 c 或者
+        c++程序中用到的每个常量,并且相互比较他们.
+        -fthread-jumps: 使用这种优化技术与编译器如果处理汇编代码中的条件和非条件分支有关。 在某些情况下, 一条跳转指令可能转移到另一
+        条分支语句。 通过一连串跳转, 编译器确定多个跳转之间的最终目标并且把第一个跳转重新定向到最终目标。
+        -floop-optimize: 通过优化如何生成汇编语言中的循环, 编译器可以在很大程序上提高应用程序的性能。 通常, 程序由很多大型且复杂的循
+        环构成。 通过删除在循环内没有改变值的变量赋值操作, 可以减少循环内执行指令的数量, 在很大程度上提高性能。 此外优化那些确定何时离
+        开循环的条件分支, 以便减少分支的影响。
+        -fif-conversion: if-then 语句应该是应用程序中仅次于循环的最消耗时间的部分。简单的 if-then 语句可能在最终的汇编语言代码中产生众多
+        的条件分支。 通过减少或者删除条件分支, 以及使用条件传送 设置标志和使用运算技巧来替换他们, 编译器可以减少 if-then 语句中花费的时
+        间量。
+        -fif-conversion2: 这种技术结合更加高级的数学特性, 减少实现 if-then 语句所需的条件分支。
+        -fdelayed-branch: 这种技术试图根据指令周期时间重新安排指令。 它还试图把尽可能多的指令移动到条件分支前, 以便最充分的利用处理
+        器的治理缓存。
+        -fguess-branch-probability: 就像其名称所暗示的, 这种技术试图确定条件分支最可能的结果, 并且相应的移动指令, 这和延迟分支技术类
+        似。因为在编译时预测代码的安排,所以使用这一选项两次编译相同的 c 或者 c++代码很可能会产生不同的汇编语言代码, 这取决于编译时
+        编译器认为会使用那些分支。 因为这个原因, 很多程序员不喜欢采用这个特性, 并且专门地使用-fno-guess-branch-probability 选项关闭这
+        个特性
+        -fcprop-registers: 因为在函数中把寄存器分配给变量, 所以编译器执行第二次检查以便减少调度依赖性(两个段要求使用相同的寄存器)并
+        且删除不必要的寄存器复制操作。
+*** 编译器优化级别 2
+        结合了第一个级别的所有优化技术, 再加上一下一些优化:
+        -fforce-mem: 这种优化再任何指令使用变量前, 强制把存放再内存位置中的所有变量都复制到寄存器中。 对于只涉及单一指令的变量, 这样
+        也许不会有很大的优化效果. 但是对于再很多指令(必须数学操作)中都涉及到的变量来说, 这会时很显著的优化, 因为和访问内存中的值相比 ,
+        处理器访问寄存器中的值要快的多。
+        -foptimize-sibling-calls: 这种技术处理相关的和/或者递归的函数调用。 通常, 递归的函数调用可以被展开为一系列一般的指令, 而不是
+        使用分支。 这样处理器的指令缓存能够加载展开的指令并且处理他们, 和指令保持为需要分支操作的单独函数调用相比, 这样更快。
+        -fstrength-reduce: 这种优化技术对循环执行优化并且删除迭代变量。 迭代变量是捆绑到循环计数器的变量, 比如使用变量, 然后使用循环
+        计数器变量执行数学操作的 for-next 循环。
+        -fgcse: 这种技术对生成的所有汇编语言代码执行全局通用表达式消除历程。 这些优化操作试图分析生成的汇编语言代码并且结合通用片段,
+         消除冗余的代码段。如果代码使用计算性的 goto, gcc 指令推荐使用-fno-gcse 选项。
+        -fcse-follow-jumps: 这种特别的通用子表达式消除技术扫描跳转指令, 查找程序中通过任何其他途径都不会到达的目标代码。这种情况最常
+        见的例子就式 if-then-else 语句的 else 部分。
+        -frerun-cse-after-loop: 这种技术在对任何循环已经进行过优化之后重新运行通用子表达式消除例程。这样确保在展开循环代码之后更进一
+        步地优化还编代码。
+        -fdelete-null-pointer-checks: 这种优化技术扫描生成的汇编语言代码, 查找检查空指针的代码。 编译器假设间接引用空指针将停止程序。
+        如果在间接引用之后检查指针, 它就不可能为空。
+        -fextensive-optimizations: 这种技术执行从编译时的角度来说代价高昂的各种优化技术,但是它可能对运行时的性能产生负面影响。
+        -fregmove: 编译器试图重新分配 mov 指令中使用的寄存器, 并且将其作为其他指令操作数, 以便最大化捆绑的寄存器的数量。
+        -fschedule-insns: 编译器将试图重新安排指令, 以便消除等待数据的处理器。 对于在进行浮点运算时有延迟的处理器来说, 这使处理器在
+        等待浮点结果时可以加载其他指令。
+        -fsched-interblock: 这种技术使编译器能够跨越指令块调度指令。 这可以非常灵活地移动指令以便等待期间完成的工作最大化。
+        -fcaller-saves: 这个选项指示编译器对函数调用保存和恢复寄存器, 使函数能够访问寄存器值, 而且不必保存和恢复他们。 如果调用多个函
+        数, 这样能够节省时间, 因为只进行一次寄存器的保存和恢复操作, 而不是在每个函数调用中都进行。
+        -fpeephole2: 这个选项允许进行任何计算机特定的观察孔优化。
+        -freorder-blocks: 这种优化技术允许重新安排指令块以便改进分支操作和代码局部性。
+        -fstrict-aliasing: 这种技术强制实行高级语言的严格变量规则。 对于 c 和 c++程序来说, 它确保不在数据类型之间共享变量. 例如, 整数变
+        量不和单精度浮点变量使用相同的内存位置。
+         -funit-at-a-time: 这种优化技术指示编译器在运行优化例程之前读取整个汇编语言代码。 这使编译器可以重新安排不消耗大量时间的代码以
+         便优化指令缓存。 但是, 这会在编译时花费相当多的内存, 对于小型计算机可能是一个问题。
+         -falign-functions: 这个选项用于使函数对准内存中特定边界的开始位置。 大多数处理器按照页面读取内存,并且确保全部函数代码位于单
+         一内存页面内, 就不需要叫化代码所需的页面。
+         -fcrossjumping: 这是对跨越跳转的转换代码处理, 以便组合分散在程序各处的相同代码。 这样可以减少代码的长度, 但是也许不会对程
+         序性能有直接影响。
+*** 编译器优化级别 3
+         它整合了第一和第二级别中的左右优化技巧, 还包括一下优化:
+         -finline-functions: 这种优化技术不为函数创建单独的汇编语言代码, 而是把函数代码包含在调度程序的代码中。 对于多次被调用的函数
+         来说, 为每次函数调用复制函数代码。 虽然这样对于减少代码长度不利, 但是通过最充分的利用指令缓存代码, 而不是在每次函数调用时进行
+         分支操作, 可以提高性能。
+         -fweb: 构建用于保存变量的伪寄存器网络。 伪寄存器包含数据, 就像他们是寄存器一样, 但是可以使用各种其他优化技术进行优化, 比如 cse
+         和 loop 优化技术。
+         -fgcse-after-reload: 这中技术在完全重新加载生成的且优化后的汇编语言代码之后执行第二次 gcse 优化,帮助消除不同优化方式创建的
+         任何冗余段。
+** 系统调用 [ 函数名,参数 ]
+   [[file:unistd_32.h][32]]
+   [[file:unistd_64.h][64]]
+- int $0x80
+- 调用号: %eax 
+- 参数
+  - 第一个参数 EBX 
+  - 第二个参数 ECX 
+  - 第三个参数  EDX 
+  - 第四个参数  ESI 
+  - 第五个参数  EDI 
+       
+    需要输入超过 6 个输入参数的系统调用, EBX 指针用于保存指向输入参数内存位置的
+    指针, 输入参数按照连续的的顺序存储, 系统调用的返回值存放在 EAX 中

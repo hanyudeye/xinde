@@ -802,7 +802,158 @@ RefTeX
 | ~SPC m r t~   | reftex-toc                            |
 | ~SPC m r T~   | reftex-toc-recenter                   |
 | ~SPC m r v~   | reftex-view-crossref                  |
+** google translate
+   翻译 google-translate-at-point-reverse  SPC x g t
+   反向翻译 google-translate-query-translate-reverse 
+   支持列表 google-translate-supported-languages
+   
 
+   定义输出方向 
+   google-translate-output-destination
+   nil  弹出缓冲区
+   echo-area 
+   popup  弹出窗口
+   kill-ring 
+
+** w3m 浏览器
+| 打开网址      | SPC a w o |
+| 打开文件      | SPC a w f |
+| 搜索          | SPC a w s |
+| Helm w3m 书签 | SPC a w b |
+
+** epub
+   | Key binding | Description         |
+| ~g V~       | View content source |
+
+Hint: use ~SPC w c~ to center the buffer.
+
+** c-c++
+   反汇编 disaster
+   代码格式化 clang-format
+   反射 smeantic-refactor
+   代码导航 cscope
+   自动补全 auto-completion
+   调试器 realgud 
+
+   | ~SPC m g a~ | open matching file                                            |
+   |             | (e.g. switch between .cpp and .h, requires a project to work) |
+   | ~SPC m g A~ | open matching file in another window                          |
+   |             | (e.g. switch between .cpp and .h, requires a project to work) |
+   | ~SPC m D~   | disaster: disassemble c/c++ code                              |
+   | ~SPC m r .~ | srefactor: refactor thing at point.                           |
+
+*** 通用编译
+    编译 compile
+*** 导航 [ goto ]
+
+| Key binding | Description               |
+|-------------+---------------------------|
+| ~SPC m g &~ | find references (address) |
+| ~SPC m g R~ | find references (read)    |
+| ~SPC m g W~ | find references (write)   |
+| ~SPC m g c~ | find callers              |
+| ~SPC m g C~ | find callees              |
+| ~SPC m g v~ | vars                      |
+| ~SPC m g f~ | find file at point (ffap) |
+| ~SPC m g F~ | ffap other window         |
+
+**** goto/hierarchy
+
+| Key binding   | Description                 |
+|---------------+-----------------------------|
+| ~SPC m g h b~ | base class(es)              |
+| ~SPC m g h d~ | derived class(es) [ccls]    |
+| ~SPC m g h c~ | call hierarchy              |
+| ~SPC m g h C~ | call hierarchy (inv)        |
+| ~SPC m g h i~ | inheritance hierarchy       |
+| ~SPC m g h I~ | inheritance hierarchy (inv) |
+
+**** goto/member
+
+| Key binding   | Description             |
+|---------------+-------------------------|
+| ~SPC m g m h~ | member hierarchy        |
+| ~SPC m g m t~ | member types [ccls]     |
+| ~SPC m g m f~ | member functions [ccls] |
+| ~SPC m g m v~ | member variables [ccls] |
+
+*** 调试[ debugger ]
+ | Key binding   | Description                     |
+ |---------------+---------------------------------|
+ | ~SPC m d d d~ | start debugging                 |
+ | ~SPC m d d l~ | debug last configuration        |
+ | ~SPC m d d r~ | debug recent configuration      |
+ |---------------+---------------------------------|
+ | ~SPC m d c~   | continue                        |
+ | ~SPC m d i~   | step in                         |
+ | ~SPC m d o~   | step out                        |
+ | ~SPC m d s~   | next step                       |
+ | ~SPC m d v~   | inspect value at point          |
+ | ~SPC m d r~   | restart frame                   |
+ |---------------+---------------------------------|
+ | ~SPC m d .~   | debug transient state           |
+ |---------------+---------------------------------|
+ | ~SPC m d a~   | abandon current session         |
+ | ~SPC m d A~   | abandon all process             |
+ |---------------+---------------------------------|
+ | ~SPC m d e e~ | eval                            |
+ | ~SPC m d e r~ | eval region                     |
+ | ~SPC m d e t~ | eval value at point             |
+ |---------------+---------------------------------|
+ | ~SPC m d S s~ | switch session                  |
+ | ~SPC m d S t~ | switch thread                   |
+ | ~SPC m d S f~ | switch frame                    |
+ |---------------+---------------------------------|
+ | ~SPC m d I i~ | inspect                         |
+ | ~SPC m d I r~ | inspect region                  |
+ | ~SPC m d I t~ | inspect value at point          |
+ |---------------+---------------------------------|
+ | ~SPC m d b b~ | toggle a breakpoint             |
+ | ~SPC m d b c~ | change breakpoint condition     |
+ | ~SPC m d b l~ | change breakpoint log condition |
+ | ~SPC m d b h~ | change breakpoint hit count     |
+ | ~SPC m d b a~ | add a breakpoint                |
+ | ~SPC m d b d~ | delete a breakpoint             |
+ | ~SPC m d b D~ | clear all breakpoints           |
+ |---------------+---------------------------------|
+ | ~SPC m d '_~  | Run debug REPL                  |
+ |---------------+---------------------------------|
+ | ~SPC m d w l~ | list local variables            |
+ | ~SPC m d w o~ | goto output buffer if present   |
+ | ~SPC m d w s~ | list sessions                   |
+ | ~SPC m d w b~ | list breakpoints                |
+** semantic 显示定义 [ ] 
+   底部显示定义
+   顶部显示函数
+   支持 refactor
+
+| ~SPC m r~ | srefactor: refactor thing at point. |
+** debug 
+| Key binding | Description     |
+|-------------+-----------------|
+| ~SPC m d d~ | open cmd buffer |
+
+
+| Key binding | Description          |
+|-------------+----------------------|
+| ~bb~        | set break            |
+| ~bc~        | clear break          |
+| ~bd~        | delete break         |
+| ~bs~        | disable break        |
+| ~be~        | enable break         |
+| ~c~         | continue             |
+| ~i~         | step into            |
+| ~J~         | jump to current line |
+| ~o~         | step out             |
+| ~q~         | quit debug           |
+| ~r~         | restart              |
+| ~s~         | step over            |
+| ~S~         | goto cmd buffer      |
+| ~v~         | eval variable        |
+** 调试服务 [ dap,Debug Adapter Protocol ] 
+** 调试管理器 [ realgud ] [ 每个语言不同调试器 ]
+   自动调试 set annotate 1
+** emoji 
 * mode
 ** 绘图模式 artist-mode
    Shift+中键 选择画什么图形
@@ -823,4 +974,3 @@ RefTeX
   | paste      | 粘贴                                                                                        | 粘贴                                                                              |
   | Flood-fill | 填充工具，填充                                                                              | 填充                                                                              |
 ** hackernews
-

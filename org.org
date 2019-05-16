@@ -1,4 +1,4 @@
-#+startup: align shrink
+# #+startup: align shrink
 * org 排版工具
 以 # 号后加一空格开始的行表示注释，文件导出时这些内容不被导出，上面第一行就是。
 以 #+ 符号开始的行用于设置文档参数或内容属性，比如文档的标题、作者，org-mode 打开时文档的呈现状态等。
@@ -540,66 +540,8 @@ To permanently enable mode line display of org clock, add this snippet to your
   (setq spaceline-org-clock-p t)
 设置模式 行 中显示 代办的时钟
 #+END_SRC
-
+ 
 * 基本命令
-** Agenda
-| 代办清单简单显示 org agenda list stuck projects                           | ~SPC a o #~   |
-| org occur in agenda files  在代办文件查找文件                             | ~SPC a o /~   |
-| org agenda list                         代办列表                          | ~SPC a o a~   |
-| org capture 抓取任务到笔记                                                | ~SPC a o c~   |
-| org store agenda views 存储代办视图                                       | ~SPC a o e~   |
-| org feed goto inbox                                                       | ~SPC a o f i~ |
-| org feed update all                                                       | ~SPC a o f u~ |
-| org cancel clock 取消时钟                                                 | ~SPC a o C c~ |
-| org goto last clocked-in clock (go to specific recent clock with ~SPC u~) | ~SPC a o C g~ |
-| org clock in      进入时钟                                                | ~SPC a o C i~ |
-| org clock in last  最后时钟                                               | ~SPC a o C I~ |
-| org jump to current clock  进入当前时钟                                   | ~SPC a o C j~ |
-| org clock out           关闭时钟                                          | ~SPC a o C o~ |
-| org resolve clocks                                                        | ~SPC a o C r~ |
-| org store link                                                            | ~SPC a o l~   |
-| org tags view                                                             | ~SPC a o m~   |
-| org agenda                                                                | ~SPC a o o~   |
-| org search view                                                           | ~SPC a o s~   |
-| org todo list                                                             | ~SPC a o t~   |
-| org-capture                                                               | ~SPC C c~     |
-
-按日期显示  d
-按周显示 w
-按月显示 org-agenda  month
-天天做 SCHEDULED: <2019-04-23 二 07:00 .+1d>
-周周做 SCHEDULED: <2019-04-23 二 07:00 .+1w>
- 使用时间点+ 间隔（ 天（d）、周（w）、月（m）或者年（y））
- 在时间段内做 <2004-08-23 Mon>--<2004-08-26 Thu>
- * TODO 从 2016 年 7 月 24 日开始到 2016 年 12 月 1 日，每个周日的上午 10:00-12:00 进行某项任务
-  SCHEDULED: <2016-07-24 Sun 10:00-12:00 ++1w> DEADLINE: <2016-12-01 Thu>
-
- 
-   ;; 优先级范围和默认任务的优先级
-  (setq org-highest-priority ?A)
-  (setq org-lowest-priority ?E)
-  (setq org-default-priority ?E)
-
-  ;; org agenda 优先级醒目外观
-  (setq org-priority-faces '(
-                             (?A . (:background "red" :foreground "white" :weight bold)) 
-                             (?B . (:background "DarkOrange" :foreground "white" :weight bold)) 
-                             (?C . (:background "yellow" :foreground "DarkGreen" :weight bold)) 
-                             (?D . (:background "DodgerBlue" :foreground "black" :weight bold)) 
-                             (?E . (:background "SkyBlue" :foreground "black" :weight bold)) ))
- 
-
- 子任务
- *** 一个任务 [0/2]
-该任务包含几个步骤：
-- [-] 步骤 1 [1/2]
-  - [X] 步骤 1.1
-  - [ ] 步骤 1.2
-- [-] 步骤 2 [1/4]
-  - [X] 步骤 2.1
-  - [ ] 步骤 2.2
-  - [ ] 
-  - [ ] 
 ** Toggles 开关
 
 | Key binding | Description                                   |
@@ -988,3 +930,63 @@ are available.
 | ~f~         | Find/visit another entry to visualize |
 | ~r~         | Rename this, or another, entry        |
 |             |                                       |
+* 代办任务
+** TODO 任务 1 [ start time - end time ]
+** DONE 任务 2 [ start time - end time ]
+CLOSED: [2019-05-09 四 15:15]
+** TODO 任务 3 [ start time - end time ]
+** TODO 任务 4 [ start time - end time ]
+| 代办列表显示方式 | 周 w, 日 d, 月 org-agenda-month,year |
+| 在代办文件中查找 | SPC a o /                            |
+| 抓取任务         | SPC a o c                            |
+| org store link   | SPC a o l                            |
+| 显示 tags        | SPC a o m                            |
+| 显示 Todolist    | SPC a o t                            |
+
+
+任务计时 
+org-clock-in 
+org-clock-cacel
+番茄闹钟
+
+天天做 SCHEDULED: <2019-04-23 二 07:00 .+1d>
+周周做 SCHEDULED: <2019-04-23 二 07:00 .+1w>
+使用时间点+ 间隔（ 天（d）、周（w）、月（m）或者年（y））
+在时间段内做 <2004-08-23 Mon>--<2004-08-26 Thu>
+
+1am 或 1pm
+
+从 2016 年 7 月 24 日开始到 2016 年 12 月 1 日，每个周日的上午 10:00-12:00 进行某项任务
+SCHEDULED: <2016-07-24 Sun 10:00-12:00 ++1w> DEADLINE: <2016-12-01 Thu>
+
+ 
+ #+begin_src lisp
+ ;; 优先级范围和默认任务的优先级
+ (setq org-highest-priority ?A)
+ (setq org-lowest-priority ?E)
+ (setq org-default-priority ?E)
+
+ ;; org agenda 优先级醒目外观
+ (setq org-priority-faces '(
+ (?A . (:background "red" :foreground "white" :weight bold)) 
+ (?B . (:background "DarkOrange" :foreground "white" :weight bold)) 
+ (?C . (:background "yellow" :foreground "DarkGreen" :weight bold)) 
+ (?D . (:background "DodgerBlue" :foreground "black" :weight bold)) 
+ (?E . (:background "SkyBlue" :foreground "black" :weight bold)) ))
+ #+end_src
+ 
+
+ 子任务
+ *** 一个任务 [0/2]
+该任务包含几个步骤：
+- [-] 步骤 1 [1/2]
+  - [X] 步骤 1.1
+  - [ ] 步骤 1.2
+- [-] 步骤 2 [1/4]
+  - [X] 步骤 2.1
+  - [ ] 步骤 2.2
+  - [ ] 
+  - [ ] 
+* 错误列表
+** invalid-function org-table-with-shrunk-field
+使用 org-reload

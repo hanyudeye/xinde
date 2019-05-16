@@ -1,5 +1,5 @@
-* 工具[计算抽象]
-** 文件
+* 工具[文件( 最终存储形式 )]
+** 文件操作 
 *** 列出文件 list ls
     | -a   | 显示指定目录下所有子目录与文件，包括隐藏文件 |
     | -l   | 以列表方式显示文件的详细信息                 |
@@ -67,7 +67,7 @@
 -S：在备份文件时，用指定的后缀“SUFFIX”代替文件的默认后缀；
 -b：覆盖已存在的文件目标前将目标文件备份；
 -v：详细显示命令执行的操作。
-** 工具
+** 软件包管理工具
 *** dpkg 软件  管理 Debian 组织发行的包的软件 
 **** deb 包本身有三部分组成：
      - 数据包，包含实际安装的程序数据，文件名为 data.tar.XXX；
@@ -410,15 +410,8 @@
     rmmod 从运行的内核中移除指定的内核模块
     insmod 将给定的模块加载到内核中
     lsmod 显示已载入系统的模块
-** 二进制
 ** 系统
-*** 关闭机器，工具
-**** who
-     在关机前需要先使用 who 命令查看有没有其它用户在线。
-**** sync
-     为了加快对磁盘文件的读写速度，位于内存中的文件数据不会立即同步到磁盘上，因
-     此关机之前需要先进行 sync 同步操作。
-**** shutdown
+*** 关闭机器 ( shutdown )
 #+BEGIN_SRC shell
   # shutdown [-krhc] 时间 [信息]
   -k： 不会关机，只是发送警告信息，通知所有在线的用户
@@ -426,11 +419,46 @@
   -h： 将系统的服务停掉后就立即关机
   -c： 取消已经在进行的 shutdown 指令内容
 #+END_SRC
-*** sudo (用户提权）
+*** 在线用户( who )
+     在关机前需要先使用 who 命令查看有没有其它用户在线。
+*** 同步磁盘( sync )
+     为了加快对磁盘文件的读写速度，位于内存中的文件数据不会立即同步到磁盘上，因
+     此关机之前需要先进行 sync 同步操作。
+*** 用户提权 ( sudo )
     sudo 允许一般用户使用 root 可执行的命令，不过只有在 /etc/sudoers 配置文件中
     添加的用户才能使用该指令。
+*** 发行版系统信息 ( lsb_release ) 
+    显示发行版 ID  -i   ---》 Ubuntu
+    显示发行版描述  -d 
+    显示发行版本号 -r
+    显示代号(codename) -c
+*** 输出系统信息( uname ) 
+    -s, --kernel-name
+    输出内核名称
+
+    -n, --nodename
+    输出网络节点主机名
+
+    -r, --kernel-release
+    输出内核发行版本
+
+    -v, --kernel-version
+    输出内核版本信息
+
+       -m, --machine
+       输出机器硬件名称
+
+       -p, --processor
+       输出处理器类型（不可移植）
+
+       -i, --hardware-platform
+       输出硬件平台信息（不可移植）
+
+       -o, --operating-system
+       输出操作系统信息
+
 ** 网络
-netstat -ntulp | grep 3306   //查看所有 3306 端口使用情况·
+   netstat -ntulp | grep 3306   //查看所有 3306 端口使用情况·
 ** 图像视频
 *** Kdenlive
     速度-100，影片就倒序播放
@@ -441,17 +469,17 @@ netstat -ntulp | grep 3306   //查看所有 3306 端口使用情况·
 *** flowblade
 *** Lightworks 官网安装
 *** Blender 非常专业
-*** 在 Linux 中安装 Olive
-注意：目前不建议将 Olive 用在生产环境中。
+*** Olive
+    注意：目前不建议将 Olive 用在生产环境中。
 
-通过 PPA 安装：
+    通过 PPA 安装：
+    
+    sudo add-apt-repository ppa：olive-editor / olive-editor 
+    sudo apt-get update 
+    sudo apt-get install olive-editor
 
-sudo add-apt-repository ppa：olive-editor / olive-editor 
-sudo apt-get update 
-sudo apt-get install olive-editor
-
-通过 Snap 安装
-sudo snap install --edge olive-editor
+    通过 Snap 安装
+    sudo snap install --edge olive-editor
 *** 屏幕录制 kazam  simplescreenrecorder obs
 *** 声音编辑 audacity
         通过麦克风，混音器或其他媒体录制实况音频。
@@ -526,172 +554,3 @@ Vocal Reduction and Isolation
    ps -ef                      # 查看所有进程
    top                         # 动态显示进程状态
    #+end_example
-* jdb
-  javac -g Java.java
-  
-  ** 命令列表 **
-connectors                -- 列出此 VM 中可用的连接器和传输
-
-run [class [args]]        -- 开始执行应用程序的主类
-
-threads [threadgroup]     -- 列出线程
-thread <thread id>        -- 设置默认线程
-suspend [thread id(s)]    -- 挂起线程 (默认值: all)
-resume [thread id(s)]     -- 恢复线程 (默认值: all)
-where [<thread id> | all] -- 转储线程的堆栈
-wherei [<thread id> | all]-- 转储线程的堆栈, 以及 pc 信息
-up [n frames]             -- 上移线程的堆栈
-down [n frames]           -- 下移线程的堆栈
-kill <thread id> <expr>   -- 终止具有给定的异常错误对象的线程
-interrupt <thread id>     -- 中断线程
-
-print <expr>              -- 输出表达式的值
-dump <expr>               -- 输出所有对象信息
-eval <expr>               -- 对表达式求值 (与 print 相同)
-set <lvalue> = <expr>     -- 向字段/变量/数组元素分配新值
-locals                    -- 输出当前堆栈帧中的所有本地变量
-
-classes                   -- 列出当前已知的类
-class <class id>          -- 显示已命名类的详细资料
-methods <class id>        -- 列出类的方法
-fields <class id>         -- 列出类的字段
-
-threadgroups              -- 列出线程组
-threadgroup <name>        -- 设置当前线程组
-
-stop in <class id>.<method>[(argument_type,...)]
-                          -- 在方法中设置断点
-stop at <class id>:<line> -- 在行中设置断点
-clear <class id>.<method>[(argument_type,...)]
-                          -- 清除方法中的断点
-clear <class id>:<line>   -- 清除行中的断点
-clear                     -- 列出断点
-catch [uncaught|caught|all] <class id>|<class pattern>
-                          -- 出现指定的异常错误时中断
-ignore [uncaught|caught|all] <class id>|<class pattern>
-                          -- 对于指定的异常错误, 取消 'catch'
-watch [access|all] <class id>.<field name>
-                          -- 监视对字段的访问/修改
-unwatch [access|all] <class id>.<field name>
-                          -- 停止监视对字段的访问/修改
-trace [go] methods [thread]
-                          -- 跟踪方法进入和退出。
-                          -- 除非指定 'go', 否则挂起所有线程
-trace [go] method exit | exits [thread]
-                          -- 跟踪当前方法的退出, 或者所有方法的退出
-                          -- 除非指定 'go', 否则挂起所有线程
-untrace [methods]         -- 停止跟踪方法进入和/或退出
-step                      -- 执行当前行
-step up                   -- 一直执行, 直到当前方法返回到其调用方
-stepi                     -- 执行当前指令
-下一步                      -- 步进一行 (步过调用)
-cont                      -- 从断点处继续执行
-
-list [line number|method] -- 输出源代码
-use (或 sourcepath) [source file path]
-                          -- 显示或更改源路径
-exclude [<class pattern>, ... | "none"]
-                          -- 对于指定的类, 不报告步骤或方法事件
-classpath                 -- 从目标 VM 输出类路径信息
-
-monitor <command>         -- 每次程序停止时执行命令
-monitor                   -- 列出监视器
-unmonitor <monitor#>      -- 删除监视器
-read <filename>           -- 读取并执行命令文件
-
-lock <expr>               -- 输出对象的锁信息
-threadlocks [thread id]   -- 输出线程的锁信息
-
-pop                       -- 通过当前帧出栈, 且包含当前帧
-reenter                   -- 与 pop 相同, 但重新进入当前帧
-redefine <class id> <class file name>
-                          -- 重新定义类的代码
-
-disablegc <expr>          -- 禁止对象的垃圾收集
-enablegc <expr>           -- 允许对象的垃圾收集
-
-!!                        -- 重复执行最后一个命令
-<n> <command>             -- 将命令重复执行 n 次
-# <command>               -- 放弃 (无操作)
-help (或 ?)               -- 列出命令
-version                   -- 输出版本信息
-exit (或 quit)            -- 退出调试器
-
-<class id>: 带有程序包限定符的完整类名
-<class pattern>: 带有前导或尾随通配符 ('*') 的类名
-<thread id>: 'threads' 命令中报告的线程编号
-<expr>: Java(TM) 编程语言表达式。
-支持大多数常见语法。
-
-可以将启动命令置于 "jdb.ini" 或 ".jdbrc" 中
-位于 user.home 或 user.dir 中
-> 
-** Derived layers
-Derived layer should provide information how to configure the language
-specific debug adapter and the language specific bindings(e. g. debug
-application, debug test, etc). The package declares function
-~spacemacs/dap-bind-keys-for-mode~ which should be used by the derived layers
-to configure the shortcuts.
-
-*** Declared prefixes
-The following prefixes have been declared:
-
-| prefix      | name              |
-|-------------+-------------------|
-| ~SPC m d~   | debug             |
-| ~SPC m d d~ | launching         |
-| ~SPC m d b~ | breakpoints       |
-| ~SPC m d l~ | debug windows     |
-| ~SPC m d S~ | context switching |
-| ~SPC m d e~ | eval              |
-| ~SPC m d I~ | inspect           |
-
-*** Default key bindings
-The default bindings are listed below. Derived layers should extend this list:
-
-| Key binding   | Description                     |
-|---------------+---------------------------------|
-| ~SPC m d d d~ | start debugging                 |
-| ~SPC m d d l~ | debug last configuration        |
-| ~SPC m d d r~ | debug recent configuration      |
-|---------------+---------------------------------|
-| ~SPC m d c~   | continue                        |
-| ~SPC m d i~   | step in                         |
-| ~SPC m d o~   | step out                        |
-| ~SPC m d s~   | next step                       |
-| ~SPC m d v~   | inspect value at point          |
-| ~SPC m d r~   | restart frame                   |
-|---------------+---------------------------------|
-| ~SPC m d .~   | debug transient state           |
-|---------------+---------------------------------|
-| ~SPC m d a~   | abandon current session         |
-| ~SPC m d A~   | abandon all process             |
-|---------------+---------------------------------|
-| ~SPC m d e e~ | eval                            |
-| ~SPC m d e r~ | eval region                     |
-| ~SPC m d e t~ | eval value at point             |
-|---------------+---------------------------------|
-| ~SPC m d S s~ | switch session                  |
-| ~SPC m d S t~ | switch thread                   |
-| ~SPC m d S f~ | switch frame                    |
-|---------------+---------------------------------|
-| ~SPC m d I i~ | inspect                         |
-| ~SPC m d I r~ | inspect region                  |
-| ~SPC m d I t~ | inspect value at point          |
-|---------------+---------------------------------|
-| ~SPC m d b b~ | toggle a breakpoint             |
-| ~SPC m d b c~ | change breakpoint condition     |
-| ~SPC m d b l~ | change breakpoint log condition |
-| ~SPC m d b h~ | change breakpoint hit count     |
-| ~SPC m d b a~ | add a breakpoint                |
-| ~SPC m d b d~ | delete a breakpoint             |
-| ~SPC m d b D~ | clear all breakpoints           |
-|---------------+---------------------------------|
-| ~SPC m d '_~  | Run debug REPL                  |
-|---------------+---------------------------------|
-| ~SPC m d w l~ | list local variables            |
-| ~SPC m d w o~ | goto output buffer if present   |
-| ~SPC m d w s~ | list sessions                   |
-| ~SPC m d w b~ | list breakpoints                |
-
-

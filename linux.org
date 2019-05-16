@@ -1,10 +1,8 @@
-* linux 
-** 组成  
-   内核，用户空间，应用程序
+* linux [ 内核 ]
 ** linux 启动过程
 *** 引导程序载入内核
     引导扇区的 Grub 读入 /boot 目录下的内核文件
-*** 运行 init  (开机启动工具)
+*** init process  (初始化)
     调用配置： /etc/inittab, /etc/init/*.conf
 *** 系统初始化
     在 init 的配置文件中有这么一行：si::sysinit:/etc/rc.d/rc.sysinit　它调用执行
@@ -31,7 +29,52 @@
     关机指令为：shutdown -h +10 10 分钟后
 ** 日志
     var/log/
+** shell
+** file
+** Date and Time
+*** Real time(1970,1,1,UTC) 
+*** Process time(CPU 时间)
+** 进程 [ fork ]
+*** 特权级 [ 继承 ]
+*** 守护进程 (demo,常驻进程)
+    httpd, syslogd
+*** 环境 list [ 环境变量 ]
+    shell 中用 export 输出环境变量
+    
+    c 中 
+   访问  char ** environ
+*** 资源使用
+*** 内存映射 [ mmap,虚拟内存 ]
+    执行文件代码段初始化    
+    分配新的 (zero-filled) 内存
+    memory-mapped I/O
+    进程通信 (shared mapping 共享内存)
+*** 进程间通信和同步
+**** 信号 [signals,SIGxxxx,整数]
+     shell 中   
+     中断信号 Control-C
+     发送信号 kill
 
+**** pipes 
+**** sockets
+**** file locking
+**** message queues
+**** semaphores
+**** shared memory
+*** 线程 ( Threads )
+*** Process Groups and Shell Job Control [进程组中每个进程的进程组标示相同]
+    $ ls -l | sort -k5n | less
+*** 会话，控制终端和控制进程 [ 一个终端创建一个会话 ]
+*** 伪终端( Pseudoterminals )
+*** The /proc File System (进程印象)
+
+
+** 静态和共享库 
+*** 静态库 (也称归档 arthives) [ 结构化的 object 模块] 
+    linker  添加到 执行文件中
+*** 共享库 [ 动态链接器调用 ]
+    可执行文件  加入一条 记录
+* 发行版 [ 库，应用程序 ]
 * linux source code
 ** build doc 
   	 /home/wuming/.local/bin/virtualenv sphinx_1.4
