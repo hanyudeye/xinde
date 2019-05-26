@@ -1,4 +1,6 @@
-* 版本控制  [ 银行账户出入金记账 ]
+#+TITLE: 文件版本控制系统
+#+DESCRIPTION: 对于文件的改动，提供一个追踪文件历史信息的功能，还支持多用户改动，历史记录查询，改动说明。
+* 版本控制  
 ** 快进式合并
    "快进式合并"（fast-farward merge），会直接将 master 分支指向合并的分支，这种模式
    下进行分支合并会丢失分支信息，也就不能在分支历史上看出分支信息。
@@ -23,14 +25,13 @@
 该功能可以用于 bug 分支的实现。如果当前正在 dev 分支上进行开发，但是此时 master
 上有个 bug 需要修复，但是 dev 分支上的开发还未完成，不想立即提交。在新建 bug 分
 支并切换到 bug 分支之前就需要使用 git stash 将 dev 分支的未提交修改储藏起来。
-* git 
-** 配置
+* git (多个节点的版本系统)
+** 配置版本系统的信息
    git config [--system,--global]
-   必须的
+   
    用户名 user.name = "用户名或者用户 ID"
    邮箱 user.email = "邮箱"
    
-   非必须 
    - 配置颜色
       git config --global color.branch auto
       git config --global color.diff auto
@@ -55,30 +56,17 @@
        : 可以使用 ssh -v git@github.com 命令来测试链接是否畅通
        : 测试是否能够连接 ssh -T git@github.com
 
-** 功能
-*** 初始化 [ init ]
-*** 暂存区
-**** 加入暂存区 [ git add <modified files>/git add . ]
-**** 删除暂存区 [ git rm --cached <file> ]  
-**** 取消暂存区
-     和暂存区删除文件差别不大, 删除会把索引也删除
-     git reset HEAD <file>
-     git rm --cached 
-     是从 stage（index，暂存区） 里面删除文件，当你提交（commit）之后文件就会删除了。
-    
-     git reset HEAD --file 
-     : 回退暂存区里的文件（还原为 HEAD commit 里面该文件的状态），会撤销从上一次提交（commit） 之后的一些操作。
-     如果是对于新增文件，这两个操作时等效的。
-**** 抛弃工作区修改, 不提交都能恢复
-     git checkout . # 抛弃工作区修改
-     git checkout <file>
-**** 用别的分支的文件替换同名文件
-     用 HEAD 指向的 master(默认主分支) 分支中的全部或者部分文件替换
-     git checkout HEAD .
-     git checkout HEAD <file>
+** 版本系统的功能使用
+   版本控制系统有暂存区，仓库，和远程仓库，一般只能一级一级变更.
+   
+*** 初始化版本系统 [git init <DIR>]
+*** 暂存区管理
+**** 把文件加入暂存区 [ git add <modified files>/git add . ]
+**** 删除暂存区里的文件,如需纳入版本库，需要重新添加 [ git rm --cached <file> ]  
+**** 重置暂存,就是恢复成未暂存的状态(暂存区是上一次的内容) [ git reset HEAD <file> ]
 **** 用两次确认的恢复草稿
      此次操作之前和之后的 commit 和 history 都会保留，并且把这次撤销作为一次最新的提交
-*** 本地库
+*** 本地库管理
 **** 保存到本地库 [ git commit -m "msg" ]
      也可以将 git add 与 git commit 用一个指令完成
      git commit -a -m "msg"
@@ -89,17 +77,11 @@
      git revert HEAD^               撤销前前一次 commit
      git revert commit-id（比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进行保存。
      git revert 是提交一个新的版本，将需要 revert 的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。
-**** 版本库分库
-***** 创建分支
-      git branch (branchname)
-***** 切换分支
-      git checkout (branchname)
-      当你切换分支的时候，Git 会用该分支的最后提交的快照替换你的工作目录的内容，所以多个分支不需要多个目录。
-***** 合并分支, 然后可以删除分支
-      git merge test 
-      把 test 分支合并到当前分支
-***** 删除分支
-      git branch -d (branchname)
+**** 版本库分支管理(分支相当于某个备份，有些微区别,一般作为开发版)
+***** 创建分支 [ git branch <BRANCHNAME> ]
+***** 切换分支 [ git checkout <BRANCHNAME> ]
+***** 合并分支, 然后可以删除分支 [ git merge <BRANCHNAME> ] 把 BRANCHNAME 分支合并到当前分支
+***** 删除分支 [ git branch -d <BRANCHNAME> ]
 ***** 隐藏
       git stash
       git pull
@@ -117,8 +99,15 @@
 
 ***** 忘了切分支
       可以先用 git stash save xxx 来保存工作区的内容，然后新建 一个分支并调用 git stash pop
-*** 远程仓库
-**** 克隆远程到本地
+**** 本地修改的文件，想要撤销，并且还没有暂存，可以用签出命令
+     git checkout . # 抛弃工作区修改
+     git checkout <file>
+**** 用别的分支的文件替换同名文件
+     用 HEAD 指向的 master(默认主分支) 分支中的全部或者部分文件替换
+     git checkout HEAD .
+     git checkout HEAD <file>
+*** 远程仓库管理
+**** 克隆远程到本地仓库,本地会有一个拷贝
      git clone RESP
      git clone --depth=1 RESP 只克隆最新的
 **** 添加要提交的中心服务器
@@ -141,7 +130,7 @@
      git fetch --all
      git reset --hard origin/master
      git pull
-*** 文件日志
+*** 文件日志查看
 **** 状态 status   
      git status
      git status -s 简短信息
@@ -172,13 +161,13 @@
      是你也可以用 --until 和 --after。
 **** 某次提交的内容 
      git show # 显示某次提交的内容 git show $id
-*** 处理发布 [tag]
+*** 添加标记[tag]
     定义版本 git tag 1.0  [branch]
 *** 把分支合并到 master 分支
     git checkout master 
     git rebase  [developversion]
     git brancd -d [developversion] 删除[developversion]分支
-** gitignore
+** gitignore 忽略文件
    以斜杠“/”开头表示目录； 
    以星号“*”通配多个字符；
    以问号“?”通配单个字符
