@@ -58,6 +58,7 @@
 
 ** 版本系统的功能使用
    版本控制系统有暂存区，仓库，和远程仓库，一般只能一级一级变更.
+   git 管理文件内容，而不管理文件名
    
 *** 初始化版本系统 [git init <DIR>]
 *** 暂存区管理
@@ -66,6 +67,9 @@
 **** 重置暂存,就是恢复成未暂存的状态(暂存区是上一次的内容) [ git reset HEAD <file> ]
 **** 用两次确认的恢复草稿
      此次操作之前和之后的 commit 和 history 都会保留，并且把这次撤销作为一次最新的提交
+**** 改名文件，并且将这个改名放入暂存区
+     git mv [file-original] [file-renamed]
+
 *** 本地库管理
 **** 保存到本地库 [ git commit -m "msg" ]
      也可以将 git add 与 git commit 用一个指令完成
@@ -79,8 +83,17 @@
      git revert 是提交一个新的版本，将需要 revert 的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。
 **** 版本库分支管理(分支相当于某个备份，有些微区别,一般作为开发版)
 ***** 创建分支 [ git branch <BRANCHNAME> ]
+      从某分支创建分支 git checkout -b <ALTERNATE> <BRANCHNAME> 
 ***** 切换分支 [ git checkout <BRANCHNAME> ]
-***** 合并分支, 然后可以删除分支 [ git merge <BRANCHNAME> ] 把 BRANCHNAME 分支合并到当前分支
+***** 合并分支间的修改[ git merge <BRANCHNAME> ] 把 BRANCHNAME 分支合并到当前分支
+****** 直接合并 把两条分支上的历史轨迹合并 
+****** 压合合并 如果想把某个分支的提交作为一个整体记录时，可以使用压合合并。
+       git merge --squash <BRANCH>
+       然后提交一下  git commit 
+****** 拣选合并 只需合并某个提交，而不是全部改动.
+       git cherry-pick <ID>
+       然后重新提交下
+***** 修改分支名称[ git branch -m <BRANCHNAME> <NEWBRANCHNAME> ]
 ***** 删除分支 [ git branch -d <BRANCHNAME> ]
 ***** 隐藏
       git stash
@@ -96,7 +109,6 @@
       2.放弃本地修改，直接覆盖之
       git reset --hard
       git pull
-
 ***** 忘了切分支
       可以先用 git stash save xxx 来保存工作区的内容，然后新建 一个分支并调用 git stash pop
 **** 本地修改的文件，想要撤销，并且还没有暂存，可以用签出命令
@@ -135,32 +147,34 @@
      git status
      git status -s 简短信息
      git remote -v 列出服务器地址
-     git diff   尚未缓存的改动：
-     git diff --cached   查看已缓存的改动：
-     git diff HEAD  查看已缓存的与未缓存的所有改动：
-   
-     git diff branch1 branch2 --stat   //显示出所有有差异的文件列表
-     git diff branch1 branch2 文件名(带路径)   //显示指定文件的详细差异
-     git diff branch1 branch2                   //显示出所有有差异的文件的详细差异
-
-     git diff --stat   显示摘要而非整个 diff
-     A: 你本地新增的文件（服务器上没有）.
-     C: 文件的一个新拷贝.
-     D: 你本地删除的文件（服务器上还在）.
-     M: 文件的内容或者 mode 被修改了.
-     R: 文件名被修改了。
-     T: 文件的类型被修改了。
-     U: 文件没有被合并(你需要完成合并才能进行提交)。
-     X: 未知状态(很可能是遇到 git 的 bug 了，你可以向 git 提交 bug report)。
-     在 man git diff-files 中可以查到这些标志的说明
-**** Git 查看提交历史
+**** 查看提交历史
      git log
      git log --oneline 简洁--graph 拓扑图 '--reverse'逆向显示
      --author 指定用户日志
      如果你要指定日期，可以执行几个选项：--since 和 --before，但
      是你也可以用 --until 和 --after。
-**** 某次提交的内容 
-     git show # 显示某次提交的内容 git show $id
+**** 查看某次提交的内容 [ git show <id> ]
+**** 更详细的信息 git blame <FILE>
+*** 比较区别
+         比较修改文件与暂存区的区别  git diff <FILE>
+         比较暂存区和版本库的区别 git diff --cached <FILE>   
+         比较不同版本区别 git diff <HEAD>
+   
+         git diff branch1 branch2 --stat   //显示出所有有差异的文件列表
+         git diff branch1 branch2 文件名(带路径)   //显示指定文件的详细差异
+         git diff branch1 branch2                   //显示出所有有差异的文件的详细差异
+
+         git diff --stat   显示摘要而非整个 diff
+         A: 你本地新增的文件（服务器上没有）.
+         C: 文件的一个新拷贝.
+         D: 你本地删除的文件（服务器上还在）.
+         M: 文件的内容或者 mode 被修改了.
+         R: 文件名被修改了。
+         T: 文件的类型被修改了。
+         U: 文件没有被合并(你需要完成合并才能进行提交)。
+         X: 未知状态(很可能是遇到 git 的 bug 了，你可以向 git 提交 bug report)。
+         在 man git diff-files 中可以查到这些标志的说明
+
 *** 添加标记[tag]
     定义版本 git tag 1.0  [branch]
 *** 把分支合并到 master 分支
