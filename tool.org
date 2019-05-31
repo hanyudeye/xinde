@@ -1,32 +1,146 @@
+#+TITLE: 开发者开发的工具
+#+KEYWORDS: 工具集合
+
 * UNIX 工具 
-** 文件操作 ( 存储器操作 ) 
-*** 列出文件 list ls
+** 文件系统操作(各种数据类型的文件，用相应的工具进行操作)
+*** 为了显示目录结构 list ls
     | -a   | 显示指定目录下所有子目录与文件，包括隐藏文件 |
     | -l   | 以列表方式显示文件的详细信息                 |
     | -h   | 配合 -l 以人性化的方式显示文件大小           |
 
-*** 文件查看 cat less more head tac tail wc
+*** 为了显示文件内容 cat less more head tac tail wc
     反向输出文件内容 rev
-*** 文件编辑
-**** 新增目录  mkdir
-****     删除文件 rm  rmdir
-**** 排序 sort(行排列) 
+   
+**** 显示文件，并显示文件的行号
+     - b ：指定行号指定的方式，主要有两种：
+        -b a ：表示不论是否为空行，也同样列出行号(类似 cat -n)；
+        -b t ：如果有空行，空的那一行不要列出行号(默认值)；
+     - n  ：列出行号表示的方法，主要有三种：
+       -n ln ：行号在萤幕的最左方显示；
+       -n rn ：行号在自己栏位的最右方显示，且不加 0 ；
+       -n rz ：行号在自己栏位的最右方显示，且加 0 ；
+     -w  ：行号栏位的占用的位数。
+     -p 在逻辑定界符处不重新开始计算。 
+*** 为了编辑文件
+**** 新增了目录  mkdir
+**** 删除了文件，目录 rm  rmdir
+**** 对内容排序 sort
      -u      去除重复行
      -t      指定分隔符（通常与 -k 联用）
      -k      指定用于排序的列号
      -f      忽略大小写
      -M      能够排序月份
      -b      忽略行首空白
-**** uniq(行去重)
-     sort <file1> <file2> | uniq -d      # 交集
-     sort <file1> <file2> | uniq         # 并集
-     sort <file1> <file2> <file2> | uniq -u  # 差集
-**** 改名 mv
-**** 合并 join 
+**** 去除重复行 uniq
+**** 文件文件夹改名 mv
+**** 两个文件中指定栏位内容相同的行连接起(表处理) join 
+    : 依照两个文件里共有的某一列，将相应的行拼接成一行
+    
+    文件 file1.txt
+    aa 1 2
+    bb 2 3
+    cc 4 6
+    dd 3 3
+
+    文件 file2.txt
+    aa 2 1
+    bb 8 2
+    cc 4 4
+    dd 5 5
+    ff 2 4
+
+
+     -a<1 或 2>：除了显示原来的输出内容之外，还显示指令文件中没有相同栏位的行；
+     -e<字符串>：若[文件 1]与[文件 2]中找不到指定的栏位，则在输出中填入选项中的字符串；
+     -i 或--ignore-case：比较栏位内容时，忽略大小写的差异；
+     -o<格式>：按照指定的格式来显示结果；
+     -t<字符>：使用栏位的分割字符；
+     -v<1 或 2>：更-a 相同，但是只显示文件中没有相同栏位的行；
+     -1<栏位>：连接[文件 1]指定的栏位；
+     -2<栏位>：连接[文件 2]指定的栏位。
+     
+
+样例：
+文件 file1.txt
+aa 1 2
+bb 2 3
+cc 4 6
+dd 3 3
+文件 file2.txt
+aa 2 1
+bb 8 2
+ff 2 4
+cc 4 4
+dd 5 5
+
+1.join file1.txt file2.txt
+输出：aa 1 2 2 1
+bb 2 3 8 2
+默认已两个文件的第一行做匹配字段，默认以空格（不限个数）做分隔符。
+2.join -j 1 file1.txt file2.txt
+输出：aa 1 2 2 1
+bb 2 3 8 9
+-j 选项 指定了以两个文件里第一列做匹配字段 等同于 join file1.txt file2.txt
+3. join -1 2 -2 3 file1.txt file2.txt
+输出： 1 aa 2 aa 2
+2 bb 3 bb 8
+4 cc 6 ff 2 
+4 cc 6 cc 4
+以第一个文件的第二列和第二个文件的第三列做匹配字段。因为第二个文件里第三列的两个 3 都与第一个文件里第三行因此输出
+4 cc 6 ff 2 
+4 cc 6 cc 4
+4 join -o 1.1 -o 1.2 -o 1.3 -o 2.1 -o 2.2 -o 2.3 -e 'empty' -a 1 file1.txt file2.txt 
+输出： aa 1 2 aa 2 1
+bb 2 3 bb 8 2
+cc 4 6 empty empty empty
+dd 3 3 empty empty empty
+-o 指定 将 file1 的 1,2,3 列，file2 的 1,2,3 列都输出。-a 指定将 file1 中不匹配的行也输出，可是 file2 中沒有与 file1 后两行相应的字段，因此使用 empty 补齐。
+
+5.join -v 1 file1.txt file2.txt 
+输出： cc 4 6
+dd 3 3
+-v 1 将 file1 中不匹配的行输出
+PS：join 命令和数据库中的 join 命令很相似。
+尽管 file1 和 file2 都已经排序，可是因为在第三行时開始不匹配因此仅仅匹配上了前两行，后面的行尽管字段也能够相应可是以不能匹配。join 命令，对文件格式的要求很强，假设想要更灵活的使用，可用 AWK 命令，參加 AWK 实例
+
+6. join 标准输入
+有时我们须要将多个格式同样的文件 join 到一起，而 join 接受的是两个文件的指令，此时我们能够使用管道和字符“-"来实现
+join file1 file2 | join - file3 | join - file4 
+这样就能够将四个文件 连接到 一起了。
 **** 替换或删除字符 tr 
 **** sed
 **** 文本转换 unix2dos dos2unix 
-**** awk 带编程性
+**** awk [  Aho, Kernighan, and Weinberger Programming Language,处理文本的语言]
+***** 语法形式
+      awk [options] 'script' var=value file(s)
+      awk [options] -f scriptfile var=value file(s)
+***** 常用命令选项
+      -F fs fs 指定输入分隔符，fs 可以是字符串或正则表达式，如-F:
+      -v var=value 赋值一个用户定义变量，将外部变量传递给 awk
+      -f scripfile 从脚本文件中读取 awk 命令
+      -m[fr] val 对 val 值设置内在限制，-mf 选项限制分配给 val 的最大块数目；-mr 选项限制记录的最大数目。这两个功能是 Bell 实验室版 awk 的扩展功能，在标准 awk 中不适用。
+***** awk 脚本基本结构
+      awk 'BEGIN{ print "start" } pattern{ commands } END{ print "end" }' file
+      
+      一个 awk 脚本通常由：BEGIN 语句块、能够使用模式匹配的通用语句块、END 语句
+      块 3 部分组成，这三个部分是可选的。任意一个部分都可以不出现在脚本中，脚本
+      通常是被 单引号 或 双引号 中，例如：
+
+      awk 'BEGIN{ i=0 } { i++ } END{ print i }' filename
+      awk "BEGIN{ i=0 } { i++ } END{ print i }" filename
+***** awk 的工作原理
+      awk 'BEGIN{ commands } pattern{ commands } END{ commands }'
+
+      第一步：执行 BEGIN{ commands }语句块中的语句；
+      第二步：从文件或标准输入(stdin)读取一行，然后执行 pattern{ commands }语句块，它逐行扫描文件，从第一行到最后一行重复这个过程，直到文件全部被读取完毕。
+      第三步：当读至输入流末尾时，执行 END{ commands }语句块。
+
+      BEGIN 语句块 在 awk 开始从输入流中读取行 之前 被执行，这是一个可选的语句块，比如变量初始化、打印输出表格的表头等语句通常可以写在 BEGIN 语句块中。
+
+      END 语句块 在 awk 从输入流中读取完所有的行 之后 即被执行，比如打印所有行的分析结果这类信息汇总都是在 END 语句块中完成，它也是一个可选语句块。
+
+      pattern 语句块 中的通用命令是最重要的部分，它也是可选的。如果没有提供 pattern 语句块，则默认执行{ print }，即打印每一个读取到的行，awk 读取的每一行都会执行该语句块。
+
      $0 所有段
      $1 第一段
      $2 第二段 。。。
@@ -67,17 +181,246 @@
 -S：在备份文件时，用指定的后缀“SUFFIX”代替文件的默认后缀；
 -b：覆盖已存在的文件目标前将目标文件备份；
 -v：详细显示命令执行的操作。
-** 软件包管理工具
-*** dpkg 软件  管理 Debian 组织发行的包的软件 
-**** deb 包本身有三部分组成：
+*** 变更目录的所有者 chown
+*** 查找文件内容
+**** rg  
+     安装
+     $ curl -LO https://github.com/BurntSushi/ripgrep/releases/download/11.0.1/ripgrep_11.0.1_amd64.deb
+     $ sudo dpkg -i ripgrep_11.0.1_amd64.deb
+     
+     这个下载快点
+     axel -n 8   https://github.com/BurntSushi/ripgrep/releases/download/11.0.1/ripgrep_11.0.1_amd64.deb
+**** find
+    - 选项 
+     -amin<分钟>：查找在指定时间曾被存取过的文件或目录，单位以分钟计算；
+     -anewer<参考文件或目录>：查找其存取时间较指定文件或目录的存取时间更接近现在的文件或目录；
+     -atime<24 小时数>：查找在指定时间曾被存取过的文件或目录，单位以 24 小时计算；
+     -cmin<分钟>：查找在指定时间之时被更改过的文件或目录；
+     -cnewer<参考文件或目录>查找其更改时间较指定文件或目录的更改时间更接近现在的文件或目录；
+     -ctime<24 小时数>：查找在指定时间之时被更改的文件或目录，单位以 24 小时计算；
+     -daystart：从本日开始计算时间；
+     -depth：从指定目录下最深层的子目录开始查找；
+     -expty：寻找文件大小为 0 Byte 的文件，或目录下没有任何子目录或文件的空目录；
+     -exec<执行指令>：假设 find 指令的回传值为 True，就执行该指令；
+     -false：将 find 指令的回传值皆设为 False；
+     -fls<列表文件>：此参数的效果和指定“-ls”参数类似，但会把结果保存为指定的列表文件；
+     -follow：排除符号连接；
+     -fprint<列表文件>：此参数的效果和指定“-print”参数类似，但会把结果保存成指定的列表文件；
+     -fprint0<列表文件>：此参数的效果和指定“-print0”参数类似，但会把结果保存成指定的列表文件；
+     -fprintf<列表文件><输出格式>：此参数的效果和指定“-printf”参数类似，但会把结果保存成指定的列表文件；
+     -fstype<文件系统类型>：只寻找该文件系统类型下的文件或目录；
+     -gid<群组识别码>：查找符合指定之群组识别码的文件或目录；
+     -group<群组名称>：查找符合指定之群组名称的文件或目录；
+     -help 或——help：在线帮助；
+     -ilname<范本样式>：此参数的效果和指定“-lname”参数类似，但忽略字符大小写的差别；
+     -iname<范本样式>：此参数的效果和指定“-name”参数类似，但忽略字符大小写的差别；
+     -inum<inode 编号>：查找符合指定的 inode 编号的文件或目录；
+     -ipath<范本样式>：此参数的效果和指定“-path”参数类似，但忽略字符大小写的差别；
+     -iregex<范本样式>：此参数的效果和指定“-regexe”参数类似，但忽略字符大小写的差别；
+     -links<连接数目>：查找符合指定的硬连接数目的文件或目录；
+     -iname<范本样式>：指定字符串作为寻找符号连接的范本样式；
+     -ls：假设 find 指令的回传值为 Ture，就将文件或目录名称列出到标准输出；
+     -maxdepth<目录层级>：设置最大目录层级；
+     -mindepth<目录层级>：设置最小目录层级；
+     -mmin<分钟>：查找在指定时间曾被更改过的文件或目录，单位以分钟计算；
+     -mount：此参数的效果和指定“-xdev”相同；
+     -mtime<24 小时数>：查找在指定时间曾被更改过的文件或目录，单位以 24 小时计算；
+     -name<范本样式>：指定字符串作为寻找文件或目录的范本样式；
+     -newer<参考文件或目录>：查找其更改时间较指定文件或目录的更改时间更接近现在的文件或目录；
+     -nogroup：找出不属于本地主机群组识别码的文件或目录；
+     -noleaf：不去考虑目录至少需拥有两个硬连接存在；
+     -nouser：找出不属于本地主机用户识别码的文件或目录；
+     -ok<执行指令>：此参数的效果和指定“-exec”类似，但在执行指令之前会先询问用户，若回答“y”或“Y”，则放弃执行命令；
+     -path<范本样式>：指定字符串作为寻找目录的范本样式；
+     -perm<权限数值>：查找符合指定的权限数值的文件或目录；
+     -print：假设 find 指令的回传值为 Ture，就将文件或目录名称列出到标准输出。格式为每列一个名称，每个名称前皆有“./”字符串；
+     -print0：假设 find 指令的回传值为 Ture，就将文件或目录名称列出到标准输出。格式为全部的名称皆在同一行；
+     -printf<输出格式>：假设 find 指令的回传值为 Ture，就将文件或目录名称列出到标准输出。格式可以自行指定；
+     -prune：不寻找字符串作为寻找文件或目录的范本样式;
+     -regex<范本样式>：指定字符串作为寻找文件或目录的范本样式；
+     -size<文件大小>：查找符合指定的文件大小的文件；
+     -true：将 find 指令的回传值皆设为 True；
+     -type<文件类型>：只寻找符合指定的文件类型的文件；
+     -uid<用户识别码>：查找符合指定的用户识别码的文件或目录；
+     -used<日数>：查找文件或目录被更改之后在指定时间曾被存取过的文件或目录，单位以日计算；
+     -user<拥有者名称>：查找符和指定的拥有者名称的文件或目录；
+     -version 或——version：显示版本信息；
+     -xdev：将范围局限在先行的文件系统中；
+     -xtype<文件类型>：此参数的效果和指定“-type”参数类似，差别在于它针对符号连接检查。
+     # 当前目录搜索所有文件，文件内容 包含 “140.206.111.111” 的内容
+    - 用法
+    find . -type f -name "*" | xargs grep "140.206.111.111"
+    在/home 目录下查找以.txt 结尾的文件名
+
+find /home -name "*.txt"
+同上，但忽略大小写
+
+find /home -iname "*.txt"
+当前目录及子目录下查找所有以.txt 和.pdf 结尾的文件
+
+find . \( -name "*.txt" -o -name "*.pdf" \)
+
+或
+
+find . -name "*.txt" -o -name "*.pdf"
+匹配文件路径或者文件
+
+find /usr/ -path "*local*"
+基于正则表达式匹配文件路径
+
+find . -regex ".*\(\.txt\|\.pdf\)$"
+同上，但忽略大小写
+
+find . -iregex ".*\(\.txt\|\.pdf\)$"
+否定参数
+找出/home 下不是以.txt 结尾的文件
+
+find /home ! -name "*.txt"
+根据文件类型进行搜索
+find . -type 类型参数
+类型参数列表：
+
+f 普通文件
+l 符号连接
+d 目录
+c 字符设备
+b 块设备
+s 套接字
+p Fifo
+基于目录深度搜索
+向下最大深度限制为 3
+
+find . -maxdepth 3 -type f
+搜索出深度距离当前目录至少 2 个子目录的所有文件
+
+find . -mindepth 2 -type f
+根据文件时间戳进行搜索
+find . -type f 时间戳
+UNIX/Linux 文件系统每个文件都有三种时间戳：
+
+访问时间 （-atime/天，-amin/分钟）：用户最近一次访问时间。
+修改时间 （-mtime/天，-mmin/分钟）：文件最后一次修改时间。
+变化时间 （-ctime/天，-cmin/分钟）：文件数据元（例如权限等）最后一次修改时间。
+搜索最近七天内被访问过的所有文件
+
+find . -type f -atime -7
+搜索恰好在七天前被访问过的所有文件
+
+find . -type f -atime 7
+搜索超过七天内被访问过的所有文件
+
+find . -type f -atime +7
+搜索访问时间超过 10 分钟的所有文件
+
+find . -type f -amin +10
+找出比 file.log 修改时间更长的所有文件
+
+find . -type f -newer file.log
+根据文件大小进行匹配
+find . -type f -size 文件大小单元
+文件大小单元：
+
+b —— 块（512 字节）
+c —— 字节
+w —— 字（2字节）
+k —— 千字节
+M —— 兆字节
+G —— 吉字节
+搜索大于 10KB 的文件
+
+find . -type f -size +10k
+搜索小于 10KB 的文件
+
+find . -type f -size -10k
+搜索等于 10KB 的文件
+
+find . -type f -size 10k
+删除匹配文件
+删除当前目录下所有.txt 文件
+
+find . -type f -name "*.txt" -delete
+根据文件权限/所有权进行匹配
+当前目录下搜索出权限为 777 的文件
+
+find . -type f -perm 777
+找出当前目录下权限不是 644 的 php 文件
+
+find . -type f -name "*.php" ! -perm 644
+找出当前目录用户 tom 拥有的所有文件
+
+find . -type f -user tom
+找出当前目录用户组 sunk 拥有的所有文件
+
+find . -type f -group sunk
+借助-exec 选项与其他命令结合使用
+找出当前目录下所有 root 的文件，并把所有权更改为用户 tom
+
+find .-type f -user root -exec chown tom {} \;
+上例中， {} 用于与 -exec 选项结合使用来匹配所有文件，然后会被替换为相应的文件名。
+
+找出自己家目录下所有的.txt 文件并删除
+
+find $HOME/. -name "*.txt" -ok rm {} \;
+上例中， -ok 和 -exec 行为一样，不过它会给出提示，是否执行相应的操作。
+
+查找当前目录下所有.txt 文件并把他们拼接起来写入到 all.txt 文件中
+
+find . -type f -name "*.txt" -exec cat {} \;> /all.txt
+将 30 天前的.log 文件移动到 old 目录中
+
+find . -type f -mtime +30 -name "*.log" -exec cp {} old \;
+找出当前目录下所有.txt 文件并以“File:文件名”的形式打印出来
+
+find . -type f -name "*.txt" -exec printf "File: %s\n" {} \;
+因为单行命令中-exec 参数中无法使用多个命令，以下方法可以实现在-exec 之后接受多条命令
+
+-exec ./text.sh {} \;
+搜索但跳出指定的目录
+查找当前目录或者子目录下所有.txt 文件，但是跳过子目录 sk
+
+find . -path "./sk" -prune -o -name "*.txt" -print
+find 其他技巧收集
+要列出所有长度为零的文件
+
+find . -empty
+其它实例
+find ~ -name '*jpg' # 主目录中找到所有的 jpg 文件。 -name 参数允许你将结果限制为与给定模式匹配的文件。
+find ~ -iname '*jpg' # -iname 就像 -name，但是不区分大小写
+find ~ ( -iname 'jpeg' -o -iname 'jpg' ) # 一些图片可能是 .jpeg 扩展名。幸运的是，我们可以将模式用“或”（表示为 -o）来组合。
+find ~ \( -iname '*jpeg' -o -iname '*jpg' \) -type f # 如果你有一些以 jpg 结尾的目录呢？ （为什么你要命名一个 bucketofjpg 而不是 pictures 的目录就超出了本文的范围。）我们使用 -type 参数修改我们的命令来查找文件。
+find ~ \( -iname '*jpeg' -o -iname '*jpg' \) -type d # 也许你想找到那些命名奇怪的目录，以便稍后重命名它们
+最近拍了很多照片，所以让我们把它缩小到上周更改的文件
+
+find ~ \( -iname '*jpeg' -o -iname '*jpg' \) -type f -mtime -7
+你可以根据文件状态更改时间 （ctime）、修改时间 （mtime） 或访问时间 （atime） 来执行时间过滤。 这些是在几天内，所以如果你想要更细粒度的控制，你可以表示为在几分钟内（分别是 cmin、mmin 和 amin）。 除非你确切地知道你想要的时间，否则你可能会在 + （大于）或 - （小于）的后面加上数字。
+
+但也许你不关心你的照片。也许你的磁盘空间不够用，所以你想在 log 目录下找到所有巨大的（让我们定义为“大于 1GB”）文件：
+
+find /var/log -size +1G
+或者，也许你想在 /data 中找到 bcotton 拥有的所有文件：
+
+find /data -owner bcotton
+你还可以根据权限查找文件。也许你想在你的主目录中找到对所有人可读的文件，以确保你不会过度分享。
+
+find ~ -perm -o=r
+删除 mac 下自动生成的文件
+
+find ./ -name '__MACOSX' -depth -exec rm -rf {} \;
+统计代码行数
+
+find . -name "*.java"|xargs cat|grep -v ^$|wc -l # 代码行数统计, 排除空行
+
+** 软件包管理工具 (有时用到某个工具，本地没有，就要下载安装)
+*** dpkg 
+**** deb 包的构成：
      - 数据包，包含实际安装的程序数据，文件名为 data.tar.XXX；
      - 安装信息及控制脚本包，包含 deb 的安装说明，标识，脚本等，文件名为 control.tar.gz；
      - 最后一个是 deb 文件的一些二进制数据，包括文件头等信息，一般看不到
-**** 工具用法
-| 显示 DEB 包信息            | dpkg -I xx.deb                    |
-| 显示 DEB 包文件列表        | dpkg -c xx.deb                    |
-| 安装 DEB 包                | dpkg -i xx.deb                    |
-| 安装 DEB 包（指定根目录）  | dpkg --root=<directory> -i xx.deb |
+**** 工具的用法
+| 显示包信息                 | dpkg -I xx.deb                    |
+| 显示包文件列表             | dpkg -c xx.deb                    |
+| 安装包                     | dpkg -i xx.deb                    |
+| 安装包（指定根目录）       | dpkg --root=<directory> -i xx.deb |
 | 显示所有已安装软件         | dpkg -l                           |
 | 显示已安装包信息           | dpkg -s foo                       |
 | 显示已安装包文件列表       | dpkg -L foo                       |
@@ -141,7 +484,7 @@
 *** 内核管理
      apt install linux-head-generic linux-image-genric linux-head
      sudo update-grub
-** 任务处理
+** 任务处理 (多任务系统中对任务的处理)
 *** 打开任务 任务名、双击图标 
 *** 任务放在前、后台 fg bg jobs 
 *** 任务列表 ps 
@@ -227,7 +570,7 @@
     cmdline 运行时的命令行命令
     environ 环境变量
     fd 打开或使用的文件的符号链接
-** 用户管理
+** 用户管理(多用户系统中对用户的管理)
 *** 添加用户 useradd 
      useradd -m -g users -G wheel -s /bin/bash ikke 
      | d<登入目录> | 指定用户登入时的启始目录           |
@@ -269,7 +612,7 @@
 *** 用户属性管理
 ****  
 *** 改变登录 shell chsh 
-** 设备管理
+** 设备管理(对各个设备的管理)
 *** 查看设备 ls /dev/
 *** 磁盘设备 
 **** 显示磁盘信息 df
@@ -410,7 +753,7 @@
     rmmod 从运行的内核中移除指定的内核模块
     insmod 将给定的模块加载到内核中
     lsmod 显示已载入系统的模块
-** 系统管理
+** 系统管理(对系统本身的管理)
 *** 关闭机器 ( shutdown )
 #+BEGIN_SRC shell
   # shutdown [-krhc] 时间 [信息]
@@ -457,8 +800,44 @@
        -o, --operating-system
        输出操作系统信息
 
-** 网络管理
+** 网络管理(对网络的管理)
    netstat -ntulp | grep 3306   //查看所有 3306 端口使用情况·
+  
+*** 远程登录 ssh
+    openssh 套件中的客户端连接工具,可以给予 ssh 加密协议安全的远程登录服务器
+    
+    - 选项 
+      -1：强制使用 ssh 协议版本 1；
+      -2：强制使用 ssh 协议版本 2；
+      -4：强制使用 IPv4 地址；
+      -6：强制使用 IPv6 地址；
+      -A：开启认证代理连接转发功能；
+      -a：关闭认证代理连接转发功能；
+      -b：使用本机指定地址作为对应连接的源 ip 地址；
+      -C：请求压缩所有数据；
+      -F：指定 ssh 指令的配置文件；
+      -f：后台执行 ssh 指令；
+      -g：允许远程主机连接主机的转发端口；
+      -i：指定身份文件；
+      -l：指定连接远程服务器登录用户名；
+      -N：不执行远程指令；
+      -o：指定配置选项；
+      -p：指定远程服务器上的端口；
+      -q：静默模式；
+      -X：开启 X11 转发功能；
+      -x：关闭 X11 转发功能；
+      -y：开启信任 X11 转发功能。
+
+    # ssh 用户名@远程服务器地址
+    ssh user1@172.24.210.101
+    # 指定端口
+    ssh -p 2211 root@140.206.185.170
+
+    # ssh 大家族
+    ssh user@ip -p22 # 默认用户名为当前用户名，默认端口为 22
+    ssh-keygen # 为当前用户生成 ssh 公钥 + 私钥
+    ssh-keygen -f keyfile -i -m key_format -e -m key_format # key_format: RFC4716/SSH2(default) PKCS8 PEM
+    ssh-copy-id user@ip:port # 将当前用户的公钥复制到需要 ssh 的服务器的 ~/.ssh/authorized_keys，之后可以免密登录
 ** 图像视频处理
 *** Kdenlive
     速度-100，影片就倒序播放
@@ -506,6 +885,24 @@ Vocal Reduction and Isolation
     mkdir -p ~/.fonts
     mv Monaco.ttf ~/.fonts
     fc-cache -vf  #刷新系统字体缓存
+** 白噪音 ( anoise )
+   sudo add-apt-repository ppa:costales/anoise
+   sudo apt-get update
+   sudo apt-get install anoise
+   
+   安装扩展噪音 sudo apt-get install anoise-community-extension1
+
+   移除
+   sudo apt-get remove anoise
+   sudo add-apt-repository --remove ppa:costales/anoise
+** 代办 ( go-for-it )
+   sudo add-apt-repository ppa:go-for-it-team/go-for-it-daily && sudo apt-get update
+   sudo apt-get install go-for-it
+** 桌面便签小工具(Indicator Stickynotes)
+   sudo add-apt-repository ppa:umang/indicator-stickynotes
+   sudo apt-get update 
+   sudo apt-get install indicator-stickynotes 
+** 桌面便签小工具(tomboy)
 
 * Linux 系统信息速查表
 ** 系统相关
@@ -552,3 +949,4 @@ Vocal Reduction and Isolation
    ps -ef                      # 查看所有进程
    top                         # 动态显示进程状态
    #+end_example
+

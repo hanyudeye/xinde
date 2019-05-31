@@ -1,4 +1,6 @@
-# #+startup: align shrink
+#+TITLE: 关于 org 的文档
+#+DESCRIPTION: org 文档是一种写法简单,但能组织文档结构的方法，适用于单页重上而下的哦。
+#+STARTUP: align shrink
 * org 排版工具
 以 # 号后加一空格开始的行表示注释，文件导出时这些内容不被导出，上面第一行就是。
 以 #+ 符号开始的行用于设置文档参数或内容属性，比如文档的标题、作者，org-mode 打开时文档的呈现状态等。
@@ -123,26 +125,55 @@ My favorite scenes are (in this order)
 
 ** 日期时间
 SCHEDULED: <2019-01-26 六 10:00>
-** 内容元数据
-#+STARTUP: indent 缩进打开 或 (setq org-startup-indented t)
-#+FILETAGS: :Peter:Boss:Secret: 如果希望文档中的所有标题都具有某些标签，只需要定义文档元数据：
-#+TITLE:       the title to be shown (default is the buffer name)
-#+AUTHOR:      the author (default taken from user-full-name)
-#+DATE:        a date, an Org timestamp1, or a format string for format-time-string
-#+EMAIL:       his/her email address (default from user-mail-address)
-#+DESCRIPTION: the page description, e.g. for the XHTML meta tag
-#+KEYWORDS:    the page keywords, e.g. for the XHTML meta tag
-#+LANGUAGE:    language for HTML, e.g. ‘en’ (org-export-default-language)
-#+TEXT:        Some descriptive text to be inserted at the beginning.
-#+TEXT:        Several lines may be given.
-#+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t ...
-#+BIND:        lisp-var lisp-val, e.g.: org-export-latex-low-levels itemize
-#+LINK_UP:     the ``up'' link of an exported page
-#+LINK_HOME:   the ``home'' link of an exported page
-#+LATEX_HEADER: extra line(s) for the LaTeX header, like \usepackage{xyz}
-#+EXPORT_SELECT_TAGS:   Tags that select a tree for export
-#+EXPORT_EXCLUDE_TAGS:  Tags that exclude a tree from export
-#+XSLT:        the XSLT stylesheet used by DocBook exporter to generate FO file
+** 内容元数据设置
+*** #+STARTUP:
+启动选项，就是 org 在打开文件时的设置
+设置大纲的显示状态 :
+overview         top-level headlines only
+content          all headlines
+showall          no folding of any entries
+showeverything   show even drawer contents
+
+设置缩进模式
+indent 缩进打开 或 (setq org-startup-indented t)
+noindent  不用缩进
+
+设置表格是否排列
+align
+noalign
+
+图像
+inlineimages   show inline images
+noinlineimages don’t show inline images on startup
+
+latex
+latexpreview   preview LaTeX fragments
+nolatexpreview don’t preview LaTeX fragments
+
+hideblocks   Hide all begin/end blocks on startup
+nohideblocks Do not hide blocks on startup
+
+*** #+CATEGORY  设置代办文件的类别，会显示在代办列表的第一列
+Sets the category of the agenda file, which applies to the entire document.
+*** #+FILETAGS: :Peter:Boss:Secret: 如果希望文档中的所有标题都具有某些标签，只需要定义文档元数据：
+*** #+TITLE:       the title to be shown (default is the buffer name)
+*** #+AUTHOR:      the author (default taken from user-full-name)
+*** #+DATE:        a date, an Org timestamp1, or a format string for format-time-string
+*** #+EMAIL:       his/her email address (default from user-mail-address)
+*** #+DESCRIPTION: the page description, e.g. for the XHTML meta tag
+*** #+KEYWORDS:    the page keywords, e.g. for the XHTML meta tag
+*** #+LANGUAGE:    language for HTML, e.g. ‘en’ (org-export-default-language)
+*** #+TEXT:        Some descriptive text to be inserted at the beginning.
+*** #+TEXT:        Several lines may be given.
+*** #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t ...
+*** #+BIND:        lisp-var lisp-val, e.g.: org-export-latex-low-levels itemize
+*** #+LINK_UP:     the ``up'' link of an exported page
+*** #+LINK_HOME:   the ``home'' link of an exported page
+*** #+LATEX_HEADER: extra line(s) for the LaTeX header, like \usepackage{xyz}
+*** #+EXPORT_SELECT_TAGS:   Tags that select a tree for export
+*** #+EXPORT_EXCLUDE_TAGS:  Tags that exclude a tree from export
+*** #+XSLT:        the XSLT stylesheet used by DocBook exporter to generate FO file
+*** #+TAGS: TAG1(c1) TAG2(c2)  设置 tag
 ** 日程视图 
 ** 代码区块
   #+BEGIN_VERSE

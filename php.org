@@ -1,5 +1,8 @@
-* PHP
-** 安装工具并配置
+#+TITLE: php 编程语言
+#+DESCRIPTION: 关于 php 的文档啦
+* PHP [模块的形式组织，跟许多语言一样，库嘛]
+  资源整理网站[[https://shockerli.net/post/php-awesome/]] 
+** 安装配置
 *** 安装核心
     apt-get install php5-common libapache2-mod-php5 php5-cli
     或者
@@ -8,21 +11,6 @@
      LoadModule php5_module        libexec/libphp5.so
      或
      apt install libapache2-mod-php php-common
-***** 隐藏入口文件
-      index.php 相当于 main 函数，apache 默认 会与此文件产生关系。
-      在 url 中隐藏此字串的方法是设置
-      1.httpd.conf 配置文件中加载了 mod_rewrite.so 模块 //在 APACHE 里面去配置
-      #LoadModule rewrite_module modules/mod_rewrite.so 把前面的警号去掉
-      2.AllowOverride None 讲 None 改为 All      //在 APACHE 里面去配置
-      3、在应用入口文件同级目录添加 .htaccess 文件,内容如下:
-      <IfModule	mod_rewrite.c>
-      Options	+FollowSymlinks	-Multiviews
-      RewriteEngine	on
-      RewriteCond	%{REQUEST_FILENAME}	!-d
-      RewriteCond	%{REQUEST_FILENAME}	!-f
-      RewriteRule	^(.*)$	index.php/$1	[QSA,PT,L]
-      </IfModule>
-
 **** nginx 的支持
      vim /usr/local/nginx/conf/nginx.conf
      修改默认的 location 块，使其支持 .php 文件：
@@ -205,96 +193,7 @@
 ***** 函数 array_slice() 
       array_slice()函数的作用是在数组中根据条件取出一段值并返回。如果数组有字符串键，所返回的数组将保留键名。
       该函数可以设置四个参数，其函数的原型如下：
-** 类
-*** 类的内容包含 
-**** 变量属性
-     实例属性 $this->property
-     静态属性 self::$property
-**** 常量属性,没有 $
-     定义 const CONSTANT='aa';
-     使用 self::CONSTANT
-**** 方法
-     $this->method
-     self::method
-     cn\wuming\houzi::show_classname();
-**** 构造函数和析构函数
-     __construct ([ mixed $args [, $... ]] )
-     __destruct ( void )
-**** 访问控制
-     private/protect/public
-**** 继承
-     extends
-**** 范围解析 ::
-     self，parent 和 static 这三个特殊的关键字是用于在类定义的内部对其属性或方法进行访问的
-**** 接口 interface
-**** 属性重载
-     __get()，__set()，__isset() 和 __unset()
-**** 对象序列化
-     所有 php 里面的值都可以使用函数 serialize()来返回一个包含字节流的字符串来表
-     示。unserialize()函数能够重新把字符串变回 php 原来的值。 序列化一个对象将会
-     保存对象的所有变量，但是不会保存对象的方法，只会保存类的名字。
-**** 命名空间
-     使用命名空间的关键字 use 同 require 功能一样 , 不用重复使用
-     命名空间 namespace my\name; 引用 $a= new my\name::class(); use
-     命名空间 namespace my\name; 引用 $a= new my\name\class(); use
-     当前命名空间常量 __NAMESPACE__
-     别名 use My\Full\Classname as Another;
-     调用全局 同名函数 \gloFunc(); 前面加个 \, 若果同当前函数同名
-
-     在声明命名空间之前唯一合法的代码是用于定义源文件编码方式的 declare 语句。
-     另外，所有非 PHP 代码包括空白符都不能出现在命名空间的声明之前：
-     另外，与 PHP 其它的语言特征不同，同一个命名空间可以定义在多个文件中，即允许将同
-     一个命名空间的内容分割存放在不同的文件中。
-     Import and Alias
-     函数
-       <?php
-       use func Namespace\functionName;
-       functionName();
-       To import a constant, change use to use constant:
-       <?php
-       use constant Namespace\CONST_NAME;
-       echo CONST_NAME;
-
-       多名字空间
-       PHP lets you define multiple namespaces in a single PHP file like this:
-      <?php
-      namespace Foo {
-           // Declare classes, interfaces, functions, and constants here
-      }
-      namespace Bar {
-           // Declare classes, interfaces, functions, and constants here
-      }
-      \ prefix 指代全局命名空间
-*** 自动加载类
-    写个 __autoload 实现
-    #+BEGIN_SRC php
-      <?php
-      function __autoload($class_name) {
-        require_once $class_name . '.php';
-      }
-
-      $obj  = new MyClass1();
-      $obj2 = new MyClass2();
-      ?>
-    #+END_SRC
-    接口
-    #+BEGIN_SRC php
-      <?php
-
-      function __autoload($name) {
-        var_dump($name);
-      }
-
-      class Foo implements ITest {
-      }
-
-      /*
-        string(5) "ITest"
-
-        Fatal error: Interface 'ITest' not found in ...
-      ,*/
-      ?>
-    #+END_SRC
+** 运行程序 php <FILENAME>/php -f <FILENAME>
 * 例子
 ** 简单文件上传 
   注意路径都是相对路径，绝对路径 必须是/home/wuming 这种的，要么用常量 ROOT 这种
@@ -1580,4 +1479,345 @@ system — Execute an external program and display the output
 *** XForms
 *** 文件上传
 *** 数据库连接
+** 反射
+    Reflection 类的摘要信息
+    ReflectionClass 类信息和工具
+    ReflectionClassConstant
+    ReflectionFunction 函数信息和工具
+    ReflectionMethod 类方法信息和工具
+    ReflectionParameter 类参数信息和工具
     
+
+    输出类的反射信息,比 var_dump 提供的信息更多 
+   $fc= new \ReflectionClass("wuming\shiwu\Fangbianmian" );
+    \Reflection::export($fc);
+
+* 对象，模式，实践    
+** 对象
+   对象的引入是成功的，因为面向对象编程可以方便的编写大程序，逻辑清晰。
+   关注对象的格局大，而关注操作，想想看，换成另一种操作要改的就多，没归属感，还不清晰。
+   其实就是命名空间使用的功能啦，把变量函数归类。
+   
+   
+*** 类和对象   
+    创建类 class ClassName{}
+    设置类的属性,共享或者私有，静态  public  protected private absolute
+    字段也有同样属性
+    设置类的默认值 class C{ public  $shuxing=1;}
+    定义常量字段 const CONSTANT='aa';
+    
+    在类的内部获取自身属性或方法
+    对于可以实例的对象 $this->property
+    静态对象 self::$property
+    在命名空间中获取 cn\wuming\houzi::show_classname();
+    实例属性 用 -> 符号，静态属性用 :: 符号
+
+    设置属性，用一种规定，就是构造函数，或创建函数，而不是随意赋值，这样有助于代码规范。
+    获取属性也是一样,要提供获取的接口而不是直接取值，注意设置成私有。
+    
+    构造函数和析构函数
+     __construct ([ mixed $args [, $... ]] )
+     __destruct ( void )
+     
+    创建继承过来的类 ， class NewC extends OriC{}
+    获取父类中的方法 parent::__construct() 
+    
+    抽象类 abstract class C{ abstract public function write();}
+    抽象类中至少有一个抽象方法。
+    继承至抽象类的子类必须实现父类的抽象方法。
+    这里还是在创造概念，创造规范呀！！
+    
+     接口，相当于小部件，小插件了哦，接口里面只存在函数哦,纯粹的模板
+     创建接口 interface In{}
+     继承接口  implements
+     #+begin_src php
+       class TuanHezi extends Hezi implements Tuan{
+       }
+     #+end_src
+
+     终止类的继承性 final class CN{}
+     复制对象 ，则需要实现 __clone() 方法,调用是 $o2= clone $o1;
+     注意，有些对象 clone 时要初始化一些值,在__clone 中完备。
+     
+     对象字符串,单纯打印对象时用 __toString, 在直接使用于 echo 或 print 时才能生效
+     
+     属性重载
+     __get()，__set()，__isset() 和 __unset()
+     
+     #+begin_src php
+       function __get($property) {
+           if ( isset($this->$property) ) 
+               return $this->$property;
+           else
+               return NULL;
+       }
+      #+end_src
+
+     禁止动态创建类属性，__set() ,定义的属性才能创建
+     #+begin_src php
+       public function __set($property, $value) {
+           if ( isset($this->$property) )
+               $this->$property = $value;
+           else
+               return NULL;
+       }
+       #+end_src
+
+     当对象调用类中一个不存在或者没有权限访问的方法的时候，就会自动调用__call()方法
+     和__call()对应的是__callStatic()方法，是位静态类的静态方法服务的。
+       
+**** 对象序列化
+     所有 php 里面的值都可以使用函数 serialize()来返回一个包含字节流的字符串来表
+     示。unserialize()函数能够重新把字符串变回 php 原来的值。 序列化一个对象将会
+     保存对象的所有变量，但是不会保存对象的方法，只会保存类的名字。
+**** 命名空间
+     在声明命名空间之前唯一合法的代码是用于定义源文件编码方式的 declare 语句。
+     另外，所有非 PHP 代码包括空白符都不能出现在命名空间的声明之前：
+     另外，与 PHP 其它的语言特征不同，同一个命名空间可以定义在多个文件中，即允许将同
+     一个命名空间的内容分割存放在不同的文件中。
+     Import and Alias
+     函数
+       <?php
+       use func Namespace\functionName;
+       functionName();
+       To import a constant, change use to use constant:
+       <?php
+       use constant Namespace\CONST_NAME;
+       echo CONST_NAME;
+
+       多名字空间
+       PHP lets you define multiple namespaces in a single PHP file like this:
+      <?php
+      namespace Foo {
+           // Declare classes, interfaces, functions, and constants here
+      }
+      namespace Bar {
+           // Declare classes, interfaces, functions, and constants here
+      }
+      \ prefix 指代全局命名空间
+*** 类函数和对象函数,用的反射的原理
+    类包含一些函数  
+    类是否存在 class_exists
+    获取内存中所有定义过的类的数组 ,有点多 get_declared_classes
+    根据对象获取对应类的类名，参数可以是任何对象  get_class()
+    获取类的所有方法，参数是类名 get_class_methods
+    获取类的属性 ，注意 ，只有 public 的数据才是属性，也不含函数 get_class_vars
+    获取父类  get_parent_class
+    
+    方法调用 
+    调用函数 call_user_func("myFunc")
+    调用类函数 call_user_func(array($obj,"methName"))
+*** 包
+    php 没有支持包的属性，但可以用命名空间设计的像包
+    
+    对于低版本的引入 require_once('business/Customer.php');
+    如果没有命名空间，这对引入两个同名类，会发生错误。
+    此时，可以用原来的 pear 命名规则,创建规范的类名  business_User,这是老的方法,目录越深越不好
+    
+    自己命名空间类的引用 namespace my\name; 引用 $a= new my\name::class(); 
+    如果是 require 进来的,要写完整的哦  $f=new \wuming\shiwu\Fangbianmian(3,4,"方法");
+    如果使用 use 的话,特别要注意名字是否相同哦。 
+    #+begin_src php
+      <?php
+      namespace foo;
+      use My\Full\Classname as Another;
+
+      // 下面的例子与 use My\Full\NSname as NSname 相同
+      use My\Full\NSname;
+
+      // 导入一个全局类
+      use ArrayObject;
+
+      // importing a function (PHP 5.6+)
+      use function My\Full\functionName;
+
+      // aliasing a function (PHP 5.6+)
+      use function My\Full\functionName as func;
+
+      // importing a constant (PHP 5.6+)
+      use const My\Full\CONSTANT;
+
+      $obj = new namespace\Another; // 实例化 foo\Another 对象
+      $obj = new Another; // 实例化 My\Full\Classname　对象
+      NSname\subns\func(); // 调用函数 My\Full\NSname\subns\func
+      $a = new ArrayObject(array(1)); // 实例化 ArrayObject 对象
+    #+end_src
+
+    当前命名空间常量 __NAMESPACE__
+    使用别名导入,注意目录结构哦 use My\Full\Classname as Another; 
+    调用全局 同名函数 \gloFunc(); 前面加个 \, 若果同当前函数同名
+    默认包含路径，可以通过 get_include_path() 获取。
+    也可以自己设置 set_include_path(get_include_path().":/mypath/");
+
+    对于一个单独在类外的 __autoload()方法，会自动加载,相当于不用执行 require_once 了，把它包含在函数里，它会自动执行
+    : 现在不推介用__autoload()了。
+*** 自动加载类
+    写个 __autoload 实现,一般只包含同级目录的文件导入
+    #+BEGIN_SRC php
+      <?php
+      function __autoload($class_name) {
+        require_once $class_name . '.php';
+      }
+
+      $obj  = new MyClass1();
+      $obj2 = new MyClass2();
+      ?>
+    #+END_SRC
+    接口
+    #+BEGIN_SRC php
+      <?php
+      function __autoload($name) {
+        var_dump($name);
+      }
+
+      class Foo implements ITest {
+      }
+
+      /*
+        string(5) "ITest"
+
+        Fatal error: Interface 'ITest' not found in ...
+      ,*/
+      ?>
+    #+END_SRC
+** 模式
+   设计模式，就是设计过的模式，就是设计过的完美的解决方案。
+   使用模式，就不用再重复开发解决问题的方案了。
+   设计模式只是定义大体的规范，而不是面面俱到。
+   我们在此学习面向对象软件开发的模式
+   
+   设计模式包含 4 个核心内容 : 命名，问题，解决方案和效果。
+   为什么使用设计模式呢？
+   1. 一个设计模式定义了一个问题。
+   2. 一个设计模式定义了解决方案。
+   3. 语言无关
+   4. 定义了一组词汇
+   5. 
+
+   组合与继承 ： 组合优于继承,两个不同的东西优于一个大的复杂的东西。
+   针对接口编程，而不是针对实现编程 ,这样，需要改动的就少了，方便移植到不同的地方。(有移植需求的地方要这样设计) 
+   
+   面向场景 
+   生成对象模式
+   面向任务的模式 
+   企业模式
+   数据库模式
+
+   单例模式 全局变量
+** 实践
+   不要重复造轮子，要善于利用工具 ，工具在 PEAR 找 
+   使用版本工具
+   使用项目管理工具,PEAR 用于小项目 ， Phing 用于大项目 
+   写清晰的文档，文档会回忆思路，而且如果没有说明，以后都看不懂代码啦。
+   使用测试工具测试类
+*** PEAR (php extension and application repository) ,不解决依赖问题的哦
+    PHP 扩展和应用程序库 ,仓库地址为 https://pear.php.net 
+    使用人家的库，和使用自带的库都是库啦，又不是写汇编的年代，现在时间就是金钱
+    php 默认自带了 pear 核心包
+    获取包安装的路径 pear config-get php_dir
+    查看所有配置 pear config-show
+    安装 pear 包 ，要用管理员权限，包都是安装在(php_dir )中的 sudo pear install <PackageName>
+    安装时顺便安装强制依赖包   pear install -o <PackageName> ,对于全部的(包含非强制 ，用 -a 选项)
+    下载下来的包，安装时,指定文件就好了  pear install -o http://PackageName.tgz
+    卸载 pear uninstall <PackageName>
+    
+    使用 pear 包，目录要在 include_path 中才能使用哦，要不来是白安装的,默认是在的。
+    包含路径一般包含文件的当前路径和 pear 包路径，可以自己增加
+    
+    - 使用 Pear_Config 包 
+      1. 先安装 pear install -a Config
+      2. 使用,在代码中 require_once("Config.php"); new Config()->parseConfig("xmlFileName","xml")
+      3. 类型包含 apache，genericconf，inifile，inicommented，phparray，xml
+    
+      创建自己的 pear 包 ,没细研究  
+      构建文件,必须的,跟 maven 的 pom.xml 差不多哦 package.xml
+*** 使用 phpDocumentor 生成文档,从 javadoc 移植过来的，看，多会重用
+    这个好像废弃了 
+    安装  pear upgrade PhpDocumentor
+    使用  phpdoc -d <项目目录 > -t <文档生成到哪个目录>  -ti " 项目标题 "  -dn "默认包名"  
+
+    文档结构 
+    #+begin_src php
+      /*
+       ,* @package  包名
+       ,* @author 作者名
+       ,* @copyright 版权声明
+       ,* @license 许可证
+       ,* @var 属性
+       ,* @param 参数
+       ,* @return 返回值
+       ,* @see 链接
+       ,* @link 链接
+       ,* 
+       ,*/
+    #+end_src
+
+** 测试
+   php 中没有主函数，main
+*** phpunit 
+    功能测试和单元测试 , 测试员用功能测试(外部测试)，程序员单元测试(测试类,内部测试)
+    我们程序员当然是内部测试了。而且内部测试能发现细节
+    
+    手工测试，手工把测试代码放在最后测试啦。
+    
+    测试单元 
+    安装,或用 composer 安装
+    
+    如果用 Composer 来管理项目的依赖关系，只要在项目的 composer.json 文件中简单地加上对 phpunit/phpunit 的依赖关系即可：
+    composer require --dev phpunit/phpunit ^|version|
+#+begin_src shell
+  $  chmod +x phpunit-7.0.phar
+  $  sudo mv phpunit-7.0.phar /usr/local/bin/phpunit
+  $  phpunit --version
+  PHPUnit x.y.z by Sebastian Bergmann and contributors.
+  也可以直接使用下载的 PHAR 文件：
+
+  $  wget https://phar.phpunit.de/phpunit-7.0.phar
+  $  php phpunit-7.0.phar --version
+  PHPUnit x.y.z by Sebastian Bergmann and contributors.
+#+end_src
+
+创建测试用例 
+#+begin_src php
+  // 用 PHPUnit 测试数组操作
+    <?php
+    use PHPUnit\Framework\TestCase;
+
+    class StackTest extends TestCase
+    {
+        public function testPushAndPop()
+        {
+            $stack = [];
+            $this->assertEquals(0, count($stack));
+
+            array_push($stack, 'foo');
+            $this->assertEquals('foo', $stack[count($stack)-1]);
+            $this->assertEquals(1, count($stack));
+
+            $this->assertEquals('foo', array_pop($stack));
+            $this->assertEquals(0, count($stack));
+        }
+    }
+    ?>
+
+    // *Martin Fowler*:
+
+    // 当你想把一些东西写到 ``print`` 语句或者调试表达式中时，别这么做，将其写成一
+    // 个测试来代替。
+#+end_src
+
+** 构建
+*** Phabricator 
+    用于敏捷开发的项目管理软件, 含代码托管、Code Review、任务管理、文档管理、问
+    题跟踪、构建与持续集成、博客、内部聊天等
+*** Phing - PHP 项目构建工具
+** 错误处理 
+   设置错误开关，配置错误等级 
+   ini_set("display_errors","On");
+   error_reporting(E_ALL); //-1 是关闭
+    
+   异常使用异常处理函数 Exception
+   抛出异常  throw new Exception("MSG");
+
+   异常监控 try{}catch(Exception $e){die($e->__toString())}
+   

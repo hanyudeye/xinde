@@ -1,26 +1,126 @@
-* maven 项目管理
+* maven 项目构建工具,定义了构建软件的一般接口(有约定规范)
+ 项目是什么？工程项目是指跟工程相关的所有人力，物力,起码物力有吧。 
+ 软件项目就是跟此软件相关的所有资源。
+ 而项目管理工具，就是管理项目(项目下的资源)的工具。
+ 项目构建工具就是构建项目的工具,项目资源按照一定的组织结构，才能构成一个具体项目吧。
+ 
+ ant ，关注点在具体编译项目。包含预处理,编译，打包，测试和分发,同 make 差不多，要写构建语法。
+ maven 除了构建功能，还能生成报告，生成 web 站点，推动成员间交流。
+ 这里，首先要有一个项目(资源)，然后声明层 maven 项目，OK! 
+maven 大部分的功能是由插件实现的,更新新插件只需修改 pom 中插件版本号。
+Compiler 插件进行编译。
+Jar 插件打包 JAR 
+
+项目模型 :包含了 
+依赖管理 
+远程仓库 
+
+maven 构建任务的例子,pom.xml
+没有具体构建代码，也不含目录信息
+用命令 mvn install 就能构建项目,单元测试，生成 jar 包
+mvn site 生成报告文件.
+
+#+begin_src xml
+  <project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.sonatype.mavenbook</groupId>
+    <artifactId>my-project</artifactId>
+    <version>1.0</version>
+  </project>
+#+end_src
+
+编译版本提示,添加版本提示 
+#+begin_src xml
+     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <!-- <java.version>1.8</java.version> -->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+#+end_src
+
+** maven 实战 
 ** 安装
    Maven 下载地址：http://maven.apache.org/download.cgi
    # wget http://mirrors.hust.edu.cn/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
    # tar -xvf  apache-maven-3.3.9-bin.tar.gz
    # sudo mv -f apache-maven-3.3.9 /usr/local/
    
-    在 /etc/profile 
+    在 /etc/profile,或 ~/.profile 中配置环境变量
     export MAVEN_HOME=/usr/local/apache-maven-3.3.9
     export PATH=${PATH}:${MAVEN_HOME}/bin
-** 目录约定
-| pom.xml                  |                                                                            |
-| /src/main/java           | 项目的 java 源代码                                                         |
-| /src/main/resources      | 项目的资源，比如说 property 文件，springmvc.xml                            |
-| /src/test/java           | 项目的测试类，比如说 Junit 代码                                            |
-| /src/test/resources      | 测试用的资源                                                               |
-| /src/main/webapp/WEB-INF | web 应用文件目录，web 项目的信息，比如存放 web.xml、本地图片、jsp 视图页面 |
-| /target                  | 打包输出目录                                                               |
-| /target/classes          | 编译输出目录                                                               |
-| /target/test-classes     | 测试编译输出目录                                                           |
-| ~/.m2/repository         | Maven 默认的本地仓库目录位置                                               |
+    
+    maven 配置文件 ~/.m2/settings.xml
+    设置国内镜像 
+    在$MAVEN_HOME/conf/settings.xml 文件，或上面的,添加,注意包含在 <settings> 中
+    #+begin_src xml
+      <settings xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">
+        <mirrors>
+          <mirror>
+            <id>alimaven</id>
+            <name>aliyun maven</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <mirrorOf>central</mirrorOf>        
+          </mirror>
+        </mirrors>
+      </settings>
+    #+end_src
+    
+    
+    本地仓库,下载依赖的本地副本  ~/.m2/repository
+    
+** maven 参考
+    maven 代码量这么少，其实遵照的是一个约定，此约定规定字节码放在 target/classes,源码在 src/main/java 。。。
+    测试约定代码 /src/test/java,添加一个测试插件，然后直接可以测试 mvn test
+    对于部署 web 应用，只要 将项目类型改为 war,将文档根目录设为 /src/main/webapp
+    
+
+
+*** 目录约定 ( pom.xml )       
+ | /src/main/java           | 项目的 java 源代码                                                         |
+ | /src/main/resources      | 项目的资源，比如说 property 文件，springmvc.xml                            |
+ | /src/test/java           | 项目的测试类，比如说 Junit 代码                                            |
+ | /src/test/resources      | 测试用的资源                                                               |
+ | /src/main/webapp/WEB-INF | web 应用文件目录，web 项目的信息，比如存放 web.xml、本地图片、jsp 视图页面 |
+ | /target                  | 打包输出目录                                                               |
+ | /target/classes          | 编译输出目录                                                               |
+ | /target/test-classes     | 测试编译输出目录                                                           |
+ | ~/.m2/repository         | Maven 默认的本地仓库目录位置                                               |
  
-** 仓库 http://search.maven.org
+** 插件仓库 http://search.maven.org
+   插件地址 https://maven.apache.org/plugins/
+*** help 插件 
+    用法  mvn help:describe -Dplugin=help
+    显示详细用法 mvn help:describe -Dplugin=help -Dfull
+    相当于 mvn 工具调用 help 插件的 describe 方法，该方法的 plugin 选项为 help ,full 选项不用赋值
+    具体方法 mvn help:describe -Dplugin=compiler -Dmojo=compile -Dfull,显示 compiler 插件编译命令的主要用法
+    详细用法 mvn help:describe [...] -Ddetail
+
+    列出当前构建中活动的 Profile   help:active-profiles
+    显示当前构建的实际 POM,包含活动的 Profile    help:effective-pom
+    打印出项目的实际 settings, 包括从全局的 settings 和用户级别 settings 继承的配置。 help:effective-settings 
+    描述插件的属性。它不需要在项目目录下运行。但是你必须提供你想要描述插件的 groupId 和 artifactId。help:describe
+
+    可以查看当前生效的 settings.xml   mvn help:effective-settings 
+*** archetype 插件(原型插件)
+    构建 Maven 项目(有配置文件 pom.xml) 
+    mvn archetype:generate 
+    
+    创建简单项目,生成一个 MavenJavaTest 项目目录,生成简单的类 com.yano.App,
+    mvn archetype:generate -DgroupId=com.yano -DartifactId=MavenJavaTest -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+    
+    mvn archetype:generate -DgroupId=com.companyname.bank -DartifactId=consumerBanking -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+
+    mvn archetype:generate -DgroupId=com.wuming -DartifactId=MavenJavaTest -DarchetypeArtifactId=maven-archetype-quickstart 
+  
+    
+*** install 插件(  构建完整项目,同时也会安装到 .m2 仓库哦  mvn install ) 
+    编译项目 mvn compile,编译项目不会生成包 jar ,少一个文件
+*** 运行项目 java -cp target/simple-1.0-SNAPSHOT.jar org.sonatype.mavenbook.App
+    mvn exec:java -Dexec.mainClass="wuming.Animal"
+    打开调试标记  mvn install -X
+
 ** 常用命令
    mvn help:effective-pom 查看 Super POM 默认配置
 
@@ -44,111 +144,224 @@
    mvntomcat:run 启动 tomcat 服务
    mvn clean package -Dmaven.test.skip=true:清除以前的包后重新打包，跳过测试类
 
-Maven 常用命令： 
-1. 创建 Maven 的普通 java 项目： 
-   mvn archetype:create 
-   -DgroupId=packageName 
-   -DartifactId=projectName  
-2. 创建 Maven 的 Web 项目：   
-    mvn archetype:create 
-    -DgroupId=packageName    
-    -DartifactId=webappName 
-    -DarchetypeArtifactId=maven-archetype-webapp    
-3. 编译源代码：mvn compile 
-4. 编译测试代码：mvn test-compile    
-5. 运行测试：mvn test   
-6. 产生 site：mvn site   
-7. 打包：mvn package   
-8. 在本地 Repository 中安装 jar：mvn install 
-9. 清除产生的项目：mvn clean   
-10. 生成 eclipse 项目：mvn eclipse:eclipse  
-11. 生成 idea 项目：mvn idea:idea  
-12. 组合使用 goal 命令，如只打包不测试：mvn -Dtest package   
-13. 编译测试的内容：mvn test-compile  
-14. 只打 jar 包: mvn jar:jar  
-15. 只测试而不编译，也不测试编译：mvn test -skipping compile -skipping test-compile 
-      ( -skipping 的灵活运用，当然也可以用于其他组合命令)  
-16. 清除 eclipse 的一些系统设置:mvn eclipse:clean  
+   Maven 常用命令： 
+   1. 创建 Maven 的普通 java 项目： 
+      mvn archetype:create 
+      -DgroupId=packageName 
+      -DartifactId=projectName  
+   2. 创建 Maven 的 Web 项目：   
+      mvn archetype:create -DgroupId=packageName -DartifactId=webappName -DarchetypeArtifactId=maven-archetype-webapp    
+   3. 编译源代码：mvn compile 
+   4. 编译测试代码：mvn test-compile    
+   5. 运行测试：mvn test   
+   6. 产生 site：mvn site   
+   7. 打包：mvn package   
+   8. 在本地 Repository 中安装 jar：mvn install 
+   9. 清除产生的项目：mvn clean   
+   10. 生成 eclipse 项目：mvn eclipse:eclipse  
+   11. 生成 idea 项目：mvn idea:idea  
+   12. 组合使用 goal 命令，如只打包不测试：mvn -Dtest package   
+   13. 编译测试的内容：mvn test-compile  
+   14. 只打 jar 包: mvn jar:jar  
+   15. 只测试而不编译，也不测试编译：mvn test -skipping compile -skipping test-compile 
+       ( -skipping 的灵活运用，当然也可以用于其他组合命令)  
+   16. 清除 eclipse 的一些系统设置:mvn eclipse:clean  
 
-ps： 
+   ps： 
 
-一般使用情况是这样，首先通过 cvs 或 svn 下载代码到本机，然后执行 mvn
-eclipse:eclipse 生成 ecllipse 项目文件，然后导入到 eclipse 就行了；修改代码后执
-行 mvn compile 或 mvn test 检验，也可以下载 eclipse 的 maven 插件。
+   一般使用情况是这样，首先通过 cvs 或 svn 下载代码到本机，然后执行 mvn
+   eclipse:eclipse 生成 ecllipse 项目文件，然后导入到 eclipse 就行了；修改代码后执
+   行 mvn compile 或 mvn test 检验，也可以下载 eclipse 的 maven 插件。
 
-mvn -version/-v  显示版本信息 
-mvn archetype:generate        创建 mvn 项目 
-mvn archetype:create -DgroupId=com.oreilly -DartifactId=my-app   创建 mvn 项目 
+   mvn -version/-v  显示版本信息 
+   mvn archetype:generate        创建 mvn 项目 
+   mvn archetype:create -DgroupId=com.oreilly -DartifactId=my-app   创建 mvn 项目 
 
-mvn package            生成 target 目录，编译、测试代码，生成测试报告，生成 jar/war 文件 
-mvn jetty:run            运行项目于 jetty 上, 
-mvn compile                    编译 
-mvn test                    编译并测试 
-mvn clean                    清空生成的文件 
-mvn site                    生成项目相关信息的网站 
-mvn -Dwtpversion=1.0 eclipse:eclipse        生成 Wtp 插件的 Web 项目 
-mvn -Dwtpversion=1.0 eclipse:clean        清除 Eclipse 项目的配置信息(Web 项目) 
-mvn eclipse:eclipse                将项目转化为 Eclipse 项目 
+   mvn package            生成 target 目录，编译、测试代码，生成测试报告，生成 jar/war 文件 
+   mvn jetty:run            运行项目于 jetty 上, 
+   mvn compile                    编译 
+   mvn test                    编译并测试 
+   mvn clean                    清空生成的文件 
+   mvn site                    生成项目相关信息的网站 
+   mvn -Dwtpversion=1.0 eclipse:eclipse        生成 Wtp 插件的 Web 项目 
+   mvn -Dwtpversion=1.0 eclipse:clean        清除 Eclipse 项目的配置信息(Web 项目) 
+   mvn eclipse:eclipse                将项目转化为 Eclipse 项目 
 
-在应用程序用使用多个存储库 
-<repositories>    
-    <repository>      
-        <id>Ibiblio</id>      
-        <name>Ibiblio</name>      
-        <url>http://www.ibiblio.org/maven/</url>    
-    </repository>    
-    <repository>      
-        <id>PlanetMirror</id>      
-        <name>Planet Mirror</name>      
-        <url>http://public.planetmirror.com/pub/maven/</url>    
-    </repository>  
-</repositories> 
+   在应用程序用使用多个存储库 
+   <repositories>    
+   <repository>      
+   <id>Ibiblio</id>      
+   <name>Ibiblio</name>      
+   <url>http://www.ibiblio.org/maven/</url>    
+   </repository>    
+   <repository>      
+   <id>PlanetMirror</id>      
+   <name>Planet Mirror</name>      
+   <url>http://public.planetmirror.com/pub/maven/</url>    
+   </repository>  
+   </repositories> 
 
-mvn deploy:deploy-file -DgroupId=com -DartifactId=client -Dversion=0.1.0 -Dpackaging=jar -Dfile=d:\client-0.1.0.jar -DrepositoryId=maven-repository-inner -Durl=ftp://xxxxxxx/opt/maven/repository/ 
+   mvn deploy:deploy-file -DgroupId=com -DartifactId=client -Dversion=0.1.0 -Dpackaging=jar -Dfile=d:\client-0.1.0.jar -DrepositoryId=maven-repository-inner -Durl=ftp://xxxxxxx/opt/maven/repository/ 
 
 
-发布第三方 Jar 到本地库中： 
+   发布第三方 Jar 到本地库中： 
 
-mvn install:install-file -DgroupId=com -DartifactId=client -Dversion=0.1.0 -Dpackaging=jar -Dfile=d:\client-0.1.0.jar 
+   mvn install:install-file -DgroupId=com -DartifactId=client -Dversion=0.1.0 -Dpackaging=jar -Dfile=d:\client-0.1.0.jar 
 
 
--DdownloadSources=true 
+   -DdownloadSources=true 
 
--DdownloadJavadocs=true 
+   -DdownloadJavadocs=true 
 
-mvn -e            显示详细错误 信息. 
+   mvn -e            显示详细错误 信息. 
 
-mvn validate        验证工程是否正确，所有需要的资源是否可用。 
-mvn test-compile    编译项目测试代码。 。 
-mvn integration-test     在集成测试可以运行的环境中处理和发布包。 
-mvn verify        运行任何检查，验证包是否有效且达到质量标准。     
-mvn generate-sources    产生应用需要的任何额外的源代码，如 xdoclet。 
+   mvn validate        验证工程是否正确，所有需要的资源是否可用。 
+   mvn test-compile    编译项目测试代码。 。 
+   mvn integration-test     在集成测试可以运行的环境中处理和发布包。 
+   mvn verify        运行任何检查，验证包是否有效且达到质量标准。     
+   mvn generate-sources    产生应用需要的任何额外的源代码，如 xdoclet。 
 
-本文来自 CSDN 博客，转载请标明出处：http://blog.csdn.net/lifxue/archive/2009/10/14/4662902.aspx 
+   本文来自 CSDN 博客，转载请标明出处：http://blog.csdn.net/lifxue/archive/2009/10/14/4662902.aspx 
 
-常用命令： 
-mvn -v 显示版本 
-mvn help:describe -Dplugin=help 使用 help 插件的  describe 目标来输出 Maven Help 插件的信息。 
-mvn help:describe -Dplugin=help -Dfull 使用 Help 插件输出完整的带有参数的目标列 
-mvn help:describe -Dplugin=compiler -Dmojo=compile -Dfull 获取单个目标的信息,设置  mojo 参数和  plugin 参数。此命令列出了 Compiler 插件的 compile 目标的所有信息 
-mvn help:describe -Dplugin=exec -Dfull 列出所有 Maven Exec 插件可用的目标 
-mvn help:effective-pom 看这个“有效的 (effective)”POM，它暴露了 Maven 的默认设置 
+   常用命令： 
+   mvn -v 显示版本 
+   mvn help:describe -Dplugin=help 使用 help 插件的  describe 目标来输出 Maven Help 插件的信息。 
+   mvn help:describe -Dplugin=help -Dfull 使用 Help 插件输出完整的带有参数的目标列 
+   mvn help:describe -Dplugin=compiler -Dmojo=compile -Dfull 获取单个目标的信息,设置  mojo 参数和  plugin 参数。此命令列出了 Compiler 插件的 compile 目标的所有信息 
+   mvn help:describe -Dplugin=exec -Dfull 列出所有 Maven Exec 插件可用的目标 
+   mvn help:effective-pom 看这个“有效的 (effective)”POM，它暴露了 Maven 的默认设置 
 
-mvn archetype:create -DgroupId=org.sonatype.mavenbook.ch03 -DartifactId=simple -DpackageName=org.sonatype.mavenbook 创建 Maven 的普通 java 项目，在命令行使用 Maven Archetype 插件 
-mvn exec:java -Dexec.mainClass=org.sonatype.mavenbook.weather.Main Exec 插件让我们能够在不往 classpath 载入适当的依赖的情况下，运行这个程序 
-mvn dependency:resolve 打印出已解决依赖的列表 
-mvn dependency:tree 打印整个依赖树 
+   mvn archetype:create -DgroupId=org.sonatype.mavenbook.ch03 -DartifactId=simple -DpackageName=org.sonatype.mavenbook 创建 Maven 的普通 java 项目，在命令行使用 Maven Archetype 插件 
+   mvn exec:java -Dexec.mainClass=org.sonatype.mavenbook.weather.Main Exec 插件让我们能够在不往 classpath 载入适当的依赖的情况下，运行这个程序 
+   mvn dependency:resolve 打印出已解决依赖的列表 
+   mvn dependency:tree 打印整个依赖树 
 
-mvn install -X 想要查看完整的依赖踪迹，包含那些因为冲突或者其它原因而被拒绝引入的构件，打开 Maven 的调试标记运行 
-mvn install -Dmaven.test.skip=true 给任何目标添加 maven.test.skip 属性就能跳过测试 
-mvn install assembly:assembly 构建装配 Maven Assembly 插件是一个用来创建你应用程序特有分发包的插件 
+   mvn install -X 想要查看完整的依赖踪迹，包含那些因为冲突或者其它原因而被拒绝引入的构件，打开 Maven 的调试标记运行 
+   mvn install -Dmaven.test.skip=true 给任何目标添加 maven.test.skip 属性就能跳过测试 
+   mvn install assembly:assembly 构建装配 Maven Assembly 插件是一个用来创建你应用程序特有分发包的插件 
 
-mvn jetty:run 调用 Jetty 插件的 Run 目标在 Jetty Servlet 容器中启动 web 应用 
-mvn compile 编译你的项目 
-mvn clean install 删除再编译 
+   mvn jetty:run 调用 Jetty 插件的 Run 目标在 Jetty Servlet 容器中启动 web 应用 
+   mvn compile 编译你的项目 
+   mvn clean install 删除再编译 
 
-mvn hibernate3:hbm2ddl 使用 Hibernate3 插件构造数据库
-** 创建项目 sprintboot
-  mvn archetype:generate -DgroupId=springboot
-  -DartifactId=springboot-helloworld
-  -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+   mvn hibernate3:hbm2ddl 使用 Hibernate3 插件构造数据库
+** 项目对象模型(POM Project Object Model)
+   很重要的 groupId,artifactId, packaging, version,决定了项目
+   
+   目标,完成项目的中间节点。
+   结构为 pluginId:goalId ，相当于 工具:方法 如 archetype:create
+   目标，就是约定啦，根据目标的设定，执行约定的事情。
+   
+   管理依赖的节点,用来管理依赖 dependencies
+** 定制 项目
+   增加许可证信息
+   #+begin_src xml
+     <licenses>
+       <license>
+         <name>Apache 2</name>
+         <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+         <distribution>repo</distribution>
+         <comments>A business-friendly OSS license</comments>
+       </license>
+     </licenses>
+   #+end_src
+   
+   增加开发人员 
+   #+begin_src xml
+     <organization>
+       <name>Sonatype</name>
+       <url>http://www.sonatype.com</url>
+     </organization>
+   #+end_src
+
+   添加依赖 
+   #+begin_src xml
+     <dependency>
+       <groupId>velocity</groupId>
+       <artifactId>velocity</artifactId>
+       <version>1.5</version>
+     </dependency>
+  #+end_src
+
+  编写单元测试，注意测试用例,注意引入测试类
+  文件名 一般是以 Test 结尾 . src/test/wuming/AppTest.java
+  
+
+忽略测试失败,在 <configuration> 中设置
+也可以命令行 mvn test -Dmaven.test.failure.ignore=true
+#+begin_src xml
+  <plugins>
+    <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-surefire-plugin</artifactId>
+      <configuration>
+        <testFailureIgnore>true</testFailureIgnore>
+      </configuration>
+    </plugin>
+  </plugins>
+#+end_src
+
+跳过单元测试,对于大系统  mvn install -Dmaven.test.skip=true
+或配置文件中
+#+begin_src xml
+  <configuration>
+    <skip>true</skip>
+  </configuration>
+#+end_src
+
+项目发布,mvn install assembly:assembly
+发布的代码会集成 jar 包,到一个大包 
+
+#+begin_src xml
+  <plugin>
+    <artifactId>maven-assembly-plugin</artifactId>
+    <configuration>
+      <descriptorRefs>
+        <descriptorRef>jar-with-dependencies</descriptorRef>
+      </descriptorRefs>
+    </configuration>
+  </plugin>
+#+end_src
+** 创建 web 应用
+   修改 ，就可以了   archetypeArtifactId = maven-archetype-webapp
+
+   生成 web 应用 mvn archetype:generate  -DgroupId=packageName -DartifactId=webappName -DarchetypeArtifactId=maven-archetype-webapp    
+   mvn archetype:generate  -DgroupId=com.wuming -DartifactId=Mywebapp -DarchetypeArtifactId=maven-archetype-webapp    
+   
+   配置 jetty 插件
+   打包好 war 文件后，要部署到 servlet 容器中,通常要下载 Jetty 或 Tomcat，解压分发包 到 webapps/ ,然后启动容器。
+   现在可以用 maven-jetty 插件在 maven 中运行 web 应用。
+   配置方法 
+   
+   #+begin_src xml
+     <build>
+       <finalName>simple-webapp</finalName>
+       <plugins>
+         <plugin>
+           <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-maven-plugin</artifactId>
+            <version>9.4.11.v20180605</version>
+         </plugin>
+       </plugins>
+     </build>
+   #+end_src
+   
+然后运行 mvn jetty:run
+在浏览器打开  http://localhost:8080
+** 多模块项目
+
+** mvnw (Maven Wrapper[包装器]) 保持 maven 版本一致
+   Maven 是一个常用的构建工具，但是 Maven 的版本和插件的配合并不是那么完美，有时
+   候你不得不切换到一个稍微旧一些的版本，以保证所有东西正常工作。
+   
+   而 Gradle 提供了一个 Wrapper，可以很好解决版本切换的问题，当然更重要的是不需要预安装 Gradle。
+   
+   Maven 虽然没有官方的 Wrapper，但是有一个第三方的 Wrapper 可以使用。
+   
+   安装很简单 mvn -N io.takari:maven:wrapper，安装完成如下
+   使用的时候直接 ./mvnw clean install 即可，它会自动下载最新版本来执行。
+
+   如果需要指定版本,重新生成 mvnw 文件在运行即可
+
+   mvn -N io.takari:maven:wrapper -Dmaven=3.1.0
+   ./mvnw clean install

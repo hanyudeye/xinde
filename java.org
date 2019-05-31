@@ -1,11 +1,19 @@
-* 工具
+#+TITLE: java 开发语言
+#+DESCRIPTION: 一种面向对象的高级语言，跨平台做的好。
+* 语言工具
+  如何把编辑器中的 java 代码制作成可执行文件呢，需要语言工具啦。
 ** 环境设置
-   export JAVA_HOME=/usr/lib/jvm/jdk-11.0.1
+   下载 JDK,然后安装，有面向各个操作系统的 JDK 可供使用。
+   
+   配置环境变量   export JAVA_HOME=/usr/lib/jvm/jdk-11.0.1
    export CLASSPATH=.:${JAVA_HOME}/lib
+   还有 PATH
 
    JAVA_HOME 指定 jdk 的安装目录
-   CLASSPATH 指定 java 执行的程序所在目录，一般当前目录在最前
-** 编译 javac 
+   CLASSPATH 指定 java 执行的程序所在目录，一般当前目录在最前,最好全局中少一点，在局部环境中修改。
+   
+   开发环境，对于项目，可以用智能化的集成开发环境，小的测试，可以用命令行。
+** 编译程序通过 javac 
    | classpath Path | 指定要加载类的路径     |
    | d Dir          | 指定编译后的类存放路径 |
    | g              | 生成调试表             |
@@ -13,189 +21,453 @@
    | verbose        | 打开详细信息           |
    | o              | 优化                   |
    
-** 执行 java
+** 执行程序通过 java
    java [options] classname [args]
    java [options] -jar filename [args]
+   java -classpath PATH fileName.java
+   
+   启用断言 java -enableassertions App
 ** 文档生成器 javadoc 
    javadoc [options...] [package names...] [source filenames...]
+   
+   javadoc -d DocDir  nameofPackage 或 className
 *** 注释样式,支持 HTML 格式
     /** 开始 */ 结束
     javadoc 文件名
-    @see 放入链接
-    @version 放入版本号
-    @author 作者
-    @param 方法参数
-    @return 返回
-    @throws
+    @see reference 链接或文本
+    #deprecated text 不鼓励
+    @version text
+    @author name
+    @param variable description
+    @return description
+    @throws class description
 ** 反编译 javap
 ** 构建工具
 *** [[file:maven.org][maven]]
 *** gradle
-* java 
-** 原语
-*** 数据类型
-    boolean
-    byte
-    char
-    short
-    int
-    float f = 1.1f;  1.1 是 double 类型
-    long
-    double
-    String
-    类型转换 s1 = (short) (s1 + 1);
-*** 反射 
-    java.lang.reflect 
-      - Field ：可以使用 get() 和 set() 方法读取和修改 Field 对象关联的字段；
-      - Method ：可以使用 invoke() 方法调用与 Method 对象关联的方法；
-      - Constructor ：可以用 Constructor 创建新的对象。
-*** 异常
-    Throwable 可以用来表示任何可以作为异常抛出的类，分为两种： *Error* 和
-    *Exception* 。其中 Error 用来表示 JVM 无法处理的错误，Exception 分为两种：
-    -   
-      - *受检异常* ：需要用 try...catch... 语句捕获并进行处理，并且可以从异常中恢复；
-      - *非受检异常* ：是程序运行时错误，例如除 0 会引发 Arithmetic Exception，此
-        时程序崩溃并且无法恢复。
-*** 泛型
-    #+BEGIN_SRC java
-      public class Box<T> {
-          // T stands for "Type"
-          private T t;
-          public void set(T t) { this.t = t; }
-          public T get() { return t; }
+* java 编程语言 
+  java 剔除了 C++ 中很多不常用的复杂的功能,以便程序能更简单。 
+  面向对象计术，就是将重点放在对象和对象的接口上。
+  面向过程，就是将重点放在制作过程上喽。
+  java 语言相对安全性也不错,自带程序检查吧。
+  数据类型大小在各平台都相同。
+  数据有类型，就相当于东西分类一样，东西不分类，只在原子级别，复杂的东西，由很多基类构成，最后统一成大东西，说白了，就是数据组织。
+  动态性，也就是运行时，查看 java 运行时环境信息也很方便。
+  
+  数据之间操作的时候，有时会因为类型不同，而作转换，对于完全不相干的类，是没有操作性的，所以应该报错。
+  强制转化的方法是在数据名称的前面加类型的名称 ，这是一个简单的写法。 int nx=(int)x;
+* 基础 
+** 基本数据类型(语言自带的数据类型)
+   byte,Byte
+   int,Integer
+   short,Short
+   long,Long
+   float,Float f = 1.1f;  1.1 是 double 类型
+   char,Character,UTF-16 结构,编码都是两个字节
+   不要在程序中用 char 类型 
+   boolean,Boolean 只有两个值,true/false
+   
+   数组的数据怎么声明呢  类型 [框]  名字 = {值 1,值 2},哈这样也挺简单
+   遍历数组的简写形式用 foreach
+   for(类型 变量名 : 数组变量名)  
+   数组拷贝
+   Array.copyof(数组源，数组长)
+   数组会了，多维数组也会的吧，我想。
+   
+   不规则数组 double[] temp = ban[i];
+   ban[i]=ban[i+1];
+   
+   
+   命令行参数，就是 args 变量,argments 的意思,仅仅就是参数哦，并不含文件名
+   
+** 变量 给数据一个名字，可以多次使用它,光有名字还不行，还有类型，以及值的属性哦
+   编程语言跟数学计算的表示方法差不多的结构。
+** 常量 
+   实例常量的生命要用 final 着重一下,名字最好起大写的. 
+   #+begin_src java
+     final double BUNENGGAI = 1;
+   #+end_src
+   如果要弄个类常量，可以用 static 声明
+   #+begin_src java
+     static final double CHANGL = 3;
+   #+end_src
+   
+*** 预定义常量  
+   Double 数的正无穷 Double.POSITIVE_INFINITY
+   Float 的正无穷 Float.POSITIVE_INFINITY
+
+   负无穷    Float.NEGATIVE_INFINITY
+*** 定义常量
+    #+begin_src java
+      /**
+       ,* Method One
+       ,*/
+      interface ConstantInterface {
+          String SUNDAY = "SUNDAY";
+          String MONDAY = "MONDAY";
+          String TUESDAY = "TUESDAY";
+          String WEDNESDAY = "WEDNESDAY";
+          String THURSDAY = "THURSDAY";
+          String FRIDAY = "FRIDAY";
+          String SATURDAY = "SATURDAY";
       }
-    #+END_SRC
-*** 注解 annotations 元信息
-** 定义词汇    
-*** 对象
-**** 抽象类与接口
-***** 抽象类
-      抽象类和抽象方法都使用 abstract 关键字进行声明。
- #+begin_src java     
-   public abstract class AbstractClassExample {
+      /**
+       ,* Method Two 
+       ,*/
+      enum ConstantEnum {
+          SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY
+      }
+      /**
+       ,* Method Three
+       ,*/
+      class ConstantClassField {
+          public static final String SUNDAY = "SUNDAY";
+          public static final String MONDAY = "MONDAY";
+          public static final String TUESDAY = "TUESDAY";
+          public static final String WEDNESDAY = "WEDNESDAY";
+          public static final String THURSDAY = "THURSDAY";
+          public static final String FRIDAY = "FRIDAY";
+          public static final String SATURDAY = "SATURDAY";
+      }
+      /**
+       ,* Method Four
+       ,* http://www.ibm.com/developerworks/cn/java/l-java-interface/index.html
+       ,*/
+      class ConstantClassFunction {
+          private static final String SUNDAY = "SUNDAY";
+          private static final String MONDAY = "MONDAY";
+          private static final String TUESDAY = "TUESDAY";
+          private static final String WEDNESDAY = "WEDNESDAY";
+          private static final String THURSDAY = "THURSDAY";
+          private static final String FRIDAY = "FRIDAY";
+          private static final String SATURDAY = "SATURDAY";
+          public static String getSunday() {
+              return SUNDAY;
+          }
+          public static String getMonday() {
+              return MONDAY;
+          }
+          public static String getTuesday() {
+              return TUESDAY;
+          }
+          public static String getWednesday() {
+              return WEDNESDAY;
+          }
+          public static String getThursday() {
+              return THURSDAY;
+          }
+          public static String getFirday() {
+              return FRIDAY;
+          }
+          public static String getSaturday() {
+              return SATURDAY;
+          }
+      }
+      public class TestConstant {
+          static final String day = "saturday";
+          public static void main(String[] args) {
+              System.out.println("Is today Saturday?");
+              System.out.println(day.equalsIgnoreCase(ConstantInterface.SATURDAY));
+              System.out.println(day.equalsIgnoreCase(ConstantEnum.SATURDAY.name()));
+              System.out.println(day.equalsIgnoreCase(ConstantClassField.SATURDAY));
+              System.out.println(day.equalsIgnoreCase(ConstantClassFunction
+                                                      .getSaturday()));
+          }
+      }
+    #+end_src
+** 运算符 数学计算多，是否有必要增加点运算符
+   基本的加减乘除都有，要专门的运算，需要特定库。语言嘛，功能扩展的越来越多。
+   自增运算，少写了很多字呀,不来很长的。
+   位的运算无非就是 与或，异或啦，非。
+   移位运算，注意 java 的特点哦。 右移(>>>,变长) 用 0 填充,>> 用符号位填充 
+   想要更多数学运算，使用 Math 类。
+** 字符串类 String
+   截取一段字符串 substring(index1,index2)
+   拼接两段字符串 string1 +  string2
+   字符串是否相等 s1.equals(string2)
+   字符串长度  s.length()
+   索引处的字符  s.charAt(index)
+   比较 compareTo(s1)  如果在 s1 前，返回负数，后，返回整数，相等，返回 0
+   是否以.. 结尾 endsWith(s1)  若果以 s1 结尾，返回 true
+   大小写转化  toUpperCase     toLowerCase
+   
+   构造字符串，因为 String 的本质是复制，若果要从小的字符串合成，可以使用 StringBuilder 类，就节约空间了。
+   拼接长字符串 B.append(CHAR).append(STR).toString();
+** 程序结构
+  面向对象的嘛，先要有对象。然后创建方法，执行程序就是执行对象中的方法喽。 
+  数据类型，说了，数据要有类型，在使用数据的时候，不用在提示什么类型，但要知道数据是有类型的。
+#+begin_src java
+  class App
+  {
+      public static void main(String args[])
+      {
+          System.out.println("我喜欢编程");
+      }
+  }
+#+end_src
+** 大数值 BigInteger BigDecimal
+   加减法只能用方法的形式 add  multiply 乘 
+* 对象和类
+  一种构建逻辑的套路,人为的约定。 
+  类可以继承，方便了扩展类啦。
+  继承语法 class B extends A{}
+  组织类的继承  final class C extends{},C 就不能继承了
+  类中成员有隐私性，如果公开就为 public ,不公开为 private,家庭成员才能访问 protected
+  对于安全性很重视的伙伴，这非常重要的.
+  类的静态，相当于类的属性，不能被实例了。!!! 不允许有静态类哦，只允许有静态内部类
+  方法的静态，方法的属性，表示此方法不能创建实例。
+  构造函数把函数名取成类名，就是构造函数了，这个也挺好的设计。调用内部构造器时，要会用 this 哦,父的用 parent。
+  析构函数必须要有一个名字了，一般用 finalize(结束) 表示。 
+  默认类私有的哦，其他类要想访问，要加公开属性 public 
+  
+  抽象类 abstract ，抽象方法，介意就声明下就好，不要定义实体.
+  
+  反射功能的主要使用者是工具开发者，而不是普通程序员
+  反射返回类的结构 .
+  reflect 包中有三个类 Field ,Method ,Constructor
+  
 
-       protected int x;
-       private int y;
+  接口 interface, public interface Interface1{}
+  泛型接口 public interface Interface1<T>{}
+  接口的实现 class Em implements Interface1,Interface2{}
 
-       public abstract void func1();
+ 
+** 导入类,为了限制类名重复，类一般还归属在某个命名空间下面
+   包，可以将类组织起来，包的属性就是名字，包有一个名字，用 package 表示这个文件是包了。
+   包的结构决定目录结构的哦。
+   import 命名空间.类.*; 导入类下的所有方法。
+   import 可以导入类，也可以导入包。
+   静态导入 import static 命名空间.类.*; 静态导入就不要在写类名了，方法是全局的了,注意只有类内的静态方法或字段才能这样使用哦。  
+   
+   javac com/wuming/hello/App.java  或 在 hello 目录内 , javac App.java 
+   java com.wuming.hello.App  ,执行的化名字要完整的哦,不来不知道哪个类。
+   
+   设置类的路径( CLASSPATH)环境变量后,java 也会在此查找类哦，注意！
+   不光可以包含文件夹，还能包含 jar 文件哦，jar 其实也是文件夹啦，打包了而已哦。
+   
+   
+** 输入输出(在 java.util.* 包中)
+   计算机不光操作内存，还可以操作键盘，鼠标，显示器啦, 把数据从这些设备写或读叫输入输出.
+   
+   读取输入,就用输入对象，这个对象可以选择输入的设备  Scanner in = new Scanner(System.in)
+   输入设备读取下一行 in.nextLine()
+   输入设备读取下一个词  next()
+   读取一个整数  nextInt()
+   
 
-       public void func2() {
-           System.out.println("func2");
-       }
-   }
-
-   public class AbstractExtendClassExample extends AbstractClassExample {
-       @Override
-       public void func1() {
-           System.out.println("func1");
-       }
-   }
-   // AbstractClassExample ac1 = new AbstractClassExample(); // 'AbstractClassExample' is abstract; cannot be instantiated
-   AbstractClassExample ac2 = new AbstractExtendClassExample();
-   ac2.func1();
+   对于密码的输入 ，可以使用 Console 类
+   读入密码后，要对密码覆盖密码数组 , 方法没有 Scanner 多   
+   #+begin_src java
+     Console cons= System.console(); 
+     String username = cons.readLine("user naem:");
+     char[] passwd = cons.readPassword("Password:");
    #+end_src
-***** 接口
-      接口的成员（字段 + 方法）默认都是 public 的，并且不允许定义为 private 或者 protected。
+   
+   格式化到输出设备 System.out
+   printf
+   
+  | 转换符 | 输出类型       |
+  | %d     | 十进制整数     |
+  | %x     | 十六进制整数   |
+  | %c     | 单个字符       |
+  | %f     | 十进制浮点数   |
+  | %o     | 八进制数       |
+  | %s     | 字符串         |
+  | %u     | 无符号十进制数 |
+  | %x     | 十六进制数     |
+  | %%     | 输出百分号%    |
+  | %tx    | 日期时间       |
+  |        |                |
 
-      接口的字段默认都是 static 和 final 的。
+ 文件输入与输出 
+ 输入文件 new Scanner(new File("myfile.txt"))
+ 文件写入 PrintWriter out = new PrintWriter("myfile") 
 
- #+begin_src java     
-   public interface InterfaceExample {
+** 流程控制 ，为了使程序能够动态化而不死板
+** 反射 
+   java.lang.reflect 
+     - Field ：可以使用 get() 和 set() 方法读取和修改 Field 对象关联的字段；
+     - Method ：可以使用 invoke() 方法调用与 Method 对象关联的方法；
+     - Constructor ：可以用 Constructor 创建新的对象。
+** 泛型
+   #+BEGIN_SRC java
+     public class Box<T> {
+         // T stands for "Type"
+         private T t;
+         public void set(T t) { this.t = t; }
+         public T get() { return t; }
+     }
+   #+END_SRC
+* 异常,日志，断言，调试       
+  异常，是计算机设置一个特殊点，有异常检查的程序会检查这个特殊点，然后进入其他分
+  支,大概是这么个情况把。
+  
+  异常有大有小，一级一级报错的,检查的时后可以忽略某些异常。
+  主动抛出异常是调试程序的一种方法, throw new EOFException()
+  抛出一个异常对象,在什么情况抛出异常，就像在什么情况执行函数一样。 
+  捕获异常 try{}catch(ExceptionType e){},看你想捕获什么异常了哇.
+  终止方法  Finally{}
+ 
+ RuntimeException(运行时异常)
+ Java.lang.ArithmeticException
+ Java.lang.ArrayStoreExcetpion
+ Java.lang.ClassCastException
+ Java.lang.IndexOutOfBoundsException
+ Java.lang.NullPointerException
+ 
+Error (错误)
+包括动态链接失败，虚拟机错误等。程序对其不做处理。程序员不能处理的哦
 
-       void func1();
+自定义异常，只要派生自  Exception 或其子类。 class FileFormatException extends IOException{}
 
-       default void func2(){
-           System.out.println("func2");
-       }
+断言，断言语句在发行版中会自动删除，而异常语句则不会，有这个好处 (assert)
+启用断言 java -enableassertions App
 
-       int x = 123;
-       // int y;               // Variable 'y' might not have been initialized
-       public int z = 0;       // Modifier 'public' is redundant for interface fields
-       // private int k = 0;   // Modifier 'private' not allowed here
-       // protected int l = 0; // Modifier 'protected' not allowed here
-       // private void fun3(); // Modifier 'private' not allowed here
-   }
 
-   public class InterfaceImplementExample implements InterfaceExample {
-       @Override
-       public void func1() {
-           System.out.println("func1");
-       }
-   }
+日志 
+取消日志，在程序入口点使用  Logger.global.setLevel(Level.OFF)
 
-   // InterfaceExample ie1 = new InterfaceExample(); // 'InterfaceExample' is abstract; cannot be instantiated
-   InterfaceExample ie2 = new InterfaceImplementExample();
-   ie2.func1();
-   System.out.println(InterfaceExample.x);
-   #+end_src
-***** super
 
-  - 访问父类的构造函数：可以使用 super() 函数访问父类的构造函数，从而委托父类完成
-    一些初始化的工作。
-  - 
-  - 访问父类的成员：如果子类重写了父类的某个方法，可以通过使用 super 关键字来引用
-    父类的方法实现。
+调试 
+技巧 1 ，对要调试的类 放入 main 方法，然后写要调试的过程。
+技巧 2 ，用 junit 单元测试，写测试用例
 
- #+begin_src java     
-   public class SuperExample {
+使用调试器可以查看流程，不用反复测试排查。
+** 异常
+   Throwable 可以用来表示任何可以作为异常抛出的类，分为两种： Error 和
+   Exception 。其中 Error 用来表示 JVM 无法处理的错误，Exception 分为两种：
+     - *受检异常* ：需要用 try...catch... 语句捕获并进行处理，并且可以从异常中恢复；
+     - *非受检异常* ：是程序运行时错误，例如除 0 会引发 Arithmetic Exception，此
+       时程序崩溃并且无法恢复。
+** 注解 annotations 元信息
+** 对象
+*** 抽象类与接口
+**** 抽象类
+     抽象类和抽象方法都使用 abstract 关键字进行声明。
+#+begin_src java     
+  public abstract class AbstractClassExample {
 
-       protected int x;
-       protected int y;
+      protected int x;
+      private int y;
 
-       public SuperExample(int x, int y) {
-           this.x = x;
-           this.y = y;
-       }
+      public abstract void func1();
 
-       public void func() {
-           System.out.println("SuperExample.func()");
-       }
-   }
+      public void func2() {
+          System.out.println("func2");
+      }
+  }
 
-   public class SuperExtendExample extends SuperExample {
+  public class AbstractExtendClassExample extends AbstractClassExample {
+      @Override
+      public void func1() {
+          System.out.println("func1");
+      }
+  }
+  // AbstractClassExample ac1 = new AbstractClassExample(); // 'AbstractClassExample' is abstract; cannot be instantiated
+  AbstractClassExample ac2 = new AbstractExtendClassExample();
+  ac2.func1();
+  #+end_src
+**** 接口
+     接口的成员（字段 + 方法）默认都是 public 的，并且不允许定义为 private 或者 protected。
 
-       private int z;
+     接口的字段默认都是 static 和 final 的。
 
-       public SuperExtendExample(int x, int y, int z) {
-           super(x, y);
-           this.z = z;
-       }
+#+begin_src java     
+  public interface InterfaceExample {
 
-       @Override
-       public void func() {
-           super.func();
-           System.out.println("SuperExtendExample.func()");
-       }
-   }
+      void func1();
 
-   SuperExample e = new SuperExtendExample(1, 2, 3);
-   e.func();
+      default void func2(){
+          System.out.println("func2");
+      }
 
-   SuperExample.func();
-   SuperExtendExample.func();
-   #+end_src
-**** 重写与重载
-*****  重写（Override）
+      int x = 123;
+      // int y;               // Variable 'y' might not have been initialized
+      public int z = 0;       // Modifier 'public' is redundant for interface fields
+      // private int k = 0;   // Modifier 'private' not allowed here
+      // protected int l = 0; // Modifier 'protected' not allowed here
+      // private void fun3(); // Modifier 'private' not allowed here
+  }
 
-  存在于继承体系中，指子类实现了一个与父类在方法声明上完全相同的一个方法。
+  public class InterfaceImplementExample implements InterfaceExample {
+      @Override
+      public void func1() {
+          System.out.println("func1");
+      }
+  }
 
-  为了满足里式替换原则，重写有有以下两个限制：
+  // InterfaceExample ie1 = new InterfaceExample(); // 'InterfaceExample' is abstract; cannot be instantiated
+  InterfaceExample ie2 = new InterfaceImplementExample();
+  ie2.func1();
+  System.out.println(InterfaceExample.x);
+  #+end_src
+**** super
 
-  - 子类方法的访问权限必须大于等于父类方法；
-  - 子类方法的返回类型必须是父类方法返回类型或为其子类型。
+ - 访问父类的构造函数：可以使用 super() 函数访问父类的构造函数，从而委托父类完成
+   一些初始化的工作。
+ - 
+ - 访问父类的成员：如果子类重写了父类的某个方法，可以通过使用 super 关键字来引用
+   父类的方法实现。
 
-  使用 @Override 注解，可以让编译器帮忙检查是否满足上面的两个限制条件。
+#+begin_src java     
+  public class SuperExample {
 
-***** . 重载（Overload）
+      protected int x;
+      protected int y;
 
-  存在于同一个类中，指一个方法与已经存在的方法名称上相同，但是参数类型、个数、顺
-  序至少有一个不同。
+      public SuperExample(int x, int y) {
+          this.x = x;
+          this.y = y;
+      }
 
-  应该注意的是，返回值不同，其它都相同不算是重载。
+      public void func() {
+          System.out.println("SuperExample.func()");
+      }
+  }
 
-*** 封装 package 
-    如果要引入 jar 包，则 CLASSPATH 要引入
-    CLASSPATH=.;D:\JAVA\LIB;C:\flavors\grape.jar
+  public class SuperExtendExample extends SuperExample {
+
+      private int z;
+
+      public SuperExtendExample(int x, int y, int z) {
+          super(x, y);
+          this.z = z;
+      }
+
+      @Override
+      public void func() {
+          super.func();
+          System.out.println("SuperExtendExample.func()");
+      }
+  }
+
+  SuperExample e = new SuperExtendExample(1, 2, 3);
+  e.func();
+
+  SuperExample.func();
+  SuperExtendExample.func();
+  #+end_src
+*** 重写与重载
+****  重写（Override）
+
+ 存在于继承体系中，指子类实现了一个与父类在方法声明上完全相同的一个方法。
+
+ 为了满足里式替换原则，重写有有以下两个限制：
+
+ - 子类方法的访问权限必须大于等于父类方法；
+ - 子类方法的返回类型必须是父类方法返回类型或为其子类型。
+
+ 使用 @Override 注解，可以让编译器帮忙检查是否满足上面的两个限制条件。
+**** 重载（Overload）
+
+ 存在于同一个类中，指一个方法与已经存在的方法名称上相同，但是参数类型、个数、顺
+ 序至少有一个不同。
+
+ 应该注意的是，返回值不同，其它都相同不算是重载。
+** 时间 Date  GregorianCalendar
+* 泛型程序设计
+* 集合
+* 多线程
 * 库
 ** IO
 *** 磁盘操作
@@ -757,8 +1029,6 @@
      - [Socket Multicast](http://labojava.blogspot.com/2012/12/socket-multicast.html)
 * jdb
 加入调试信息  javac -g Java.java
-  
-  ** 命令列表 **
 connectors                -- 列出此 VM 中可用的连接器和传输
 
 run [class [args]]        -- 开始执行应用程序的主类

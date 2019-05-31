@@ -224,10 +224,7 @@ basicstyle=\footnotesize,
 \lstset{style=mystyle}
 
 \begin{document}
-
-
 Hello world!
-
 \begin{lstlisting}[language=Python]
 
 print "Hello World!"

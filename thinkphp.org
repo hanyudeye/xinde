@@ -765,4 +765,20 @@ notice	警告,程序可以运行但是还不够完美的错误
 ** 部署
 *** 虚拟主机环境
 *** Linux 主机环境
-*** URL 重写
+*** URL 重写 (隐藏入口文件)
+    地址重写是一种配对规则，会把匹配的输入参数转成规则设定的那样，起到隐藏文件的作用
+    
+**** apache 设置 
+    1. 加载并启用重写模块 加载 mod_rewrite.so(httpd.conf),启动
+         加载功能模块 LoadModule rewrite_module modules/mod_rewrite.so 
+    2. 修改配置 AllowOverride None 讲 None 改为 All      //在 APACHE 里面去配置
+    3. 在应用入口文件同级目录添加 .htaccess 文件,内容如下:
+       #+begin_src apache
+         <IfModule	mod_rewrite.c>
+         Options	+FollowSymlinks	-Multiviews
+         RewriteEngine	on
+         RewriteCond	%{REQUEST_FILENAME}	!-d
+         RewriteCond	%{REQUEST_FILENAME}	!-f
+         RewriteRule	^(.*)$	index.php/$1	[QSA,PT,L]
+         </IfModule>
+         #+end_src

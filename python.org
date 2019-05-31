@@ -1,4 +1,6 @@
-#+AUTHOR: wuming
+#+TITLE: Python 教程
+#+DESCRIPTION: Python 语言如何学？ 
+* [[ https://github.com/duzhi5368/AwesomeAllInOne/wiki/Python-%E8%B5%84%E6%BA%90%E5%A4%A7%E5%85%A8%E4%B8%AD%E6%96%87%E7%89%88 ][ Python 资源大全]
 * 语言配套工具
 ** 编译器 
 *** 工具选项
@@ -6,7 +8,7 @@
     | O     | 生成优化的字节码(生成 .pyo 文件)           |
     | S     | 不导入 site 模块以在启动时查找 Python 路径 |
     | v     | 冗余输出(导入语句详细追踪)                 |
-    | m mod | 将一个模块以脚本形式运行,汇编模块 dis           |
+    | m mod | 将一个模块以脚本形式运行,汇编模块 dis      |
     | c cmd | 执行 cmd 字符串脚本                        |
 *** 环境变量
 | PYTHONPATH    | 搜索路径，默认我们 import 的模块都会从 PYTHONPATH 里面寻找。                                      |
@@ -23,7 +25,18 @@
     明细 pip show beautifulsoup4
     卸载 pip uninstall requests
     国内源 pip install -i https://pypi.douban.com/simple virtualenv
-** 虚拟环境 virtualenv
+*** pipenv
+    更高级别的工具，可以简化常见用例的依赖关系管理。
+    
+    pip install  pipenv
+    
+    为项目安装包
+    $ cd project_folder
+    $ pipenv install requests
+    
+** 虚拟环境 virtualenv 管理包
+   环境，就是用某个环境的工具执行代码喽，激活了环境记得关闭此环境哦
+   
 *** 创建虚拟环境
     创建 env 环境目录   virtualenv env
     创建目录，并选用 python3 的解释器 virtualenv -p /usr/local/bin/python3 venv
@@ -37,6 +50,72 @@
 **** 启动/切换虚拟环境 workon [virtual-name]
 **** 删除虚拟环境 rmvirtualenv  [virtual-name]
 **** 离开虚拟环境 deactivate
+** 版本管理 pyenv,管理 python 版本
+   通过在 PATH 最前面插入 shims 来决定应用使用的 python 版本，从而将你的命令传递
+   给正确的 python 程序
+   
+   安装 pyenv   curl -L https://raw.githubusercontent.com/yyuu/pyenv-installer/master/bin/pyenv-installer | bash
+   
+   配置环境变量
+   
+   #+begin_src shell
+     export PYENV_ROOT="$HOME/.pyenv"
+     export PATH="$PYENV_ROOT/bin:$PATH"
+     eval "$(pyenv init -)"
+     eval "$(pyenv virtualenv-init -)"
+     export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+   #+end_src
+
+
+   常用命令 
+   pyenv versions – 查看系统当前安装的 python 列表
+   pyenv version – 查看系统当前使用的 python 版本
+   pyenv install -v 3.5.3 – 安装 python
+   pyenv uninstall 2.7.13 – 卸载 python
+   pyenv rehash – 为所有已安装的可执行文件（如：~/.pyenv/versions/bin/）创建 shims， 因此每当你增删了 Python 版本或带有可执行文件的包（如 pip）以后，都应该执行一次本命令）
+   
+   版本切换
+   pyenv global 3.5.3 – 设置全局的 Python 版本，通过将版本号写入~/.pyenv/version 文件的方式
+   pyenv local 2.7.13 – 设置面向程序的本地版本，通过将版本号写入当前目录下的.python-version 文件的方式。 通过这种方式设置的 Python 版本优先级较 global 高。
+   pyenv shell 2.7.13 - 设置面向 shell 的 Python 版本，通过设置当前 shell 的 PYENV_VERSION 环境变量的方式
+   优先级: shell > local > global
+
+   卸载 pyenv
+   禁用 pyenv 很简单，只需要在~/.bash_profile 中的 pyenv init 那行删了即可。
+   完全移除 pyenv，先执行上面第 1 步，然后删了 pyenv 的根目录: rm -rf $(pyenv root)
+   插件 pyenv-virtualenv
+   
+   安装插件    官网地址: https://github.com/pyenv/pyenv-virtualenv
+
+   使用自动安装 pyenv 后，它会自动安装部分插件，通过 pyenv-virtualenv 插件可以很好的和 virtualenv 结合
+
+   另外，一个可选配置是在~/.bash_profile 最后添加:
+
+   eval "$(pyenv virtualenv-init -)"
+   
+   可以实现自动激活虚拟环境，这个特性非常有用建议都加上。
+
+   创建虚拟环境: pyenv virtualenv 2.7.13 virtual-env-2.7.13，默认使用当前环境 python 版本。 在文件夹$(pyenv root)/versions/my-virtual-env-2.7.13 中创建一个基于 Python 2.7.13 的虚拟环境。
+   列出虚拟环境: pyenv virtualenvs，对每个 virtualenv 显示 2 个, 短的只是个链接，那个*表示当前激活的。
+   激活虚拟环境: pyenv activate virtual-env-2.7.13
+   退出虚拟环境: pyenv deactivate
+   删除虚拟环境: pyenv uninstall virtual-env-2.7.13
+   
+   如果 eval "$(pyenv virtualenv-init -)"写在你的 shell 配置中(比如上面
+   的~/.bash_profile), 那么当 pyenv-virtualenv 进入/离开某个含有.python-version
+   目录时会自动激活/退出虚拟环境。
+   
+   场景使用流程:
+
+   # 先创建一个虚拟环境
+   pyenv versions
+   pyenv virtualenv 2.7.13 virtual-env-2.7.13
+   # 进入某个目录比如/root/work/flask-demo
+   pyenv local virtual-env-2.7.13
+   # 然后再不需要去手动激活了
+   使用 pyenv 来管理多版本的 python 命令，使用 pyenv-virtualenv 插件来管理多版本
+   python 包环境。爽歪歪~
+
 * python
 ** 对象
 *** 基本对象
@@ -51,8 +130,8 @@
     创建格式化字符串 '<%s => %s>' % (self.__class__.__name__, self.name) *<Manager => Tom Jones>*
     数组长度 len
 **** 对象转换
-     | 将 字符串 x 转换为一个整数                                     | int(x [,base ])        |
-     | 将 字符串 x 转换到一个浮点数                                   | float(x )              |
+     | 将 字符串 x 转换为一个整数                            | int(x [,base ])        |
+     | 将 字符串 x 转换到一个浮点数                          | float(x )              |
      | 创建一个复数                                          | complex(real [,imag ]) |
      | 将对象 x 转换为字符串                                 | str(x )                |
      | 将对象 x 转换为表达式字符串                           | repr(x )               |
@@ -73,7 +152,7 @@
      foostr = 'abcde'
      foostr[::-1]
 *** 模块(对象包)
-    !模块名(文件名) 与 类名 相同 
+    : 模块名 与 类名 相同 
 **** 导入模块 import 
      从文件中导入类 from person_start import Person
 
@@ -293,22 +372,22 @@
 
      类的专有方法：
 
-     | 方法 | 说明 |
-     | ------| ------ |
-     |`__init__` |构造函数，在生成对象时调用|
-     |`__del__ `| 析构函数，释放对象时使用|
-     |`__repr__ `| 打印，转换|
-     |`__setitem__ `| 按照索引赋值|
-     |`__getitem__`| 按照索引获取值|
-     |`__len__`| 获得长度|
-     |`__cmp__`| 比较运算|
-     |`__call__`| 函数调用|
-     |`__add__`| 加运算|
-     |`__sub__`| 减运算|
-     |`__mul__`|乘运算|
-     |`__div__`| 除运算|
-     |`__mod__`| 求余运算|
-     |`__pow__`|乘方|
+     | 方法           | 说明                       |
+     | ------         | ------                     |
+     | `__init__`     | 构造函数，在生成对象时调用 |
+     | `__del__ `     | 析构函数，释放对象时使用   |
+     | `__repr__ `    | 打印，转换                 |
+     | `__setitem__ ` | 按照索引赋值               |
+     | `__getitem__`  | 按照索引获取值             |
+     | `__len__`      | 获得长度                   |
+     | `__cmp__`      | 比较运算                   |
+     | `__call__`     | 函数调用                   |
+     | `__add__`      | 加运算                     |
+     | `__sub__`      | 减运算                     |
+     | `__mul__`      | 乘运算                     |
+     | `__div__`      | 除运算                     |
+     | `__mod__`      | 求余运算                   |
+     | `__pow__`      | 乘方                       |
 
      当然有些时候我们需要获取类的相关信息，我们可以使用如下的方法：
 
@@ -317,7 +396,7 @@
      * `hasattr(obj, attr)`：判断对象是否具有指定属性/方法；
      * `getattr(obj, attr[, default])` 获取属性/方法的值, 要是没有对应的属性则返回 default 值（前提是设置了 default），否则会抛出 AttributeError 异常；
      * `setattr(obj, attr, value)`：设定该属性/方法的值，类似于 obj.attr=value；
-     * `dir(obj)`：可以获取相应对象的所有属性和方法名的列表：
+     * `dir(obj)`：可以获取相应对象的所有属性和方法名的列表：不带参数，显示环境下的变量，引入的模块数组
 
      ## 2、方法的访问控制 ##
 
@@ -1138,8 +1217,8 @@
 *** 数据类型转换 
     | 方法                   | 说明                                                  |
     |------------------------+-------------------------------------------------------|
-    | int(x [,base ])        | 将 x 转换为一个整数                                     |
-    | float(x )              | 将 x 转换到一个浮点数                                   |
+    | int(x [,base ])        | 将 x 转换为一个整数                                   |
+    | float(x )              | 将 x 转换到一个浮点数                                 |
     | complex(real [,imag ]) | 创建一个复数                                          |
     | str(x )                | 将对象 x 转换为字符串                                 |
     | repr(x )               | 将对象 x 转换为表达式字符串                           |
@@ -1155,7 +1234,8 @@
     集合 [A,B,C]
     集合中哪一个 [NUM]  数字下标 ，逆向为负  -
     合并 append
-    数组化    list('abc') returns ['a', 'b', 'c'] and list( (1, 2, 3) ) returns [1, 2, 3]
+    字符串数组化    list('abc') returns ['a', 'b', 'c'] 
+    数字数组化 list( (1, 2, 3) ) returns [1, 2, 3]
     初始化数组 range(3) 
 *** 字符串
     分割 split
@@ -1981,13 +2061,24 @@ text= os.popen("type hello.py").read()
 **** : input 函数
 : input([prompt]) 函数和 raw_input([prompt]) 函数基本类似，但是 input 可以接收一个 Python 表达式作为输入，并将运算结果返回
 *** 打开和关闭文件 
-**** open 
-**** close
-**** write
-**** read
-**** 文件定位
-**** 重命名和删除文件
-**** remove()方法
+    
+    open 
+    
+     把文件读到字符串    open('file').read()
+     读 N 字节文件到字符串 open('file').read(N)
+     读全部到字符串列表 open('file').readlines()
+     读取下一行到字符串串 open('file').readline()
+     
+      file = open('spam.txt', 'w')
+      file.write(('spam' * 5) + '\n')
+      file.close()
+
+      close
+      write
+      read
+      文件定位
+      重命名和删除文件
+      remove()方法
 *** 目录
 **** mkdir()方法 
 **** chdir()方法 
@@ -2063,4 +2154,303 @@ Enum 在模块 enum.py 中，先来看看 Enum 类的片段
 ** 重量级
   [[file:django.org][Django]] 
 * python network program
+* python 系统编程，python 为了跟系统交互，创建了接口，我们可以直接用
+** 系统工具接口,操作系统 os 
+   学习系统相关模块 
+   这里，我们概述各个系统的模块,包括
+*** 系统编程，涉及流，命令行参数，环境变量 
+    系统编程需要导入自带的 sys,os 模块
+    看看模块里都有哪些属性，方法 dir(MODULE),返回一个数组，统计有多少东西 len(dir(MODULE)) 
+    os.path  是 os 中的嵌套模块，子模块嘛,具体的应该是类集。
+    可以用 dir 看下系统模块的具体内容，有些还能执行下。
+    
+    显示模块搜索路径  sys.path
+    # 显示加载的模块 print(sys.modules)
+
+  | 环境变量 Shell variables         | os.environ                                                                 |
+  | 运行程序 Running programs        | os.system, os.popen, os.execv, os.spawnv                                   |
+  | 进程处理 Spawning processes      | os.fork, os.pipe, os.waitpid, os.kill                                      |
+  | 文件描述 Descriptor files, locks | os.open, os.read, os.write                                                 |
+  | 文件处理 File processing         | os.remove, os.rename, os.mkfifo, os.mkdir, os.rmdir                        |
+  | 管理员工具 Administrative tools  | os.getcwd, os.chdir, os.chmod, os.getpid, os.listdir, os.access            |
+  | 移植工具 Portability tools       | os.sep(文件路径分割符), os.pathsep(路径分隔符，看看 PATH 环境变量怎么设置的), os.curdir, os.path.split, os.path.join  |
+  | 路径名称工具 Pathname tools      | os.path.exists('path'), os.path.isdir('path'), os.path.getsize('path')     |
+
+  路径合理化 os.path.normpath
+  绝对路径 abspath
+  
+  运行程序 
+  os.system('python helloshell.py') # run a Python program
+
+  把进程赋予变量
+  output = os.popen('python helloshell.py').read()
+  output
+
+子进程模块 
+import subprocess
+  # 行分隔符
+  print("%d"  % ord( os.linesep ))
+
+*** python 为预处理文件,目录和目录树提供的工具
+*** 处理并行的标准工具,进程,线程，队列，管道，信号等
+*** 大的例子
+*** 字符串操作
+    屏蔽转义 os.path.getsize(r'C:\autoexec.bat')
+
+**** 截断文本到文本行列表,去除换行符 splitlines  
+     能识别的字符,都当做换行符，分隔  
+     \n 换行
+     \r 回程
+     \r\n 回车+换行
+     \v  或\x0b 行列表
+     \f 或 \x0c 换页
+     \x1c 文件分隔符
+     \x1d 组分隔符
+**** 截断文本，但不去除换行符 split 
+     例子 
+     #+begin_src python
+       line = 'aaa\nbbb\nccc\n'
+
+       >>> line.split('\n')
+       ['aaa', 'bbb', 'ccc', '']
+
+       >>> line.splitlines()
+       ['aaa', 'bbb', 'ccc']
+     #+end_src
+**** 查找需要的字符串所在索引号  find
+     str.find("hello")
+     找不到，就返回 -1
+**** 替换
+     #+begin_src python
+       #替换字符串的一部分
+       r=mystr.replace("nice","很高兴")
+       print(r)
+     #+end_src
+**** 字符串是否包含  "str1"  in "str2"
+     返回布尔 
+**** 是否 isappha,isdigit,
+**** 大小转换
+**** string 库
+     string.ascii_lowercase
+     whitespace 空格字符
+     
+*** 输入输出,输入输出是函数，不再是语句了,注意用法,不然报错
+**** print 
+     错误的用法  print  "hello,world"
+     正确用法 print("hello","world") 用逗号的参数，拼接时会自动加一个空格
+    
+    模板 print("I'm %s. I'm %d year old" % ('Vamei', 99))
+    字典输出 print("I'm %(name)s. I'm %(age)d year old" % {'name':'Vamei', 'age':99})
+    
+   - 格式符
+     - %s    字符串 (采用 str()的显示)
+     - %r    字符串 (采用 repr()的显示)
+     - %c    单个字符
+     - %b    二进制整数
+     - %d    十进制整数
+     - %i    十进制整数
+     - %o    八进制整数
+     - %x    十六进制整数
+     - %e    指数 (基底写为 e)
+     - %E    指数 (基底写为 E)
+     - %f    浮点数
+     - %F    浮点数，与上相同
+     - %g    指数(e) 或浮点数 (根据显示长度)
+     - %G    指数(E)或浮点数 (根据显示长度)
+     - %%    字符"%"
+
  
+   - 对格式进行进一步的控制： %[(name)][flags][width].[precision]typecode
+     - (name)为命名
+     - flags 可以有+,-,' '或 0。+表示右对齐。-表示左对齐。' '为一个空格，表示在正数的左侧填充一个空格，从而与负数对齐。0表示使用 0 填充。
+     - width 表示显示宽度
+     - precision 表示小数点后精度
+
+   - 比如：
+     -print("%+10x" % 10)
+     -print("%04d" % 5)
+     -print("%6.3f" % 2.3)
+* python 环境
+  git clone https://github.com/yyuu/pyenv.git ~/.pyenv
+  git clone https://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
+  echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
+  echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
+  echo 'eval "$(pyenv init -)"' >> ~/.zshrc
+  echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.zshrc
+
+# 不喜写兼容代码，所有代码均向 3.5+ 靠拢
+v=3.5.2|wget http://mirrors.sohu.com/python/$v/Python-$v.tar.xz -P ~/.pyenv/cache/;pyenv install $v
+v=3.6.0|wget http://mirrors.sohu.com/python/$v/Python-$v.tar.xz -P ~/.pyenv/cache/;pyenv install $v
+v=2.7.9|wget http://mirrors.sohu.com/python/$v/Python-$v.tar.xz -P ~/.pyenv/cache/;pyenv install $v
+
+# 设置 Global Python 为 2.7.9, 备注：尽量不要把 Py3 设置为全局，否则由于 Homebrew 本身有一些应用是依赖于 Py2 的，设置为 Py2 容易出现一些奇怪的问题。
+pyenv global 2.7.9
+pip install -i https://pypi.doubanio.com/simple requests
+# 下面这个是用于安装基本的代码补全功能
+pip install -i https://pypi.doubanio.com/simple --upgrade "jedi>=0.9.0" "json-rpc>=1.8.1" "service_factory>=0.1.5" flake8 pytest autoflake hy
+
+# 先激活环境??? 
+pyenv virtualenv 3.5.2 py3-daily
+pyenv activate py3-daily
+pip install -i https://pypi.doubanio.com/simple requests
+pip install -i https://pypi.doubanio.com/simple beatutifulsoup4
+pip install -i https://pypi.doubanio.com/simple ipython[notebook]
+pip install -i https://pypi.doubanio.com/simple jupyter
+# 下面这个是用于安装基本的代码补全功能
+pip install -i https://pypi.doubanio.com/simple --upgrade "jedi>=0.9.0" "json-rpc>=1.8.1" "service_factory>=0.1.5" flake8 pytest autoflake hy
+pyenv deactivate
+# pyenv uninstall py3-daily
+
+2.1 代码补全
+当你按照前面的所有配置走一圈下来，基本上就已经可以完美的进行补全了。
+比如，当我编辑一个 py 文件的时候，
+# 先激活虚拟环境
+pyenv activate 3.5.2/envs/py3-daily
+emacs py.py
+
+如图所示，因为请求，numpy 这种第三方库都可以完美补全，其他自然不在话下。
+
+代码补全
+
+代码补全还有另一个神器，就是可以内嵌 lisp 的 Snippet 模板 -  yasnippet，由于模板功能基本上和其他编辑器相同，而使用 elisp 语言进行编写动态 Snippet 模板则需要会 elisp，这以后有机会再学学。
+2.2 代码跳转
+
+文件代码跳转 spc-spc-helm-imenu 查看文件结构
+文件跳转在 normal-mode 下，gd 即可跳转到函数定义上，但是不能跨文件跳转。
+
+
+
+
+
+
+单文件使用 helm_imenu 进行浏览
+
+
+
+
+
+
+使用 ag 进行代码搜索
+
+2.3 pytest 测试
+
+spc-ms-py3-daily 进入选择 py3-daily 虚拟环境
+spc-spc-pytest-all 进入即可运行所有 pytest 测试。
+
+测试过程：
+运行测试失败，运行测试失败，使用 cwj 跳转到下面窗口，对红色标记处输入，即可跳转到出错文件行。
+
+
+
+
+
+pytest 运行测试失败
+
+修正运行测试成功，如图：
+
+
+
+
+
+pytest 运行测试成功
+
+×03。IPython 笔记本
+通常情况下我使用 IPython Notebook 都是在 Web 端，因为是 Web 端，实际上大量的 Dom 渲染对浏览器的渲染速度还是有一定的影响的，我还是比较喜欢客户端，因为客户端的快捷键可以定制，而 Web 端的快捷键实在是相当的不方便。
+是不是 IPython Notebook 的 web 端没有好处呢？有的，比如我可以借用外部的 JS 可视化图表对 js 进行可视化呀。
+比如我发在简书上的这篇技术文 IPython Notebook 引入 ECharts 做可视化
+但，如果不需要 js 功能的话，还是用客户端舒服一些。
+3.1 IPython Notebook 基本配置
+spacemacs 貌似只支持密码访问 IPython Notebook，那么我们就生成密码。
+# 首先激活 py3-daily 环境
+python -c "from notebook.auth import passwd;print(passwd())" | pbcopy
+# 恩，于是剪切板上就有如下的字符串
+sha1:9bf4c48a6b83:26bc24a78a1e4aea7baa36874f5e86bafac0dbb9
+# 打开 config 文件取消注释并修改 c.NotebookApp.password
+vim ~/.jupyter/jupyter_notebook_config.py
+c.NotebookApp.password = 'sha1:35543659622f:f9a78f0b20132f3e04aa1d4ed4060f9fd9eb7663'
+
+3.2 Emacs IPython Notebook
+# 首先在终端打开 IPython Notebook
+ipython notebook
+
+接着打开 emacs，输入 spc-ain，默认端口，然后输入密码即可。首次登陆后还需要在输入一次 spc-ain 即可看到 IPython Notebook 的主界面。
+
+
+
+
+
+IPYNB 的主界面
+
+光标移到[新笔记本]键击进入新建 IPython Notebook。
+输入如下代码：
+# The %... is an iPython thing, and is not part of the Python language.
+# In this case we're just telling the plotting library to draw things on
+# the notebook, instead of on a separate window.
+%matplotlib inline
+# See all the "as ..." contructs? They're just aliasing the package names.
+# That way we can call methods like plt.plot() instead of matplotlib.pyplot.plot().
+import numpy as np
+import scipy as sp
+import matplotlib as mpl
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+import pandas as pd
+import time
+pd.set_option('display.width', 1000)
+pd.set_option('display.max_columns', 100)
+pd.set_option('display.notebook_repr_html', True)
+import seaborn as sns
+sns.set_style("darkgrid")
+sns.set_context("poster")
+sns.set()
+
+# Load the example flights dataset and conver to long-form
+flights_long = sns.load_dataset("flights")
+flights = flights_long.pivot("month", "year", "passengers")
+
+# Draw a heatmap with the numeric values in each cell
+sns.heatmap(flights, annot=True, fmt="d", linewidths=.5)
+
+
+shift + enter，咣
+热力图就出来了
+
+
+
+
+
+热力图
+
+0×04。扩展
+看完上文，就可以深入文档进行探索了。
+
+作者：无与童比
+链接：https://www.jianshu.com/p/c5cc672aae63
+来源：简书
+简书著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。
+
+* python Head
+** 基础 
+** 共享代码 
+*** 模块的方法 
+*** 发布代码
+*** PyPI 网站
+*** 错误工具箱
+** 文件与异常 
+*** 文件 [ 更多处理数据的方法] 
+*** 排查错误
+*** 数据用久保存 [ 文件方法 ]
+** 数据处理 
+*** 定制数据 [ 类的方法 ] 
+** web 通讯 [ 客户端，服务器,配合网络接口]
+*** 使用 MVC 设计 
+*** CGI 让 web 执行 
+*** 启用 CGI 跟踪
+** 移动应用开发
+*** 在安卓上测试 python 
+** 数据管理 [ 数据库的方法喽,相比文件存储方式 ]
+*** SQLite 
+** 扩展 web 应用 [ 讲到管理服务器了 ]
+*** Google App Engine 
+** 设计模式 [ 应对专业领域 ]
+** 其他技术

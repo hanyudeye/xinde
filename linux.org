@@ -1,3 +1,5 @@
+#+TITLE: linux
+
 * linux [ 内核 ]
 ** linux 启动过程
 *** 引导程序载入内核
@@ -29,8 +31,6 @@
     关机指令为：shutdown -h +10 10 分钟后
 ** 日志
     var/log/
-** shell
-** file
 ** Date and Time
 *** Real time(1970,1,1,UTC) 
 *** Process time(CPU 时间)
@@ -68,15 +68,129 @@
 *** 伪终端( Pseudoterminals )
 *** The /proc File System (进程印象)
 
-
 ** 静态和共享库 
 *** 静态库 (也称归档 arthives) [ 结构化的 object 模块] 
     linker  添加到 执行文件中
 *** 共享库 [ 动态链接器调用 ]
     可执行文件  加入一条 记录
-* 发行版 [ 库，应用程序 ]
 * linux source code
 ** build doc 
   	 /home/wuming/.local/bin/virtualenv sphinx_1.4
 	 . sphinx_1.4/bin/activate
 	 pip install -r Documentation/sphinx/requirements.txt
+* linux 操作系统 
+  linux 操作系统 一般是学习 linux 内核  + 应用程序 的过程 
+  linux 一般以发行版的形式安装，方便简单。
+** 首先是磁盘操作
+  本机设备都放在 /dev/ 这个目录下
+  磁盘设备放在 /dev/sd* 文件名下
+  分区类型，分为 msdos(MBR) 和 GPT 两种
+  MBR 是为了兼容 windows,它把开机程序和，分区信息都放在第一个扇区。
+  如果是扩展分区类型的分区，在在目的分区的第一扇区划出多个扩展分区子分区。
+  扩展分区最多一个。
+
+  
+  GUID partition table(  GPT 磁盘分区表 ), 把扇区定义为逻辑区块地址（Logical Block Address, LBA）
+  GPT 使用了 34 个 LBA 区块来纪录分区信息,并且磁盘最后的 34 个 LBA 用来作备份。
+  LBA0 （MBR 相容区块）
+  LBA1 （GPT 表头纪录）
+  LBA2-33 （实际纪录分区信息处）
+  
+
+  开机的检测程序分为 BIOS 和 UEFI
+  BIOS 会调用操作系统设置的 MBR/GPT(LBA0) 的启动程序,跟操作系统有关。
+  
+  linux 会多一个 boot loader 来选择多个系统中的一个。
+  
+ UEFI（Unified Extensible Firmware Interface）,相当于一个小操作系统，可以进行配置，所以如果要安装 linux,就要关闭 安全启动（secure boot )这一选项.  
+ : 微软专用
+** 文件权限与目录配置
+   因为系统是多用户的，所以文件有了所属问题，其他用户对文件的权限由文件所有者所给予。
+   改变文件所有者,chown
+   改变文件所属组 chgrp
+   改变文件权限 chmod
+   添加组  addgroup
+   
+   文件的节点属性由文件系统决定。
+** 文件目录管理
+   显示目录中的文件，可以用命令 ls
+   文件内容拷贝 cp
+   文件名字变更 mv
+   删除文件 rm
+   
+   文件内容查询 
+   由第一行开始显示文件内容 cat
+   从最后一行开始显示，可以看出 tac 是 cat 的倒着写！ tac
+   显示的时候，顺道输出行号！ nl 
+   more 一页一页的显示文件内容
+   less 与 more 类似，但是比 more 更好的是，他可以往前翻页！
+   head 只看头几行
+   tail 只看尾巴几行
+   od 以二进制的方式读取文件内容！
+   
+   设置文件隐藏属性 chattr
+   
+   查找指令或文件
+   查找可执行文件 which
+   查找文件或程序 whereis 
+   查找本地信息 locale
+   查找文件 find find /etc -name '*httpd*'
+** 文件系统 
+   分区后，要进行分区格式化，以便存放文件。
+   最新的技术，可以将一个分区格式化为多个文件系统( 例如 LVM )，也能将多个分区合并为一个文件系统(LVM, RAID)。
+   inode 存放文件权限与属性, data block 存放实际数据 ,superblock 记录文件系统整体信息。
+
+   显示被格式化的设备 blkid
+   超级块的详细信息  dumpe2fs /dev/vda5
+
+   列出文件系统的信息 df
+   评估文件系统使用量  du
+
+   列出磁盘的分区表类型与分区信息 parted (parted device_name print)
+   磁盘分区： gdisk/fdisk
+   
+   开机挂载 /etc/fstab
+   
+   挂载交换文件 swapon /dev/vda6
+   使用文件创建交换文件 mkswap
+** 文件压缩技术
+   压缩率有小到大 为 compress > gzip > bzip > xz, 但耗时久
+
+   光盘写入工具
+   创建镜像文件  mkisofs
+** 账号与群组
+   每个用户都有一个用户标示 UID
+   同样每个组有一个数字表示  GID 
+   id 可以显示用户信息  
+
+   创建新用户，useradd
+   删除用户 userdel
+   修改用户属性 usermod
+
+   获取文件属性 getfacl
+   设置文件属性 setfacl
+
+   切换到超级管理员权限运行 sudo 
+   权限文件配置 /etc/sudoers
+
+   查询使用者
+   w
+   who
+   lastlog
+
+   使用者对谈： write, mesg, wall
+   
+   使用者邮件信箱： mail
+   mail -s "nice to meet you" vbird1
+** 工作调度 cront
+** 磁盘配额
+   quota
+** 系统服务
+   service
+** 软件安装 
+** X Window 
+** 编译内核
+** 模块
+ /lib/modules/$(uname -r)/kernel/
+* linux 内存初始化
+入口点 /arch/i386/kernel/head.S

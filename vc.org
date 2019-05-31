@@ -126,10 +126,11 @@
      git remote add origin https://github.com/hanyudeye/test.git 添加远程源 
 **** 远程的东西与本地同步
      git push -u origin master
+     将本地分支上的提交推送到远程某分支 git push origin <BRANCH>:<REMOTEBRANCH>
 **** 更新本地的版本库
      git pull
      git pull git://github.com/tom/test.git
-**** 查看远程分支
+**** 查看远程分支情况
      git branch -r # 查看远程 branch
      git checkout -b bug_fix_local bug_fix_remote #把本地端切换为远程的 bug_fix_remote branch 并命名为 bug_fix_local
 **** 修改远程仓库 
@@ -142,6 +143,11 @@
      git fetch --all
      git reset --hard origin/master
      git pull
+*** 搭建 git 服务
+    git 服务支持三种协议   
+    ssh   git@github.com/xx/bb  安全好
+    git    git://github.com/xx/bb  速度快
+    http/https  http://github.com/xx/bb.git  不用改防火墙
 *** 文件日志查看
 **** 状态 status   
      git status
@@ -155,6 +161,8 @@
      是你也可以用 --until 和 --after。
 **** 查看某次提交的内容 [ git show <id> ]
 **** 更详细的信息 git blame <FILE>
+     git blame -L 12,13 <FILE> 具体行的细节
+     显示文件内容变更细节
 *** 比较区别
          比较修改文件与暂存区的区别  git diff <FILE>
          比较暂存区和版本库的区别 git diff --cached <FILE>   
@@ -175,12 +183,26 @@
          X: 未知状态(很可能是遇到 git 的 bug 了，你可以向 git 提交 bug report)。
          在 man git diff-files 中可以查到这些标志的说明
 
-*** 添加标记[tag]
-    定义版本 git tag 1.0  [branch]
+*** TAG  [只读]
+**** 使用标签标记里程碑 [ git tag 1.0  [branch] ]
+     为某个分支创建标签 git tag  [ TAG ] [BRANCH] 
+**** 查看可发布版本[  git tag ]
+**** 签出标签 [git checkout 1.0],此时不在某个分支上，可以在此签出到某分支  [ git checkout -b [ BRANCH1.0 ] ]
 *** 把分支合并到 master 分支
     git checkout master 
     git rebase  [developversion]
     git brancd -d [developversion] 删除[developversion]分支
+*** 管理本地版本库
+*** 使用 Git 子模块跟踪外部版本库
+    添加子模块 git submodule add <RESP> <MODULENAME>
+    显示子模块 git submodule
+    
+克隆含子模块的版本库
+还要初始化子模块  git submodule init <MODULENAME>
+然后更细 git submodule update <MODULENAME>
+*** 高级功能
+**** 压缩
+**** 导出
 ** gitignore 忽略文件
    以斜杠“/”开头表示目录； 
    以星号“*”通配多个字符；
@@ -450,6 +472,9 @@
    使用终端执行如下命令：svn list https://your.repository.url 接下来选择对应的
    （临时）/（永久）即可。
 ** 功能
+   :LOGBOOK:
+   CLOCK: [2019-05-26 日 19:42]--[2019-05-26 日 20:07] =>  0:25
+   :END:
    查看修改的文件记录
    svn cat -- 显示特定版本的某文件内容。
    svn list -- 显示一个目录或某一版本存在的文件列表。

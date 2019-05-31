@@ -6,9 +6,9 @@
        (insert (format-time-string "%Y-%m-%d %H:%M:%S" (current-time))))
    #+end_src
 * elisp
-** 创建语义 
-*** 定义词汇
-**** 全局变量名 (defvar *aa*)
+** 变量，方法
+*** 创建变量
+**** 全局变量名 (defvar aa)
 **** 赋值 setf set setq
 *** 定义方法 (defun name (para) body)
 **** 可选参数
@@ -46,7 +46,7 @@
        (defmacro name (parameter) 
            body-form)
 ** 词汇语义
-*** 数字写法 
+*** 数学符号 
      - 数字写法    
       - #xff => 255
       - #o123 => 83
@@ -122,8 +122,8 @@
     lognot 非
 
 *** 字符表示
-    6 字符和字符串
-在 emacs lisp 中，字符常量通过一个问号来引入，比如 ?a 表示字符 a。其内部表示为一个整数，可以 直接拿它跟一个整数进行比较，如
+    在 emacs lisp 中，字符常量通过一个问号来引入，比如 ?a 表示字符 a。其内部表示
+    为一个整数，可以 直接拿它跟一个整数进行比较，如
 
 (= ?a 97) => t
 有些特殊字符可以通过 \ 引入，比如 ?\t 即为 tab。常见的特殊字符如下：
@@ -396,18 +396,24 @@ replace-regexp-in-string regexp rep string
      (dotimes (x 4) (print i)) ;打印 0,1,2,3
 **** DO
      基本形式：
-
-     (do (var init-form step-form) 
-         (end-test-form result-form)
+     #+begin_src lisp
+       (do (var init-form step-form) 
+           (end-test-form result-form)
          statements)
-     注意，因为可能有多个 var 变量，和 let 中一样，这里的第一个括号中包含的形式要为多个变量的形式。
+     #+end_src
+         
+     注意，因为可能有多个 var 变量，和 let 中一样，这里的第一个括号中包含的形式
+     要为多个变量的形式。
 
      一个实例如下：
 
+     #+begin_src lisp
      (do ((n 0 (1+ n)))
          ((>= n 4))
          (print n))
-     9.5 LOOP
+     #+end_src
+         
+**** LOOP
      最简单的方式：
 
      (loop 
@@ -1008,3 +1014,10 @@ replace-regexp-in-string regexp rep string
 **** byte-code function
 **** record
 **** buffer
+* function
+** current-time [四段数字] 
+   This function returns the current time, represented as a list of four integers
+  (sec-high sec-low microsec picosec). These integers have trailing zeros on
+  systems that return time with lower resolutions. On all current machines
+  picosec is a multiple of 1000, but this may change as higher-resolution clocks
+  become available.
