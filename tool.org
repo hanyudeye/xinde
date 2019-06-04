@@ -1,7 +1,56 @@
-#+TITLE: 开发者开发的工具
-#+KEYWORDS: 工具集合
+#+TITLE: 计算机工具
+#+KEYWORDS: 应用软件
+#+DESCRIPTION: 可供用户使用的计算机工具
+#+CATEGORIES: 应用软件 
+#+DATE: <2019-06-02 19:45:35>
 
-* UNIX 工具 
+* 系统信息查看
+** 系统相关
+   lsb_release -a              # 查看操作系统版本
+   head -n 1 /etc/issue        # 查看操作系统版本
+   cat /proc/version           # 查看操作系统内核信息
+   uname -a                    # 查看操作系统内核信息、CPU 信息
+   cat /proc/cpuinfo           # 查看 CPU 信息
+   hostname                    # 查看计算机名字
+   env                         # 列出环境变量
+   lsmod                       # 列出加载的内核模块
+   uptime                      # 查看系统运行时间、负载、用户数量
+   cat /proc/loadavg           # 查看系统负载
+** 内存与外存
+   free -m                     # 查看物理内存和交换区的使用情况
+   grep MemTotal /proc/meminfo # 查看内存总量
+   grep MemFree /proc/meminfo  # 查看空闲内存总量
+   df -h                       # 查看各分区使用情况
+   fdisk -l                    # 查看所有分区
+   swapon -s                   # 查看所有交换分区
+   hdparm -i /dev/hda          # 查看 IDE 磁盘的参数
+   dmesg | grep IDE            # 查看系统启动时 IDE 磁盘的状态
+   mount | column -t           # 查看各分区的挂载状态
+   du -sh <目录名>              # 查看指定目录的大小
+** 网络状态
+   #+begin_example
+   ifconfig                    # 查看所有网络接口的属性
+   iptables -L                 # 查看 iptables 防火墙
+   route -n                    # 查看本机路由表
+   netstat -lntp               # 查看所有监听端口
+   netstat -antp               # 查看所有已建立的连接
+   netstat -s                  # 查看网络统计信息
+   #+end_example
+** 用户状态相关
+   #+begin_example
+   w                           # 查看活动用户以及他们在做什么
+   who                         # 查看活动用户
+   id <用户名>                  # 查看用户的 ID、组信息
+   cut -d: -f1 /etc/passwd     # 查看系统中所有用户
+   cut -d: -f1 /etc/group      # 查看系统所有组
+   #+end_example
+** 进程状态相关
+   #+begin_example
+   ps -ef                      # 查看所有进程
+   top                         # 动态显示进程状态
+   #+end_example
+
+* 系统自带工具
 ** 文件系统操作(各种数据类型的文件，用相应的工具进行操作)
 *** 为了显示目录结构 list ls
     | -a   | 显示指定目录下所有子目录与文件，包括隐藏文件 |
@@ -869,7 +918,38 @@ find . -name "*.java"|xargs cat|grep -v ^$|wc -l # 代码行数统计, 排除空
     可扩展的各种插件和更多。
 Vocal Reduction and Isolation
 *** 字幕编辑 Aegisub
-* ubuntu 工具
+** 浏览帮助文档    
+*** man [manual] 
+*** info
+    info 文档的结构像 ~树节点~ 一样，不过文档内部还有指向别处的 ~超链接~ 
+    : 在 emacs 中使用 info 和在 shell 中执行 info 有点区别的。
+**** 快捷键 
+     
+| TAB   | 跳转到下一个超文本连接。           | 光标在链接处移动                                          |
+| RET   | 跟随光标下的超文本连接。           | 跳转到节点(或链接 )处                                     |
+| l     | 移动到本窗口的最后阅读过的节点。   | 遍历历史记录(反向)                                        |
+| C-v   | 向前翻页                           |                                                           |
+| Alt-v | 向后翻页                           |                                                           |
+|-------+------------------------------------+-----------------------------------------------------------|
+| [     | 移动到本文档的上一个节点。         | 会按序遍历整个文档树                                      |
+| ]     | 移动到本文档的下一个节点。         | 会按序遍历整个文档树                                      |
+| p     | 移动到同级的上一个节点。           | 同级遍历                                                  |
+| n     | 移动到同级的下一个节点。           | 同级遍历                                                  |
+| u     | 上移一层。                         | 跳转到父节点                                              |
+| t     | 移到此文档的顶层节点。             | 到文档根                                                  |
+| d     | 跳转到 info 的根                   |                                                           |
+|-------+------------------------------------+-----------------------------------------------------------|
+| 1...9 | 选取节点菜单中的第一至第九个项目。 | 快速跳转到当前文档的第 N 个链接                           |
+| m     | 选取由名称指定的菜单项目。         | 链接条目跳出来供你选择                                    |
+| f     | 按照交叉参考指定名称。             | 跳转到链接指向(别的文档 )                                 |
+| g     | 移动到由名字指定的节点。           | 按照节点名跳转                                            |
+| /     | 向前搜索指定的字符串。             | 内容查找  (emacs 中用@@html:<kbd>@@ C-s @@html:</kbd>@@ ) |
+| i     | 在索引条目中搜索指定的字符串，     | 并选择第一个找到的条目所引用的节点                        |
+|-------+------------------------------------+-----------------------------------------------------------|
+| C-g   | 取消当前操作。                     |                                                           |
+|-------+------------------------------------+-----------------------------------------------------------|
+
+* ubuntu 图形工具
 ** 换字体
 *** 安装到系统 /usr/share/fonts/
     wget https://github.com/fangwentong/dotfiles/raw/master/ubuntu-gui/fonts/Monaco.ttf
@@ -885,68 +965,8 @@ Vocal Reduction and Isolation
     mkdir -p ~/.fonts
     mv Monaco.ttf ~/.fonts
     fc-cache -vf  #刷新系统字体缓存
-** 白噪音 ( anoise )
-   sudo add-apt-repository ppa:costales/anoise
-   sudo apt-get update
-   sudo apt-get install anoise
+** 用户目录配置
+    ~/.config/user-dirs.dirs
+* GNU Coreutils
+** 简介
    
-   安装扩展噪音 sudo apt-get install anoise-community-extension1
-
-   移除
-   sudo apt-get remove anoise
-   sudo add-apt-repository --remove ppa:costales/anoise
-** 代办 ( go-for-it )
-   sudo add-apt-repository ppa:go-for-it-team/go-for-it-daily && sudo apt-get update
-   sudo apt-get install go-for-it
-** 桌面便签小工具(Indicator Stickynotes)
-   sudo add-apt-repository ppa:umang/indicator-stickynotes
-   sudo apt-get update 
-   sudo apt-get install indicator-stickynotes 
-** 桌面便签小工具(tomboy)
-
-* Linux 系统信息速查表
-** 系统相关
-   lsb_release -a              # 查看操作系统版本
-   head -n 1 /etc/issue        # 查看操作系统版本
-   cat /proc/version           # 查看操作系统内核信息
-   uname -a                    # 查看操作系统内核信息、CPU 信息
-   cat /proc/cpuinfo           # 查看 CPU 信息
-   hostname                    # 查看计算机名字
-   env                         # 列出环境变量
-   lsmod                       # 列出加载的内核模块
-   uptime                      # 查看系统运行时间、负载、用户数量
-   cat /proc/loadavg           # 查看系统负载
-** 内存与外存
-   free -m                     # 查看物理内存和交换区的使用情况
-   grep MemTotal /proc/meminfo # 查看内存总量
-   grep MemFree /proc/meminfo  # 查看空闲内存总量
-   df -h                       # 查看各分区使用情况
-   fdisk -l                    # 查看所有分区
-   swapon -s                   # 查看所有交换分区
-   hdparm -i /dev/hda          # 查看 IDE 磁盘的参数
-   dmesg | grep IDE            # 查看系统启动时 IDE 磁盘的状态
-   mount | column -t           # 查看各分区的挂载状态
-   du -sh <目录名>              # 查看指定目录的大小
-** 网络状态
-   #+begin_example
-   ifconfig                    # 查看所有网络接口的属性
-   iptables -L                 # 查看 iptables 防火墙
-   route -n                    # 查看本机路由表
-   netstat -lntp               # 查看所有监听端口
-   netstat -antp               # 查看所有已建立的连接
-   netstat -s                  # 查看网络统计信息
-   #+end_example
-** 用户状态相关
-   #+begin_example
-   w                           # 查看活动用户以及他们在做什么
-   who                         # 查看活动用户
-   id <用户名>                  # 查看用户的 ID、组信息
-   cut -d: -f1 /etc/passwd     # 查看系统中所有用户
-   cut -d: -f1 /etc/group      # 查看系统所有组
-   #+end_example
-** 进程状态相关
-   #+begin_example
-   ps -ef                      # 查看所有进程
-   top                         # 动态显示进程状态
-   #+end_example
-

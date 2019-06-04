@@ -1,808 +1,943 @@
+ #+TITLE: JavaScript 使用简介
+#+DATE: <2019-06-02 05:07:53>
+#+TAGS: JavaScript 
+#+CATEGORIES: 语言使用
+#+DESCRIPTION: 写点关于 JavaScript 这门语言的使用方法
+
+  在整理
 * Javascript 
-** 错误处理
-*** Try...Catch 
-    #+BEGIN_SRC js
-      var txt=""
-      function message()
-      {
-          try
-          {
-              adddlert("Welcome guest!")
-          }
-          catch(err)
-          {
-              txt="此页面存在一个错误。\n\n"
-              txt+="错误描述: " + err.description + "\n\n"
-              txt+="点击 OK 继续。\n\n"
-              alert(txt)
-          }
+** 简介  
+  通常是给浏览器用的 ~客户端脚本~ ，配合 CSS 用来渲染 文档树(DOM) ,现在也出了 此语言写的 ~服务端脚本~ 
+
+  #+begin_verse
+  一般称 ~前端语言~ ，[客户端] ，[浏览器端] ，怎么称呼无所谓啦!
+  ~前端语言~ ，包括 ~HTML~, ~CSS~ ，他们，但现在有了很多封装的框架，顺便 ~框架语言~ 也要一并学的哦
+  
+  语言特点 ：开发时间短 , 功能又多 , so 有些功能的语法有点怪异 。
+                      不提供任何与 I/O（输入/输出）相关的 API 。
+  #+end_verse
+ 
+  
+ 
+ #+HTML: <!-- more -->
+
+ #+begin_quote
+ 从语法角度看，JavaScript 语言是一种“对象模型”语言。各种宿主环境通过这个模型，描述自己的功能和操作接口，从而通过 JavaScript 控制这些功能。但是，JavaScript 并不是纯粹的“面向对象语言”，还支持其他编程范式（比如函数式编程）。这导致几乎任何一个问题，JavaScript 都有多种解决方法。阅读本书的过程中，你会诧异于 JavaScript 语法的灵活性。
+
+ JavaScript 的核心语法部分相当精简，只包括两个部分：基本的语法构造（比如操作符、控制结构、语句）和标准库（就是一系列具有各种功能的对象比如`Array`、`Date`、`Math`等）。除此之外，各种宿主环境提供额外的 API（即只能在该环境使用的接口），以便 JavaScript 调用。以浏览器为例，它提供的额外 API 可以分成三大类。
+
+- 浏览器控制类：操作浏览器
+- DOM 类：操作网页的各种元素
+- Web 类：实现互联网的各种功能
+
+如果宿主环境是服务器，则会提供各种操作系统的 API，比如文件操作 API、网络通信 API 等等。这些你都可以在 Node 环境中找到。
+ #+end_quote
+
+
+
+ #+begin_quote
+ 老道认为 JavaScript 优美的特性如下:
+ 1. 函数是头等对象(可以作为其他函数的参数和返回值 ，支持闭包)
+ 2. 基于原型继承的动态对象
+ 3. 对象字面量和数组字面量(构成 JSON 的基础)
+
+  对于鸡肋和糟粕, 使用 ~JSLint~ 测试  
+ 1. hasOwnProperty ，老道说它糟粕的原因是因为这不是一个关键字 ，而是一个 Object。
+    prototype 上可以被重写的方法。那么这个告诉我们 ，并不是不要用 hasOwnProperty
+    ，而是要注意不要覆盖它。
+
+ 2. eval 的主要问题是性能 ，大量的 eval(类 eval)语句降低了 JS 引擎的性能。少量可用
+ #+end_quote
+
+: Javascript 语言的发展: 现在使用越来越广啦
+: 包括 Node ，数据库操作 [NoSQL] ,移动平台开发,内嵌脚本语言 [GNOME ,Acrobat]，跨平台的桌面应用程序 [这都 独立程序了 ]
+: 现代浏览器都编译执行了
+** 配套工具 
+*** 解析器 
+    安装浏览器,用控制台 
+    - 打开控制台: 按键 @@html:<kbd>@@ Ctrl  + Shift + J @@html:</kbd>@@ 
+    - 换行继续打命令    @@html:<kbd>@@ Shift +  Enter @@html:</kbd>@@ 
+    - 执行命令  @@html:<kbd>@@  Enter @@html:</kbd>@@
+    
+    或者
+    - 安装 node.js 解析器
+    
+*** 测试工具 
+** 语言用法 [ 计算机功能的一套文字 ] 
+*** 简介  
+    #+begin_verse
+   文字化最好的方法就是自然语言啦，中国用汉语，外国用外语 
+   不过汉语编程语言用的不多，一般用来写文档、注释或伪代码
+    #+end_verse
+   
+    语句: 就是表达一句意思 ，自然语言用  ~。~ 隔开，程序语言用 ~;~ 隔开.有的语句是一块的，代表多个用处，放一块了。
+    一般先要定义一个东西，然后再使用它。
+    #+begin_src js -n
+      //定义 a 是一个数字
+      var a = 1 + 3;
+
+      // 定义 show 是一个操作 
+      function show(arr){
+          console.log(arr);
       }
-      #+END_SRC
-** 类
-*** ES5 模拟类  
-    #+begin_src javascript
-      function PersonES5(p) {
-          this.age = p.age;
-          this.name = p.name;
-          this.sex = p.sex;
-      }
 
-      PersonES5.prototype.showInfo = function() {
-          console.log(this);
-      };
-
-      var person = new PersonES5({
-          age:18,
-          name:'tom',
-          sex:'boy'
-      });
-
-      person.showInfo();
- #+end_src
-*** ES6
-    #+begin_src js
-      class PersonES6 {
-          constructor(p) {
-              this.age = p.age;
-              this.name = p.name;
-              this.sex = p.sex;
-          }
-          showInfo() {
-              console.log(this);
-          }
-      }
-
-
-      var person = new PersonES6({
-          age:18,
-          name:'tom',
-          sex:'boy'
-      });
-
-      person.showInfo();
+      //使用 show 操作  a . 计算机，你去 用 show  操作  a
+      show(a);
     #+end_src
-** 库
-*** Date 
-    #+BEGIN_SRC js
-      日期 Date() getTime() setFullYear() toUTString getDay()
-      new Date() // 当前日期和时间
-      new Date(milliseconds) //返回从 1970 年 1 月 1 日至今的毫秒数
-      new Date(dateString)
-      new Date(year, month, day, hours, minutes, seconds, milliseconds)
+   
+    复制到 浏览器的 ~Console~  ， 按回车，就可以执行了
+    
+*** 被操作对象 [ Javascript 解释器能直接理解的对象 ]
+    其实有很多 ，简单写一些
+    
+    数字 [ 整数，小数 ]  用法: 直接写
+    #+begin_src js -n
+      //整数,默认 10 进制 
+      123, 7893 ,3
 
-      milliseconds 毫秒（0-999）1 秒=1000 毫秒
-      var today = new Date()
-      var d1 = new Date("October 13, 1975 11:13:00")
-      var d2 = new Date(79,5,24)
-      var d3 = new Date(79,5,24,11,33,0)
-      设置日期
-      var myDate=new Date();
-      myDate.setFullYear(2010,0,14);
+      //科学技术法
+      1e3  //返回 1 乘以 10 的
 
-      设置日期为 5 天后
-      var myDate=new Date();
-      myDate.setDate(myDate.getDate()+5);
-      getTime 获取毫秒时间
-    #+END_SRC
-*** Math
-    abs 绝对值
-    E 自然对数
-    LN2 2 的自然对数
-    PI 圆周率
-    Math.SQRT2 2 的平方根
-    sqrt 平方根
-    pow(x, y) x 的 y 次方
-    max
-    min
-    ceil 上
-    floor 下
-    round 四舍五入
-*** 对象与字符串转换
-    对象字符串化   var strify = JSON.stringify(arr);
-    字符串对象话  var arrParse = JSON.parse(strify);
-*** 字符正则查找
+      //八进制表示 第一位必须是 0
+      012  //返回 10
+
+      //十六进制 
+      0xA   //返回 10
+
+      //负数，负数只能 10 进制哦
+          -10,-21
+
+      //小数
+      1.2,3.323
+    #+end_src
+    
+    
+    文字，用法: 用引号引起来。不加会面临文字中空格如何表示问题。
+    看不见的字前面加转义符号 ~\~
+    : Javascript 认可的是两个字节的 Unicode，对于四字节字符的无法识别，会认为是两个字节。
+    
+
+    
+    #+begin_src js -n 
+      "我是一段话" 
+
+      'and me'
+
+      '这是一行包含特殊字符的一段话 \n'
+    #+end_src
+    
+    Object [ 对象对象,包含数据和功能 ]  用法  
+    #+begin_src js -n 
+      var woshiduixiang = {
+          name:"阿明",
+          lastName:"Huang" ,
+
+          //方法
+          whatsName:function(){
+              alert(this.name+" "+this.lastName);   
+          },
+      }
+    #+end_src
+     
+    对象有两种读取成员的方法：点结构（`object.key`）和方括号结构（`object[key]`）。
+    但是，对于数值的键名，不能使用点结构。 ~arr.0~  的写法不合法
+
+
+**** 基本对象 
+     Function [ 函数对象 ] 
+     Boolean [ 布尔型对象 ] [ true, false]
+     Symbol [ 字符串 ]
+     Error
+     EvalError
+     InternalError
+     RangeError
+     ReferenceError
+     SyntaxError
+     TypeError
+     URIError
+     Infinity
+     NaN
+     undefined 
+     null 
+     literal  [ 字面量 ]
+     globalThis
+ 
+**** Numbers and dates
+     Number
+     Math
+     Date
+
+****  Text processing
+     These objects represent strings and support manipulating them.
+
+     String
+     RegExp
+
+****  Indexed collections
+     These objects represent collections of data which are ordered by an index
+     value. This includes (typed) arrays and array-like constructs.
+
+     Array
+     Int8Array
+     Uint8Array
+     Uint8ClampedArray
+     Int16Array
+     Uint16Array
+     Int32Array
+     Uint32Array
+     Float32Array
+     Float64Array
+
+****  Keyed collections
+     These objects represent collections which use keys; these contain elements
+     which are iterable in the order of insertion.
+
+     Map
+     Set
+     WeakMap
+     WeakSet
+
+****  Structured data
+     These objects represent and interact with structured data buffers and data
+     coded using JavaScript Object Notation (JSON).
+
+     ArrayBuffer
+     SharedArrayBuffer 
+     Atomics 
+     DataView
+     JSON
+
+*** 功能 [ 被操作对象的功能,功能与对象要配才行哦 ? 你不会拿着自行车去种地吧 ]
+**** 基本操作 
+***** 数字操作
+      整数小数 ，更复杂的功能用 ~Math~  库
+     
+      #+begin_src js -n
+        //加减运算
+        1+3;
+        3-7;
+        33*3;
+        3.5/2;
+
+        //数字是否相等，小数因为存储问题最好不要直接这样判断
+        3==3.0  //true
+        3===3.0   //true
+        0.1 + 0.2 === 0.3  //false
+
+      #+end_src
+      
+      将字符串转换整数 parseInt
+      #+begin_src js -n
+        parseInt('12.34') // 12
+        parseInt('15e2') // 15
+        parseInt('abc') // NaN
+        parseInt('.3') // NaN
+        parseInt('0x10') // 16
+        parseInt('011') // 11
+        parseInt('1000', 2) // 8
+        parseInt('1000', 6) // 216
+
+      #+end_src
+      
+      parseFloat     
+      #+begin_src js -n
+        parseFloat('314e-2') // 3.14
+        parseFloat('0.0314E+2') // 3.14
+        parseFloat('3.14more non-digit characters') // 3.14
+        parseFloat('FF2') // NaN
+
+      #+end_src
+
+      isNaN()
+      #+begin_src js -n
+        isNaN(NaN) // true
+        isNaN(123) // false
+      #+end_src
+
+      isFinite(),表示某个值是否为正常的数值
+
+      #+begin_src js -n
+        isFinite(Infinity) // false
+        isFinite(-Infinity) // false
+      #+end_src
+
+***** 字符串操作
+      获取长度  "hello".length
+      
+      Base64 转码
+      一种编码方法，可以将任意值转成 0～9、A～Z、a-z、`+`和`/`这 64 个字符组成的可打印字符
+    
+    #+begin_src js -n
+      var string = 'Hello World!';
+      btoa(string) // "SGVsbG8gV29ybGQh"
+      atob('SGVsbG8gV29ybGQh') // "Hello World!"
+    #+end_src
+    : 注意，这两个方法不适合非 ASCII 码的字符，会报错。
+
+    索引位置
     #+BEGIN_SRC js
       var s="helo world";
       var i=s.search(/wo/i);
       i: 不区分大小写
     #+END_SRC
-*** 对象数列 Array
-    数组创建
+
+***** 数组 [ 特殊对象]
+      任何类型的数据，都可以放入数组。
+      也有 length 属性
+
+      #+begin_src js -n
+        var arr = [
+            {a: 1},
+            [1, 2, 3],
+            function() {return true;}
+        ];
+
+        arr[0] // Object {a: 1}
+        arr[1] // [1, 2, 3]
+        arr[2] // function (){return true;}
+      #+end_src
+
+      in 运算符,检查键名是否存在
+      #+begin_src js -n
+        var arr = [ 'a', 'b', 'c' ];
+        2 in arr  // true
+        '2' in arr // true
+        4 in arr // false
+      #+end_src
+      
+      for...in 循环和数组的遍历
+      `for...in`循环不仅可以遍历对象，也可以遍历数组，毕竟数组只是一种特殊对象。
+
+      #+begin_src js
+        var a = [1, 2, 3];
+        a.foo = true;
+
+        for (var key in a) {
+            console.log(key);
+        }
+        // 0
+        // 1
+        // 2
+        // foo
+      #+end_src
+
+      forEach ,内部行为好像
+      #+begin_src js -n
+        var colors = ['red', 'green', 'blue'];
+        colors.forEach(function (color) {
+            console.log(color);
+        });
+        // red
+        // green
+        // blue
+      #+end_src
+      
+      delete ,会产生空位
+      : 但是 length 属性不变，要注意
+      
+      #+begin_src js -n
+        var a = [1, 2, 3];
+        delete a[1];
+
+        a[1] // undefined
+        a.length // 3
+      #+end_src
+
+      push 方法
+     对象转数组  
+     #+begin_src js -n
+       var arr = Array.prototype.slice.call(arrayLike);
+       //或
+
+       function print(value, index) {
+           console.log(index + ' : ' + value);
+       }
+
+       Array.prototype.forEach.call(arrayLike, print);
+
+     #+end_src
+
+***** 函数 [ 具有执行功能的变量 ] [ 其他变量存值,它存方法 ]
+****** 声明方式 
+       1. function 命令
+       #+begin_src js -n
+         function print(s) {
+             console.log(s);
+         }
+       #+end_src
+
+       2. 函数表达式
+       #+begin_src js -n
+         var print = function(s) {
+             console.log(s);
+         };
+       #+end_src
+       3. Function 构造函数
+       #+begin_src js -n
+         var add = new Function(
+             'x',
+             'y',
+             'return x + y'
+         );
+
+         // 等同于
+         function add(x, y) {
+             return x + y;
+         }
+       #+end_src
+****** 属性 
+       看它的结构 ,包含者属性
+       
+       函数名属性 name
+       
+       函数的`length`属性返回函数预期传入的参数个数，即函数定义之中的参数个数。
+       
+       函数的`toString`方法返回一个字符串，内容是函数的源码。
+
+****** 递归 [ 每次只做一部分，循环调用自身的过程 (记得把余下的部分作参数哦)]
+
+       #+begin_src js -n
+         function fib(num) {
+             if (num === 0) return 0;
+             if (num === 1) return 1;
+             return fib(num - 2) + fib(num - 1);
+         }
+
+         fib(6) // 8
+       #+end_src
+       
+****** 闭包
+       定义在一个函数内部的函数，就是能获取函数内部属性
+       #+begin_src js -n
+         function createIncrementor(start) {
+             return function () {
+                 return start++;
+             };
+         }
+
+         var inc = createIncrementor(5);
+
+         inc() // 5
+         inc() // 6
+         inc() // 7
+       #+end_src
+       
+***** Object 
+      读取对象的属性
+      #+begin_src js -n
+        var obj = {
+            p: 'Hello World'
+        };
+
+        obj.p // "Hello World"
+        obj['p'] // "Hello World"
+      #+end_src
+
+      #+begin_verse
+      静态方法
+      返回对象的属性: keys 
+      #+end_verse
+      
+      #+begin_verse
+      实例方法
+      属性的删除：delete 命令 ,继承的属性不能删 ,比如 toString
+      该对象求值: valueOf 
+      #+end_verse
+      
+**** 流程控制 [ 条件语句 ，满足条件才做事情  ]
+***** if - else  结构  
+      #+begin_src js -n
+        if (m === 3) {
+            // 满足条件时，执行的语句
+        } else {
+            // 不满足条件时，执行的语句
+        }
+      #+end_src
+***** switch 结构   
+      #+begin_src js -n
+        switch (fruit) {
+        case "banana":
+            // ...
+            break;
+        case "apple":
+            // ...
+            break;
+        default:
+            // ...
+        }
+      #+end_src
+
+      
+      if...else
+      Executes a statement if a specified condition is true. If the condition is false, another statement can be executed.
+      switch
+      Evaluates an expression, matching the expression's value to a case clause, and executes statements associated with that case.
+      throw
+      Throws a user-defined exception.
+      try...catch
+      Marks a block of statements to try, and specifies a response, should an exception be thrown.
+***** while 循环
+      #+begin_src js -n
+        while (条件)
+        语句;
+
+        // 或者
+        while (条件) 语句;
+      #+end_src
+***** for 循环 
+      #+begin_src js -n
+        for (初始化表达式; 条件; 递增表达式)
+        语句
+
+        // 或者
+
+        for (初始化表达式; 条件; 递增表达式) {
+            语句
+        }
+      #+end_src
+**** 声明语句
+***** var Declares a variable, optionally initializing it to a value.
+***** let Declares a block scope local variable, optionally initializing it to a value.
+***** const Declares a read-only named constant.
+**** 其他
+***** export
+      Used to export functions to make them available for imports in external
+      modules, and other scripts.
+***** import
+      Used to import functions exported from an external module, another script.
+ 
+*** 错误处理
+**** Try...Catch 
+     #+BEGIN_SRC js
+       var txt=""
+       function message()
+       {
+           try
+           {
+               adddlert("Welcome guest!")
+           }
+           catch(err)
+           {
+               txt="此页面存在一个错误。\n\n"
+               txt+="错误描述: " + err.description + "\n\n"
+               txt+="点击 OK 继续。\n\n"
+               alert(txt)
+           }
+       }
+     #+END_SRC
+*** 类 [ 现在面向对象了，可以用面向对象的一套概念了 ]
+**** ES5 模拟类  
+     #+begin_src javascript
+       function PersonES5(p) {
+           this.age = p.age;
+           this.name = p.name;
+           this.sex = p.sex;
+       }
+
+       PersonES5.prototype.showInfo = function() {
+           console.log(this);
+       };
+
+       var person = new PersonES5({
+           age:18,
+           name:'tom',
+           sex:'boy'
+       });
+
+       person.showInfo();
+     #+end_src
+**** ES6
+     #+begin_src js
+       class PersonES6 {
+           constructor(p) {
+               this.age = p.age;
+               this.name = p.name;
+               this.sex = p.sex;
+           }
+           showInfo() {
+               console.log(this);
+           }
+       }
+
+
+       var person = new PersonES6({
+           age:18,
+           name:'tom',
+           sex:'boy'
+       });
+
+       person.showInfo();
+     #+end_src
+* 标准库
+** Date 
+   #+BEGIN_SRC js
+     日期 Date() getTime() setFullYear() toUTString getDay()
+     new Date() // 当前日期和时间
+     new Date(milliseconds) //返回从 1970 年 1 月 1 日至今的毫秒数
+     new Date(dateString)
+     new Date(year, month, day, hours, minutes, seconds, milliseconds)
+
+     milliseconds 毫秒（0-999）1 秒=1000 毫秒
+     var today = new Date()
+     var d1 = new Date("October 13, 1975 11:13:00")
+     var d2 = new Date(79,5,24)
+     var d3 = new Date(79,5,24,11,33,0)
+     设置日期
+     var myDate=new Date();
+     myDate.setFullYear(2010,0,14);
+
+     设置日期为 5 天后
+     var myDate=new Date();
+     myDate.setDate(myDate.getDate()+5);
+     getTime 获取毫秒时间
+   #+END_SRC
+** Number
+   MAX_VALUE 
+   MIN_VALUE
+** Math
+   #+begin_verse
+   abs 绝对值
+   E 自然对数
+   LN2 2 的自然对数
+   PI 圆周率
+   Math.SQRT2 2 的平方根
+   sqrt 平方根
+   pow(x, y) x 的 y 次方
+   max 取最大值
+   min 取最小值
+   ceil 上
+   floor 下
+   round 四舍五入
+   #+end_verse
+** JSON
+  - 对象转字符串  JSON.stringify(arr);
+  - 字符串转对象  JSON.parse(strify);
+** Array [ 原生对象 ] 
+*** 数组创建 [ 推介用字面量]
+    #+begin_src js -n
     var arr1 = new Array(); //创建一个空数组
     var arr2 = new Array(20); // 创建一个包含 20 项的数组
     var arr3 = new Array("lily","lucy","Tom"); // 创建一个包含 3 个字符串的数组
+    #+end_src
     创建数组的第二种基本方式是使用数组字面量表示法：
 
+    #+begin_src js -n
     var arr4 = []; //创建一个空数组
     var arr5 = [20]; // 创建一个包含 1 项的数组
     var arr6 = ["lily","lucy","Tom"]; // 创建一个包含 3 个字符串的数组
+    #+end_src
     在读取和设置数组的值时，要使用方括号并提供相应值的基于 0 的数字索引：
 
-    var arr6 = ["lily","lucy","Tom"]; // 创建一个包含 3 个字符串的数组
-    alert(arr6[0]); //lily
-    arr6[1] = "mary"; //修改第二项为 mary
-    arr6[3] = "sean"; //增加第四项为 sean
-    JavaScript 中数组的 length 属性是可以修改的，看下面的示例：
-
-    var arr = ["lily","lucy","Tom"]; // 创建一个包含 3 个字符串的数组
-    arr[arr.length] = "sean"; //在下标为 3 处（也就是数组尾部）添加一项"sean"
+    #+begin_src js
     arr.length = arr.length-1; //将数组的最后一项删除
-    如果需要判断一个对象是不是数组对象，在 ECMAScript 5 之前，我们可以通过 instanceof Array 去判断，但是 instanceof 操作符的问题在于，它假定只有一个全局执行环境。如果网页中包含多个框架，那实际上就存在两个以上不同的全局执行环境，从而存在两个以上不同版本的 Array 构造函数。如果你从一个框架向另一个框架传入一个数组，那么传入的数组与在第二个框架中原生创建的数组分别具有各自不同的构造函数。
-
-    ECMAScript 5 新增了 Array.isArray()方法。这个方法的目的是最终确定某个值到底是不是数组，而不管它是在哪个全局执行环境中创建的。
-
-    数组方法
-
-    下面开始介绍数组的方法，数组的方法有数组原型方法，也有从 object 对象继承来的方法，这里我们只介绍数组的原型方法，数组原型方法主要有以下这些：
-
-    join()
-    push()和 pop()
-    shift() 和 unshift()
-    sort()
-    reverse()
-    concat()
-    slice()
-    splice()
-    indexOf()和 lastIndexOf() （ES5 新增）
-    forEach() （ES5 新增）
-    map() （ES5 新增）
-    filter() （ES5 新增）
-    every() （ES5 新增）
-    some() （ES5 新增）
-    reduce()和 reduceRight() （ES5 新增）
-    针对 ES5 新增的方法浏览器支持情况：
-
-    Opera 11+ 
-    Firefox 3.6+ 
-    Safari 5+ 
-    Chrome 8+ 
-    Internet Explorer 9+
-
-    对于支持的浏览器版本，可以通过 Array 原型扩展来实现。下面详细介绍一下各个方法的基本功能。
-
-    1、join()
-
-    join(separator): 将数组的元素组起一个字符串，以 separator 为分隔符，省略的话则用默认用逗号为分隔符，该方法只接收一个参数：即分隔符。
-
-    var arr = [1,2,3];
-    console.log(arr.join()); // 1,2,3
-    console.log(arr.join("-")); // 1-2-3
-    console.log(arr); // [1, 2, 3]（原数组不变）
-    通过 join()方法可以实现重复字符串，只需传入字符串以及重复的次数，就能返回重复后的字符串，函数如下：
-
-    function repeatString(str, n) {
-    return new Array(n + 1).join(str);
-    }
-    console.log(repeatString("abc", 3)); // abcabcabc
-    console.log(repeatString("Hi", 5)); // HiHiHiHiHi
-    2、push()和 pop()
-
-    push(): 可以接收任意数量的参数，把它们逐个添加到数组末尾，并返回修改后数组的长度。 
-    pop()：数组末尾移除最后一项，减少数组的 length 值，然后返回移除的项。
-
-    var arr = ["Lily","lucy","Tom"];
-    var count = arr.push("Jack","Sean");
-    console.log(count); // 5
-    console.log(arr); // ["Lily", "lucy", "Tom", "Jack", "Sean"]
-    var item = arr.pop();
-    console.log(item); // Sean
-    console.log(arr); // ["Lily", "lucy", "Tom", "Jack"]
-    3、shift() 和 unshift()
-
-    shift()：删除原数组第一项，并返回删除元素的值；如果数组为空则返回 undefined。 
-    unshift:将参数添加到原数组开头，并返回数组的长度 。
-
-    这组方法和上面的 push()和 pop()方法正好对应，一个是操作数组的开头，一个是操作数组的结尾。
-
-    var arr = ["Lily","lucy","Tom"];
-    var count = arr.unshift("Jack","Sean");
-    console.log(count); // 5
-    console.log(arr); //["Jack", "Sean", "Lily", "lucy", "Tom"]
-    var item = arr.shift();
-    console.log(item); // Jack
-    console.log(arr); // ["Sean", "Lily", "lucy", "Tom"]
-    4、sort()
-
-    sort()：按升序排列数组项——即最小的值位于最前面，最大的值排在最后面。
-
-    在排序时，sort()方法会调用每个数组项的 toString()转型方法，然后比较得到的字符串，以确定如何排序。即使数组中的每一项都是数值，sort()方法比较的也是字符串，因此会出现以下的这种情况：
-
-    var arr1 = ["a", "d", "c", "b"];
-    console.log(arr1.sort()); // ["a", "b", "c", "d"]
-    arr2 = [13, 24, 51, 3];
-    console.log(arr2.sort()); // [13, 24, 3, 51]
-    console.log(arr2); // [13, 24, 3, 51](元数组被改变)
-    为了解决上述问题，sort()方法可以接收一个比较函数作为参数，以便我们指定哪个值位于哪个值的前面。比较函数接收两个参数，如果第一个参数应该位于第二个之前则返回一个负数，如果两个参数相等则返回 0，如果第一个参数应该位于第二个之后则返回一个正数。以下就是一个简单的比较函数：
-
-    function compare(value1, value2) {
-    if (value1 < value2) {
-    return -1;
-    } else if (value1 > value2) {
-    return 1;
-    } else {
-    return 0;
-    }
-    }
-    arr2 = [13, 24, 51, 3];
-    console.log(arr2.sort(compare)); // [3, 13, 24, 51]
-    如果需要通过比较函数产生降序排序的结果，只要交换比较函数返回的值即可：
-
-    function compare(value1, value2) {
-    if (value1 < value2) {
-    return 1;
-    } else if (value1 > value2) {
-    return -1;
-    } else {
-    return 0;
-    }
-    }
-    arr2 = [13, 24, 51, 3];
-    console.log(arr2.sort(compare)); // [51, 24, 13, 3]
-
-    5、reverse()
-
-    reverse()：反转数组项的顺序。
-
-    var arr = [13, 24, 51, 3];
-    console.log(arr.reverse()); //[3, 51, 24, 13]
-    console.log(arr); //[3, 51, 24, 13](原数组改变)
-    6、concat()
-
-    concat() ：将参数添加到原数组中。这个方法会先创建当前数组一个副本，然后将接收到的参数添加到这个副本的末尾，最后返回新构建的数组。在没有给 concat()方法传递参数的情况下，它只是复制当前数组并返回副本。
-
-    var arr = [1,3,5,7];
-    var arrCopy = arr.concat(9,[11,13]);
-    console.log(arrCopy); //[1, 3, 5, 7, 9, 11, 13]
-    console.log(arr); // [1, 3, 5, 7](原数组未被修改)
-    从上面测试结果可以发现：传入的不是数组，则直接把参数添加到数组后面，如果传入的是数组，则将数组中的各个项添加到数组中。但是如果传入的是一个二维数组呢？
-
-    var arrCopy2 = arr.concat([9,[11,13]]);
-    console.log(arrCopy2); //[1, 3, 5, 7, 9, Array[2]]
-    console.log(arrCopy2[5]); //[11, 13]
-    上述代码中，arrCopy2 数组的第五项是一个包含两项的数组，也就是说 concat 方法只能将传入数组中的每一项添加到数组中，如果传入数组中有些项是数组，那么也会把这一数组项当作一项添加到 arrCopy2 中。
-
-    7、slice()
-
-    slice()：返回从原数组中指定开始下标到结束下标之间的项组成的新数组。slice()方法可以接受一或两个参数，即要返回项的起始和结束位置。在只有一个参数的情况下，slice()方法返回从该参数指定位置开始到当前数组末尾的所有项。如果有两个参数，该方法返回起始和结束位置之间的项——但不包括结束位置的项。
-
-    var arr = [1,3,5,7,9,11];
-    var arrCopy = arr.slice(1);
-    var arrCopy2 = arr.slice(1,4);
-    var arrCopy3 = arr.slice(1,-2);
-    var arrCopy4 = arr.slice(-4,-1);
-    console.log(arr); //[1, 3, 5, 7, 9, 11](原数组没变)
-    console.log(arrCopy); //[3, 5, 7, 9, 11]
-    console.log(arrCopy2); //[3, 5, 7]
-    console.log(arrCopy3); //[3, 5, 7]
-    console.log(arrCopy4); //[5, 7, 9]
-    arrCopy 只设置了一个参数，也就是起始下标为 1，所以返回的数组为下标 1（包括下标 1）开始到数组最后。 
-    arrCopy2 设置了两个参数，返回起始下标（包括 1）开始到终止下标（不包括 4）的子数组。 
-    arrCopy3 设置了两个参数，终止下标为负数，当出现负数时，将负数加上数组长度的值（6）来替换该位置的数，因此就是从 1 开始到 4（不包括）的子数组。 
-    arrCopy4 中两个参数都是负数，所以都加上数组长度 6 转换成正数，因此相当于 slice(2,5)。
-
-    8、splice()
-
-    splice()：很强大的数组方法，它有很多种用法，可以实现删除、插入和替换。
-
-    删除：可以删除任意数量的项，只需指定 2 个参数：要删除的第一项的位置和要删除的项数。例如，splice(0,2)会删除数组中的前两项。
-    插入：可以向指定位置插入任意数量的项，只需提供 3 个参数：起始位置、0（要删除的项数）和要插入的项。例如，splice(2,0,4,6)会从当前数组的位置 2 开始插入 4 和 6。
-    替换：可以向指定位置插入任意数量的项，且同时删除任意数量的项，只需指定 3 个参数：起始位置、要删除的项数和要插入的任意数量的项。插入的项数不必与删除的项数相等。例如，splice (2,1,4,6)会删除当前数组位置 2 的项，然后再从位置 2 开始插入 4 和 6。
-    splice()方法始终都会返回一个数组，该数组中包含从原始数组中删除的项，如果没有删除任何项，则返回一个空数组。
-
-    var arr = [1,3,5,7,9,11];
-    var arrRemoved = arr.splice(0,2);
-    console.log(arr); //[5, 7, 9, 11]
-    console.log(arrRemoved); //[1, 3]
-    var arrRemoved2 = arr.splice(2,0,4,6);
-    console.log(arr); // [5, 7, 4, 6, 9, 11]
-    console.log(arrRemoved2); // []
-    var arrRemoved3 = arr.splice(1,1,2,4);
-    console.log(arr); // [5, 2, 4, 4, 6, 9, 11]
-    console.log(arrRemoved3); //[7]
-    9、indexOf()和 lastIndexOf()
-
-    indexOf()：接收两个参数：要查找的项和（可选的）表示查找起点位置的索引。其中， 从数组的开头（位置 0）开始向后查找。 
-    lastIndexOf：接收两个参数：要查找的项和（可选的）表示查找起点位置的索引。其中， 从数组的末尾开始向前查找。
-
-    这两个方法都返回要查找的项在数组中的位置，或者在没找到的情况下返回1。在比较第一个参数与数组中的每一项时，会使用全等操作符。
-
-    var arr = [1,3,5,7,7,5,3,1];
-    console.log(arr.indexOf(5)); //2
-    console.log(arr.lastIndexOf(5)); //5
-    console.log(arr.indexOf(5,2)); //2
-    console.log(arr.lastIndexOf(5,4)); //2
-    console.log(arr.indexOf("5")); //-1
-    10、forEach()
-
-    forEach()：对数组进行遍历循环，对数组中的每一项运行给定函数。这个方法没有返回值。参数都是 function 类型，默认有传参，参数分别为：遍历的数组内容；第对应的数组索引，数组本身。
-
-    var arr = [1, 2, 3, 4, 5];
-    arr.forEach(function(x, index, a){
-    console.log(x + '|' + index + '|' + (a === arr));
-    });
-    // 输出为：
-    // 1|0|true
-    // 2|1|true
-    // 3|2|true
-    // 4|3|true
-    // 5|4|true
-    11、map()
-
-    map()：指“映射”，对数组中的每一项运行给定函数，返回每次函数调用的结果组成的数组。
-
-    下面代码利用 map 方法实现数组中每个数求平方。
-
-    var arr = [1, 2, 3, 4, 5];
-    var arr2 = arr.map(function(item){
-    return item*item;
-    });
-    console.log(arr2); //[1, 4, 9, 16, 25]
-    12、filter()
-
-    filter()：“过滤”功能，数组中的每一项运行给定函数，返回满足过滤条件组成的数组。
-
-    var arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    var arr2 = arr.filter(function(x, index) {
-    return index % 3 === 0 || x >= 8;
-    }); 
-    console.log(arr2); //[1, 4, 7, 8, 9, 10]
-    13、every()
-
-    every()：判断数组中每一项都是否满足条件，只有所有项都满足条件，才会返回 true。
-
-    var arr = [1, 2, 3, 4, 5];
-    var arr2 = arr.every(function(x) {
-    return x < 10;
-    }); 
-    console.log(arr2); //true
-    var arr3 = arr.every(function(x) {
-    return x < 3;
-    }); 
-    console.log(arr3); // false
-    14、some()
-
-    some()：判断数组中是否存在满足条件的项，只要有一项满足条件，就会返回 true。
-
-    var arr = [1, 2, 3, 4, 5];
-    var arr2 = arr.some(function(x) {
-    return x < 3;
-    }); 
-    console.log(arr2); //true
-    var arr3 = arr.some(function(x) {
-    return x < 1;
-    }); 
-    console.log(arr3); // false
-    15、reduce()和 reduceRight()
-
-    这两个方法都会实现迭代数组的所有项，然后构建一个最终返回的值。reduce()方法从数组的第一项开始，逐个遍历到最后。而 reduceRight()则从数组的最后一项开始，向前遍历到第一项。
-
-    这两个方法都接收两个参数：一个在每一项上调用的函数和（可选的）作为归并基础的初始值。
-
-    传给 reduce()和 reduceRight()的函数接收 4 个参数：前一个值、当前值、项的索引和数组对象。这个函数返回的任何值都会作为第一个参数自动传给下一项。第一次迭代发生在数组的第二项上，因此第一个参数是数组的第一项，第二个参数就是数组的第二项。
-
-    下面代码用 reduce()实现数组求和，数组一开始加了一个初始值 10。
-
-    var values = [1,2,3,4,5];
-    var sum = values.reduceRight(function(prev, cur, index, array){
-    return prev + cur;
-    },10);
-    console.log(sum); //25
-*** 时钟对象
-    执行一次 setTimeout
-    重复执行 setInterval
-    #+BEGIN_SRC html 
-      <html>
-        <head>
-          <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-          <title>无标题文档</title>
-          <script language="JavaScript" type="text/javascript">
-            var str = "这个是测试用的范例文字";
-            var seq = 0;
-            var second=1000; //间隔时间 1 秒钟
-            function scroll() {
-            msg = str.substring(0, seq+1);
-            document.getElementByIdx_x_x('word').innerHTML = msg;
-            seq++;
-            if (seq >= str.length) seq = 0;
-            }
-          </script>
-        </head>
-        <body onload="setInterval('scroll()',second)">
-          <div id="word"></div><br/><br/>
-        </body>
-      </html>
-      <p>页面上显示时钟：</p>
-      <p id="demo"></p>
-      <button onclick="myStopFunction()">停止时钟</button>
-      <script>
-        var myVar=setInterval(function(){myTimer()},1000);
-        function myTimer(){
-        var d=new Date();
-        var t=d.toLocaleTimeString();
-        document.getElementById("demo").innerHTML=t;
-        }
-        function myStopFunction(){
-        clearInterval(myVar);
-        }
-      </script>
-
-
-    #+END_SRC
-** Global objects
-*** 基本对象值 
-    数字，字符串，小数
-    Infinity
-    NaN
-    undefined 
-    null 
-    literal
-    globalThis
- 
-*** 基本功能
-    eval()
-    isFinite()
-    isNaN()
-    parseFloat()
-    parseInt()
-    decodeURI()
-    decodeURIComponent()
-    encodeURI()
-    encodeURIComponent()
-    escape() 
-    unescape() 
-*** 基本对象 Fundamental objects
-  Object
-  Function  new Function('a','b','return a+b');
-  Boolean
-  Symbol
-  Error
-  EvalError
-  InternalError
-  RangeError
-  ReferenceError
-  SyntaxError
-  TypeError
-  URIError
-
-*** Numbers and dates
-  Number
-  Math
-  Date
-
-***  Text processing
-  These objects represent strings and support manipulating them.
-
-  String
-  RegExp
-
-***  Indexed collections
-  These objects represent collections of data which are ordered by an index
-  value. This includes (typed) arrays and array-like constructs.
-
-  Array
-  Int8Array
-  Uint8Array
-  Uint8ClampedArray
-  Int16Array
-  Uint16Array
-  Int32Array
-  Uint32Array
-  Float32Array
-  Float64Array
-
-***  Keyed collections
-  These objects represent collections which use keys; these contain elements
-  which are iterable in the order of insertion.
-
-  Map
-  Set
-  WeakMap
-  WeakSet
-
-***  Structured data
-  These objects represent and interact with structured data buffers and data
-  coded using JavaScript Object Notation (JSON).
-
-  ArrayBuffer
-  SharedArrayBuffer 
-  Atomics 
-  DataView
-  JSON
-
-***  Control abstraction objects
-  Promise
-  Generator
-  GeneratorFunction
-  AsyncFunction 
-
-***  Reflection
-  Reflect
-  Proxy
-
-*** Internationalization
-  Additions to the ECMAScript core for language-sensitive functionalities.
-
-  Intl
-  Intl.Collator
-  Intl.DateTimeFormat
-  Intl.ListFormat
-  Intl.NumberFormat
-  Intl.PluralRules
-  Intl.RelativeTimeFormat
-
-*** WebAssembly
-  WebAssembly
-  WebAssembly.Module
-  WebAssembly.Instance
-  WebAssembly.Memory
-  WebAssembly.Table
-  WebAssembly.CompileError
-  WebAssembly.LinkError
-  WebAssembly.RuntimeError
-
-*** Other
-  arguments
-
-** Statements
-  This chapter documents all the JavaScript statements and declarations.
-
-  For an alphabetical listing see the sidebar on the left.
-
-*** Control flow
-  Block
-  A block statement is used to group zero or more statements. The block is delimited by a pair of curly brackets.
-  break
-  Terminates the current loop, switch, or label statement and transfers program control to the statement following the terminated statement.
-  continue
-  Terminates execution of the statements in the current iteration of the current or labeled loop, and continues execution of the loop with the next iteration.
-  Empty
-  An empty statement is used to provide no statement, although the JavaScript syntax would expect one.
-  if...else
-  Executes a statement if a specified condition is true. If the condition is false, another statement can be executed.
-  switch
-  Evaluates an expression, matching the expression's value to a case clause, and executes statements associated with that case.
-  throw
-  Throws a user-defined exception.
-  try...catch
-  Marks a block of statements to try, and specifies a response, should an exception be thrown.
- 
-*** Declarations
-  var
-  Declares a variable, optionally initializing it to a value.
-  let
-  Declares a block scope local variable, optionally initializing it to a value.
-  const
-  Declares a read-only named constant.
- 
-*** Functions and classes
-  function
-  Declares a function with the specified parameters.
-  function*
-  Generator Functions enable writing iterators more easily.
-  async function
-  Declares an async function with the specified parameters.
-  return
-  Specifies the value to be returned by a function.
-  class
-  Declares a class.
- 
-*** Iterations
-  do...while
-  Creates a loop that executes a specified statement until the test condition evaluates to false. The condition is evaluated after executing the statement, resulting in the specified statement executing at least once.
-  for
-  Creates a loop that consists of three optional expressions, enclosed in parentheses and separated by semicolons, followed by a statement executed in the loop.
-    for each...in
-  Iterates a specified variable over all values of object's properties. For each distinct property, a specified statement is executed.
-  for...in
-  Iterates over the enumerable properties of an object, in arbitrary order. For each distinct property, statements can be executed.
-  for...of
-  Iterates over iterable objects (including arrays, array-like objects, iterators and generators), invoking a custom iteration hook with statements to be executed for the value of each distinct property.
-  for await...of
-  Iterates over async iterable objects, array-like objects, iterators and generators, invoking a custom iteration hook with statements to be executed for the value of each distinct property.
-  while
-  Creates a loop that executes a specified statement as long as the test condition evaluates to true. The condition is evaluated before executing the statement.
- 
-*** Others
-  debugger
-  Invokes any available debugging functionality. If no debugging functionality is available, this statement has no effect.
-  export
-  Used to export functions to make them available for imports in external modules, and other scripts.
-  import
-  Used to import functions exported from an external module, another script.
-  import.meta
-  A meta-property exposing context-specific metadata to a JavaScript module.
-  label
-  Provides a statement with an identifier that you can refer to using a break or continue statement.
-   with
-  Extends the scope chain for a statement.
- 
-** Expressions and operators
-  This chapter documents all the JavaScript expressions and operators. 
-
-  For an alphabetical listing see the sidebar on the left.
-
- 
-*** Primary expressions
-   Basic keywords and general expressions in JavaScript.
-
-   this
-   The this keyword refers to a special property of an execution context.
-   function
-   The function keyword defines a function expression.
-   class
-   The class keyword defines a class expression.
-   function*
-   The function* keyword defines a generator function expression.
-   yield
-   Pause and resume a generator function.
-   yield*
-   Delegate to another generator function or iterable object.
-   async function
-   The async function defines an async function expression.
-   await
-   Pause and resume an async function and wait for the promise's resolution/rejection.
-   []
-   Array initializer/literal syntax.
-   {}
-   Object initializer/literal syntax.
-   /ab+c/i
-   Regular expression literal syntax.
-   ( )
-   Grouping operator.
-  
-*** Left-hand-side expressions
-   Left values are the destination of an assignment.
-
-   Property accessors
-   Member operators provide access to a property or method of an object
-   (object.property and object["property"]).
-   new
-   The new operator creates an instance of a constructor.
-   new.target
-   In constructors, new.target refers to the constructor that was invoked by new.
-   super
-   The super keyword calls the parent constructor.
-   ...obj
-   Spread syntax allows an expression to be expanded in places where multiple arguments (for function calls) or multiple elements (for array literals) are expected.
-  
-*** Increment and decrement
-   Postfix/prefix increment and postfix/prefix decrement operators.
-
-   A++
-   Postfix increment operator.
-   A--
-   Postfix decrement operator.
-   ++A
-   Prefix increment operator.
-   --A
-   Prefix decrement operator.
-  
-*** Unary operators
-   A unary operation is operation with only one operand.
-
-   delete
-   The delete operator deletes a property from an object.
-   void
-   The void operator discards an expression's return value.
-   typeof
-   The typeof operator determines the type of a given object.
-   +
-   The unary plus operator converts its operand to Number type.
-   -
-   The unary negation operator converts its operand to Number type and then negates it.
-   ~
-   Bitwise NOT operator.
-   !
-   Logical NOT operator.
-  
-*** Arithmetic operators
-   Arithmetic operators take numerical values (either literals or variables) as their operands and return a single numerical value.
-
-   +
-   Addition operator.
-   -
-   Subtraction operator.
-   /
-   Division operator.
-   *
-   Multiplication operator.
-   %
-   Remainder operator.
-   **
-   Exponentiation operator.
-  
-*** Relational operators
-   A comparison operator compares its operands and returns a Boolean value based on whether the comparison is true.
-
-   in
-   The in operator determines whether an object has a given property.
-   instanceof
-   The instanceof operator determines whether an object is an instance of another object.
-   <
-   Less than operator.
-   >
-   Greater than operator.
-   <=
-   Less than or equal operator.
-   >=
-   Greater than or equal operator.
-   Note: => is not an operator, but the notation for Arrow functions.
-
-  
-*** Equality operators
-   The result of evaluating an equality operator is always of type Boolean based on whether the comparison is true.
-
-   ==
-   Equality operator.
-   !=
-   Inequality operator.
-   ===
-   Identity operator.
-   !==
-   Nonidentity operator.
-  
-*** Bitwise shift operators
-   Operations to shift all bits of the operand.
-
-   <<
-   Bitwise left shift operator.
-   >>
-   Bitwise right shift operator.
-   >>>
-   Bitwise unsigned right shift operator.
-  
-*** Binary bitwise operators
-   Bitwise operators treat their operands as a set of 32 bits (zeros and ones) and return standard JavaScript numerical values.
-
-   &
-   Bitwise AND.
-   |
-   Bitwise OR.
-   ^
-   Bitwise XOR.
-  
-*** Binary logical operators
-   Logical operators are typically used with boolean (logical) values, and when they are, they return a boolean value.
-
-   &&
-   Logical AND.
-   ||
-   Logical OR.
-  
-*** Conditional (ternary) operator
-   (condition ? ifTrue : ifFalse)
-   The conditional operator returns one of two values based on the logical value of the condition.
-
-*** Assignment operators
-   An assignment operator assigns a value to its left operand based on the value of its right operand.
-
-   =
-   Assignment operator.
-   *=
-   Multiplication assignment.
-   /=
-   Division assignment.
-   %=
-   Remainder assignment.
-   +=
-   Addition assignment.
-   -=
-   Subtraction assignment
-   <<=
-   Left shift assignment.
-   >>=
-   Right shift assignment.
-   >>>=
-   Unsigned right shift assignment.
-   &=
-   Bitwise AND assignment.
-   ^=
-   Bitwise XOR assignment.
-   |=
-   Bitwise OR assignment.
-   [a, b] = [1, 2]
-   {a, b} = {a:1, b:2}
-   Destructuring assignment allows you to assign the properties of an array or object to variables using syntax that looks similar to array or object literals.
+    #+end_src
+
+*** 数组方法
+**** Array.isArray()  [ 静态方法 ] 
+     判断是否数组 
+**** Array.prototype [ 静态方法 ]
+    调用函数 call 
+    
+     #+begin_src js
+     Array.prototype.join.call(['hello','world'],'----');
+     #+end_src
+     
+     含义等于
+
+     #+begin_src js
+     ['hello','world'].join('---')
+     #+end_src
+     
+**** join(separator) [ 实例方法 ]
+     : 将数组的元素组起一个字符串，以 separator 为分隔符，省略的话则用默认用逗号为分隔符
+     #+begin_src js -n
+       var arr = [1,2,3];
+       console.log(arr.join()); // 1,2,3
+       console.log(arr.join("-")); // 1-2-3
+       console.log(arr); // [1, 2, 3]（原数组不变）
+     #+end_src
+     
+     通过 join()方法可以实现重复字符串，只需传入字符串以及重复的次数，就能返回重
+     复后的字符串，函数如下：
+
+     #+begin_src js -n
+       function repeatString(str, n) {
+           return new Array(n + 1).join(str);
+       }
+       console.log(repeatString("abc", 3)); // abcabcabc
+       console.log(repeatString("Hi", 5)); // HiHiHiHiHi
+       #+end_src
+     : 其实就是创建一个多一位的空数组，然后用 分隔符子串填充     
+**** push()和 pop()
+     #+begin_verse
+     push(): 可以接收任意数量的参数，把它们逐个添加到数组末尾，并返回修改后数组的长度。 
+     pop()：数组末尾移除最后一项，减少数组的 length 值，然后返回移除的项。
+     #+end_verse
+
+     #+begin_src js -n
+       var arr = ["Lily","lucy","Tom"];
+       var count = arr.push("Jack","Sean");
+       console.log(count); // 5
+       console.log(arr); // ["Lily", "lucy", "Tom", "Jack", "Sean"]
+       var item = arr.pop();
+       console.log(item); // Sean
+       console.log(arr); // ["Lily", "lucy", "Tom", "Jack"]
+     #+end_src
+**** shift() 和 unshift()
+#+begin_src js -n
+     shift()：删除原数组第一项，并返回删除元素的值；如果数组为空则返回 undefined。 
+     unshift:将参数添加到原数组开头，并返回数组的长度 。
+#+end_src
+
+     这组方法和上面的 push()和 pop()方法正好对应，一个是操作数组的开头，一个是操
+     作数组的结尾。
+
+     #+begin_src js -n
+     var arr = ["Lily","lucy","Tom"];
+     var count = arr.unshift("Jack","Sean");
+     console.log(count); // 5
+     console.log(arr); //["Jack", "Sean", "Lily", "lucy", "Tom"]
+     var item = arr.shift();
+     console.log(item); // Jack
+     console.log(arr); // ["Sean", "Lily", "lucy", "Tom"]
+     #+end_src
+**** sort()
+     #+begin_src js -n
+     sort()：按升序排列数组项——即最小的值位于最前面，最大的值排在最后面。
+     在排序时，sort()方法会调用每个数组项的 toString()转型方法，然后比较得到的字符串，以确定如何排序。即使数组中的每一项都是数值，sort()方法比较的也是字符串，因此会出现以下的这种情况：
+     #+end_src
+
+     #+begin_src js -n
+       var arr1 = ["a", "d", "c", "b"];
+       console.log(arr1.sort()); // ["a", "b", "c", "d"]
+       arr2 = [13, 24, 51, 3];
+       console.log(arr2.sort()); // [13, 24, 3, 51]
+       console.log(arr2); // [13, 24, 3, 51](元数组被改变)
+     #+end_src
+     为了解决上述问题，sort()方法可以接收一个比较函数作为参数，以便我们指定哪个
+     值位于哪个值的前面。比较函数接收两个参数，如果第一个参数应该位于第二个之前
+     则返回一个负数，如果两个参数相等则返回 0，如果第一个参数应该位于第二个之后
+     则返回一个正数。以下就是一个简单的比较函数：
+
+     #+begin_src js -n
+       function compare(value1, value2) {
+           if (value1 < value2) {
+               return -1;
+           } else if (value1 > value2) {
+               return 1;
+           } else {
+               return 0;
+           }
+       }
+       arr2 = [13, 24, 51, 3];
+       console.log(arr2.sort(compare)); // [3, 13, 24, 51]
+     #+end_src
+     如果需要通过比较函数产生降序排序的结果，只要交换比较函数返回的值即可：
+     #+begin_src  js -n
+       function compare(value1, value2) {
+           if (value1 < value2) {
+               return 1;
+           } else if (value1 > value2) {
+               return -1;
+           } else {
+               return 0;
+           }
+       }
+       arr2 = [13, 24, 51, 3];
+       console.log(arr2.sort(compare)); // [51, 24, 13, 3]
+     #+end_src
+**** reverse()
+     reverse()：反转数组项的顺序。
+
+     #+begin_src js -n
+     var arr = [13, 24, 51, 3];
+     console.log(arr.reverse()); //[3, 51, 24, 13]
+     console.log(arr); //[3, 51, 24, 13](原数组改变)
+     #+end_src
+**** concat()
+     concat() ：将参数添加到原数组中。这个方法会先创建当前数组一个副本，然后将接收到的参数添加到这个副本的末尾，最后返回新构建的数组。在没有给 concat()方法传递参数的情况下，它只是复制当前数组并返回副本。
+
+     #+begin_src js -n
+     var arr = [1,3,5,7];
+     var arrCopy = arr.concat(9,[11,13]);
+     console.log(arrCopy); //[1, 3, 5, 7, 9, 11, 13]
+     console.log(arr); // [1, 3, 5, 7](原数组未被修改)
+     #+end_src
+     从上面测试结果可以发现：传入的不是数组，则直接把参数添加到数组后面，如果传入的是数组，则将数组中的各个项添加到数组中。但是如果传入的是一个二维数组呢？
+
+     #+begin_src js -n
+     var arrCopy2 = arr.concat([9,[11,13]]);
+     console.log(arrCopy2); //[1, 3, 5, 7, 9, Array[2]]
+     console.log(arrCopy2[5]); //[11, 13]
+     #+end_src
+     上述代码中，arrCopy2 数组的第五项是一个包含两项的数组，也就是说 concat 方法只能将传入数组中的每一项添加到数组中，如果传入数组中有些项是数组，那么也会把这一数组项当作一项添加到 arrCopy2 中。
+**** slice()
+     slice()：返回从原数组中指定开始下标到结束下标之间的项组成的新数组。slice()方法可以接受一或两个参数，即要返回项的起始和结束位置。在只有一个参数的情况下，slice()方法返回从该参数指定位置开始到当前数组末尾的所有项。如果有两个参数，该方法返回起始和结束位置之间的项——但不包括结束位置的项。
+#+begin_src js -n
+     var arr = [1,3,5,7,9,11];
+     var arrCopy = arr.slice(1);
+     var arrCopy2 = arr.slice(1,4);
+     var arrCopy3 = arr.slice(1,-2);
+     var arrCopy4 = arr.slice(-4,-1);
+     console.log(arr); //[1, 3, 5, 7, 9, 11](原数组没变)
+     console.log(arrCopy); //[3, 5, 7, 9, 11]
+     console.log(arrCopy2); //[3, 5, 7]
+     console.log(arrCopy3); //[3, 5, 7]
+     console.log(arrCopy4); //[5, 7, 9]
+#+end_src
+     arrCopy 只设置了一个参数，也就是起始下标为 1，所以返回的数组为下标 1（包括下标 1）开始到数组最后。 
+     arrCopy2 设置了两个参数，返回起始下标（包括 1）开始到终止下标（不包括 4）的子数组。 
+     arrCopy3 设置了两个参数，终止下标为负数，当出现负数时，将负数加上数组长度的值（6）来替换该位置的数，因此就是从 1 开始到 4（不包括）的子数组。 
+     arrCopy4 中两个参数都是负数，所以都加上数组长度 6 转换成正数，因此相当于 slice(2,5)。
+**** splice()
+     splice()：很强大的数组方法，它有很多种用法，可以实现删除、插入和替换。
+
+     删除：可以删除任意数量的项，只需指定 2 个参数：要删除的第一项的位置和要删除的项数。例如，splice(0,2)会删除数组中的前两项。
+     插入：可以向指定位置插入任意数量的项，只需提供 3 个参数：起始位置、0（要删除的项数）和要插入的项。例如，splice(2,0,4,6)会从当前数组的位置 2 开始插入 4 和 6。
+     替换：可以向指定位置插入任意数量的项，且同时删除任意数量的项，只需指定 3 个参数：起始位置、要删除的项数和要插入的任意数量的项。插入的项数不必与删除的项数相等。例如，splice (2,1,4,6)会删除当前数组位置 2 的项，然后再从位置 2 开始插入 4 和 6。
+     splice()方法始终都会返回一个数组，该数组中包含从原始数组中删除的项，如果没有删除任何项，则返回一个空数组。
+     #+begin_src js -n
+       var arr = [1,3,5,7,9,11];
+       var arrRemoved = arr.splice(0,2);
+       console.log(arr); //[5, 7, 9, 11]
+       console.log(arrRemoved); //[1, 3]
+       var arrRemoved2 = arr.splice(2,0,4,6);
+       console.log(arr); // [5, 7, 4, 6, 9, 11]
+       console.log(arrRemoved2); // []
+       var arrRemoved3 = arr.splice(1,1,2,4);
+       console.log(arr); // [5, 2, 4, 4, 6, 9, 11]
+       console.log(arrRemoved3); //[7]
+#+end_src
+**** indexOf()和 lastIndexOf()
+#+begin_verse
+     indexOf()：接收两个参数：要查找的项和（可选的）表示查找起点位置的索引。其中， 从数组的开头（位置 0）开始向后查找。 
+     lastIndexOf：接收两个参数：要查找的项和（可选的）表示查找起点位置的索引。其中， 从数组的末尾开始向前查找。
+#+end_verse
+
+     这两个方法都返回要查找的项在数组中的位置，或者在没找到的情况下返回1。在比较第一个参数与数组中的每一项时，会使用全等操作符。
+
+     #+begin_src js -n
+     var arr = [1,3,5,7,7,5,3,1];
+     console.log(arr.indexOf(5)); //2
+     console.log(arr.lastIndexOf(5)); //5
+     console.log(arr.indexOf(5,2)); //2
+     console.log(arr.lastIndexOf(5,4)); //2
+     console.log(arr.indexOf("5")); //-1
+     #+end_src
+**** forEach()
+     forEach()：对数组进行遍历循环，对数组中的每一项运行给定函数。这个方法没有返回值。参数都是 function 类型，默认有传参，参数分别为：遍历的数组内容；第对应的数组索引，数组本身。
+
+     #+begin_src js -n 
+     var arr = [1, 2, 3, 4, 5];
+     arr.forEach(function(x, index, a){
+     console.log(x + '|' + index + '|' + (a === arr));
+     });
+     // 输出为：
+     // 1|0|true
+     // 2|1|true
+     // 3|2|true
+     // 4|3|true
+     // 5|4|true
+     #+end_src
+**** map()
+#+begin_verse
+     map()：指“映射”，对数组中的每一项运行给定函数，返回每次函数调用的结果组成的数组。
+#+end_verse
+
+     下面代码利用 map 方法实现数组中每个数求平方。
+#+begin_src js -n
+
+     var arr = [1, 2, 3, 4, 5];
+     var arr2 = arr.map(function(item){
+     return item*item;
+     });
+     console.log(arr2); //[1, 4, 9, 16, 25]
+#+end_src
+**** filter()
+
+     filter()：“过滤”功能，数组中的每一项运行给定函数，返回满足过滤条件组成的数组。
+#+begin_src js -n
+     var arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+     var arr2 = arr.filter(function(x, index) {
+     return index % 3 === 0 || x >= 8;
+     }); 
+     console.log(arr2); //[1, 4, 7, 8, 9, 10]
+#+end_src
+**** every()
+     every()：判断数组中每一项都是否满足条件，只有所有项都满足条件，才会返回 true。
+#+begin_src js -n
+
+     var arr = [1, 2, 3, 4, 5];
+     var arr2 = arr.every(function(x) {
+     return x < 10;
+     }); 
+     console.log(arr2); //true
+     var arr3 = arr.every(function(x) {
+     return x < 3;
+     }); 
+     console.log(arr3); // false
+#+end_src
+**** some()
+
+     some()：判断数组中是否存在满足条件的项，只要有一项满足条件，就会返回 true。
+#+begin_src js -n
+
+     var arr = [1, 2, 3, 4, 5];
+     var arr2 = arr.some(function(x) {
+     return x < 3;
+     }); 
+     console.log(arr2); //true
+     var arr3 = arr.some(function(x) {
+     return x < 1;
+     }); 
+     console.log(arr3); // false
+#+end_src
+**** reduce()和 reduceRight()
+#+begin_verse
+     这两个方法都会实现迭代数组的所有项，然后构建一个最终返回的值。reduce()方法从数组的第一项开始，逐个遍历到最后。而 reduceRight()则从数组的最后一项开始，向前遍历到第一项。
+     这两个方法都接收两个参数：一个在每一项上调用的函数和（可选的）作为归并基础的初始值。
+     传给 reduce()和 reduceRight()的函数接收 4 个参数：前一个值、当前值、项的索引和数组对象。这个函数返回的任何值都会作为第一个参数自动传给下一项。第一次迭代发生在数组的第二项上，因此第一个参数是数组的第一项，第二个参数就是数组的第二项。
+#+end_verse
+
+     下面代码用 reduce()实现数组求和，数组一开始加了一个初始值 10。
+#+begin_src js -n
+     var values = [1,2,3,4,5];
+     var sum = values.reduceRight(function(prev, cur, index, array){
+     return prev + cur;
+     },10);
+     console.log(sum); //25
+#+end_src
+** 时钟对象
+   执行一次 setTimeout
+   
+   重复执行 setInterval
+   #+BEGIN_SRC js -n
+     var str = "这个是测试用的范例文字";
+     var seq = 0;
+     var second=1000; //间隔时间 1 秒钟
+
+     function scroll() {
+         msg = str.substring(0, seq+1);
+         document.getElementByIdx_x_x('word').innerHTML = msg;
+         seq++;
+         if (seq >= str.length) seq = 0;
+     }
+
+     setInterval('scroll()',second)
+
+     var myVar=setInterval(function(){myTimer()},1000);
+     function myTimer(){
+         var d=new Date();
+         var t=d.toLocaleTimeString();
+         // document.getElementById("demo").innerHTML=t;
+         console.log(t);
+     }
+
+     function myStopFunction(){
+         clearInterval(myVar);
+     }
+
+   #+END_SRC
 * DOM 
 *** window 
 **** 状态处理
@@ -1071,6 +1206,7 @@
 **** Media 
      onabort
      onplay
+* 浏览器 API
 * web 移动开发最佳实践
 ** 避免使用全局变量和函数
    var myApp = {

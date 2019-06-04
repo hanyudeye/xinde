@@ -1,5 +1,9 @@
 #+TITLE: spacemacs 层的用法
 #+DESCRIPTION: 描述层的用法和某些层的具体功能
+#+KEYWORDS: spacemacs,layer
+#+CATEGORIES: 软件使用
+#+DATE: <2019-06-03 14:36:36>
+
 * include (包含操作)
 ** 简单方式  (load-file "~/elisp/foo.el")
  但我们还要注意性能，一般在打开文件时加载，所以要做复杂的判断
@@ -706,7 +710,6 @@ command =cscope/run-pycscope= for Python projects, bound to ~SPC m g i~.
 ** Yasnippet 代码片段
   代码片段的写法有它自己的格式，主要包含 
   
-   
    创建片段  yas-new-snippet
 | ~M-/~       | 展开片段 Expand a snippet if text before point is a prefix of a snippet            |
 | ~SPC i s~   | 列出片段 List all current yasnippets for inserting                                 |
@@ -940,13 +943,17 @@ Hint: use ~SPC w c~ to center the buffer.
 
 | ~SPC m r~ | srefactor: refactor thing at point. |
 ** debug 
-| Key binding | Description     |
-|-------------+-----------------|
-| ~SPC m d d~ | open cmd buffer |
+   使用 realgud 包调试多种语言
+   特定于语言的调试器由相应的层添加。 如果你想
+   添加其他调试器，将它们添加到= debug-additional-debuggers =变量中。
+
+   #+BEGIN_SRC emacs-lisp
+     (setq-default dotspacemacs-configuration-layers
+                   '((debug :variables debug-additional-debuggers '("remake"))))
+#+END_SRC
 
 
-| Key binding | Description          |
-|-------------+----------------------|
+| ~SPC m d d~ | open cmd buffer      |
 | ~bb~        | set break            |
 | ~bc~        | clear break          |
 | ~bd~        | delete break         |
@@ -962,65 +969,52 @@ Hint: use ~SPC w c~ to center the buffer.
 | ~S~         | goto cmd buffer      |
 | ~v~         | eval variable        |
 ** 调试服务 [ dap,Debug Adapter Protocol ] 
-   和调试器功能差不多，提供了
-   启动/附加
-   断点
-   异常
-   暂停与继续
-   step In/out /over
-   调用堆栈
-   线程
-   多个同时调试会话
-   执行表达式 
-   调试/运行配置
-   调试 REPL(Read-Eval-Print Loop,交互)
-  
    默认功能
    编辑调试魔板 , ~SPC m d d e~
    开始调试 ~SPC m d d d~
    调试最后的配置 ~SPC m d d l~
 
-   用法,对项目有用，似乎 
+   用法
    定义调试模板 dap-debug-edit-template
    进行调试  dap-debug 
-   | ~SPC m d c~   | continue                        |
-   | ~SPC m d i~   | step in                         |
-   | ~SPC m d o~   | step out                        |
-   | ~SPC m d s~   | next step                       |
-   | ~SPC m d v~   | inspect value at point          |
-   | ~SPC m d r~   | restart frame                   |
-   |---------------+---------------------------------|
-   | ~SPC m d .~   | debug transient state           |
-   |---------------+---------------------------------|
-   | ~SPC m d a~   | abandon current session         |
-   | ~SPC m d A~   | abandon all process             |
-   |---------------+---------------------------------|
-   | ~SPC m d e e~ | eval                            |
-   | ~SPC m d e r~ | eval region                     |
-   | ~SPC m d e t~ | eval value at point             |
-   |---------------+---------------------------------|
-   | ~SPC m d S s~ | switch session                  |
-   | ~SPC m d S t~ | switch thread                   |
-   | ~SPC m d S f~ | switch frame                    |
-   |---------------+---------------------------------|
-   | ~SPC m d I i~ | inspect                         |
-   | ~SPC m d I r~ | inspect region                  |
-   | ~SPC m d I t~ | inspect value at point          |
-   |---------------+---------------------------------|
-   | ~SPC m d b b~ | toggle a breakpoint             |
-   | ~SPC m d b c~ | change breakpoint condition     |
-   | ~SPC m d b l~ | change breakpoint log condition |
-   | ~SPC m d b h~ | change breakpoint hit count     |
-   | ~SPC m d b a~ | add a breakpoint                |
-   | ~SPC m d b d~ | delete a breakpoint             |
-   | ~SPC m d b D~ | clear all breakpoints           |
-   |---------------+---------------------------------|
-   | ~SPC m d '_~  | Run debug REPL                  |
-   |---------------+---------------------------------|
-   | ~SPC m d w l~ | list local variables            |
-   | ~SPC m d w o~ | goto output buffer if present   |
-   | ~SPC m d w s~ | list sessions                   |
-   | ~SPC m d w b~ | list breakpoints                |
+   | ~SPC m d c~   | continue                           |
+   | ~SPC m d i~   | step in                            |
+   | ~SPC m d o~   | step out                           |
+   | ~SPC m d s~   | next step                          |
+   | ~SPC m d v~   | 求值 point 下 的值                 |
+   | ~SPC m d r~   | restart frame                      |
+   |---------------+------------------------------------|
+   | ~SPC m d .~   | 调试瞬态                           |
+   |---------------+------------------------------------|
+   | ~SPC m d a~   | 放弃当前会话                       |
+   | ~SPC m d A~   | 放弃所有过程                       |
+   |---------------+------------------------------------|
+   | ~SPC m d e e~ | eval                               |
+   | ~SPC m d e r~ | eval region                        |
+   | ~SPC m d e t~ | eval value at point                |
+   |---------------+------------------------------------|
+   | ~SPC m d S s~ | switch session                     |
+   | ~SPC m d S t~ | switch thread                      |
+   | ~SPC m d S f~ | switch frame                       |
+   |---------------+------------------------------------|
+   | ~SPC m d I i~ | inspect                            |
+   | ~SPC m d I r~ | inspect region                     |
+   | ~SPC m d I t~ | inspect value at point             |
+   |---------------+------------------------------------|
+   | ~SPC m d b b~ | toggle a breakpoint                |
+   | ~SPC m d b c~ | change breakpoint condition        |
+   | ~SPC m d b l~ | change breakpoint log condition    |
+   | ~SPC m d b h~ | change breakpoint hit count        |
+   | ~SPC m d b a~ | add a breakpoint                   |
+   | ~SPC m d b d~ | delete a breakpoint                |
+   | ~SPC m d b D~ | clear all breakpoints              |
+   |---------------+------------------------------------|
+   | ~SPC m d '_~  | 运行 REPL 交互式  调试             |
+   |---------------+------------------------------------|
+   | ~SPC m d w l~ | 列出局部变量                       |
+   | ~SPC m d w o~ | goto output buffer 如果有此 buffer |
+   | ~SPC m d w s~ | list sessions                      |
+   | ~SPC m d w b~ | 列出断点                           |
 
 ** 调试管理器 [ realgud ] [ 每个语言不同调试器 ]
    自动调试 set annotate 1
@@ -1289,7 +1283,7 @@ x,执行
     | ~l l~     | 打开日志缓存 open =log buffer=                  |
     | ~o~       | 数据恢复到某个节点                              |
     | ~P u~     | 发布 push to tracked branch                     |
-    | ~s~       | 暂存,在 diff 中，还能暂存特定行                         |
+    | ~s~       | 暂存,在 diff 中，还能暂存特定行                 |
     | ~x~       | 丢弃更改(不想改了)                              |
     | ~S~       | 暂存全部                                        |
     | ~TAB~     | 查看文件改动 (diff)                             |
@@ -1311,7 +1305,503 @@ x,执行
  | ~Y~       | copy current commit hash                           |
 
 ** github
-* mode
+** javascript
+   使用 js2-mode 对 js 语言支持
+  特性  
+   - 多个后端支持：Tern 和 LSP
+   - 智能代码折叠
+   - 重构：使用[[https://github.com/magnars/js2-refactor.el][js2-refactor]]完成。
+   - 自动完成和文档
+   - 通过[[https://github.com/skeeto/skewer-mode][skewer-mode]]和[[https://github.com/pandeiro/livid-mode][livid-mode]]提供 REPL
+   - 使用 web-beautify 格式化
+
+  启用 导入帮助程序(~ImportJS~) 
+  #+begin_src sh
+    $ npm install -g import-js
+  #+end_src
+  
+  flycheck 错误检查
+  #+BEGIN_SRC sh
+    $ npm install -g eslint
+    # or
+    $ npm install -g jshint
+#+END_SRC
+
+如果安装在非标准目录中，请添加该目录
+#+BEGIN_SRC elisp
+  (add-to-list 'exec-path "/path/to/node/bins" t)
+#+END_SRC
+
+美化 
+添加  ~web-beautify~ ，或 ~prettier~ 层，参考层文档
+
+import-js，导入模块，并导航代码
+#+BEGIN_SRC elisp
+  (javascript :variables javascript-import-tool 'import-js)
+#+END_SRC
+| ~SPC m i i~ | 导入光标下变量对应的模块                 |
+| ~SPC m i f~ | 导入任何缺少的模块并删除任何未使用的模块 |
+| ~SPC m g i~ | 转到光标下变量对应的模块                 |
+
+选择后端 
+#+BEGIN_SRC elisp
+  (javascript :variables javascript-backend 'tern)
+#+END_SRC
+
+或者本地变量 =.dir-locals.el=
+#+BEGIN_SRC elisp
+  ((js2-mode (javascript-backend . lsp)))
+#+END_SRC
+
+选择格式化程序
+#+BEGIN_SRC elisp
+  (javascript :variables javascript-fmt-tool 'web-beautify)
+#+END_SRC
+
+或者本地变量 =.dir-locals.el=
+#+BEGIN_SRC elisp
+  ((js2-mode (javascript-fmt-tool . prettier)))
+#+END_SRC
+
+调试器（dap 集成）
+安装 =M-x dap-firefox-setup= 
+
+调整缩进，设置变量
+#+BEGIN_SRC emacs-lisp
+  (setq-default js2-basic-offset 2)
+#+END_SRC
+或者
+#+BEGIN_SRC emacs-lisp
+  (javascript :variables js2-basic-offset 2)
+#+END_SRC
+
+同样 缩进 JSON 文件的方式,或在 层中设置
+#+BEGIN_SRC emacs-lisp
+  (setq-default js-indent-level 2)
+#+END_SRC
+
+REPL 交互 ,需要开启 httpd 服务
+空白页交互 run-skewer
+页面交互,需要安装 Greasemonkey 脚本
+
+node ,配置 自动把 node_modules/.bin 添加到  =exec_path=
+#+BEGIN_SRC elisp
+  (setq-default dotspacemacs-configuration-layers
+    '((javascript :variables node-add-modules-path t)))
+#+END_SRC
+
+js2 模式
+~SPC m w~ ,切换 js2 模式警告和错误
+~%~,块间跳转
+
+| ~SPC m z c~ | 隐藏元素          |
+| ~SPC m z o~ | 显示元素          |
+| ~SPC m z r~ | 显示所有元素      |
+| ~SPC m z e~ | 隐藏/显示元素开关 |
+| ~SPC m z F~ | 隐藏函数开关      |
+| ~SPC m z C~ | 隐藏注释开关      |
+
+重构（js2-refactor）
+| ~SPC m k~     | 删除到行的末尾，但不跨越语义边界                                       |
+| ~SPC m r 3 i~ | 将三元运算符转换为 if 语句                                             |
+| ~SPC m r a g~ | 如果缺少，则创建一个= / * global * / = annotation，并添加 var 以指向它 |
+| ~SPC m r a o~ | 用对象文字命名参数   替换函数调用的参数                                |
+| ~SPC m r b a~ | 将最后一个子节点移出当前函数，if-statement，for-loop 或 while-loop     |
+| ~SPC m r c a~ | 将多行数组转换为一行                                                   |
+| ~SPC m r c o~ | 将多行对象文字转换为一行                                               |
+| ~SPC m r c u~ | 将多行函数转换为一行（期望分号作为语句分隔符）                         |
+| ~SPC m r e a~ | 将一行数组转换为多行                                                   |
+| ~SPC m r e f~ | 将标记的表达式提取到新的命名函数中                                     |
+| ~SPC m r e m~ | 将标记的表达式提取到对象文字中的新方法中                               |
+
+文档（js-doc）
+| ~SPC m r d b~ | 为当前文件插入 JSDoc 注释 |
+| ~SPC m r d f~ | 为函数 插入 JSDoc 注释    |
+| ~SPC m r d t~ | 给注释插入 tag|
+| ~SPC m r d h~ | 显示可用的 jsdoc tag 列表 |
+
+REPL（skewer-mode）
+
+| ~SPC m e e~ | 求值选中部分表达式               |
+| ~SPC m e E~ | 求值选区并插入结果               |
+| ~SPC m s b~ | 求值 buff                        |
+| ~SPC m s B~ | 求值选区 并 切换到 REPL buffer   |
+| ~SPC m s r~ | 将当前选区发送到 REPL            |
+| ~SPC m s s~ | 切换到 REPL                      |
+
+** tern
+增加了对 JavaScript 代码分析的引擎 [ tern 引擎 ]
+
+安装
+#+BEGIN_SRC sh
+  $ npm install -g tern
+#+END_SRC
+
+在多个不同的编辑会话中重用服务器
+默认不创建项目  =.tern-port= 文件
+#+BEGIN_SRC emacs-lisp
+  (tern :variables tern-disable-port-files nil)
+#+END_SRC
+
+~M-.~ ,上个命令
+
+| ~SPC m C-g~   | 带你回到你按 ~M-.~  的最后一个位置                       |
+| ~SPC m g g~   | 跳转到光标下的东西的定义处                               |
+| ~SPC m g G~   | 跳转到给定名称的定义(gtag)                                |
+| ~SPC m h d~   | 找到光标下的东西的文档, 再按一次打开关联的 URL（如果有） |
+| ~SPC m h t~   | 找到光标下的东西的类型                                   |
+| ~SPC m r r V~ | 使用 tern 重命名光标下的变量                             |
+** import-js  [导入模块，并导航代码]
+  安装  
+  #+BEGIN_SRC sh
+    $ npm install -g import-js
+  #+END_SRC
+  如果这不起作用,可以用下面方式 
+#+BEGIN_SRC sh
+  $ sudo npm install --unsafe-perm -g import-js
+#+END_SRC
+
+启用，在 javascript 配置 
+#+BEGIN_SRC elisp
+  (javascript :variables javascript-import-tool 'import-js)
+#+END_SRC
+然后，层 ~react~  和 ~typescript~ 也有此特性
+
+| ~SPC m i i~ | 导入光标下变量对应的模块                 |
+| ~SPC m i f~ | 导入任何缺少的模块并删除任何未使用的模块 |
+| ~SPC m i g~ | 转到光标下的变量模块                     |
+
+** org
+*** 特点 
+   整合子弹头 org-bullets 
+   整合番茄时钟  org-pomodaro 
+   演示模式 org-present
+   插入图像 org-download
+   管理工程下的代办 org-projectile
+   插入 org 格式的剪贴板中的 URL (org-cliplink) 
+   
+   : 任何 org 相关代码 不能在  =dotspacemacs/user-config= 之前加载，会冲突
+   确定 org 加载后，对 org 进行配置 
+   #+BEGIN_SRC emacs-lisp
+     (with-eval-after-load 'org
+       ;; here goes your Org config :)
+       ;; ....
+       )
+   #+END_SRC
+
+   要不来会出现异常，如下
+   #+begin_verse
+   If this is not done you will encounter a lot of unbind key exceptions while working with org.
+   More details can be found [[https://github.com/syl20bnr/spacemacs/issues/8106][here]].
+   #+end_verse
+
+*** github 
+    导出到 github
+  #+BEGIN_SRC emacs-lisp
+  (setq-default dotspacemacs-configuration-layers '(
+    (org :variables org-enable-github-support t)))
+#+END_SRC
+
+*** Twitter Bootstrap support
+    启用导出到 Twitter Bootstrap 格式的 HTML   
+    #+BEGIN_SRC emacs-lisp
+      (setq-default dotspacemacs-configuration-layers '(
+                                                        (org :variables
+                                                             org-enable-bootstrap-support t)))
+    #+END_SRC
+
+*** Gnuplot 
+    通过[[http://www.gnuplot.info/][Gnuplot]]绘制表格内的数据, windows 有问题，要排除  =dotspacemacs-excluded-packages=
+*** Reveal.js
+    导出 Reveal.js
+
+    #+BEGIN_SRC emacs-lisp
+      (setq-default dotspacemacs-configuration-layers
+                    '((org :variables org-enable-reveal-js-support t)))
+#+END_SRC
+
+    [[https://github.com/hakimel/reveal.js/releases][download]] =reveal.js= 并且 把 =org-reveal-root= 指向 =reveal.js=  路径
+    文档 the [[https://github.com/yjwen/org-reveal#set-the-location-of-revealjs][manual]].
+
+    或者，将以下行添加到要处理的每个 =.org= 文件中：
+  #+BEGIN_EXAMPLE
+    #+REVEAL_ROOT: http://cdn.jsdelivr.net/reveal.js/3.0.0/
+  #+END_EXAMPLE
+*** Org-journal [ 简单的日记管理系统 ]
+    - 在目录中每天创建一个单独的日志文件
+    - 新的日志文件将始终迁移具有所选 TODO 状态的条目
+    - 具有日志加密功能
+    - 轻松集成 org-agenda 和 Emacs 日历，iCalendar
+
+    #+BEGIN_SRC emacs-lisp
+      (setq-default dotspacemacs-configuration-layers '(
+                                                        (org :variables
+                                                             org-enable-org-journal-support t)))
+    #+END_SRC
+    
+    默认存储在 =~/Documents/journal/= 文件夹, 在 user-config 中覆盖
+    #+BEGIN_SRC emacs-lisp
+      (setq org-journal-dir "~/org/journal/")
+    #+END_SRC
+
+    要更改日志文件名格式 
+    #+BEGIN_SRC emacs-lisp
+      (setq org-journal-file-format "%Y-%m-%d")
+    #+END_SRC
+    *警告* : 不能包含扩展名，会破坏日历搜索功能
+
+    配置日志的格式 
+  #+BEGIN_EXAMPLE
+  #+TITLE: Tuesday, September 06 2016
+  #+END_EXAMPLE
+ 配置日期 
+  #+BEGIN_SRC emacs-lisp
+    (setq org-journal-date-prefix "#+TITLE: ")
+    (setq org-journal-date-format "%A, %B %d %Y")
+  #+END_SRC
+  
+配置时间格式
+#+BEGIN_SRC emacs-lisp
+  (setq org-journal-time-prefix "* ")
+  (setq org-journal-time-format "")
+#+END_SRC
+
+或在 layer 中配置也可以
+  
+#+BEGIN_SRC emacs-lisp
+  (setq-default dotspacemacs-configuration-layers '(
+    (org :variables
+        org-enable-org-journal-support t
+        org-journal-dir "~/org/journal/"
+        org-journal-file-format "%Y-%m-%d"
+        org-journal-date-prefix "#+TITLE: "
+        org-journal-date-format "%A, %B %d %Y"
+        org-journal-time-prefix "* "
+        org-journal-time-format "")
+  )
+#+END_SRC
+*** Hugo (巨大，无限) 
+    是一种兼容 ~Markdown~ , ~TOML/YAML~ 的前端格式
+#+BEGIN_SRC emacs-lisp
+  (setq-default dotspacemacs-configuration-layers '(
+    (org :variables
+         org-enable-hugo-support t)))
+#+END_SRC
+*** Trello [ 也是一种文档展现形式吧 ]
+#+BEGIN_SRC emacs-lisp
+  (setq-default dotspacemacs-configuration-layers '(
+    (org :variables
+         org-enable-trello-support t)))
+#+END_SRC
+*** bullets
+    配置子弹
+    #+BEGIN_SRC emacs-lisp
+      (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
+    #+END_SRC
+    禁用子弹
+    #+BEGIN_SRC emacs-lisp
+      (dotspacemacs-excluded-packages '(org-bullets))
+    #+END_SRC
+*** Project [ 项目支持 ]
+    指定项目特定 TODOs,如果是绝对路径，那么所有项目的 TODOs 都在那个文件里，只有
+    文件名的话,就存储在项目的根目录
+
+    #+BEGIN_SRC emacs-lisp
+      (setq-default dotspacemacs-configuration-layers
+                    '((org :variables org-projectile-file "TODOs.org")))
+    #+END_SRC
+
+   TODO 文件不会自动加载到 agenda 中的，可以这样配置 
+   #+BEGIN_SRC emacs-lisp
+     (with-eval-after-load 'org-agenda
+       (require 'org-projectile)
+       (mapcar '(lambda (file)
+                  (when (file-exists-p file)
+                    (push file org-agenda-files)))
+               (org-projectile-todo-files)))
+   #+END_SRC
+*** Org-brain support
+*** Mode line [ 模式行 ]
+    临时显示  org clock , 请按 ~SPC t m c~   
+    永久显示 
+    #+BEGIN_SRC elisp
+      (setq spaceline-org-clock-p t)
+    #+END_SRC
+*** Sticky header[ 粘性标题支持 ]
+    #+BEGIN_SRC emacs-lisp
+      (setq-default dotspacemacs-configuration-layers '(
+                                                        (org :variables
+                                                             org-enable-sticky-header t)))
+                                                             #+END_SRC
+*** Epub 
+    输出 epub 格式 
+    #+BEGIN_SRC emacs-lisp
+      (setq-default dotspacemacs--configuration-layers
+                    '((org :variables
+                           org-enable-epub-support t)))
+    #+END_SRC
+*** 快捷键
+**** start org
+     | ~SPC a o #~   | 显示 agenda 中没有开启 TODO 的列表                                 |
+     | ~SPC a o /~   | 在 agenda files 中搜索                                             |
+     | ~SPC a o a~   | agenda list                                                        |
+     | ~SPC a o c~   | 打开 capture ,供你写文字(可以配置模板)                             |
+     | ~SPC a o e~   | org store agenda views                                             |
+     | ~SPC a o f i~ | org feed 转到 inbox                                                |
+     | ~SPC a o f u~ | org feed 更新全部                                                  |
+     | ~SPC a o C c~ | 取消时钟                                                           |
+     | ~SPC a o C g~ | 最后的 clocked-in clock (go to specific recent clock with ~SPC u~) |
+     | ~SPC a o C i~ | clock in                                                           |
+     | ~SPC a o C I~ | clock in last                                                      |
+     | ~SPC a o C j~ | 到 current clock                                                   |
+     | ~SPC a o C o~ | clock out                                                          |
+     | ~SPC a o C r~ | resolve clocks                                                     |
+     | ~SPC a o l~   | 保存 link                                                          |
+     | ~SPC a o m~   | 列出 tags                                                          |
+     | ~SPC a o o~   | agenda 命令列表                                                    |
+     | ~SPC a o s~   | 也是搜索，就是上面的显示文件名                                     |
+     | ~SPC a o t~   | 显示 todo list                                                     |
+**** 开关
+     | ~SPC m T c~ | org-toggle-checkbox                           |
+     | ~SPC m T e~ | org-toggle-pretty-entities                    |
+     | ~SPC m T i~ | org-toggle-inline-images                      |
+     | ~SPC m T l~ | org-toggle-link-display                       |
+     | ~SPC m T t~ | org-show-todo-tree                            |
+     | ~SPC m T T~ | org-todo                                      |
+     | ~SPC m T V~ | toggle =space-doc-mode= a read-only view mode |
+     | ~SPC m T x~ | org-preview-latex-fragment                    |
+**** org-mode
+     | ~SPC m *~     | org-ctrl-c-star                               |
+     | ~SPC m RET~   | org-ctrl-c-ret                                |
+     | ~SPC m -~     | org-ctrl-c-minus                              |
+     | ~SPC m '​~     | org-edit-special                              |
+     | ~SPC m a~     | org-agenda                                    |
+     | ~SPC m A~     | org-attach                                    |
+     | ~SPC m c~     | org-capture                                   |
+     | ~SPC m C c~   | org-clock-cancel                              |
+     | ~SPC m C d~   | Temporarily show clock times for current file |
+     | ~SPC m C e~   | org-evaluate-time-range                       |
+     | ~SPC m C g~   | org-clock-goto                                |
+     | ~SPC m C i~   | org-clock-in                                  |
+     | ~SPC m C I~   | org-clock-in-last                             |
+     | ~SPC m C j~   | Jump to the current clock                     |
+     | ~SPC m C o~   | org-clock-out                                 |
+     | ~SPC m C R~   | Insert clock report                           |
+     | ~SPC m C r~   | org-resolve-clocks                            |
+     | ~SPC m d d~   | org-deadline                                  |
+     | ~SPC m d s~   | org-schedule                                  |
+     | ~SPC m d t~   | org-time-stamp                                |
+     | ~SPC m d T~   | org-time-stamp-inactive                       |
+     | ~SPC m e e~   | org-export-dispatch                           |
+     | ~SPC m e m~   | send current buffer as HTML email message     |
+     | ~SPC m f i~   | org-feed-goto-inbox                           |
+     | ~SPC m f u~   | org-feed-update-all                           |
+     | ~SPC m l~     | org-open-at-point                             |
+     | ~SPC m L~     | org-shiftright                                |
+     | ~SPC m H~     | org-shiftleft                                 |
+     | ~SPC m K~     | org-shiftup                                   |
+     | ~SPC m J~     | org-shiftdown                                 |
+     | ~SPC m C-S-l~ | org-shiftcontrolright                         |
+     | ~SPC m C-S-h~ | org-shiftcontrolleft                          |
+     | ~SPC m C-S-j~ | org-shiftcontroldown                          |
+     | ~SPC m C-S-k~ | org-shiftcontrolup                            |
+     | ~SPC s j~     | spacemacs/jump-in-buffer (jump to a heading)  |
+**** evil-org-mode
+| ~gj~ / ~gk~   | 元素间导航        |
+| ~gh~ / ~gl~   | 父 /子 间导航     |
+| ~gH~          | 根节点,第一级标题 |
+| ~M-j~ / ~M-k~ | 元素移动          |
+| ~M-J~ / ~M-K~ | 元素树移动        |
+| ~M-h~ / ~M-l~ | 元素自身升降级    |
+| ~M-H~ / ~M-L~ | 元素树升降级      |
+**** 表
+| ~SPC m t c~   | 把表转换为 table.el              |
+| ~SPC m t d c~ | 删除列                           |
+| ~SPC m t d r~ | 删除行                           |
+| ~SPC m t e~   | 插入计算结果                     |
+| ~SPC m t E~   | 导出表格(格式自己配)             |
+| ~SPC m t i c~ | 插入列                           |
+| ~SPC m t i h~ | 插入水平线                       |
+| ~SPC m t i r~ | 插入行                           |
+| ~SPC m t I~   | 将文件导入表格                   |
+| ~SPC m t n~   | 新建表格                         |
+| ~SPC m t N~   | 新建 table.el 格式表格           |
+| ~SPC m t p~   | 使用 org-plot / gnuplot 绘制表格 |
+| ~SPC m t r~   | 应用公式计算当前行               |
+| ~SPC m t s~   | 表格排序                         |
+| ~SPC m t t f~ | 公式调试器开关                   |
+| ~SPC m t t o~ | 行/列号的显示开关                |
+| ~SPC m t w~   | 长行截断到两行                   |
+**** 元素插入
+     | ~SPC m i d~   | org-insert-drawer                                |
+     | ~SPC m i D s~ | 插入屏幕截图                                     |
+     | ~SPC m i D y~ | 插入网络图片(图片保存在一级标题命名的文件夹下)   |
+     | ~SPC m i e~   | org-set-effort                     effort        |
+     | ~SPC m i f~   | org-insert-footnote              脚注            |
+     | ~SPC m i h~   | org-insert-heading             标题              |
+     | ~SPC m i H~   | org-insert-heading-after-current                 |
+     | ~SPC m i i~   | org-insert-item 列表项                           |
+     | ~SPC m i K~   | spacemacs/insert-keybinding-org         键盘按键 |
+     | ~SPC m i l~   | org-insert-link        链接                      |
+     | ~SPC m i L~   | 网络链接，会自动附上有标题的链接                 |
+     | ~SPC m i n~   | org-add-note  插入一段 note                         |
+     | ~SPC m i p~   | org-set-property    插入属性                         |
+     | ~SPC m i s~   | org-insert-subheading 插入子标题                      |
+     | ~SPC m i t~   | org-set-tags                  插入 tag              |
+     |               |                                                  |
+**** link
+     打开链接 | ~SPC m x o~ | org-open-at-point |
+**** Babel / Source Blocks
+| ~SPC m b .~ | 进入 Transient 状态|
+| ~SPC m b a~ | 产生一个 has 码 org-babel-sha1-hash         |
+| ~SPC m b b~ | 执行块 org-babel-execute-buffer            |
+| ~SPC m b c~ | 检查 org-babel-check-src-block              |
+| ~SPC m b d~ | 分成两段代码块 org-babel-demarcate-block      |
+| ~SPC m b e~ | 执行 org-babel-execute-maybe               |
+| ~SPC m b f~ | org-babel-tangle-file                    |
+| ~SPC m b g~ | 跳到命名代码块 org-babel-goto-named-src-block   |
+| ~SPC m b i~ | org-babel-lob-ingest                     |
+| ~SPC m b I~ | 代码块信息 org-babel-view-src-block-info      |
+| ~SPC m b j~ | 插入头部参数 org-babel-insert-header-arg        |
+| ~SPC m b l~ | org-babel-load-in-session                |
+| ~SPC m b n~ | 下一个代码块 org-babel-next-src-block         |
+| ~SPC m b o~ | 打开求值结果 buffer  org-babel-open-src-block-result |
+| ~SPC m b p~ | 上一个代码块 org-babel-previous-src-block            |
+| ~SPC m b r~ | 跳到命名结果块 org-babel-goto-named-result      |
+| ~SPC m b s~ | org-babel-execute-subtree                |
+| ~SPC m b t~ | org-babel-tangle                         |
+| ~SPC m b u~ |跳到代码块头部 org-babel-goto-src-block-head     |
+| ~SPC m b v~ |在另一个 buffer 展开代码块  org-babel-expand-src-block |
+| ~SPC m b x~ | org-babel-do-key-sequence-in-edit-buffer |
+| ~SPC m b z~ | org-babel-switch-to-session              |
+| ~SPC m b Z~ | org-babel-switch-to-session-with-code    |
+**** 加强
+     | ~SPC m x b~ | 粗体     |
+     | ~SPC m x c~ | 代码     |
+     | ~SPC m x i~ | 斜体     |
+     | ~SPC m x r~ | 清除特性 |
+     | ~SPC m x s~ | 删除线   |
+     | ~SPC m x u~ | 下划线   |
+     | ~SPC m x v~ | 等宽     |
+     |             |          |
+**** 在日历中导航
+     | ~M-l~ | 明天 |
+     | ~M-h~ | 昨天 |
+     | ~M-j~ | 下周 |
+     | ~M-k~ | 上周 |
+     | ~M-L~ | 下月 |
+     | ~M-H~ | 上月 |
+     | ~M-J~ | 下年 |
+     | ~M-K~ | 上年 |
+     |       |      |
+**** Presentation [简报,放大镜]
+     激活  ~SPC SPC org-present~
+**** Org-projectile
+     | ~SPC a o p~       | Capture a TODO for the current project                  |
+     | ~SPC u SPC a o p~ | Capture a TODO for any given project (choose from list) |
+     | ~SPC p o~         | Go to the TODOs for the current project                 |
+
+* 包 (package)
 ** 绘图模式 artist-mode
    Shift+中键 选择画什么图形
    Shift+ 右键 删除一个区域
@@ -1331,3 +1821,79 @@ x,执行
   | paste      | 粘贴                                                                                        | 粘贴                                                                              |
   | Flood-fill | 填充工具，填充                                                                              | 填充                                                                              |
 ** hackernews
+** skewer [实时 Web 开发]
+   在 Web 浏览器中提供与 JavaScript，CSS 和 HTML 的实时交互。表达式是从 emacs 的 ~编辑缓冲区~ ~实时~ 发送给浏览器进行求值
+   
+查看所有当前连接的客户端的列表 list-skewer-clients
+如果 ~浏览器~ 与 ~skewer~ 的连接丢失，可以在 浏览器控制台  用 ~skewer()~ 重新连接
+
+*** CSS 
+    Load the declaration at the point.
+    Load the entire rule around the point.
+    Load the current buffer as a stylesheet.
+*** HTML
+    Load the HTML tag immediately around the point   
+*** 提供 REPL 交互 
+    repl 的控制台输出 是 ~skewer.log()~
+*** bower (亭子) [ 动态加载没有包含的库 ]
+    使用 skewer-bower-load，但是这个 bower infrastructure 不好，不推介使用
+*** 名字由来 skewer
+    Emacs is skewering the browser from server-side
+
+    不懂什么意思
+
+** org-brain 脑图 [ 不太好操作 ，废弃了 ]
+*** 概述 
+    维基和思维导图的组合，其中每个维基页/思维导图节点都是 org-mode 驻留在您的文件中
+  ~org-brain-path~, 可以自己设置。
+  
+    脑图浏览模式  org-brain-visualize =SPC a o b= , 能把这些节点链接起来
+    刷新   org-brain-update-id-locations
+
+    节点之间有四种不同类型的关系
+    - Parents
+    - Children
+    - Siblings (兄弟)
+    - Friends( 朋友 )
+ 
+    固定节点 ， index , 节点资源(链接和附件)
+ 
+*** 概览
+  PINNED：索引
+
+               + -Python 游戏开发 -  +  - 游戏设计
+               + - 编程书籍|
+   编程 -  +  -  Emacs |
+         |   |
+         + ----------------- + ----------------- +
+                           |
+                           ▽
+                    游戏编程←→电脑游戏
+
+*** 快捷键
+**** 使用
+ | ~SPC a o B v~ | 可视化进入脑图 |
+ | ~SPC a o B a~ | Go to the org-brain agenda   |
+**** 在 org  文件中编写
+ | ~SPC m B a c~ | Add child    |
+ | ~SPC m B a f~ | Add friend   |
+ | ~SPC m B a p~ | Add parent   |
+ | ~SPC m B g c~ | Go to child  |
+ | ~SPC m B g f~ | Go to friend |
+ | ~SPC m B g p~ | Go to parent |
+ | ~SPC m B R~   | Refile entry |
+ | ~SPC m B x~   | Delete entry |
+ | ~SPC m B v~   | 创建一个节点 |
+
+
+**** 在可是化环境中编写 (Visualization) 
+ | ~j / TAB~   | Goto next link                     |
+ | ~k / S-TAB~ | Goto previous link                 |
+ | ~C-y~       | 粘贴资源链接                       |
+ | ~a~         | Add resource [[http://orgmode.org/manual/Attachments.html][attachment]]            |
+ | ~c~         | Add child                          |
+ | ~f~         | 查找/访问另一个条目以显示          |
+ | ~l~         | 添加资源链接                       |
+ | ~p~         | Add parent                         |
+ | ~o~         | Open and edit the visualized entry |
+ | ~r~         | 重命名                             |

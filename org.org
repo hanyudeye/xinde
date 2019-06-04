@@ -1,1026 +1,342 @@
-#+TITLE: 关于 org 的文档
+#+TITLE: org 使用简介
 #+DESCRIPTION: org 文档是一种写法简单,但能组织文档结构的方法，适用于单页重上而下的哦。
-#+KEYWORDS: org
+#+S: org
+#+DATE: <2019-06-03 16:49:36>
 #+CATEGORIES: 软件使用
-#+DATE: <2019-06-01 16:49:36>
-
+ #+STARTUP: hideblocks
+#+TAGS: org 
 * org 排版工具
-  以 # 号后加一空格开始的行表示注释，文件导出时这些内容不被导出，上面第一行就是。
-  以 #+ 符号开始的行用于设置文档参数或内容属性，比如文档的标题、作者，org-mode 打开时文档的呈现状态等。
-  用 [[]] 括起来的内容表示外部链接
-  用 <<>> 括起来的内容表示文档的内部链接
-  以 * 符号开始的行，表示该行为标题。
-  标题内容前的 TODO 标记是待办任务的标记符号。
-  标题行后面两个 : 符号间的内容表示标签（TAG）。
-  标题行如果标题文本前有 COMMENT 标记表示该标题下的所有内容为注释。
-  位于 #+BEGIN_XXX 和 #+END_XXX 之间的内容为特殊文档块，如代码块、例子、引用等。
-** 常用标记  
-*** 字体
-  *粗体*
-  /斜体/
-  +删除线+
-  _下划线_
-  下标：H_2 O
-  上标：E=mc^2
-  等宽字：  =git=  或者 ～git～
-*** 表格
-  | Pone | Name | Age |
-  |------+------+-----|
-  | 4321 | Anna |  25 |
-*** 列表
-无序列表项以‘-’、‘+’或者‘*‘开头。
-有序列表项以‘1.’或者‘1)’开头。
-描述列表用‘::’将项和描述分开。
+** 简介  
+   一种纯文本标记语言 ，用来 ~写笔记~ ，管理 ~TODO~ 列表 ，也是一个创作系统，能够进行 =文字编程= 和 =重复研究= 。 
   
-My favorite scenes are (in this order)
-    1. The attack of the Rohirrim
-    2. Eowyn's fight with the witch king
-       + this was already my favorite scene in the book
-         + I really like Miranda Otto.
-       + hello
-    Important actors in this film are:
-    - Elijah Wood :: He plays Frodo
-      - Sean Austin :: He plays Sam, Frodo's friend.
-    - ::
-
-*** 分隔线
-五条短线或以上显示为分隔线。
------
-*** 标签      
-**** 定义     
-\* Meeting with the French group     :work:
-\** Summary by Frank                 :boss:notes:
-\*** TODO Prepare slides for him     :action:
-则最后一行标题具有 work, boss, notes, action 四个标签。
-
-更方便的做法是在正文部分用 C-c C-q 或直接在标题上用 C-c C-c 创建标签，这种方式可以
-列出所有预定义的标签以便选取。
-
-**** 预定义 tag
-  在当前文件头部定义
-  这种方式预定义的标签只能在当前文件中使用。使用#+TAGS 元数据进行标记，如：
-      #+TAGS: { 桌面(d) 服务器(s) }  编辑器(e) 浏览器(f) 多媒体(m) 压缩(z)    
-  每项之间必须用空格分隔，可以在括号中定义一个快捷键；花括号里的为标签组，只能选择一个
-  对标签定义进行修改后，要在标签定义的位置按 C-c C-c 刷新才能生效。
-
-  在配置文件中定义 上面的标签定义只能在当前文件生效，如果要在所有的.org 文件中生
-  效，需要在 Emacs 配置文件 .emacs 中进行定义：
+   能导出不同的格式，新的导出后端可以从现有的后端派生，也可以从头开始定义。
   
-  (setq org-tag-alist '(
-
-  (:startgroup . nil)
-  ("桌面" . ?d) ("服务器" . ?s)
-  (:endgroup . nil)
-  ("编辑器" . ?e)
-  ("浏览器" . ?f) 
-  ("多媒体" . ?m)
-  ))    
-  默认情况下，org 会动态维护一个 Tag 列表，即当前输入的标签若不在列表中，则自动加入列表以供下次补齐使用。
-
-  为了使这几种情况（默认列表、文件预设 tags，全局预设 tags）同时生效，需要在文件中增加一个空的 TAGS 定义：
-
-  #+TAGS:
-**** 按 tag 搜索
-  C-c \	按 tag 搜索标题
-  C-c / m	搜索并按树状结构显示
-  C-c a m	按标签搜索多个文件（需要将文件加入全局 agenda)
+   Org 在 Emacs 中运行。
   
-  可以使用逻辑表达式限制条件，更准确灵活的搜索
-  + 和      a+b     同时有这两个标签
-  + 排除    a-b     有 a 但没有 b
-  | 或      a | b     有 a 或者有 b |
-  &     和      a&b     同时有 a 和 b，可以用“+”替代
-  在查询视图中 C-c C-c 退出
-*** 抽屉盒子 drawer
-:mydrawer:
-这是抽屉的东西
-
-:END:
-
-** 链接
- #+BEGIN_SRC 
-  http://www.astro.uva.nl/~dominik            on the web
-  file:/home/dominik/images/jupiter.jpg       file, absolute path
-  /home/dominik/images/jupiter.jpg            same as above
-  file:papers/last.pdf                        file, relative path
-  file:projects.org                           another Org file
-  docview:papers/last.pdf::NNN                open file in doc-view mode at page NNN
-  id:B7423F4D-2E8A-471B-8810-C40F074717E9     Link to heading by ID
-  news:comp.emacs                             Usenet link
-  mailto:adent@galaxy.net                     Mail link
-  vm:folder                                   VM folder link
-  vm:folder#id                                VM message link
-  wl:folder#id                                WANDERLUST message link
-  mhe:folder#id                               MH-E message link
-  rmail:folder#id                             RMAIL message link
-  gnus:group#id                               Gnus article link
-  bbdb:R.*Stallman                            BBDB link (with regexp)
-  irc:/irc.com/#emacs/bob                     IRC link
-  info:org:External%20links                   Info node link (with encoded space)
+   #+begin_verse
+  反馈： 给官方发错误报告 =org-submit-bug-report=
+  自己调试 :重载 ~org-reload~  调试 ~toggle-debug-or-error~  打开 ~org-mode~
+   #+end_verse
   
-  对于文件链接，可以用::后面增加定位符的方式链接到文件的特定位置。定位符可以是行号或搜索选项。如：
-  file:~/code/main.c::255                     进入到 255 行
-  file:~/test.txt::2                          进入到 2 行
-  file:~/xx.org::My Target                    找到目标‘<<My Target>>’
-  file:~/xx.org/::#my-custom-id               查找自定义 id 的项
-  #+END_SRC
-  
-
-** 日期时间
-SCHEDULED: <2019-01-26 六 10:00>
-** 内容元数据设置
-*** #+STARTUP:
-启动选项，就是 org 在打开文件时的设置
-设置大纲的显示状态 :
-overview         top-level headlines only
-content          all headlines
-showall          no folding of any entries
-showeverything   show even drawer contents
-
-设置缩进模式
-indent 缩进打开 或 (setq org-startup-indented t)
-noindent  不用缩进
-
-设置表格是否排列
-align
-noalign
-
-图像
-inlineimages   show inline images
-noinlineimages don’t show inline images on startup
-
-latex
-latexpreview   preview LaTeX fragments
-nolatexpreview don’t preview LaTeX fragments
-
-hideblocks   Hide all begin/end blocks on startup
-nohideblocks Do not hide blocks on startup
-
-*** #+CATEGORY  设置代办文件的类别，会显示在代办列表的第一列
-Sets the category of the agenda file, which applies to the entire document.
-*** #+FILETAGS: :Peter:Boss:Secret: 如果希望文档中的所有标题都具有某些标签，只需要定义文档元数据：
-*** #+TITLE:       the title to be shown (default is the buffer name)
-*** #+AUTHOR:      the author (default taken from user-full-name)
-*** #+DATE:        a date, an Org timestamp1, or a format string for format-time-string
-*** #+EMAIL:       his/her email address (default from user-mail-address)
-*** #+DESCRIPTION: the page description, e.g. for the XHTML meta tag
-*** #+KEYWORDS:    the page keywords, e.g. for the XHTML meta tag
-*** #+LANGUAGE:    language for HTML, e.g. ‘en’ (org-export-default-language)
-*** #+TEXT:        Some descriptive text to be inserted at the beginning.
-*** #+TEXT:        Several lines may be given.
-*** #+OPTIONS:     H:2 num:t toc:t \n:nil @:t ::t |:t ^:t f:t TeX:t ...
-*** #+BIND:        lisp-var lisp-val, e.g.: org-export-latex-low-levels itemize
-*** #+LINK_UP:     the ``up'' link of an exported page
-*** #+LINK_HOME:   the ``home'' link of an exported page
-*** #+LATEX_HEADER: extra line(s) for the LaTeX header, like \usepackage{xyz}
-*** #+EXPORT_SELECT_TAGS:   Tags that select a tree for export
-*** #+EXPORT_EXCLUDE_TAGS:  Tags that exclude a tree from export
-*** #+XSLT:        the XSLT stylesheet used by DocBook exporter to generate FO file
-*** #+TAGS: TAG1(c1) TAG2(c2)  设置 tag
-** 日程视图 
-** 代码区块
-  #+BEGIN_VERSE
-   Great clouds overhead
-   Tiny black birds rise and fall
-   Snow covers Emacs
-       -- AlexSchroeder
-  #+END_VERSE
-  缩进区块
-  通常用于引用，与默认格式相比左右都会留出缩进：
-  #+BEGIN_QUOTE
-    缩进区块
-  #+END_QUOTE
-  居中区块
-  #+BEGIN_CENTER
-  Everything should be made as simple as possible, \\
-  but not any simpler
-  #+END_CENTER
-  代码区块
-  #+BEGIN_SRC ruby
-    require 'redcarpet'
-    md = Redcarpet.new("Hello, world.")
-    puts md.to_html
-  #+END_SRC
-  例子
-  : 单行的例子以冒号开头
-
-  #+BEGIN_EXAMPLE
-   多行的例子
-   使用区块
-  #+END_EXAMPLE
-  注释
-  以‘#‘开头的行被看作注释，不会被导出
-  区块注释采用如下写法：
-
-  #+BEGIN_COMMENT
-    块注释
-    ...
-   #+END_COMMENT
-  表格与图片
-  对于表格和图片，可以在前面增加标题和标签的说明，以方便交叉引用。
-  比如在表格的前面添加：
-
-  #+CAPTION: This is the caption for the next table (or link)
-  #+LABEL: tbl:table1
-  则在需要的地方可以通过
-
-  \ref{table1}
-  来引用该表格。
-
-*** 嵌入 Html
-    对于导出 html 以及发布，嵌入 html 代码就很有用。比如下面的例子适用于格式化为 cnblogs 的代码块：
-
-  #+BEGIN_HTML
-    <div class="cnblogs_Highlighter">
-    <pre class="brush:cpp">
-    int main()
-    {
-      return 0;
-    }
-    </pre>
-    </div>
-  #+END_HTML
-  相当于在 cnblogs 的网页编辑器中插入"c++"代码。
-
-** 发布
-** 程序代码
-*** 编辑代码 
-在代码框编辑代码 C-c ' 
-  #+BEGIN_SRC lisp
-    (+ 3 4)
-  #+END_SRC
-* org-brain 脑图
-脑图浏览模式  org-brain-visualize =SPC a o b=
-** 配置 
- 配置 org-brain-path
-** 操作 
- 同步 org-brain-update-id-locations
+   #+HTML: <!-- more -->
  
- 导航 
- j 或 TAB	forward-button	转到下一个链接
- k 或 S-TAB	backward-button	转到上一个链接
- b	org-brain-visualize-back	就像网页浏览器中的后退按钮一样。
+** 文件结构 [ 大纲结构，展开大纲，就可以看里面的细节 ]
+*** 标题 
+    大纲结构的具体实现是用 =标题= ,写法是 以 =*= 加空格开头
+   
+    #+begin_src org 
+      ,* 顶级标题
+      ,** 第二级
+      ,*** 第三级
+          一些文字
+      ,*** 第三级
+          一些文字
+    #+end_src
+   
+    在 =emacs= 中， 在标题上按住@@html:<kbd>@@ <tab> @@html:</kbd>@@ ，就能展开或者闭合 =标题下面= 的内容了 
+
+    导航什么的可用 ~vim~ 类的快捷键，我装的是 ~spacemacs~
+*** 普通列表
+    列表跟标题差不多的，只是它们作为标题下面的内容存在
+    
+    : 缩进对列表会有影响
+    : 属于同一列表的项目必须在第一行上具有相同的缩进
+**** 无序列表, 以  ~-~,'+' ,或 '*' 开头
+    写法 
+    #+begin_src org
+      ,* 青菜
+       一些文字
+      ,* 萝卜
+       一些文字
+      ,* 大白菜
+       一些文字
+      #+end_src
+      
+    展现形式
+      * 青菜
+      一些文字
+      * 萝卜
+      一些文字
+      * 大白菜
+      一些文字
+    
+**** 有序列表
+     以 ~1.~, ~1)~ 开头,或 自定义起始序号 ~[@20]~
+     1. a
+     2. b
+     3. c
+
+*** 抽屉   
+    一块折叠内容，通常放置不需要关注的补充说明 
  
-编辑
-h 或*	org-brain-new-child	添加一个新的子节点并创建该文件
+    #+begin_src org
+      :DRAWERNAME:
+      This is inside the drawer.
+      :END:
+    #+end_src
 
-c	org-brain-add-child	作为一个孩子添加一个现有的条目或新的文件
-C	org-brain-remove-child	删除一个条目的子女关系
-p	org-brain-add-parent	将现有条目或新文件添加为父项
-P	org-brain-remove-parent	删除条目的父关系之一
-f	org-brain-add-friendship	将现有条目或新文件添加为朋友
-F	org-brain-remove-friendship	删除条目的一个朋友关系
-d	org-brain-delete-entry	选择一个条目进行删除。
+    时钟时间, TODO 跟踪状态，这些不重要的内容通常放置在 ~LOGBOOK~  抽屉中
+*** 块
+    org 文件中通常包含各种以 ~#+ BEGIN~  开头 ~#+ END~ 结尾的块 
+    
+    #+begin_src org
+      ,#+STARTUP: hideblocks
+      ,#+STARTUP: nohideblocks
+    #+end_src
+*** 脚注
+    文章内容中的 ~参考信息~ 会放在文章底部[fn:1]
 
-q org-brain-visualize-quit  退出
-a org-brain-visualize-attach	org-attach 在条目上运行（仅限标题条目）
-n	org-brain-pin	如果条目是固定的，则切换
-v	org-brain-visualize	选择并可视化一个不同的条目
-r	org-brain-visualize-random	随机显示您的一个条目。
-R	org-brain-visualize-wander	以设定的时间间隔随机显示。R 再次取消。
+    #+begin_src org
+      行内定义
+      [fn:: This is the inline definition of this footnote]
 
-修改
-t	org-brain-set-title	更改条目的标题。
-T	org-brain-set-tags	更改条目的标签。
-o	org-brain-goto-current	打开当前条目进行编辑
-O	org-brain-goto	选择并编辑您的一个 org-brain 条目
+      行外定义
+      [fn:NAME] 这里是脚注
+      行外引用
+      [fn:NAME]
+    #+end_src
 
-新增
-l	org-brain-visualize-add-resource	在条目中添加新的资源链接
-C-y	org-brain-visualize-paste-resource	从剪贴板添加新的资源链接
-** 概览
-  PINNED：索引
+    : 我都不会写，用的快捷键，边学边用。
+*** 字体格式化
+    #+begin_src org
+      ,*粗体*
+      /斜体/
+      +删除线+
+      _下划线_
+      下标：H_2 O
+      上标：E=mc^2
+      等宽字：  =git=  或者 ～git～
+    #+end_src
+** 表
+    以 两条 ~|~ 组成一个单元格，再多再加就可以了，多行的话复制一下。
+    水平分隔线用 ~|---~  开始，中间 ~-~ 多于两个就可以了。
 
-               + -Python 游戏开发 -  +  - 游戏设计
-               + - 编程书籍|
-   编程 -  +  -  Emacs |
-         |   |
-         + ----------------- + ----------------- +
-                           |
-                           ▽
-                    游戏编程←→电脑游戏
-* TODOLIST(待办清单)     
-** 配制
-(setq org-agenda-files (list "~/doc/org/linux.org"
-                  "~/doc/org/work.org"
-                  "~/doc/org/home.org"))  
-* Description 描述
-This layer enables [[http://orgmode.org/][org mode]] for Spacemacs.
-描述了 spacemacs 支持的 org mode 的功能
-** Features:
-- Vim inspired key bindings are provided by [[https://github.com/Somelauw/evil-org-mode][evil-org-mode]]
-- evil org mode 用来支持 vim 的快捷键
-- Nicer bullet via [[https://github.com/sabof/org-bullets][org-bullets]]
-- 子弹头的图表
-- A [[https://cirillocompany.de/pages/pomodoro-technique][pomodoro method]] integration via [[https://github.com/lolownia/org-pomodoro][org-pomodoro]]
-- 番茄整合
-- Presentation mode via [[https://github.com/rlister/org-present][org-present]]
-- 描述模式
-- Insertion of images via [[https://github.com/abo-abo/org-download][org-download]]
-- 图片插入
-- Project-specific TODOs via [[https://github.com/IvanMalison/org-projectile][org-projectile]]
-- 工程指定文件
+    #+begin_src org
+      | Name  | Phone | Age |
+      |-------+-------+-----|
+      | Peter |  1234 |  17 |
+      | Anna  |  4321 |  25 |
+    #+end_src
 
-** BibTeX
-For more extensive support of references through BibTeX files, have a look at
-the [[https://github.com/syl20bnr/spacemacs/blob/develop/layers/+lang/bibtex/README.org][BibTeX layer]].
+创建表格 ，对于规格化的文本, 可以用  ~org-table-create-or-convert-from-region~  快速创建  
+如 
+#+begin_src org
+  a ,  b, c
+  a ,  b, c
+#+end_src
 
-tex 格式支持
-** Important Note
-Since version 0.104, spacemacs uses the =org= version from the =org= ELPA
-从版本 0.1 起，spacemacs 用了 ELPA  的仓库版本替换了某个版本
-repository instead of the one shipped with emacs. Then, any =org= related code
-should not be loaded before =dotspacemacs/user-config=, otherwise both versions
-那么，任何 org 相关的代码必须不能加载在配置前,不然会引起冲突
-will be loaded and will conflict.
+计算,对于含有数字的列 ，可以 用 ~org-table-sum~ 求和运算
 
-Because of autoloading, calling to =org= functions will trigger the loading up
-由于自动加载
-of the =org= shipped with emacs which will induce conflicts.
-One way to avoid conflict is to wrap your =org= config code in a
-一种避免冲突的办法是 
-=with-eval-after-load= block like this:
-使用 后加载的方式加载 org 代码
-#+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'org
-    ;; here goes your Org config :)
-    ;; ....
-    )
-#+END_SRC
 
-Please also note that everything described here only applies if you install this
-同时要注意的是，这里表述 的方法是使用了 org 层的配置，而不是 手动用了 org 包
-layer instead of manually loading =org= as separate emacs package.
+公式计算: 在 ~表头部标签~ 可以输入表达式 
+#+begin_src org
+  ,#+TBLFM: $2=$1^2::$3=$1^3::$4=$1^4::$5=sqrt($1)::$6=sqrt(sqrt(($1)))
+#+end_src
+单元格坐标获取， ~org-table-field-info~
 
-If this is not done you will encounter a lot of unbind key exceptions while working with org.
-如果不这样，会引起一系列异常
-More details can be found [[https://github.com/syl20bnr/spacemacs/issues/8106][here]].
+#+TBLFM: $2=$1^2::$3=$1^3::$4=$1^4::$5=sqrt($1)::$6=sqrt(sqrt(($1)))
+| N | N^2 | N^3 | N^4 |   sqrt(n) | sqrt[4](N) |
+|---+-----+-----+-----+-----------+------------|
+| 1 |   1 |   1 |   1 |         1 |          1 |
+| 2 |   4 |   8 |  16 |    1.4142 |     1.1892 |
+| 3 |   9 |  27 |  81 |    1.7321 |     1.3161 |
+| 4 |  16 |  64 | 256 |         2 |  1.4142136 |
+| 5 |  25 | 125 | 625 | 2.2360680 |  1.4953488 |
 
-* Install
-** Layer
-To use this configuration layer: in the main Spacemacs configuration
-file (=~/.spacemacs=), to the existing =dotspacemacs-configuration-layers= list
-add the =org= entry.
+一些公式的例子 
+#+begin_verse
+在奇数行上插入列号，在偶数行上将字段设置为空。 ~if(@# % 2, $#, string(""))~
+将名为 FOO 的表的第 1 列的每一行的文本或值复制 到当前表的第 2 列 ~$2 = '(identity remote(FOO, @@#$1))~
+#+end_verse
 
-** Github support
-To install Github related extensions like [[https://github.com/larstvei/ox-gfm][ox-gfm]] to export to Github
-flavored markdown set the variable =org-enable-github-support= to =t=.
+定义常量
+#+begin_src org
+   ,#+CONSTANTS: c=299792458. pi=3.14 eps=2.4e-6
+#+end_src
 
-#+BEGIN_SRC emacs-lisp
-  (setq-default dotspacemacs-configuration-layers '(
-    (org :variables org-enable-github-support t)))
-#+END_SRC
+对于行或列的移动，删除的快速命令，文档上都有，不概述了。
+** 超链接
+   #+begin_src org
+     描述性链接
+     [[LINK][DESCRIPTION]]
+     纯链接 
+     [[LINK]]
+   #+end_src
+    
+   文件内部链接,名字不像超链接,跟某级标题同名的链接 
+   #+begin_src org 
+     [[ TitleA ]]
+     [[TitleB][DESCRIPTION]]
+   #+end_src
+   也可以链接到表
+   #+begin_src org
+     ,#+NAME: My Target
+     | a  | table      |
+     |----+------------|
+     | of | four cells |
+   #+end_src
+    
+   Radio Targets: 相当于 ~HTML~ 中的锚点，内部跳转用的。
+   #+begin_src org
+     <<<目标>>>
+   #+end_src
+    
 
-** Twitter Bootstrap support
-To enable the export to Twitter Bootstrap-formatted HTML - set
-the variable =org-enable-bootstrap-support= to =t=.
-This would install the [[https://github.com/marsmining/ox-twbs][ox-twbs]] extension.
+  链接格式 
+  #+begin_src org
+    [[file:~/code/main.c::255]]
+    [[file:~/xx.org::My Target]]
+    [[file:~/xx.org::*My Target]]
+    [[file:~/xx.org::#my-custom-id]]
+    [[file:~/xx.org::/regexp/]]
+  #+end_src
+** TODO  
+   标题前面有 ~TODO~  字样的列就是 ~TODO~ 项目，TODO 文件主要用于写 项目将要实现的功能 
 
-#+BEGIN_SRC emacs-lisp
-  (setq-default dotspacemacs-configuration-layers '(
-    (org :variables
-         org-enable-bootstrap-support t)))
-#+END_SRC
+   项目默认只有两种状态，可以创建更多状态
+   #+begin_src emacs-lisp
+     (setq org-todo-keywords
+           '((sequence "TODO" "FEEDBACK" "VERIFY" "|" "DONE" "DELEGATED")))
+   #+end_src
+   
+用于类型也不错 
+#+begin_src elisp
+  (setq org-todo-keywords '((type "Fred" "Sara" "Lucy" "|" "DONE")))
+#+end_src
 
-** Gnuplot support
-Org-mode supports the plotting of data within tables through [[http://www.gnuplot.info/][Gnuplot]] as
-demonstrated [[http://orgmode.org/worg/org-tutorials/org-plot.html][here]].
-
-Unfortunately, this is [[https://github.com/bruceravel/gnuplot-mode/issues/15][not terribly well supported]] on Windows,
-at this stage. To disable the configuration of gnuplot support - add
-the =gnuplot= package to your =dotspacemacs-excluded-packages= variable.
-
-** Reveal.js support
-To enable the export of org files as a [[http://lab.hakim.se/reveal-js/][reveal.js]] presentation - set the
-variable =org-enable-reveal-js-support= to =t=.
-This would install the [[https://github.com/yjwen/org-reveal/][org-reveal]] Emacs extension.
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default dotspacemacs-configuration-layers
-   '((org :variables org-enable-reveal-js-support t)))
-#+END_SRC
-
-Then the extension needs to be pointed to the =reveal.js= itself.
-So [[https://github.com/hakimel/reveal.js/releases][download]] =reveal.js= and point =org-reveal-root= to the path,
-as it described in the [[https://github.com/yjwen/org-reveal#set-the-location-of-revealjs][manual]].
-
-Alternatively, add the following line to each =.org= file you want to process:
-
-#+BEGIN_EXAMPLE
-  #+REVEAL_ROOT: http://cdn.jsdelivr.net/reveal.js/3.0.0/
-#+END_EXAMPLE
-
-** Org-journal support
-[[https://github.com/bastibe/org-journal][org-journal]] is a simple journal management system that:
-- Keeps a separate journal file for each day inside a directory
-- New daily file would always migrate entries with chosen TODO states
-- Has journal encryption functionality
-- Easily integrates with org-agenda and Emacs calendar, iCalendar,
-  allows scheduling
-- Easily integrates with org-capture
-
-To install org-journal - set the variable =org-enable-org-journal-support= to =t=.
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default dotspacemacs-configuration-layers '(
-    (org :variables
-         org-enable-org-journal-support t)))
-#+END_SRC
-
-By default, journal files are stored in =~/Documents/journal/=. To override
-this - set =org-journal-dir= variable in the =dotspacemacs/user-config=:
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-journal-dir "~/org/journal/")
-#+END_SRC
-
-To change the journal file name format - alter =org-journal-file-format=:
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-journal-file-format "%Y-%m-%d")
-#+END_SRC
-
-*Warning:* setting =org-journal-file-format= to include a file extension like
-=%Y-%m-%d.org= would break the calendar search functionality.
-
-By default, journal files are started with a first level heading (=*=) followed
-by the date in the form set by locale. To format journal files differently:
-- alter =org-journal-date-prefix= and =org-journal-date-format=.
-  For example, to have new journal files created with this header:
-
-  #+BEGIN_EXAMPLE
-    #+TITLE: Tuesday, September 06 2016
-  #+END_EXAMPLE
-
-- define the following in =dotspacemacs/user-config=:
-
-  #+BEGIN_SRC emacs-lisp
-    (setq org-journal-date-prefix "#+TITLE: ")
-    (setq org-journal-date-format "%A, %B %d %Y")
-  #+END_SRC
-
-The default entry is a second level heading (=** =) followed by a timestamp. If
-you start your journal files with a Title as shown above you may want to adjust
-entries to start at the first level heading and you may want to change or omit
-the timestamp.
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-journal-time-prefix "* ")
-  (setq org-journal-time-format "")
-#+END_SRC
-
-Any of the org-journal settings can be configured in =dotspacemacs/user-config=
-or defined alongside the layer itself.
-
-For example:
-
-#+CAPTION: Configure org-journal with the layer
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default dotspacemacs-configuration-layers '(
-    (org :variables
-        org-enable-org-journal-support t
-        org-journal-dir "~/org/journal/"
-        org-journal-file-format "%Y-%m-%d"
-        org-journal-date-prefix "#+TITLE: "
-        org-journal-date-format "%A, %B %d %Y"
-        org-journal-time-prefix "* "
-        org-journal-time-format "")
-  )
-#+END_SRC
-
-** Hugo support
-To install the Org exporter [[https://ox-hugo.scripter.co][ox-hugo]] that generates [[https://gohugo.io][Hugo]] -compatible Markdown
-/plus/ TOML/YAML front-matter, set the variable =org-enable-hugo-support= to
-=t=.
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default dotspacemacs-configuration-layers '(
-    (org :variables
-         org-enable-hugo-support t)))
-#+END_SRC
-
-** Trello support
-To install Trello support set the variable =org-enable-trello-support= to =t=.
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default dotspacemacs-configuration-layers '(
-    (org :variables
-         org-enable-trello-support t)))
-#+END_SRC
-
-** Different bullets
-You can tweak the bullets displayed in the org buffer in the function
-=dotspacemacs/user-config= of your dotfile by setting the variable
-=org-bullets-bullet-list=. By default the list is set to =("◉" "○" "✸" "✿")=.
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
-#+END_SRC
-
-You can disable the fancy bullets entirely by adding =org-bullets= to =dotspacemacs-excluded-packages=.
-
-#+BEGIN_SRC emacs-lisp
-  (dotspacemacs-excluded-packages '(org-bullets))
-#+END_SRC
-
-** Project support
-工程支持
-Set the layer variable =org-projectile-file= to the filename where you want to
-设置 org 工程文件，如果希望 存储 工程 TOdos 文件
-store project-specific TODOs. If this is an absolute path, all todos will be
-加入是一个绝对路径，所有 todos 都存储在这个文件当中
-stored in the same file (organized by project), whereas if it is just a single
-假如只是单独的一个文件,那么会存在每个工程的文件夹里面
-filename, todos will be stored in each project root.
-
-#+BEGIN_SRC emacs-lisp
-  (setq-default dotspacemacs-configuration-layers
-    '((org :variables org-projectile-file "TODOs.org")))
-#+END_SRC
-
-The TODO files are not added to the agenda automatically. You can do this with
-todos 文件并不会自动加入到代办事项，你可以用下面的方法用 
-the following snippet.
-
-#+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'org-agenda
+文件属性中设置 
+#+begin_src org
+   #+TODO: TODO FEEDBACK VERIFY | DONE CANCELED
+#+end_src
+** TAGS [标签，文章的属性,关键词 ]
+   写法,这篇文章写 ~org~ 的， tags 就写 ~org~ ，多个关键词用 @@html:<kbd>@@ , @@html:</kbd>@@  隔开。
+  #+begin_src org 
+    ,#+TAGS: org 
+  #+end_src
   
-    (require 'org-projectile)
-    (mapcar '(lambda (file)
-                   (when (file-exists-p file)
-                     (push file org-agenda-files)))
-            (org-projectile-todo-files)))
-#+END_SRC
+  标签归类,有层次了 
+  #+begin_src org
+    ,#+TAGS: [ Control : Context Task ]
+    ,#+TAGS: [ Persp : Vision Goal AOF Project ]
+  #+end_src
+** 日期和时间 [ 规划 TODO ]
+  为了给 ~TODO~ 项目进行时间规划, org 创建了 带有日期与时间信息的特殊格式串
+*** 时间戳的写法 
+  #+begin_src org
+    ,* TODO 和小李看电影
+      <2019-06-01 六 19:15>
+    ,* 去公园里玩
+      <2019-06-04 二 08:30-09:30>
+      #+end_src
 
-org 代办加载后
-加载 org 工程文件
-映射，  当文件存在的时候
-压入文件到代办列表
-工程文件列表
-** Org-brain support
-For Emacs 25 or later, support for [[https://kungsgeten.github.io/org-brain.html][org-brain]] is included. See the [[https://github.com/Kungsgeten/org-brain][org-brain
-package documentation]] for more information.
-
-从 25 版本后，已包含了 org 脑图,详情将 脑图文档
-** Mode line support
-To temporarily enable mode line display of org clock, press ~SPC t m c~.
-闹钟的模式行显示开关 使用  spc t m c
-To permanently enable mode line display of org clock, add this snippet to your
-要用久使用时钟 ，要配置
-=dotspacemacs/user-config= function:
-
-#+BEGIN_SRC elisp
-  (setq spaceline-org-clock-p t)
-设置模式 行 中显示 代办的时钟
-#+END_SRC
- 
-* 基本命令
-** Toggles 开关
-
-| Key binding | Description                                   |
-|-------------+-----------------------------------------------|
-| ~SPC m T c~ | org-toggle-checkbox 复选框开关                |
-| ~SPC m T e~ | org-toggle-pretty-entities  美丽实体          |
-| ~SPC m T i~ | org-toggle-inline-images         行内图像     |
-| ~SPC m T l~ | org-toggle-link-display                       |
-| ~SPC m T t~ | org-show-todo-tree                            |
-| ~SPC m T T~ | org-todo                                      |
-| ~SPC m T V~ | toggle =space-doc-mode= a read-only view mode |
-| ~SPC m T x~ | org-preview-latex-fragment                    |
-
-** Org with evil-org-mode
-evil org 模式处理 org 文件
-Please see the [[https://github.com/Somelauw/evil-org-mode/blob/master/doc/keythemes.org][evil-org documentation]] for additional instructions on customizing
-=evil-org-mode=.
-
-| Key binding   | Description                     |
-|---------------+---------------------------------|
-| ~gj~ / ~gk~   | Next/previous element (heading) |
-| ~gh~ / ~gl~   | Parent/child element (heading)  |
-| ~gH~          | Root heading                    |
-| ~ae~          | Element text object             |
-| ~ar~          | Subtree text object             |
-| ~M-j~ / ~M-k~ | Move heading                    |
-| ~M-h~ / ~M-l~ | Promote or demote heading       |
-| ~M-J~ / ~M-K~ | Move subtree                    |
-| ~M-H~ / ~M-L~ | Promote or demote subtree       |
-| ~>>~ / ~<<~   | Promote or demote heading       |
-
-If the layer variable =org-want-todo-bindings= is true, the following bindings
-are also available.
-
-| Key bindings | Description                         |
-|--------------+-------------------------------------|
-| ~t~          | Cycle TODO state of current heading |
-| ~T~          | Insert new TODO heading             |
-| ~M-t~        | Insert new TODO sub-heading         |
-
-** Tables
-
-| Key binding   | Description                                                                |
-|---------------+----------------------------------------------------------------------------|
-| ~SPC m t a~   | Align the table at point by aligning all vertical bars                     |
-| ~SPC m t b~   | Blank the current table field or active region                             |
-| ~SPC m t c~   | Convert from =org-mode= table to table.el and back                         |
-| ~SPC m t d c~ | Delete a column from the table                                             |
-| ~SPC m t d r~ | Delete the current row or horizontal line from the table                   |
-| ~SPC m t e~   | Replace the table field value at the cursor by the result of a calculation |
-| ~SPC m t E~   | Export table to a file, with configurable format                           |
-| ~SPC m t h~   | Go to the previous field in the table                                      |
-| ~SPC m t H~   | Move column to the left                                                    |
-| ~SPC m t i c~ | Insert a new column into the table                                         |
-| ~SPC m t i h~ | Insert a horizontal-line below the current line into the table             |
-| ~SPC m t i H~ | Insert a hline and move to the row below that line                         |
-| ~SPC m t i r~ | Insert a new row above the current line into the table                     |
-| ~SPC m t I~   | Import a file as a table                                                   |
-| ~SPC m t j~   | Go to the next row (same column) in the current table                      |
-| ~SPC m t J~   | Move table row down                                                        |
-| ~SPC m t K~   | Move table row up                                                          |
-| ~SPC m t l~   | Go to the next field in the current table, creating new lines as needed    |
-| ~SPC m t L~   | Move column to the right                                                   |
-| ~SPC m t n~   | Query for a size and insert a table skeleton                               |
-| ~SPC m t N~   | Use the table.el package to insert a new table                             |
-| ~SPC m t p~   | Plot the table using org-plot/gnuplot                                      |
-| ~SPC m t r~   | Recalculate the current table line by applying all stored formulas         |
-| ~SPC m t s~   | Sort table lines according to the column at point                          |
-| ~SPC m t t f~ | Toggle the formula debugger in tables                                      |
-| ~SPC m t t o~ | Toggle the display of Row/Column numbers in tables                         |
-| ~SPC m t w~   | Wrap several fields in a column like a paragraph                           |
-
-** Trees
-
-| Key binding   | Description                     |
-|---------------+---------------------------------|
-| ~gj~ / ~gk~   | Next/previous element (heading) |
-| ~gh~ / ~gl~   | Parent/child element (heading)  |
-| ~gH~          | Root heading                    |
-| ~ae~          | Element text object             |
-| ~ar~          | Subtree text object             |
-| ~M-j~ / ~M-k~ | Move heading                    |
-| ~M-h~ / ~M-l~ | Promote or demote heading       |
-| ~M-J~ / ~M-K~ | Move subtree                    |
-| ~M-H~ / ~M-L~ | Promote or demote subtree       |
-| ~>>~ / ~<<~   | Promote or demote heading       |
-| ~TAB~         | org-cycle                       |
-| ~SPC m s a~   | Toggle archive tag for subtree  |
-| ~SPC m s A~   | Archive subtree                 |
-| ~SPC m s b~   | org-tree-to-indirect-buffer     |
-| ~SPC m s l~   | org-demote-subtree              |
-| ~SPC m s h~   | org-promote-subtree             |
-| ~SPC m s k~   | org-move-subtree-up             |
-| ~SPC m s j~   | org-move-subtree-down           |
-| ~SPC m s n~   | org-narrow-to-subtree           |
-| ~SPC m s N~   | widen narrowed subtree          |
-| ~SPC m s r~   | org-refile                      |
-| ~SPC m s s~   | show sparse tree                |
-| ~SPC m s S~   | sort trees                      |
-
-** Element insertion
-
-| Key binding   | Description                      |
-|---------------+----------------------------------|
-| ~SPC m i d~   | org-insert-drawer                |
-| ~SPC m i D s~ | Take screenshot                  |
-| ~SPC m i D y~ | Yank image url                   |
-| ~SPC m i e~   | org-set-effort                   |
-| ~SPC m i f~   | org-insert-footnote              |
-| ~SPC m i H~   | org-insert-heading-after-current |
-| ~SPC m i h~   | org-insert-heading               |
-| ~SPC m i K~   | spacemacs/insert-keybinding-org  |
-| ~SPC m i l~   | org-insert-link                  |
-| ~SPC m i n~   | org-add-note                     |
-| ~SPC m i p~   | org-set-property                 |
-| ~SPC m i s~   | org-insert-subheading            |
-| ~SPC m i t~   | org-set-tags                     |
-
-** Links
-
-| Key binding | Description       |
-|-------------+-------------------|
-| ~SPC m x o~ | org-open-at-point |
-
-** Babel / Source Blocks
-
-| Key binding | Description                              |
-|-------------+------------------------------------------|
-| ~SPC m b .~ | Enter Babel Transient State              |
-| ~SPC m b a~ | org-babel-sha1-hash                      |
-| ~SPC m b b~ | org-babel-execute-buffer                 |
-| ~SPC m b c~ | org-babel-check-src-block                |
-| ~SPC m b d~ | org-babel-demarcate-block                |
-| ~SPC m b e~ | org-babel-execute-maybe                  |
-| ~SPC m b f~ | org-babel-tangle-file                    |
-| ~SPC m b g~ | org-babel-goto-named-src-block           |
-| ~SPC m b i~ | org-babel-lob-ingest                     |
-| ~SPC m b I~ | org-babel-view-src-block-info            |
-| ~SPC m b j~ | org-babel-insert-header-arg              |
-| ~SPC m b l~ | org-babel-load-in-session                |
-| ~SPC m b n~ | org-babel-next-src-block                 |
-| ~SPC m b o~ | org-babel-open-src-block-result          |
-| ~SPC m b p~ | org-babel-previous-src-block             |
-| ~SPC m b r~ | org-babel-goto-named-result              |
-| ~SPC m b s~ | org-babel-execute-subtree                |
-| ~SPC m b t~ | org-babel-tangle                         |
-| ~SPC m b u~ | org-babel-goto-src-block-head            |
-| ~SPC m b v~ | org-babel-expand-src-block               |
-| ~SPC m b x~ | org-babel-do-key-sequence-in-edit-buffer |
-| ~SPC m b z~ | org-babel-switch-to-session              |
-| ~SPC m b Z~ | org-babel-switch-to-session-with-code    |
-
-*** Org Babel Transient State
-Use ~SPC m b .~ to enter a transient state for quick source block navigation and
-execution. During that state, the following bindings are active:
-
-| Key binding | Description                   |
-|-------------+-------------------------------|
-| ~'~         | edit source block             |
-| ~e~         | execute source block          |
-| ~g~         | jump to named source block    |
-| ~j~         | jump to next source block     |
-| ~k~         | jump to previous source block |
-| ~z~         | recenter buffer in window     |
-| ~q~         | leave transient state         |
-
-** Emphasis
-
-| Key binding | Description                |
-|-------------+----------------------------|
-| ~SPC m x b~ | make region bold           |
-| ~SPC m x c~ | make region code           |
-| ~SPC m x i~ | make region italic         |
-| ~SPC m x r~ | clear region emphasis      |
-| ~SPC m x s~ | make region strike-through |
-| ~SPC m x u~ | make region underline      |
-| ~SPC m x v~ | make region verbose        |
-
-** Navigating in calendar
-在日历导航
-| Key binding | Description        |
-|-------------+--------------------|
-| ~M-l~       | One day forward    |
-| ~M-h~       | One day backward   |
-| ~M-j~       | One week forward   |
-| ~M-k~       | One week backward  |
-| ~M-L~       | One month forward  |
-| ~M-H~       | One month backward |
-| ~M-J~       | One year forward   |
-| ~M-K~       | One year backward  |
-
-** Capture buffers and src blocks
-=org-capture-mode= and =org-src-mode= both support the confirm and abort
-conventions.
-
-| Key binding                                  | Description                            |
-|----------------------------------------------+----------------------------------------|
-| ~SPC m <dotspacemacs-major-mode-leader-key>~ | confirm in =org-capture-mode=          |
-| ~SPC m '​~                                    | confirm in =org-src-mode=              |
-| ~SPC m c~                                    | confirm                                |
-| ~SPC m a~                                    | abort                                  |
-| ~SPC m k~                                    | abort                                  |
-| ~SPC m r~                                    | org-capture-refile in org-capture-mode |
-
-** Org agenda
-*** Key bindings
-The evilified org agenda supports the following bindings:
-
-| Key binding          | Description                       |
-|----------------------+-----------------------------------|
-| ~M-SPC~ or ~s-M-SPC~ | org-agenda transient state        |
-| ~SPC m a~            | org-agenda                        |
-| ~SPC m C c~          | org-agenda-clock-cancel           |
-| ~SPC m C i~          | org-agenda-clock-in               |
-| ~SPC m C o~          | org-agenda-clock-out              |
-| ~SPC m C p~          | org-pomodoro (if package is used) |
-| ~SPC m d d~          | org-agenda-deadline 事项结束线    |
-| ~SPC m d s~          | org-agenda-schedule    事项开始线 |
-| ~SPC m i e~          | org-agenda-set-effort             |
-| ~SPC m i p~          | org-agenda-set-property           |
-| ~SPC m i t~          | org-agenda-set-tags               |
-| ~SPC m s r~          | org-agenda-refile                 |
-| ~M-j~                | next item                         |
-| ~M-k~                | previous item                     |
-| ~M-h~                | earlier view                      |
-| ~M-l~                | later view                        |
-| ~gr~                 | refresh                           |
-| ~gd~                 | toggle grid                       |
-| ~C-v~                | change view                       |
-| ~RET~                | org-agenda-goto                   |
-| ~M-RET~              | org-agenda-show-and-scroll-up     |
-
-*** Org agenda transient state
-Use ~M-SPC~ or ~s-M-SPC~ in an org agenda buffer to activate its transient state.
-The transient state aims to list the most useful org agenda commands and
-visually organize them by category. The commands associated with each binding
-are listed bellow.
-
-| Key binding | Description         | Command                           |
-|-------------+---------------------+-----------------------------------|
-| Entry       |                     |                                   |
-|-------------+---------------------+-----------------------------------|
-| ~ht~        | set status          | org-agenda-todo                   |
-| ~hk~        | kill                | org-agenda-kill                   |
-| ~hR~        | refile              | org-agenda-refile                 |
-| ~hA~        | archive             | org-agenda-archive-default        |
-| ~h:~        | set tags            | org-agenda-set-tags               |
-| ~hp~        | set priority        | org-agenda-priority               |
-|-------------+---------------------+-----------------------------------|
-| Visit entry |                     |                                   |
-|-------------+---------------------+-----------------------------------|
-| ~SPC~       | in other window     | org-agenda-show-and-scroll-up     |
-| ~TAB~       | & go to location    | org-agenda-goto                   |
-| ~RET~       | & del other windows | org-agenda-switch-to              |
-| ~o~         | link                | link-hint-open-link               |
-|-------------+---------------------+-----------------------------------|
-| Filter      |                     |                                   |
-|-------------+---------------------+-----------------------------------|
-| ~ft~        | by tag              | org-agenda-filter-by-tag          |
-| ~fr~        | refine by tag       | org-agenda-filter-by-tag-refine   |
-| ~fc~        | by category         | org-agenda-filter-by-category     |
-| ~fh~        | by top headline     | org-agenda-filter-by-top-headline |
-| ~fx~        | by regexp           | org-agenda-filter-by-regexp       |
-| ~fd~        | delete all filters  | org-agenda-filter-remove-all      |
-|-------------+---------------------+-----------------------------------|
-| Date        |                     |                                   |
-|-------------+---------------------+-----------------------------------|
-| ~ds~        | schedule            | org-agenda-schedule               |
-| ~dS~        | un-schedule         | org-agenda-schedule               |
-| ~dd~        | set deadline        | org-agenda-deadline               |
-| ~dD~        | remove deadline     | org-agenda-deadline               |
-| ~dt~        | timestamp           | org-agenda-date-prompt            |
-| ~+~         | do later            | org-agenda-do-date-later          |
-| ~-~         | do earlier          | org-agenda-do-date-earlier        |
-|-------------+---------------------+-----------------------------------|
-| Toggle      |                     |                                   |
-|-------------+---------------------+-----------------------------------|
-| ~tf~        | follow              | org-agenda-follow-mode            |
-| ~tl~        | log                 | org-agenda-log-mode               |
-| ~ta~        | archive             | org-agenda-archives-mode          |
-| ~tr~        | clock report        | org-agenda-clockreport-mode       |
-| ~td~        | diaries             | org-agenda-toggle-diary           |
-|-------------+---------------------+-----------------------------------|
-| View        |                     |                                   |
-|-------------+---------------------+-----------------------------------|
-| ~vd~        | day                 | org-agenda-day-view               |
-| ~vw~        | week                | org-agenda-week-view              |
-| ~vt~        | fortnight           | org-agenda-fortnight-view         |
-| ~vm~        | month               | org-agenda-month-view             |
-| ~vy~        | year                | org-agenda-year-view              |
-| ~vn~        | next span           | org-agenda-later                  |
-| ~vp~        | prev span           | org-agenda-earlier                |
-| ~vr~        | reset               | org-agenda-reset-view             |
-|-------------+---------------------+-----------------------------------|
-| Clock       |                     |                                   |
-|-------------+---------------------+-----------------------------------|
-| ~cI~        | in                  | org-agenda-clock-in               |
-| ~cO~        | out                 | org-agenda-clock-out              |
-| ~cq~        | cancel              | org-agenda-clock-cancel           |
-| ~cj~        | jump                | org-agenda-clock-goto             |
-|-------------+---------------------+-----------------------------------|
-| Other       |                     |                                   |
-|-------------+---------------------+-----------------------------------|
-| ~gr~        | reload              | org-agenda-redo                   |
-| ~.~         | go to today         | org-agenda-goto-today             |
-| ~gd~        | go to date          | org-agenda-goto-date              |
-
-** Pomodoro
-
-| Key binding | Description       |
-|-------------+-------------------|
-| ~SPC m C p~ | starts a pomodoro |
-
-** Presentation
-org-present must be activated explicitly by typing: ~SPC SPC org-present~
-
-| Key binding | Description    |
-|-------------+----------------|
-| ~h~         | previous slide |
-| ~l~         | next slide     |
-| ~q~         | quit           |
-
-** Helm-org-rifle
-
-| Key binding | Description                                |
-|-------------+--------------------------------------------|
-| ~SPC a o r~ | Search org files for keywords and headings |
-
-** Org-projectile
-
-| Key binding       | Description                                             |
-|-------------------+---------------------------------------------------------|
-| ~SPC a o p~       | Capture a TODO for the current project                  |
-| ~SPC u SPC a o p~ | Capture a TODO for any given project (choose from list) |
-| ~SPC p o~         | Go to the TODOs for the current project                 |
-
-** Org-journal
-
-| Key binding   | Description            |
-|---------------+------------------------|
-| ~SPC a o j j~ | New journal entry      |
-| ~SPC a o j s~ | Search journal entries |
-
-Journal entries are highlighted in the calendar. The following key bindings are
-available for =calendar-mode= for navigating and manipulating the journal.
-
-| Key binding | Description                           |
-|-------------+---------------------------------------|
-| ~SPC m r~   | Read journal entry                    |
-| ~SPC m i~   | Insert journal entry for date         |
-| ~SPC m n~   | Next journal entry                    |
-| ~SPC m p~   | Previous journal entry                |
-| ~SPC m s~   | Search all journal entries            |
-| ~SPC m w~   | Search calendar week journal entries  |
-| ~SPC m m~   | Search calendar month journal entries |
-| ~SPC m y~   | Search calendar year journal entries  |
-
-While viewing a journal entry in =org-journal-mode= the following key bindings
-are available.
-
-| Key binding | Description            |
-|-------------+------------------------|
-| ~SPC m j~   | New journal entry      |
-| ~SPC m p~   | Previous journal entry |
-| ~SPC m n~   | Next journal entry     |
-
-** Org-brain
-*** Application bindings
-
-| Key binding | Description                  |
-|-------------+------------------------------|
-| ~SPC a o b~ | Visualize an org-brain entry |
-
-*** Visualization bindings
-
-| Key binding | Description                           |
-|-------------+---------------------------------------|
-| ~j / TAB~   | Goto next link                        |
-| ~k / S-TAB~ | Goto previous link                    |
-| ~c~         | Add child                             |
-| ~p~         | Add parent                            |
-| ~l~         | Add resource link                     |
-| ~C-y~       | Paste resource link                   |
-| ~a~         | Add resource [[http://orgmode.org/manual/Attachments.html][attachment]]               |
-| ~o~         | Open and edit the visualized entry    |
-| ~f~         | Find/visit another entry to visualize |
-| ~r~         | Rename this, or another, entry        |
-|             |                                       |
-* 代办任务
-** TODO 任务 1 [ start time - end time ]
-** DONE 任务 2 [ start time - end time ]
-CLOSED: [2019-05-09 四 15:15]
-** TODO 任务 3 [ start time - end time ]
-** TODO 任务 4 [ start time - end time ]
-| 代办列表显示方式 | 周 w, 日 d, 月 org-agenda-month,year |
-| 在代办文件中查找 | SPC a o /                            |
-| 抓取任务         | SPC a o c                            |
-| org store link   | SPC a o l                            |
-| 显示 tags        | SPC a o m                            |
-| 显示 Todolist    | SPC a o t                            |
-
-
-任务计时 
-org-clock-in 
-org-clock-cacel
-番茄闹钟
-
-天天做 SCHEDULED: <2019-04-23 二 07:00 .+1d>
-周周做 SCHEDULED: <2019-04-23 二 07:00 .+1w>
-使用时间点+ 间隔（ 天（d）、周（w）、月（m）或者年（y））
-在时间段内做 <2004-08-23 Mon>--<2004-08-26 Thu>
-
-1am 或 1pm
-
-从 2016 年 7 月 24 日开始到 2016 年 12 月 1 日，每个周日的上午 10:00-12:00 进行某项任务
-SCHEDULED: <2016-07-24 Sun 10:00-12:00 ++1w> DEADLINE: <2016-12-01 Thu>
-
- 
- #+begin_src lisp
- ;; 优先级范围和默认任务的优先级
- (setq org-highest-priority ?A)
- (setq org-lowest-priority ?E)
- (setq org-default-priority ?E)
-
- ;; org agenda 优先级醒目外观
- (setq org-priority-faces '(
- (?A . (:background "red" :foreground "white" :weight bold)) 
- (?B . (:background "DarkOrange" :foreground "white" :weight bold)) 
- (?C . (:background "yellow" :foreground "DarkGreen" :weight bold)) 
- (?D . (:background "DodgerBlue" :foreground "black" :weight bold)) 
- (?E . (:background "SkyBlue" :foreground "black" :weight bold)) ))
+  对于间断性的任务      
+ #+begin_src org
+   ,* 每周三去学校接 sam
+     <2007-05-16 Wed 12:30 +1w>
  #+end_src
- 
 
- 子任务
- *** 一个任务 [0/2]
-该任务包含几个步骤：
-- [-] 步骤 1 [1/2]
-  - [X] 步骤 1.1
-  - [ ] 步骤 1.2
-- [-] 步骤 2 [1/4]
-  - [X] 步骤 2.1
-  - [ ] 步骤 2.2
-  - [ ] 
-  - [ ] 
-* 错误列表
-** invalid-function org-table-with-shrunk-field
-使用 org-reload
+ 延时显示任务　
+  #+begin_src org
+   ,* 学校接 sam
+     <2007-05-16 Wed 12:30 -1d>
+ #+end_src
+: 第二天显示，可以验证昨天是否完成了任务
+
+ 
+ : 间隔参数 可以为 天 (d) ，周 (w) , 月 (m) 或 年 (y)
+ : 循环任务用　=+=  ,延时显示用 =-=　
+*** Deadlines and Scheduling [ 给时间附属性 ]
+    
+    Deadlines : 任务截止时间 ( 通常是 TODO 项目 )
+    #+begin_src org
+      ,*** TODO write article about the Earth for the Guide
+          DEADLINE: <2004-02-29 Sun>
+    #+end_src
+    
+    #+begin_src org
+      ,*** 设置一个５天的警告
+          DEADLINE: <2004-02-29 Sun -5d>
+    #+end_src
+
+    SCHEDULED: 任务开始时间
+    
+    #+begin_src org
+      ,*** TODO 叫小李吃饭
+          SCHEDULED: <2004-12-25 六 11:00>
+    #+end_src
+*** 给任务计时
+    统计在任务上花了多少时间,就要给任务计时　
+#+begin_verse
+    计时开始, ~org-clock-in~ 
+    停止计时, ~org-clock-out~ 
+    在上一个停止处继续计时 , ~org-clock-in-last~
+#+end_verse
+    
+    历史记录就这样的格式
+    #+begin_src org
+      :LOGBOOK:
+      CLOCK: [2019-06-04 二 08:59]--[2019-06-04 二 09:09] =>  0:10
+      CLOCK: [2019-06-04 二 08:56]--[2019-06-04 二 08:59] =>  0:03
+      :END:
+    #+end_src
+
+*** 计时报表
+    org 能统计这些任务花费的时间，输出一些表 
+    
+    #+begin_verse
+    输出报表, ~org-clock-report~
+    更新光标处的报表, ~org-dblock-update~
+    #+end_verse
+
+    报表输出格式
+    #+begin_src org
+      ,#+BEGIN: clocktable :scope subtree :maxlevel 2
+      ,#+CAPTION: Clock summary at [2019-06-04 二 09:06]
+      | Headline                         | Time   |      |
+      |----------------------------------+--------+------|
+      | *Total time*                     | *0:09* |      |
+      |----------------------------------+--------+------|
+      | \_  把 org  agenda 的 clock 学会 |        | 0:09 |
+      ,#+END:
+    #+end_src
+    这个任务总共做了９分钟 
+*** 解决空闲时间(Resolving idle time)
+    如果你正在计时一个任务，但突然有事(比如接电话)，那么就要从当前计时中减去你花去干其他事花的时间(浪费时间)。 
+    
+    设置默认要预留的时间: ~org-clock-idle-time~
+
+    #+begin_verse
+    设置浪费时间:　org-resolve-clocks  
+    k 保留任务的的有效计时数，并从当前时间开始计时 
+    K(大写)  全部有效，并退出任务计时
+    s/S 从当前时间重新计时 
+    C 取消任务计时
+    #+end_verse
+    
+** Agenda Views [ 日程浏览 ]
+   能把不同文件中的 ~TODO~ 项目收集起来 ，用来 ~GTD~ (把事情做完) 管理
+   
+   #+begin_verse
+   ~GTD~ 是一套任务收集，分配的方法，用来节约时间的。
+   ~org~ 中 任务都被收集到 org 文件中 ，就像 ~TODO~ 项目一样。
+   #+end_verse
+   
+   #+begin_verse
+   进入 Agenda Views 视图 , ~org-agenda-list~ 
+   把当前文件添加到 Agenda Files , ~org-agenda-file-to-front~
+   移除当前文件, ~org-remove-file~ 
+   遍历 Agenda Files , ~org-cycle-agenda-files~
+   #+end_verse
+   
+  图片展示 , 切换 日视图@@html:<kbd>@@ d @@html:</kbd>@@ ,周视图@@html:<kbd>@@ w @@html:</kbd>@@ ,
+  月视图 ~org-agenda-month-view~
+  
+#+DOWNLOADED: /tmp/screenshot.png @ 2019-06-04 10:28:24
+[[file:org_%E6%8E%92%E7%89%88%E5%B7%A5%E5%85%B7/screenshot_2019-06-04_10-28-24.png]]
+  
+
+* 参考资料
+  
+  
+[fn:1] 这里是脚注那段的参考信息，网址是 :  https://orgmode.org
+ 
