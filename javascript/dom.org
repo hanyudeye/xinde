@@ -1,0 +1,204 @@
+#+TITLE: DOM 简介
+#+DESCRIPTION: DOM 简介
+#+TAGS: DOM,javascript
+#+CATEGORIES: 软件使用
+
+* DOM (w3c 标准)
+  BOM 是控制浏览器的，DOM 控制浏览器内网页的内容。 
+  提供了对网页文档的操作(节点的操作形式)
+*** document  
+    ~document~ 节点对象代表整个文档
+    ~document~ 对象有不同的办法可以获取。
+
+- 正常的网页，直接使用`document`或`window.document`。
+- `iframe`框架里面的网页，使用`iframe`节点的`contentDocument`属性。
+- Ajax 操作返回的文档，使用`XMLHttpRequest`对象的`responseXML`属性。
+- 内部节点的`ownerDocument`属性。
+
+`document`对象继承了`EventTarget`接口、`Node`接口、`ParentNode`接口。这意味着，这些接口的方法都可以在`document`对象上调用。除此之外，`document`对象还有很多自己的属性和方法。
+
+**** 属性
+     doctype   返回文档类型,通常就是第一个节点 ~document.firstChild~
+     doctype.name  返回文档类型的名称
+     body    	          提供对 <body> 元素的直接访问对于定义了框架集的文档，该属性引用最外层的 <frameset> 	  	  	  	 
+     head         指向 <head> 元素
+     cookie 	          设置或返回与当前文档有关的所有 cookie
+     domain 	          返回当前文档的域名 	
+     lastModified 	    返回文档被最后修改的日期和时间 该值来自于 Last-Modified HTTP 头部，它是由 Web 服务器发送的可选项	
+     referrer 	        返回载入当前文档的文档的 URL
+     title 	            返回当前文档的标题 
+     URL 	              返回当前文档的 URL 
+**** 方法
+     close() 	             关闭用 document.open() 方法打开的输出流，并显示选定的数据 
+     getElementById() 	   返回对拥有指定 id 的第一个对象的引用
+     getElementsByName()   返回带有指定名称的对象集合 	
+     getElementsByTagName()返回带有指定标签名的对象集合
+     getElementsByClassName()返回带有指定 class 的对象集合
+     open() 	             打开一个流，以收集来自任何 document.write() 或 document.writeln() 方法的输出
+     write()    	         向文档写 HTML 表达式 或 JavaScript 代码 
+     writeln() 	           等同于 write() 方法，不同的是在每个表达式之后写一个换行符 
+*** Style
+    element.style.属性=属性值 
+**** 属性
+***** 背景
+      background 	          在一行中设置所有的背景属性 
+      backgroundAttachment 	设置背景图像是否固定或随页面滚动 
+      backgroundColor 	    设置元素的背景颜色 
+      backgroundImage 	    设置元素的背景图像 
+      backgroundPosition 	  设置背景图像的起始位置 
+      backgroundPositionX 	设置 backgroundPosition 属性的 X 坐标 
+      backgroundPositionY 	设置 backgroundPosition 属性的 Y 坐标 
+      backgroundRepeat 	    设置是否及如何重复背景图像
+***** 边框和边距
+      border             	在一行设置四个边框的所有属性 	
+      borderBottom  	    在一行设置底边框的所有属性 
+      borderBottomColor 	设置底边框的颜色 	
+      borderBottomStyle 	设置底边框的样式 	
+      borderBottomWidth 	设置底边框的宽度 	
+      borderColor     	  设置所有四个边框的颜色 (可设置四种颜色) 	
+      borderLeft       	  在一行设置左边框的所有属性 
+      borderLeftColor 	  设置左边框的颜色 	
+      borderLeftStyle 	  设置左边框的样式 	
+      borderLeftWidth 	  设置左边框的宽度 	
+      borderRight 	      在一行设置右边框的所有属性
+      borderRightColor 	  设置右边框的颜色 	
+      borderRightStyle 	  设置右边框的样式 	
+      borderRightWidth 	  设置右边框的宽度 	
+      borderStyle 	      设置所有四个边框的样式 (可设置四种样式) 
+      borderTop 	        在一行设置顶边框的所有属性 
+      borderTopColor 	    设置顶边框的颜色 		
+      borderTopStyle 	    设置顶边框的样式 		
+      borderTopWidth 	    设置顶边框的宽度 		
+      borderWidth 	      设置所有四条边框的宽度 (可设置四种宽度) 
+      margin 	            设置元素的边距 (可设置四个值)
+      marginBottom        设置元素的底边距
+      marginLeft 	        设置元素的左边距 	
+      marginRight 	      设置元素的右边据
+      marginTop 	        设置元素的顶边距 	
+      outline 	          在一行设置所有的 outline 属性 
+      outlineColor 	      设置围绕元素的轮廓颜色 	
+      outlineStyle 	      设置围绕元素的轮廓样式 	
+      outlineWidth 	      设置围绕元素的轮廓宽度 	
+      padding 	          设置元素的填充 (可设置四个值)
+      paddingBottom       设置元素的下填充
+      paddingLeft 	      设置元素的左填充
+      paddingRight 	      设置元素的右填充
+      paddingTop 	        设置元素的顶填充 	
+***** 布局
+      clear    	        设置在元素的哪边不允许其他的浮动元素 	
+      clip      	      设置元素的形状 	
+      content 	        设置元信息 	
+      counterIncrement 	设置其后是正数的计数器名称的列表其中整数指示每当元素出现时计数器的增量默认是 1
+      counterReset 	    设置其后是正数的计数器名称的列表其中整数指示每当元素出现时计数器被设置的值默认是 0
+      cssFloat 	        设置图像或文本将出现（浮动）在另一元素中的何处 	
+      cursor   	        设置显示的指针类型 
+      direction 	      设置元素的文本方向 	
+      display 	        设置元素如何被显示 	inherit 父的属性继承
+      height 	          设置元素的高度 
+      markerOffset 	    设置 marker box 的 principal box 距离其最近的边框边缘的距离
+      marks 	          设置是否 cross marks 或 crop marks 应仅仅被呈现于 page box 边缘之外 	
+      maxHeight 	      设置元素的最大高度 	
+      maxWidth 	        设置元素的最大宽度 	
+      minHeight 	      设置元素的最小高度 	
+      minWidth 	        设置元素的最小宽度 	
+****** overflow 	规定如何处理不适合元素盒的内容 	
+       overflow-x:      hidden;隐藏水平滚动条
+       verticalAlign 	  设置对元素中的内容进行垂直排列 
+       visibility 	    设置元素是否可见 
+       width 	          设置元素的宽度
+***** 列表
+      listStyle 	在一行设置列表的所有属性 
+      listStyleImage 	把图像设置为列表项标记 
+      listStylePosition 改变列表项标记的位置 	
+      listStyleType 	设置列表项标记的类型
+***** 定位
+      bottom 	设置元素的底边缘距离父元素底边缘的之上或之下的距离 	
+      left       	置元素的左边缘距离父元素左边缘的左边或右边的距离 	
+      position 	把元素放置在 static, relative, absolute 或 fixed 的位置 	
+      right 	            置元素的右边缘距离父元素右边缘的左边或右边的距离 	
+      top 	            设置元素的顶边缘距离父元素顶边缘的之上或之下的距离 	
+      zIndex 	设置元素的堆叠次序
+***** 文本
+      color 	设置文本的颜色 
+      font 	在一行设置所有的字体属性 
+      fontFamily 	设置元素的字体系列
+      fontSize 	设置元素的字体大小
+      fontSizeAdjust 	设置/调整文本的尺寸 
+      fontStretch 	设置如何紧缩或伸展字体
+      fontStyle 	设置元素的字体样式 
+      fontVariant 	用小型大写字母字体来显示文本 
+      fontWeight 	设置字体的粗细 
+      letterSpacing 	设置字符间距 
+      lineHeight 	设置行间距 
+      quotes 	设置在文本中使用哪种引号 
+      textAlign 	排列文本 
+      textDecoration 	设置文本的修饰 
+      textIndent 	缩紧首行的文本 
+      textShadow 	设置文本的阴影效果
+      textTransform 	对文本设置大写效果 
+      whiteSpace 	设置如何设置文本中的折行和空白符 	
+      wordSpacing 	设置文本中的词间距 
+***** Table 
+      borderCollapse 	设置表格边框是否合并为单边框，或者像在标准的 HTML 中那样分离 
+      borderSpacing 	设置分隔单元格边框的距离 
+      captionSide 	设置表格标题的位置 	
+      emptyCells 	设置是否显示表格中的空单元格
+      tableLayout 	设置用来显示表格单元格、行以及列的算法
+*** node
+**** 节点属性
+     innerHTML: 获取元素内容,很多东西
+     nodeName 规定节点的名称
+     nodeValue 规定节点的值 (文本节点有值)
+***** nodeType 返回节点的类型 nodeType 是只读的
+      #+BEGIN_SRC 
+      元素 	1
+      属性 	2
+      文本 	3
+      注释 	8
+      #+END_SRC
+      : 通过使用一个元素节点的 parentNode、firstChild 以及 lastChild 属性
+**** 修改
+     var para=document.createElement("p");
+     var node=document.createTextNode("This is new.");
+     para.appendChild(node);
+**** 节点元素
+***** 创建新的 HTML 元素 - appendChild()您首先必须创建该元素，然后把它追加到已有的元素上
+***** 创建新的 HTML 元素 - insertBefore()
+***** 删除已有的 HTML 元素
+      var child=document.getElementById("p1");
+      child.parentNode.removeChild(child);
+***** 替换 HTML 元素
+      : 如需替换 HTML DOM 中的元素，请使用 replaceChild() 方法：
+      #+BEGIN_SRC 
+      var parent=document.getElementById("div1");
+      var child=document.getElementById("p1");
+      parent.replaceChild(para,child);
+      #+END_SRC
+*** 事件
+**** window 
+     onload    页面结束加载之后触发   
+     onresize  当浏览器窗口被调整大小时触发 
+**** 页面或图像  
+     onload 
+     onUnload
+**** FORM 
+     onFocus
+     onBlur 
+     onChange
+     onselect      在元素中文本被选中后触发            
+     onsubmit     在提交表单时触发                   
+**** 键盘
+     onkeydown  在用户按下按键时触发
+     onkeypress 在用户敲击按钮时触发
+     onkeyup    当用户释放按键时触发
+**** Mouse 
+     onclick
+     ondblclick
+     onmousedown
+     onmouseup 
+     onscroll
+     onMouseOver 
+     onMouseOut
+**** Media 
+     onabort
+     onplay

@@ -1,0 +1,165 @@
+#+TITLE: BOM 简介
+#+DESCRIPTION: BOM 简介
+#+TAGS: BOM,javascript
+#+CATEGORIES: 软件使用
+* BOM(Browser Object Model) 缺乏标准
+  /home/wuming/book/program/javascript-tutorial/docs/bom/window.md
+** 简介 
+  BOM（Browser Object Model）即浏览器对象模型, 浏览器提供的接口。
+#+HTML: <!-- more -->
+
+
+#+DOWNLOADED: /tmp/screenshot.png @ 2019-06-11 04:56:24
+[[file:BOM(Browser_Object_Model)_%E7%BC%BA%E4%B9%8F%E6%A0%87%E5%87%86/screenshot_2019-06-11_04-56-24.png]]
+** window 对象
+   当前浏览器窗口，是当前网页的顶层对象,最高层对象。
+
+   最为顶层对象的缺陷是
+#+begin_src js
+  a = 1;
+  window.a // 1
+#+end_src
+所有未声明变量自动变成了 ~window~ 对象的属性，使得编译阶段无法检测出未声明变量。
+
+*** 属性
+**** window.name
+     设置或返回窗口的名称, 意义不大。这个属性主要配合超链接和表单的`target`属性使用。
+**** window.closed ,window.opener
+     表示窗口是否关闭,一般用来检查使用脚本打开的新窗口是否关闭。
+
+#+begin_src js
+  var popup=window.open();
+  if((popup !==null) && !popup.closed){
+      console.log('窗口开着'); 
+  }else{
+      console.log('窗口关了'); 
+  }
+#+end_src
+
+`window.opener`属性表示打开当前窗口的父窗口
+
+如果两个窗口之间不需要通信，建议将子窗口的`opener`属性显式设为`null`，这样可以减少一些安全隐患。
+
+#+begin_src js
+var newWin = window.open('example.html', 'newWindow', 'height=400,width=400');
+newWin.opener = null;
+#+end_src
+
+上面代码中，子窗口的`opener`属性设为`null`，两个窗口之间就没办法再联系了。
+
+通过`opener`属性，可以获得父窗口的全局属性和方法，但只限于两个窗口同源的情况（参见《同源限制》一章），且其中一个窗口由另一个打开。`<a>`元素添加`rel="noopener"`属性，可以防止新打开的窗口获取父窗口，减轻被恶意网站修改父窗口 URL 的风险。
+
+#+begin_src js
+<a href="https://an.evil.site" target="_blank" rel="noopener">
+恶意网站
+</a>
+#+end_src
+**** window.self，window.window
+     指向自身，只读
+**** window.frames，window.length
+`window.frames`属性返回一个类似数组的对象，成员为页面内所有框架窗口，包括`frame`元素和`iframe`元素。`window.frames[0]`表示页面中第一个框架窗口。
+
+如果`iframe`元素设置了`id`或`name`属性，那么就可以用属性值，引用这个`iframe`窗口。比如`<iframe name="myIFrame">`可以用`frames['myIFrame']`或者`frames.myIFrame`来引用。
+
+`frames`属性实际上是`window`对象的别名。
+#+begin_src js
+frames === window // true
+#+end_src
+
+`window.length`属性返回当前网页包含的框架总数。如果当前网页不包含`frame`和`iframe`元素，那么`window.length`就返回`0`。
+
+#+begin_src js
+window.frames.length === window.length // true
+#+end_src
+
+**** window.devicePixelRatio
+     `window.devicePixelRatio`属性返回一个数值，表示一个 CSS 像素的大小与一个物理像素
+     的大小之间的比率。也就是说，它表示一个 CSS 像素由多少个物理像素组成。它可以用于
+     判断用户的显示环境，如果这个比率较大，就表示用户正在使用高清屏幕，因此可以显示较
+     大像素的图片。
+
+* ll
+  *** window 
+**** 状态处理
+    | 窗口是否已被关闭                | closed      |
+    | 文档显示区高度                  | innerHeight |
+    | 文档显示区宽度                  | innerwidth  |
+    | 设置或返回框架数量              | length      |
+    | 设置或返回窗口的名称            | name        |
+    | 返回窗口的外部高度              | outerheight |
+    | 返回窗口的外部宽度              | outerwidth  |
+    | 返回父窗口                      | parent      |
+    | 返回对当前窗口的引用            | self        |
+    | 设置窗口状态栏的文本            | status      |
+    | 返回最顶层的先辈窗口            | top         |
+    | 窗口的左上角在屏幕上的的 y 坐标 | screenY     |
+**** 对象操作
+   | 显示带有一段消息和一个确认按钮的警告框           | alert             |
+   | 把键盘焦点从顶层窗口移开                         | blur              |
+   | 取消由 setInterval() 设置的 timeout              | clearInterval     |
+   | 取消由 setTimeout() 方法设置的 timeout           | clearTimeout      |
+   | 关闭浏览器窗口                                   | close             |
+   | 显示带有一段消息以及确认按钮和取消按钮的对话框   | confirm           |
+   | 创建一个 pop-up 窗口                             | createPopup       |
+   | 把键盘焦点给予一个窗口                           | focus             |
+   | 可相对窗口的当前坐标把它移动指定的像素           | moveBy            |
+   | 把窗口的左上角移动到一个指定的坐标               | moveTo            |
+   | 打开一个新的浏览器窗口或查找一个已命名的窗口     | open(link,'blank) |
+   | 访问打开的原窗口                                 | opener            |
+   | 打印当前窗口的内容(打印机）                      | print             |
+   | 显示可提示用户输入的对话框                       | prompt            |
+   | 按照指定的像素调整窗口的大小                     | resizeBy          |
+   | 把窗口的大小调整到指定的宽度和高度               | resizeTo          |
+   | 按照指定的像素值来滚动内容                       | scrollBy          |
+   | 把内容滚动到指定的坐标                           | scrollTo          |
+   | 按照指定的周期（以毫秒计）来调用函数或计算表达式 | setInterval       |
+   | 在指定的毫秒数后调用函数或计算表达式             | setTimeout        |
+*** navigator
+**** 属性
+     | 代码名                | appCodeName     |
+     | 次级版本              | appMinorVersion |
+     | 名称                  | appName         |
+     | 平台和版本信息        | appVersion      |
+     | 语言                   | browserLanguage |
+     | 是否启用 cookie     | cookieEnabled   |
+     | CPU 等级             | cpuClass        |
+     | 是否处于脱机模式       | onLine          |
+     | 操作系统               | platform        |
+     | 默认语言               | systemLanguage  |
+     |                        | language        |
+     | user-agent 头部的值    | userAgent       |
+     | 返回 OS 的自然语言设置 | userLanguage    |
+**** 方法
+     javaEnabled() 	      规定浏览器是否启用 Java
+     taintEnabled() 	    规定浏览器是否启用数据污点 (data tainting)
+*** screen
+**** 状态
+     availHeight 	     返回显示屏幕的高度 (除 Windows 任务栏之外)
+     availWidth 	     返回显示屏幕的宽度 (除 Windows 任务栏之外) 
+     bufferDepth 	     设置或返回在 off-screen bitmap buffer 中调色板的比特深度
+     colorDepth 	     返回目标设备或缓冲器上的调色板的比特深度
+     deviceYDPI 	     返回显示屏幕的每英寸垂直点数 
+     height 	         返回显示屏幕的高度 
+     pixelDepth 	     返回显示屏幕的颜色分辨率（比特每像素）
+     width 	           返回显示器屏幕的宽度 
+*** history
+**** 属性
+     length            返回浏览器历史列表中的 URL 数量
+**** 方法
+     back() 	          加载 history 列表中的前一个 URL 	
+     forward() 	        加载 history 列表中的下一个 URL 
+     go() 	            加载 history 列表中的某个具体页面 [Num|URL] e: -1 前一个页面	
+*** location(url) 
+**** 属性
+     hash 	            设置或返回从井号 (#) 开始的 URL（锚）
+     host 	            设置或返回主机名和当前 URL 的端口号 
+     hostname 	        设置或返回当前 URL 的主机名 
+     href 	            设置或返回完整的 URL
+     pathname 	        设置或返回当前 URL 的路径部分 
+     port 	            设置或返回当前 URL 的端口号
+     protocol 	        设置或返回当前 URL 的协议 
+     search           	设置或返回从问号 (?) 开始的 URL（查询部分）
+**** 方法
+     assign() 	        加载新的文档
+     reload() 	        重新加载当前文档
+     replace() 	        用新的文档替换当前文档 

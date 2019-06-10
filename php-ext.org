@@ -1,0 +1,1582 @@
+#+TITLE: php 补充
+#+DESCRIPTION: 
+#+TAGS: php
+#+CATEGORIES: 软件使用
+
+
+* 例子
+** 简单文件上传 
+   注意路径都是相对路径，绝对路径 必须是/home/wuming 这种的，要么用常量 ROOT 这种
+   PHP 文件上传
+   通过 PHP，可以把文件上传到服务器。
+   本章节实例在 test 项目下完成，目录结构为：
+   test
+   |-----upload             # 文件上传的目录
+   |-----form.html          # 表单文件
+   |-----upload_file.php    # php 上传代码
+   源码下载
+   创建一个文件上传表单
+   允许用户从表单上传文件是非常有用的。
+   请看下面这个供上传文件的 HTML 表单：
+   <html>
+   <head>
+   <meta charset="utf-8">
+   <title>菜鸟教程(runoob.com)</title>
+   </head>
+   <body>
+
+   <form action="upload_file.php" method="post" enctype="multipart/form-data">
+   <label for="file">文件名：</label>
+   <input type="file" name="file" id="file"><br>
+   <input type="submit" name="submit" value="提交">
+   </form>
+
+   </body>
+   </html>
+   将以上代码保存到 form.html 文件中。
+   有关上面的 HTML 表单的一些注意项列举如下：
+   <form> 标签的 enctype 属性规定了在提交表单时要使用哪种内容类型。在表单需要二进制数据时，比如文件内容，请使用 "multipart/form-data"。
+   <input> 标签的 type="file" 属性规定了应该把输入作为文件来处理。举例来说，当在浏览器中预览时，会看到输入框旁边有一个浏览按钮。
+   注释：允许用户上传文件是一个巨大的安全风险。请仅仅允许可信的用户执行文件上传操作。
+   创建上传脚本
+   "upload_file.php" 文件含有供上传文件的代码：
+   <?php
+   if ($_FILES["file"]["error"] > 0)
+   {
+   echo "错误：" . $_FILES["file"]["error"] . "<br>";
+   }
+   else
+   {
+   echo "上传文件名: " . $_FILES["file"]["name"] . "<br>";
+   echo "文件类型: " . $_FILES["file"]["type"] . "<br>";
+   echo "文件大小: " . ($_FILES["file"]["size"] / 1024) . " kB<br>";
+   echo "文件临时存储的位置: " . $_FILES["file"]["tmp_name"];
+   }
+   ?>
+   通过使用 PHP 的全局数组 $_FILES，你可以从客户计算机向远程服务器上传文件。
+   第一个参数是表单的 input name，第二个下标可以是 "name"、"type"、"size"、"tmp_name" 或 "error"。如下所示：
+   $_FILES["file"]["name"] - 上传文件的名称
+   $_FILES["file"]["type"] - 上传文件的类型
+   $_FILES["file"]["size"] - 上传文件的大小，以字节计
+   $_FILES["file"]["tmp_name"] - 存储在服务器的文件的临时副本的名称
+   $_FILES["file"]["error"] - 由文件上传导致的错误代码
+   这是一种非常简单文件上传方式。基于安全方面的考虑，您应当增加有关允许哪些用户上传文件的限制。
+   上传限制
+   在这个脚本中，我们增加了对文件上传的限制。用户只能上传 .gif、.jpeg、.jpg、.png 文件，文件大小必须小于 200 kB：
+   <?php
+   // 允许上传的图片后缀
+   $allowedExts = array("gif", "jpeg", "jpg", "png");
+   $temp = explode(".", $_FILES["file"]["name"]);
+   $extension = end($temp);        // 获取文件后缀名
+   if ((($_FILES["file"]["type"] == "image/gif")
+   || ($_FILES["file"]["type"] == "image/jpeg")
+   || ($_FILES["file"]["type"] == "image/jpg")
+   || ($_FILES["file"]["type"] == "image/pjpeg")
+   || ($_FILES["file"]["type"] == "image/x-png")
+   || ($_FILES["file"]["type"] == "image/png"))
+   && ($_FILES["file"]["size"] < 204800)    // 小于 200 kb
+   && in_array($extension, $allowedExts))
+   {
+   if ($_FILES["file"]["error"] > 0)
+   {
+   echo "错误：: " . $_FILES["file"]["error"] . "<br>";
+   }
+   else
+   {
+   echo "上传文件名: " . $_FILES["file"]["name"] . "<br>";
+   echo "文件类型: " . $_FILES["file"]["type"] . "<br>";
+   echo "文件大小: " . ($_FILES["file"]["size"] / 1024) . " kB<br>";
+   echo "文件临时存储的位置: " . $_FILES["file"]["tmp_name"];
+   }
+   }
+   else
+   {
+   echo "非法的文件格式";
+   }
+   ?>
+   保存被上传的文件
+   上面的实例在服务器的 PHP 临时文件夹中创建了一个被上传文件的临时副本。
+   这个临时的副本文件会在脚本结束时消失。要保存被上传的文件，我们需要把它拷贝到另外的位置：
+   <?php
+   // 允许上传的图片后缀
+   $allowedExts = array("gif", "jpeg", "jpg", "png");
+   $temp = explode(".", $_FILES["file"]["name"]);
+   echo $_FILES["file"]["size"];
+   $extension = end($temp);     // 获取文件后缀名
+   if ((($_FILES["file"]["type"] == "image/gif")
+   || ($_FILES["file"]["type"] == "image/jpeg")
+   || ($_FILES["file"]["type"] == "image/jpg")
+   || ($_FILES["file"]["type"] == "image/pjpeg")
+   || ($_FILES["file"]["type"] == "image/x-png")
+   || ($_FILES["file"]["type"] == "image/png"))
+   && ($_FILES["file"]["size"] < 204800)   // 小于 200 kb
+   && in_array($extension, $allowedExts))
+   {
+   if ($_FILES["file"]["error"] > 0)
+   {
+   echo "错误：: " . $_FILES["file"]["error"] . "<br>";
+   }
+   else
+   {
+   echo "上传文件名: " . $_FILES["file"]["name"] . "<br>";
+   echo "文件类型: " . $_FILES["file"]["type"] . "<br>";
+   echo "文件大小: " . ($_FILES["file"]["size"] / 1024) . " kB<br>";
+   echo "文件临时存储的位置: " . $_FILES["file"]["tmp_name"] . "<br>";
+        
+   // 判断当期目录下的 upload 目录是否存在该文件
+   // 如果没有 upload 目录，你需要创建它，upload 目录权限为 777
+   if (file_exists("upload/" . $_FILES["file"]["name"]))
+   {
+   echo $_FILES["file"]["name"] . " 文件已经存在。 ";
+   }
+   else
+   {
+   // 如果 upload 目录不存在该文件则将文件上传到 upload 目录下
+   move_uploaded_file($_FILES["file"]["tmp_name"], "upload/" . $_FILES["file"]["name"]);
+   echo "文件存储在: " . "upload/" . $_FILES["file"]["name"];
+   }
+   }
+   }
+   else
+   {
+   echo "非法的文件格式";
+   }
+   ?>
+   上面的脚本检测了文件是否已存在，如果不存在，则把文件拷贝到名为 "upload" 的目录下。
+   文件上传演示操作如下所示：
+** 日志记录
+   error_log("出现大麻烦了!", 1, ". mydomain.com");   //发送到管理员邮箱中   
+   error_log("搞砸了!",   2,   "localhost:5000");     //发送到本机对应 5000 端口的服务器中   
+   error_log("搞砸了!\n",   3,   "/usr/local/errors.log");  //追加到指定的文件中   
+   #+BEGIN_SRC php
+     <?php
+     header("Content-type: text/html; charset=utf-8");
+     /********************
+       1、写入内容到文件,追加内容到文件
+       2、打开并读取文件内容
+     ,********************/
+     $file  = 'log.txt';//要写入文件的文件名（可以是任意文件名），如果文件不存在，将会创建一个
+     $content = "第一次写入的内容\n";
+
+     if($f  = file_put_contents($file, $content,FILE_APPEND)){// 这个函数支持版本(PHP 5) 
+         echo "写入成功。<br />";
+     }
+     if($data = file_get_contents($file)){; // 这个函数支持版本(PHP 4 >= 4.3.0, PHP 5) 
+         echo "写入文件的内容是：$data";
+     }
+     ?>
+   #+END_SRC
+** 临时域名
+   ./natapp -authtoken=e5eb817e91aeee83 
+* 树的节点
+  #+begin_src php
+    /**
+     ,* Class TNode
+     ,* 节点类
+     ,*/
+    class TNode
+    {
+        public $lnode = null;
+        public $rnode = null;
+        public $val = 0;
+
+        public function __construct($val, $lnode = null, $rnode = null)
+        {
+            $this->val = $val;
+            $this->lnode = $lnode;
+            $this->rnode = $rnode;
+        }
+    }
+
+    /**
+     ,* Class BinarySearchTree
+     ,* 二叉查找树容器
+     ,*/
+    class BinarySearchTree
+    {
+
+        /**
+         ,* 用于存放根节点
+         ,* @var null|TNode
+         ,*/
+        protected $head = null;
+
+        /**
+         ,* 内部节点的指向引用
+         ,* @var null|TNode
+         ,*/
+        protected $pointer = null;
+
+        public function __construct(TNode &$node)
+        {
+            $this->head = &$node;
+            $this->pointer = $this->head;
+        }
+
+        /**
+         ,* 重置指针到根节点
+         ,*/
+        public function rewind()
+        {
+            $this->pointer = &$this->head;
+        }
+
+        /**
+         ,* 插入操作
+         ,* @param $val
+         ,*/
+        public function insert($val)
+        {
+            $this->rewind();
+            //遍历插入
+            while (true) {
+                if ($val > $this->pointer->val) {
+                    //大于当前节点则向右查
+                    if (!empty($this->pointer->rnode)) {
+                        $this->pointer = &$this->pointer->rnode;
+                    } else {
+                        $this->pointer->rnode = new TNode($val);
+                        break;
+                    }
+                } else {
+                    //小于当前节点则向左查
+                    if (!empty($this->pointer->lnode)) {
+                        $this->pointer = &$this->pointer->lnode;
+                    } else {
+                        $this->pointer->lnode = new TNode($val);
+                        break;
+                    }
+                }
+            }
+        }
+
+        /**
+         ,* 查找操作
+         ,* @param $val
+         ,* @return bool|null|TNode
+         ,*/
+        public function search($val)
+        {
+            //与插入类似
+            $this->rewind();
+            while (true) {
+                if ($val > $this->pointer->val) {
+                    if (!empty($this->pointer->rnode)) {
+                        $this->pointer = &$this->pointer->rnode;
+                    } else {
+                        return false;
+                    }
+                } else if ($val < $this->pointer->val) {
+                    if (!empty($this->pointer->lnode)) {
+                        $this->pointer = &$this->pointer->lnode;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return $this->pointer;
+                }
+            }
+        }
+
+        /**
+         ,* 删除操作
+         ,* @param $val
+         ,* @return bool
+         ,*/
+        public function delete($val)
+        {
+            $this->rewind();
+            $flag = true;
+            $prev_pointer = null;
+            //遍历寻找需要被删除的数据
+            while (true) {
+                if ($val > $this->pointer->val) {
+                    if (!empty($this->pointer->rnode)) {
+                        $prev_pointer = $this->pointer;
+                        $this->pointer = &$this->pointer->rnode;
+                    } else {
+                        $flag = false;
+                        break;
+                    }
+                } else if ($val < $this->pointer->val) {
+                    if (!empty($this->pointer->lnode)) {
+                        $prev_pointer = $this->pointer;
+                        $this->pointer = &$this->pointer->lnode;
+                    } else {
+                        $flag = false;
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+
+            if ($flag === false) {
+                return false;
+            }
+
+            if ($this->pointer->rnode == null || $this->pointer->lnode == null) {
+                //存在左边
+                if ($this->pointer == $prev_pointer->lnode) {
+                    unset($prev_pointer->lnode);
+                    $prev_pointer->lnode = $this->pointer->lnode;
+                } else {
+                    unset($prev_pointer->rnode);
+                    $prev_pointer->rnode = $this->pointer->lnode;
+                }
+                unset($this->pointer);
+            } else if ($this->pointer->rnode != null && $this->pointer->rnode == null) {
+                //存在右边分支
+                if ($this->pointer == $prev_pointer->lnode) {
+                    unset($prev_pointer->lnode);
+                    $prev_pointer->lnode = $this->pointer->rnode;
+                } else {
+                    unset($prev_pointer->rnode);
+                    $prev_pointer->rnode = $this->pointer->rnode;
+                }
+                unset($this->pointer);
+            } else if ($this->pointer->rnode == null && $this->pointer->lnode == null) {
+                //不存在两边分支
+                if ($this->pointer == $prev_pointer->lnode) {
+                    unset($prev_pointer->lnode);
+                } else {
+                    unset($prev_pointer->rnode);
+                }
+                unset($this->pointer);
+            } else {
+                //两边都存在分支
+                $temp = &$this->pointer;
+                //先转向左节点
+                $search = &$this->pointer->lnode;
+                //一直向右寻找
+                while (!empty($search->rnode)) {
+                    $temp = &$search;
+                    $search = &$search->rnode;
+                }
+                $this->pointer->val = $search->val;
+                //如果第一次寻找存在右节点
+                if ($temp != $this->pointer) {
+                    //重置右节点
+                    $temp->rnode = $search->lnode;
+                } else {
+                    //重置左节点
+                    $temp->lnode = $search->lnode;
+                }
+            }
+        }
+
+    }
+
+    // 实例演示
+
+    $tree = new BinarySearchTree(new TNode(1));
+    $tree->insert(2);
+    $tree->insert(5);
+    $tree->insert(7);
+    $tree->insert(3);
+    $tree->insert(6);
+    $tnode = $tree->search(5);
+    var_dump($tnode);
+    $tree->delete(5);
+    var_dump($tree);
+  #+end_src
+* 数据库调试
+  echo mysql_errno();  
+  echo mysql_error();
+* 数据库操作
+  1.链接数据库通用方法：conn.php 
+  <?php 
+  //第一步：链接数据库 
+  $conn=@mysql_connect("localhost:3306","wuming","wuming")or die ("mysql 链接失败"); 
+
+  //第二步: 选择指定的数据库，设置字符集 
+  @mysql_select_db("test",$conn) or die ("db 链接失败".mysql_error()); 
+  print_r($conn);
+  mysql_query('SET NAMES UTF8')or die ("字符集设置错误"); 
+  ?> 
+
+  2.增加 add.php 
+  <?php 
+  include("conn.php");//引入链接数据库 
+  if(!empty($_POST['sub'])){ 
+  $title=$_POST['title']; 
+  $con=$_POST['con']; 
+  echo $sql="insert into news(id,title,dates,contents) value (null,'$title',now(),'$con')" ; 
+  mysql_query($sql); 
+  echo"插入成功"; 
+  } 
+  ?> 
+  <form action="add.php" method="post"> 
+  标题: <input type="text" name="title"><br> 
+  内容: <textarea rows="5" cols="50" name="con"></textarea><br> 
+  <input type="submit" name="sub" value="发表"> 
+  </form> 
+
+  3.删除 del.php 
+  <?php 
+  include("conn.php");//引入链接数据库<pre name="code" class="html"><?php 
+  include("conn.php");//引入链接数据库 
+  if(!empty ($_GET['id'])){ 
+  $sql="select * from news where id='".$_GET['id']."'"; 
+  $query=mysql_query($sql); 
+  $rs=mysql_fetch_array($query); 
+  } 
+  if(!empty($_POST['sub'])){ 
+  $title=$_POST['title']; 
+  $con=$_POST['con']; 
+  $hid=$_POST['hid']; 
+  $sql="update news set title='$title',contents='$con' where id='$hid' limit 1 "; 
+  mysql_query($sql); 
+  echo "<script> alert('更新成功'); location.href='index.php'</script>"; 
+  echo"更新成功"; 
+  } 
+  ?> 
+  <form action="edit.php" method="post"> 
+  <input type="hidden" name="hid" value="<?php echo $rs['id']?>"/> 
+  标题: <input type="text" name="title" value="<?php echo $rs['title']?>"><br> 
+  内容: <textarea rows="5" cols="50" name="con"><?php echo $rs['contents']?></textarea><br> 
+  <input type="submit" name="sub" value="发表"> 
+  </form></pre><br> 
+  if(!empty($_GET['del'])){ $d=$_GET['del']; $sql="delete from news where id ='$d'"; } $query=mysql_query($sql); echo "删除成功"; ?><p></p> 
+  <pre></pre> 
+  <br> 
+  4，改 edit.php 页面 
+  <p></p> 
+  <p><br> 
+  </p> 
+  <p></p><pre name="code" class="html"><?php 
+  include("conn.php");//引入链接数据库 
+  if(!empty ($_GET['id'])){ 
+  $sql="select * from news where id='".$_GET['id']."'"; 
+  $query=mysql_query($sql); 
+  $rs=mysql_fetch_array($query); 
+  } 
+  if(!empty($_POST['sub'])){ 
+  $title=$_POST['title']; 
+  $con=$_POST['con']; 
+  $hid=$_POST['hid']; 
+  $sql="update news set title='$title',contents='$con' where id='$hid' limit 1 "; 
+  mysql_query($sql); 
+  echo "<script> alert('更新成功'); location.href='index.php'</script>"; 
+  echo"更新成功"; 
+  } 
+  ?> 
+  <form action="edit.php" method="post"> 
+  <input type="hidden" name="hid" value="<?php echo $rs['id']?>"/> 
+  标题: <input type="text" name="title" value="<?php echo $rs['title']?>"><br> 
+  内容: <textarea rows="5" cols="50" name="con"><?php echo $rs['contents']?></textarea><br> 
+  <input type="submit" name="sub" value="发表"> 
+  </form></pre><br> 
+  5.查，列表页面<pre name="code" class="html"><a href="add.php">添加内容</a> 
+  <form> 
+  <input type="text" name="keys" /> 
+  <input type="submit" name="subs" value="搜索"/> 
+  </form> 
+  <?php 
+  include("conn.php");//引入链接数据库 
+  if(!empty($_GET['keys'])){ 
+  $w=" title like '%".$_GET['keys']."%'"; 
+  }else{ 
+  $w=1; 
+  } 
+  $sql="select * from news where $w order by id desc"; 
+  $query=mysql_query($sql); 
+  while($rs=mysql_fetch_array($query)){ 
+  ?> 
+  <h2>标题:<a href="view.php?id=<?php echo $rs['id'] ?>"><?php echo $rs['title'] ?></a> <a href="edit.php?id=<?php echo $rs['id'] ?>">编辑</a>｜｜<a href="del.php?del=<?php echo $rs['id'] ?>">删除</a></h2> 
+  <li><?php echo $rs['dates'] ?></li> 
+  <p><?php echo $rs['contents'] ?></p> 
+  <hr> 
+  <?php 
+  } 
+* 扩展
+** date
+	 date(Y 年 m 月 d 日 l 星期/M 英文月,而不是数字)
+	 ((int)date('h')+8)时间,东八区要加 8 小时
+	 h - 带有首位零的 12 小时小时格式
+	 i - 带有首位零的分钟 (minute)
+	 s - 带有首位零的秒（00 -59）(second)
+	 a - 小写的午前和午后（am 或 pm）ante (before) meridiem post meridiem
+	 cal_days_in_month()	针对指定的年份和历法，返回一个月中的天数。
+	 cal_from_jd()	把儒略日计数转换为指定历法的日期。
+	 cal_info()	返回有关指定历法的信息。
+	 cal_to_jd()	把指定历法中的日期转换为儒略日计数。
+	 easter_date()	返回指定年份的复活节午夜的 Unix 时间戳。
+	 easter_days()	返回指定年份的复活节与 3 月 21 日之间的天数。
+	 frenchtojd()	把法国共和历的日期转换成为儒略日计数。
+	 gregoriantojd()	把格利高里历法的日期转换成为儒略日计数。
+	 jddayofweek()	返回日期在周几。
+	 jdmonthname()	返回月的名称。
+	 jdtofrench()	把儒略日计数转换为法国共和历的日期。
+	 jdtogregorian()	将格利高里历法转换成为儒略日计数。
+	 jdtojewish()	把儒略日计数转换为犹太历法的日期。
+	 jdtojulian()	把儒略日计数转换为儒略历法的日期。
+	 jdtounix()	把儒略日计数转换为 Unix 时间戳。
+	 jewishtojd()	把犹太历法的日期转换为儒略日计数。
+	 juliantojd()	把儒略历法的日期转换为儒略日计数。
+	 unixtojd()	把 Unix 时间戳转换为儒略日计数。
+
+	 Date/Time 函数的行为受到 php.ini 中设置的影响：
+	 date.timezone 	默认时区（所有的 Date/Time 函数使用该选项） 	
+	 date.default_latitude 	默认纬度（date_sunrise() 和 date_sunset() 使用该选项）
+	 date.default_longitude 	默认经度（date_sunrise() 和 date_sunset() 使用该选项）
+	 date.sunrise_zenith 	默认日出天顶（date_sunrise() 和 date_sunset() 使用该选项）
+	 date.sunset_zenith 	默认日落天顶（date_sunrise() 和 date_sunset() 使用该选项）
+	 PHP 5 Date/Time 函数
+	 函数 	描述
+	 checkdate() 	验证格利高里日期。
+	 date_add() 	添加日、月、年、时、分和秒到日期。
+	 date_create_from_format() 	返回根据指定格式进行格式化的新的 DateTime 对象。
+	 date_create() 	返回新的 DateTime 对象。
+	 date_date_set() 	设置新日期。
+	 date_default_timezone_get() 	返回由所有的 Date/Time 函数使用的默认时区。
+	 date_default_timezone_set() 	设置由所有的 Date/Time 函数使用的默认时区。
+	 date_diff() 	返回两个日期间的差值。
+	 date_format() 	返回根据指定格式进行格式化的日期。
+	 date_get_last_errors() 	返回日期字符串中的警告/错误。
+	 date_interval_create_from_date_string() 	从字符串的相关部分建立 DateInterval。
+	 date_interval_format() 	格式化时间间隔。
+	 date_isodate_set() 	设置 ISO 日期。
+	 date_modify() 	修改时间戳。
+	 date_offset_get() 	返回时区偏移。
+	 date_parse_from_format() 	根据指定的格式返回带有关于指定日期的详细信息的关联数组。
+	 date_parse() 	返回带有关于指定日期的详细信息的关联数组。
+	 date_sub() 	从指定日期减去日、月、年、时、分和秒。
+	 date_sun_info() 	返回包含有关指定日期与地点的日出/日落和黄昏开始/黄昏结束的信息的数组。
+	 date_sunrise() 	返回指定日期与位置的日出时间。
+	 date_sunset() 	返回指定日期与位置的日落时间。
+	 date_time_set() 	设置时间。
+	 date_timestamp_get() 	返回 Unix 时间戳。
+	 date_timestamp_set() 	设置基于 Unix 时间戳的日期和时间。
+	 date_timezone_get() 	返回给定 DateTime 对象的时区。
+	 date_timezone_set() 	设置 DateTime 对象的时区。
+	 date() 	格式化本地日期和时间。
+	 getdate() 	返回某个时间戳或者当前本地的日期/时间的日期/时间信息。
+	 gettimeofday() 	返回当前时间。
+	 gmdate() 	格式化 GMT/UTC 日期和时间。
+	 gmmktime() 	返回 GMT 日期的 UNIX 时间戳。
+	 gmstrftime() 	根据区域设置对 GMT/UTC 日期和时间进行格式化。
+	 idate() 	将本地时间/日期格式化为整数。
+	 localtime() 	返回本地时间。
+	 microtime() 	返回当前时间的微秒数。
+	 mktime() 	返回日期的 Unix 时间戳。
+	 strftime() 	根据区域设置对本地时间/日期进行格式化。
+	 strptime() 	解析由 strftime() 生成的时间/日期。
+	 strtotime() 	将任何英文文本的日期或时间描述解析为 Unix 时间戳。
+	 time() 	返回当前时间的 Unix 时间戳。
+	 timezone_abbreviations_list() 	返回包含夏令时、偏移量和时区名称的关联数组。
+	 timezone_identifiers_list() 	返回带有所有时区标识符的索引数组。
+	 timezone_location_get() 	返回指定时区的位置信息。
+	 timezone_name_from_abbr() 	根据时区缩略语返回时区名称。
+	 timezone_name_get() 	返回时区的名称。
+	 timezone_offset_get() 	返回相对于 GMT 的时区偏移。
+	 timezone_open() 	创建新的 DateTimeZone 对象。
+	 timezone_transitions_get() 	返回时区的所有转换。
+	 timezone_version_get() 	返回时区数据库的版本。
+
+** Generators
+   yield
+    
+   #+begin_src php
+     <?php
+     function gen_one_to_three() {
+         for ($i = 1; $i <= 3; $i++) {
+             // Note that $i is preserved between yields.
+             yield $i;
+         }
+     }
+
+     $generator = gen_one_to_three();
+     foreach ($generator as $value) {
+         echo "$value\n";
+     }
+   #+end_src
+** file
+	 fopen("filename",'w')  //可以指定绝对路径或相对路径
+	 "r" 	只读方式打开，将文件指针指向文件头。
+	 "r+" 	读写方式打开，将文件指针指向文件头。
+	 "w" 	写入方式打开，将文件指针指向文件头并将文件大小截为零。如果文件不存在则尝试创建之。
+	 "w+" 	读写方式打开，将文件指针指向文件头并将文件大小截为零。如果文件不存在则尝试创建之。
+	 "a" 	写入方式打开，将文件指针指向文件末尾。如果文件不存在则尝试创建之。
+	 "a+" 	读写方式打开，将文件指针指向文件末尾。如果文件不存在则尝试创建之。
+	 "x" 	创建并以写入方式打开，将文件指针指向文件头。如果文件已存在，则报错.
+	 basename() 	返回路径中的文件名部分。
+	 chgrp() 	改变文件组。 	
+	 chmod() 	改变文件模式。 
+	 chown() 	改变文件所有者。 	
+	 clearstatcache() 	清除文件状态缓存。 	
+	 fopen() 可以通过 http 路径打开,可以在 php.ini 中配置 allow_url_fopen   //unix 中要注意文件的访问权限
+	 copy() 	复制文件。
+	 fread(filepoint,length)	读取打开的文件。
+	 fwrite(file,string,length)   
+	 file_get_contents(filepath) 函数把整个文件读入一个字符串中。
+	 file_put_contents(filepath,filecontent) 在 ftp 中要用到 flags 和 context 标志
+	 basename()
+	 is_readable()
+	 fgets()
+	 fgetss() 去掉文件中的 html 格式
+	 readfile(filename) 输出到浏览器
+	 file(file) 返回值是文件内容
+	 fgetc()
+	 file_exists()
+	 filesize()
+	 unlink() 删除文件
+	 rewind()
+	 fseek()
+	 ftell()
+	 delete() 	参见 unlink() 或 unset()。 	 
+	 dirname() 	返回路径中的目录名称部分。 	
+	 disk_free_space() 	返回目录的可用空间。 	
+	 disk_total_space() 	返回一个目录的磁盘总容量。
+	 diskfreespace() 	disk_free_space() 的别名。
+	 fclose() 	关闭打开的文件。 	
+	 feof() 	测试文件指针是否到了文件结束的位置。 	
+	 fflush() 	向打开的文件输出缓冲内容。 
+	 fgetc() 	从打开的文件中返回字符。 
+	 fgetcsv() 	从打开的文件中解析一行，校验 CSV 字段。 	
+	 fgets() 	从打开的文件中返回一行。 	
+	 fgetss() 	从打开的文件中读取一行并过滤掉 HTML 和 PHP 标记。 	  file() 	把文件读入一个数组中。 	
+	 file_exists() 	检查文件或目录是否存在。
+	 file_get_contents() 	将文件读入字符串。 	
+	 file_put_contents() 	将字符串写入文件。 	
+	 fileatime() 	返回文件的上次访问时间。 	
+	 filectime() 	返回文件的上次改变时间。 	
+	 filegroup() 	返回文件的组 ID。 	
+	 fileinode() 	返回文件的 inode 编号。 
+	 filemtime() 	返回文件的上次修改时间。
+	 fileowner() 	文件的 user ID（所有者）。
+	 fileperms() 	返回文件的权限。 	
+	 filesize() 	返回文件大小。 	
+	 filetype() 	返回文件类型。 	
+	 flock() 	锁定或释放文件。
+	 fnmatch() 	根据指定的模式来匹配文件名或字符串。 	
+	 fopen() 	打开一个文件或 URL。 	
+	 fpassthru() 	从打开的文件中读数据，直到 EOF，并向输出缓冲写结果
+	 fputcsv() 	将行格式化为 CSV 并写入一个打开的文件中。 	
+	 fputs() 	fwrite() 的别名。 	
+	 fread() 	读取打开的文件。 	
+	 fscanf() 	根据指定的格式对输入进行解析。
+	 fseek() 	在打开的文件中定位。 	
+	 fstat() 	返回关于一个打开的文件的信息。
+	 ftell() 	返回文件指针的读/写位置 
+	 ftruncate() 	将文件截断到指定的长度。
+	 fwrite() 	写入文件。 	
+	 glob() 	返回一个包含匹配指定模式的文件名/目录的数组。 	
+	 is_dir() 	判断指定的文件名是否是一个目录。 	
+	 is_executable() 	判断文件是否可执行。 	
+	 is_file() 	判断指定文件是否为常规的文件。 	
+	 is_link() 	判断指定的文件是否是连接。 	
+	 is_readable() 	判断文件是否可读。 	
+	 is_uploaded_file() 	判断文件是否是通过 HTTP POST 上传的。 	
+	 is_writable() 	判断文件是否可写。 	
+	 is_writeable() 	is_writable() 的别名。 	
+	 link() 	创建一个硬连接。 	
+	 linkinfo() 	返回有关一个硬连接的信息。 	
+	 lstat() 	返回关于文件或符号连接的信息。 	
+	 mkdir() 	创建目录。 	
+	 move_uploaded_file() 	将上传的文件移动到新位置。 	
+	 parse_ini_file() 	解析一个配置文件。 	
+	 pathinfo() 	返回关于文件路径的信息。 	
+	 pclose() 	关闭有 popen() 打开的进程。 	
+	 popen() 	打开一个进程。 	
+	 readfile() 	读取一个文件，并输出到输出缓冲。 	
+	 readlink() 	返回符号连接的目标。 	
+	 realpath() 	返回绝对路径名。 	
+	 rename() 	重名名文件或目录。 	
+	 rewind() 	倒回文件指针的位置。 	
+	 rmdir() 	删除空的目录。 	
+	 set_file_buffer() 	设置已打开文件的缓冲大小。 	
+	 stat() 	返回关于文件的信息。 	
+	 symlink() 	创建符号连接。 	
+	 tempnam() 	创建唯一的临时文件。
+	 tmpfile() 	建立临时文件。 	
+	 touch() 	设置文件的访问和修改时间。 	
+	 umask() 	改变文件的文件权限。 	
+	 unlink() 	删除文件。
+
+	 isset(varname)判断变量是否已经配置，就是变量存不存在值
+	 unset(varname)取消配置；
+	 empty(varname) 对于值是 0 的数返回 true，这里要当心
+
+** Directory 
+	 chdir()	改变当前的目录。
+	 chroot()	改变根目录。
+	 closedir()	关闭目录句柄。
+	 dir()	返回 Directory 类的实例。
+	 getcwd()	返回当前工作目录。
+	 opendir()	打开目录句柄。
+	 readdir()	返回目录句柄中的条目。
+	 rewinddir()	重置目录句柄。
+	 scandir()	返回指定目录中的文件和目录的数组。
+** PHP 过滤器用于对来自非安全来源的数据（比如用户输入）进行验证和过滤
+	 filter_has_var() 	检查是否存在指定输入类型的变量。 	
+	 filter_id() 	返回指定过滤器的 ID 号。 	
+	 filter_input() 	从脚本外部获取输入，并进行过滤。 	
+	 filter_input_array() 	从脚本外部获取多项输入，并进行过滤。 	
+	 filter_list() 	返回包含所有得到支持的过滤器的一个数组。 	
+	 filter_var_array() 	获取多项变量，并进行过滤。 	
+	 filter_var() 	获取一个变量，并进行过滤。
+** HTTP 函数允许您在其他输出被发送之前，对由 Web 服务器发送到浏览器的信息进行操作
+	 header() 	向客户端发送原始的 HTTP 报头。
+	 headers_list() 	返回已发送的（或待发送的）响应头部的一个列表。
+	 headers_sent() 	检查 HTTP 报头是否发送/已发送到何处。
+	 setcookie() 	定义与 HTTP 报头的其余部分一共发送的 cookie。
+	 setrawcookie() 	定义与 HTTP 报头的其余部分一共发送的 cookie（不进行 URL 编码）
+
+** 数学 (Math) 函数能处理 integer 和 float 范围内的值。
+	 abs() 	绝对值。 	
+	 acos() 	反余弦。 	
+	 acosh() 	反双曲余弦。 	
+	 asin() 	反正弦。 	
+	 asinh() 	反双曲正弦。 	
+	 atan() 	反正切。 	
+	 atan2() 	两个参数的反正切。 	
+	 atanh() 	反双曲正切。 	
+	 base_convert() 	在任意进制之间转换数字。 	
+	 bindec() 	把二进制转换为十进制。 	
+	 ceil() 	向上舍入为最接近的整数。 	
+	 cos() 	余弦。 	
+	 cosh() 	双曲余弦。 	
+	 decbin() 	把十进制转换为二进制。 	
+	 dechex() 	把十进制转换为十六进制。 	
+	 decoct() 	把十进制转换为八进制。 	
+	 deg2rad() 	将角度转换为弧度。 	
+	 exp() 	返回 Ex 的值。 	
+	 expm1() 	返回 Ex - 1 的值。 	
+	 floor() 	向下舍入为最接近的整数。 	
+	 fmod() 	返回除法的浮点数余数。 	
+	 getrandmax() 	显示随机数最大的可能值。 	
+	 hexdec() 	把十六进制转换为十进制。 	
+	 hypot() 	计算直角三角形的斜边长度。 	
+	 is_finite() 	判断是否为有限值。 	
+	 is_infinite() 	判断是否为无限值。 	
+	 is_nan() 	判断是否为合法数值。 	
+	 lcg_value() 	返回范围为 (0, 1) 的一个伪随机数。 	
+	 log() 	自然对数。 	
+	 log10() 	以 10 为底的对数。 	
+	 log1p() 	返回 log(1 + number)。 	
+	 max() 	返回最大值。 	
+	 min() 	返回最小值。 	
+	 mt_getrandmax() 	显示随机数的最大可能值。 	
+	 mt_rand() 	使用 Mersenne Twister 算法返回随机整数。 	
+	 mt_srand() 	播种 Mersenne Twister 随机数生成器。 	
+	 octdec() 	把八进制转换为十进制。 	
+	 pi() 	返回圆周率的值。 	
+	 pow() 	返回 x 的 y 次方。 	
+	 rad2deg() 	把弧度数转换为角度数。 	
+	 rand() 	返回随机整数。 	
+	 round() 	对浮点数进行四舍五入。 	
+	 sin() 	正弦。 	
+	 sinh() 	双曲正弦。 	
+	 sqrt() 	平方根。 
+	 srand() 	播下随机数发生器种子。 	
+	 tan() 	正切。 	
+	 tanh() 	双曲正切。
+** string	
+   mb_substr(strip_tags( $list["content"]),0,20) 截取字符串 对中文的支持
+   ucfirst(string)->string 第一个字大写
+   addcslashes — 以 C 语言风格使用反斜线转义字符串中的字符
+   addslashes — 使用反斜线引用字符串
+   bin2hex — 函数把包含数据的二进制字符串转换为十六进制值
+   chop — rtrim 的别名
+   chr — 返回指定的字符
+   chunk_split — 将字符串分割成小块
+   convert_cyr_string — 将字符由一种 Cyrillic 字符转换成另一种
+   convert_uudecode — 解码一个 uuencode 编码的字符串
+   convert_uuencode — 使用 uuencode 编码一个字符串
+   count_chars — 返回字符串所用字符的信息
+   crc32 — 计算一个字符串的 crc32 多项式
+   crypt — 单向字符串散列
+   explode — 使用一个字符串分割另一个字符串 : array explode ( string $delimiter , string $string [, int $limit ] )
+   fprintf — 将格式化后的字符串写入到流
+   get_html_translation_table — 返回使用 htmlspecialchars 和 htmlentities 后的转换表
+   hebrev — 将逻辑顺序希伯来文（logical-Hebrew）转换为视觉顺序希伯来文（visual-Hebrew）
+   hebrevc — 将逻辑顺序希伯来文（logical-Hebrew）转换为视觉顺序希伯来文（visual-Hebrew），并且转换换行符
+   hex2bin — 转换十六进制字符串为二进制字符串
+   html_entity_decode — Convert all HTML entities to their applicable characters
+   htmlentities — Convert all applicable characters to HTML entities
+   htmlspecialchars_decode — 将特殊的 HTML 实体转换回普通字符
+   htmlspecialchars — Convert special characters to HTML entities
+*** implode — 将一个一维数组的值转化为字符串
+    #+BEGIN_SRC php
+      <?php
+      $arr = array('Hello','World!','I','love','Shanghai!');
+      echo implode(" ",$arr);
+      ?>
+    #+END_SRC
+*** join — 别名 implode
+    lcfirst — 使一个字符串的第一个字符小写
+    levenshtein — 计算两个字符串之间的编辑距离
+    localeconv — Get numeric formatting information
+    ltrim — 删除字符串开头的空白字符（或其他字符）
+    md5_file — 计算指定文件的 MD5 散列值
+    md5 — 计算字符串的 MD5 散列值
+    metaphone — Calculate the metaphone key of a string
+    money_format — 将数字格式化成货币字符串
+    nl_langinfo — Query language and locale information
+    nl2br — 在字符串所有新行之前插入 HTML 换行标记
+    number_format — 以千位分隔符方式格式化一个数字
+    ord — 返回字符的 ASCII 码值
+    parse_str — 将字符串解析成多个变量
+    print — 输出字符串;    实际不是函数,没参数
+    printf — 输出格式化字符串
+    quoted_printable_decode — 将 quoted-printable 字符串转换为 8-bit 字符串
+    quoted_printable_encode — 将 8-bit 字符串转换成 quoted-printable 字符串
+    quotemeta — 转义元字符集
+    rtrim — 删除字符串末端的空白字符（或者其他字符）
+    setlocale — 设置地区信息
+    sha1_file — 计算文件的 sha1 散列值
+    sha1 — 计算字符串的 sha1 散列值
+    similar_text — 计算两个字符串的相似度
+    soundex — Calculate the soundex key of a string
+    sprintf — Return a formatted string
+    sscanf — 根据指定格式解析输入的字符
+    str_getcsv — 解析 CSV 字符串为一个数组
+    str_ireplace — str_replace 的忽略大小写版本
+    str_pad — 使用另一个字符串填充字符串为指定长度
+    str_repeat — 重复一个字符串
+    str_replace — 子字符串替换
+    str_rot13 — 对字符串执行 ROT13 转换
+    str_shuffle — 随机打乱一个字符串
+    str_split — 将字符串转换为数组
+    str_word_count — 返回字符串中单词的使用情况
+    strcasecmp — 二进制安全比较字符串（不区分大小写）
+    strchr — 别名 strstr
+    strcmp — 二进制安全字符串比较
+    strcoll — 基于区域设置的字符串比较
+    strcspn — 获取不匹配遮罩的起始子字符串的长度
+    strip_tags — 从字符串中去除 HTML 和 PHP 标记
+    stripcslashes — 反引用一个使用 addcslashes 转义的字符串
+    stripos — 查找字符串首次出现的位置（不区分大小写）
+    stripslashes — 反引用一个引用字符串
+    stristr — strstr 函数的忽略大小写版本
+    strlen — 获取字符串长度
+    strnatcasecmp — 使用“自然顺序”算法比较字符串（不区分大小写）
+    strnatcmp — 使用自然排序算法比较字符串
+    strncasecmp — 二进制安全比较字符串开头的若干个字符（不区分大小写）
+    strncmp — 二进制安全比较字符串开头的若干个字符
+    strpbrk — 在字符串中查找一组字符的任何一个字符
+    strpos — 查找字符串首次出现的位置
+    strrchr — 查找指定字符在字符串中的最后一次出现
+    strrev — 反转字符串
+    strripos — 计算指定字符串在目标字符串中最后一次出现的位置（不区分大小写）
+    strrpos — 计算指定字符串在目标字符串中最后一次出现的位置
+    strspn — 计算字符串中全部字符都存在于指定字符集合中的第一段子串的长度。
+    strstr — 查找字符串的首次出现
+    strtok — 标记分割字符串
+    strtolower — 将字符串转化为小写
+    strtoupper — 将字符串转化为大写
+    strtr — 转换指定字符
+    substr_compare — 二进制安全比较字符串（从偏移位置比较指定长度）
+    substr_count — 计算字串出现的次数
+    substr_replace — 替换字符串的子串
+    substr — 返回字符串的子串
+    trim — 去除字符串首尾处的空白字符（或者其他字符）
+    ucfirst — 将字符串的首字母转换为大写
+    ucwords — 将字符串中每个单词的首字母转换为大写
+    vfprintf — 将格式化字符串写入流
+    vprintf — 输出格式化字符串
+    vsprintf — 返回格式化字符串
+    wordwrap — 打断字符串为指定数量的字串
+** 网络 函数
+   checkdnsrr — 给指定的主机（域名）或者 IP 地址做 DNS 通信检查
+   closelog — 关闭系统日志链接
+   define_syslog_variables — Initializes all syslog related variables
+   dns_check_record — 别名 checkdnsrr
+   dns_get_mx — 别名 getmxrr
+   dns_get_record — 获取指定主机的 DNS 记录
+   fsockopen — 打开一个网络连接或者一个 Unix 套接字连接
+   gethostbyaddr — 获取指定的 IP 地址对应的主机名  //这个只能查到本机的主机名,可能跟域名反向解析有关,不能反向解析,只能解析 host 文件里面的
+   gethostbyname — Get the IPv4 address corresponding to a given Internet host name
+   gethostbynamel — Get a list of IPv4 addresses corresponding to a given Internet host name
+   gethostname — Gets the host name
+   getmxrr — Get MX records corresponding to a given Internet host name
+   getprotobyname — Get protocol number associated with protocol name
+   getprotobynumber — Get protocol name associated with protocol number
+   getservbyname — Get port number associated with an Internet service and protocol
+   getservbyport — Get Internet service which corresponds to port and protocol
+   header_register_callback — Call a header function
+   header_remove — Remove previously set headers
+   header — 发送原生 HTTP 头
+   headers_list — Returns a list of response headers sent (or ready to send)
+   headers_sent — Checks if or where headers have been sent
+   http_response_code — Get or Set the HTTP response code
+   inet_ntop — Converts a packed internet address to a human readable representation
+   inet_pton — Converts a human readable IP address to its packed in_addr representation
+   ip2long — 将一个 IPV4 的字符串互联网协议转换成数字格式
+   long2ip — Converts an long integer address into a string in (IPv4) Internet standard dotted format
+   openlog — Open connection to system logger
+   pfsockopen — 打开一个持久的网络连接或者 Unix 套接字连接。
+   setcookie — Send a cookie
+   setrawcookie — Send a cookie without urlencoding the cookie value
+   socket_get_status — 别名 stream_get_meta_data
+   socket_set_blocking — 别名 stream_set_blocking
+   socket_set_timeout — 别名 stream_set_timeout
+   syslog — Generate a system log message
+
+** pthreads
+	 Threaded — Threaded 类
+   Threaded::chunk — 操作
+   Threaded::count — Manipulation
+   Threaded::extend — Runtime Manipulation
+   Threaded::from — Creation
+   Threaded::getTerminationInfo — Error Detection
+   Threaded::isRunning — State Detection
+   Threaded::isTerminated — State Detection
+   Threaded::isWaiting — State Detection
+   Threaded::lock — Synchronization
+   Threaded::merge — Manipulation
+   Threaded::notify — Synchronization
+   Threaded::pop — Manipulation
+   Threaded::run — Execution
+   Threaded::shift — Manipulation
+   Threaded::synchronized — Synchronization
+   Threaded::unlock — Synchronization
+   Threaded::wait — Synchronization
+	 Thread — Thread 类
+   Thread::detach — 执行
+   Thread::getCreatorId — 识别
+   Thread::getCurrentThread — 识别
+   Thread::getCurrentThreadId — 识别
+   Thread::getThreadId — 识别
+   Thread::globally — 执行
+   Thread::isJoined — 状态监测
+   Thread::isStarted — 状态检测
+   Thread::join — 同步
+   Thread::kill — 执行
+   Thread::start — 执行
+** Worker — Worker 类
+   Worker::getStacked — 栈分析
+   Worker::isShutdown — 状态检测
+   Worker::isWorking — 状态检测
+   Worker::shutdown — 同步
+   Worker::stack — 栈操作
+   Worker::unstack — 栈操作
+	 Collectable — The Collectable class
+   Collectable::isGarbage — Determine whether an object has been marked as garbage
+   Collectable::setGarbage — Mark an object as garbage
+   Modifiers — 方法修饰符
+** Pool — Pool 类
+   Pool::collect — 回收已完成任务的引用
+   Pool::__construct — 创建新的 Worker 对象池
+   Pool::resize — 改变 Pool 对象的可容纳 Worker 对象的数量
+   Pool::shutdown — 停止所有的 Worker 对象
+   Pool::submit — 提交对象以执行
+   Pool::submitTo — 提交对象以执行
+** Mutex — Mutex 类
+   Mutex::create — 创建一个互斥量
+   Mutex::destroy — 销毁互斥量
+   Mutex::lock — 给互斥量加锁
+   Mutex::trylock — 尝试给互斥量加锁
+   Mutex::unlock — 释放互斥量上的锁
+** Cond — Cond 类
+   Cond::broadcast — 广播条件变量
+   Cond::create — 创建一个条件变量
+   Cond::destroy — 销毁条件变量
+   Cond::signal — 发送唤醒信号
+   Cond::wait — 等待
+		  
+** PCRE 函数 Perl Compatible Regular Expressions 兼容正则
+	 if(!(/^1[34578]\d{9}$/.test(phone))) 测试手机号
+   preg_filter — 执行一个正则表达式搜索和替换
+   preg_grep — 返回匹配模式的数组条目
+   preg_last_error — 返回最后一个 PCRE 正则执行产生的错误代码
+   preg_match_all — 执行一个全局正则表达式匹配
+   preg_match — 执行一个正则表达式匹配
+   preg_quote — 转义正则表达式字符
+   preg_replace_callback_array — Perform a regular expression search and replace using callbacks
+   preg_replace_callback — 执行一个正则表达式搜索并且使用一个回调进行替换
+   preg_replace — 执行一个正则表达式的搜索和替换
+   : mixed preg_replace( mixed pattern, mixed replacement, mixed subject [, int limit ] )
+   : $str = preg_replace('/\s/','-',$str);  这里要注意,匹配模式要加载/ /中间
+   pattern 	正则表达式
+   replacement 	替换的内容
+   subject 	需要匹配替换的对象
+   limit 	可选，指定替换的个数，如果省略 limit 或者其值为 -1，则所有的匹配项都会被替换
+
+   replacement 可以包含 \\n 形式或 $n 形式的逆向引用，首选使用后者。每个此种引用将被替换为与第 n 个被捕获的括号内的子模式所匹配的文本。n 可以从 0 到 99，其中 \\0 或 $0 指的是被整个模式所匹配的文本。对左圆括号从左到右计数（从 1 开始）以取得子模式的数目。
+   对替换模式在一个逆向引用后面紧接着一个数字时（如 \\11），不能使用 \\ 符号来表示逆向引用。因为这样将会使 preg_replace() 搞不清楚是想要一个 \\1 的逆向引用后面跟着一个数字 1 还是一个 \\11 的逆向引用。解决方法是使用 \${1}1。这会形成一个隔离的 $1 逆向引用，而使另一个 1 只是单纯的文字。
+   上述参数除 limit 外都可以是一个数组。如果 pattern 和 replacement 都是数组，将以其键名在数组中出现的顺序来进行处理，这不一定和索引的数字顺序相同。如果使用索引来标识哪个 pattern 将被哪个 replacement 来替换，应该在调用 preg_replace() 之前用 ksort() 函数对数组进行排序。
+
+   int preg_match ( string pattern, string subject [, array matches [, int flags]])
+   在 subject 字符串中搜索与 pattern 给出的正则表达式相匹配的内容。
+   如果提供了 matches，则其会被搜索的结果所填充。$matches[0] 将包含与整个模式匹配的文本，$matches[1] 将包含与第一个捕获的括号中的子模式所匹配的文本，以此类推    
+   模式修正符 	说明
+   i 	模式中的字符将同时匹配大小写字母
+   m 	字符串视为多行
+   s 	将字符串视为单行，换行符作为普通字符
+   x 	将模式中的空白忽略
+   e 	preg_replace() 函数在替换字符串中对逆向引用作正常的替换，将其作为 PHP 代码求值，并用其结果来替换所搜索的字符串。
+   A 	强制仅从目标字符串的开头开始匹配
+   D 	模式中的 $ 元字符仅匹配目标字符串的结尾
+   U 	匹配最近的字符串
+   u 	模式字符串被当成 UTF-8 
+
+***    preg_split — 通过一个正则表达式分隔字符串		
+** JSON 函数 
+   json_decode — 对 JSON 格式的字符串进行解码
+   json_encode — 对变量进行 JSON 编码
+   json_last_error_msg — Returns the error string of the last json_encode() or json_decode() call
+   json_last_error — 返回最后发生的错误
+** Socket 函数
+   socket_accept — Accepts a connection on a socket
+   socket_bind — 给套接字绑定名字
+   socket_clear_error — 清除套接字或者最后的错误代码上的错误
+   socket_close — 关闭套接字资源
+   socket_cmsg_space — Calculate message buffer size
+   socket_connect — 开启一个套接字连接
+   socket_create_listen — Opens a socket on port to accept connections
+   socket_create_pair — Creates a pair of indistinguishable sockets and stores them in an array
+   socket_create — 创建一个套接字（通讯节点）
+   socket_get_option — Gets socket options for the socket
+   socket_getopt — 别名 socket_get_option
+   socket_getpeername — Queries the remote side of the given socket which may either result in host/port or in a Unix filesystem path, dependent on its type
+   socket_getsockname — Queries the local side of the given socket which may either result in host/port or in a Unix filesystem path, dependent on its type
+   socket_import_stream — Import a stream
+   socket_last_error — Returns the last error on the socket
+   socket_listen — Listens for a connection on a socket
+   socket_read — Reads a maximum of length bytes from a socket
+   socket_recv — 从已连接的 socket 接收数据
+   socket_recvfrom — Receives data from a socket whether or not it is connection-oriented
+   socket_recvmsg — Read a message
+   socket_select — Runs the select() system call on the given arrays of sockets with a specified timeout
+   socket_send — Sends data to a connected socket
+   socket_sendmsg — Send a message
+   socket_sendto — Sends a message to a socket, whether it is connected or not
+   socket_set_block — Sets blocking mode on a socket resource
+   socket_set_nonblock — Sets nonblocking mode for file descriptor fd
+   socket_set_option — Sets socket options for the socket
+   socket_setopt — 别名 socket_set_option
+   socket_shutdown — Shuts down a socket for receiving, sending, or both
+   socket_strerror — Return a string describing a socket error
+   socket_write — Write to a socket
+** 日志记录函数
+   可以把函数执行流程写入日志
+   file_put_contents(filepath,"out:".$data, FILE_APPEND); 追加到文本
+** Program execution Functions
+   escapeshellarg — Escape a string to be used as a shell argument
+   escapeshellcmd — Escape shell metacharacters
+   exec — Execute an external program
+   passthru — Execute an external program and display raw output
+   proc_close — Close a process opened by proc_open and return the exit code of that process
+   proc_get_status — Get information about a process opened by proc_open
+   proc_nice — Change the priority of the current process
+   proc_open — Execute a command and open file pointers for input/output
+   proc_terminate — Kills a process opened by proc_open
+   shell_exec — Execute command via shell and return the complete output as a string
+   system — Execute an external program and display the output
+
+** 特性 trait 
+   #+BEGIN_SRC php
+     <?php
+     trait Geocodable {
+         {
+             $this->address = $address;
+         }
+         public function getLatitude()
+         {
+             if (isset($this->geocoderResult) === false) {
+                 $this->geocodeAddress();
+             }
+             return $this->geocoderResult->getLatitude();
+         }
+         public function getLongitude()
+         {
+             if (isset($this->geocoderResult) === false) {
+                 $this->geocodeAddress();
+             }
+             return $this->geocoderResult->getLongitude();
+         }
+         protected function geocodeAddress()
+         {
+             $this->geocoderResult = $this->geocoder->geocode($this->address);
+             return true;
+         }
+     }
+
+   #+END_SRC
+** 错误输出 die($msg)
+   Exception::__construct — 异常构造函数
+   Exception::getMessage — 获取异常消息内容
+   Exception::getPrevious — 返回异常链中的前一个异常
+   Exception::getCode — 获取异常代码
+   Exception::getFile — 获取发生异常的程序文件名称
+   Exception::getLine — 获取发生异常的代码在文件中的行号
+   Exception::getTrace — 获取异常追踪信息
+   Exception::getTraceAsString — 获取字符串类型的异常追踪信息
+   Exception::__toString — 将异常对象转换为字符串
+   Exception::__clone — 异常克隆
+** 上下文（Context）选项和参数
+*** 套接字上下文选项 — 套接字上下文选项列表
+*** HTTP context 选项 — HTTP context 的选项列表
+*** FTP context options — FTP context option listing
+*** SSL 上下文选项 — SSL 上下文选项清单
+*** CURL context options — CURL 上下文选项列表
+*** Phar 上下文（context）选项 — Phar 上下文（context）选项列表
+*** MongoDB context options — MongoDB context option listing
+** 支持的协议和封装协议
+   PHP 带有很多内置 URL 风格的封装协议，可用于类似 fopen()、copy()、file_exists() 和 filesize() 的文件系统函数。 除了这些封装协议，还能通过 stream_wrapper_register() 来注册自定义的封装协议。
+   file:// — 访问本地文件系统
+   http:// — 访问 HTTP(s) 网址
+   ftp:// — 访问 FTP(s) URLs
+   php:// — 访问各个输入/输出流（I/O streams）
+   zlib:// — 压缩流
+   data:// — 数据（RFC 2397）
+   glob:// — 查找匹配的文件路径模式
+   phar:// — PHP 归档
+   ssh2:// — Secure Shell 2
+   rar:// — RAR
+   ogg:// — 音频流
+   expect:// — 处理交互式的流
+** 安全
+*** HTTP 认证
+*** Cookie
+    setcookie("MyCookie[foo]", 'Testing 1', time()+3600);
+    <?php setcookie("mycookie['foo']", 'hfafa', time()+3600); ?>
+    <?php echo $_COOKIE['foo']; ?>
+*** 会话
+*** XForms
+*** 文件上传
+*** 数据库连接
+** 反射
+   Reflection 类的摘要信息
+   ReflectionClass 类信息和工具
+   ReflectionClassConstant
+   ReflectionFunction 函数信息和工具
+   ReflectionMethod 类方法信息和工具
+   ReflectionParameter 类参数信息和工具
+    
+
+   输出类的反射信息,比 var_dump 提供的信息更多 
+   $fc= new \ReflectionClass("wuming\shiwu\Fangbianmian" );
+   \Reflection::export($fc);
+** 函数处理函数
+   #+begin_verse
+   call_user_func_array — Call a callback with an array of parameters
+   call_user_func — Call the callback given by the first parameter
+   create_function — Create an anonymous (lambda-style) function
+   forward_static_call_array — Call a static method and pass the arguments as array
+   forward_static_call — Call a static method
+   func_get_arg — Return an item from the argument list
+   func_get_args — Returns an array comprising a function's argument list
+   func_num_args — Returns the number of arguments passed to the function
+   function_exists — Return TRUE if the given function has been defined
+   get_defined_functions — Returns an array of all defined functions
+   register_shutdown_function — Register a function for execution on shutdown
+   register_tick_function — Register a function for execution on each tick
+   unregister_tick_function — De-register a function for execution on each tick
+   #+end_verse
+** 数组
+   | current                                       | 返回数组中的当前元素的值                                                                    |
+   | end                                           | 将内部指针指向数组中的最后一个元素，并输出                                                  |
+   | next                                          | 将内部指针指向数组中的下一个元素，并输出                                                    |
+   | prev                                          | 将内部指针指向数组中的上一个元素，并输出                                                    |
+   | reset                                         | 将内部指针指向数组中的第一个元素，并输出                                                    |
+   | array_values                                  | 返回关联数组中所有元素的值                                                                  |
+   | array_keys                                    | 返回关联数组中值所对应的所有的键名                                                          |
+   | in_array                                      | 数组中是否存在某个值 strict(精确性) 决定是否区分大小写                                      |
+   | array_flip                                    | 交换数组中的键和值                                                                          |
+   | array_reverse                                 | 将原数组中的元素顺序翻转，创建新的数组                                                      |
+   | count ( mixed var [, int mode] )              | model 决定是否遍历树叶                                                                      |
+   | array_count_values                            | 统计数组中所有值出现的次数                                                                  |
+   | array_unique                                  | 删除数组中重复的值，并返回没有重复值的新数组                                                |
+   | sort                                          | 按由小到大的升序对给定数组的值排序 SORT_REGULAR SORT_NUMERIC SORT_STRING SORT_LOCALE_STRING |
+   | rsort                                         | 对数组的元素按照键值进行由大到小的逆向排序                                                  |
+   | usort                                         | 使用用户自定义的回调函数对数组排序                                                          |
+   | asort                                         | 对数组进行由小到大排序并保持索引关系                                                        |
+   | arsort                                        | 对数组进行由大到小的逆向排序并保持索引关系                                                  |
+   | uasort                                        | 使用用户自定义的比较回调函数对数组中的值进行排序并保持索引关联                              |
+   | ksort                                         | 按照键名对数组进行由小到大的排序，为数组值保留原来的键                                      |
+   | krsort                                        | 将数组按照由大到小的键逆向排序，为数组值保留原来的键                                        |
+   | uksort                                        | 使用用户自定义的比较回调函数对数组中的键名进行排序                                          |
+   | natsort                                       | 用自然顺序算法对给定数组中的元素排序                                                        |
+   | natcasesort                                   | 用不区分大小写的自然顺序算法对给定数组中的元素排序                                          |
+   | usort ( array &array, callback cmp_function ) | 用户自定义排序                                                                              |
+**** 使用回调函数处理数组的函数 
+***** array_fileter()函数用回调函数过滤数组中的元素，返回按用户自定义函数过滤后的新数组
+      array array_filter ( array input [, callback callback] )
+      该函数的第一个参数是必选项，要求输入一个被过滤的数组。第二个参数是可选项，将用户自定义的函数名以字符
+      串形式传入。如果自定义过滤函数返回 true，则被操作的数组的当前值就会被包含在返回的结果数组中，并将结果
+      组成一个新的数组。如果原数组是一个关联数组，键名保持不变。函数 array_filter()使用的代码如下所示：
+
+      function myFun($var){                                           //自定义函数 myFun，如果参数能被 2 整除则返回真
+      if($var % 2 == 0)
+      return true;
+      }
+
+      $array = array("a"=>1, "b"=>2, "c"=>3, "d"=>4, "e"=>5);          //声明值为整数序列的数组
+      //使用函数 array_filter()将自定义的函数名以字符串的形式传给第二个参数
+      print_r(array_filter($array, "myFun"));                         //过滤后的结果输出 Array ( [b] => 2 [d] => 4 )
+      ?>
+
+      在上面的代码中，array_filter()函数依次将$array 数组中的每个值传递到 myFun()函数中，如果 myFun()函数返回
+      TRUE，则$array 数组的当前值会被包含在返回的结果数组中，并将结果组成一个新的数组返回。
+***** array_walk()函数对数组中的每个元素应用回调函数处理。如果成功则返回 TRUE，否则返回 FALSE。该函数有三个
+      bool array_walk ( array &array, callback funcname [, mixed userdata] )
+
+      该函数的第一个参数是必选项，要求输入一个被指定的回调函数处理的数组。第二个参数也是必选项，传入用户定
+      义的回调函数，用于操作传入第一个参数的数组。array_walk()函数依次将第一个参数的数组中的每个值传递到这
+      个自定义的函数中。自定义的这个回调函数中应该接收两个参数，依次传入进来元素的值作为第一个参数，键名作
+      为第二个参数。如果在 array_walk()函数中提供可选的第三个参数，也将被作为回调函数的第三个参数接收。
+
+      如果自定义的回调函数需要的参数比给出得多，则每次 array_walk()调用回调函数时都会产生一个 E_WARNING 级的
+      错误。这些警告可以通过在 array_walk()调用前加上 PHP 的错误操作符@来抑制，或者用 error_reporting()。
+
+      如果回调函数需要直接作用于数组中的值，可以将回调函数的第一个参数指定为引用：&$value。函数 array_walk
+      ()使用的代码如下所示：
+
+
+      <?php
+      function myFun1($value,$key) {                                          //定义一个回调函数接收两个参数
+      echo "The key $key has the value $value<br>";                     //将参数连接在一起输出
+      }
+
+      $lamp=array("a"=>"Linux","b"=>"Apache","c"=>"Mysql","d"=>"PHP");    //定义一个数组$lamp
+      array_walk($lamp,"myFun1");                     //使用 array_walk 函数传入一个数组和一个回调函数
+      /*  执行后输出如下结果：
+      The key a has the value Linux
+      The key b has the value Apache
+      The key c has the value MySQL
+      The key d has the value PHP */
+
+      function myFun2($value,$key,$p)  {              //自定义一个回调函数需要接受三个参数
+      echo "$key $p $value <br>";             //将三个参数连接后输出
+      }
+        
+      array_walk($lamp,"myFun2","has the value");     //使用 array_walk 函数传入三个参数
+      /*执行后输出如下结果：
+      a has the value Linux
+      b has the value Apache
+      c has the value MySQL
+      d has the value PHP     */
+
+      function myFun3(&$value,$key) {                     //改变量组元素的值（请注意 &$value 传入引用）
+      $value="Web";                           //将改变原数组中每个元素的值
+      }
+
+      array_walk($lamp,"myFun3");                     //使用 array_walk 函数传入两个参数，其中第一个参数为引用
+      print_r($lamp);                                 //输出：Array ( [a] => Web [b] => Web [c] => Web [d] => Web )
+      ?>
+
+***** array_map() 
+      与上一个 array_walk()函数相比，array_map()函数将更加灵活，并且可以处理多个数组。
+      将回调函数作用到给定数组的元素上，返回用户自定义函数作用后的数组。array_map()是
+      任意参数列表函数，回调函数接受的参数数目应该和传递给 array_map()函数的数组数目
+      一致。其函数的原型如下：
+***** 多维数组的排序 
+      array_multisort()  对多个数组或多维数组进行排序  
+      PHP 也允许在多维数组上执行一些比较复杂的排序。例如，首先对一个嵌套数组使用一个普通的键值进行排序，然
+      后再根据另一个键值进行排序。这与使用 SQL 的 ORDER BY 语句对多个字段进行排序非常相似。可以使用
+      array_multisort()函数对多个数组或多维数组进行排序，或者根据某一维或多维对多维数组进行排序。其函数的原
+      型分别如下：
+
+
+      bool array_multisort ( array ar1 [, mixed arg [, mixed ... [, array ...]]] )
+
+      该函数如果成功则返回 TRUE，失败则返回 FALSE。第一个参数是要排序的主要数组。数组中的值比较为相同的话，
+      就按照下一个输入数组中相应值的大小来排序，依此类推。函数 array_multisort()使用的代码如下所示：
+
+
+      <?php
+      $data = array(                          //声明一个$data 数组，仿真了一个行和列数组
+      array("id" => 1, "soft" => "Linux", "rating" => 3),
+      array("id" => 2, "soft" => "Apache", "rating" => 1),
+      array("id" => 3, "soft" => "MySQL", "rating" => 4),
+      array("id" => 4, "soft" => "PHP", "rating" => 2),
+      );
+      //使用 foreach 遍历创建两个数组作为 array_multisort 的参数
+      foreach ($data as $key => $value) {
+      $soft[$key] = $value["soft"];     //将$data 中的每个数组元素中键值为 soft 的值形成数组$soft
+      $rating[$key] = $value["rating"]; //将每个数组元素中键值为 rating 的值形成数组$rating
+      }
+
+      array_multisort($rating, $soft, $data);  //使用 array_multisort()函数传入三个数组进行排序
+      print_r($data);                          //输出排序后的二维数组
+      ?>
+
+**** 拆分、合并、分解和接合数组 
+***** 函数 array_slice() 
+      array_slice()函数的作用是在数组中根据条件取出一段值并返回。如果数组有字符串键，所返回的数组将保留键名。
+      该函数可以设置四个参数，其函数的原型如下：
+** 单元测试 phpunit https://phar.phpunit.de/
+   安装
+   #+begin_src sh
+    wget http://phar.phpunit.cn/phpunit-6.2.phar
+    chmod +x phpunit-6.2.phar
+    sudo mv phpunit-6.2.phar /usr/local/bin/phpunit
+    phpunit --version
+   #+end_src
+** 依赖管理器 (仅安装依赖哦，不是一套完整程序)
+*** Composer 
+**** composer.json  
+     #+begin_src json
+       {
+           "require": {
+               "monolog/monolog": "1.2.*"
+           }
+       }
+     #+end_src
+**** 安装
+     全局安装
+     #+begin_src sh
+       curl -sS https://getcomposer.org/installer | php
+       mv composer.phar /usr/local/bin/composer
+     #+end_src
+     
+     局部安装 
+     #+begin_src sh
+       curl -sS https://getcomposer.org/installer | php
+     #+end_src
+    将下载执行文件 composer.phar 
+    使用 
+    #+begin_src sh
+    php composer.phar install
+    #+end_src
+    
+**** 配置
+***** 设置中国镜像地址
+      #+begin_src sh
+      composer config -g repo.packagist composer https://packagist.phpcomposer.com
+      #+end_src
+      
+      然后在自己项目里面的 composer.json 文件里面添加如下：
+      #+BEGIN_SRC json
+        "repositories": {
+            "packagist": {
+                "type": "composer",
+                "url": "https://packagist.phpcomposer.com"
+            }
+        }
+      #+END_SRC
+**** 自动加载
+     在你的代码的初始化部分中加入下面一行：就可以使用 ~composer~ 里的依赖了
+     #+begin_src sh
+       require 'vendor/autoload.php';
+     #+end_src
+     
+**** 使用
+     | about                   | 显示 ~composer~ 的 简短信息                      |
+     | archive                 | 创建此 composer 包的存档                         |
+     | browse[home]            | 在浏览器中打开包的存储库 URL 或主页              |
+     | clear-cache             | 清除缓存                                         |
+     | create-project          | 从包中创建新项目到给定目录                       |
+     | diagnose                | 诊断系统以识别常见错误                           |
+     | exec                    | 执行 verdored binary/script                      |
+     | init                    | 在当前目录中创建基本的 composer.json 文件        |
+     | install                 | 从 composer.lock 或 composer.json 安装项目依赖项 |
+     | licenses                | 查看依赖许可                                     |
+     | require                 | 将所需的包添加到 composer.json 并安装它们        |
+     | list                    | 列出命令                                         |
+     | 显示有关包的信息        | show [info]                                      |
+     | status                  | 显示本地修改的包列表                             |
+     | validate                | 验证 composer.json 和 composer.lock              |
+     | composer update foo/bar | 仅更新单个库                                     |
+
+     #+begin_verse
+     请求安装 composer require "foo/bar:1.0.0"
+     composer init --require=foo/bar:1.0.0 -n
+     克隆仓库 composer create-project doctrine/orm path 2.2.0
+     #+end_verse
+
+** 数据库哦   
+***** predis/[[https://github.com/nrk/predis/wiki/Quick-tour][predis]]
+****** 连接到服务器 
+       连接到默认主机（127.0.0.1）和端口（6379）
+       $redis = new Predis\Client();
+       
+       使用参数连接到服务器
+       $redis = new Predis\Client(array(
+       'host' => '10.0.0.1', 
+       'port' => 6380, 
+       ));
+
+     
+* 对象，模式，实践    
+** 模式
+   设计模式，就是设计过的模式，就是设计过的完美的解决方案。
+   使用模式，就不用再重复开发解决问题的方案了。
+   设计模式只是定义大体的规范，而不是面面俱到。
+   我们在此学习面向对象软件开发的模式
+   
+   设计模式包含 4 个核心内容 : 命名，问题，解决方案和效果。
+   为什么使用设计模式呢？
+   1. 一个设计模式定义了一个问题。
+   2. 一个设计模式定义了解决方案。
+   3. 语言无关
+   4. 定义了一组词汇
+
+   组合与继承 ： 组合优于继承,两个不同的东西优于一个大的复杂的东西。
+   针对接口编程，而不是针对实现编程 ,这样，需要改动的就少了，方便移植到不同的地方。(有移植需求的地方要这样设计) 
+   
+   面向场景 
+   生成对象模式
+   面向任务的模式 
+   企业模式
+   数据库模式
+
+   单例模式 全局变量
+** 实践
+   不要重复造轮子，要善于利用工具 ，工具在 PEAR 找 
+   使用版本工具
+   使用项目管理工具,PEAR 用于小项目 ， Phing 用于大项目 
+   写清晰的文档，文档会回忆思路，而且如果没有说明，以后都看不懂代码啦。
+   使用测试工具测试类
+*** PEAR (php extension and application repository) ,不解决依赖问题的哦
+    PHP 扩展和应用程序库 ,仓库地址为 https://pear.php.net 
+    使用人家的库，和使用自带的库都是库啦，又不是写汇编的年代，现在时间就是金钱
+    php 默认自带了 pear 核心包
+    获取包安装的路径 pear config-get php_dir
+    查看所有配置 pear config-show
+    安装 pear 包 ，要用管理员权限，包都是安装在(php_dir )中的 sudo pear install <PackageName>
+    安装时顺便安装强制依赖包   pear install -o <PackageName> ,对于全部的(包含非强制 ，用 -a 选项)
+    下载下来的包，安装时,指定文件就好了  pear install -o http://PackageName.tgz
+    卸载 pear uninstall <PackageName>
+    
+    使用 pear 包，目录要在 include_path 中才能使用哦，要不来是白安装的,默认是在的。
+    包含路径一般包含文件的当前路径和 pear 包路径，可以自己增加
+    
+    - 使用 Pear_Config 包 
+      1. 先安装 pear install -a Config
+      2. 使用,在代码中 require_once("Config.php"); new Config()->parseConfig("xmlFileName","xml")
+      3. 类型包含 apache，genericconf，inifile，inicommented，phparray，xml
+    
+      创建自己的 pear 包 ,没细研究  
+      构建文件,必须的,跟 maven 的 pom.xml 差不多哦 package.xml
+*** 使用 phpDocumentor 生成文档,从 javadoc 移植过来的，看，多会重用
+    这个好像废弃了 
+    安装  pear upgrade PhpDocumentor
+    使用  phpdoc -d <项目目录 > -t <文档生成到哪个目录>  -ti " 项目标题 "  -dn "默认包名"  
+
+    文档结构 
+    #+begin_src php
+      /*
+       ,* @package  包名
+       ,* @author 作者名
+       ,* @copyright 版权声明
+       ,* @license 许可证
+       ,* @var 属性
+       ,* @param 参数
+       ,* @return 返回值
+       ,* @see 链接
+       ,* @link 链接
+       ,* 
+       ,*/
+    #+end_src
+
+** 测试
+   php 中没有主函数，main
+*** phpunit 
+    功能测试和单元测试 , 测试员用功能测试(外部测试)，程序员单元测试(测试类,内部测试)
+    我们程序员当然是内部测试了。而且内部测试能发现细节
+    
+    手工测试，手工把测试代码放在最后测试啦。
+    
+    测试单元 
+    安装,或用 composer 安装
+    
+    如果用 Composer 来管理项目的依赖关系，只要在项目的 composer.json 文件中简单地加上对 phpunit/phpunit 的依赖关系即可：
+    composer require --dev phpunit/phpunit ^|version|
+#+begin_src shell
+  $  chmod +x phpunit-7.0.phar
+  $  sudo mv phpunit-7.0.phar /usr/local/bin/phpunit
+  $  phpunit --version
+  PHPUnit x.y.z by Sebastian Bergmann and contributors.
+  也可以直接使用下载的 PHAR 文件：
+
+  $  wget https://phar.phpunit.de/phpunit-7.0.phar
+  $  php phpunit-7.0.phar --version
+  PHPUnit x.y.z by Sebastian Bergmann and contributors.
+#+end_src
+
+创建测试用例 
+#+begin_src php
+  // 用 PHPUnit 测试数组操作
+    <?php
+    use PHPUnit\Framework\TestCase;
+
+    class StackTest extends TestCase
+    {
+        public function testPushAndPop()
+        {
+            $stack = [];
+            $this->assertEquals(0, count($stack));
+
+            array_push($stack, 'foo');
+            $this->assertEquals('foo', $stack[count($stack)-1]);
+            $this->assertEquals(1, count($stack));
+
+            $this->assertEquals('foo', array_pop($stack));
+            $this->assertEquals(0, count($stack));
+        }
+    }
+    ?>
+
+    // *Martin Fowler*:
+
+    // 当你想把一些东西写到 ``print`` 语句或者调试表达式中时，别这么做，将其写成一
+    // 个测试来代替。
+#+end_src
+
+** 构建
+*** Phabricator 
+    用于敏捷开发的项目管理软件, 含代码托管、Code Review、任务管理、文档管理、问
+    题跟踪、构建与持续集成、博客、内部聊天等
+*** Phing - PHP 项目构建工具
+** 错误处理 
+   设置错误开关，配置错误等级 
+   ini_set("display_errors","On");
+   error_reporting(E_ALL); //-1 是关闭
+    
+   异常使用异常处理函数 Exception
+   抛出异常  throw new Exception("MSG");
+
+   异常监控 try{}catch(Exception $e){die($e->__toString())}
+** 类
+- 类使用 class 关键字后加上类名定义。
+- 类名后的一对大括号({})内可以定义变量和方法。
+- 类的变量使用 var 来声明(不用 var 也可以), 变量也可以初始化值。
+- 类的函数定义类似 PHP 函数的定义，但函数只能通过该类及其实例化的对象访问。
+*** 构造函数 (实例化函数,只能有一个，不能简单重载)
+    用 new 创建对象实例时默认调用的函数 。
+#+begin_src php
+    void __construct ([ mixed $args [, $... ]] )
+#+end_src
+**** 重载方法 
+     #+begin_src php -n
+       <?php 
+       class A 
+       { 
+           function __construct() 
+           { 
+               $a = func_get_args(); 
+               $i = func_num_args(); 
+               if (method_exists($this,$f='__construct'.$i)) { 
+                   call_user_func_array(array($this,$f),$a); 
+               } 
+           } 
+    
+           function __construct1($a1) 
+           { 
+               echo('__construct with 1 param called: '.$a1.PHP_EOL); 
+           } 
+    
+           function __construct2($a1,$a2) 
+           { 
+               echo('__construct with 2 params called: '.$a1.','.$a2.PHP_EOL); 
+           } 
+    
+           function __construct3($a1,$a2,$a3) 
+           { 
+               echo('__construct with 3 params called: '.$a1.','.$a2.','.$a3.PHP_EOL); 
+           } 
+       } 
+       $o = new A('sheep'); 
+       $o = new A('sheep','cat'); 
+       $o = new A('sheep','cat','dog'); 
+
+       // results: 
+       // __construct with 1 param called: sheep 
+       // __construct with 2 params called: sheep,cat 
+       // __construct with 3 params called: sheep,cat,dog 
+       ?>
+     #+end_src

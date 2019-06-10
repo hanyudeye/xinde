@@ -1,0 +1,196 @@
+#+TITLE: vuejs 简介
+#+DESCRIPTION: vuejs 简介
+#+TAGS: vue,vuejs
+#+CATEGORIES: 框架使用
+
+* vuejs                                                      
+  
+** vue 工具选项  
+| init   | generate a new project from a template |
+| list   | list available official templates      |
+| build  | prototype a new project                |
+| create | (for v3 warning only)                  |
+
+** 安装使用
+ 生成项目  vue init <template-name> <project-name>
+ vue init webpack vue-todos
+ 
+ 运行项目
+ cd vue-todos
+ npm install
+ npm run dev
+
+** 初始化 Vue 项目环境
+*** 初始化主环境的多种实现方式
+**** el 绑定主环境
+     ```
+     new Vue({
+     el: '#app'
+     })
+ ```
+****  2)$mount 手动挂载
+     new Vue({
+
+     }).$mount('#app');
+     
+****  3)实例$mount 挂载
+
+ ```
+ let app = new Vue({
+
+ });
+
+ app.$mount('#app');
+ ```
+** 创建第一个 Vue 应用
+
+```
+<div id="app">{{test}}</div>
+<script>
+new Vue({
+    el: '#app',
+    data: {
+        test: 'Hello World !'
+    }
+})
+</script>
+```
+
+** 定义数据 data 
+** 定义方法
+   #+begin_src js
+
+     new Vue({
+         el: '#app',
+         methods: {
+             fun(){
+                 alert(1);
+             }
+         }
+     })
+#+end_src
+** 事件绑定指令
+
+       <div id="app">
+        <input type="button" value="点击我" v-on:click="fun()">
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            methods: {
+                fun(){
+                    alert('Hello World !');
+                }
+            }
+        })
+    </script> 
+** v-on 指令还有较方便的简写方式 @
+   <input type="button" value="点击我" @:click="fun()">
+** v-model 用于非成对 DOM 的数据绑定({{}}模板数据绑定只适合成对标签)
+<input type="input" v-model="">
+** v-show 用于显示或隐藏 DOM 元素，配合布尔值表示显示状态，使用场景较多
+
+* vue
+  ( view )
+  模板语法
+** 渲染  
+  #+begin_src html
+    < div  id = “app” >
+      {{message}} 
+    </ div >
+  #+end_src
+
+ #+begin_src javascript
+   var app = new Vue（{ 
+       el：'＃app'，
+       data：{ 
+           message：'Hello Vue！'
+       } 
+   }）
+ #+end_src
+*** DOM 设置属性
+    #+begin_src html
+      <div id="app-2">
+        <span v-bind:title="message">
+          将鼠标悬停在我身上几秒钟 ，看看我动态绑定的标题！
+        </span>
+      </div>
+        #+end_src
+** 条件和循环
+   #+begin_src html
+     <div id="app-3">
+          <span v-if="seen">Now you see me</span>
+     </div>
+   #+end_src
+
+   #+begin_src html
+     <div id="app-4">
+       <ol>
+         <li v-for="todo in todos">
+           {{ todo.text }}
+         </li>
+       </ol>
+     </div>
+   #+end_src
+   
+   #+begin_src js
+     var app4 = new Vue({
+         el: '#app-4',
+         data: {
+             todos: [
+                 { text: 'Learn JavaScript' },
+                 { text: 'Learn Vue' },
+                 { text: 'Build something awesome' }
+             ]
+         }
+     })
+#+end_src
+** 事件
+   
+#+begin_src html
+<div id="app-5">
+  <p>{{ message }}</p>
+  <button v-on:click="reverseMessage">Reverse Message</button>
+</div>
+#+end_src
+
+#+begin_src js
+var app5 = new Vue({
+  el: '#app-5',
+  data: {
+    message: 'Hello Vue.js!'
+  },
+  methods: {
+    reverseMessage: function () {
+      this.message = this.message.split('').reverse().join('')
+    }
+  }
+})
+#+end_src
+** 组件
+   #+begin_src js
+     // Define a new component called todo-item
+     Vue.component('todo-item', {
+         template: '<li>This is a todo</li>'
+     })
+#+end_src
+
+Now you can compose it in another component’s template:
+
+
+#+begin_src html
+  <ol>
+    <!-- Create an instance of the todo-item component -->
+    <todo-item></todo-item>
+  </ol>
+#+end_src
+
+* 库地址
+   #+begin_src html
+     <！ - 开发版，包括有用的控制台警告 - > 
+       < script  src = “https://cdn.jsdelivr.net/npm/vue/dist/vue.js” ></ script >
+
+       <！ - 生产版本，针对大小和速度进行了优化 - > 
+         < script  src = “https://cdn.jsdelivr.net/npm/vue” ></ script >
+   #+end_src
+
