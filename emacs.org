@@ -1,138 +1,187 @@
-* emacs [ 大编辑器 ]
+#+TITLE: emacs 使用简介
+#+DESCRIPTION: emacs 编辑器 
+#+TAGS: emacs
+#+CATEGORIES: 软件使用
+#+DATE: <2019-06-04 22:30:51>
+
+* emacs 
+** 简介 
+   #+begin_verse
+   可扩展的编辑器。
+   就是可以在编辑器内部调用编写函数，然后 ~调用函数~ ，还可以设置调用函数的 ~快捷键~ 。
+   扩展语言是 emacs-lisp(elisp)
+   除了底层是 ~C~ 写的,其他都是 ~elisp~ 写的
+   键盘上的 ~Alt~ 键，在 emacs 中 称 ~Meta~ 键，简写 @@html:<kbd>@@ M @@html:</kbd>@@  (由于古老的历史) 
+   初学者帮助，（help-with-tutorial） @@html:<kbd>@@ C-h t @@html:</kbd>@@ 
+   #+end_verse
+#+HTML: <!-- more -->
+
 ** 选项
-   | +<行号>         | 将光标移动到制定行号的行；                             |
-   | q               | 不加载初始化文件                                       |
-   | u<用户>         | 加载指定用户的初始化文件；                             |
-   | f<函数>         | 执行指定 lisp（广泛应用于人工智能领域的编程语言）函数； |
-   | l<lisp 代码文件> | 加载指定的 lisp 代码文件                                 |
-   | batch           | 以批处理模式运行 emacs 编辑器                            |
-   | debug-init      | 程序启动时，加载调试器                                 |
-   | script=file     | 执行文件                                               |
-   | insert=file     | 插入文件                                               |
-** 屏幕组织 
-*** frame [ 框架 ] 
-    - 框架
+   | +<行号>          | 将光标移动到制定行号的行；                              |
+   | q                | 不加载初始化文件                                        |
+   | u<用户>          | 加载指定用户的初始化文件；                              |
+   | f<函数>          | 执行指定 lisp（广泛应用于人工智能领域的编程语言）函数； |
+   | l<lisp 代码文件> | 加载指定的 lisp 代码文件                                |
+   | batch            | 以批处理模式运行 emacs 编辑器                           |
+   | debug-init       | 程序启动时，加载调试器                                  |
+   | script=file      | 执行文件                                                |
+   | insert=file      | 插入文件                                                |
+** 屏幕结构
+   从上往下
+      #+begin_verse
       - 菜单 (顶部)
       - 工具栏(顶部)
       - 窗口 (中部) [ 多个 ]
         - 滚动条
         - 模式行
       - echo area (底部)
-*** point [ 光标,每个 buffer 记录 point ]  
-*** The Mode Line [ 状态栏 ]
-*** The Echo Area [ 信息栏 ]
-** 用户输入 [ 主用键盘,鼠标, 控制键与字符键结合 ]
-** 按键 [ 按键组合,命令 ]
-   - 键序列
-     - 完整键
-     - 前缀键
-** 命令 [ 命名命令,函数 ]
-*** 输入文本 
-    特殊字符 
-    C-q 八进制数字
-    C-q 101  --->'A'
+      #+end_verse
+      
+** 基本编辑命令
+   都可以用@@html:<kbd>@@ <tab> @@html:</kbd>@@ 补全
+*** 插入文本
+    可见字符( 键盘上有的字符 )可以直接输入( 用输入法 )。(~self-insert~)
 
-    C-q 控制键
+    #+begin_verse
+    不可见, 用 ~C-q~ ( ~quoted-insert~ ) 命令
+    键盘控制键 : 如  @@html:<kbd>@@ C-q  DEL @@html:</kbd>@@ , @@html:<kbd>@@  C-q RET @@html:</kbd>@@ 
+    八进制数字 : @@html:<kbd>@@ C-q  1 0 1 @@html:</kbd>@@ 插入 ~A~ 
+    #+end_verse
     
-    unicode
-    C-x 8 十六进制/或名称
-*** 空行
-    头部插入空行    C-o 
-    删除空行 C-x C-o  [ 不用选择，只要当前光标是空行 ]
-*** 文本操作
-**** 选中文本
-***** 标记 Mark
-****** 做标记 set-mark-command 或者鼠标 
-****** 标记对象 word, list, paragraph, page
-****** 操作标记
-******* 删除 kill 
-******* 拷贝 yank
-******* 大小转化
-******* 替换
-******* 缩进
-******* 填充
-******* 拼写检查
-******* 求值（lisp 代码）
-******* 保存到寄存器 registers
-****** 标记环 mark ring (凡做标记的操作 point 会存储到环中)
-       全局 mark ring pop-global-mark
-****** shift 键辅助标记
-       一些光标移动+ shift 键会直接标记光标下的文本
-***** 矩形标记 rectangles
-**** Killing 环   (删除文本到 kill 环中)
-     在图形编辑器中，还会拷贝到系统 clipboard
-***** 删除命令(存在 kill 环) 
-      kill-line kill-word kill-page
-***** delete 命令（不会存在 killing 环)
-      delete-char delete-backward-char delete-line
-**** 暂存器 Registers (大小写字符或数字都可) 
-***** 创建暂存器 
-****** position registers 
-     记录位置 point-to-register
-     跳转到位置 jump-to-register
-****** text registers
-      Copy region into register R (‘copy-to-register’).
-      Insert text from register R (‘insert-register’). 
-      append-to-register <RET> R
-****** rectangle registers
-       copy-rectangle-to-register
-       insert-register
-****** number registers
-       ‘C-u NUMBER C-x r n R’                                   
-       Store NUMBER into register R (‘number-to-register’).
-      
-       ‘C-x r i R’                                          
-       Insert the number from register R into the buffer.
-****** file registers
-****** keyboard macro registers
-       ‘C-x r j R’
+    还有，就是用 ~insert-char~ 命令
 
-***** 显示 view-registers
-**** Display 界面 
-**** 搜索 替换 
-**** 有用的命令 
-***** 大小转化 
-      M-l 小写
-      M-u 大写
-      M-c 首字母大写
-**** 键盘宏
+*** 移动光标：将光标移动到您想要更改某些内容的位置
+    #+begin_verse
+    后一个字：forward-char
+    前一个字：backward-char
+    下一行：next-line
+    上一行：previous-line
+    行首： move-beginning-of-line
+    行尾： move-end-of-line
+    后一个词组: forward-word
+    。。。
+    #+end_verse
 
-*** 国际化 
-**** International Chars::    键盘只能数 100 个字
-     emacs 有自己的编码（类 unicode 的编码)
-***** 编码输入 C-x 8 <RET> 🔔 16 进制
-***** 显示编码 C-x =
-      详细信息 C-u C-x =
-**** 语言环境 把编码显示某国语言(超出某国的会乱码)
-***** 设置语言环境 set-language-environment 用 sdcv 测试
-      
-**** Input Methods::           Entering text characters not on your keyboard.
-**** Select Input Method::     Specifying your choice of input methods.      
-**** Coding Systems:: 有时一种语言有几种编码系统 
-***** 显示编码 describe-coding-system 
-***** 列出编码 list-coding-systems
-***** 识别编码 方法 语言环境变量 
-***** 自定义 prefer-coding-system
-***** 指定文件编码 revert-buffer-with-coding-system
-***** 指定输出的编码 set-buffer-file-coding-system
-***** File Name Coding::        Coding systems for file _names_.                
-      (‘set-file-name-coding-system’).
-***** Terminal Coding::         Specifying coding systems for converting      
-      (‘set-terminal-coding-system’).
+*** 删除：删除和删除文本。
+    #+begin_verse
+    删除光标前面的字    delete-forward-char
+    删除光标后面的字 delete-char
+    把光标那行后面都删掉 kill-line
+    删掉光标后面词组 kill-word
+    ....
+    #+end_verse
 
-**** 字体
-***** 字体信息 describe-fontset  
-***** 字体安装
-           xset fp+ /usr/local/share/emacs/fonts
-           xset fp rehash
-      
-***** Defining Fontsets       Defining a new fontset.                       
-***** 改字体 set-frame-font
-***** 改界面字体 set-face-font 
-**** Undisplayable Characters:: When characters don’t display.           
-**** Unibyte Mode::            You can pick one European character set       
-**** Charsets::                How Emacs groups its internal character codes.
-**** Bidirectional Editing::   Support for right-to-left scripts.           
+*** 撤消与恢复
+    #+begin_verse
+    撤消   undo
+    恢复(取消撤销) undo-tree-redo
+    恢复整个 buffer revert-buffer
+    #+end_verse
+
+*** 文件：访问，创建和保存文件。
+    访问 find-file
+    保存 save-buffer
+*** 帮助：询问角色的作用。
+    #+begin_verse
+    不会的键  describe-key
+    不会的命令 describe-function
+    不会的变量 describe-variable
+    #+end_verse
+
+*** 长行的显示
+    长行显示截断开关 : toggle-truncate-lines 
+*** 长行截断 (一段文字显示在一行了)
+    自动填充: 在插入到一定长度时自动给你换行。 ~auto-fill-mode~
+    截断当前(光标处)长行: ~fill-paragraph~ 
+    把选中的区域 (region) 截断 ~fill-region-as-paragraph~
+    设置行的长度： ~set-fill-column~
+
+    填充前缀: 用前缀来填充截断的长行
+    设置填充前缀:   ~set-fill-prefix~
+    使用当前填充前缀填充长行: ~fill-paragraph~  , 插入时也会填充前缀哦。 (就是上面的截断命令)
+    
+*** 光标信息
+    哪一行 what-line    
+    模式行开关: 
+       - 行号  line-number-mode
+       - 列号  column-number-mode
+         
+     #+begin_verse
+     区域信息(region)  count-words-region
+     缓冲区信息  count-words
+     字符信息  what-cursor-position
+     高亮行 hl-line-mode
+     缓冲区大小 size-indication-mode
+     #+end_verse
+     
+     : 用原生的哦 ~emacs -q ~ ，我这装了插件有些改了不起效果
+*** 数字参数
+    有些命令要执行多次，可以加一个数字参数 
+   @@html:<kbd>@@ M @@html:</kbd>@@ 键加一个数字 N 就能执行 N 次命令
+   
+** 文本操作命令
+*** Mark (标记) 选中一段文本
+    图形窗口下直接用鼠标选中就可以 
+    
+
+    #+begin_verse
+    命令行下包括以下步骤
+    开始标记 ~set-mark-command~
+    然后执行光标移动命令，拉大选区，就可以了
+
+    直接标记
+    标记词 mark-word
+    标记段 mark-paragraph  。。。
+    
+    交换标记开始点 ~exchange-point-and-mark~ , 可以更改选区方向
+   
+   #+end_verse
+*** kill 和粘贴 
+    用 ~kill~ 命令 删除的文本一般都保存在 ~kill-ring~ 这个地方，
+    不保存在 ~kill-ring~   的命令叫 ~delete~ 命令，通常删除字，词这些删的少的。 
+    
+    kill 行： kill-line
+    kill 选区 ~kill-region~
+    复制选区 ~kill-ring-save~ ,不删，加到  ~kill-ring~ 
+ 
+    粘贴到光标： ~yank~ ,在 ~kill-ring~ 最上面的，就是你最后一次执行 ~kill~ 的内容。
+    弹出早些的 ~kill~ 的内容 : ~yank-pop~ ,多次执行就遍历 ~kill-ring~ 中的内容
+    : 如果要执行 ~yank-pop~ , 上一次命令 必须是 ~yank~ 命令哦
+
+*** 矩形区域 rectangles
+    对表格很有用     
+
+    矩形标记: rectangle-mark-mode
+
+*** 暂存器 
+    保存文本，矩形，位置和其他内容供以后使用
+**** 访问寄存器内容 ~view-register~
+**** 位置寄存器
+     记录位置 ~point-to-register~
+     跳转到位置 ~jump-to-register~
+
+**** text registers
+     拷贝到寄存器 ~copy-to-register~
+     弹出寄存器内容 ~insert-register~
+     内容追加 ~append-to-register~
+**** rectangle registers
+     copy-rectangle-to-register
+     insert-register
+     
+**** number registers
+     number-to-register
+*** 搜索和替换 
+    向后搜： ~isearch-forward~
+    向前搜： ~isearch-backward~
+    替换： ~replace-string~
+*** 大小转化 [ upcase, lowcase ]
+*** 键盘宏  记录键盘序列
+*** 文件处理
+**** 文件目录
+     显示目录列表  ~list-directory~
+     创建目录 ~make-directory~
+     删除目录 ~delete-directory~
+
 ** 服务
 - 开启服务
   1. 在 emacs 中 server-start, 或放在 init file 中,
@@ -141,6 +190,7 @@
   EDITOR=emacsclient -c
 ** package
 *** 列出扩展 list-packages
+*** 重新安装包 package-reinstall
 *** 加载扩展
     require <sysbol name>
     
@@ -150,38 +200,8 @@
     
     (load 'auto-complete-autoloads)
     包管理器 elpa(Emacs package system)
-** 高级特性 
-*** Modes::               Major and minor modes alter Emacs’s basic behavior.
-*** Indentation::         Editing the white space at the beginnings of lines.
-*** Text::                Commands and modes for editing human languages.
-*** Programs::            Commands and modes for editing programs.
-*** Building::            Compiling, running and debugging programs.
-*** Maintaining::         Features for maintaining large programs.
-*** Abbrevs::             Defining text abbreviations to reduce typing.
-*** Dired::               Directory and file manager.
-*** Calendar/Diary::      Calendar and diary facilities.
-*** Sending Mail::        Sending mail in Emacs.
-*** Rmail::               Reading mail in Emacs.
-*** Gnus::                A flexible mail and news reader.
-*** Host Security::       Security issues on a single computer.
-*** Network Security::    Managing the network security.
-*** Document View::       Viewing PDF, PS and DVI files.
-*** Shell::               Executing shell commands from Emacs.
-*** Emacs Server::        Using Emacs as an editing server.
-*** Printing::            Printing hardcopies of buffers or regions.
-*** Sorting::             Sorting lines, paragraphs or pages within Emacs.
-*** Picture Mode::        Editing pictures made up of text characters.
-*** Editing Binary Files::  Editing binary files with Hexl mode.
-*** Saving Emacs Sessions:: Saving Emacs state from one session to the next.
-*** Recursive Edit::      Performing edits while within another command.
-*** Hyperlinking::        Following links in buffers.
-*** Amusements::          Various games and hacks.
-*** Packages::            Installing additional features.
-*** Customization::       Modifying the behavior of Emacs.
+*** 字节编译 byte-recompile-directory
 ** 调试
    使用函数 debug-on-error,就会捕捉错误，重新执行下错误内容就捕捉到了
-   重新安装包 package-reinstall
-   
-   错误 Cannot open load file: 需要 
-   
-  字节编译 byte-recompile-directory
+
+

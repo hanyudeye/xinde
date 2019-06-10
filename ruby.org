@@ -1,17 +1,17 @@
 * Ruby layers
-  该层为Ruby编程语言提供支持
+  该层为 Ruby 编程语言提供支持
   启动 1.打开交互模式 inf-ruby
   2.使用 ruby-send-region
 ** 特点：
-*** 版本管理器（rbenv，rvm或chruby）
+*** 版本管理器（rbenv，rvm 或chruby）
 *** 与捆绑器集成(bundler)
-*** 测试运行器（ruby-test和rspec）
+*** 测试运行器（ruby-test 和rspec）
 *** Rake runner （收集运行器）
 *** Linter（rubocop）代码校验工具
-*** 交互式REPL和代码导航（robe）
+*** 交互式 REPL 和代码导航（robe）
 ** 安装
-该层支持两种不同的Ruby模式：Emacs的内置Ruby模式和 enh-ruby模式。默认情况下，
-内置的Ruby模式已启用。要切换到 enh-ruby-mode 要设置 ruby-enable-enh-ruby-mode至t：
+该层支持两种不同的 Ruby 模式：Emacs 的内置 Ruby 模式和 enh-ruby 模式。默认情况下，
+内置的 Ruby 模式已启用。要切换到 enh-ruby-mode 要设置 ruby-enable-enh-ruby-mode 至t：
 #+BEGIN_SRC emacs-lisp
   (defun dotspacemacs-configuration-layers ()
      '((ruby :variables ruby-enable-enh-ruby-mode t)))
@@ -21,15 +21,15 @@
 *** 先决条件
 pry 和 pry-doc 用来跳转到定义和代码文档（robe-mode）
 - =ruby_parser= is required for *goto-step_definition* in =feature-mode=
-rubocop 是rubocop集​​成所必需的
+rubocop 是 rubocop 集​​成所必需的
 
-您可以将宝石添加到当前项目的上下文中(在Gemfile文件中），例如：
+您可以将宝石添加到当前项目的上下文中(在 Gemfile 文件中），例如：
 
 #+BEGIN_SRC ruby
   gem 'pry'
 #+END_SRC
-: gem 是ruby的 package管理工具
-或者在命令行上（请参考ruby版本管理器的具体文档了解详情和注意事项）：
+: gem 是 ruby 的 package 管理工具
+或者在命令行上（请参考 ruby 版本管理器的具体文档了解详情和注意事项）：
 #+BEGIN_SRC sh
   gem install pry
 #+END_SRC
@@ -38,8 +38,8 @@ rubocop 是rubocop集​​成所必需的
   gem install pry-doc
 #+END_SRC
 
-*** Ruby版本管理
-    该层支持RVM，Rbenv和Chruby。您可以通过ruby-version-manager在dotfile
+*** Ruby 版本管理
+    该层支持 RVM，Rbenv 和Chruby。您可以通过 ruby-version-manager 在dotfile
     中设置变量来选择默认的版本管理器，例如：
 #+BEGIN_SRC emacs-lisp
   (defun dotspacemacs-configuration-layers ()
@@ -47,9 +47,9 @@ rubocop 是rubocop集​​成所必需的
 #+END_SRC
 
 
-当启用版本管理器时，它将使用当前激活的ruby(也就是上面设定的版本工具)，除非.ruby-version文件存在，
-在这种情况下使用该文件的ruby版本工具。 rvm也将尝试寻找一个.rvmrc和gemfile，则先后顺序为
- .rvmrc，然后.ruby-version再gemfile。
+当启用版本管理器时，它将使用当前激活的 ruby(也就是上面设定的版本工具)，除非.ruby-version 文件存在，
+在这种情况下使用该文件的 ruby 版本工具。 rvm 也将尝试寻找一个.rvmrc 和gemfile，则先后顺序为
+ .rvmrc，然后.ruby-version 再gemfile。
 
 注意：一次只能启用一个版本管理器。
 **** rvm
@@ -81,7 +81,7 @@ rvm use 2.2.0
 如果想设置为默认版本，这样一来以后新打开的控制台默认的 Ruby 就是这个版本
 rvm use 2.2.0 --default 
 
-查询已经安装的ruby
+查询已经安装的 ruby
 rvm list
 
 卸载一个已安装版本
@@ -144,15 +144,15 @@ rvmsudo passenger-install-nginx-module
 然后看看 nginx.conf，都给你配置好了，只需要加上 root 位置（yourapp/public）就可以了。
 
 当我第一次安装完成了，就惊呼，这也太爽了吧。
-PS: RVM 是个好东西，做的很智能，（大部分）操作失败后会告诉你原因，然后告诉你需要安装哪些Lib等等，非常适合新手老手使用,简直是居家旅行必备良药。
+PS: RVM 是个好东西，做的很智能，（大部分）操作失败后会告诉你原因，然后告诉你需要安装哪些 Lib 等等，非常适合新手老手使用,简直是居家旅行必备良药。
 
 其他选择
 如果你不太喜欢 RVM 的风格，你也可以试试 rbenv, Ruby China 同样有一篇关于它的 Guide: rbenv 实用指南
-*** 测试runner
-该层支持RSpec，ruby-test和minitest测试runners（框架）。默认情况下ruby-test使用，如果要改变到另一个框架
-可以设置图层变量ruby-test-runner。
+*** 测试 runner
+该层支持 RSpec，ruby-test 和minitest 测试 runners（框架）。默认情况下 ruby-test 使用，如果要改变到另一个框架
+可以设置图层变量 ruby-test-runner。
 
-将测试runner 设置为RSpec：
+将测试 runner 设置为 RSpec：
 #+BEGIN_SRC emacs-lisp
   (defun dotspacemacs-configuration-layers ()
      '((ruby :variables ruby-test-runner 'rspec)))
@@ -165,13 +165,13 @@ Tip: 您可以使用目录局部变量为不同的项目启用不同的测试运
     SPC m '​	切换当前字符串的引号（仅限内置模式）
     SPC m {	切换当前块的样式（只有内置模式）
     SPC m g g	转到定义（robe-jump）
-    SPC m h h	在point上显示方法的文档（robe-doc）
+    SPC m h h	在 point 上显示方法的文档（robe-doc）
     SPC m s f	发送函数定义
-    SPC m s F	发送函数定义并切换到REPL
-    SPC m s i	启动REPL
+    SPC m s F	发送函数定义并切换到 REPL
+    SPC m s i	启动 REPL
     SPC m s r	发送区域
-    SPC m s R	发送区域并切换到REPL
-    SPC m s s	切换到REPL
+    SPC m s R	发送区域并切换到 REPL
+    SPC m s s	切换到 REPL
     SPC m x '​	更改符号或“字符串”
     SPC m x "​	更改符号或“字符串”
     SPC m x :	将字符串更改为符号
@@ -182,22 +182,22 @@ SPC m b c	运行包检查
 SPC m b i	运行软件包安装
 SPC m b s	运行包控制台
 SPC m b u	运行软件包更新
-SPC m b x	运行bundle exec
+SPC m b x	运行 bundle exec
 SPC m b o	运行包打开
 *** RuboCop(代码校验）
-SPC m r r f	在当前访问的文件上运行RuboCop
+SPC m r r f	在当前访问的文件上运行 RuboCop
 SPC m r r F	在当前访问的文件上运行自动更正
-SPC m r r d	从运行RuboCop的目录中提示
+SPC m r r d	从运行 RuboCop 的目录中提示
 SPC m r r D	提示要运行自动更正的目录
-SPC m r r p	在整个项目上运行RuboCop
+SPC m r r p	在整个项目上运行 RuboCop
 SPC m r r P	在项目上运行自动更正
 *** 测试
-**** RSpec模式
-当ruby-test-runner等于rspec。
+**** RSpec 模式
+当 ruby-test-runner 等于 rspec。
 
 SPC m t a	运行所有规格
-SPC m t b	运行当前的spec文件
-SPC m t c	运行当前的spec文件和后续的
+SPC m t b	运行当前的 spec 文件
+SPC m t c	运行当前的 spec 文件和后续的
 SPC m t d	在目录中运行测试
 SPC m t e	将示例标记为挂起
 SPC m t f	运行方法
@@ -207,12 +207,12 @@ SPC m t r	重新运行最后的规范
 SPC m t t	在指针运行规范
 SPC m t TAB	在规格和目标的缓冲区之间切换
 SPC m t ~	在规范和目标的缓冲区查找示例之间切换
-**** Ruby测试模式
-当ruby-test-runner等于ruby-test。
+**** Ruby 测试模式
+当 ruby-test-runner 等于 ruby-test。
 SPC m t b	运行测试文件
 SPC m t t	在指针运行测试
 **** 最小模式
-     当ruby-test-runner等于minitest。
+     当 ruby-test-runner 等于 minitest。
 
 SPC m t a	运行所有测试
 SPC m t b	运行当前文件
@@ -230,54 +230,54 @@ SPC m r R c	提取常量
 SPC m r R l	解压让（rspec）
 ** 层选项
 变量	默认值	描述
-ruby-enable-enh-ruby-mode	nil	如果不是零，则使用`enh-ruby-mode'包而不是内置的Ruby模式。
-ruby-version-manager	nil	如果不为零，则定义Ruby版本管理器。可能的值是`rbenv'，`rvm'或`chruby'。
+ruby-enable-enh-ruby-mode	nil	如果不是零，则使用`enh-ruby-mode'包而不是内置的 Ruby 模式。
+ruby-version-manager	nil	如果不为零，则定义 Ruby 版本管理器。可能的值是`rbenv'，`rvm'或`chruby'。
 ruby-test-runner	ruby-test	测试跑步者使用。可能的值是`ruby-test'，`minitest'或`rspec'。
 ruby-highlight-debugger-keywords	t	如果不为零，则为调试器关键字启用突出显示。
 * RubyGems
-gem -v 查看RubyGems的版本
-gem update --system 升级RubyGems的版本
+gem -v 查看 RubyGems 的版本
+gem update --system 升级 RubyGems 的版本
 gem install gem_name 安装某个插件
 gem install -v x.x.x gem_name 安装指定版本的插件
 gem list 列出安装的套件
 gem update gem_name 更新某个插件
 gem update 更新所有的插件
 gem uninstall gem_name 删除某个插件
-另外，在安装插件时，系统会默认安装该插件的RDoc和ri文件，如果不希望安装这些该件，可在安装时使用--no-ri --no-rdoc参数：
+另外，在安装插件时，系统会默认安装该插件的 RDoc 和ri 文件，如果不希望安装这些该件，可在安装时使用--no-ri --no-rdoc 参数：
 
 gem install gem_name --no-ri --no-rdoc
 
-也可以在用户目录~下，新建一个.gemrc文档，内容如下：
+也可以在用户目录~下，新建一个.gemrc 文档，内容如下：
 gem: --no-ri --no-rdoc
-系统将默认不安装RDoc和ri文件。
+系统将默认不安装 RDoc 和ri 文件。
 
-###国内RubyGems镜像
+###国内 RubyGems 镜像
 
-如果服务器在国内，安装所需的gems将是异常痛苦的体验，所幸的是，现在可以使用国内的镜像：
+如果服务器在国内，安装所需的 gems 将是异常痛苦的体验，所幸的是，现在可以使用国内的镜像：
 $ gem sources --remove https://rubygems.org/
 gem sources --add https://gems.ruby-china.com/
 $ gem sources -l
 如果显示：
 
-就说明更改成功啦，你现在可以从国内镜像安装rugy gems啦。详细内容可参考 Rubygems镜像
+就说明更改成功啦，你现在可以从国内镜像安装 rugy gems 啦。详细内容可参考 Rubygems 镜像
 
-如果使用Bundler管理Ruby Gems，可以修改Gemfile：
+如果使用 Bundler 管理 Ruby Gems，可以修改 Gemfile：
 source 'http://ruby.taobao.org/'
 
 gem 'rails', '3.2.2'
 ... ... ...
 
-###建立和分享Ruby Gems
+###建立和分享 Ruby Gems
 
 根据官方的简介：
 gem update --system #Update to the latest RubyGems version
 gem build foo.gemspec #Build your gem
 gem push foo-1.0.0.gem #Deploy your gem instantly
 
-如何建立自己的Rubygems
+如何建立自己的 Rubygems
 ###简单的示例：
 
-以创建topico-0.0.1.gem为例：
+以创建 topico-0.0.1.gem 为例：
 
 ####建立文件夹
 
@@ -285,7 +285,7 @@ gem push foo-1.0.0.gem #Deploy your gem instantly
 ├── lib
 │  └── topico.rb
 └── topico.gemspec
-注意：lib目录下必须有个和你gem名字一样的rb文件。
+注意：lib 目录下必须有个和你 gem 名字一样的 rb 文件。
 
 ####编写代码 lib\topico.rb
 
@@ -294,7 +294,7 @@ class Topico
   puts "Hello, RubyGems!"
  end
 end
-####编辑GemSpec文件 topico.gemspec
+####编辑 GemSpec 文件 topico.gemspec
 
 Gem::Specification.new do |s|
  s.name    = 'topico'
@@ -309,7 +309,7 @@ Gem::Specification.new do |s|
 end
 这里仅列出了较为常见的属性。
 
-####编译生成gem
+####编译生成 gem
 
 $ gem build topico.gemspec
 系统会提示信息：
@@ -327,11 +327,11 @@ $ gem build topico.gemspec
 │  └── topico.rb
 ├── topico-0.0.1.gem
 └── topico.gemspec
-注意新生成的topico-0.0.1.gem
+注意新生成的 topico-0.0.1.gem
 
-####安装并测试gem
+####安装并测试 gem
 
-安装topico-0.0.1.gem
+安装 topico-0.0.1.gem
 
 $ gem install ./topico-0.0.1.gem
 系统会提示：
@@ -340,16 +340,16 @@ Successfully installed topico-0.0.1
 1 gem installed
 Installing ri documentation for topico-0.0.1...
 Installing RDoc documentation for topico-0.0.1...
-在irb中测试使用 irb：
+在 irb 中测试使用 irb：
 
 irb(main):001:0> require 'topico'
 => true
 irb(main):002:0> Topico.hello
 Hello, RubyGems!
 => nil
-####发布到RugyGems网站
+####发布到 RugyGems 网站
 
-先设置RubyGems的用户名和密码：
+先设置 RubyGems 的用户名和密码：
 
 $ curl -u username https://rubygems.org/api/v1/api_key.yaml > ~/.gem/credentials
 Enter host password for user 'username':
@@ -361,11 +361,11 @@ Enter host password for user 'username':
 $ gem push topico-0.0.1.gem
 Pushing gem to https://rubygems.org...
 Successfully registered gem: topico (0.0.1)
-发布成功，这样大家都可以使用你的Rubygem啦。
+发布成功，这样大家都可以使用你的 Rubygem 啦。
 
 ###稍微复杂一些的示例：
 
-下面看一下如何组织多个ruby文件。
+下面看一下如何组织多个 ruby 文件。
 
 1.目录结构
 
@@ -375,16 +375,16 @@ Successfully registered gem: topico (0.0.1)
 │  │  └── calculation.rb
 │  └── topico.rb
 └── topico.gemspec
-2.编写GemSpec
+2.编写 GemSpec
 
-在s.files一行，修改：
+在 s.files 一行，修改：
 
  s.files    = ["lib/topico.rb", "lib/ext/calculation.rb"]
-重新gem build即可。
+重新 gem build 即可。
 
-3.如何在Gem中包含可执行该件
+3.如何在 Gem 中包含可执行该件
 
-（1）在插件目录下，建立bin文件夹：
+（1）在插件目录下，建立 bin 文件夹：
 
 生成可执行该件，并且将权限修改为可运行。
 
@@ -398,7 +398,7 @@ $ chmod a+x bin/greeting
 require 'topico'
 puts Topico.hello
 
-（3）修改GemSpec,添加一行s.executables
+（3）修改 GemSpec,添加一行 s.executables
 
  s.executables << 'greeting'
 * ruby

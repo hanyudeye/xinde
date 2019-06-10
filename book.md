@@ -1,3 +1,8 @@
+-----
+title: 书籍简介
+tags: book
+categories: book,书籍
+-----
 # 要读的书
 ## 待读书类型
 Java开发（语法、性能、设计模式、框架）

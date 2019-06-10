@@ -1,114 +1,27 @@
+#+TITLE: spacemacs 简介
+#+DESCRIPTION: spacemacs 用法简介
+#+TAGS: spacemacs
+#+CATEGORIES: 软件使用
+
 * spacemacs 
-** 个性化设置
-*** 配置环境变量 
-    spacemacs/edit-env 
-    ~/.spacemacs.d/.spacemacs.env
-    
-    更新环境变量 SPC f e E
-*** 配置文件 .spacemacs 
-    同步.spacemacs 文件  (SPC  f e R)
-    测试  (test-dotfile)
-*** 键绑定
-    (evil-leader/set-key "o y" 'copy-to-clipboard)
-    全局绑定 会被模式绑定覆盖
-     (global-set-key (kbd "C-]") 'forward-char)
-     //被下面的覆盖了
-     (define-key evil-insert-state-map (kbd "C-]") 'forward-char)
-     //用前导键
-  #+BEGIN_SRC emacs-lisp
-    (spacemacs/set-leader-keys "C-]" 'forward-char)
-    (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "C-]" 'forward-char)
-  #+END_SRC
-*** 配置本地变量 SPC f v f
-    
-** 编码
-   以某编码打开：M-x revert-buffer-with-coding-system RET
-   插入字符 Ctrl-x 8 Enter 3bb Enter
-** 导航
-*** 快速跳转 通过 [[https://github.com/abo-abo/avy][avy]] 
-    | ~SPC j b~   | 返回原来的地方 |
-    | ~SPC j j~   | 跳到某个 char  |
-    | ~SPC j w~   | 跳到某个  word |
-    | ~SPC j l~   | 跳到某个  line |
-**** 跳转链接 ace-link 
-     | ~o~         | 默认模式 hinitiate ace link mode in =help-mode= and =info-mode= |
+  编辑器扩展, 把编辑器弄的 方便配置(~.spacemacs~), 操作统一 (按 ~SPC~ 就好了) ,方便扩展(~layer~)
+ #+HTML: <!-- more -->
+ 
+** layer 
+** Dotfile 用法
+*** 命令
+    同步 dotfile 
+    同步命令 ~dotspacemacs/sync-configuration-layers~  会重新执行  ~dotfile ~
 
-*** 增强功能绑定 [[https://github.com/tpope/vim-unimpaired][tpope’s vim-unimpaired]].
-    | ~[ SPC~     | Insert space above               |
-    | ~] SPC~     | Insert space below               |
-    | ~[ b~       | Go to previous buffer            |
-    | ~] b~       | Go to next buffer                |
-    | ~[ f~       | Go to previous file in directory |
-    | ~] f~       | Go to next file in directory     |
-    | ~[ l~       | Go to the previous error         |
-    | ~] l~       | Go to the next error             |
-    | ~[ h~       | Go to the previous vcs hunk      |
-    | ~] h~       | Go to the next vcs hunk          |
-    | ~[ q~       | Go to the previous error         |
-    | ~] q~       | Go to the next error             |
-    | ~[ t~       | Go to the previous frame         |
-    | ~] t~       | Go to the next frame             |
-    | ~[ w~       | Go to the previous window        |
-    | ~] w~       | Go to the next window            |
-    | ~[ e~       | Move line up                     |
-    | ~] e~       | Move line down                   |
-    | ~[ p~       | Paste above current line         |
-    | ~] p~       | Paste below current line         |
-    | ~g p~       | Select pasted text               |
-
-*** Jumping, Joining and Splitting
-    The ~SPC j~ prefix is for jumping, joining and splitting.
-*** 窗口操作 SPC w 
-    黄金分割 golden-ratio
-*** 缓存和文件　Buffers and Files
-**** Buffers manipulation key bindings
-     Buffer manipulation commands (start with ~b~):
-**** 文件操作 SPC f 
-**** 框架操作 Frame manipulation commands (start with ~F~): 
-**** 配置文件操作 SPC f e
-     Convenient key bindings are located under the prefix ~SPC f e~ to quickly
-     navigate between =Emacs= and Spacemacs specific files.
-
-*** 书签 SPC f b
-    | ~C-d~       | delete the selected bookmark                 |
-    | ~C-e~       | edit the selected bookmark                   |
-    | ~C-f~       | toggle filename location                     |
-    | ~C-o~       | open the selected bookmark in another window |
-
-    To save a new bookmark, just type the name of the bookmark and press ~RET~.
-
-*** 视图文档
-  =doc-view-mode= is a built-in major mode to view DVI, PostScript (PS), PDF,
-                 OpenDocument, and Microsoft Office documents.
-
-| Key Binding | Description                              |
-|-------------+------------------------------------------|
-| ~/~         | search forward                           |
-| ~?~         | search backward                          |
-| ~+~         | enlarge                                  |
-| ~-~         | shrink                                   |
-| ~gg~        | go to first page                         |
-| ~G~         | go to last page                          |
-| ~gt~        | go to page number                        |
-| ~h~         | previous page                            |
-| ~H~         | adjust to height                         |
-| ~j~         | next line                                |
-| ~k~         | previous line                            |
-| ~K~         | kill proc and buffer                     |
-| ~l~         | next page                                |
-| ~n~         | go to next search occurrence             |
-| ~N~         | go to previous search occurrence         |
-| ~P~         | fit page to window                       |
-| ~r~         | revert                                   |
-| ~W~         | adjust to width                          |
-| ~C-d~       | scroll down                              |
-| ~C-k~       | kill proc                                |
-| ~C-u~       | scroll up                                |
-| ~C-c C-c~   | toggle display text and image display    |
-| ~C-c C-t~   | open new buffer with doc’s text contents |
-
-** 查找,搜索 SPC s
-*** 通过语义列出符号  SPC s j
+    测试 dotfile : ~dotspacemacs/test-dotfile~
+*** 配置 ( 按下面的执行流程 )
+**** dotspacemacs/init (不能改) 
+**** dotspacemacs/user-init (设置加载包前的初始化)
+**** dotspacemacs/user-env (设置环境变量, 在加载图层和包前调用)
+**** dotspacemacs/layers( 设置要使用的层，还可以配置使用或排除的包)
+**** dotspacemacs/user-config (设置层初始化后要执行的用户配置)
+**** dotspacemacs/emacs-custom-settings (在 emacs 菜单设置的变量，不用改)
+*** 层的定义
 ** 编辑 
 *** 文本操作 (start with ~x~)
 *** 文本输入 (start with ~i~)
@@ -286,33 +199,6 @@
     - double click in line numbsually seler margin visually select the current code block
 
 *** 字符复制上面行 CTL-y   下面行 CTL-e  
-** 工程管理 SPC p
-** 暂存器  SPC r
-   | ~SPC r e~ | show evil yank and named registers |
-   | ~SPC r m~ | show marks register                |
-   | ~SPC r r~ | show helm register                  |
-   | ~SPC r y~ | show kill ring                     |
-** 服务
-*** 连接服务 emacsclient -c
-*** 保证服务不关闭
-    #+BEGIN_SRC emacs-lisp
-      (setq-default dotspacemacs-persistent-server t)
-    #+END_SRC
-
-
-    | ~SPC q q~  | Quit Emacs and kill the server, prompt for changed buffers to save       |
-    | ~SPC q Q~  | Quit Emacs and kill the server, lose all unsaved changes.                |
-    | ~SPC q r~  | Restart both Emacs and the server, prompting to save any changed buffers |
-    | ~SPC q s~  | Save the buffers, quit Emacs and kill the server                         |
-    | ~SPC q f~  | Kill the current frame                                                   |
-    | ~SPC q t~  | Restart Emacs and debug with --with-timed-requires                       |
-    | ~SPC q T~  | Restart Emacs and debug with --adv-timers                                |
-
-*** 关闭服务
-    #+BEGIN_SRC emacs-lisp
-      (setq-default dotspacemacs-enable-server nil)
-    #+END_SRC
-
 ** 调试
 *** 加载有错误
     emacs --debug-init
@@ -321,7 +207,448 @@
 *** 打开调试开关 
     toggle-debug-on-error
 ** 帮助
-*** 手册 SPC h m 
-*** spacemacs 文档 SPC  h SPC 
-*** 显示当前层的快捷键 SPC ?
+*** 手册 
+*** spacemacs 文档
+** 概念
+*** 设置编辑样式 
+   ~dotspacemacs-editing-style~  为 =vim=, =hybrid=, or =emacs=  
+**** vim
+   设置键绑定 
+   #+BEGIN_SRC emacs-lisp
+     (define-key evil-insert-state-map (kbd "C-]") 'forward-char)
+  #+END_SRC
+
+   默认样式
+   #+BEGIN_SRC emacs-lisp
+     (setq-default dotspacemacs-editing-style '(vim :variables
+                                                    vim-style-visual-feedback nil
+                                                    vim-style-remap-Y-to-y$ nil
+                                                    vim-style-retain-visual-state-on-shift t
+                                                    vim-style-visual-line-move-text nil
+                                                    vim-style-ex-substitute-global nil)
+   #+END_SRC
+
+**** emacs
+     键绑定
+#+BEGIN_SRC emacs-lisp
+  (define-key evil-emacs-state-map (kbd "C-]") 'forward-char)
+#+END_SRC
+
+**** hybrid
+#+BEGIN_SRC emacs-lisp
+  (define-key evil-hybrid-state-map (kbd "C-]") 'forward-char)
+#+END_SRC
+
+*** 设置 Toggles
+    在 ~user-config~ 中
+    设置开关  =spacemacs/toggle-NAME-on= and =spacemacs/toggle-NAME-off=
     
+    设置默认开关状态
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/toggle-nameless-on-register-hooks)
+  ;; or to enable it for emacs-lips buffers only
+  (spacemacs/toggle-nameless-on-register-hook-emacs-lisp-mode)
+#+END_SRC
+
+** 环境变量和 PATH
+   配置环境变量 =dotspacemacs/user-env= 
+   默认加载 =~/.spacemacs.env= ,通过 =spacemacs/load-spacemacs-env= 命令
+   可以配置，并重新加载
+   可以强制导入系统环境变量，但不推介,会覆盖
+** Binding keys
+全局映射方式 
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-]") 'forward-char)
+#+END_SRC
+
+spacemacs 方式
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/set-leader-keys "C-]" 'forward-char)
+  (spacemacs/set-leader-keys-for-major-mode 'emacs-lisp-mode "C-]" 'forward-char)
+#+END_SRC
+
+声明前缀,通常先前缀，后完整
+#+BEGIN_SRC emacs-lisp
+  (spacemacs/declare-prefix "o o" "file")
+  (spacemacs/set-leader-keys "o o c" 'my-custom-command)
+#+END_SRC
+
+
+** GUI Elements
+*** 主题 
+    设置默认主题
+    #+BEGIN_SRC emacs-lisp
+      (setq-default dotspacemacs-themes '(spacemacs-light leuven zenburn))
+    #+END_SRC
+
+    加载主题 ~load-theme~
+** Layouts 和 workspaces
+*** 布局 layouts 
+    对缓冲区分组，一般是一个项目文件夹。也叫工程。   
+    
+    项目布局，项目文件夹下要包含一个 ~.projectile~ 文件，或者在 ~git~ 库, ~svn~ 库
+    创建项目布局 ~helm-projectile~
+    
+    
+    自定义布局
+    
+    #+BEGIN_SRC emacs-lisp
+      (spacemacs|define-custom-layout "@ERC"
+        :binding "E"
+        :body
+        (progn
+          ;; hook to add all ERC buffers to the layout
+          (defun spacemacs-layouts/add-erc-buffer-to-persp ()
+            (persp-add-buffer (current-buffer)
+                              (persp-get-by-name
+                               erc-spacemacs-layout-name)))
+          (add-hook 'erc-mode-hook #'spacemacs-layouts/add-erc-buffer-to-persp)
+          ;; Start ERC
+          (call-interactively 'erc)))
+#+END_SRC
+
+*** 工作空间
+    布局的子布局，共享父布局的 buffer
+** 命令
+*** Vim key bindings
+*** Completion(完成)
+    自动完成补全，都不用按@@html:<kbd>@@ <tab> @@html:</kbd>@@ 了 
+    一种 ~helm~ , 一种 ~ivy~
+*** 导航
+**** 跳转
+     jumping, joining and splitting 功能都由 ~SPC j~ 开头的按键提供，功能很多。
+**** 窗口跳转
+*** 工程管理
+*** 寄存器
+    | ~SPC r e~ | show evil yank and named registers |
+    | ~SPC r m~ | show marks register                |
+    | ~SPC r r~ | show helm register                 |
+    | ~SPC r y~ | show kill ring                     |
+
+** 服务
+   服务开关 ~server-start~
+   客户端连接到服务 ~emacsclient -c~
+   
+   保证服务不关闭
+    #+BEGIN_SRC emacs-lisp
+      (setq-default dotspacemacs-persistent-server t)
+    #+END_SRC
+
+* include (包含操作)
+** 简单方式  (load-file "~/elisp/foo.el")
+ 但我们还要注意性能，一般在打开文件时加载，所以要做复杂的判断
+** require 方式(lisp 文件有一个属性)
+   
+#+BEGIN_SRC emacs-lisp
+  ;;有此属性
+  ;; Your code goes here ...
+
+  (provide 'my-feature)
+#+END_SRC
+
+To have Emacs load this file, call =require=, as such:
+
+#+BEGIN_SRC emacs-lisp
+  (require 'my-feature)
+#+END_SRC
+
+这种方式会做一系列判断，(在 load-path 变量)会检查 el,elc 文件，会判断是否已加载过.
+这种方式普遍，作者写的严谨，依赖都会写.
+
+显示路径 SPC h d v load-path
+(add-to-list 'load-path "/some/path/")
+** Auto-loading
+   require 列表还是很长很慢
+   
+   如果函数被定义为自动加载属性，那么只有函数被使用时，会被自动加载(第一次执行会轻微延时)
+
+   当调用函数时，先执行文件  (autoload 'some-function "some-file")
+   
+   SPC h d f some-function 可以显示函数的属性 为 auto-loaded 函数
+   
+   文件样式 helm-autoloads.el
+#+BEGIN_SRC emacs-lisp
+  ;;;###autoload  ;;这个是 magic 注释,自动生成
+  (defun my-function ()
+    ;; Source code...
+    )
+#+END_SRC
+自动加载的不光函数，还有 macros, major or minor modes, groups, classes, and so on.
+还有下面的文件
+#+BEGIN_SRC emacs-lisp
+  ;;;###autoload
+  (require 'helm)
+#+END_SRC
+*** Eval after load
+
+当加载后要配置变量，可以用下面的函数
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'helm
+       ;; Code
+       )
+#+END_SRC
+
+*** Use-package(这个功能强大)
+    https://github.com/jwiegley/use-package
+   方式 1  
+#+BEGIN_SRC emacs-lisp
+  (use-package helm
+    :defer t
+    :init
+    ;; Code to execute before Helm is loaded
+    :config
+    ;; Code to execute after Helm is loaded
+    )
+#+END_SRC
+
+模式场景
+#+BEGIN_SRC emacs-lisp
+  (use-package ruby-mode
+    :mode "\\.rb\\'")
+#+END_SRC
+
+* layer 
+** 层的内容
+- declare additional layers 层定义
+- the packages list and configuration  包的列表和配置
+- all functions used in the layer should be declared here  函数定义
+- layer specific configuration 层的特定配置
+- general key bindings 键盘绑定
+
+** layers.el
+   #+BEGIN_SRC emacs-lisp
+     ;; 层 A 依赖层 B
+     (configuration-layer/declare-layer 'B)
+     ;;效果就像 B 加入了层配置变量
+     ;; dotspacemacs-configuration-layers
+#+END_SRC
+
+** packages.el
+#+BEGIN_SRC emacs-lisp
+    ;; 包列表
+      (defconst mylayer-packages
+        '(
+          ;; Get the package from MELPA, ELPA, etc.
+          some-package
+          (some-package :location elpa)
+
+          ;; A local package
+          (some-package :location local)
+
+          ;; A local package to be built with Quelpa
+          (some-package :location (recipe :fetcher local))
+
+          ;; A package recipe
+          (some-package :location (recipe
+                                   :fetcher github
+                                   :repo "some/repo"))
+
+          ;; An excluded package
+          (some-package :excluded t)
+          ))
+  ;; Local packages should reside at <layer>/local/<package>/
+#+END_SRC
+
+For each included package, you may define one or more of the following
+functions, which are called in order by Spacemacs to initialize the package.
+1. =<layer>/pre-init-<package>=
+2. =<layer>/init-<package>=
+3. =<layer>/post-init-<package>=
+
+*Note:* A package will not be installed unless at least one layer defines an
+=init= function for it. That is to say, in a certain sense, the =init= function
+does mandatory setup while the =pre-init= and =post-init= functions do optional
+setup. This can be used for managing cross-layer dependencies, which we will
+discuss later.
+
+** funcs.el
+#+BEGIN_SRC emacs-lisp
+  (when (configuration-layer/package-used-p 'my-package)
+    (defun spacemacs/my-package-enable () ...)
+    (defun spacemacs/my-package-disable () ...))
+#+END_SRC
+
+** config.el
+** keybindings.el
+* Case study: auto-completion
+Spacemacs provides a layer called =auto-completion= which provides
+auto-completion features in many modes. It does this using the package
+=company=. This layer owns the =company= package, so it defines a function
+called =auto-completion/init-company=.
+
+When a user enables the =auto-completion= layer, Spacemacs locates it and finds
+=company= in the list of packages. Provided that =company= is not excluded,
+either by the user or another layer, Spacemacs then locates and runs the =init=
+function for =company=. This function includes a call to =use-package= that sets
+up the basic configuration.
+
+However, auto-completion is a two-horse game. By its very nature, it is specific
+to the major mode in question. It is pointless to expect the =auto-completion=
+layer to include configuration for each conceivable major mode, and equally
+futile to expect each programming language layer (python, ruby, etc.) to fully
+configure =company= on their own.
+
+This is solved using the =post-init= functions. The Python layer, for example,
+includes the =company= package and defines a function called
+=python/post-init-company=. This function is called after
+=auto-completion/init-company=, but it is not called if
+- the =auto-completion= layer is not enabled, in which case no =init= function
+  for =company= will be found, or
+- the =company= package is excluded either by the user or another layer
+
+As such, =python/post-init-company= is the /only/ safe place to put
+configuration related to =company= in Python mode.
+
+If the Python layer had defined an =init= function for =company=, that package
+would have been installed even if the =auto-completion= layer had been disabled,
+which is not what we want.
+* Layer tips and tricks
+** Cross-dependencies
+Spacemacs provides a couple of additional useful functions you can use to check
+whether other layers or packages are included.
+- check if a layer is enabled
+- check if a package is or will be installed
+
+These are useful in some cases, but usually you can get the desired result just
+by using =post-init= functions.
+
+For layers that require another layers to be enabled, use the functions
+=configuration-layer/declare-layer= and =configuration-layer/declare-layers= to
+ensure that layers are enabled even if the user has not enabled them explicitly.
+Calls to these functions must go in the =layers.el= file.
+
+** Shadowing
+Shadowing is the operation of replacing a used layer by another one. For
+instance if a used layer A can shadow a used layer B and the layer A is listed
+after the layer B in the dotfile then the layer A replaces the layer B and it is
+like only the layer A is being used.
+
+Examples of this mechanism are helm/ivy layers or neotree/treemacs layers.
+
+A layer can shadow other layers by calling in its =layers.el= file the function
+=configuration-layer/declare-shadow-relation=. This function declares a
+=can-shadow= relation between all the layers.
+
+=can-shadow= is a commutative relation, if layer A can shadow layer B then layer
+B can shadow layer A.
+
+The =shadow= operator is a binary operator accepting two layer names, it is not
+commutative and the order of the operands is determined by the order of the
+layers in the dotfile (like the ownership stealing mechanism).
+
+If =:can-shadow= property is set explicitly to =nil= in the dotfile then the
+layer won’t shadow any layer.
+
+For instance to install both ivy and helm layer:
+
+#+BEGIN_SRC emacs-lisp
+  (setq dotspacemacs-configuration-layers
+   '(
+     ivy
+     (helm :can-shadow nil)
+     )
+#+END_SRC
+
+note that due to the commutative relation =can-shadow= the above example can
+also be written like this (in this case, =:can-shadow= should be read
+=:can-be-shawdowed=):
+
+#+BEGIN_SRC emacs-lisp
+  (setq dotspacemacs-configuration-layers
+  '(
+    (ivy :can-shadow nil)
+    helm
+    )
+#+END_SRC
+
+We will prefer the first form as it is more intuitive.
+
+** Use-package init and config
+In the vast majority of cases, a package =init= function should do nothing but
+call to =use-package=. Again, in the vast majority of cases, all the
+configuration you need to do should be doable within the =:init= or =:config=
+blocks of such a call.
+
+What goes where? Since =:init= is executed before load and =:config= after,
+these rules of thumb apply.
+
+In =:config= should be
+- Anything that requires the package to be already loaded.
+- Anything that takes a long time to run, which would ruin startup performance.
+
+The =:init= block should contain setup for the entry points to the package. This
+includes key bindings, if the package should be loaded manually by the user, or
+hooks, if the package should be loaded upon some event. It is not unusual to
+have both!
+
+** Use-package hooks
+Spacemacs includes a macro for adding more code to the =:init= or =:config=
+blocks of a call to =use-package=, after the fact. This is useful for =pre-init=
+or =post-init= functions to “inject” code into the =use-package= call of the
+=init= function.
+
+#+BEGIN_SRC emacs-lisp
+  (spacemacs|use-package-add-hook helm
+    :pre-init
+    ;; Code
+    :post-init
+    ;; Code
+    :pre-config
+    ;; Code
+    :post-config
+    ;; Code
+    )
+#+END_SRC
+
+Since a call to =use-package= may evaluate the =:init= block immediately, any
+function that wants to inject code into this block must run =before= the call to
+=use-package=. Further, since this call to =use-package= typically takes place
+in the =init-<package>= function, calls to =spacemacs|use-package-add-hook=
+*always* happen in the =pre-init-<package>= functions, and not in
+=post-init-<package>=.
+
+** Best practices
+If you break any of these rules, you should know what you are doing and have a
+good reason for doing it.
+
+*** Package ownership
+Each package should be owned by one layer only. The layer that owns the
+package should define its =init= function. Other layers should rely on
+=pre-init= or =post-init= functions.
+
+*** Localize your configuration
+*Each function can only assume the existence of one package.* With some
+exceptions, the =pre-init=, =init= and =post-init= functions can /only/
+configure exactly the package they are defined for. Since the user can exclude
+an arbitrary set of packages, there is no /a priori/ safe way to assume that
+another package is included. Use =configuration-layer/package-usedp= if you
+must.
+
+This can be very challenging, so please take this as a guideline and not
+something that is absolute. It is quite possible for the user to break her
+Spacemacs installation by excluding the wrong packages, and it is not our
+intention to prevent this at all costs.
+
+*** Load ordering
+In Spacemacs, layers are loaded in order of inclusion in the dotfile, and
+packages are loaded in alphabetical order. In the rare cases where you make use
+of this property, you should make sure to document it well. Many will assume
+that layers can be included in arbitrary order (which is true in most cases),
+and that packages can be renamed without problems (which is also in most cases).
+
+Preferably, write your layer so that it is independent of load ordering. The
+=pre= - and =post-init= functions are helpful, together with
+=configuration-layer/package-usedp=.
+
+*** No require
+Do not use require. If you find yourself using =require=, you are almost
+certainly doing something wrong. Packages in Spacemacs should be loaded through
+auto-loading, and not explicitly by you. Calls to =require= in package init
+functions will cause a package to be loaded upon startup. Code in an =:init=
+block of =use-package= should not cause anything to be loaded, either. If you
+need a =require= in a =:config= block, that is a sign that some other package is
+missing appropriate auto-loads.
+
+*** Auto-load everything
+Defer everything. You should have a very good reason not to defer the loading
+of a package.

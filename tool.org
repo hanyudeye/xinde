@@ -1,625 +1,214 @@
 #+TITLE: 计算机工具
-#+KEYWORDS: 应用软件
 #+DESCRIPTION: 可供用户使用的计算机工具
-#+CATEGORIES: 应用软件 
 #+DATE: <2019-06-02 19:45:35>
+#+TAGS: shell,ubuntu
+#+CATEGORIES: 软件使用
 
-* 系统信息查看
-** 系统相关
-   lsb_release -a              # 查看操作系统版本
-   head -n 1 /etc/issue        # 查看操作系统版本
-   cat /proc/version           # 查看操作系统内核信息
-   uname -a                    # 查看操作系统内核信息、CPU 信息
-   cat /proc/cpuinfo           # 查看 CPU 信息
-   hostname                    # 查看计算机名字
-   env                         # 列出环境变量
-   lsmod                       # 列出加载的内核模块
-   uptime                      # 查看系统运行时间、负载、用户数量
-   cat /proc/loadavg           # 查看系统负载
-** 内存与外存
-   free -m                     # 查看物理内存和交换区的使用情况
-   grep MemTotal /proc/meminfo # 查看内存总量
-   grep MemFree /proc/meminfo  # 查看空闲内存总量
-   df -h                       # 查看各分区使用情况
-   fdisk -l                    # 查看所有分区
-   swapon -s                   # 查看所有交换分区
-   hdparm -i /dev/hda          # 查看 IDE 磁盘的参数
-   dmesg | grep IDE            # 查看系统启动时 IDE 磁盘的状态
-   mount | column -t           # 查看各分区的挂载状态
-   du -sh <目录名>              # 查看指定目录的大小
-** 网络状态
-   #+begin_example
-   ifconfig                    # 查看所有网络接口的属性
-   iptables -L                 # 查看 iptables 防火墙
-   route -n                    # 查看本机路由表
-   netstat -lntp               # 查看所有监听端口
-   netstat -antp               # 查看所有已建立的连接
-   netstat -s                  # 查看网络统计信息
-   #+end_example
-** 用户状态相关
-   #+begin_example
-   w                           # 查看活动用户以及他们在做什么
-   who                         # 查看活动用户
-   id <用户名>                  # 查看用户的 ID、组信息
-   cut -d: -f1 /etc/passwd     # 查看系统中所有用户
-   cut -d: -f1 /etc/group      # 查看系统所有组
-   #+end_example
-** 进程状态相关
-   #+begin_example
-   ps -ef                      # 查看所有进程
-   top                         # 动态显示进程状态
-   #+end_example
+* GNU Coreutils [GNU 实用程序]
+** 简介
+  此 GNU 实用程序 大部分 与 ~POSIX~ 标准洁容。
+  这份手册是前人写的手册的综合整理
+  
+#+HTML: <!-- more -->
+** 通用选项 [ 以下所有选项都指向实用程序本身 ]
+   #+begin_verse
+   用法:  Name [选项] <操作对象>
+   <操作对象>  一般是必须的，除非是解释器什么的
+   #+end_verse
+  
+*** --help  [ 打印可用选项的简单介绍 ]
+*** --version [ 显示版本信息 ]
+*** -- [ 后面跟的内容都视为操作对象而非选项 ]
+** 输出整个文件
+   这些命令读取和写入整个文件，或者以某种方式转换它们
+   : 一般写入的地方是显示器，当然你可以输出到文件
+*** cat [连接和写入文件] 
+    cat [OPTION] [FILE]...
 
-* 系统自带工具
-** 文件系统操作(各种数据类型的文件，用相应的工具进行操作)
-*** 为了显示目录结构 list ls
-    | -a   | 显示指定目录下所有子目录与文件，包括隐藏文件 |
-    | -l   | 以列表方式显示文件的详细信息                 |
-    | -h   | 配合 -l 以人性化的方式显示文件大小           |
-
-*** 为了显示文件内容 cat less more head tac tail wc
-    反向输出文件内容 rev
-   
-**** 显示文件，并显示文件的行号
-     - b ：指定行号指定的方式，主要有两种：
-        -b a ：表示不论是否为空行，也同样列出行号(类似 cat -n)；
-        -b t ：如果有空行，空的那一行不要列出行号(默认值)；
-     - n  ：列出行号表示的方法，主要有三种：
-       -n ln ：行号在萤幕的最左方显示；
-       -n rn ：行号在自己栏位的最右方显示，且不加 0 ；
-       -n rz ：行号在自己栏位的最右方显示，且加 0 ；
-     -w  ：行号栏位的占用的位数。
-     -p 在逻辑定界符处不重新开始计算。 
-*** 为了编辑文件
-**** 新增了目录  mkdir
-**** 删除了文件，目录 rm  rmdir
-**** 对内容排序 sort
-     -u      去除重复行
-     -t      指定分隔符（通常与 -k 联用）
-     -k      指定用于排序的列号
-     -f      忽略大小写
-     -M      能够排序月份
-     -b      忽略行首空白
-**** 去除重复行 uniq
-**** 文件文件夹改名 mv
-**** 两个文件中指定栏位内容相同的行连接起(表处理) join 
-    : 依照两个文件里共有的某一列，将相应的行拼接成一行
+    #+begin_verse
+    -b 显示行号，空行不显示行号
+    -E 行尾显示 "$"
+    -n 所有行都显示行号,含空行
+    -s 抑制多行空白的重复输出，只输出一行
+    -v 显示除 LFD(换行) 和 TAB(制表) 之外的控制字符
+    #+end_verse
     
-    文件 file1.txt
-    aa 1 2
-    bb 2 3
-    cc 4 6
-    dd 3 3
+    例子
+    #+begin_src sh
+      cat a - b
+    #+end_src
+    先显示文件 ~a~ 的内容，然后显示你键盘输入的内容 ,@@html:<kbd>@@ C-d @@html:</kbd>@@ 结束输入后，显示 ~b~ 的内容
+    
+*** tac [ 以相反方式连接和写入文件 ]
+*** nl    [ 行编号和写文件 ]
+    格式
+    #+begin_verse
+    \:\:\:
+    start of header;
+    \:\:
+    start of body;
+    \:
+    start of footer.
+    #+end_verse
 
-    文件 file2.txt
-    aa 2 1
-    bb 8 2
-    cc 4 4
-    dd 5 5
-    ff 2 4
+只有包含在 body 中的内容才能编号
+#+begin_verse
+-b STYLE
+     'a'    空行也编号
+     't'     只编号非空行
+     'n'    不编号
+#+end_verse
 
+*** od 	  	[ 以八进制或其他格式写入文件 ]
+    选择进制
+    #+begin_verse
+    ‘-A RADIX’
+    ‘--address-radix=RADIX’
+    Select the base in which file offsets are printed.  RADIX can be
+    one of the following:
+    
+     ‘d’
+          decimal;
+     ‘o’
+          octal;
+     ‘x’
+          hexadecimal;
+     ‘n’
+          none (do not print offsets).
+    #+end_verse
 
-     -a<1 或 2>：除了显示原来的输出内容之外，还显示指令文件中没有相同栏位的行；
-     -e<字符串>：若[文件 1]与[文件 2]中找不到指定的栏位，则在输出中填入选项中的字符串；
-     -i 或--ignore-case：比较栏位内容时，忽略大小写的差异；
-     -o<格式>：按照指定的格式来显示结果；
-     -t<字符>：使用栏位的分割字符；
-     -v<1 或 2>：更-a 相同，但是只显示文件中没有相同栏位的行；
-     -1<栏位>：连接[文件 1]指定的栏位；
-     -2<栏位>：连接[文件 2]指定的栏位。
+*** base32 
+    以 base32 编码打印
+*** base64  
+    将数据转换为可打印数据
+** 文件部分的输出
+*** head：输出文件的第一部分
+*** tail：输出文件的最后一部分
+*** split：将文件拆分成碎片
+*** csplit：将文件拆分为上下文确定的部分
+** 文件数据统计
+*** wc：打印换行符，单词和字节计数
+    #+begin_verse
+    -c 字节数
+    -m 字数
+    -w 词组
+    -l 行数
+    #+end_verse
+    
+*** sum：打印校验和和块计数 [  文件内容相同，打印的校验和也就相同 ]
+    计算 16-bit checksum
+*** cksum：打印 CRC 校验和和字节计数
+*** b2sum：打印或检查 BLAKE2 摘要
+*** md5sum：打印或检查 MD5 摘要
+*** sha1sum：打印或检查 SHA-1 摘要
+*** stat    打印文件信息节点(inode)内容 [ 文件属性 ]
+** 对文件进行排序
+*** sort  [ 排序文本文件 ] 
+*** uniq  [ Uniquify 文件 ]
+** 文件查找
+*** rg  
+    #+begin_src sh
+    $ curl -LO https://github.com/BurntSushi/ripgrep/releases/download/11.0.1/ripgrep_11.0.1_amd64.deb
+    $ sudo dpkg -i ripgrep_11.0.1_amd64.deb
+    #+end_src
      
+*** find
+    : find [path...] [expression]
+    在目录里查找符合表达式的文件或目录 ,[ 后面还能加表达式进一步处理 ]
+    : 第一个参数是路径
+    
+    指定需满足的条件 
+    | name        | 文件名或目录名匹配                   |
+    | iname       | 文件名或目录名匹配(大小写不同也可以) |
+    | path        | 文件名或目录名匹配  ,同上差不多的    |
+    | regex       | 名字匹配正则表达式                   |
+    | maxdepth N  | 最大目录深度                         |
+    | mindepth  N | 最少目录深度                         |
+    | perm NNN    | 权限匹配                             |
+    | user        | 文件主                               |
+    | group       | 文件组                               |
+    | empty       | 长度为 0                             |
 
-样例：
-文件 file1.txt
-aa 1 2
-bb 2 3
-cc 4 6
-dd 3 3
-文件 file2.txt
-aa 2 1
-bb 8 2
-ff 2 4
-cc 4 4
-dd 5 5
+    #+begin_src sh
+      # 查找当前目录或者子目录下所有.txt 文件，但是跳过子目录 sk
+      find . -path "./sk" -prune -o -name "*.txt" -print
+    #+end_src
 
-1.join file1.txt file2.txt
-输出：aa 1 2 2 1
-bb 2 3 8 2
-默认已两个文件的第一行做匹配字段，默认以空格（不限个数）做分隔符。
-2.join -j 1 file1.txt file2.txt
-输出：aa 1 2 2 1
-bb 2 3 8 9
--j 选项 指定了以两个文件里第一列做匹配字段 等同于 join file1.txt file2.txt
-3. join -1 2 -2 3 file1.txt file2.txt
-输出： 1 aa 2 aa 2
-2 bb 3 bb 8
-4 cc 6 ff 2 
-4 cc 6 cc 4
-以第一个文件的第二列和第二个文件的第三列做匹配字段。因为第二个文件里第三列的两个 3 都与第一个文件里第三行因此输出
-4 cc 6 ff 2 
-4 cc 6 cc 4
-4 join -o 1.1 -o 1.2 -o 1.3 -o 2.1 -o 2.2 -o 2.3 -e 'empty' -a 1 file1.txt file2.txt 
-输出： aa 1 2 aa 2 1
-bb 2 3 bb 8 2
-cc 4 6 empty empty empty
-dd 3 3 empty empty empty
--o 指定 将 file1 的 1,2,3 列，file2 的 1,2,3 列都输出。-a 指定将 file1 中不匹配的行也输出，可是 file2 中沒有与 file1 后两行相应的字段，因此使用 empty 补齐。
 
-5.join -v 1 file1.txt file2.txt 
-输出： cc 4 6
-dd 3 3
--v 1 将 file1 中不匹配的行输出
-PS：join 命令和数据库中的 join 命令很相似。
-尽管 file1 和 file2 都已经排序，可是因为在第三行时開始不匹配因此仅仅匹配上了前两行，后面的行尽管字段也能够相应可是以不能匹配。join 命令，对文件格式的要求很强，假设想要更灵活的使用，可用 AWK 命令，參加 AWK 实例
-
-6. join 标准输入
-有时我们须要将多个格式同样的文件 join 到一起，而 join 接受的是两个文件的指令，此时我们能够使用管道和字符“-"来实现
-join file1 file2 | join - file3 | join - file4 
-这样就能够将四个文件 连接到 一起了。
-**** 替换或删除字符 tr 
-**** sed
-**** 文本转换 unix2dos dos2unix 
-**** awk [  Aho, Kernighan, and Weinberger Programming Language,处理文本的语言]
-***** 语法形式
-      awk [options] 'script' var=value file(s)
-      awk [options] -f scriptfile var=value file(s)
-***** 常用命令选项
-      -F fs fs 指定输入分隔符，fs 可以是字符串或正则表达式，如-F:
-      -v var=value 赋值一个用户定义变量，将外部变量传递给 awk
-      -f scripfile 从脚本文件中读取 awk 命令
-      -m[fr] val 对 val 值设置内在限制，-mf 选项限制分配给 val 的最大块数目；-mr 选项限制记录的最大数目。这两个功能是 Bell 实验室版 awk 的扩展功能，在标准 awk 中不适用。
-***** awk 脚本基本结构
-      awk 'BEGIN{ print "start" } pattern{ commands } END{ print "end" }' file
+   时间戳
+    + 访问时间 （-atime/天，-amin/分钟）：用户最近一次访问时间。
+    + 修改时间 （-mtime/天，-mmin/分钟）：文件最后一次修改时间。
+    + 变化时间 （-ctime/天，-cmin/分钟）：文件数据元（例如权限等）最后一次修改时间。
       
-      一个 awk 脚本通常由：BEGIN 语句块、能够使用模式匹配的通用语句块、END 语句
-      块 3 部分组成，这三个部分是可选的。任意一个部分都可以不出现在脚本中，脚本
-      通常是被 单引号 或 双引号 中，例如：
-
-      awk 'BEGIN{ i=0 } { i++ } END{ print i }' filename
-      awk "BEGIN{ i=0 } { i++ } END{ print i }" filename
-***** awk 的工作原理
-      awk 'BEGIN{ commands } pattern{ commands } END{ commands }'
-
-      第一步：执行 BEGIN{ commands }语句块中的语句；
-      第二步：从文件或标准输入(stdin)读取一行，然后执行 pattern{ commands }语句块，它逐行扫描文件，从第一行到最后一行重复这个过程，直到文件全部被读取完毕。
-      第三步：当读至输入流末尾时，执行 END{ commands }语句块。
-
-      BEGIN 语句块 在 awk 开始从输入流中读取行 之前 被执行，这是一个可选的语句块，比如变量初始化、打印输出表格的表头等语句通常可以写在 BEGIN 语句块中。
-
-      END 语句块 在 awk 从输入流中读取完所有的行 之后 即被执行，比如打印所有行的分析结果这类信息汇总都是在 END 语句块中完成，它也是一个可选语句块。
-
-      pattern 语句块 中的通用命令是最重要的部分，它也是可选的。如果没有提供 pattern 语句块，则默认执行{ print }，即打印每一个读取到的行，awk 读取的每一行都会执行该语句块。
-
-     $0 所有段
-     $1 第一段
-     $2 第二段 。。。
-     
-     打印第一 第三段  $ last -n 5 | awk '{print $1 "\t" $3}'
-   $ awk '条件类型 1 {动作 1} 条件类型 2 {动作 2} ...' filename
-
-   示例：/etc/passwd 文件第三个字段为 UID，对 UID 小于 10 的数据进行处理。
-   $ cat /etc/passwd | awk 'BEGIN {FS=":"} $3 < 10 {print $1 "\t " $3}'
-   root 0
-   bin 1
-   daemon 2
-
-   awk 变量：
-
-   | 变量名称 | 代表意义 |
-   | NF | 每一行拥有的字段总数 |
-   | NR | 目前所处理的是第几行数据 |
-   | FS | 目前的分隔字符，默认是空格键 |
-
-   示例：显示正在处理的行号以及每一行有多少字段
-
-   $ last -n 5 | awk '{print $1 "\t lines: " NR "\t columns: " NF}'
-   
-   awk '{if($6 > 50) print $1 "Too high"}' filename
-   awk '{if($1 > 10) {print $1 "Too high"} else {print "two low"}}' awktest.txt
-**** ln 创建链接 ln 目标 目录
-**** cp
-     -a：此参数的效果和同时指定"-dpR"参数相同；
--d：当复制符号连接时，把目标文件或目录也建立为符号连接，并指向与源文件或目录连接的原始文件或目录；
--f：强行复制文件或目录，不论目标文件或目录是否已存在；
--i：覆盖既有文件之前先询问用户；
--l：对源文件建立硬连接，而非复制文件；
--p：保留源文件或目录的属性；
--R/r：递归处理，将指定目录下的所有文件与子目录一并处理；
--s：对源文件建立符号连接，而非复制文件；
--u：使用这项参数后只会在源文件的更改时间较目标文件更新时或是名称相互对应的目标文件并不存在时，才复制文件；
--S：在备份文件时，用指定的后缀“SUFFIX”代替文件的默认后缀；
--b：覆盖已存在的文件目标前将目标文件备份；
--v：详细显示命令执行的操作。
-*** 变更目录的所有者 chown
-*** 查找文件内容
-**** rg  
-     安装
-     $ curl -LO https://github.com/BurntSushi/ripgrep/releases/download/11.0.1/ripgrep_11.0.1_amd64.deb
-     $ sudo dpkg -i ripgrep_11.0.1_amd64.deb
-     
-     这个下载快点
-     axel -n 8   https://github.com/BurntSushi/ripgrep/releases/download/11.0.1/ripgrep_11.0.1_amd64.deb
-**** find
-    - 选项 
-     -amin<分钟>：查找在指定时间曾被存取过的文件或目录，单位以分钟计算；
-     -anewer<参考文件或目录>：查找其存取时间较指定文件或目录的存取时间更接近现在的文件或目录；
-     -atime<24 小时数>：查找在指定时间曾被存取过的文件或目录，单位以 24 小时计算；
-     -cmin<分钟>：查找在指定时间之时被更改过的文件或目录；
-     -cnewer<参考文件或目录>查找其更改时间较指定文件或目录的更改时间更接近现在的文件或目录；
-     -ctime<24 小时数>：查找在指定时间之时被更改的文件或目录，单位以 24 小时计算；
-     -daystart：从本日开始计算时间；
-     -depth：从指定目录下最深层的子目录开始查找；
-     -expty：寻找文件大小为 0 Byte 的文件，或目录下没有任何子目录或文件的空目录；
-     -exec<执行指令>：假设 find 指令的回传值为 True，就执行该指令；
-     -false：将 find 指令的回传值皆设为 False；
-     -fls<列表文件>：此参数的效果和指定“-ls”参数类似，但会把结果保存为指定的列表文件；
-     -follow：排除符号连接；
-     -fprint<列表文件>：此参数的效果和指定“-print”参数类似，但会把结果保存成指定的列表文件；
-     -fprint0<列表文件>：此参数的效果和指定“-print0”参数类似，但会把结果保存成指定的列表文件；
-     -fprintf<列表文件><输出格式>：此参数的效果和指定“-printf”参数类似，但会把结果保存成指定的列表文件；
-     -fstype<文件系统类型>：只寻找该文件系统类型下的文件或目录；
-     -gid<群组识别码>：查找符合指定之群组识别码的文件或目录；
-     -group<群组名称>：查找符合指定之群组名称的文件或目录；
-     -help 或——help：在线帮助；
-     -ilname<范本样式>：此参数的效果和指定“-lname”参数类似，但忽略字符大小写的差别；
-     -iname<范本样式>：此参数的效果和指定“-name”参数类似，但忽略字符大小写的差别；
-     -inum<inode 编号>：查找符合指定的 inode 编号的文件或目录；
-     -ipath<范本样式>：此参数的效果和指定“-path”参数类似，但忽略字符大小写的差别；
-     -iregex<范本样式>：此参数的效果和指定“-regexe”参数类似，但忽略字符大小写的差别；
-     -links<连接数目>：查找符合指定的硬连接数目的文件或目录；
-     -iname<范本样式>：指定字符串作为寻找符号连接的范本样式；
-     -ls：假设 find 指令的回传值为 Ture，就将文件或目录名称列出到标准输出；
-     -maxdepth<目录层级>：设置最大目录层级；
-     -mindepth<目录层级>：设置最小目录层级；
-     -mmin<分钟>：查找在指定时间曾被更改过的文件或目录，单位以分钟计算；
-     -mount：此参数的效果和指定“-xdev”相同；
-     -mtime<24 小时数>：查找在指定时间曾被更改过的文件或目录，单位以 24 小时计算；
-     -name<范本样式>：指定字符串作为寻找文件或目录的范本样式；
-     -newer<参考文件或目录>：查找其更改时间较指定文件或目录的更改时间更接近现在的文件或目录；
-     -nogroup：找出不属于本地主机群组识别码的文件或目录；
-     -noleaf：不去考虑目录至少需拥有两个硬连接存在；
-     -nouser：找出不属于本地主机用户识别码的文件或目录；
-     -ok<执行指令>：此参数的效果和指定“-exec”类似，但在执行指令之前会先询问用户，若回答“y”或“Y”，则放弃执行命令；
-     -path<范本样式>：指定字符串作为寻找目录的范本样式；
-     -perm<权限数值>：查找符合指定的权限数值的文件或目录；
-     -print：假设 find 指令的回传值为 Ture，就将文件或目录名称列出到标准输出。格式为每列一个名称，每个名称前皆有“./”字符串；
-     -print0：假设 find 指令的回传值为 Ture，就将文件或目录名称列出到标准输出。格式为全部的名称皆在同一行；
-     -printf<输出格式>：假设 find 指令的回传值为 Ture，就将文件或目录名称列出到标准输出。格式可以自行指定；
-     -prune：不寻找字符串作为寻找文件或目录的范本样式;
-     -regex<范本样式>：指定字符串作为寻找文件或目录的范本样式；
-     -size<文件大小>：查找符合指定的文件大小的文件；
-     -true：将 find 指令的回传值皆设为 True；
-     -type<文件类型>：只寻找符合指定的文件类型的文件；
-     -uid<用户识别码>：查找符合指定的用户识别码的文件或目录；
-     -used<日数>：查找文件或目录被更改之后在指定时间曾被存取过的文件或目录，单位以日计算；
-     -user<拥有者名称>：查找符和指定的拥有者名称的文件或目录；
-     -version 或——version：显示版本信息；
-     -xdev：将范围局限在先行的文件系统中；
-     -xtype<文件类型>：此参数的效果和指定“-type”参数类似，差别在于它针对符号连接检查。
-     # 当前目录搜索所有文件，文件内容 包含 “140.206.111.111” 的内容
-    - 用法
-    find . -type f -name "*" | xargs grep "140.206.111.111"
-    在/home 目录下查找以.txt 结尾的文件名
-
-find /home -name "*.txt"
-同上，但忽略大小写
-
-find /home -iname "*.txt"
-当前目录及子目录下查找所有以.txt 和.pdf 结尾的文件
-
-find . \( -name "*.txt" -o -name "*.pdf" \)
-
-或
-
-find . -name "*.txt" -o -name "*.pdf"
-匹配文件路径或者文件
-
-find /usr/ -path "*local*"
-基于正则表达式匹配文件路径
-
-find . -regex ".*\(\.txt\|\.pdf\)$"
-同上，但忽略大小写
-
-find . -iregex ".*\(\.txt\|\.pdf\)$"
-否定参数
-找出/home 下不是以.txt 结尾的文件
-
-find /home ! -name "*.txt"
-根据文件类型进行搜索
-find . -type 类型参数
-类型参数列表：
-
-f 普通文件
-l 符号连接
-d 目录
-c 字符设备
-b 块设备
-s 套接字
-p Fifo
-基于目录深度搜索
-向下最大深度限制为 3
-
-find . -maxdepth 3 -type f
-搜索出深度距离当前目录至少 2 个子目录的所有文件
-
-find . -mindepth 2 -type f
-根据文件时间戳进行搜索
-find . -type f 时间戳
-UNIX/Linux 文件系统每个文件都有三种时间戳：
-
-访问时间 （-atime/天，-amin/分钟）：用户最近一次访问时间。
-修改时间 （-mtime/天，-mmin/分钟）：文件最后一次修改时间。
-变化时间 （-ctime/天，-cmin/分钟）：文件数据元（例如权限等）最后一次修改时间。
-搜索最近七天内被访问过的所有文件
-
-find . -type f -atime -7
-搜索恰好在七天前被访问过的所有文件
-
-find . -type f -atime 7
-搜索超过七天内被访问过的所有文件
-
-find . -type f -atime +7
-搜索访问时间超过 10 分钟的所有文件
-
-find . -type f -amin +10
-找出比 file.log 修改时间更长的所有文件
-
-find . -type f -newer file.log
-根据文件大小进行匹配
-find . -type f -size 文件大小单元
-文件大小单元：
-
-b —— 块（512 字节）
-c —— 字节
-w —— 字（2字节）
-k —— 千字节
-M —— 兆字节
-G —— 吉字节
-搜索大于 10KB 的文件
-
-find . -type f -size +10k
-搜索小于 10KB 的文件
-
-find . -type f -size -10k
-搜索等于 10KB 的文件
-
-find . -type f -size 10k
-删除匹配文件
-删除当前目录下所有.txt 文件
-
-find . -type f -name "*.txt" -delete
-根据文件权限/所有权进行匹配
-当前目录下搜索出权限为 777 的文件
-
-find . -type f -perm 777
-找出当前目录下权限不是 644 的 php 文件
-
-find . -type f -name "*.php" ! -perm 644
-找出当前目录用户 tom 拥有的所有文件
-
-find . -type f -user tom
-找出当前目录用户组 sunk 拥有的所有文件
-
-find . -type f -group sunk
-借助-exec 选项与其他命令结合使用
-找出当前目录下所有 root 的文件，并把所有权更改为用户 tom
-
-find .-type f -user root -exec chown tom {} \;
-上例中， {} 用于与 -exec 选项结合使用来匹配所有文件，然后会被替换为相应的文件名。
-
-找出自己家目录下所有的.txt 文件并删除
-
-find $HOME/. -name "*.txt" -ok rm {} \;
-上例中， -ok 和 -exec 行为一样，不过它会给出提示，是否执行相应的操作。
-
-查找当前目录下所有.txt 文件并把他们拼接起来写入到 all.txt 文件中
-
-find . -type f -name "*.txt" -exec cat {} \;> /all.txt
-将 30 天前的.log 文件移动到 old 目录中
-
-find . -type f -mtime +30 -name "*.log" -exec cp {} old \;
-找出当前目录下所有.txt 文件并以“File:文件名”的形式打印出来
-
-find . -type f -name "*.txt" -exec printf "File: %s\n" {} \;
-因为单行命令中-exec 参数中无法使用多个命令，以下方法可以实现在-exec 之后接受多条命令
-
--exec ./text.sh {} \;
-搜索但跳出指定的目录
-查找当前目录或者子目录下所有.txt 文件，但是跳过子目录 sk
-
-find . -path "./sk" -prune -o -name "*.txt" -print
-find 其他技巧收集
-要列出所有长度为零的文件
-
-find . -empty
-其它实例
-find ~ -name '*jpg' # 主目录中找到所有的 jpg 文件。 -name 参数允许你将结果限制为与给定模式匹配的文件。
-find ~ -iname '*jpg' # -iname 就像 -name，但是不区分大小写
-find ~ ( -iname 'jpeg' -o -iname 'jpg' ) # 一些图片可能是 .jpeg 扩展名。幸运的是，我们可以将模式用“或”（表示为 -o）来组合。
-find ~ \( -iname '*jpeg' -o -iname '*jpg' \) -type f # 如果你有一些以 jpg 结尾的目录呢？ （为什么你要命名一个 bucketofjpg 而不是 pictures 的目录就超出了本文的范围。）我们使用 -type 参数修改我们的命令来查找文件。
-find ~ \( -iname '*jpeg' -o -iname '*jpg' \) -type d # 也许你想找到那些命名奇怪的目录，以便稍后重命名它们
-最近拍了很多照片，所以让我们把它缩小到上周更改的文件
-
-find ~ \( -iname '*jpeg' -o -iname '*jpg' \) -type f -mtime -7
-你可以根据文件状态更改时间 （ctime）、修改时间 （mtime） 或访问时间 （atime） 来执行时间过滤。 这些是在几天内，所以如果你想要更细粒度的控制，你可以表示为在几分钟内（分别是 cmin、mmin 和 amin）。 除非你确切地知道你想要的时间，否则你可能会在 + （大于）或 - （小于）的后面加上数字。
-
-但也许你不关心你的照片。也许你的磁盘空间不够用，所以你想在 log 目录下找到所有巨大的（让我们定义为“大于 1GB”）文件：
-
-find /var/log -size +1G
-或者，也许你想在 /data 中找到 bcotton 拥有的所有文件：
-
-find /data -owner bcotton
-你还可以根据权限查找文件。也许你想在你的主目录中找到对所有人可读的文件，以确保你不会过度分享。
-
-find ~ -perm -o=r
-删除 mac 下自动生成的文件
-
-find ./ -name '__MACOSX' -depth -exec rm -rf {} \;
-统计代码行数
-
-find . -name "*.java"|xargs cat|grep -v ^$|wc -l # 代码行数统计, 排除空行
-
-** 软件包管理工具 (有时用到某个工具，本地没有，就要下载安装)
-*** dpkg 
-**** deb 包的构成：
-     - 数据包，包含实际安装的程序数据，文件名为 data.tar.XXX；
-     - 安装信息及控制脚本包，包含 deb 的安装说明，标识，脚本等，文件名为 control.tar.gz；
-     - 最后一个是 deb 文件的一些二进制数据，包括文件头等信息，一般看不到
-**** 工具的用法
-| 显示包信息                 | dpkg -I xx.deb                    |
-| 显示包文件列表             | dpkg -c xx.deb                    |
-| 安装包                     | dpkg -i xx.deb                    |
-| 安装包（指定根目录）       | dpkg --root=<directory> -i xx.deb |
-| 显示所有已安装软件         | dpkg -l                           |
-| 显示已安装包信息           | dpkg -s foo                       |
-| 显示已安装包文件列表       | dpkg -L foo                       |
-| 卸载包                     | dpkg -r foo                       |
-| 卸载软件包并删除其配置文件 | dpkg -P foo                       |
-| 重新配置已安装程序         | dpkg-reconfigure foo              |
-*** 高级打包工具 apt-get Advanced Packaging Tool (解决 debian 依赖)
-**** 配置
-     /etc/apt/sources.list
-     deb web 或[ftp 地址] [发行版名字] main/contrib/non-[free]
-**** 功能 
- | apt-cache search           | 搜索包                           |
- | apt-cache show             | 获取包的相关信息                 |
- | apt-get install            | 安装包                           |
- | apt-get reinstall          | 重新安装包                       |
- | apt-get -f install         | 强制安装                         |
- | apt-get remove             | 删除包                           |
- | apt-get remove --purge     | 删除包，包括删除配置文件等       |
- | apt-get autoremove --purge | 删除包及其依赖的软件包配置文件等 |
- | apt-get update             | 更新源                           |
- | apt-get upgrade            | 更新已安装的包                   |
- | apt-get dist-upgrade       | 升级系统                         |
- | apt-cache depends          | 了解使用依赖                     |
- | apt-get source             | 下载该包的源代码                 |
-*** aptitude  与 apt-get 不同的是，aptitude 在处理依赖问题上更佳一些
-| aptitude update          | 更新可用的包列表       |
-| aptitude upgrade         | 升级可用的包           |
-| aptitude dist-upgrade    | 将系统升级到新的发行版 |
-| aptitude install pkgname | 安装包                 |
-| aptitude remove pkgname  | 删除包                 |
-| aptitude purge pkgname   | 删除包及其配置文件     |
-| aptitude search string   | 搜索包                 |
-| aptitude show pkgname    | 显示包的详细信息       |
-| aptitude clean           | 删除下载的包文件       |
-| aptitude autoclean       | 仅删除过期的包文件     |
-*** yum(基于 Red Hat 的系统, 自动处理依赖性关系)
-| install      | 安装 rpm 软件包                           |
-| update       | 更新 rpm 软件包                           |
-| check-update | 检查是否有可用的更新 rpm 软件包           |
-| remove       | 删除指定的 rpm 软件包                     |
-| list         | 显示软件包的信息                        |
-| search       | 检查软件包的信息                        |
-| info         | 显示指定的 rpm 软件包的描述信息和概要信息 |
-| clean        | 清理 yum 过期的缓存                       |
-| shell        | 进入 yum 的 shell 提示符                    |
-| resolvedep   | 显示 rpm 软件包的依赖关系                 |
-| localinstall | 安装本地的 rpm 软件包                     |
-| localupdate  | 显示本地 rpm 软件包进行更新               |
-| deplist      | 显示 rpm 软件包的所有依赖关系             |
-*** Snap https://uappexplorer.com/snaps
-| sudo snap list                      | 查询已经安装了的软件     |
-| sudo snap find xxxx                 | 搜索要安装的 Snap 软件包 |
-| sudo snap info xxxx                 | 查看 Snap 软件的更多信息 |
-| sudo snap install xxxx              | 安装 Snap 软件包         |
-| sudo snap switch –channel=xxxx xxxx | 更换软件安装通道         |
-| sudo snap refresh xxxx              | 更新 Snap 软件包         |
-| sudo snap revert xxxx               | 还原到之前版本           |
-| sudo snap remove xxxx               | 卸载 Snap 软件           |
-| sudo snap install xx.snap --dangerous | 离                     |
-
-*** 内核管理
-     apt install linux-head-generic linux-image-genric linux-head
-     sudo update-grub
-** 任务处理 (多任务系统中对任务的处理)
-*** 打开任务 任务名、双击图标 
-*** 任务放在前、后台 fg bg jobs 
-*** 任务列表 ps 
-**** 属性 
-     | UID         | 用户 ID                                 |
-     | PID         | 进程 ID                                 |
-     | PPID        | 父进程 ID                               |
-     | C           | CPU 占用率                              |
-     | STIME       | 开始时间                                |
-     | TTY         | 开始此进程的 TTY----终端设备            |
-     | TIME        | 此进程运行的总时间                      |
-     | CMD         | 命令名                                  |
-     | 进程 ID %CPU | 进程占用 CPU 百分比                       |
-     | %MEM        | 进程占用内存百分比                      |
-     | VSZ         | 虚拟内存占用大小 单位：kb（killobytes） |
-     | RSS         | 实际内存占用大小 单位：kb（killobytes） |
-     | STAT        | 进程状态                                |
-     | START       | 进程启动时刻                            |
-     |             |                                         |
-**** 功能 
-     | e | 显示所有进程                             |
-     | f | 全格式                                   |
-     | h | 不显示标题                               |
-     | l | 长格式                                   |
-     | w | 宽输出                                   |
-     | a | 显示终端上的所有进程，包括其他用户的进程 |
-     | r | 只显示正在运行的进程。                   |
-     | u | 以用户为主的格式来显示程序状况。         |
-     | x | 显示所有程序，不以终端机来区分。         |
-
-*** 执行周期任务 crontab 
-**** 命令
-     crontab [ -u user ] file
-     crontab [ -u user ] [ -i ] { -e | -l | -r } |
-     -e 编辑 crontab 文件
-     -l　列出 crontab 文件内容
-     -r 删除 crontab 文件
-**** 开启日志     
-    修改 rsyslog 文件，将/etc/rsyslog.d/50-default.conf 文件中的#cron.*前的#删掉；
-    重启 rsyslog 服务 service rsyslog restart；
-    重启 cron 服务 service cron restart；
-
-    more /var/log/cron.log；
-    就可以查看运行时的日志文件，如果在日志文件中出现：No MTA installed, discarding output
-
-    那么就是说，crontab 执行脚本时是不会直接错误的信息输出，而是会以邮件的形式发送到你的邮箱里，这时候就需要邮件服务器了，
-    如果你没有安装邮件服务器，它就会报这个错。如果是测试，可以用下面的办法来解决：
-
-    在每条定时脚本后面加入：
-    ?
-    001
-    >/dev/null 2>&1
-    就可以解决 No MTA installed, discarding output 的问题
-**** 编辑文件, 其实编辑好后就会自动执行
-    crontab -e  
-
-    # m h  dom mon dow   command  
-    */2 * * * * date >> ~/time.log  
-**** 执行     
-     sudo service cron restart  
-
-     对于自己的，只要执行下自己的 crontab　文件即可
-     crontab -u wuming crontabfile
-
- | 分钟 | 0 - 59                                                                     |
- | 小时 | 0 - 23                                                                     |
- | 天   | 1 - 31                                                                     |
- | 月   | 1 - 12                                                                     |
- | 星期 | 0 - 6   0 表示星期天                                                        |
- | 星号 | 表示任意值，比如在小时部分填写 * 代表任意小时（每小时）                    |
- | 逗号 | 可以允许在一个部分中填写多个值，比如在分钟部分填写 1,3 表示一分钟或三分钟  |
- | 斜线 | 一般配合 * 使用，代表每隔多长时间，比如在小时部分填写 */2 代表每隔两分钟。 |
-\* * * * *                  # 每隔一分钟执行一次任务  
-0 * * * *                  # 每小时的 0 点执行一次任务，比如 6:00，10:00  
-6,10 * 2 * *            # 每个月 2 号，每小时的 6 分和 10 分执行一次任务  
-0 * * * *                  # 每小时的 0 点执行一次任务，比如 6:00，10:00  
-6,10 * 2 * *            # 每个月 2 号，每小时的 6 分和 10 分执行一次任务  
-*** 杀死任务 按照进程名 pkill 
-*** 任务属性
-    ls /proc/PID 
-    cwd 进程运行目录
-    exe 程序绝对路径
-    cmdline 运行时的命令行命令
-    environ 环境变量
-    fd 打开或使用的文件的符号链接
-** 用户管理(多用户系统中对用户的管理)
+  文件尺寸 size 
+    + b —— 块（512 字节）
+    + c —— 字节
+    + w —— 字（2字节）
+    + k —— 千字节
+    + M —— 兆字节
+    + G —— 吉字节
+    
+    #+begin_src sh
+      # 搜索大于 10KB 的文件
+      find . -type f -size +10k
+    #+end_src
+
+
+    条件连接符 
+    | o | 或             |
+    | ! | 非             |
+    | a | 与，其实没必要,默认就是与的 |
+
+    type 匹配 
+    | f | 普通文件 |
+    | l | 符号连接 |
+    | d | 目录     |
+    | c | 字符设备 |
+    | b | 块设备   |
+    | s | 套接字   |
+    | p | Fifo     |
+
+    
+**** 后续操作
+    删除 delete
+    执行命令 exec   
+    #+begin_src sh
+      #  {} 用于与 -exec 选项结合使用来匹配所有文件，然后会被替换为相应的文件名。
+      find . -type f -user root -exec chown tom {} \;
+    #+end_src
+    
+** 字段操作
+*** cut  按列打印文件
+    -c N  打印第 N 列
+*** paste 文件行合并
+    合并两个文件 ,不是尾部插入,而是每行合并
+    
+    -s 把文件多行合并成一行
+*** join 只合并不同部分,行首必须相同
+    #+begin_verse
+    $ cat file1
+    a 1
+    b 2
+    e 5
+    
+    $ cat file2
+    a X
+    e Y
+    f Z
+    
+    $ join file1 file2
+    a 1 X
+    e 5 Y
+
+    #+end_verse
+** 目录操作
+** 用户信息
+*** id 
+*** logname
+*** whoami
+*** users
+*** who
+** 用户管理
 *** 添加用户 useradd 
      useradd -m -g users -G wheel -s /bin/bash ikke 
      | d<登入目录> | 指定用户登入时的启始目录           |
@@ -635,37 +224,102 @@ find . -name "*.java"|xargs cat|grep -v ^$|wc -l # 代码行数统计, 排除空
      | s<shell>    | 指定用户登入后所使用的 shell       |
      | u<uid>      | 指定用户 id                        |
 *** 组 
-**** 创建组织 groupadd 
-**** sudo 配置 /etc/sudoers 
-**** 删除组织 groupdel
+    
+    #+begin_verse
+    创建组织 groupadd 
+    删除组织 groupdel
+    #+end_verse
+    
 *** 忘记密码
-**** kernel /vmlinuz-2.6.18-8.el5  ro root=LABEL=/ rhgb quiet linux single
-**** #vi /etc/shadow 编辑 shadow 中 root
-**** 详细 
-      1,启动时在启动的 linux 系统（或 grub 到计时结束前）上按下“e”键
-      2，选中类似“于 kernel /boot/vmlinuz-2.4.18-14 ”按“e”键
-      3,修改命令行，加入 linux single，结果如下：
-      kernel /vmlinuz-2.6.18-8.el5  ro root=LABEL=/ rhgb quiet linux single
-      4,回车返回，按 b 键,进入命令行
-      5, #vi /etc/shadow 编辑 shadow
-      将第一行，即以 root 开头的一行中 root:后和下一个:前的内容删除，
-      第一行将类似于
-      root::……
-      保存
-      (如果保存不了，是文件属性的问题，就 chmod 755 /etc/shadow，这样就 OK 了)
-      6. #reboot 重启，root 密码为空
-*** 用户通信 write USERNAME 终端
-    终端通过 who 获取
-    write wuming pts/0
+    1. 启动时在启动的 linux 系统（或 grub 到计时结束前）上按下“e”键
+    2. 选中类似“于 kernel /boot/vmlinuz-2.4.18-14 ”按“e”键
+    3. 修改命令行，加入 linux single，结果如下：
+       #+begin_src sh
+         kernel /vmlinuz-2.6.18-8.el5  ro root=LABEL=/ rhgb quiet linux single
+       #+end_src
+    4. 回车返回，按 b 键,进入命令行
+    5. #vi /etc/shadow 编辑 shadow 将第一行，即以 root 开头的一行中 root:后和下一个:前的内容删除
+    1. #reboot 重启，root 密码为空
+*** 用户通信 
+    #+begin_src sh
+      write USERNAME 终端
+      write USERNAME  pts/0
+    #+end_src
+    
 *** 拒绝通信 mesg n 
-*** 用户属性管理
-****  
 *** 改变登录 shell chsh 
-** 设备管理(对各个设备的管理)
+** 系统信息
+*** date 
+    打印或设置系统日期和时间
+*** arch 
+    打印机硬件名称 
+*** nproc  
+    打印可用处理器的数量
+*** uname
+    打印系统信息 
+*** hostname
+    打印或设置系统名称 
+*** hostid 
+    打印数字主机标识符 
+*** uptime
+    打印系统正常运行时间和负载 
+*** lsmod
+    列出加载的内核模块 
+** 设备管理
 *** 查看设备 ls /dev/
 *** 磁盘设备 
 **** 显示磁盘信息 df
 **** 创建, 备份磁盘 dd
+     推介备份块设备,字符设备慢
+***** 选项
+     | bs=<字节数>    | 将 ibs（输入）与 obs（输出）设成指定的字节数； |
+     | cbs=<字节数>   | 转换时，每次只转换指定的字节数；               |
+     | conv=<关键字>  | 指定文件转换的方式；                           |
+     | count=<区块数> | 仅读取指定的区块数；                           |
+     | ibs=<字节数>   | 每次读取的字节数；                             |
+     | obs=<字节数>   | 每次输出的字节数；                             |
+     | of=<文件>      | 输出到文件；                                   |
+     | seek=<区块数>  | 一开始输出时，跳过指定的区块数；               |
+     | skip=<区块数>  | 一开始读取时，跳过指定的区块数；               |
+     
+     块大小
+    | 单元大小         | 代码 |
+    | 字节（1B） 默认  | c    |
+    | 字节（2B）       | w    |
+    | 块（512B）       | b    |
+    | 千字节（1024B）  | k    |
+    | 兆字节（1024KB） | M    |
+    | 吉字节（1024MB） | G    |
+
+***** 操作
+      #+begin_src sh
+        #创建一个 1 M 的文件
+        dd if=/dev/zero of=sun.txt bs=1M count=1
+      #+end_src
+      : /dev/zero 是字符设备，推介使用块设备
+      
+      将本地的/dev/hdb 整盘备份到/dev/hdd
+      #+begin_src sh
+        dd if=/dev/hdb of=/dev/hdd
+      #+end_src
+
+      将备份文件恢复到指定盘
+      #+begin_src sh
+        dd if=/root/image of=/dev/hdb
+      #+end_src
+      
+      软盘
+       #+begin_src sh
+         dd if=/dev/zero of=emptydisk.img bs=512 count=2880
+         # 或者
+         dd if=/dev/fd0 of=disk.img count=1 bs=1440k
+       #+end_src
+
+      随机数
+      #+begin_src sh
+      dd if=/dev/urandom bs=1 count=15|base64
+      #+end_src
+      
 **** 磁盘分区 parted/fdisk
 **** 分区格式化 创建文件系统 mkfs
      mkfs -V -t msdos -c /dev/hda5
@@ -768,7 +422,7 @@ find . -name "*.java"|xargs cat|grep -v ^$|wc -l # 代码行数统计, 排除空
 **** 磁盘文件名(操作对象命名规范)
      IDE 磁盘：/dev/hd[a-d]
      SATA/SCSI/SAS 磁盘：/dev/sd[a-p]
-**** 分区
+**** 分区格式
 ***** MBR
       MBR 中，第一个扇区最重要，里面有主要开机记录（Master boot record, MBR）及分区
       表（partition table），其中主要开机记录占 446 bytes，分区表占 64 bytes。
@@ -790,168 +444,221 @@ find . -name "*.java"|xargs cat|grep -v ^$|wc -l # 代码行数统计, 排除空
       GPT 没有扩展分区概念，都是主分区，每个 LAB 可以分 4 个分区，因此总共可以分
       4 * 32 = 128 个分区。MBR 不支持 2.2 TB 以上的硬盘，GPT 则最多支持到
       2<sup>33</sup> TB = 8 ZB。
-**** 开机检测程序
-***** BIOS  
-***** UEFI
-      BIOS 不可以读取 GPT 分区表，而 UEFI 可以。
-*** 配置文件
-    $ cat /proc/cpuinfo
-    $ cat /proc/meminfo
-    $ cat /proc/net/sockstat
 *** 模块 
-    rmmod 从运行的内核中移除指定的内核模块
-    insmod 将给定的模块加载到内核中
-    lsmod 显示已载入系统的模块
-** 系统管理(对系统本身的管理)
-*** 关闭机器 ( shutdown )
-#+BEGIN_SRC shell
-  # shutdown [-krhc] 时间 [信息]
-  -k： 不会关机，只是发送警告信息，通知所有在线的用户
-  -r： 将系统的服务停掉后就重新启动
-  -h： 将系统的服务停掉后就立即关机
-  -c： 取消已经在进行的 shutdown 指令内容
-#+END_SRC
-*** 在线用户( who )
-     在关机前需要先使用 who 命令查看有没有其它用户在线。
-*** 同步磁盘( sync )
-     为了加快对磁盘文件的读写速度，位于内存中的文件数据不会立即同步到磁盘上，因
-     此关机之前需要先进行 sync 同步操作。
-*** 用户提权 ( sudo )
-    sudo 允许一般用户使用 root 可执行的命令，不过只有在 /etc/sudoers 配置文件中
-    添加的用户才能使用该指令。
-*** 发行版系统信息 ( lsb_release ) 
-    显示发行版 ID  -i   ---》 Ubuntu
-    显示发行版描述  -d 
-    显示发行版本号 -r
-    显示代号(codename) -c
-*** 输出系统信息( uname ) 
-    -s, --kernel-name
-    输出内核名称
+    - rmmod 从运行的内核中移除指定的内核模块
+    - insmod 将给定的模块加载到内核中
+    - lsmod 显示已载入系统的模块
+** 修改环境命令
+*** chroot ：	  	修改根目录。
+*** env      ：	  	修改环境变量。
+*** nohup ：	  	免疫挂断。
+*** stdbuf ：	  	修改标准流的缓冲。
+*** timeout ：	  	运行时间限制。
+** 任务处理 (进程处理)
+   #+begin_verse
+   进程:  一个个体操作数据。数据包括 (设备, 文件)，不能操作其他工具(只能通信)
+   : 都是由系统监视的
+   
+   线程，相对自由一点，条条框框少一点。
 
-    -n, --nodename
-    输出网络节点主机名
+   作业(job): 一种可控的(挂起，执行)进程,在 shell 交互中才需要(shell 只有一个交互界面,放在前台会占用命令输入界面 )，图形界面不需要。
+   
+   shell 将每个管道分配给一个 作业(job)。 它保存一个当前运行的作业表，可以用
+   jobs 命令来列出。
+   #+end_verse
 
-    -r, --kernel-release
-    输出内核发行版本
+*** 进程列表 ps 
+**** 属性 
+     | UID         | 用户 ID                                 |
+     | PID         | 进程 ID                                 |
+     | PPID        | 父进程 ID                               |
+     | C           | CPU 占用率                              |
+     | STIME       | 开始时间                                |
+     | TTY         | 开始此进程的 TTY----终端设备            |
+     | TIME        | 此进程运行的总时间                      |
+     | CMD         | 命令名                                  |
+     | 进程 ID %CPU | 进程占用 CPU 百分比                       |
+     | %MEM        | 进程占用内存百分比                      |
+     | VSZ         | 虚拟内存占用大小 单位：kb（killobytes） |
+     | RSS         | 实际内存占用大小 单位：kb（killobytes） |
+     | STAT        | 进程状态                                |
+     | START       | 进程启动时刻                            |
+     |             |                                         |
+**** 功能 
+     | e | 显示所有进程                             |
+     | f | 全格式                                   |
+     | h | 不显示标题                               |
+     | l | 长格式                                   |
+     | w | 宽输出                                   |
+     | a | 显示终端上的所有进程，包括其他用户的进程 |
+     | r | 只显示正在运行的进程。                   |
+     | u | 以用户为主的格式来显示程序状况。         |
+     | x | 显示所有程序，不以终端机来区分。         |
 
-    -v, --kernel-version
-    输出内核版本信息
+*** kill 
+*** pkill 
+*** 进程属性
+    ls /proc/PID 
+    cwd 进程运行目录
+    exe 程序绝对路径
+    cmdline 运行时的命令行命令
+    environ 环境变量
+    fd 打开或使用的文件的符号链接
+*** 任务放在前、后台 fg bg jobs 
+*** 周期任务 crontab 
+     crontab [ -u user ] [ -i ] { -e | -l | -r } |
+     -e 编辑 crontab 文件
+     -l　列出 crontab 文件内容
+     -r 删除 crontab 文件
 
-       -m, --machine
-       输出机器硬件名称
+     执行周期任务
+     #+begin_src sh
+       sudo service cron restart  
+     #+end_src
+ 
+     只要执行下自己的 crontab
+     #+begin_src sh
+     
+     crontab -u USERNAME crontabfile
+     #+end_src
+     
+       #+begin_verse
+       * * * * *                  # 每隔一分钟执行一次任务  
+       0 * * * *                  # 每小时的 0 点执行一次任务，比如 6:00，10:00  
+       6,10 * 2 * *            # 每个月 2 号，每小时的 6 分和 10 分执行一次任务  
+       0 * * * *                  # 每小时的 0 点执行一次任务，比如 6:00，10:00  
+       6,10 * 2 * *            # 每个月 2 号，每小时的 6 分和 10 分执行一次任务  
+       #+end_verse
 
-       -p, --processor
-       输出处理器类型（不可移植）
-
-       -i, --hardware-platform
-       输出硬件平台信息（不可移植）
-
-       -o, --operating-system
-       输出操作系统信息
-
-** 网络管理(对网络的管理)
-   netstat -ntulp | grep 3306   //查看所有 3306 端口使用情况·
-  
+** 延时
+*** sleep
+** 网络管理
+*** route -n                  
+    查看本机路由表
+*** netstat -lntp              
+    查看所有监听端口
+*** netstat -antp             
+    查看所有已建立的连接
+*** ifconfig            
+    查看所有网络接口的属性 
+*** iptables -L               
+    查看 iptables 防火墙 
 *** 远程登录 ssh
-    openssh 套件中的客户端连接工具,可以给予 ssh 加密协议安全的远程登录服务器
+    #+begin_src sh -n
+      # ssh 用户名@远程服务器地址
+      ssh user1@172.24.210.101
+      # 指定端口
+      ssh -p 2211 root@140.206.185.170
+    #+end_src
+
+    #+begin_src sh -n
+      # ssh 大家族
+      ssh user@ip -p22 # 默认用户名为当前用户名，默认端口为 22
+      ssh-keygen # 为当前用户生成 ssh 公钥 + 私钥
+      ssh-keygen -f keyfile -i -m key_format -e -m key_format # key_format: RFC4716/SSH2(default) PKCS8 PEM
+      ssh-copy-id user@ip:port # 将当前用户的公钥复制到需要 ssh 的服务器的 ~/.ssh/authorized_keys，之后可以免密登录
+    #+end_src
     
-    - 选项 
-      -1：强制使用 ssh 协议版本 1；
-      -2：强制使用 ssh 协议版本 2；
-      -4：强制使用 IPv4 地址；
-      -6：强制使用 IPv6 地址；
-      -A：开启认证代理连接转发功能；
-      -a：关闭认证代理连接转发功能；
-      -b：使用本机指定地址作为对应连接的源 ip 地址；
-      -C：请求压缩所有数据；
-      -F：指定 ssh 指令的配置文件；
-      -f：后台执行 ssh 指令；
-      -g：允许远程主机连接主机的转发端口；
-      -i：指定身份文件；
-      -l：指定连接远程服务器登录用户名；
-      -N：不执行远程指令；
-      -o：指定配置选项；
-      -p：指定远程服务器上的端口；
-      -q：静默模式；
-      -X：开启 X11 转发功能；
-      -x：关闭 X11 转发功能；
-      -y：开启信任 X11 转发功能。
-
-    # ssh 用户名@远程服务器地址
-    ssh user1@172.24.210.101
-    # 指定端口
-    ssh -p 2211 root@140.206.185.170
-
-    # ssh 大家族
-    ssh user@ip -p22 # 默认用户名为当前用户名，默认端口为 22
-    ssh-keygen # 为当前用户生成 ssh 公钥 + 私钥
-    ssh-keygen -f keyfile -i -m key_format -e -m key_format # key_format: RFC4716/SSH2(default) PKCS8 PEM
-    ssh-copy-id user@ip:port # 将当前用户的公钥复制到需要 ssh 的服务器的 ~/.ssh/authorized_keys，之后可以免密登录
-** 图像视频处理
-*** Kdenlive
-    速度-100，影片就倒序播放
-    马赛克 固定位置
-    自动遮盖  移动位置  分析
-    抠图
-*** OpenShot
-*** flowblade
-*** Lightworks 官网安装
-*** Blender 非常专业
-*** Olive
-    注意：目前不建议将 Olive 用在生产环境中。
-
-    通过 PPA 安装：
-    
-    sudo add-apt-repository ppa：olive-editor / olive-editor 
-    sudo apt-get update 
-    sudo apt-get install olive-editor
-
-    通过 Snap 安装
-    sudo snap install --edge olive-editor
-*** 屏幕录制 kazam  simplescreenrecorder obs
-*** 声音编辑 audacity
-        通过麦克风，混音器或其他媒体录制实况音频。
-    从不同的声音格式导入和导出文件。
-    复制，剪切，粘贴，删除选项，以方便编辑。
-    大范围的键盘快捷键。
-    添加声音效果。
-    可扩展的各种插件和更多。
-Vocal Reduction and Isolation
-*** 字幕编辑 Aegisub
-** 浏览帮助文档    
+** 帮助文档    
 *** man [manual] 
 *** info
     info 文档的结构像 ~树节点~ 一样，不过文档内部还有指向别处的 ~超链接~ 
-    : 在 emacs 中使用 info 和在 shell 中执行 info 有点区别的。
-**** 快捷键 
      
-| TAB   | 跳转到下一个超文本连接。           | 光标在链接处移动                                          |
-| RET   | 跟随光标下的超文本连接。           | 跳转到节点(或链接 )处                                     |
-| l     | 移动到本窗口的最后阅读过的节点。   | 遍历历史记录(反向)                                        |
-| C-v   | 向前翻页                           |                                                           |
-| Alt-v | 向后翻页                           |                                                           |
-|-------+------------------------------------+-----------------------------------------------------------|
-| [     | 移动到本文档的上一个节点。         | 会按序遍历整个文档树                                      |
-| ]     | 移动到本文档的下一个节点。         | 会按序遍历整个文档树                                      |
-| p     | 移动到同级的上一个节点。           | 同级遍历                                                  |
-| n     | 移动到同级的下一个节点。           | 同级遍历                                                  |
-| u     | 上移一层。                         | 跳转到父节点                                              |
-| t     | 移到此文档的顶层节点。             | 到文档根                                                  |
-| d     | 跳转到 info 的根                   |                                                           |
-|-------+------------------------------------+-----------------------------------------------------------|
-| 1...9 | 选取节点菜单中的第一至第九个项目。 | 快速跳转到当前文档的第 N 个链接                           |
-| m     | 选取由名称指定的菜单项目。         | 链接条目跳出来供你选择                                    |
-| f     | 按照交叉参考指定名称。             | 跳转到链接指向(别的文档 )                                 |
-| g     | 移动到由名字指定的节点。           | 按照节点名跳转                                            |
-| /     | 向前搜索指定的字符串。             | 内容查找  (emacs 中用@@html:<kbd>@@ C-s @@html:</kbd>@@ ) |
-| i     | 在索引条目中搜索指定的字符串，     | 并选择第一个找到的条目所引用的节点                        |
-|-------+------------------------------------+-----------------------------------------------------------|
-| C-g   | 取消当前操作。                     |                                                           |
-|-------+------------------------------------+-----------------------------------------------------------|
+    |-----+----------------------------------+---------------------------|
+    | TAB | 跳转到下一个超文本连接。         | 光标在链接处移动          |
+    | RET | 跟随光标下的超文本连接。         | 跳转到节点(或链接 )处     |
+    | l   | 移动到本窗口的最后阅读过的节点。 | 遍历历史记录(反向)        |
+    | [   | 移动到本文档的上一个节点。       | 会按序遍历整个文档树      |
+    | ]   | 移动到本文档的下一个节点。       | 会按序遍历整个文档树      |
+    | p   | 移动到同级的上一个节点。         | 同级遍历                  |
+    | n   | 移动到同级的下一个节点。         | 同级遍历                  |
+    | u   | 上移一层。                       | 跳转到父节点              |
+    | t   | 移到此文档的顶层节点。           | 到文档根                  |
+    | d   | 跳转到 info 的根                 |                           |
+    | m   | 选取由名称指定的菜单项目。       | 链接条目跳出来供你选择    |
+    | f   | 按照交叉参考指定名称。           | 跳转到链接指向(别的文档 ) |
+    | g   | 移动到由名字指定的节点。         | 按照节点名跳转            |
+* ubuntu 发行版
+** 软件包管理工具
+*** dpkg 
+**** deb 包的构成：
+     - 数据包，包含实际安装的程序数据，文件名为 data.tar.XXX；
+     - 安装信息及控制脚本包，包含 deb 的安装说明，标识，脚本等，文件名为 control.tar.gz；
+     - 最后一个是 deb 文件的一些二进制数据，包括文件头等信息，一般看不到
 
-* ubuntu 图形工具
+**** 用法
+     | 显示包信息                 | dpkg -I xx.deb                    |
+     | 显示包文件列表             | dpkg -c xx.deb                    |
+     | 安装包                     | dpkg -i xx.deb                    |
+     | 安装包（指定根目录）       | dpkg --root=<directory> -i xx.deb |
+     | 显示所有已安装软件         | dpkg -l                           |
+     | 显示已安装包信息           | dpkg -s foo                       |
+     | 显示已安装包文件列表       | dpkg -L foo                       |
+     | 卸载包                     | dpkg -r foo                       |
+     | 卸载软件包并删除其配置文件 | dpkg -P foo                       |
+     | 重新配置已安装程序         | dpkg-reconfigure foo              |
+*** 高级打包工具 apt-get Advanced Packaging Tool (解决 debian 依赖)
+**** 配置
+     /etc/apt/sources.list
+     deb web 或[ftp 地址] [发行版名字] main/contrib/non-[free]
+**** 功能 
+     | apt-cache search           | 搜索包                           |
+     | apt-cache show             | 获取包的相关信息                 |
+     | apt-get install            | 安装包                           |
+     | apt-get reinstall          | 重新安装包                       |
+     | apt-get -f install         | 强制安装                         |
+     | apt-get remove             | 删除包                           |
+     | apt-get remove --purge     | 删除包，包括删除配置文件等       |
+     | apt-get autoremove --purge | 删除包及其依赖的软件包配置文件等 |
+     | apt-get update             | 更新源                           |
+     | apt-get upgrade            | 更新已安装的包                   |
+     | apt-get dist-upgrade       | 升级系统                         |
+     | apt-cache depends          | 了解使用依赖                     |
+     | apt-get source             | 下载该包的源代码                 |
+*** aptitude  与 apt-get 不同的是，aptitude 在处理依赖问题上更佳一些
+    | aptitude update          | 更新可用的包列表       |
+    | aptitude upgrade         | 升级可用的包           |
+    | aptitude dist-upgrade    | 将系统升级到新的发行版 |
+    | aptitude install pkgname | 安装包                 |
+    | aptitude remove pkgname  | 删除包                 |
+    | aptitude purge pkgname   | 删除包及其配置文件     |
+    | aptitude search string   | 搜索包                 |
+    | aptitude show pkgname    | 显示包的详细信息       |
+    | aptitude clean           | 删除下载的包文件       |
+    | aptitude autoclean       | 仅删除过期的包文件     |
+*** yum(基于 Red Hat 的系统, 自动处理依赖性关系)
+    | install      | 安装 rpm 软件包                           |
+    | update       | 更新 rpm 软件包                           |
+    | check-update | 检查是否有可用的更新 rpm 软件包           |
+    | remove       | 删除指定的 rpm 软件包                     |
+    | list         | 显示软件包的信息                        |
+    | search       | 检查软件包的信息                        |
+    | info         | 显示指定的 rpm 软件包的描述信息和概要信息 |
+    | clean        | 清理 yum 过期的缓存                       |
+    | shell        | 进入 yum 的 shell 提示符                    |
+    | resolvedep   | 显示 rpm 软件包的依赖关系                 |
+    | localinstall | 安装本地的 rpm 软件包                     |
+    | localupdate  | 显示本地 rpm 软件包进行更新               |
+    | deplist      | 显示 rpm 软件包的所有依赖关系             |
+*** Snap https://uappexplorer.com/snaps
+    | sudo snap list                      | 查询已经安装了的软件     |
+    | sudo snap find xxxx                 | 搜索要安装的 Snap 软件包 |
+    | sudo snap info xxxx                 | 查看 Snap 软件的更多信息 |
+    | sudo snap install xxxx              | 安装 Snap 软件包         |
+    | sudo snap switch –channel=xxxx xxxx | 更换软件安装通道         |
+    | sudo snap refresh xxxx              | 更新 Snap 软件包         |
+    | sudo snap revert xxxx               | 还原到之前版本           |
+    | sudo snap remove xxxx               | 卸载 Snap 软件           |
+
+*** 内核管理
+    #+begin_src sh
+      sudo apt install linux-head-generic linux-image-genric linux-head
+      sudo update-grub
+    #+end_src
+    
 ** 换字体
 *** 安装到系统 /usr/share/fonts/
+    #+begin_src sh -n
     wget https://github.com/fangwentong/dotfiles/raw/master/ubuntu-gui/fonts/Monaco.ttf
     sudo mkdir -p /usr/share/fonts/custom
     sudo mv Monaco.ttf /usr/share/fonts/custom
@@ -960,13 +667,20 @@ Vocal Reduction and Isolation
     sudo mkfontscale  #生成核心字体信息
     sudo mkfontdir
     sudo fc-cache -fv
+    #+end_src
+    
 *** 安装到用户目录  ~/.fonts/ (安装到 ~/.local/share/fonts 原理相同)
-    wget https://github.com/fangwentong/dotfiles/blob/ubuntu/fonts/Monaco.ttf?raw=true
-    mkdir -p ~/.fonts
-    mv Monaco.ttf ~/.fonts
-    fc-cache -vf  #刷新系统字体缓存
 ** 用户目录配置
-    ~/.config/user-dirs.dirs
-* GNU Coreutils
-** 简介
-   
+   ~/.config/user-dirs.dirs
+** 图像视频处理
+*** Kdenlive
+    #+begin_verse
+    速度-100，影片就倒序播放
+    马赛克 固定位置
+    自动遮盖  移动位置  分析
+    抠图
+    #+end_verse
+*** 屏幕录制 kazam  simplescreenrecorder obs
+*** 声音编辑 audacity
+*** 字幕编辑 Aegisub
+ 
