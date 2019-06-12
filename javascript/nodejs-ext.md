@@ -4111,8 +4111,6 @@ JXcore 是一个支持多线程的 Node.js 发行版本，基本不需要对你�
 
 但我们这篇文章主要是要教大家介绍 JXcore 的打包功能。
 
-<hr>
-
 ### JXcore 安装
 下载 JXcore 安装包，并解压，在解压的的目录下提供了 jx 二进制文件命令，接下来我们主要使用这个命令。
 
@@ -4181,3 +4179,5 @@ $ jx index.jx command_line_arguments
 <hr>
 
 更多 JXcore 功能特性你可以参考官网：<http://jxcore.com/>。
+
+

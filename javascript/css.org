@@ -1,6 +1,19 @@
+#+TITLE: css 简介
+#+DESCRIPTION: 对界面部件进行排列布局
+#+TAGS: css
+#+CATEGORIES: 语言使用
+
 * css
+  一个元素是一个矩形像素块，css 用选择器定位元素，在 ~{}~ 中放置元素的样式属性和位置信息。
+  界面内容与布局的分离。
+  #+HTML: <!-- more -->
+** 选择器
+*** 派生选择器 li strong {a:v;b:v}  
+*** id 选择器  #red {color:red;}
+*** 类选择器  .center {text-align: center}
+*** 属性选择器  input [title="value"] //也可以不要 value 修饰
 ** 样式
-*** 样式
+*** 元素样式
 **** 背景 
      background-color: 默认 transparent 透明
      
@@ -86,18 +99,18 @@
      outline-style
      outline-width
      
-    | 值      | 描述                                                |
-    | none    | 默认。定义无轮廓。                                  |
-    | dotted  | 定义点状的轮廓。                                    |
-    | dashed  | 定义虚线轮廓。                                      |
-    | solid   | 定义实线轮廓。                                      |
-    | double  | 定义双线轮廓。双线的宽度等同于 outline-width 的值。 |
-    | groove  | 定义 3D 凹槽轮廓。此效果取决于 outline-color 值。   |
-    | ridge   | 定义 3D 凸槽轮廓。此效果取决于 outline-color 值。   |
-    | inset   | 定义 3D 凹边轮廓。此效果取决于 outline-color 值。   |
-    | outset  | 定义 3D 凸边轮廓。此效果取决于 outline-color 值。   |
-    | inherit | 规定应该从父元素继承轮廓样式的设置。                |
-    *** 边框
+     | 值      | 描述                                                |
+     | none    | 默认。定义无轮廓。                                  |
+     | dotted  | 定义点状的轮廓。                                    |
+     | dashed  | 定义虚线轮廓。                                      |
+     | solid   | 定义实线轮廓。                                      |
+     | double  | 定义双线轮廓。双线的宽度等同于 outline-width 的值。 |
+     | groove  | 定义 3D 凹槽轮廓。此效果取决于 outline-color 值。   |
+     | ridge   | 定义 3D 凸槽轮廓。此效果取决于 outline-color 值。   |
+     | inset   | 定义 3D 凹边轮廓。此效果取决于 outline-color 值。   |
+     | outset  | 定义 3D 凸边轮廓。此效果取决于 outline-color 值。   |
+     | inherit | 规定应该从父元素继承轮廓样式的设置。                |
+     *** 边框
 **** 内边距
      padding
 **** 边框
@@ -167,8 +180,8 @@
     rotateY() 
 *** 过渡 
     transition 转化,过度
-    !   规定您希望把效果添加到哪个 CSS 属性上,可以多个属性
-    !   规定效果的时长
+    规定您希望把效果添加到哪个 CSS 属性上,可以多个属性
+    规定效果的时长
     #+BEGIN_SRC css 
       div{transition:width 2s;}
       div:hover{width:300px;}
@@ -182,26 +195,26 @@
     #+BEGIN_SRC css 
       @keyframes myfirst
       {
-      from {background: red;}
-      to {background: yellow;}
+          from {background: red;}
+          to {background: yellow;}
       }
 
       @-moz-keyframes myfirst /* Firefox */
       {
-      from {background: red;}
-      to {background: yellow;}
+          from {background: red;}
+          to {background: yellow;}
       }
 
       @-webkit-keyframes myfirst /* Safari 和 Chrome */
       {
-      from {background: red;}
-      to {background: yellow;}
+          from {background: red;}
+          to {background: yellow;}
       }
 
       @-o-keyframes myfirst /* Opera */
       {
-      from {background: red;}
-      to {background: yellow;}
+          from {background: red;}
+          to {background: yellow;}
       }
     #+END_SRC
     通过规定至少以下两项 CSS3 动画属性，即可将动画绑定到选择器：
@@ -216,17 +229,12 @@
     #+BEGIN_SRC css 
       div
       {
-      animation: myfirst 5s;
-      -moz-animation: myfirst 5s;	/* Firefox */
-      -webkit-animation: myfirst 5s;	/* Safari 和 Chrome */
-      -o-animation: myfirst 5s;	/* Opera */
+          animation: myfirst 5s;
+          -moz-animation: myfirst 5s;	/* Firefox */
+          -webkit-animation: myfirst 5s;	/* Safari 和 Chrome */
+          -o-animation: myfirst 5s;	/* Opera */
       }
     #+END_SRC
-** 选择器
-*** 派生选择器 li strong {a:v;b:v}  
-*** id 选择器  #red {color:red;}
-*** 类选择器  .center {text-align: center}
-*** 属性选择器  input [title="value"] //也可以不要 value 修饰
 ** 属性
 *** 背景
     background 	          在一行中设置所有的背景属性 
@@ -371,8 +379,9 @@
    @supports, 如果满足给定条件则条件规则组里的规则生效。 
 
    @document, 如果文档样式表满足给定条件则条件规则组里的规则生效。 (推延至 CSS Level 4 规范)
-* 字体
+* 字体类型
 ** 英文字体  
+   #+begin_verse
    "Times New Roman"
    "华文仿宋"
    "华文细黑"
@@ -391,7 +400,9 @@
    Courier New
    Geneva
    Helvetica
+   #+end_verse
 ** 中文字体
+   #+begin_verse
    仿宋 FangSong
    仿宋_GB2312 FangSong_GB2312
    儷宋 Pro LiSong Pro Light
@@ -428,6 +439,7 @@
    黑体 SimHei
    "方正姚体" 
    "黑体"
+   #+end_verse
 * less 动态样式语言
 ** 变量
    变量允许我们单独定义一系列通用的样式，然后在需要的时候去调用。所以在做全局样式调
@@ -892,6 +904,25 @@ h2 {
 
  但是开启硬件加速并不会加速其他元素的执行，它只是加速了动画的转换（使用 GPU）。
  最后，硬件的资源是很宝贵的，有必要的时候才考虑使用。
+** 图片自适应
+ 首先是设置 background:url(图片地址) 0 0 no-repeat scroll transparent;background-size:100% 100%;
+
+ #+begin_src html
+   <div class="msg_desc">
+     <img style="max-width:100%;overflow:hidden;" src="http://www.tao3w.com/upload/kindeditor/image/20140724/20140724172508_15817.jpg" alt="">
+   </div>
+ #+end_src
+ 
+ 这里就把图片固定在 msg_desc 里面了，方便吧。
+ -------------
+ 注：在 html 里面插入图片，如果想让图片自适应屏幕的小而不是宽高固定不变可以在 css 代码里加入
+ img { height: auto; width: auto\9; width:100%; }
+ 
+ width:auto;是宽度自动的意思。
+
+ \9 是 hack css 的一种写法，这种在正常 css 代码后面加"\9"的方式，只有 IE 浏览器才能识别，
+ 其他浏览器会忽略这条语句。这样就能做到差异化浏览器，来达到兼容浏览器的目的。
+
 * 尺寸
   font-size:默认大小是 16 像素 (16px=1em(当前尺寸,当前是 16px))
   相对尺寸 1em=16px。那么 12px=0.75em,10px=0.625em

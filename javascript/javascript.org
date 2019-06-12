@@ -505,7 +505,6 @@
       modules, and other scripts.
 ***** import
       Used to import functions exported from an external module, another script.
- 
 *** 错误处理
 **** Try...Catch 
      #+BEGIN_SRC js
@@ -1368,3 +1367,10 @@
  上面代码中，最多只能同时运行两个异步任务。变量`running`记录当前正在运行的任务数，只要低于门槛值，就再启动一个新的任务，如果等于`0`，就表示所有任务都执行完了，这时就执行`final`函数。
 
  这段代码需要三秒完成整个脚本，处在串行执行和并行执行之间。通过调节`limit`变量，达到效率和资源的最佳平衡。
+* 模块
+  Javascript不是一种模块化编程语言，在es6以前，它是不支持”类”（class），所以也
+  就没有”模块”（module）了。
+  
+ES6标准发布后，module成为标准，标准使用是以export指令导出接口，以import引入模块，
+但是在我们一贯的node模块中，我们依然采用的是CommonJS规范，使用require引入模块，
+使用module.exports导出接口。
