@@ -64,17 +64,7 @@
    而有一个人专门发给我们消息。
    
    或者我们告诉那个人我们会处理哪种消息，那个人如简析到那种消息就发给我们处理。
-* java lsp
-** Server jdtls: status:starting exited with status exit. Do you want to restart it
-   1.Delete workspace `lsp-java-workspace-dir`
-   2.Delete server installation from `lsp-java-server-install-dir`
-   3.Evaluating `lsp-java--ls-command` will give you the command that is used for starting JDT LS - you could then start it outside of emacs
-* ntfs 执行权限
-  fstab 配置
-  UUID=0005D5040006FBE9   /media/d        ntfs-3g defaults,locale=zh_CN.UTF-8     0       0
 * ubuntu 释放 cache 内存
-写了个简单的脚本：
-
 #!/bin/bash                                                                                                                                                                                                 
 
 sync && echo 1 | sudo tee /proc/sys/vm/drop_caches
@@ -93,32 +83,29 @@ sync && echo 3 | sudo tee /proc/sys/vm/drop_caches
    在后边加上 single 回车
    最后按"b"启动，启动后就进入了单用户模式了
    此时已经进入到单用户模式了，你可以更改 root 密码了。更密码的命令为 passwd
-** .profile 配置文件会在图形界面开始或登录系统后执行一遍,而单独的 .zshrc .bashrc 配置文件会在开 shell 后又单独执行一遍.
 * CGI 服务器调用脚本语言
-* 终端下使用 lantern 代理
-  1，在 linux 上安装蓝灯（lantern），只能在浏览器上访问外网，不能在终端下访问外网，
- 
-  2，在本地终端命令行下访问外网：
+* 代理  
+  什么是代理，就是中介呀。 我们找个中介委托他做某件事。
+  so,我们跟中介交流 
+** 终端下使用 lantern 代理
+   就是终端要跟人交流，通过给 中介 ~lantern~  发消息要干某事， ~lantern~ 帮 终端做。
+  
+   在要用的终端配置代理：
+   #+begin_src sh
+     export http_proxy=http://127.0.0.1:42428
+     export https_proxy=https://127.0.0.1:42428
+   #+end_src
+   #+begin_quote
+   怎么配置了代理机器呀，因为消息发给代理机器的呀，代理机器通过它自己的服务器获取数据后返回给终端的。  
+   #+end_quote
+   
+   测试是否成功
+   #+begin_quote
+   wget https://google.com 
+   #+end_quote
+** 浏览器设置代理 
+   按照代理的说明配置下浏览器就好了
 
-       export http_proxy=http://127.0.0.1:42428
-       export https_proxy=https://127.0.0.1:42428
-       
-       # 127.0.0.1:40695
-      用 curl google.com 测试下，不会出现连接被拒绝的情况
-      也可以将 这两行命令写入到  ~/.bashrc 文件中，这样就不用每次打开一个窗口，都要 export 一下
-
-
-3，在服务器端下命令行下访问外网
-     服务器可以利用本地机器访问外网，不过，这两个网络要在同一个局域网中
-     
-     在本地终端下 
-     cd  ~/.lantern
-     vi  settings.yaml
-     修改 addr: 127.0.0.1:X  为  addr:本地机器 ip:X
-
-     在服务器端下：
-     export  http_proxy=http://本地机器 ip:X
-     export  https_proxy=http://本地机器 ip:X
 * 客户机如何使用宿主机 lantern 代理上网
   ip route show
   # 查看 route
@@ -148,7 +135,7 @@ sync && echo 3 | sudo tee /proc/sys/vm/drop_caches
 相依于硬件。而类似概念的 API 则在源代码定义这些，则较为高端，并不直接相依于硬件，
 通常会是人类可阅读的代码。一个 ABI 常见的样貌即是调用约定：数据怎么成为计算程序
 的输入或者从中得到输出；x86 的调用约定即是一个 ABI 的例子。
-* 根
+* 植物的根
   高等植物茎干下部长在土里的部分，主要功能是把植物固定在土地上，吸收土壤里的水分
   和养料，有的还能储藏养料。
 * 写公式 在 LibreOffice Writer 中用公式编辑器写,所见即所得
@@ -213,7 +200,6 @@ grep -o 'WORD' <file> | wc -l
  9. 调整体态
  10. 拥抱一下
 * 环游世界  买一张[ 环游世界的机票 ], 住就住在  [ 青年旅社 ]
-* 总访客量 121 SCHEDULED: <2019-06-03 一>
 * 写作
 ** 第一章 四种困难
    写作本身的困难:要不要写作
@@ -412,3 +398,136 @@ DIY(动手自己配置)
 * 熬夜 补充能量，绿茶，花生米，杏仁，肌肉放松 
 * 肯德基最划算的套餐就是周一到周五十二点到两点超值午餐
 * 饮料的瓶子最贵
+* cmake
+  用来构建 c/c++ 项目
+  项目需包含 CMakeLists.txt 文件
+  
+
+** 源文件夹和二进制文件夹
+   CMake 可以生成构建管道 (其他类型的构建文件)
+   前提是需要知道哪些是源文件夹，哪些是二进制文件夹
+   二进制文件夹是 CMake 生成管道的地方，通常是在项目目录下创建一个 build 子目录
+   可以创建多个使用不同构建系统或配置项的 ~build 类~ 二进制文件夹
+
+   CMakeCache.txt
+   
+** 配置和生成步骤
+*** 配置
+  在  ~CMakeLists.txt~ 中定义构建目标
+*** 生成
+** 命令行运行
+   -G 指定生成什么类型的管道，可以用 ~cmake --help~ 查看
+   
+   在 类 UNIX 环境默认生成 makefile
+   #+begin_src sh
+     mkdir build
+     cd build
+     cmake -G "Visual Studio 15 2017" ..
+   #+end_src
+
+   然后就可以构建了 ,亦可以用 cmake 来构建
+   #+begin_src sh
+$ make
+$ make install
+#+end_src
+** 选项 
+-S <path-to-source>
+要构建的 CMake 项目的根目录的路径。
+-B <path-to-build>
+CMake 将用作构建目录的根目录的路径。
+
+如果目录尚不存在，CMake 将会成功。
+** CMake language
+*** 命令调用
+   样式为函数形式，但是参数不用逗号,而是用空格隔开
+   命令名称不区分大小写
+   add_executable(hello world.c) 
+
+   if(FALSE AND (FALSE OR TRUE)) # evaluates to FALSE
+*** 括号参数
+    参数过长用 括号 ,算一个参数
+    #+begin_verse
+    message([=[
+    This is the first line in a bracket argument with bracket length 1.
+    No \-escape sequences or ${variable} references are evaluated.
+    This is always one argument even though it contains a ; character.
+    The text does not end on a closing bracket of length 0 like ]].
+    It does end in a closing bracket of length 1.
+    ]=])
+    #+end_verse
+*** 引用参数
+    算一个参数
+    #+begin_verse
+message("This is a quoted argument containing multiple lines.
+This is always one argument even though it contains a ; character.
+Both \\-escape sequences and ${variable} references are evaluated.
+The text does not end on an escaped double-quote like \".
+It does end in an unescaped double quote.
+")
+    #+end_verse
+*** 不带引号的参数
+    多个参数
+    #+begin_verse
+    foreach(arg
+    NoSpace
+    Escaped\ Space
+    This;Divides;Into;Five;Arguments
+    Escaped\;Semicolon
+    )
+  message("${arg}")
+  endforeach()
+    #+end_verse
+*** 变量引用¶
+    ${<variable>}
+    
+    可以嵌套   
+    ${outer_${inner_variable}_variable}
+ 
+    环境变量 $ENV{<variable>}.
+    缓存变量 $CACHE{<variable>}
+*** 控制块
+**** 条件 
+      if()/elseif()/else()/endif() 
+**** 循环
+foreach()/endforeach() and while()/endwhile()
+*** 命令定义
+      macro()/endmacro(), and function()/endfunction()
+*** 变量
+    set() 和 unset()
+*** 列表
+    set(srcs a.c b.c c.c) # sets "srcs" to "a.c;b.c;c.c"
+*** 命令
+    add_executable 
+    将选定的源文件添加到可执行文件中
+    
+    add_compile_options(<option> ...)
+    添加源文件的编译选项
+    
+    add_custom_command
+将自定义生成规则添加到生成的生成系统
+* Babel 是一个帮助您在最新版本的 JavaScript 中编写代码的工具
+  可以转译 es6 标准代码到 es5 格式, 并且支持 jsx 语法
+* CDN( 内容分发网络) 一些公司会把他们公开的文件放置在 CDN 上供人们访问
+* Ubuntu 18.04.1 挂载 ntfs 硬盘
+  需要安装两个软件
+#+begin_src sh
+sudo apt-get install ntfs-3g
+sudo apt-get install ntfs-config
+#+end_src
+ 
+打开读写权限
+以下命令会弹出图形界面, 放心操作
+#+begin_src js
+sudo ntfs-config
+#+end_src
+ 
+ 
+开机自动挂载
+# 找到并修改配置文件
+sudo gedit /etc/fstab
+ 
+# 添加下面的内容
+#+begin_verse
+/dev/sda1 /media/box ntfs-3g defaults,locale=zh_CN.UTF-8 0 0
+#+end_verse
+ 

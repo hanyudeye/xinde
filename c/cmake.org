@@ -1,63 +1,53 @@
-* 安装
-  apt install cmake 
-** Layer
-To use this configuration layer, add it to your =~/.spacemacs=. You will need to
-add =cmake= to the existing =dotspacemacs-configuration-layers= list in this
-file.
+* cmake
+  添加了对 ~cmake~ 脚本的支持 
+  自动生成 ~compile_commands.json~ 编译标识, 即时配置 flycheck,company-clang 和 RTags
+  使用 ~helm-ctest~ 运行选定的测试
+** 安装
+   #+begin_src sh
+   apt install cmake 
+   #+end_src
+   
+   使用 CMake-ide 
+ #+BEGIN_SRC emacs-lisp
+   (setq-default dotspacemacs-configuration-layers
+                 '((cmake :variables cmake-enable-cmake-ide-support t)))
+ #+END_SRC
 
-** CMake-ide configuration
-To enable CMake projects support set the layer variable =cmake-enable-cmake-ide-support=
-to =t= in the dotfile:
+** 配置
+ 创建工程配置文件 =.dir-locals.el=
+ 示例配置，此配置强制 ~cmake-ide~ 使用本地目录，并将该目录变量 传递给 ~helm-make~, 你可以使用 ~SPC c c~ 来构建项目
+ #+BEGIN_SRC emacs-lisp
+   ((nil .
+         ((cmake-ide-project-dir . "~/Project")
+          (cmake-ide-build-dir . "~/Project/build")
+          (cmake-ide-cmake-opts . "-DCMAKE_BUILD_TYPE=Debug")
+          (helm-make-build-dir . "build")
+          (helm-make-arguments . "-j7")
+          (helm-ctest-dir . "~/Project/build/")
+          )))
+ #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-  (setq-default dotspacemacs-configuration-layers
-    '((cmake :variables cmake-enable-cmake-ide-support t)))
-#+END_SRC
+ 如果想使用 ~make~  代替 ~cmake~ ,使用  ~helm-make~ 命令 
+ : 跟上面没啥区别呀～～ ??
+ 
+在有 ~projectile~  文件的情况下，可以像下面这样配置
 
-=cmake-ide= plugin has several useful configuration options.
+ #+BEGIN_SRC emacs-lisp
+   ((nil . ((eval . (setq
+                     projectile-project-test-cmd #'helm-ctest
+                     projectile-project-compilation-cmd #'helm-make-projectile
+                     projectile-project-compilation-dir "build"
+                     helm-make-build-dir (projectile-compilation-dir)
+                     helm-ctest-dir (projectile-compilation-dir)
+                     ))
+            (projectile-project-name . "My Cool Project")
+            (projectile-project-run-cmd . "./run.sh")
+            (projectile-project-configure-cmd . "cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..")
+            (helm-make-arguments . "-j7"))))
+ #+END_SRC
 
-To configure project you need to create =.dir-locals.el= file. In case of using
-make as CMake backend you can use =helm-make= to select required build target.
-
-Here is a sample configuration. This configuration forces =cmake-ide= to use the
-local directory and pass that directory to =helm-make=. Such config allows to
-build your project with ~SPC c c~ key binding.
-
-Additionally it’s possible to configure =helm-ctest= in the same way via defining ~helm-ctest-dir~.
-Trailing slash is required.
-
-#+BEGIN_SRC emacs-lisp
-  ((nil .
-        ((cmake-ide-project-dir . "~/Project")
-         (cmake-ide-build-dir . "~/Project/build")
-         (cmake-ide-cmake-opts . "-DCMAKE_BUILD_TYPE=Debug")
-         (helm-make-build-dir . "build")
-         (helm-make-arguments . "-j7")
-         (helm-ctest-dir . "~/Project/build/")
-         )))
-#+END_SRC
-
-In case of projectile it’s possible to configure project like:
-
-#+BEGIN_SRC emacs-lisp
-  ((nil . ((eval . (setq
-                    projectile-project-test-cmd #'helm-ctest
-                    projectile-project-compilation-cmd #'helm-make-projectile
-                    projectile-project-compilation-dir "build"
-                    helm-make-build-dir (projectile-compilation-dir)
-                    helm-ctest-dir (projectile-compilation-dir)
-                    ))
-           (projectile-project-name . "My Cool Project")
-           (projectile-project-run-cmd . "./run.sh")
-           (projectile-project-configure-cmd . "cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..")
-           (helm-make-arguments . "-j7"))))
-#+END_SRC
-
-* Key Bindings
-
-| Key Binding | Description                                                             |
-|-------------+-------------------------------------------------------------------------|
-| ~SPC m p c~ | Run CMake and set compiler flags for auto-completion and flycheck       |
-| ~SPC m p C~ | Run CMake if compilation database JSON file is not found                |
-| ~SPC m p d~ | Remove file connected to current buffer and kill buffer, then run CMake |
-| ~SPC m p t~ | Run CTest                                                               |
+** 键盘绑定
+ | ~SPC m p c~ | Run CMake and 自动完成和 flycheck 设置编译器标识       |
+ | ~SPC m p C~ | Run CMake 如果没找到编译数据库 JSON 文件               |
+ | ~SPC m p d~ | 删除连接到当前缓冲区的文件，删除缓冲区，然后 run CMake |
+ | ~SPC m p t~ | Run CTest                                              |

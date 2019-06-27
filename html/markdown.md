@@ -9,6 +9,24 @@
 * **hello粗体** 
 * __hello粗体__
 ~~删除线~~
+
+# 颜色
+```
+<font face="黑体">这就是黑体字</font>
+<font face="微软雅黑">这是微软雅黑</font>
+<font face="STCAIYUN">然后是华文彩云</font>
+<font color=#0099ff size=7 face="黑体">color=#0099ff size=72 face="黑体"</font>
+<font color=#00ffff size=72>color=#00ffff</font>
+<font color=gray size=72>color=gray</font>
+```
+
+<font face="黑体">这就是黑体字</font>
+<font face="微软雅黑">这是微软雅黑</font>
+<font face="STCAIYUN">然后是华文彩云</font>
+<font color=#0099ff size=7 face="黑体">color=#0099ff size=72 face="黑体"</font>
+<font color=#00ffff size=72>color=#00ffff</font>
+<font color=gray size=72>color=gray</font>
+
 # 表格
 | 标题 | 标题 | 标题 |
 |------|------|------|
@@ -43,7 +61,7 @@
 2. 列表
 
 # 代码区块
-    缩进1个制表符或4个空格
+缩进1个制表符或4个空格
 
 # 链接
 * 行内式 [百度](http://www.baidu.com)
@@ -202,3 +220,8 @@ E=mc^2 \text{，自动编号公式示例}
 $$在公式 \eqref{eq:Sample} 中，我们看到了这个被自动编号的公式。$$
 ```
 
+
+# 文本对齐方式
+<p align="left">居左文本</p>
+<p align="center">居中文本</p>
+<p align="right">居右文本</p>

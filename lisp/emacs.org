@@ -1,4 +1,4 @@
-#+TITLE: emacs 使用简介
+#+TITLE: emacs 简介
 #+DESCRIPTION: emacs 编辑器 
 #+TAGS: emacs
 #+CATEGORIES: 软件使用
@@ -6,16 +6,20 @@
 
 * emacs 
 ** 简介 
+   最初由大神  Richard Stallman 于 1975 年在 MIT 协同盖伊·史提尔二世共同完成的一款 ~文字修改软件~ 。
+   
    #+begin_verse
-   可扩展的编辑器。
-   就是可以在编辑器内部调用编写函数，然后 ~调用函数~ ，还可以设置调用函数的 ~快捷键~ 。
-   扩展语言是 emacs-lisp(elisp)
-   除了底层是 ~C~ 写的,其他都是 ~elisp~ 写的
+   他是一款可扩展的编辑器,因为他本身又是一个 ~elisp~ 程序语言,我们在写文字的时候，可以写写 ~elisp~ 脚本来增加一点快捷操作。
+   他除了底层是 ~C~ 写的,其他的扩展都是 ~elisp~ 写的,扩展有很多，可以找来用用。
    键盘上的 ~Alt~ 键，在 emacs 中 称 ~Meta~ 键，简写 @@html:<kbd>@@ M @@html:</kbd>@@  (由于古老的历史) 
-   初学者帮助，（help-with-tutorial） @@html:<kbd>@@ C-h t @@html:</kbd>@@ 
+   初学者帮助，（help-with-tutorial）,快捷键为  @@html:<kbd>@@ C-h t @@html:</kbd>@@ 
    #+end_verse
+   
+   #+begin_quote
+   这个编辑器的基本用法是你输入文字，看到哪些要更改的就执行要如何更改的命令，就像 ~ps~ 给选区加 ~滤镜~ 一样 , 没有那个滤镜就要自己写或者找找了。
+   #+end_quote
+   
 #+HTML: <!-- more -->
-
 ** 选项
    | +<行号>          | 将光标移动到制定行号的行；                              |
    | q                | 不加载初始化文件                                        |
@@ -118,12 +122,15 @@
 *** 数字参数
     有些命令要执行多次，可以加一个数字参数 
    @@html:<kbd>@@ M @@html:</kbd>@@ 键加一个数字 N 就能执行 N 次命令
-   
+*** 输入法
+    M-x set-input-method RET TeX will allow you to write e.g. \beta to get β,
+    \sum or \Sigma to get Σ etc.
+
+    It can be toggled on and off with toggle-input-method, bound to C-\ and C-<.
+
 ** 文本操作命令
 *** Mark (标记) 选中一段文本
     图形窗口下直接用鼠标选中就可以 
-    
-
     #+begin_verse
     命令行下包括以下步骤
     开始标记 ~set-mark-command~
@@ -181,14 +188,32 @@
      显示目录列表  ~list-directory~
      创建目录 ~make-directory~
      删除目录 ~delete-directory~
+*** hexl  mode
+    插入 16 进制     ~hexl-insert-hex-char~
 
-** 服务
+** 编码 
+   一般能正常的理解编码，当乱码的时候，查看下文字的编码信息 ~what-cursor-position~ 
+   然后在网上查查那个数字是什么汉字 ， https://www.qqxiuzi.cn/bianma/zifuji.php ,可能会失效，网上搜个。
+  
+   1. 命令行编码转换用 ~iconv~ ,如  
+      iconv -f 原编码 -t 转换后的编码 inputfile -o outputfile
+      #+begin_src js
+        iconv -f gb2312 -t utf-8 file > filenew
+      #+end_src
+   2. emacs 手动设置编码格式 ~set-buffer-file-coding-system~  
+
+** 服务 (把这编辑器作为一个服务程序)
 - 开启服务
   1. 在 emacs 中 server-start, 或放在 init file 中,
   2.用 --daemon 作为启动 emacs 的参数
 - 设置客户端
   EDITOR=emacsclient -c
-** package
+** 扩展
+   #+begin_verse
+  两步 1 下载，2 使用  
+  有些使用前要配置下，看扩展的帮助
+  #+end_verse
+  
 *** 列出扩展 list-packages
 *** 重新安装包 package-reinstall
 *** 加载扩展
@@ -201,7 +226,22 @@
     (load 'auto-complete-autoloads)
     包管理器 elpa(Emacs package system)
 *** 字节编译 byte-recompile-directory
-** 调试
+** 排错
    使用函数 debug-on-error,就会捕捉错误，重新执行下错误内容就捕捉到了
 
+** 调试
+   使用 GUD (Grand Unified Debugger) 提供统一接口
+
+*** 开启 GUD 
+**** gdb (开启一个多界面的调试器,IDE-like) 
+**** gud-gdb 
+**** perldb
+**** jdb
+**** pdb
+**** guiler (Scheme)
+**** dbx (DBX)
+**** xdb (XDB)
+**** sdb (SDB)
+*** gdb
+*** lisp debugger
 

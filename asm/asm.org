@@ -1,20 +1,71 @@
 #+TITLE: at&t 汇编简介
-#+DESCRIPTION: 
+#+DESCRIPTION: at&t 汇编简介
 #+TAGS: asm,at&t
 #+CATEGORIES: 语言使用
+#+DATE: <2019-06-23 15:20:58>
 
 * 汇编语言 
-** 基本结构
-   #+begin_src asm
-       # Hello World ～
+** 简介 
+   #+begin_verse
+   讲完高级语言，讲点低级语言吧。 
+   写汇编是很头疼的事情，那时用汇编写出那么多好程序很了不起。
+   汇编是面向机器的，我们原来的数学运算什么都是抽象出来的,数据类型也是抽象出来的。 
+   #+end_verse
+ 
+  在机器层，我们能操作的是寄存器，内存，硬件设备。每种硬件处理方法也不一样，非常复杂
+ #+HTML: <!-- more -->
+
+ 因为操作的是机器，就要配置好一个环境来好好展示机器各方面的数据。
+ 
+** 计算理论
+   #+begin_verse
+   图灵理论
+   基本思想是用机器来模拟人们用纸笔进行数学运算的过程，他把这样的过程看作下列两种简单的动作：
+   在纸上写上或擦除某个符号；
+   把注意力从纸的一个位置移动到另一个位置；
+   #+end_verse
+   
+   #+begin_verse
+   就像我们完成一件事情一样，例如我们 盖一座房子，那我们要有一张建筑图纸。 
+   建筑图纸就相当于软件，或图灵里面的纸带，我们相当于硬件，我们按照图纸一条一条解析，执行图纸上的内容，执行完，房子就造好了。
+   #+end_verse
+   
+** 具体实现
+   #+DOWNLOADED: https://upload-images.jianshu.io/upload_images/7111365-68ff109722f28e90?imageMogr2/auto-orient/ @ 2019-06-23 18:20:15
+   [[file:image/liucheng.jpeg]]
+
+
+   #+begin_verse
+cpu 那块芯片上有这么 3 块单元
+1.控制单元
+2.存储单元
+3.运算单元
+
+然后
+
+控制单元又可以分成：指令寄存器（内存里面读取到的指令会在这里），指令译码器（吧读取到指令翻译成具体操作），操作控制器。
+存储单元就是寄存器，用来存放等待处理和处理过的数据，用来减少 cpu 对内存的访问次数。
+运算单元的话就是进行算术运算和逻辑运算这些。
+
+接下来说一下工作的流程
+第一步：取指令，cpu 的控制器读取一条指令放到指令寄存器里面。
+第二步：指令译码，对指令寄存器里面的指令进行译码，确定指令进行的操作，操作数地址。
+第三步：执行指令，利用操作数地址找到操作数，进行运算。
+第四步：修改指令计数器，确定下一条指令的地址。
+   #+end_verse
+   #+begin_quote
+   跟人的计算过程差不多吧 
+   #+end_quote
+
+** 图纸结构
+   #+begin_src nasm
+       #显示器设备显示一行文字
      .data
-     msg:
-       .ascii "Hello world, hello AT&T asm!\n"
+     msg: .ascii "Hello world, hello AT&T asm!\n"
        len = . - msg
 
      .text
      .global _start
-
      _start:
        movl	$len,	%edx	# 显示的字符数
        movl	$msg,	%ecx	# 缓冲区指针
@@ -27,22 +78,20 @@
        movl	%eax,	%ebx	# 传给_exit 的参数, 这里是 write 的返回值，打印的数量
        movl	$1,	%eax	# 系统调用号，_exit
        int	$0x80		# 系统调用
+   #+end_src
 
-         #+end_src
+   #+begin_src nasm
+       # 显示器显示 CPUID：
+     .section .data
+     output:
+     .ascii "The processor Vendor ID is 'XXXXXXXXXXXX'\n"
 
-   #+begin_src asm
-       # 输出 CPUID：
-       # cpuid.s Sample program to extract the processor Vendor ID
-       .section .data
-       output:
-       .ascii "The processor Vendor ID is 'XXXXXXXXXXXX'\n"
+     .section .text
+     .global _start
 
-       .section .text
-       .global _start
-
-       _start:
+     _start:
        movl	$0,	%eax		# The CPUID output option(the Vendor ID string)	
-         cpuid #cpuid 指令根据不同的 eax,输出不同的值 
+       cpuid #cpuid 指令根据不同的 eax,输出不同的值 
        movl	$output,%edi
        movl	%ebx, 	28(%edi)
        movl	%edx,	32(%edi)
@@ -59,7 +108,12 @@
        int	$0x80		# 系统调用
 
    #+end_src
-** 描述
+** 程序结构
+   基本结构是有两个区块，一个区块是 数据区，放置你声明的变量
+   一个区块是代码区，你的函数都放在那里。 
+   数据区用 ~.data~ 表示
+   代码区用 ~.text~ 表示
+
 *** 数据放置区 .data .rodata(只读)
 *** 数据定义 msg: .asciz "hello"
 *** 数据类型
@@ -86,6 +140,7 @@
     .section .text
     movl $LINUX_SYS_CALL, %eax
 *** 临时数据区 bss  .comm  .lcomm
+    #+begin_verse
     .comm 声明为未初始化的通用内存区域
     .lcomm 声明为未初始化的本地内存区域
     
@@ -93,6 +148,8 @@
     .lcomm buffer, 1000
  
     不占用程序空间，会在分配内存是分配空间
+    #+end_verse
+    
 *** 代码放置区 .text
 *** 代码入口处 .global
 *** 寄存器
@@ -107,10 +164,10 @@
 *** 编译代码类型 .code16 .code32
 *** 当前地址  . 
     len:  .int  .-msg
-** 处理
-*** 指令
+** 命令
 **** 传送指令
 ***** move 指令
+      #+begin_verse
       .section .data
       value:
       .int 100
@@ -124,15 +181,17 @@
      
       movl $value, %eax 把标签 value 当前引用的内存地址指针传递给 eax
        
-          movl %ebx, (%edi) 如果 edi 外面没有括号那么这个指令只是把 ebx 中的值加载
-          到 edi 中, 如果有了括号就表示把 ebx 中的内容传送给 edi 中包含的内存位置。
+      movl %ebx, (%edi) 如果 edi 外面没有括号那么这个指令只是把 ebx 中的值加载
+      到 edi 中, 如果有了括号就表示把 ebx 中的内容传送给 edi 中包含的内存位置。
        
-          movl %ebx, 4(%edi) 表示把 edi 中的值放在 edi 指向的位置之后的 4 字节内存
-          位置中
+      movl %ebx, 4(%edi) 表示把 edi 中的值放在 edi 指向的位置之后的 4 字节内存
+      位置中
        
-          movl %ebx, -4(%edi) 表示把 edi 中的值放在 edi 指向的位置之前的 4 字节内存
-          位置中
+      movl %ebx, -4(%edi) 表示把 edi 中的值放在 edi 指向的位置之前的 4 字节内存
+      位置中
+      #+end_verse
 ***** cmove 指令(条件转移):
+      #+begin_verse
       cmovex 源操作数, 目的操作数. x 的取值为:
       无符号数:
       a/nbe 大于/不小于或者等于
@@ -153,8 +212,10 @@
       no 未溢出
       s 带符号(负)
       ns 无符号(非负)
+      #+end_verse
 **** 交换数据
 ***** xchg 在两个寄存器之间或者寄存器和内存间交换值如:
+      #+begin_verse
       xchg 操作数, 操作数, 要求两个操作数必须长度相同且不能同时都是内存位置其中寄
       存器可以是 32,16,8 位的 bswap 反转一个 32 位寄存器的字节顺序如: bswap %ebx
         
@@ -162,19 +223,25 @@
         
       其中源操作数必须是寄存器, 目标操作数可以是内存位置也可以是寄存器其中寄存器可
       以是 32,16,8 位的
+      #+end_verse
 ***** cmpxchg
+      #+begin_verse
       cmpxchg source, destination
         
       其中 source 必须是寄存器, destination 可以是内存或者寄存器, 用来比较两者
       的值, 如果相等,就把源操作数的值加载到目标操作数中, 如果不等就把目标操作
       数加载到源操作数中,其中寄存器可以是 32,16,8 位的, 其中源操作数是 EAX,AX
       或者 AL 寄存器中的值
+      #+end_verse
 ***** cmpxchg8b 同 cmpxchg, 但是它处理 8 字节值, 同时它只有一个操作数
+      #+begin_verse
       cmpxchg8b destination 其中 destination 引用一个内存位置, 其中的 8 字节值
       会与 EDX 和 EAX 寄存器中包含的值(EDX 高位寄存器,EAX 低位寄存器)进行比较,
       如果目标值和 EDX:EAX 对中的值相等, 就把 EDX:EAX 对中的 64 位值传递给内存
       位置, 如果不匹配就把内存地址中的值加载到 EDX:EAX 对中
+      #+end_verse
 ***** 堆栈
+      #+begin_verse
       ESP 寄存器保存了当前堆栈的起始位置, 当一个数据压入栈时, 它就会自动递减, 反之其自动递增
       压入堆栈操作:
       pushx source, x 取值为:
@@ -188,24 +255,32 @@
       pushad/popad 压入或者弹出所有 32 位通用寄存器
       pushf/popf 压入或者弹出 EFLAGS 寄存器的低 16 位
       pushfd/popfd 压入或者弹出 EFLAGS 寄存器的全部 32 位
+      #+end_verse
 ***** 数据地址对齐
+      #+begin_verse
       gas 汇编器支持.align 命令, 它用于在特定的内存边界对准定义的数据元素, 在
       数据段中.align 命令紧贴在数据定义的前面
+      #+end_verse
 **** 控制流程
 ***** 无条件跳转
 ****** 跳转
        jmp location 其中 location 为要跳转到的内存地址, 在汇编中为定义的标签
 ****** 调用
+       #+begin_verse
        调用指令分为两个部分:
        1, 调用 call address 跳转到指定位置
        2, 返回指令 ret, 它没有参数紧跟在 call 指令后面的位置
        执行 call 指令时,它把 EIP 的值放到堆栈中, 然后修改 EIP 以指向被调用的函数地址, 当被调用函数完成后, 它从堆栈获取过去的 EIP 的
        值, 并把控制权返还给原始程序。
+       #+end_verse
 ****** 中断
+       #+begin_verse
        由硬件设备生成中断。 程序生成软件中断当一个程序产生中断调用时, 发出调用
        的程序暂停, 被调用的程序接替它运行, 指令指针被转移到被调用的函数地址,
        当调用完成时使用中断返回指令可以返回调原始程序。
-***** 条件跳转:
+       #+end_verse
+***** 条件跳转
+      #+begin_verse
       条件跳转按照 EFLAGS 中的值来判断是否该跳转, 格式为:
       jxx address, 其中 xx 是 1-3 个字符的条件代码, 取值如下:
         
@@ -245,33 +320,45 @@
       条件跳转不支持分段内存模型下的远跳转, 如果在该模式下进行程序设计必须使用
       程序逻辑确定条件是否存在, 然后实现无条件跳转, 跳转前必须设置 EFLAGS 寄存
       器
-***** 比较:
+      #+end_verse
+***** 比较
+      #+begin_verse
       cmp operend1, operend2
       进位标志修改指令:
       CLC 清空进位标志(设置为 0)
       CMC 对进位标志求反(把它改变为相反的值)
       STC 设置进位标志(设置为 1)
-***** 循环:
+      #+end_verse
+***** 循环
+      #+begin_verse
       loop 循环直到 ECX 寄存器为 0
       loope/loopz 循环直到 ecx 寄存器为 0 或者没有设置 ZF 标志
       loopne/loopnz 循环直到 ecx 为 0 或者设置了 ZF 标志
       指令格式为: loopxx address 注意循环指令只支持 8 位偏移地址
+      #+end_verse
 **** 数学运算
 ***** 加法
+      #+begin_verse
       ADD source, destination 
       其中 source 可以是立即数内存或者寄存器, destination 可以是内存或者寄存器, 但是两者不能同时都是内存位置
       ADC 和 ADD 相似进行加法运算, 但是它把前一个 ADD 指令的产生进位标志的值包含在其中, 在处理位数大于 32(如 64)
       位的整数时, 该指令非常有用
+      #+end_verse
 ***** 减法
+      #+begin_verse
       SUB source, destination 把两个整数相减
       NEG 它生成值的补码
       SBB 指令, 和加法操作一样, 可以使用进位情况帮助执行大的无符号数值的减法运算. SBB 在多字节减法操作中利用进位和溢出标志实现跨
       数据边界的的借位特性
+      #+end_verse
 ***** 递增和递减
+      #+begin_verse
       dec destination 递减
       inc destination 递增
       其中 dec 和 inc 指令都不会影响进位标志, 所以递增或递减计数器的值都不会影响程序中涉及进位标志的其他任何运算
+      #+end_verse
 ***** 乘法
+      #+begin_verse
       mul source 进行无符号数相乘
       它使用隐含的目标操作数, 目标位置总是使用 eax 的某种形式, 这取决与源操作数的长度, 因此根据源操作数的长度,目标操作数必须放在
       AL, AX, EAX 中。 此外由于乘法可能产生很大的值, 目标位置必须是源操作数的两倍位置, 源为 8 时, 应该是 16, 源为 16 时, 应该为 32, 但
@@ -282,7 +369,9 @@
       在与乘法的操作结果被限制为单一目标寄存器的长度.
       imul multiplier, source, destination
       其中 multiplier 是一个立即数, 这种方式允许一个值与给定的源操作数进行快速的乘法运算, 然后把结果存储在通用寄存器中
+      #+end_verse
 ***** 除法
+      #+begin_verse
       div divisor 执行无符号数除法运算
       除数的最大值取决与被除数的长度, 对于 16 位被除数 ,除数只能为 8 位, 32 或 64 位同上
       被除数 被除数长度 商 余数
@@ -290,7 +379,9 @@
       DX:AX 32 位 AX DX
       EDX:EAX 64 位 EAX EDX
       idiv divisor 执行有符号数的除法运算, 方式和 div 一样
-***** 浮点数:
+      #+end_verse
+***** 浮点数
+      #+begin_verse
       fld 指令用于把浮点数字传送入和传送出 FPU 寄存器, 格式:
       fld source
       其中 source 可以为 32 64 或者 80 位整数值
@@ -302,7 +393,9 @@
        
       类似 FST 用于获取 FPU 寄存器堆栈中顶部的值, 并且把这个值放到内存位置中,对
       于单精度使用 FSTS, 对于双精度使用 FSTL
-***** 左移位:
+      #+end_verse
+***** 左移位
+      #+begin_verse
       sal 向左移位
       sal destination 把 destination 向左移动 1 位
       sal %cl, destination 把 destination 的值向左移动 CL 寄存器中指定的位数
@@ -311,20 +404,26 @@
       向左移位可以对带符号数和无符号数执行向左移位的操作, 移位造成的空位用零填
       充, 移位造成的超过数据长度的任何位都被存放在进位标志中, 然后在下一次移位
       操作中被丢弃
-***** 右移位:
+      #+end_verse
+***** 右移位
+      #+begin_verse
       shr 向右移位
       sar 向右移位
       SHR 指令清空移位造成的空位, 所以它只能对无符号数进行移位操作
        
       SAR 指令根据整数的符号位, 要么清空, 要么设置移位造成的空位, 对于负数, 空
       位被设置为 1
-***** 循环移位:
+      #+end_verse
+***** 循环移位
+      #+begin_verse
       和移位指令类似, 只不过溢出的位被存放回值的另一端, 而不是丢弃
       ROL 向左循环移位
       ROR 向右循环移位
       RCL 向左循环移位, 并且包含进位标志
       RCR 向右循环移位, 并且包含进位标志
+      #+end_verse
 **** 逻辑运算
+     #+begin_verse
      AND OR XOR
      这些指令使用相同的格式:
      and source, destination
@@ -341,8 +440,10 @@
        
      位测试可以使用以上的逻辑运算指令, 但这些指令会修改 destination 的值, 因此
      intel 提供了 test 指令, 它不会修改目标值而是设置相应的标志
+     #+end_verse
 **** 字符串处理
 ***** 传送字符串
+      #+begin_verse
       movs 有三种格式
       movsb 传送单一字节
       movsw 传送一个字
@@ -353,7 +454,9 @@
       递增或者自动递减, 如果 DF 标志为 0 则 movs 指令后 ESI 和 EDI 会递增, 反之会递减, 为了设置 DF 标志, 可以使用一下指令:
       CLD 将 DF 标志清零
       STD 设置 DF 标志
+      #+end_verse
 ***** rep 前缀
+      #+begin_verse
       REP 指令的特殊之处在与它不执行什么操作, 这条指令用于按照特定次数重复执行字符串指令, 有 ECX 寄存器控制,但不需要额外的 loop 指
       令, 如 rep movsl
       rep 的其他格式:
@@ -361,390 +464,38 @@
       repne 不等于时重复
       repnz 不为零时重复
       repz 为零时重复
+      #+end_verse
 ***** 存储和加载字符串
+      #+begin_verse
       LODS 加载字符串, ESI 为源, 当一次执行完 lods 时会递增或递减 ESI 寄存器, 然后把字符串值存放到 EAX 中
       STOS 使用 lods 把字符串值加载到 EAX 后, 可以使用它把 EAX 中的值存储到内存中去:
       stos 使用 EDI 作为目的操作数, 执行 stos 指令后, 会根据 DF 的值自动递增或者递减 EDI 中的值
+      #+end_verse
 ***** 比较字符串
+      #+begin_verse
       cmps 和其他的操作字符串的指令一样, 隐含的源和目标操作数都为 ESI 和 EDI, 每次执行时都会根据 DF 的值把
       ESI 和 EDI 递增或者递减, cmps 指令从目标字符串中减去源字符串, 执行后会设置 EFLAGS 寄存器的状态.
+      #+end_verse
 ***** 扫描字符串
       scas 把 EDI 作为目标, 它把 EDI 中的字符串和 EAX 中的字符串进行比较 ,然后根据 DF 的值递增或者递减 EDI
 **** 使用函数
+     #+begin_verse
      GNU 汇编语言定义函数的语法:
      .type 标签(也就是函数名), @function
      ret 返回到调用处
+     #+end_verse
 **** 符号扩展指令
+     #+begin_verse
      其它的 Intel 格式的符号扩展指令还有:
      cbw -- sign-extend byte in %al to word in %ax;
      cwde -- sign-extend word in %ax to long in %eax;
      cwd -- sign-extend word in %ax to long in %dx:%ax;
      cdq -- sign-extend dword in %eax to quad in %edx:%eax;
      对应的 AT&T 语法的指令为 cbtw,cwtl,cwtd,cltd。
-*** 伪指令
-** 内联汇编
-   1.基本的内联汇编
-   1）asm 格式
-   GNU 的 C 编译器使用 asm 关键字指出使用汇编语言编写的源代码段落。基本格式：
-   asm("assembly code");
-   括号中的汇编格式：指令必须在引号里；指令超过一条，必须使用新行字符分隔。如：
-   asm ( "movl	$1,	%eax\n\t"
-	 "movl	$0,	%ebx\n\t"
-	 "int	$0x80" );
-
-   2）使用全局 C 变量
-
-   如何将数据传递和传出汇编语言呢？一种方法是使用 C 语言的全局变量，并且只有全局的变
-   量才能在基本的内联汇编代码内使用。
-
-   示例：
-   /*************************************************************************
-	 > File:		use_global_var.c
-	 > Author:	孤舟钓客
-	 > Mail:		guzhoudiaoke@126.com 
-	 > Time:		2012 年 12 月 23 日 星期日 11 时 33 分 25 秒
-   ************************************************************************/
- 
-   #include<stdio.h>
- 
-   int a = 11;
-   int b = 22;
-   int result;
- 
-   int main()
-   {
-	 asm ( "pusha\n\t"
-	 "movl		a,		%eax\n\t"
-	 "movl		b,		%ebx\n\t"
-	 "imull	%ebx,	%eax\n\t"
-	 "movl		%eax,	result\n\t"
-	 "popa" );
-	 printf ("The answer is %d\n", result);
-	 return 0;
-   }
-
-   运行结果：
-   liury@liury-laptop:~/program/asm/inline_assembly/use_global_var$ ls
-   use_global_var.c
-   liury@liury-laptop:~/program/asm/inline_assembly/use_global_var$ gcc -o use_global_var use_global_var.c 
-   liury@liury-laptop:~/program/asm/inline_assembly/use_global_var$ ./use_global_var 
-   The answer is 242
-
-   注释：
-   反汇编：
-
-   可以发现 a 和 b 在.data 段中，并且类型、对齐方式等的设置。result 没有初始化，故声明为.comm 值。
-   注意开头和结尾的 PUSHA，POPA。因为后面的 C 代码可能用到寄存器，而内联汇编中可能改变了它们，会发生不可预料的后果，故要在开始的位置保存它们，最后恢复它们。
-
-
-   3）volatile 修饰符
-   编译器会试图优化生成的汇编代码以提高性能。但对内联汇编来说，优化有时并不是好事。如果不希望编译器处理内联汇编代码，可以明确地说明。用 volatile 修饰符可以完成这个请求：
-   asm volatile ("assembly code");
-
-
-   4）__asm__替换关键字
-   ANSI C 规范把关键字 asm 用于其他用途，不能将它用于内联汇编语句。如果希望使用 ANSI C 约定编写代码，必须使用关键字__asm__替换一般的关键字 asm。汇编代码段则与 asm 一样。__asm__可以使用__volatile__进行修饰。
-
-
-   2.扩展的 asm
-   基本的 asm 格式简单，但有局限：所有输入输出必须使用全局 C 变量；必须注意不改变任何寄存器的值。
-   扩展格式提供附加选项。
-
-
-   1）扩展 asm 格式
-   扩展 asm 提供附加的特性，格式：
-   asm ("assembly code" : output locations : input operands : changed registers);
-   assembly code:汇编代码，同基本的 asm
-   output locations：输出位置，包含内联汇编代码的输出值的寄存器和内存位置的列表
-   input operands: 输入操作数，包含内联汇编代码的输入值的寄存器和内存位置的列表
-   changed registers：改动的寄存器，内联代码改变的任何其他寄存器列表
-   若不生成输出值：asm ("assembly code" : : input operands : changed registers);
-   若不改动任何寄存器: asm ("assembly code" : output locations : input operands);
-   .file	"use_global_var.c"
-   .globl a
-	 .data
-	 .align 4
-	 .type	a, @object
-	 .size	a, 4
-   a:
-	 .long	11
-   .globl b
-	 .align 4
-	 .type	b, @object
-	 .size	b, 4
-   b:
-	 .long	22
-	 .comm	result,4,4
-	 .section	.rodata
-   .LC0:
-	 .string	"The answer is %d\n"
-	 .text
-   .globl main
-	 .type	main, @function
-   main:
-	 pushl	%ebp
-	 movl	%esp, %ebp
-	 andl	$-16, %esp
-	 subl	$16, %esp
-   #APP
-   # 16 "use_global_var.c" 1
-	 pusha
-	 movl		a,		%eax
-	 movl		b,		%ebx
-	 imull	%ebx,	%eax
-	 movl		%eax,	result
-	 popa
-   # 0 "" 2
-   #NO_APP
-	 movl	result, %edx
-	 movl	$.LC0, %eax
-	 movl	%edx, 4(%esp)
-	 movl	%eax, (%esp)
-	 call	printf
-	 movl	$0, %eax
-	 leave
-	 ret
-	 .size	main, .-main
-	 .ident	"GCC: (Ubuntu 4.4.3-4ubuntu5.1) 4.4.3"
-	 .section	.note.GNU-stack,"",@progbits
-
-   2）指定输入和输出
-   扩展格式中，可从寄存器和内存位置给输入、输出赋值，输入、输出列表的格式：
-   "constraint" (variable)
-   variable 是 C 变量。扩展 asm 中，局部和全局变量都可以用。约束（constraint）定义把变量存放在哪里（对于输入值）或者从哪里传送变量（对于输出值）。使用它定义把变量存放在寄存器还是内存位置中。
-   约束是单一字符的代码，定义如下：
-   ------------------------------------------------------------------------
-   约束 描述
-   --------------------------------------------------------------------
-   a Use the %eax, %ax, or %al registers.
-   b Use the %ebx, %bx, or %bl registers.
-   c Use the %ecx, %cx, or %cl registers.
-   d Use the %edx, %dx, or $dl registers.
-   S Use the %esi or %si registers.
-   D Use the %edi or %di registers.
-   r Use any available general-purpose register.
-   q Use either the %eax, %ebx, %ecx, or %edx register.
-   A Use the %eax and the %edx registers for a 64-bit value.
-   m Use the variable\u2019s memory location.
-   o Use an offset memory location.
-   V Use only a direct memory location.
-   i Use an immediate integer value.
-   n Use an immediate integer value with a known value.
-   g Use any register or memory location available.
-   -------------------------------------------------------------------------
-   除了这些约束外，输出值还包含一个约束修饰符，它指示编译器如何处理输出值：
-   ---------------------------------------------------------------------
-   输出修饰符 描述
-   ---------------------------------------------------------------
-   + 可以读取和写入操作数
-   = 只能写入操作数
-   % 如果必要，操作数可以和下一个操作数切换
-   & 在内联函数完成前，可以删除或者重新使用操作数
-   ----------------------------------------------------------------------
-   示例：
-   asm ("assembly code" : "=a"(result) : "d"(data1) : "c"(data2));
-   把 C 语言变量 data1 放到 EDX 中，data2 放到 ECX 中，结果存放到 EAX 中然后传送给 result。
-
-   3）使用寄存器
-   如果输入值和输出变量被赋值给寄存器，那么在内联汇编中几乎可以像平常一样使用寄存器。
-   示例：
-   /*************************************************************************
-	 > File:		use_registers.c
-	 > Author:	孤舟钓客
-	 > Mail:		guzhoudiaoke@126.com 
-	 > Time:		2012 年 12 月 23 日 星期日 13 时 56 分 38 秒
-   ************************************************************************/
- 
-   #include<stdio.h>
- 
-   int main()
-   {
-	 int data1 = 11;
-	 int data2 = 22;
-	 int result;
- 
-	 __asm__ ("imull	%%edx,	%%ecx\n\t"
-	 "movl	%%ecx,	%%eax"
-	 : "=a"(result)
-	 : "d"(data1), "c"(data2));
- 
- 
-	 printf("The result is %d\n", result);
-   }
-
-   运行：
-   liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ gcc -o use_registers use_registers.c
-   liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ ls
-   use_registers  use_registers.c  use_registers.s
-   liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ ./use_registers 
-   The result is 242
-
-   注释：
-   为了使用占位符见下面，使用寄存器时要写两个%
-   "=a" 使用等号符号修饰输出寄存器表明汇编代码只能写入它，这是对内联汇编代码中所有输出值的要求。
-   反汇编：
-	 movl	$11, 28(%esp)
-	 movl	$22, 24(%esp)
-	 movl	28(%esp), %eax
-	 movl	24(%esp), %ecx
-	 movl	%eax, %edx
-   #APP
-   # 16 "use_registers.c" 1
-	 imull	%edx,	%ecx
-	 movl	%ecx,	%eax
-   # 0 "" 2
-   #NO_APP
-	 movl	%eax, 20(%esp)
-
-   可见，编译器把 C 局部变量栈上的值加载到了寄存器中，并通过把 EAX 中的结果输出给栈上的变量 result。
-
-   不一定要在内联汇编中指定输出值，一些汇编指令已经假设输入值包含输出值。比如 MOVS 指令输入值包含输出位置。
-   示例：
-   /*************************************************************************
-	 > File:		only_input.c
-	 > Author:	孤舟钓客
-	 > Mail:		guzhoudiaoke@126.com 
-	 > Time:		2012 年 12 月 23 日 星期日 14 时 15 分 12 秒
-   ************************************************************************/
- 
-   #include<stdio.h>
- 
-   int main()
-   {
-	 char input[30] = "Hello inline assembly.\n";
-	 char output[30];
-	 int len = 24;
- 
-	 __asm__ __volatile__ (
-	 "cld\n\t"
-	 "rep	movsb"
-	 :
-	 : "S"(input), "D"(output), "c"(len));
- 
- 
-	 printf("%s", output);
-	 return 0;
-   }
-
-   运行：
-   liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ gcc -o only_input only_input.c 
-   liury@liury-laptop:~/program/asm/inline_assembly/use_registers$ ./only_input 
-   Hello inline assembly.
-
-   注释：
-   程序把 MOVS 需要的三个输入值作为输入，要复制的字符串的位置存放在 ESI 中，目标位置存放在 EDI 中，要复制的字符串长度存放在 ECX 中，
-   输出值已被定义为输入值之一，所以在扩展格式中没有专门定义输出值。
-   此时 volatile 很重要，否则编译器或许会认为这个 asm 段是不必要的而删除它，因为它不生成输出。
-
-   4）使用占位符
-   当有很多输入值时，上面的方法有点麻烦，于是提供了占位符（placeholder），可以在内联汇编中使用它引入输入和输出。这样可以在对于编译器方便的任何寄存器或者内存位置中声明输入和输出。
-   占位符是前面加%的数字。按照内联汇编中列出的每个输入值和输出值在列表中的顺序，每个值被赋予一个从 0 开始的数字，然后可以在汇编代码中使用占位符表示值。如：
-   asm ("assembly code"
-	 : "=r"(result)
-	 : "r"(data1), "r"(data2));
-
-   将生成如下的占位符：
-   %0: 表示包含变量值 result 的寄存器
-   %1: 表示包含变量值 data1 的寄存器
-   %2: 表示包含变量值 data2 的寄存器
-   使用占位符：
-   imull	%1,	%2
-   movl	%2,	%0
-
-   5）引用占位符
-   如果内联汇编代码中的输入和输出共享 C 变量，可以指定占位符作为约束值，可减少代码中需要的寄存器数量：
-   asm ("imull	%1,	%0"
-	 : "=r"(data2)
-	 : "r"(data1), "0"(data2));
-   0 标记通知编译器使用第一个命名的寄存器存放输出值 data2.
-
-   6）替换占位符
-   当输入输出很多时，数字型的占位符会很混乱，新的（3.1 开始）GNU 编译器允许声明替换的名称作为占位符，格式：
-   %[name] "constraint" (variable)
-   示例：
-   asm ("imull	%[val1], %[val2]"
-	 : [val2] "=r"(data2)
-	 : [val1] "r"(data1), "0"(data2));
-
-   7）改动的寄存器列表
-   前面的例子中没有指定改动的寄存器，为何？ 编译器默认输入值和输出值使用的寄存器都会被改动，并做了相应处理，所以不需要指定这些是改动了的寄存器，而若指定了，会产生错误信息
-   正确方法：如果内联汇编代码使用了没有被初始地声明为输入输出的任何其他寄存器，则要通知编译器。编译器必须知道这些寄存器，以便避免使用它们。
-   示例：
-   asm ("movl	%1,		%%eax\n\t"
-	 "addl	%%eax,	%0"
-	 : "=r"(result)
-	 : "r"(data1), "0"(result)
-	 : "%eax" );
-
-   在改变的寄存器中指明要使用%eax，则当用"r"指定要使用一个寄存器时就不会选%eax 了。
-   如果在内联汇编中使用了没有在输入输出中定义的任何内存位置，必须标记为被破坏的。在改动的寄存器列表中使用”memory“通知编译器这个内存位置在内联汇编中被改动。
-
-   8）使用内存位置
-   在内联汇编代码中使用寄存器比较快，但也可以直接使用 C 变量的内存位置。约束 m 用于引用输入输出的内存位置。
-   示例：
-   asm ("divb	%2\n\t"
-	 "movl	%eax,	%0"
-	 : "=m"(result)
-	 : "a"(dividend), "m"(divisor));
-
-   9）跳转
-   内联汇编代码中也可以包含定义位置标签，实现跳转。
-   示例：
-   int a = 11;
-   int b = 22;
-   int result;
- 
-   asm ("cmp	%1,	%2\n\t"
-	 "jge	greater\n\t"
-	 "movl	%1,	%0\n\t"
-	 "jmp	end\n"
-	 "greater:\n\t"
-	 "movl	%2,	%0\n"
-	 "end:"
-	 : "=r"(result)
-	 : "r"(a), "r"(b) );
-
-   内联汇编中使用标签的两个限制：
-   只能跳转到相同的 asm 段内的标签；
-   内联汇编也被编码到最终的汇编代码中，如果有另一个 asm 段，就不能再次使用相同的标签，否则会出错。另外如果试图整合使用 C 关键字（如函数名称或全局变量）的标签，也会出错。
-   解决办法：
-   在不同的 asm 段中也不用用过的标签；
-   使用局部标签。
-   条件分支和无条件分支都运行指定一个数字加上方向标志作为标签，方向标志指出处理器应该向哪个方向查找数字型标签，第一个遇到的标签会被采用。
-   示例：
-   asm ("cmp	%1,	%2\n\t"
-	 "jge	0f\n\t"
-	 "movl	%1,	%0\n\t"
-	 "jmp	1f\n"
-	 "0:\n\t"
-	 "movl	%2,	%0\n"
-	 "1:"
-	 : "=r"(result)
-	 : "r"(a), "r"(b) );
-
-   其中 f（forward）指出从跳转指令向前（即到后面的代码）查找标签，b（backword）则相反，到向后（到前面的代码）找标签。
-
-   3.内联汇编用作宏函数
-   1）C 宏函数
-   #define NAME	expression
-   示例：
-   #define SUM(a, b, result) \
-	 ((result) = (a) + (b))
-
-   2）内联汇编宏函数
-   示例：
-   #define GREATER(a, b, result) ( { asm ( \
-	 "cmp	%1,		%2\n\t"	\
-	 "jge	0f\n\t"			\
-	 "movl	%1,		%0\n\t"	\
-	 "jmp	1f\n\t"			\
-	 "0:\n\t"				\
-	 "movl	%2,		%0\n\t"	\
-	 "1:\n\t"				\
-	 : "=r"(result)			\
-	 : "r"(a), "r"(b) ); })
+     #+end_verse
 ** 高级功能
 *** gnu 内联汇编的语法:
+    #+begin_verse
     asm 或__asm__("汇编代码");
     指令必须包含在引号里
     如果包含的指令超过一行 必须使用新行分隔符分隔
@@ -753,58 +504,61 @@
     做内存位置, 而不是立即数值
     
     如果不希望优化内联汇编, 则可以 volatile 修饰符如:__asm__ volatile("code");
+    #+end_verse
 *** GCC 内联汇编的扩展语法
-         __asm__("assembly code":output locations:input operands:changed registers);
-         第一部分是汇编代码
-         第二部分是输出位置, 包含内联汇编代码的输出值的寄存器和内存位置列表
-         第三部分是输入操作数,包含内联汇编代码输入值的寄存器和内存位置的列表
-         第四部分是改动的寄存器, 内联汇编改变的任何其他寄存器的列表
-         这几个部分可以不全有, 但是没有的还必须使用:分隔
-         1, 指定输入值和输出值, 输入值和输出值的列表格式为:
+    #+begin_verse
+    __asm__("assembly code":output locations:input operands:changed registers);
+    第一部分是汇编代码
+    第二部分是输出位置, 包含内联汇编代码的输出值的寄存器和内存位置列表
+    第三部分是输入操作数,包含内联汇编代码输入值的寄存器和内存位置的列表
+    第四部分是改动的寄存器, 内联汇编改变的任何其他寄存器的列表
+    这几个部分可以不全有, 但是没有的还必须使用:分隔
+    #+end_verse
+**** 1, 指定输入值和输出值, 输入值和输出值的列表格式为:
+     "constraint"(variable), 其中 variable 是程序中声明的 c 变量, 在扩展 asm
+     格式中, 局部和全局变量都可以使用,使用 constrant(约束)
+     
+     定义把变量存放到哪(输入)或从哪里传送变量(输出)
        
-         "constraint"(variable), 其中 variable 是程序中声明的 c 变量, 在扩展 asm
-         格式中, 局部和全局变量都可以使用,使用 constrant(约束)
+     约束使用单一的字符, 如下:
+     约束 描述
+     a 使用%eax, %ax, %al 寄存器
+     b 使用%ebx, %bx, %bl 寄存器
+     c 使用%ecx, %cx, %cl 寄存器
+     d 使用%edx, %dx, %dl 寄存器
+     S 使用%esi, %si 寄存器
+     D 使用%edi, %di 寄存器
+     r 使用任何可用的通用寄存器
+     q 使用%eax, %ebx, %ecx,%edx 之一
+     A 对于 64 位值使用%eax, %edx 寄存器
+     f 使用浮点寄存器
+     t 使用第一个(顶部)的浮点寄存器
+     u 使用第二个浮点寄存器
+     m 使用变量的内存位置
+     o 使用偏移内存位置
+     V 只使用直接内存位置
+     i 使用立即整数值
+     n 使用值已知的立即整数值
+     g 使用任何可用的寄存器和内存位置
+     除了这些约束之外, 输出值还包含一个约束修饰符:
+     输出修饰符 描述
+     + 可以读取和写入操作数
+       = 只能写入操作数
+       % 如果有必要操作数可以和下一个操作数切换
+       & 在内联函数完成之前, 可以删除和重新使用操作数
+       如:
+       __asm__("assembly code": "=a"(result):"d"(data1),"c"(data2));
        
-         定义把变量存放到哪(输入)或从哪里传送变量(输出)
+       把 c 变量 data1 存放在 edx 寄存器中, 把 c 变量 data2 存放到 ecx 寄存器中,
+       内联汇编的结果将存放在 eax 寄存器中, 然后传送给变量 result
        
-         约束使用单一的字符, 如下:
-         约束 描述
-         a 使用%eax, %ax, %al 寄存器
-         b 使用%ebx, %bx, %bl 寄存器
-         c 使用%ecx, %cx, %cl 寄存器
-         d 使用%edx, %dx, %dl 寄存器
-         S 使用%esi, %si 寄存器
-         D 使用%edi, %di 寄存器
-         r 使用任何可用的通用寄存器
-         q 使用%eax, %ebx, %ecx,%edx 之一
-         A 对于 64 位值使用%eax, %edx 寄存器
-         f 使用浮点寄存器
-         t 使用第一个(顶部)的浮点寄存器
-         u 使用第二个浮点寄存器
-         m 使用变量的内存位置
-         o 使用偏移内存位置
-         V 只使用直接内存位置
-         i 使用立即整数值
-         n 使用值已知的立即整数值
-         g 使用任何可用的寄存器和内存位置
-         除了这些约束之外, 输出值还包含一个约束修饰符:
-         输出修饰符 描述
-         + 可以读取和写入操作数
-         = 只能写入操作数
-         % 如果有必要操作数可以和下一个操作数切换
-         & 在内联函数完成之前, 可以删除和重新使用操作数
-         如:
-         __asm__("assembly code": "=a"(result):"d"(data1),"c"(data2));
+       在扩展的 asm 语句块中如果要使用寄存器必须使用两个百分号符号
        
-         把 c 变量 data1 存放在 edx 寄存器中, 把 c 变量 data2 存放到 ecx 寄存器中,
-         内联汇编的结果将存放在 eax 寄存器中, 然后传送给变量 result
-       
-         在扩展的 asm 语句块中如果要使用寄存器必须使用两个百分号符号
-       
-         不一定总要在内联汇编代码中指定输出值, 一些汇编指令假定输入值包含输出值,
-         如 movs 指令
+       不一定总要在内联汇编代码中指定输出值, 一些汇编指令假定输入值包含输出值,
+       如 movs 指令
 *** 其他扩展内联汇编知识:
 **** 使用占位符
+          #+begin_verse
           输入值存放在内联汇编段中声明的特定寄存器中, 并且在汇编指令中专门使用这些寄存器.虽然这种方式能够很好的处理只有几个输入值的情
           况, 但对于需要很多输入值的情况, 这中方式显的有点繁琐. 为了帮助解决这个问题, 扩展 asm 格式提供了占位符, 可以在内联汇编代码中使
           用它引用输入和输出值.
@@ -815,7 +569,9 @@
           : "=r"(data2)
           : "r"(data1), "0"(data2));
           如输入输出值中共享相同的变量 data2, 而在输入变量中则可以使用标记 0 作为输入参数的约束
+          #+end_verse
 **** 替换占位符
+          #+begin_verse
           如果处理很多输入和输出值, 数字型的占位符很快就会变的很混乱, 为了使条理清晰 ,GNU 汇编器(从版本 3.1 开始)允许声明替换的名称作为
           占位符.替换的名称在声明输入值和输出值的段中定义, 格式如下:
           %[name]"constraint"(variable)
@@ -823,29 +579,34 @@
           __asm__("imull %[value1], %[value2]"
           : [value2] "=r"(data2)
           : [value1] "r"(data1), "0"(data2));
+          #+end_verse
 **** 改动寄存器列表
+     编译器假设输入值和输出值使用的寄存器会被改动, 并且相应的作出处理。程序员
+     不需要在改动的寄存器列表中包含这些值, 如果这样做了, 就
        
-          编译器假设输入值和输出值使用的寄存器会被改动, 并且相应的作出处理。程序员
-          不需要在改动的寄存器列表中包含这些值, 如果这样做了, 就
-       
-          会产生错误消息. 注意改动的寄存器列表中的寄存器使用完整的寄存器名称, 而不像输入和输出寄存器定义的那样仅仅是单一字母。 在寄存器
-          名称前面使用百分号符号是可选的。
-          改动寄存器列表的正确使用方法是, 如果内联汇编代码使用了没有被初始化地声明为输入或者输出值的其他任何寄存器 , 则要通知编译器。编
-          译器必须知道这些寄存器, 以避免使用他们。如:
-          int main(void) {
-          int data1 = 10;
-          int result = 20;
-          __asm__("movl %1, %%eax\n\t"
-          "addl %%eax, %0"
-          : "=r"(result)
-          : "r"(data1), "0"(result)
-          : "%eax");
-          printf("The result is %d\n", result);
-          return 0;
-          }
+     会产生错误消息. 注意改动的寄存器列表中的寄存器使用完整的寄存器名称, 而不像输入和输出寄存器定义的那样仅仅是单一字母。 在寄存器
+     名称前面使用百分号符号是可选的。
+     改动寄存器列表的正确使用方法是, 如果内联汇编代码使用了没有被初始化地声明为输入或者输出值的其他任何寄存器 , 则要通知编译器。编
+     译器必须知道这些寄存器, 以避免使用他们。如:
+          #+begin_src c
+            int main(void) {
+              int data1 = 10;
+              int result = 20;
+              __asm__("movl %1, %%eax\n\t"
+                      "addl %%eax, %0"
+                      : "=r"(result)
+                      : "r"(data1), "0"(result)
+                      : "%eax");
+              printf("The result is %d\n", result);
+              return 0;
+            }
+          #+end_src
 **** 使用内存位置
-          虽然在内联汇编代码中使用寄存器比较快, 但是也可以直接使用 c 变量的内存位置。 约束 m 用于引用输入值和输出值中的内存位置。 记住, 对
-          于要求使用寄存器的汇编指令, 仍然必须使用寄存器, 所以不得不定义保存数据的中间寄存器。如:
+     虽然在内联汇编代码中使用寄存器比较快, 但是也可以直接使用 c 变量的内存
+     位置。 约束 m 用于引用输入值和输出值中的内存位置。 记住, 对于要求使用
+     寄存器的汇编指令, 仍然必须使用寄存器, 所以不得不定义保存数据的中间寄存
+     器。如:
+          #+begin_src c
           int main(void) {
           int dividentd = 20;
           int divisor = 5;
@@ -857,25 +618,28 @@
           printf("The result is %d\n", result);
           return 0;
           }
+          #+end_src
 **** 处理跳转
           内联汇编语言代码也可以包含定义其中位置的标签。 可以实现一般的汇编条件分支和无条件分支, 如:
-          int main(void) {
-          int a = 10;
-          int b = 20;
-          int result;
-          __asm__("cmp %1, %2\n\t"
-          "jge greater\n\t"
-          "movl %1, %0\n\t"
-          "jmp end\n"
-          "greater:\n\t"
-          "movl %2, %0\n"
-          "end:"
-          :"=r"(result)
-          :"r"(a), "r"(b));
-          printf("The larger value is %d\n", result);
-          return 0;
-          }
-          在内联汇编代码中使用标签时有两个限制。 第一个限制是只能跳转到相同的 asm 段内的标签,不能从-个 asm 段跳转到另一个 asm 段中的
+          #+begin_src c
+            int main(void) {
+              int a = 10;
+              int b = 20;
+              int result;
+              __asm__("cmp %1, %2\n\t"
+                      "jge greater\n\t"
+                      "movl %1, %0\n\t"
+                      "jmp end\n"
+                      "greater:\n\t"
+                      "movl %2, %0\n"
+                      "end:"
+                      :"=r"(result)
+                      :"r"(a), "r"(b));
+              printf("The larger value is %d\n", result);
+              return 0;
+            }
+          #+end_src
+          在内联汇编代码中使用标签时有两个限制。 第一个限制是只能跳转到相同的 asm 段内的标签,不能从一个 asm 段跳转到另一个 asm 段中的
           标签。第二个限制更加复杂一点。 以上程序使用标签 greater 和 end。 但是, 这样有个潜在的问题, 查看汇编后的代码清单, 可以发现内联
           汇编标签也被编码到了最终汇编后的代码中。 这意味着如果在 c 代码中还有另一个 asm 段, 就不能再次使用相同的标签, 否则会因为标签重
           复使用而导致错误消息。还有如果试图整合使用 c 关键字(比如函数名称或者全局变量)的标签也会导致错误。
@@ -884,9 +648,6 @@
    -O 提供基础级别的优化
    -O2 提供更加高级的代码优化
    -O3 提供最高级的代码优化
-  
-   不同的优化级别使用的优化技术也可以单独的应用于代码。 可以使用-f 命令行选项引用
-   每个单独的优化技术。
 *** 编译器优化级别 1
         在优化的第一个级别执行基础代码的优化。 这个级别试图执行 9 种单独的优化功能:
         -fdefer-pop: 这种优化技术与汇编语言代码在函数完成时如何进行操作有关。 一般情况下, 函数的输入值被保存在堆栈种并且被函数访问。
@@ -945,17 +706,15 @@
          -fcrossjumping: 这是对跨越跳转的转换代码处理, 以便组合分散在程序各处的相同代码。 这样可以减少代码的长度, 但是也许不会对程
          序性能有直接影响。
 *** 编译器优化级别 3
-         它整合了第一和第二级别中的左右优化技巧, 还包括一下优化:
-         -finline-functions: 这种优化技术不为函数创建单独的汇编语言代码, 而是把函数代码包含在调度程序的代码中。 对于多次被调用的函数
-         来说, 为每次函数调用复制函数代码。 虽然这样对于减少代码长度不利, 但是通过最充分的利用指令缓存代码, 而不是在每次函数调用时进行
-         分支操作, 可以提高性能。
-         -fweb: 构建用于保存变量的伪寄存器网络。 伪寄存器包含数据, 就像他们是寄存器一样, 但是可以使用各种其他优化技术进行优化, 比如 cse
-         和 loop 优化技术。
-         -fgcse-after-reload: 这中技术在完全重新加载生成的且优化后的汇编语言代码之后执行第二次 gcse 优化,帮助消除不同优化方式创建的
-         任何冗余段。
-** 系统调用 [ 函数名,参数 ]
-   [[file:unistd_32.h][32]]
-   [[file:unistd_64.h][64]]
+    它整合了第一和第二级别中的左右优化技巧, 还包括一下优化:
+    -finline-functions: 这种优化技术不为函数创建单独的汇编语言代码, 而是把函数代码包含在调度程序的代码中。 对于多次被调用的函数
+    来说, 为每次函数调用复制函数代码。 虽然这样对于减少代码长度不利, 但是通过最充分的利用指令缓存代码, 而不是在每次函数调用时进行
+    分支操作, 可以提高性能。
+    -fweb: 构建用于保存变量的伪寄存器网络。 伪寄存器包含数据, 就像他们是寄存器一样, 但是可以使用各种其他优化技术进行优化, 比如 cse
+    和 loop 优化技术。
+    -fgcse-after-reload: 这中技术在完全重新加载生成的且优化后的汇编语言代码之后执行第二次 gcse 优化,帮助消除不同优化方式创建的
+    任何冗余段。
+** 系统调用 
 - int $0x80
 - 调用号: %eax 
 - 参数

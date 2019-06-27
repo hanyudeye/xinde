@@ -99,9 +99,9 @@
  | ~o~         | Open and edit the visualized entry |
  | ~r~         | 重命名                             |
 ** evil-mc(多光标) ~g r~
-  给选定的区域创建匹配的光标 ~evil-mc-make-all-cursors~ , ~g r m~
-  移除所有光标 ~evil-mc-undo-all-cursors~ , ~g r q~
-  对于当前选定的区域，移到下一个匹配处 ~evil-mc-skip-and-goto-next-match~, ~g r n~
+   给选定的区域创建匹配的光标 ~evil-mc-make-all-cursors~ , ~g r m~
+   移除所有光标 ~evil-mc-undo-all-cursors~ , ~g r q~
+   对于当前选定的区域，移到下一个匹配处 ~evil-mc-skip-and-goto-next-match~, ~g r n~
    对于当前选定的区域，创建下一个光标  ~evil-mc-make-and-goto-next-match~  , ~g r j~
    暂停光标, ~evil-mc-pause-cursors~, ~g r s~
    恢复光标 ~evil-mc-resume-cursors~ , ~g r r~
@@ -167,6 +167,30 @@ json 文档结构包含可选的  query, files, and timeout
     
 loadEagerly: 指定的文件永远加载
 plugins 用于包含插件(可在里面配置插件的具体属性)
+** gnuplot-mode
+ | C-M-i   | completion-at-point                                                       |
+ | M-RET   | completion-at-point                                                       |
+ | C-M-x   | gnuplot-send-line-to-gnuplot                                              |
+ | C-c C-b | gnuplot-send-buffer-to-gnuplot                                            |
+ | C-c C-c | comment-region                                                            |
+ | C-c C-d | gnuplot-info-lookup-symbol                                                |
+ | C-c C-e | gnuplot-show-gnuplot-buffer                                               |
+ | C-c C-f | gnuplot-send-file-to-gnuplot                                              |
+ | C-c TAB | gnuplot-insert-filename                                                   |
+ | C-c C-j | gnuplot-forward-script-line                                               |
+ | C-c C-k | gnuplot-kill-gnuplot-buffer                                               |
+ | C-c C-l | gnuplot-send-line-to-gnuplot                                              |
+ | C-c C-n | gnuplot-negate-option                                                     |
+ | C-c C-o | gnuplot-gui-set-options-and-insert                                        |
+ | C-c C-p | gnuplot-show-gnuplot-version                                              |
+ | C-c C-r | gnuplot-send-region-to-gnuplot                                            |
+ | C-c C-u | gnuplot-bug-report                                                        |
+ | C-c C-v | gnuplot-send-line-and-forward                                             |
+ | C-c C-w | gnuplot-show-version (that binding is currently shadowed by another mode) |
+ | C-c C-z | gnuplot-customize                                                         |
+ | C-c ESC | Prefix Command                                                            |
+ | C-c M-i | gnuplot-inline-image-mode                                                 |
+
 
 * layer
 ** spacemacs-project  
@@ -1650,6 +1674,188 @@ js2 mode 补全 ~node~ 变量
     | ~SPC m d F~ | on a =defun= symbol toggle off the instrumentalisation of the function |
     | ~SPC m d t~ | insert =(debug)= to print the stack trace and re-evaluate the function |
 
+** mu4e
+ 该层添加了对 Mu4e 电子邮件客户端的支持
+ 通知使用 mu4e-alert
+
+*** 安装
+    要使用此层，您必须单独安装 mu 和 mu4e 
+    通常 mu4e 与 mu 捆绑在一起（许多 Linux 发行版就是这种情况）  
+*** 命令
+ |------------------------+---------------------------------|
+ | ~SPC a M~              | Start mu4e                      |
+ | ~SPC m S~ or ~SPC m /~ | Search emails (requires helm)   |
+ | ~SPC m C~              | Search contacts (requires helm) |
+ | C-x m                  | Compose new message             |
+
+ | ~J~   | 转到下一个未读标记 |
+ | ~C-j~ | Next header        |
+ | ~C-k~ | Previous header    |
+*** 配置 (参阅 mu4e)
+**** maildirs extension
+     将所有 maildirs 的列表添加到主 mu4e 视图中
+     默认显示所有邮件的未读和总邮件数
+    
+     需要激活
+
+ #+BEGIN_SRC emacs-lisp
+   (setq-default dotspacemacs-configuration-layers
+                 '((mu4e :variables
+                         mu4e-use-maildirs-extension t)))
+ #+END_SRC
+**** 多个账户
+     #+BEGIN_SRC emacs-lisp
+       (setq mu4e-contexts
+             `( ,(make-mu4e-context
+                  :name "Private"
+                  :enter-func (lambda () (mu4e-message "Switch to the Private context"))
+                  ;; leave-func not defined
+                  :match-func (lambda (msg)
+                                (when msg
+                                  (mu4e-message-contact-field-matches msg
+                                                                      :to "aliced@home.example.com")))
+                  :vars '(  ( user-mail-address      . "aliced@home.example.com"  )
+                            ( user-full-name     . "Alice Derleth" )
+                            ( mu4e-compose-signature .
+                                                     (concat
+                                                      "Alice Derleth\n"
+                                                      "Lauttasaari, Finland\n"))))
+                ,(make-mu4e-context
+                  :name "Work"
+                  :enter-func (lambda () (mu4e-message "Switch to the Work context"))
+                  ;; leave-fun not defined
+                  :match-func (lambda (msg)
+                                (when msg
+                                  (mu4e-message-contact-field-matches msg
+                                                                      :to "aderleth@miskatonic.example.com")))
+                  :vars '(  ( user-mail-address      . "aderleth@miskatonic.example.com" )
+                            ( user-full-name     . "Alice Derleth" )
+                            ( mu4e-compose-signature .
+                                                     (concat
+                                                      "Prof. Alice Derleth\n"
+                                                      "Miskatonic University, Dept. of Occult Sciences\n"))))))
+
+       ;; set `mu4e-context-policy` and `mu4e-compose-policy` to tweak when mu4e should
+       ;; guess or ask the correct context, e.g.
+
+       ;; start with the first (default) context;
+       ;; default is to ask-if-none (ask when there's no context yet, and none match)
+       ;; (setq mu4e-context-policy 'pick-first)
+
+       ;; compose with the current context is no context matches;
+       ;; default is to ask
+       ;; (setq mu4e-compose-context-policy nil)
+     #+END_SRC
+**** 异步模式
+     需要在 user-config 中打开
+  #+BEGIN_SRC emacs-lisp
+   (setq mu4e-attachment-dir "~/files")
+ #+END_SRC
+**** 附件目录
+     默认情况下，mu4e 会将附件文件保存到 ~$HOME~
+     此层修改改 ~$HOME/Downloads~
+     可以自己修改
+    
+ #+BEGIN_SRC emacs-lisp
+   (setq mu4e-attachment-dir "~/files")
+ #+END_SRC
+**** 示例配置
+     #+BEGIN_SRC emacs-lisp
+       ;;; Set up some common mu4e variables
+       (setq mu4e-maildir "~/.mail"
+             mu4e-trash-folder "/Trash"
+             mu4e-refile-folder "/Archive"
+             mu4e-get-mail-command "mbsync -a"
+             mu4e-update-interval nil
+             mu4e-compose-signature-auto-include nil
+             mu4e-view-show-images t
+             mu4e-view-show-addresses t)
+
+       ;;; Mail directory shortcuts
+       (setq mu4e-maildir-shortcuts
+             '(("/gmail/INBOX" . ?g)
+               ("/college/INBOX" . ?c)))
+
+       ;;; Bookmarks
+       (setq mu4e-bookmarks
+             `(("flag:unread AND NOT flag:trashed" "Unread messages" ?u)
+               ("date:today..now" "Today's messages" ?t)
+               ("date:7d..now" "Last 7 days" ?w)
+               ("mime:image/*" "Messages with images" ?p)
+               (,(mapconcat 'identity
+                            (mapcar
+                             (lambda (maildir)
+                               (concat "maildir:" (car maildir)))
+                             mu4e-maildir-shortcuts) " OR ")
+                "All inboxes" ?i)))
+     #+END_SRC
+**** 通知
+     mu4e-alert 提供一个桌面提示，并且模式行显示未读消息的数量
+     参考文档 [[https://github.com/iqbalansari/mu4e-alert#user-content-customizations][文档]]
+**** 模式行通知
+     显示新消息 user/config
+     #+BEGIN_SRC emacs-lisp
+       (setq mu4e-enable-mode-line t)
+     #+END_SRC
+
+     或
+     #+BEGIN_SRC emacs-lisp
+       (mu4e :variables mu4e-enable-mode-line t)
+     #+END_SRC
+**** 默认布局
+     可改
+     #+BEGIN_SRC emacs-lisp
+   (setq-default dotspacemacs-configuration-layers
+                 '((mu4e :variables mu4e-spacemacs-layout-name "@Mu4e"
+                         mu4e-spacemacs-layout-binding "m"
+                         mu4e-spacemacs-kill-layout-on-exit t)))
+ #+END_SRC
+
+** imenu-list 
+ | ~SPC b i~ | toggle imenu-list window                               |
+ | ~q~       | quit imenu-list window                                 |
+ | ~RET~     | go to current entry                                    |
+ | ~d~       | display current entry, keep focus on imenu-list window |
+ | ~f~       | fold/unfold current section                            |
+ | ~r~       | refresh imenu-list window                              |
+** react
+ ES6 和 JSX 就绪配置层
+ 它会自动识别 .jsx 文件 和 带有 =react= imported 的文件
+
+ 动态语法检查 
+ #+BEGIN_SRC sh
+   $ npm install -g eslint babel-eslint eslint-plugin-react
+ #+END_SRC
+
+ 使用 项目配置文件 ~.eslintrc~ ,进行代码优化
+ https://github.com/airbnb/javascript
+ #+begin_src js
+ // Use this file as a starting point for your project's .eslintrc.
+ // Copy this file, and add rule overrides as needed.
+ {
+   "extends": "airbnb"
+ }
+ #+end_src
+
+*** 键绑定
+**** rjsx-mode
+    | ~<~           | inserts </> whenever it would start a new JSX node                               |
+    | ~>~           | right before the slash in a self-closing tag automatically inserts a closing tag |
+    | ~SPC m r r t~ | rename tag at point                                                              |
+*** tern
+    | ~SPC m C-g~   | brings you back to last place you were when you pressed M-..                             |
+    | ~SPC m g g~   | jump to the definition of the thing under the cursor                                     |
+    | ~SPC m g G~   | jump to definition for the given name                                                    |
+    | ~SPC m h d~   | find docs of the thing under the cursor. Press again to open the associated URL (if any) |
+    | ~SPC m h t~   | find the type of the thing under the cursor                                              |
+    | ~SPC m r r V~ | rename variable under the cursor using tern                                              |
 
 
-
+** chinese
+   当外部输入法不能使用时，比如在 console 或者 cygwin 环境下，尽最大可能让 Emacs
+   用户不必为输入中文而烦恼。
+  
+   导入词库就可以了, 词库地址 
+   http://tumashu.github.io/pyim-bigdict/pyim-bigdict.pyim.gz
+   可以安装搜狗输入法中的词库，用转化工具转化
+  

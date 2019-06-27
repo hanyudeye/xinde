@@ -1,3 +1,7 @@
+#+TITLE: Linux 环境下编一些小程序
+#+DESCRIPTION: 
+#+TAGS: linux,program
+#+CATEGORIES: 语言使用
 
 * linux 接口　[ 文件,进程,计时器,进程线程通信,网络]
  hapter 1: History and Standards .................................................................................... 1
@@ -956,7 +960,6 @@ xviii  C o n t e n ts i n D e t a i l
   }
 #+end_src
 *** strerror
-* source code[[file:~/downcode/tlpi-dist/][source]] 
 * 库
 ** sys/types.h 
 ** stdlib.h [ 标准库定义的常量,函数 ]
@@ -965,3 +968,68 @@ xviii  C o n t e n ts i n D e t a i l
 ** unistd.h [ 系统调用 ] 
 ** errno.h
 ** string.h
+* unix
+** 基础
+   操作系统给编写应用程序提供服务的，他会释放接口。典型有执行新程序，打开文件，读文件，分配存储区，获取当前 i 时间等。
+*** 登录 
+**** 登录名  
+**** 提供环境 ( 命令行 / 图形界面 )
+*** 文件目录
+**** 文件系统 
+**** 文件名
+**** 路径名
+**** 工作目录
+*** 输入输出
+**** 文件描述符 
+     指定描述符
+     #+begin_src sh
+     cat 1 >&1
+     #+end_src
+**** 不用缓存的 io (用描述符操作)
+     open ,read ,write, lseek,close
+**** 标准 io
+*** 程序和进程
+**** 程序 (可执行文件) 
+**** 进程和进程 ID (程序的执行实例)
+**** 进程控制 
+     fork,exec, waitpid
+*** 错误处理
+    strerror, perror
+*** 用户标识
+**** 用户 ID 
+**** 组 ID
+**** 添加组
+*** 信号
+*** 时间值
+**** 日历时间 (UTC)
+**** 进程时间 (time)
+     • 时钟时间。
+     • 用户 CPU 时间。
+     • 系统 CPU 时间。
+*** 系统调用和库函数
+** 标准化
+*** ANSI C (美国标准)
+*** IEEE POSIX (Portable Operating System Interface for Computer Environment)
+*** XPG3
+*** FIPS
+*** 限制 (limits.h)
+    每种标准限制不同 
+** 文件 IO
+   不用缓存的 io (用描述符操作)
+   open ,read ,write, lseek,close
+   
+   通过指定文件名，返回一个操作系统分配的文件标识符。
+   然后我们能够多次读取那个文件，读的时候有一个位移标识指定当前读取的位置，
+   最后读完就返回 0 , 发生错误返回 -1 
+*** 文件描述符
+   : 对于内核而言,所有打开文件都由文件描述符引用
+
+   默认已打开的文件: STDIN_FILENO、STDOUT_FILENO 和 STDERR_FILENO
+*** open (创建文件) 
+    O_RDONLY 只读打开
+    O_WRONLY 只写打开
+    O_RDWR 读、写打开
+    O_APPEND 每次写时都加到文件的尾端。
+    O_CREAT 若此文件不存在则创建它。
+*** create
+*** close
