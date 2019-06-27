@@ -14,211 +14,86 @@
 		</span>
     <% } %>
 * 主题
-** NexT 参考 https://notes.iissnan.com/
-   文档  https://theme-next.org/docs/getting-started/
+** [[https://theme-next.org/docs/getting-started/][NexT]]
 *** 安装 
-**** 1.下载最新 release 版本
-     #+BEGIN_SRC shell
-            $ mkdir themes/next
-            $ curl -s https://api.github.com/repos/theme-next/hexo-theme-next/releases/latest | grep tarball_url | cut -d '"' -f 4 | wget -i - -O- | tar -zx -C themes/next --strip-components=1
+**** 下载最新 release 版本
+     #+BEGIN_SRC sh 
+       $ mkdir themes/next
+       $ curl -s https://api.github.com/repos/theme-next/hexo-theme-next/releases/latest | grep tarball_url | cut -d '"' -f 4 | wget -i - -O- | tar -zx -C themes/next --strip-components=1
      #+END_SRC
-**** 2.指定 branch 使用 git 安装：
-     $ git clone --branch v6.0.0 https://github.com/theme-next/hexo-theme-next themes/next
-**** 3.下载最新 master 分支
-     $ git clone https://github.com/theme-next/hexo-theme-next themes/next
+**** 指定 branch 使用 git 安装：
+     #+begin_src js
+       $ git clone --branch v6.0.0 https://github.com/theme-next/hexo-theme-next themes/next
+     #+end_src
      
-#+BEGIN_SRC shell
-获取 tags 列表：
-
-$ cd themes/next
-$ git tag -l
-…
-v6.0.0
-v6.0.1
-v6.0.2
-例如，假设你想要切换到 v6.0.1 这一 tag 指向的 release 版本。输入如下指令：
-
-$ git checkout tags/v6.0.1
-Note: checking out 'tags/v6.0.1'.
-…
-HEAD is now at da9cdd2... Release v6.0.1
-然后，假设你想要切换回 master 分支，输入如下指令即可：
-
-$ git checkout master
-#+END_SRC
+**** 下载最新 master 分支
+     #+begin_src js
+     $ git clone https://github.com/theme-next/hexo-theme-next themes/next
+     #+end_src
+     
+     获取 tags 列表：
+     #+BEGIN_SRC shell
+       $ cd themes/next
+       $ git tag -l
+       $ git checkout tags/v6.0.1
+     #+END_SRC
 **** 完成配置
      在 hexo 根配置文件 _config.yml 中设置你的主题：
+     #+begin_src yaml
      theme: next
-*** Hexo 的 Next 主题配置
-    使用 Next 主题
-  将下载的代码放在 myBlog/next 目录下
-  设置站点 myBlog/_config.yml 的 theme 字段值为 next
-  生成新页面 hexo g
-  开启服务 hexo s --debug
-  发布代码 hexo d
-  注：此时登录网站，发现是空白的，打开控制台，提示很多 vendors 目录下的文件 404，解决办法是将 next 主题下即 myBlog/themes/next/source 下的 vendors 目录名改为 lib，并修改 myBlog/themes/next/_config.yml 的_internal: vendors 改为_internal: lib。
-
-  参考：iissnan 的回答
-
-  主题配置
-  主题风格设定
-  通过修改 next 主题下的_config.yml 的 scheme 字段，配置不同的风格。
-
-  # Schemes
-  scheme: Muse
-  #scheme: Mist
-  #scheme: Pisces
-  本站点使用的是默认的 Muse，显示效果如下：
-
-
-
-  菜单设置
+     #+end_src
+     
+*** 配置
+**** 主题风格设定
+     通过修改 next 主题下的_config.yml 的 scheme 字段，配置不同的风格。
+     #+begin_src yaml
+       # Schemes
+       scheme: Muse
+       #scheme: Mist
+       #scheme: Pisces
+  #+end_src
+**** 菜单设置
   通过修改 next 主题下的_config.yml 的 menu 字段，选定显示的菜单项。
 
-  menu:
-    home: /
-    categories: /categories
-    about: /about
-    archives: /archives
-    tags: /tags
-    #commonweal: /404.html
+  #+begin_src yaml
+      menu:
+        home: /
+        categories: /categories
+        about: /about
+        archives: /archives
+        tags: /tags
+        #commonweal: /404.html
+  #+end_src
   其中，home 代表主页，categories 代表分类页，about 代表关于页面，archives 代表归档页，commonweal 代表 404 页面（page not found 时候显示的页面）。
 
   菜单项文本修改是在对 next 主题下的 language 文件夹下的文件进行修改，若当前语言是简体中文，直接修改 language/zh-Hans.yml 里的对应字段即可。
 
   本站点显示主页，分类页，关于页面和归档页。
-
-  头像设置
+**** 头像设置
   在主题下的 source/images/下放置头像文件 avatar.gif 即可。
+**** 设置文章代码主题
+     Next 主题总共支持 5 种主题，默认主题是白色的 normal。通过修改 next 主题下的_config.yml 的 highlight 字段，来设置代码主题。
 
-  设置文章代码主题
-  Next 主题总共支持 5 种主题，默认主题是白色的 normal。通过修改 next 主题下的_config.yml 的 highlight 字段，来设置代码主题。
+     本站点使用的是 night 主题。即令 highlight 为 night。
+**** 添加标签页面
+     前面通过修改 next 主题下的_config.yml 文件中的 menu 选项，可以在主页面的菜单栏添加标签选项，但是此时点击标签，跳转的页面会显示 page not found。
 
-  本站点使用的是 night 主题。即令 highlight 为 night。
+     添加标签页面的具体方法是：
 
-  添加标签页面
-  前面通过修改 next 主题下的_config.yml 文件中的 menu 选项，可以在主页面的菜单栏添加标签选项，但是此时点击标签，跳转的页面会显示 page not found。
+     新建页面
+     输入如下命令：
 
-  添加标签页面的具体方法是：
+     $ cd myBlog
+     $ hexo new page tags
+     输入命令后，在 myBlog/source 下会新生成一个新的文件夹 tags，在该文件夹下会有一个 index.md 文件。
+     
+**** 加入站点内容搜索功能
+     本站点使用的是 Local Search。加入站点内容搜索功能步骤如下：
 
-  新建页面
-  输入如下命令：
-
-  $ cd myBlog
-  $ hexo new page tags
-  输入命令后，在 myBlog/source 下会新生成一个新的文件夹 tags，在该文件夹下会有一个 index.md 文件。
-
-  设置页面类型
-  在上步新生成的 myBlog/source/tags/index.md 中添加 type: "tags"，index.md 文件内容如下：
-
-  ---
-  title: tags
-  date: 2016-11-15 19:10:05
-  type: "tags"
-  ---
-  设置具体文章的 tags
-  当要为某一篇文章添加标签，只需在 myBlog/source/_post 目录下的具体文章的 tags 中添加标签即可，如：
-
-  ---
-  title: 基于 Hexo 和 Github 搭建博客
-  date: 2016-11-09
-  tags: [npm, hexo, github]
-  categories: 搭建博客
-  ---
-  本站添加为标签后的效果如下：
-
-
-
-  添加分类页面
-  步骤与添加标签页面类似，具体如下：
-
-  新建页面
-  输入如下命令：
-
-  $ cd myBlog
-  $ hexo new page categories
-  输入命令后，在 myBlog/source 下会新生成一个新的文件夹 categories，在该文件夹下会有一个 index.md 文件。
-
-  设置页面类型
-  在上步新生成的 myBlog/source/categories/index.md 中添加 type: "categories"，index.md 文件内容如下：
-
-  ---
-  title: categories
-  date: 2016-11-15 19:11:13
-  type: "categories"
-  ---
-  设置具体文章的 categories
-  当要为某一篇文章添加分类，只需在 myBlog/source/_post 目录下的具体文章的 categories 中添加分类即可，如：
-
-  ---
-  title: 基于 Hexo 和 Github 搭建博客
-  date: 2016-11-09
-  tags: [npm, hexo, github]
-  categories: 搭建博客
-  ---
-  本站添加为标签后的效果如下：
-
-
-
-  添加关于我页面
-  步骤与添加标签页面类似，具体如下：
-
-  新建页面
-  $ cd myBlog
-  $ hexo new page about
-  输入命令后，在 myBlog/source 下会新生成一个新的文件夹 about，在该文件夹下会有一个 index.md 文件。
-
-  修改 about/index.md
-  本站点 index.md 如下：
-
-  ---
-  title: about
-  date: 2016-11-15 19:08:50
-  ---
-  ## 关于我
-
-  一只学习前端的小菜鸟，欢迎分享知识。
-
-  From XDU
-
-  QQ：847909475
-  Email: 847909475@qq.com
-  效果如下：
-
-
-
-  引入第三方服务
-  加入评论功能
-  本站点使用的是多说。加入评论功能的步骤如下：
-
-  登录多说，填写表单，创建站点
-
-
-  图片中红框圈中的框中内容就是下一步 duoshuo_shortname 字段的值
-
-  添加 duoshuo_shortname
-  在站点的 myBlog/_config.yml 中加入 duoshuo_shortname 字段，值为第一步红框里的内容
-
-  加入评论后效果如下：
-
-
-
-  加入分享功能
-  本站点使用的是多说。加入分享功能的步骤如下：
-
-  在站点的 myBlog/_config.yml 中加入 duoshuo_share 字段，值为 true。
-
-  加入分享后效果如下：
-
-
-  加入站点内容搜索功能
-  本站点使用的是 Local Search。加入站点内容搜索功能步骤如下：
-
-  安装 hexo-generator-searchdb
-  $ npm install hexo-generator-searchdb --save
+     安装 hexo-generator-searchdb
+     $ npm install hexo-generator-searchdb --save
   注意：安装时应在站点根目录下，即 myBlog 目录下
-
-  添加 search 字段
+**** 添加 search 字段
   在站点 myBlog/_config.yml 中添加 search 字段，如下：
 
   search:
@@ -226,26 +101,6 @@ $ git checkout master
     field: post
     format: html
     limit: 10000
-  效果如下：
-
-
-
-  加入数据统计与分析功能
-  本站点使用的是百度统计。加入数据统计与分析功能步骤如下：
-
-  注册站长账号并登陆
-  在这里注册站长账号，并填写信息，网站域名和网站首页以下图为例来填写，注册完成后并登陆。
-
-
-  在跳转的页面中会显示下图，复制 hm.js 后的 id 值
-
-
-  添加 baidu_analytics 字段
-
-  在站点 myBlog/_config.yml 中添加 search 字段，值为上步复制的 id 值
-
-  至此，该功能已成功加入，大约过 20min 后在百度统计上可以看到站点的访问情况，如下图：
-
 *** 提交合并请求
 
 提交合并请求前，请再次确认您已经查看了[你需要了解的](#before-submitting-an-issue)内

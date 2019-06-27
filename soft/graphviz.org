@@ -1,0 +1,128 @@
+#+TITLE: graphviz 简介
+#+DESCRIPTION: graphviz 简介
+#+TAGS: 
+#+CATEGORIES: 软件使用
+
+* graphviz  (画流程图的)
+修改方向  rankdir=LR; 
+
+有向图   a -> b;
+
+标签
+#+begin_src dot
+  digraph graphname {
+    T [label="Teacher"]     // node T
+    P [label="Pupil"]       // node P
+    T->P [label="Instructions", fontcolor=darkgreen] // edge T->P
+    };
+#+end_src
+
+颜色
+#+begin_src dot
+  digraph graphname {
+          T [label="Teacher", color=Blue, fontcolor=Red, fontsize=24, shape=box]   // node T
+          P [label="Pupil", color=Blue, fontcolor=Red, fontsize=24, shape=box]     // node P
+
+          T->P [label="Instructions", fontcolor=darkgreen] // edge T->P
+          };
+#+end_src
+
+* dot 语法
+无向图:  - -
+有向图：- >
+属性：节点和边显示样式（颜色、形状、线形）； 用[key=value,]表示
+注释：//单行注释；    ＃注释此行 ；     /***/多行注释
+属性
+label＝“123”         节点标签，替换节点默认名称
+shape＝box           节点形状（）
+style＝filled            样式 (filled 填充 dashed）
+fontcolor＝red           字体颜色
+color＝yellow            节点配色
+fontname＝Courier        字体
+penwidth＝1.0                线条宽度
+／／
+nodesep=1.0     节点间距
+node [color=Red,]           # 所有节点属性配置
+edge [color=Blue,]          # 所有边属性配置
+图像属性
+label="My Graph";           # 给图像设置标签
+rankdir=LR;                     # 从左到右布局
+a->{b c d}                      #  a 分别指向 b c d 节点
+{rank=same; a, b, c }       # 将一组元素放到同一个 level 将 abc 节点放置同一水平
+splines="line";                 # 让边框变为直线，没有曲线和锐角
+K=0.6;                          # 在布局中影响 spring 属性，spring 属性用于将节点往外推，在 twopi 和 sfdp 布局中很有用。
+bgcolor                 背景颜色
+concentrate = false         让多条边有公共部分
+nodesep = .25           节点之间的间隔（英寸）
+peripheries = 1             边界数
+rank                    (same,min,source, max,sink)设置多个节点顺序
+rankdir = TB            排序方向
+ranksep = .75           间隔
+size                    图的大小（英寸）
+文／wsztrush（简书作者）
+原文链接：http://www.jianshu.com/p/5b02445eca1d
+著作权归作者所有，转载请联系作者获得授权，并标注“简书作者”。
+译注：暂时还没明白这个 spring 属性应该怎么翻，初步猜测是弹性。
+交点属性
+[label="Some Label"]        # 给交点打标签
+[color="red"]                   # 给交点上色
+[fillcolor="blue"]              # 设置交点的填充色
+shape   ellipse 形状
+sides   4   当 shape=polygon 时的边数
+fillcolor   lightgrey/black 填充颜色
+fixedsize   false   标签是否影响节点的大小
+边的属性
+[label="Some Label"]        # 给边设置标签 (设置路径权重的时候很有用)
+[color="red"]                   # 给交点上色 (标示路径的时候很有用)
+[penwidth=2.0]                  # 给边适配厚度，标示路径的时候很有用。
+arrowhead = normal      # 箭头头部形状
+arrowsize   = 1.0           # 箭头大小
+arrowtail = normal      # 箭头尾部形状
+constraint=true         #是否根据边来影响节点的排序
+decorate                #设置之后会用一条线来连接 edge 和 label
+dir=forward         # 设置方向：forward,back,both,none
+headclip=true           # 是否到边界为止
+tailclip=true           #与 headclip 类似
+文／wsztrush（简书作者）
+原文链接：http://www.jianshu.com/p/5b02445eca1d
+著作权归作者所有，转载请联系作者获得授权，并标注“简书作者”。
+尺寸, 背景颜色
+fixedsize=true;
+size="1,1";
+resolution=72;
+bgcolor="#C6CFD532";
+eg
+digraph structs {
+node[shape=record]
+struct1 [label="<f0> left|<f1> mid\ dle|<f2> right"];
+struct2 [label="{<f0> one|<f1> two\n\n\n}" shape=Mrecord];
+struct3 [label="hello\nworld |{ b |{c|<here> d|e}| f}| g | h"];
+struct1:f1 -> struct2:f0;
+struct1:f0 -> struct3:f1;
+}
+dot 语言 三种对象：图表、结点、边缘
+digraph     可控制的
+graph       不可控制
+subgraph        子图表
+绘制属性：
+形状：多边形和纪录
+box 盒子 ,
+polygon 多边形 ,
+ellipse 椭圆,
+oval 椭圆,
+circle 圆,
+point ,
+egg 卵形,
+triangle 三角 ,
+plaintext ,
+diamond 菱形 ,
+trapezium 梯形 ,
+parallelogram 平行四边形 ,
+house ,
+pentagon 五角形 ,
+hexagon 六角形 ,
+septagon ,
+octagon 八边形 ,
+doublecircle ,
+doubleoctagon ,
+tripleoctagon

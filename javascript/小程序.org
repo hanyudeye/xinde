@@ -1,0 +1,373 @@
+#+TITLE: 微信小程序简介
+#+DESCRIPTION: 微信小程序简介
+#+TAGS: 微信小程序
+#+CATEGORIES: 框架使用
+
+* 微信小程序
+** 简介 
+   我们编写小程序，要学习它的界面展示的技术，逻辑处理不用学，用 ~js~  技术，还要学下它 提供的函数来利用手机资源。
+  
+   #+begin_quote
+   wxml 功能和 HTML 类似，wxss 功能和 CSS 类似，JS 包含组件逻辑。
+   就是仿的 HTML + CSS 技术
+   使用的组件技术
+   #+end_quote
+** 认证
+    企业、政府、媒体、其他组织注册小程序需要进行微信认证，认证费用为 300 元，如
+    该企业已有微信公众号，则可以用微信公众号快速创建小程序账号，以此创建的小程序
+    无需认证。
+   
+    个人注册主体无法认证，故无需缴纳 300 元认证费用，但会有功能限制。
+   
+    微信小程序需要 https 请求，需要准备 
+    1：备案的域名：由于备案需要一定的时间，所以请事先准备 
+    2：受认可的证书 https 排查说明：http://www.wxapp-union.com/forum.php?mod=viewthread&tid=6483：
+    一个账号只能发布一个小程序，如需发布多个，请申请多个
+    7：你必须通过微信认证，才可以使用微信支付等功能：
+    认证指引：https://mp.weixin.qq.com/debug/wxadoc/product/renzheng.html?t=201714
+** 组件 
+ 基础组件库主要分为四类：
+ 控件(controller)主要包括：
+ action-sheet / button / searchbar / modal / navigator / drawer
+ 表单(form)主要包括：
+ checkbox / radio / form,selector / switch / slider / input / label / picker
+ 媒体(media)主要包括：
+ image / audio / video
+ 视图(view)主要包括：
+ progress / toast / scroll-view / text / view / mask / icon / spinner / swiper / slide-tab
+** 局限  
+   微信提供了不错的底层 API 以及还算丰富的组件库，让小程序可以快速开发并且拥有原
+   生体验，相对之前的公众号/服务号，体验更好。
+   
+   微信流量很大，对于部分中小产品来说，是一次机会。
+ 
+   一些低频高需产品也许很适合，比如订票，用户打开页面，简单选择，然后微信支付，感觉还挺爽的。
+
+   从技术栈来说，我不喜欢！
+
+   微信小程序是基于微信生态的，而这个生态目前太不成熟。
+   只能在微信中运行，多半不支持在浏览器或者其他地方运行，也就是说，并没有减少产品的开发成本，反倒是多了一个开发流水线。
+   新的语法糖，开发调试环境也不友好，开发者会有阵痛期。
+** 小程序优缺点
+ 微信小程序的官方文档写得不完善，很多方面没有覆盖。
+如何定义一个组件；
+无法使用 less 或者 sass 之类的预编译；
+wxml 没得到主流编辑器的支持，导致开发速度偏慢；
+想要解决 less 和 wxml 问题？可以参考这个：wxapp-redux-starter；
+✦ 微信小程序的开发工具极不稳定。
+和 shadowsocks 等 VPN 冲突；
+经常无故卡死；
+开发工具和真机表现偶尔会有差异；
+有时候代码无故不生效，需要重启才行；
+没有类似 HMR 的机制导致经常刷新；
+调试工具不好用等等。
+✦ 微信小程序的生态和问答社区几乎为零。
+微信的生态为零，导致部分功能开发起来吃力，比如解析富文本。
+微信的问答社区就更差了，遇到问题全靠猜，实在找不到办法就重启。
+ 微信小程序的应用场景太受限，和微信的一贯保守风格很像，或许以后会慢慢放开，慢慢期待吧。
+* 小程序
+** 创建小程序 
+   Pages 目录下。微信小程序中的每一个页面的【路径+页面名】都需要写在 app.json 的 Pages 中，且 Pages 中的第一个页面是小程序的首页。
+   每一个小程序页面是由同路径下同名的四个不同后缀文件的组成，如：index.js、index.wxml、index.wxss、index.json。.js 后缀的文件是脚本文件，.json 后缀的文件
+   是配置文件，.wxss 后缀的是样式表文件，.wxml 后缀的文件是页面结构文件。
+   index.wxml 是页面的结构文件：
+   #+BEGIN_SRC html
+     <!--index.wxml-->
+     <view class="container">
+
+       <view  bindtap="bindViewTap" class="userinfo">
+
+         <image class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover">
+
+         </image>
+
+         <text class="userinfo-nickname">
+           {{userInfo.nickName}}
+         </text>
+
+       </view>
+       <view class="usermotto">
+         <text class="user-motto">
+           {{motto}}
+         </text>
+       </view>
+
+     </view>
+
+   #+END_SRC
+   index.js 是页面的脚本文件，在这个文件中我们可以监听并处理页面的生命周期函数、获取小程序实例，声明并处理数据，响应页面交互事件等。
+   #+BEGIN_SRC css
+     //index.js //获取应用实例 var app = getApp()
+     Page({
+     data: {
+         motto: 'Hello World',
+         userInfo: {}
+     },
+     //事件处理函数
+       bindViewTap: function() {
+         wx.navigateTo({
+
+     url: '../logs/logs'
+     })
+     },
+     onLoad: function () {
+         console.log('onLoad')
+         var that = this
+         //调用应用实例的方法获取全局数据
+         app.getUserInfo(function(userInfo){
+                                //更新数据
+                                that.setData({
+     userInfo:userInfo
+     })
+                            })
+     } })
+#+END_SRC
+
+index.wxss 是页面的样式表：
+#+BEGIN_SRC css
+/**index.wxss**/
+ 
+.userinfo {
+display: flex;
+flex-direction: column;
+align-items: center; }
+.userinfo-avatar {
+width: 128rpx;
+height: 128rpx;
+margin: 20rpx;
+border-radius: 50%; }
+
+.userinfo-nickname {
+color: #aaa; }
+
+
+
+.usermotto {
+margin-top: 200px; } 
+#+END_SRC
+
+index.json 是页面的配置文件：
+
+页面的配置文件是非必要的。当有页面的配置文件时，配置项在该页面会覆盖 app.json 的
+ window 中相同的配置项。如果没有指定的页面配置文件，则在该页面直接使用
+ app.json 中的默认配置。
+
+logs 的页面结构
+#+BEGIN_SRC html
+<!--logs.wxml-->
+ <view class="container log-list">
+
+<block wx:for="{{logs}}" wx:for-item="log">
+
+  <text class="log-item">
+{{index + 1}}. {{log}}
+</text>
+
+
+</block>
+ 
+</view>
+#+END_SRC
+logs 页面使用 <block/>  控制标签来组织代码，在 <block/>  上使用 wx:for 绑定 logs 数据，并将 logs 数据循环展开节点
+#+BEGIN_SRC json
+//logs.js var util = require('../../utils/util.js') 
+Page({
+data: {
+  logs: []
+},
+onLoad: function () {
+  this.setData({
+
+ logs: (wx.getStorageSync('logs') || []).map(function (log) {
+
+
+return util.formatTime(new Date(log))
+
+ })
+  })
+} })
+#+END_SRC
+** 结构（页面）
+*** 小程序公共设置 
+**** 公共数据 app.json
+ app.json 是对当前小程序的全局配置，包括了小程序的所有页面路径、界面表现、网络超时时间、底部 tab 等。QuickStart 项目里边的 app.json 配置内容如下：
+ #+begin_src js
+   {
+       "pages":[
+           "pages/index/index",
+           "pages/logs/logs"
+       ],
+       "window":{
+           "backgroundTextStyle":"light",
+           "navigationBarBackgroundColor": "#fff",
+           "navigationBarTitleText": "WeChat",
+           "navigationBarTextStyle":"black"
+       }
+   }
+ #+end_src
+ 我们简单说一下这个配置各个项的含义:
+
+ pages 字段 —— 用于描述当前小程序所有页面路径，这是为了让微信客户端知道当前你的小程序页面定义在哪个目录。
+ window 字段 —— 小程序所有页面的顶部背景颜色，文字颜色定义在这里的。
+ 其他配置项细节可以参考文档 小程序的配置 app.json。
+**** 公共逻辑 app.js
+**** 公共样式 app.wxss
+*** 项目配置 project.config.json
+*** 页面设置
+**** 页面内容设置 WXML 
+     从事过网页编程的人知道，网页编程采用的是 HTML + CSS + JS 这样的组合，其中 HTML 是用来描述当前这个页面的结构，CSS 用来描述页面的样子，
+     JS 通常是用来处理这个页面和用户的交互。
+
+     同样道理，在小程序中也有同样的角色，其中 WXML 充当的就是类似 HTML 的角色。打开 pages/index/index.wxml，你会看到以下的内容:
+ #+BEGIN_SRC xml
+ <view class="container">
+   <view class="userinfo">
+     <button wx:if="{{!hasUserInfo && canIUse}}"> 获取头像昵称 </button>
+     <block wx:else>
+       <image src="{{userInfo.avatarUrl}}" background-size="cover"></image>
+       <text class="userinfo-nickname">{{userInfo.nickName}}</text>
+     </block>
+   </view>
+   <view class="usermotto">
+     <text class="user-motto">{{motto}}</text>
+   </view>
+ </view>
+ #+END_SRC
+
+ 和 HTML 非常相似，有标签、属性等等构成。但是也有很多不一样的地方，我们来一一阐述一下：
+ 标签名字有点不一样 往往写 HTML 的时候，经常会用到的标签是 div, p, span，开发者在写一个页面的时候可以根据这些基础的标签组合出不一样的组件，
+ 例如日历、弹窗等等。换个思路，既然大家都需要这些组件，为什么我们不能把这些常用的组件包装起来，大大提高我们的开发效率。 从上边的例子可以看到，
+ 小程序的 WXML 用的标签是 view, button, text 等等，这些标签就是小程序给开发者包装好的基本能力，我们还提供了地图、视频、音频等等组件能力 
+ 更多详细的组件讲述参考下个章节 小程序的能力
+
+ 多了一些 wx:if 这样的属性以及 {{ }} 这样的表达式 在网页的一般开发流程中，我们通常会通过 JS 操作 DOM (对应 HTML 的描述产生的树)，
+ 以引起界面的一些变化响应用户的行为。例如，用户点击某个按钮的时候，JS 会记录一些状态到 JS 变量里边，同时通过 DOM API 操控 DOM 的属性或者行为，
+ 进而引起界面一些变化。当项目越来越大的时候，你的代码会充斥着非常多的界面交互逻辑和程序的各种状态变量，显然这不是一个很好的开发模式，因此就有了 MVVM 的开发模式(例如 React, Vue)，提倡把渲染和逻辑分离。简单来说就是不要再让 JS 直接操控 DOM，JS 只需要管理状态即可，然后再通过一种模板语法来描述状态和界面结构的关系即可。 小程序的框架也是用到了这个思路，如果你需要把一个 Hello World 的字符串显示在界面上。WXML 是这么写 :
+
+ <text></text>
+ JS 只需要管理状态即可:
+
+ this.setData({ msg: "Hello World" })
+ 通过 {{ }} 的语法把一个变量绑定到界面上，我们称为数据绑定。仅仅通过数据绑定还不够完整的描述状态和界面的关系，还需要 if/else, for 等控制能力，
+ 在小程序里边，这些控制能力都用 wx: 开头的属性来表达。 更详细的文档可以参考 WXML
+
+**** 页面样式设置 WXSS 
+ WXSS 具有 CSS 大部分的特性，小程序在 WXSS 也做了一些扩充和修改。
+
+ 新增了尺寸单位。在写 CSS 样式时，开发者需要考虑到手机设备的屏幕会有不同的宽度和设备像素比，采用一些技巧来换算一些像素单位。WXSS 
+ 在底层支持新的尺寸单位 rpx，开发者可以免去换算的烦恼，只要交给小程序底层来换算即可，由于换算采用的浮点数运算，所以运算结果会和预期结果有一点点偏差。
+ 提供了全局的样式和局部样式。和前边 app.json, page.json 的概念相同，你可以写一个 app.wxss 作为全局样式，会作用于当前小程序的所有页面，
+ 局部页面样式 page.wxss 仅对当前页面生效。
+ 此外 WXSS 仅支持部分 CSS 选择器
+ 更详细的文档可以参考 WXSS。
+
+**** 页面交互设置 JS 
+     一个服务仅仅只有界面展示是不够的，还需要和用户做交互：响应用户的点击、获取用户的位置等等。在小程序里边，我们就通过编写 JS 脚本文件来处理用户的操作。
+     #+BEGIN_SRC html
+        <view>{{ msg }}</view>
+        <button bindtap="clickMe">点击我</button>
+     #+END_SRC
+    点击 button 按钮的时候，我们希望把界面上 msg 显示成 "Hello World"，于是我们在 button 上声明一个属性: bindtap，在 JS 文件里边声明了
+     clickMe 方法来响应这次点击操作：
+ #+BEGIN_SRC javascript
+     Page({
+     clickMe: function() {
+     this.setData({ msg: "Hello World" })
+     }
+   })
+ #+END_SRC
+ 响应用户的操作就是这么简单，更详细的事件可以参考文档 WXML - 事件 。
+
+ 此外你还可以在 JS 中调用小程序提供的丰富的 API，利用这些 API 可以很方便的调起微信提供的能力，例如获取用户信息、本地存储、微信支付等。在前边的 QuickStart 例子中，在 pages/index/index.js 就调用了 wx.getUserInfo 获取微信用户的头像和昵称，最后通过 setData 把获取到的信息显示到界面上。更多 API 可以参考文档 小程序的 API。
+ 通过这个章节，你了解了小程序涉及到的文件类型以及对应的角色，在下个章节中，我们把这一章所涉及到的文件通过 “小程序的框架” 给 “串” 起来，让他们都工作起来。
+**** 页面数据设置 json
+** 小程序的能力
+*** 小程序的启动
+微信客户端在打开小程序之前，会把整个小程序的代码包下载到本地。
+紧接着通过 app.json 的 pages 字段就可以知道你当前小程序的所有页面路径:
+
+{
+  "pages":[
+    "pages/index/index",
+    "pages/logs/logs"
+  ]
+}
+
+这个配置说明在 QuickStart 项目定义了两个页面，分别位于 pages/index/index 和 pages/logs/logs 目录。而写在 pages 
+字段的第一个页面就是这个小程序的首页(打开小程序看到的第一个页面)。
+
+于是微信客户端就把首页的代码装载进来，通过小程序底层的一些机制，就可以渲染出这个首页。
+小程序启动之后，在 app.js 定义的 App 实例的 onLaunch 回调会被执行:
+
+App({
+  onLaunch: function () {
+    // 小程序启动之后 触发
+  }
+})
+整个小程序只有一个 App 实例，是全部页面共享的，更多的事件回调参考文档 注册程序 App。
+接下来我们简单看看小程序的一个页面是怎么写的。
+
+*** 程序与页面
+你可以观察到 pages/logs/logs 下其实是包括了 4 种文件的，微信客户端会先根据 logs.json 配置生成一个界面，顶部的颜色和文字你都可以在这个 json 文件里边定义好。
+紧接着客户端就会装载这个页面的 WXML 结构和 WXSS 样式。最后客户端会装载 logs.js，你可以看到 logs.js 的大体内容就是:
+
+Page({
+  data: { // 参与页面渲染的数据
+    logs: []
+  },
+  onLoad: function () {
+    // 页面渲染后 执行
+  }
+})
+Page 是一个页面构造器，这个构造器就生成了一个页面。在生成页面的时候，小程序框架会把 data 数据和 index.wxml 一起渲染出最终的结构，
+于是就得到了你看到的小程序的样子。
+在渲染完界面之后，页面实例就会收到一个 onLoad 的回调，你可以在这个回调处理你的逻辑。
+有关于 Page 构造器更多详细的文档参考 注册页面 Page。
+
+*** 组件
+小程序提供了丰富的基础组件给开发者，开发者可以像搭积木一样，组合各种组件拼合成自己的小程序。
+就像 HTML 的 div, p 等标签一样，在小程序里边，你只需要在 WXML 写上对应的组件标签名字就可以把该组件显示在界面上，例如，你需要在界面上显示地图，
+你只需要这样写即可：
+
+<map></map>
+使用组件的时候，还可以通过属性传递值给组件，让组件可以以不同的状态去展现，例如，我们希望地图一开始的中心的经纬度是广州，那么你需要声明地图的 
+longitude(中心经度) 和 latitude(中心纬度) 两个属性:
+
+<map longitude="广州经度" latitude="广州纬度"></map>
+组件的内部行为也会通过事件的形式让开发者可以感知，例如用户点击了地图上的某个标记，你可以在 js 编写 markertap 函数来处理：
+
+<map bindmarkertap="markertap" longitude="广州经度" latitude="广州纬度"></map>
+当然你也可以通过 style 或者 class 来控制组件的外层样式，以便适应你的界面宽度高度等等。
+
+更多的组件可以参考 小程序的组件 。
+
+*** API
+为了让开发者可以很方便的调起微信提供的能力，例如获取用户信息、微信支付等等，小程序提供了很多 API 给开发者去使用。
+要获取用户的地理位置时，只需要：
+
+wx.getLocation({
+  type: 'wgs84',
+  success: (res) => {
+    var latitude = res.latitude // 经度
+    var longitude = res.longitude // 纬度
+  }
+})
+调用微信扫一扫能力，只需要：
+
+wx.scanCode({
+  success: (res) => {
+    console.log(res)
+  }
+})
+需要注意的是：多数 API 的回调都是异步，你需要处理好代码逻辑的异步问题。
+
+更多的 API 能力见 小程序的 API。
+
+通过这个章节你已经大概了解了小程序运行的一些基本概念，当你开发完一个小程序之后，你就需要发布你的小程序。在下个章节，你会知道发布前需要做什么准备。
+   
+* demo
+3）、移动商城 https://github.com/liuxuanqiang/wechat-weapp-mall
+4）、天气 http://swiftcafe.io/2016/10/03/wx-weather-app/
+5）、空气质量查询 http://blog.csdn.net/yulianlin/article/details/52692066
+6）、github 客户端 https://blog.zhengxiaowai.cc/post/weapp-demo.html
+7）、知乎日报 http://www.apkbus.com/forum.php?mod=viewthread&tid=268626&extra=page%3D1%26filter%3Dsortid%26sortid%3D12
