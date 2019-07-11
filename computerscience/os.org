@@ -8,35 +8,35 @@
   使小学生也会使用计算机.
   #+end_quote
   
- #+begin_verse
- 什么是操作系统？ 
+  #+begin_verse
+  什么是操作系统？ 
  
- 我们看下我们的电脑桌面，想象一下没有操作系统的时候该是什么情况。 ~开不了机~
- 我们想使用某个软件都不行，即使我们能使用那个软件了，我们想切换到别的软件，不好意思， ~没有办法~
- 那么，计算机世界 就变成独立的机器，比如 ~放歌计算机~ ， ~算术计算机~ ,  ~放电影计算机~  ,每个软件一个计算机，或者简单点每个软件一个光盘，要用的时候插进去，把另一个软件取出来。
- #+end_verse
+  我们看下我们的电脑桌面，想象一下没有操作系统的时候该是什么情况。 ~开不了机~
+  我们想使用某个软件都不行，即使我们能使用那个软件了，我们想切换到别的软件，不好意思， ~没有办法~
+  那么，计算机世界 就变成独立的机器，比如 ~放歌计算机~ ， ~算术计算机~ ,  ~放电影计算机~  ,每个软件一个计算机，或者简单点每个软件一个光盘，要用的时候插进去，把另一个软件取出来。
+  #+end_verse
  
- #+HTML: <!-- more -->
- #+begin_quote
- 使我想起以前的插卡游戏机,有手柄的 
- #+end_quote
+  #+HTML: <!-- more -->
+  #+begin_quote
+  使我想起以前的插卡游戏机,有手柄的 
+  #+end_quote
 
 
- [[file:image/%E6%B8%B8%E6%88%8F%E6%9C%BA.jpg]]
+  [[file:image/%E6%B8%B8%E6%88%8F%E6%9C%BA.jpg]]
 
- #+begin_quote
- 所以，操作系统的一个主要功能就是进行切换光盘操作( 切换软件 )。
- 能切换软件了，操作系统还不满足。又把硬件控制了，对外提供了操作接口，你总不能指望用户会调音量,会用手旋转磁盘来读取某个文件吧, 删除文件呢,用橡皮擦擦吗?
- 还做了其他一些事情，做的功能越来越多。
- #+end_quote
+  #+begin_quote
+  所以，操作系统的一个主要功能就是进行切换光盘操作( 切换软件 )。
+  能切换软件了，操作系统还不满足。又把硬件控制了，对外提供了操作接口。你总不能指望用户会调音量,会用手旋转磁盘来读取某个文件吧, 删除文件呢,用橡皮擦擦吗?
+  还做了其他一些事情，做的功能越来越多。
+  #+end_quote
 
-#+begin_quote
-#+begin_verse
+  #+begin_quote
+  #+begin_verse
 早期的操作系统是给高级用户用的,只有一个 ~shell~ 界面让用户执行软件。
 现在的操作系统是图形化的,程序有对应的图标放在桌面上,双击一下就打开了.
 操作系统使可以操作电脑的受众扩大到小学生,要不来,面对那个机器,鬼知道怎么弄。
-#+end_verse
-#+end_quote
+  #+end_verse
+  #+end_quote
 
 * 开机引导程序[ 操作系统前 ]
   : 在操作系统加载之前执行的小程序，用来检测硬件的，缺胳膊少腿的硬件就没必要加载操作系统了。
@@ -56,543 +56,62 @@
 ** 执行多任务程序，切换程序
    执行一个程序不够吧，起码执行两三个，来回切换才行嘛
 ** 进程管理 (执行多任务的具体实现)
+   #+begin_verse
    进程是加载到内存执行的程序,不是在磁盘里的程序文件。
    我执行了几个任务,任务就要运行了是吧. 
    如果是单核的 ~CPU~ ,就是一次只能执行一个程序.可是我要执行多个程序呀, 所以操作系统就给每个任务一个时间段,几个程序轮流执行一个时间段.
    因为速度刷刷快,我们在切换程序的时候都感觉不到延时. 
    多核的化,可以把一些时间段给另外一些核执行,这个就是同时的了.
+   #+end_verse
    
+   #+begin_quote
+   操作系统做了这么一件事，就是把程序进程化，那么就不会破坏磁盘上的程序文件了，然后进程也方便处理。
+   #+end_quote
 *** 进程的状态
     单核的化,一个任务就执行一个时间段, 那么另外的任务就只能等了. 任务的状态属性如下
     - 进程状态
-       - 就绪状态（ready）：等待被调度
-       - 运行状态（running）
-       - 阻塞状态（waiting）：等待资源 ( 这个不会被调度, 你开了两个程序,同一时间只能操作一个程序,另一个不是那种切换后还在那放歌的程序一般就不执行了 )
+      - 就绪状态（ready）：等待被调度
+      - 运行状态（running）
+      - 阻塞状态（waiting）：等待资源 ( 这个不会被调度, 你开了两个程序,同一时间只能操作一个程序,另一个不是那种切换后还在那放歌的程序一般就不执行了 )
 
-     : 操作系统把任务放在一个调度列表里面的 , 就绪状态的任务才会按序执行.    
+      : 操作系统把任务放在一个调度列表里面的 , 就绪状态的任务才会按序执行.    
      
 *** 调度算法 (任务调度的几个方法)
-       - 批处理系统
-         - 先来先服务
-         - 短作业优先
-         - 最短剩余时间优先 
-       - 交互式系统
-         - 时间片轮转
-         - 优先级调度 (每个任务还有不同的优先级,这个有点骚)
-         - 多级反馈队列
-       - 实时系统
-*** 进程管理
-    执行多个程序会面临的问题 
-**** 经典同步问题
-***** 读者-写者问题 (几个任务操作同一个数据怎么办)
-         允许多个进程同时对数据进行读操作，但是不允许读和写以及写和写操作同时发生。
-
-         一个整型变量 count 记录在对数据进行读操作的进程数量，一个互斥量 count_mutex 用于
-         对 count 加锁，一个互斥量 data_mutex 用于对读写的数据加锁。
-
-         #+begin_src c -n
-         typedef int semaphore;
-         semaphore count_mutex = 1;
-         semaphore data_mutex = 1;
-         int count = 0;
-
-         void reader() {
-             while(TRUE) {
-                 down(&count_mutex);
-                 count++;
-                 if(count == 1) down(&data_mutex); // 第一个读者需要对数据进行加锁，防止写进程访问
-                 up(&count_mutex);
-                 read();
-                 down(&count_mutex);
-                 count--;
-                 if(count == 0) up(&data_mutex);
-                 up(&count_mutex);
-             }
-         }
-
-         void writer() {
-             while(TRUE) {
-                 down(&data_mutex);
-                 write();
-                 up(&data_mutex);
-             }
-         }
-         #+end_src
-
-         以下内容由 [@Bandi Yugandhar](https://github.com/yugandharbandi) 提供。
-
-         The first case may result Writer to starve. This case favous Writers i.e no
-         writer, once added to the queue, shall be kept waiting longer than absolutely
-         necessary(only when there are readers that entered the queue before the writer).
-
-         #+begin_src c -n
-         int readcount, writecount;                   //(initial value = 0)
-         semaphore rmutex, wmutex, readLock, resource; //(initial value = 1)
-
-         //READER
-         void reader() {
-         <ENTRY Section>
-          down(&readLock);                 //  reader is trying to enter
-          down(&rmutex);                  //   lock to increase readcount
-           readcount++;                 
-           if (readcount == 1)          
-            down(&resource);              //if you are the first reader then lock  the resource
-          up(&rmutex);                  //release  for other readers
-          up(&readLock);                 //Done with trying to access the resource
-
-         <CRITICAL Section>
-         //reading is performed
-
-         <EXIT Section>
-          down(&rmutex);                  //reserve exit section - avoids race condition with readers
-          readcount--;                       //indicate you're leaving
-           if (readcount == 0)          //checks if you are last reader leaving
-            up(&resource);              //if last, you must release the locked resource
-          up(&rmutex);                  //release exit section for other readers
-         }
-
-         //WRITER
-         void writer() {
-           <ENTRY Section>
-           down(&wmutex);                  //reserve entry section for writers - avoids race conditions
-           writecount++;                //report yourself as a writer entering
-           if (writecount == 1)         //checks if you're first writer
-            down(&readLock);               //if you're first, then you must lock the readers out. Prevent them from trying to enter CS
-           up(&wmutex);                  //release entry section
-
-         <CRITICAL Section>
-          down(&resource);                //reserve the resource for yourself - prevents other writers from simultaneously editing the shared resource
-           //writing is performed
-          up(&resource);                //release file
-
-         <EXIT Section>
-           down(&wmutex);                  //reserve exit section
-           writecount--;                //indicate you're leaving
-           if (writecount == 0)         //checks if you're the last writer
-            up(&readLock);               //if you're last writer, you must unlock the readers. Allows them to try enter CS for reading
-           up(&wmutex);                  //release exit section
-         }
-         #+end_src
-
-         We can observe that every reader is forced to acquire ReadLock. On the
-         otherhand, writers doesn’t need to lock individually. Once the first writer
-         locks the ReadLock, it will be released only when there is no writer left in the
-         queue.
-
-         From the both cases we observed that either reader or writer has to starve.
-         Below solutionadds the constraint that no thread shall be allowed to starve;
-         that is, the operation of obtaining a lock on the shared data will always
-         terminate in a bounded amount of time.
-
-         #+begin_src c -n
-         int readCount;                  // init to 0; number of readers currently accessing resource
-
-         // all semaphores initialised to 1
-         Semaphore resourceAccess;       // controls access (read/write) to the resource
-         Semaphore readCountAccess;      // for syncing changes to shared variable readCount
-         Semaphore serviceQueue;         // FAIRNESS: preserves ordering of requests (signaling must be FIFO)
-
-         void writer()
-         { 
-             down(&serviceQueue);           // wait in line to be servicexs
-             // <ENTER>
-             down(&resourceAccess);         // request exclusive access to resource
-             // </ENTER>
-             up(&serviceQueue);           // let next in line be serviced
-
-             // <WRITE>
-             writeResource();            // writing is performed
-             // </WRITE>
-
-             // <EXIT>
-             up(&resourceAccess);         // release resource access for next reader/writer
-             // </EXIT>
-         }
-
-         void reader()
-         { 
-             down(&serviceQueue);           // wait in line to be serviced
-             down(&readCountAccess);        // request exclusive access to readCount
-             // <ENTER>
-             if (readCount == 0)         // if there are no readers already reading:
-                 down(&resourceAccess);     // request resource access for readers (writers blocked)
-             readCount++;                // update count of active readers
-             // </ENTER>
-             up(&serviceQueue);           // let next in line be serviced
-             up(&readCountAccess);        // release access to readCount
-
-             // <READ>
-             readResource();             // reading is performed
-             // </READ>
-
-             down(&readCountAccess);        // request exclusive access to readCount
-             // <EXIT>
-             readCount--;                // update count of active readers
-             if (readCount == 0)         // if there are no readers left:
-                 up(&resourceAccess);     // release resource access for all
-             // </EXIT>
-             up(&readCountAccess);        // release access to readCount
-         }
-         #+end_src
-***** 哲学家进餐问题
-         五个哲学家围着一张圆桌，每个哲学家面前放着食物。哲学家的生活有两种交替
-         活动：吃饭以及思考。当一个哲学家吃饭时，需要先拿起自己左右两边的两根筷
-         子，并且一次只能拿起一根筷子。
-
-         下面是一种错误的解法，考虑到如果所有哲学家同时拿起左手边的筷子，那么就无法拿起右
-         手边的筷子，造成死锁。
-
-         #+begin_src c -n
-         #define N 5
-
-         void philosopher(int i) {
-             while(TRUE) {
-                 think();
-                 take(i);       // 拿起左边的筷子
-                 take((i+1)%N); // 拿起右边的筷子
-                 eat();
-                 put(i);
-                 put((i+1)%N);
-             }
-         }
-         #+end_src
-
-         为了防止死锁的发生，可以设置两个条件：
-
-         - 必须同时拿起左右两根筷子；
-         - 只有在两个邻居都没有进餐的情况下才允许进餐。
-
-         #+begin_src c -n
-         #define N 5
-         #define LEFT (i + N - 1) % N // 左邻居
-         #define RIGHT (i + 1) % N    // 右邻居
-         #define THINKING 0
-         #define HUNGRY   1
-         #define EATING   2
-         typedef int semaphore;
-         int state[N];                // 跟踪每个哲学家的状态
-         semaphore mutex = 1;         // 临界区的互斥
-         semaphore s[N];              // 每个哲学家一个信号量
-
-         void philosopher(int i) {
-             while(TRUE) {
-                 think();
-                 take_two(i);
-                 eat();
-                 put_tow(i);
-             }
-         }
-
-         void take_two(int i) {
-             down(&mutex);
-             state[i] = HUNGRY;
-             test(i);
-             up(&mutex);
-             down(&s[i]);
-         }
-
-         void put_tow(i) {
-             down(&mutex);
-             state[i] = THINKING;
-             test(LEFT);
-             test(RIGHT);
-             up(&mutex);
-         }
-
-         void test(i) {         // 尝试拿起两把筷子
-             if(state[i] == HUNGRY && state[LEFT] != EATING && state[RIGHT] !=EATING) {
-                 state[i] = EATING;
-                 up(&s[i]);
-             }
-         }
-         #+end_src
-**** 死锁
-***** 必要条件
-
-          - 互斥：每个资源要么已经分配给了一个进程，要么就是可用的。
-          - 占有和等待：已经得到了某个资源的进程可以再请求新的资源。
-          - 不可抢占：已经分配给一个进程的资源不能强制性地被抢占，它只能被占有它的进程显式
-            地释放。
-          - 环路等待：有两个或者两个以上的进程组成一条环路，该环路中的每个进程都在等待下一
-            个进程所占有的资源。
-***** 处理方法
-          主要有以下四种方法：
-          - 鸵鸟策略
-          - 死锁检测与死锁恢复
-          - 死锁预防
-          - 死锁避免
-***** 鸵鸟策略
-
-          把头埋在沙子里，假装根本没发生问题。
-
-          因为解决死锁问题的代价很高，因此鸵鸟策略这种不采取任务措施的方案会获得更高的性能。
-
-          当发生死锁时不会对用户造成多大影响，或发生死锁的概率很低，可以采用鸵鸟策略。
-
-          大多数操作系统，包括 Unix，Linux 和 Windows，处理死锁问题的办法仅仅是忽略它。
-***** 死锁检测与死锁恢复
-
-          不试图阻止死锁，而是当检测到死锁发生时，采取措施进行恢复。
-****** 1. 每种类型一个资源的死锁检测
-       上图为资源分配图，其中方框表示资源，圆圈表示进程。资源指向进程表示该资源已经分配
-       给该进程，进程指向资源表示进程请求获取该资源。
-
-       图 a 可以抽取出环，如图 b，它满足了环路等待条件，因此会发生死锁。
-
-       每种类型一个资源的死锁检测算法是通过检测有向图是否存在环来实现，从一个节点出发进
-       行深度优先搜索，对访问过的节点进行标记，如果访问了已经标记的节点，就表示有向图存
-       在环，也就是检测到死锁的发生。
-****** 2. 每种类型多个资源的死锁检测
-       上图中，有三个进程四个资源，每个数据代表的含义如下：
-
-       - E 向量：资源总量
-       - A 向量：资源剩余量
-       - C 矩阵：每个进程所拥有的资源数量，每一行都代表一个进程拥有资源的数量
-       - R 矩阵：每个进程请求的资源数量
-
-         进程 P<sub>1</sub> 和 P<sub>2</sub> 所请求的资源都得不到满足，只有进程
-         P<sub>3</sub> 可以，让 P<sub>3</sub> 执行，之后释放 P<sub>3</sub> 拥有的资源，此
-         时 A = (2 2 2 0)。P<sub>2</sub> 可以执行，执行后释放 P<sub>2</sub> 拥有的资源，A
-         = (4 2 2 1) 。P<sub>1</sub> 也可以执行。所有进程都可以顺利执行，没有死锁。
-
-         算法总结如下：
-
-         每个进程最开始时都不被标记，执行过程有可能被标记。当算法结束时，任何没有被标记的
-         进程都是死锁进程。
-
-         1. 寻找一个没有标记的进程 P<sub>i</sub>，它所请求的资源小于等于 A。
-         2. 如果找到了这样一个进程，那么将 C 矩阵的第 i 行向量加到 A 中，标记该进程，并转
-            回 1。
-         3. 如果没有这样一个进程，算法终止。
-****** 3. 死锁恢复
-       - 利用抢占恢复
-       - 利用回滚恢复
-       - 通过杀死进程恢复
-***** 死锁预防
-           在程序运行之前预防发生死锁。
-****** 1. 破坏互斥条件
-
-            例如假脱机打印机技术允许若干个进程同时输出，唯一真正请求物理打印机的进程是打印机
-            守护进程。
-****** 2. 破坏占有和等待条件
-
-            一种实现方式是规定所有进程在开始执行前请求所需要的全部资源。
-****** 3. 破坏不可抢占条件
-****** 4. 破坏环路等待
-
-            给资源统一编号，进程只能按编号顺序来请求资源。
-***** 死锁避免
-
-            在程序运行时避免发生死锁。
-****** 1. 安全状态
-
-            图 a 的第二列 Has 表示已拥有的资源数，第三列 Max 表示总共需要的资源数，Free 表示
-            还有可以使用的资源数。从图 a 开始出发，先让 B 拥有所需的所有资源（图 b），运行结
-            束后释放 B，此时 Free 变为 5（图 c）；接着以同样的方式运行 C 和 A，使得所有进程
-            都能成功运行，因此可以称图 a 所示的状态时安全的。
-
-            定义：如果没有死锁发生，并且即使所有进程突然请求对资源的最大需求，也仍然存在某种
-            调度次序能够使得每一个进程运行完毕，则称该状态是安全的。
-
-            安全状态的检测与死锁的检测类似，因为安全状态必须要求不能发生死锁。下面的银行家算
-            法与死锁检测算法非常类似，可以结合着做参考对比。
-****** 2. 单个资源的银行家算法
-
-            一个小城镇的银行家，他向一群客户分别承诺了一定的贷款额度，算法要做的是判断对请求
-            的满足是否会进入不安全状态，如果是，就拒绝请求；否则予以分配。
-
-
-            上图 c 为不安全状态，因此算法会拒绝之前的请求，从而避免进入图 c 中的状态。
-****** 3. 多个资源的银行家算法
-            上图中有五个进程，四个资源。左边的图表示已经分配的资源，右边的图表示还需要分配的
-            资源。最右边的 E、P 以及 A 分别表示：总资源、已分配资源以及可用资源，注意这三个
-            为向量，而不是具体数值，例如 A=(1020)，表示 4 个资源分别还剩下 1/0/2/0。
-
-            检查一个状态是否安全的算法如下：
-
-            - 查找右边的矩阵是否存在一行小于等于向量 A。如果不存在这样的行，那么系统将会发生
-              死锁，状态是不安全的。
-            - 假若找到这样一行，将该进程标记为终止，并将其已分配资源加到 A 中。
-            - 重复以上两步，直到所有进程都标记为终止，则状态时安全的。
-
-            如果一个状态不是安全的，需要拒绝进入这个状态。
-
-*** 进程通信 (任务与任务之间有时会说说话,不单打独斗)
-        进程同步与进程通信很容易混淆，它们的区别在于：
-
-        - 进程同步：控制多个进程按一定顺序执行；
-        - 进程通信：进程间传输信息。
-
-        进程通信是一种手段，而进程同步是一种目的。也可以说，为了能够达到进程同步的目的，
-        需要让进程进行通信，传输一些进程同步所需要的信息。
-**** 1. 管道
-
-        管道是通过调用 pipe 函数创建的，fd[0] 用于读，fd[1] 用于写。
-
-        #+begin_src c
-        #include <unistd.h>
-        int pipe(int fd[2]);
-        #+end_src
-
-        它具有以下限制：
-
-        - 只支持半双工通信（单向交替传输）；
-        - 只能在父子进程中使用。
-**** 2. FIFO
-
-         也称为命名管道，去除了管道只能在父子进程中使用的限制。
-
-         #+begin_src c
-         #include <sys/stat.h>
-         int mkfifo(const char *path, mode_t mode);
-         int mkfifoat(int fd, const char *path, mode_t mode);
-         #+end_src
-
-         FIFO 常用于客户-服务器应用程序中，FIFO 用作汇聚点，在客户进程和服务器进程之间传
-         递数据。
-
-**** 3. 消息队列
-
-         相比于 FIFO，消息队列具有以下优点：
-
-         - 消息队列可以独立于读写进程存在，从而避免了 FIFO 中同步管道的打开和关闭时可能产
-           生的困难；
-         - 避免了 FIFO 的同步阻塞问题，不需要进程自己提供同步方法；
-         - 读进程可以根据消息类型有选择地接收消息，而不像 FIFO 那样只能默认地接收。
-
-**** 4. 信号量
-
-         它是一个计数器，用于为多个进程提供对共享数据对象的访问。
-**** 5. 共享存储
-
-         允许多个进程共享一个给定的存储区。因为数据不需要在进程之间复制，所以这是最快的一
-         种 IPC。
-
-         需要使用信号量用来同步对共享存储的访问。
-
-         多个进程可以将同一个文件映射到它们的地址空间从而实现共享内存。另外 XSI 共享内存
-         不是使用文件，而是使用使用内存的匿名段。
-
-**** 6. 套接字
-
-         与其它通信机制不同的是，它可用于不同机器间的进程通信。
-
+    - 批处理系统
+      - 先来先服务
+      - 短作业优先
+      - 最短剩余时间优先 
+    - 交互式系统
+      - 时间片轮转
+      - 优先级调度 (每个任务还有不同的优先级,这个有点骚)
+      - 多级反馈队列
+    - 实时系统
+** 线程
+   做多个事情，创造线程是因为进程的开销有点大。
 ** 内存管理 
    执行多任务,怎么分配任务的内存呢,这里要考虑下的. 要不来,瞎分配,等着死机吧.
 *** 虚拟内存 (假内存, 哈,内存一直是不够用的)
-    虚拟内存的目的是为了让物理内存扩充成更大的逻辑内存，从而让程序获得更多的可用内存。
-    
-    为了更好的管理内存，操作系统将内存抽象成地址空间。每个程序拥有自己的地址空间，
-    这个地址空间被分割成多个块，每一块称为一页。这些页被映射到物理内存，但不需要
-    映射到连续的物理内存，也不需要所有页都必须在物理内存中。当程序引用到不在物理
-    内存中的页时，由硬件执行必要的映射，将缺失的部分装入物理内存并重新执行失败的
-    指令。
+    硬件的构造允许使用虚拟内存的特性, 因为硬件设计中，访问内存不是直接使用内存地址，而是用拼接成的地址。
+**** 分页系统地址映射 (把内存分分块,跟磁盘的目录结构一样,方便操作)
+     内存管理单元（MMU）管理着地址空间和物理内存的转换，其中的页表（Page table）
+     存储着页（程序地址空间）和页框（物理内存空间）的映射表。
 
-    从上面的描述中可以看出，虚拟内存允许程序不用将地址空间中的每一页都映射到物理
-    内存，也就是说一个程序不需要全部调入内存就可以运行，这使得有限的内存运行大程
-    序成为可能。例如有一台计算机可以产生 16 位地址，那么一个程序的地址空间范围是
-    0\~64K。该计算机只有 32KB 的物理内存，虚拟内存技术允许该计算机运行一个 64K
-    大小的程序。
+     一个虚拟地址分成两个部分，一部分存储页面号，一部分存储偏移量。
 
-*** 分页系统地址映射 (把内存分分块,跟磁盘的目录结构一样,方便操作)
-    内存管理单元（MMU）管理着地址空间和物理内存的转换，其中的页表（Page table）
-    存储着页（程序地址空间）和页框（物理内存空间）的映射表。
-
-    一个虚拟地址分成两个部分，一部分存储页面号，一部分存储偏移量。
-
-    下图的页表存放着 16 个页，这 16 个页需要用 4 个比特位来进行索引定位。例如对
-    于虚拟地址（0010 000000000100），前 4 位是存储页面号 2，读取表项内容为（110
-    1），页表项最后一位表示是否存在于内存中，1 表示存在。后 12 位存储偏移量。这
-    个页对应的页框的地址为 （110 000000000100）。
-
-*** 页面置换算法
-    在程序运行过程中，如果要访问的页面不在内存中，就发生缺页中断从而将该页调入内
-    存中。此时如果内存已无空闲空间，系统必须从内存中调出一个页面到磁盘对换区中来
-    腾出空间。
-
-    页面置换算法和缓存淘汰策略类似，可以将内存看成磁盘的缓存。在缓存系统中，缓存
-    的大小有限，当有新的缓存到达时，需要淘汰一部分已经存在的缓存，这样才有空间存
-    放新的缓存数据。
-
-    页面置换算法的主要目标是使页面置换频率最低（也可以说缺页率最低）。
-
-    
-**** 1. 最佳 Optimal
-
-     所选择的被换出的页面将是最长时间内不再被访问，通常可以保证获得最低的缺页率。
-
-     是一种理论上的算法，因为无法知道一个页面多长时间不再被访问。
-
-     举例：一个系统为某进程分配了三个物理块，并有如下页面引用序列：
-
-     开始运行时，先将 7, 0, 1 三个页面装入内存。当进程要访问页面 2 时，产生缺页中断，
-     会将页面 7 换出，因为页面 7 再次被访问的时间最长。
-
-     
-**** 2. 最近最久未使用 LRU, Least Recently Used
-
-     虽然无法知道将来要使用的页面情况，但是可以知道过去使用页面的情况。LRU 将最近最久
-     未使用的页面换出。
-
-     为了实现 LRU，需要在内存中维护一个所有页面的链表。当一个页面被访问时，将这
-     个页面移到链表表头。这样就能保证链表表尾的页面是最近最久未访问的。
-
-     因为每次访问都需要更新链表，因此这种方式实现的 LRU 代价很高。
-
-****  3. 最近未使用 NRU, Not Recently Used
-
-     每个页面都有两个状态位：R 与 M，当页面被访问时设置页面的 R=1，当页面被修改
-     时设置 M=1。其中 R 位会定时被清零。可以将页面分成以下四类：
-
-     - R=0，M=0
-     - R=0，M=1
-     - R=1，M=0
-     - R=1，M=1
-
-       当发生缺页中断时，NRU 算法随机地从类编号最小的非空类中挑选一个页面将它换出。
-
-       NRU 优先换出已经被修改的脏页面（R=0，M=1），而不是被频繁使用的干净页面（R=1，
-       M=0）。
-
-       
-**** 4. 先进先出 FIFO, First In First Out
-     选择换出的页面是最先进入的页面。
-
-     该算法会将那些经常被访问的页面也被换出，从而使缺页率升高。
-**** 5. 第二次机会算法
-
-     FIFO 算法可能会把经常使用的页面置换出去，为了避免这一问题，对该算法做一个简
-     单的修改：
-
-     当页面被访问 (读或写) 时设置该页面的 R 位为 1。需要替换的时候，检查最老页面
-     的 R 位。如果 R 位是 0，那么这个页面既老又没有被使用，可以立刻置换掉；如果是
-     1，就将 R 位清 0，并把该页面放到链表的尾端，修改它的装入时间使它就像刚装入的
-     一样，然后继续从链表的头部开始搜索。
-**** 6. 时钟 Clock
-     第二次机会算法需要在链表中移动页面，降低了效率。时钟算法使用环形链表将页面
-     连接起来，再使用一个指针指向最老的页面。
-*** 分段 (每个任务一个段的内存啦)
-    虚拟内存采用的是分页技术，也就是将地址空间划分成固定大小的页，每一页再与内存
-    进行映射。
-
-    下图为一个编译器在编译过程中建立的多个表，有 4 个表是动态增长的，如果使用分页系
-    统的一维地址空间，动态增长的特点会导致覆盖问题的出现。
-
-    分段的做法是把每个表分成段，一个段构成一个独立的地址空间。每个段的长度可以不同，
-    并且可以动态增长。
-*** 段页式
-    程序的地址空间划分成多个拥有独立地址空间的段，每个段上的地址空间划分成大小相同的
-    页。这样既拥有分段系统的共享和保护，又拥有分页系统的虚拟内存功能。
+**** 分段 (每个任务一个段的内存啦)
+     分段的做法是把每个表分成段，一个段构成一个独立的地址空间。每个段的长度可以不同，
+     并且可以动态增长。
+**** 段页式
+     程序的地址空间划分成多个拥有独立地址空间的段，每个段上的地址空间划分成大小相同的
+     页。这样既拥有分段系统的共享和保护，又拥有分页系统的虚拟内存功能。
 *** 分页与分段的比较
     - 对程序员的透明性：分页透明，但是分段需要程序员显示划分每个段。
     - 地址空间的维度：分页是一维地址空间，分段是二维的。
     - 大小是否可以改变：页的大小不可变，段的大小可以动态改变。
     - 出现的原因：分页主要用于实现虚拟内存，从而获得更大的地址空间；分段主要是为了使
       程序和数据可以被划分为逻辑上独立的地址空间并且有助于共享和保护。
-
 ** 文件管理 
-   资料怎么放,程序怎么放,不会每个程序一个光盘吧.把磁盘弄成目录的形式怎么样?这样就可以放资料了.
-   
+   一般文件要有自己的属性啦,什么文件所属，文件类型。   
 *** 文件存储空间的管理 
     把文件的属性信息放在 inode 里面
     把文件的内容放在 data block 里面

@@ -4,170 +4,194 @@
 #+CATEGORIES: 语言使用
 
 * css
-  一个元素是一个矩形像素块，css 用选择器定位元素，在 ~{}~ 中放置元素的样式属性和位置信息。
-  界面内容与布局的分离。
+  对 ~html~ 表现的视觉元素进行排版和定义元素外观的。
+  
   #+HTML: <!-- more -->
 ** 选择器
-*** 派生选择器 li strong {a:v;b:v}  
-*** id 选择器  #red {color:red;}
-*** 类选择器  .center {text-align: center}
-*** 属性选择器  input [title="value"] //也可以不要 value 修饰
-** 样式
-*** 元素样式
-**** 背景 
-     background-color: 默认 transparent 透明
-     
-     background-image:默认 none,url(path) 可以放两张背景
-     
-     background-repeat:默认 padding 左上角开始 repeat-x repeat-y no-repeat(重复图像) 
-     
-     background-position: top ,center,bottom,left,center,right(上中下,左中右) 100px 4com 2%,一个值得话,纵坐标默认居中
-     
-     background-attachment:fixed/scroll/local 背景关联
-     
-     background-size: 长宽 px 或 %,相对于父元素而不是图形
-     
-     background-origin 背景图片相对于(content-box、padding-box 或 border-box )的定位
-     
-     background-clip:content-box; 规定背景的绘制区域
-**** 文本
-     text-indent: -5em 2% 2px 用于块元素,行元素可以用 padding,可以继承
-
-     text-align: left,center,right 行内元素
-     
-     word-spacing:定义为由空白符包围的一个字符串,中英文混合文本中。其默认值 normal 与设置值为 0 是一样的
-     
-     letter-spacing:字间距离
-
-     text-transform:capitalize uppercase lowercase 
-     
-     text-decoration:underline overline(上划线) line-through(穿透线) blink(闪烁)文本装饰
-     
-     direction：ltr 和 rtl 文本方向
-     
-     text-shadow:5px 5px 5px #FF0000;
-
-     word-wrap: 长单词,(超过一行)允许截断到下一行 break-word /normal
-     
-     text-outline: 文本轮廓
-**** 字体
-     font-family: 使用字体系列,字体名中有空格时 要用引号
-
-     font-style:字体风格 normal italic(normal 版本的倾斜改动) oblique(字体的倾斜版本)
-
-     font-variant:字体变形 small-caps (另一种格式的大写英文)
-
-     font-weigth: bold 100~900 九级加粗度数字 400 等价于 normal，而 700 等价于
-     bold。浏览器分不出那么多级,就 normal 和 bold
-
-     font-size:默认大小是 16 像素 (16px=1em(当前尺寸,当前是 16px))
-
-     自定义字体
-     #+BEGIN_SRC css
-       在新的 @font-face 规则中，您必须首先定义字体的名称（比如 myFirstFont），然后指向该字体文件。
-       如需为 HTML 元素使用字体，请通过 font-family 属性来引用字体的名称 (myFirstFont)：
-
-       <style> 
-       @font-face
-       {
-           font-family: myFirstFont;
-           src: url('Sansation_Light.ttf'),
-                url('Sansation_Light.eot'); /* IE9+ */
-       }
-
-       div
-       {
-           font-family:myFirstFont;
-       }
-       </style>
-
-     #+END_SRC
-**** 链接
-     链接的四种状态：
-     a:link - 普通的、未被访问的链接
-     a:visited - 用户已访问的链接
-     a:hover - 鼠标指针位于链接的上方
-     a:active - 链接被点击的时刻
+   对视觉元素进行定位 
+  
+*** 用相对位置定位 ( 派生选择器 )   
+    li strong {a:v;b:v}
+*** 用 id 定位
+    #red {color:red;}
+*** 用类名定位 ( 类选择器 ) 
+    .center {text-align: center}
+*** 用属性名定位 ( 属性选择器 ) 
+    input [title="value"] //也可以不要 value 修饰
+*** 用函数 (伪元素)
+  | :first-line                   | 向文本的首行设置特殊样式。                      |
+  | :first-letter                 | 向文本的首字母设置特殊样式                      |
+  | :before                       | 在元素的内容前面插入新内容。                    |
+  | :link	a:link                 | 选择所有未访问链接                              |
+  | :visited	a:visited           | 选择所有访问过的链接                            |
+  | :active	a:active             | 选择正在活动链接                                |
+  | :hover	a:hover               | 把鼠标放在链接上的状态                          |
+  | :focus	input:focus           | 选择元素输入后具有焦点                          |
+  | :first-letter	p:first-letter | 选择每个<p> 元素的第一个字母                    |
+  | :first-line	p:first-line     | 选择每个<p> 元素的第一行                        |
+  | :first-child	p:first-child   | 选择器匹配属于任意元素的第一个子元素的 <p> 元素 |
+  | :before	p:before             | 在每个<p>元素之前插入内容                       |
+  | :after	p:after               | 在每个<p>元素之后插入内容                       |
+  | :lang(language)	p:lang(it)   | 为<p>元素的 lang 属性选择一个开始值             |
     
-     text-decoration 属性大多用于去掉链接中的下划线
-**** 列表
-     list-style-type: square(方块)circle,decimal
-     list-style-image: url(xxx.gif) 点,用图像替代
-     list-style-position: [ outside ,inside ]
-**** 轮廓 [ 元素周围的一条线 ]
-     outline-color:
-     outline-style
-     outline-width
+** 元素外观 
+*** 背景 
+    #+begin_verse
+    background-color: 默认 transparent 透明
+    background-image:默认 none,url(path) 可以放两张背景
+    background-repeat:默认 padding 左上角开始 repeat-x repeat-y no-repeat(重复图像) 
+    background-position: top ,center,bottom,left,center,right(上中下,左中右) 100px 4com 2%,一个值得话,纵坐标默认居中
+    background-attachment:fixed/scroll/local 背景关联
+    background-size: 长宽 px 或 %,相对于父元素而不是图形
+    background-origin 背景图片相对于(content-box、padding-box 或 border-box )的定位
+    background-clip:content-box; 规定背景的绘制区域
+    #+end_verse
+    
+*** 轮廓 [ 元素周围的一条线 ]
+    outline-color:
+    outline-style
+    outline-width
      
-     | 值      | 描述                                                |
-     | none    | 默认。定义无轮廓。                                  |
-     | dotted  | 定义点状的轮廓。                                    |
-     | dashed  | 定义虚线轮廓。                                      |
-     | solid   | 定义实线轮廓。                                      |
-     | double  | 定义双线轮廓。双线的宽度等同于 outline-width 的值。 |
-     | groove  | 定义 3D 凹槽轮廓。此效果取决于 outline-color 值。   |
-     | ridge   | 定义 3D 凸槽轮廓。此效果取决于 outline-color 值。   |
-     | inset   | 定义 3D 凹边轮廓。此效果取决于 outline-color 值。   |
-     | outset  | 定义 3D 凸边轮廓。此效果取决于 outline-color 值。   |
-     | inherit | 规定应该从父元素继承轮廓样式的设置。                |
-     *** 边框
-**** 内边距
-     padding
-**** 边框
-     border-style
+    | 值      | 描述                                                |
+    | none    | 默认。定义无轮廓。                                  |
+    | dotted  | 定义点状的轮廓。                                    |
+    | dashed  | 定义虚线轮廓。                                      |
+    | solid   | 定义实线轮廓。                                      |
+    | double  | 定义双线轮廓。双线的宽度等同于 outline-width 的值。 |
+    | groove  | 定义 3D 凹槽轮廓。此效果取决于 outline-color 值。   |
+    | ridge   | 定义 3D 凸槽轮廓。此效果取决于 outline-color 值。   |
+    | inset   | 定义 3D 凹边轮廓。此效果取决于 outline-color 值。   |
+    | outset  | 定义 3D 凸边轮廓。此效果取决于 outline-color 值。   |
+    | inherit | 规定应该从父元素继承轮廓样式的设置。                |
+    *** 边框
+*** 内边距
+    padding
+*** 边框
+    #+begin_verse
+    border-style
+    border-width
+    border-color:transparent 有宽度的不可见边框
+    border-radius: 边框圆角 四个角顺序是 top right bottom left
+    box-shadow:边框阴影 (灯光的照射形成的)
+    #+end_verse
 
-     border-width
+    box-shadow: h-shadow v-shadow blur spread color inset;
+    h-shadow 	必需。水平阴影的位置。允许负值。 
+    v-shadow 	必需。垂直阴影的位置。允许负值。 
+    blur 	 可选。模糊距离。 
+    spread 	可选。阴影的尺寸。 
+    color 	可选。阴影的颜色。请参阅 CSS 颜色值。
+    inset 	可选。将外部阴影 (outset) 改为内部阴影。
 
-     border-color:transparent 有宽度的不可见边框
+    #+begin_verse
+    border-image-source 	用在边框的图片的路径。(特别要注意图片是框型的,跟 border 设定要一样,就是把图片套到边框上面) 	
+    border-image-slice 	图片边框向内偏移。 	
+    border-image-width 	图片边框的宽度。 	
+    border-image-outset 	边框图像区域超出边框的量。 	
+    border-image-repeat 	图像边框是否应平铺(repeated)、铺满(rounded)或拉伸(stretched)。
+    #+end_verse
+    
+*** 外边距
+    margin
+** 文本外观    
+*** 文本属性
+    #+begin_verse
+    text-indent: -5em 2% 2px 用于块元素,行元素可以用 padding,可以继承
+    text-align: left,center,right 行内元素
+    word-spacing:定义为由空白符包围的一个字符串,中英文混合文本中。其默认值 normal 与设置值为 0 是一样的
+    letter-spacing:字间距离
+    text-transform:capitalize uppercase lowercase 
+    text-decoration:underline overline(上划线) line-through(穿透线) blink(闪烁)文本装饰
+    direction：ltr 和 rtl 文本方向
+    text-shadow:5px 5px 5px #FF0000;
+    word-wrap: 长单词,(超过一行)允许截断到下一行 break-word /normal
+    text-outline: 文本轮廓
+    #+end_verse
+    
+*** 字体
+    #+begin_verse
+    font-family: 使用字体系列,字体名中有空格时 要用引号
+    font-style:字体风格 normal italic(normal 版本的倾斜改动) oblique(字体的倾斜版本)
+    font-variant:字体变形 small-caps (另一种格式的大写英文)
+    font-weigth: bold  normal
+    font-size:默认大小是 16 像素 (16px=1em(当前尺寸,当前是 16px))
+    #+end_verse
 
-     border-radius: 边框圆角 四个角顺序是 top right bottom left
+**** 自定义字体
+      在新的 @font-face 规则中，您必须首先定义字体的名称（比如 myFirstFont），然后指向该字体文件。
+      如需为 HTML 元素使用字体，请通过 font-family 属性来引用字体的名称 (myFirstFont)：
+      #+BEGIN_SRC css
+        @font-face
+        {
+            font-family: myFirstFont;
+            src: url('Sansation_Light.ttf'),
+                 url('Sansation_Light.eot'); /* IE9+ */
+        }
 
-     box-shadow:边框阴影 (灯光的照射形成的)
-
-     box-shadow: h-shadow v-shadow blur spread color inset;
-     h-shadow 	必需。水平阴影的位置。允许负值。 
-     v-shadow 	必需。垂直阴影的位置。允许负值。 
-     blur 	 可选。模糊距离。 
-     spread 	可选。阴影的尺寸。 
-     color 	可选。阴影的颜色。请参阅 CSS 颜色值。
-     inset 	可选。将外部阴影 (outset) 改为内部阴影。
-
-     border-image-source 	用在边框的图片的路径。(特别要注意图片是框型的,跟 border 设定要一样,就是把图片套到边框上面) 	
-
-     border-image-slice 	图片边框向内偏移。 	
-
-     border-image-width 	图片边框的宽度。 	
-
-     border-image-outset 	边框图像区域超出边框的量。 	
-
-     border-image-repeat 	图像边框是否应平铺(repeated)、铺满(rounded)或拉伸(stretched)。
-**** 外边距
-     margin
-**** 外边距合并 当两个垂直外边距相遇时，它们将形成一个外边距。
-*** 定位
-**** 相对定位 (相对当前布局)
-     position:relative
-     left:-20px
-     top right bottom
-**** 绝对定位
-     元素原先在正常文档流中所占的空间会关闭，就好像元素原来不存在一样
-**** 浮动 
-**** 堆叠顺序,先要设定 position 属性
-     z-index 正数,接近用户,负数,远离用户
-**** 居中
-     #+begin_src css
-       section{
-           width:500px;
-           margin: 0 auto;
-       }
-     #+end_src
+        div
+        {
+            font-family:myFirstFont;
+        }
+    #+END_SRC
+** 链接外观
+    #+begin_verse
+    a:link - 普通的、未被访问的链接
+    a:visited - 用户已访问的链接
+    a:hover - 鼠标指针位于链接的上方
+    a:active - 链接被点击的时刻
+    #+end_verse
+    
+    text-decoration 属性大多用于去掉链接中的下划线
+** 列表外观
+    #+begin_verse
+    list-style-type: square(方块)circle,decimal
+    list-style-image: url(xxx.gif) 点,用图像替代
+    list-style-position: [ outside ,inside ]
+    #+end_verse
+    
+** 设定位置
+*** 相对定位 (相对当前布局)
+    #+begin_src css
+      position:relative
+      left:-20px
+    #+end_src
+    top right bottom
+*** 绝对定位
+      #+begin_src css
+      position:absolute
+      #+end_src
+      
+*** 浮动 
+    float
+*** 堆叠顺序,先要设定 position 属性
+    #+begin_verse
+    z-index 正数,接近用户,负数,远离用户
+    #+end_verse
+    
+*** 居中定位
+    #+begin_src css
+      section{
+          width:500px;
+          margin: 0 auto;
+      }
+    #+end_src
+** 条件规则组
+   #+begin_verse
+   @规则, 由它们的标示符指定, 每种规则都有不同的语法:
+   @charset, 定义样式表使用的字符集.
+   @import, 告诉 CSS 引擎引入一个外部样式表.
+   @namespace, 告诉 CSS 引擎必须考虑 XML 命名空间。
+   嵌套@规则, 是嵌套语句的子集,不仅可以作为样式表里的一个语句，也可以用在条件规则组里：
+   @media, 如果满足媒介查询的条件则条件规则组里的规则生效。
+   @page, 描述打印文档时布局的变化.
+   @font-face, 描述将下载的外部的字体。 
+   @keyframes, 描述 CSS 动画的中间步骤 . 
+   @supports, 如果满足给定条件则条件规则组里的规则生效。 
+   @document, 如果文档样式表满足给定条件则条件规则组里的规则生效。 (推延至 CSS Level 4 规范)
+   #+end_verse
+** 设定简单特效
 *** 转换
-    Internet Explorer 10、Firefox 以及 Opera 支持 transform 属性。
-
-    Chrome 和 Safari 需要前缀 -webkit-。
-
-    注释：Internet Explorer 9 需要前缀 -ms-。
-
+    #+begin_verse
     transform:
 
     translate()转化,平移 px em %
@@ -178,6 +202,7 @@
     transform-origin 	允许你改变被转换元素的位置
     rotateX() 元素围绕其 X 轴以给定的度数进行旋转。
     rotateY() 
+    #+end_verse
 *** 过渡 
     transition 转化,过度
     规定您希望把效果添加到哪个 CSS 属性上,可以多个属性
@@ -186,10 +211,13 @@
       div{transition:width 2s;}
       div:hover{width:300px;}
     #+END_SRC
+    #+begin_verse
     transition-property 	规定应用过渡的 CSS 属性的名称。 
     transition-duration 	定义过渡效果花费的时间。默认是 0。
     transition-timing-function 	规定过渡效果的时间曲线。默认是 "ease"。
     transition-delay 	规定过渡效果何时开始。默认是 0。
+    #+end_verse
+    
 *** 动画
     如需在 CSS3 中创建动画，您需要学习 @keyframes 规则。用户创建动画
     #+BEGIN_SRC css 
@@ -235,403 +263,11 @@
           -o-animation: myfirst 5s;	/* Opera */
       }
     #+END_SRC
-** 属性
-*** 背景
-    background 	          在一行中设置所有的背景属性 
-    backgroundAttachment 	设置背景图像是否固定或随页面滚动 
-    backgroundColor 	    设置元素的背景颜色 
-    backgroundImage 	    设置元素的背景图像 
-    backgroundPosition 	  设置背景图像的起始位置 
-    backgroundPositionX 	设置 backgroundPosition 属性的 X 坐标 
-    backgroundPositionY 	设置 backgroundPosition 属性的 Y 坐标 
-    backgroundRepeat 	    设置是否及如何重复背景图像
-*** 边框和边距
-    border             	在一行设置四个边框的所有属性 	
-    borderBottom  	    在一行设置底边框的所有属性 
-    borderBottomColor 	设置底边框的颜色 	
-    borderBottomStyle 	设置底边框的样式 	
-    borderBottomWidth 	设置底边框的宽度 	
-    borderColor     	  设置所有四个边框的颜色 (可设置四种颜色) 	
-    borderLeft       	  在一行设置左边框的所有属性 
-    borderLeftColor 	  设置左边框的颜色 	
-    borderLeftStyle 	  设置左边框的样式 	
-    borderLeftWidth 	  设置左边框的宽度 	
-    borderRight 	      在一行设置右边框的所有属性
-    borderRightColor 	  设置右边框的颜色 	
-    borderRightStyle 	  设置右边框的样式 	
-    borderRightWidth 	  设置右边框的宽度 	
-    borderStyle 	      设置所有四个边框的样式 (可设置四种样式) 
-    borderTop 	        在一行设置顶边框的所有属性 
-    borderTopColor 	    设置顶边框的颜色 		
-    borderTopStyle 	    设置顶边框的样式 		
-    borderTopWidth 	    设置顶边框的宽度 		
-    borderWidth 	      设置所有四条边框的宽度 (可设置四种宽度) 
-    margin 	            设置元素的边距 (可设置四个值)
-    marginBottom        设置元素的底边距
-    marginLeft 	        设置元素的左边距 	
-    marginRight 	      设置元素的右边据
-    marginTop 	        设置元素的顶边距 	
-    outline 	          在一行设置所有的 outline 属性 
-    outlineColor 	      设置围绕元素的轮廓颜色 	
-    outlineStyle 	      设置围绕元素的轮廓样式 	
-    outlineWidth 	      设置围绕元素的轮廓宽度 	
-    padding 	          设置元素的填充 (可设置四个值)
-    paddingBottom       设置元素的下填充
-    paddingLeft 	      设置元素的左填充
-    paddingRight 	      设置元素的右填充
-    paddingTop 	        设置元素的顶填充 	
-*** 布局
-    clear    	        设置在元素的哪边不允许其他的浮动元素 	
-    clip      	      设置元素的形状 	
-    content 	        设置元信息 	
-    counterIncrement 	设置其后是正数的计数器名称的列表。其中整数指示每当元素出现时计数器的增量。默认是 1。
-    counterReset 	    设置其后是正数的计数器名称的列表。其中整数指示每当元素出现时计数器被设置的值。默认是 0。
-    cssFloat 	        设置图像或文本将出现（浮动）在另一元素中的何处。 	
-    cursor   	        设置显示的指针类型 
-    direction 	      设置元素的文本方向 	
-    display 	        设置元素如何被显示 	inherit 父的属性继承
-    height 	          设置元素的高度 
-    markerOffset 	    设置 marker box 的 principal box 距离其最近的边框边缘的距离
-    marks 	          设置是否 cross marks 或 crop marks 应仅仅被呈现于 page box 边缘之外 	
-    maxHeight 	      设置元素的最大高度 	
-    maxWidth 	        设置元素的最大宽度 	
-    minHeight 	      设置元素的最小高度 	
-    minWidth 	        设置元素的最小宽度 	
-**** overflow 	规定如何处理不适合元素盒的内容 	
-     overflow-x:      hidden;隐藏水平滚动条
-     verticalAlign 	  设置对元素中的内容进行垂直排列 
-     visibility 	    设置元素是否可见 
-     width 	          设置元素的宽度
-*** 列表
-    listStyle 	在一行设置列表的所有属性 
-    listStyleImage 	把图像设置为列表项标记 
-    listStylePosition 改变列表项标记的位置 	
-    listStyleType 	设置列表项标记的类型
-*** 定位
-    bottom 	设置元素的底边缘距离父元素底边缘的之上或之下的距离 	
-    left       	置元素的左边缘距离父元素左边缘的左边或右边的距离 	
-    position 	把元素放置在 static, relative, absolute 或 fixed 的位置 	
-    right 	            置元素的右边缘距离父元素右边缘的左边或右边的距离 	
-    top 	            设置元素的顶边缘距离父元素顶边缘的之上或之下的距离 	
-    zIndex 	设置元素的堆叠次序
-*** 文本
-    color 	设置文本的颜色 
-    font 	在一行设置所有的字体属性 
-    fontFamily 	设置元素的字体系列。
-    fontSize 	设置元素的字体大小。
-    fontSizeAdjust 	设置/调整文本的尺寸 
-    fontStretch 	设置如何紧缩或伸展字体
-    fontStyle 	设置元素的字体样式 
-    fontVariant 	用小型大写字母字体来显示文本 
-    fontWeight 	设置字体的粗细 
-    letterSpacing 	设置字符间距 
-    lineHeight 	设置行间距 
-    quotes 	设置在文本中使用哪种引号 
-    textAlign 	排列文本 
-    textDecoration 	设置文本的修饰 
-    textIndent 	缩紧首行的文本 
-    textShadow 	设置文本的阴影效果
-    textTransform 	对文本设置大写效果 
-    whiteSpace 	设置如何设置文本中的折行和空白符 	
-    wordSpacing 	设置文本中的词间距 
-*** 表格
-    borderCollapse 	设置表格边框是否合并为单边框，或者像在标准的 HTML 中那样分离。 
-    borderSpacing 	设置分隔单元格边框的距离 
-    captionSide 	设置表格标题的位置 	
-    emptyCells 	设置是否显示表格中的空单元格
-    tableLayout 	设置用来显示表格单元格、行以及列的算法
-** 伪元素
-   :first-line 伪元素 "first-line" 伪元素用于向文本的首行设置特殊样式。
-   :first-letter 伪元素 "first-letter" 伪元素用于向文本的首字母设置特殊样式：
-   :before 伪元素 ":before" 伪元素可以在元素的内容前面插入新内容。
-   #+BEGIN_SRC css
-     :link	a:link	选择所有未访问链接
-     :visited	a:visited	选择所有访问过的链接
-     :active	a:active	选择正在活动链接
-     :hover	a:hover	把鼠标放在链接上的状态
-     :focus	input:focus	选择元素输入后具有焦点
-     :first-letter	p:first-letter	选择每个<p> 元素的第一个字母
-     :first-line	p:first-line	选择每个<p> 元素的第一行
-     :first-child	p:first-child	选择器匹配属于任意元素的第一个子元素的 <p> 元素
-     :before	p:before	在每个<p>元素之前插入内容
-     :after	p:after	在每个<p>元素之后插入内容
-     :lang(language)	p:lang(it)	为<p>元素的 lang 属性选择一个开始值
-   #+END_SRC
-** 条件规则组
-   @规则, 由它们的标示符指定, 每种规则都有不同的语法:
-
-   @charset, 定义样式表使用的字符集.
-
-   @import, 告诉 CSS 引擎引入一个外部样式表.
-
-   @namespace, 告诉 CSS 引擎必须考虑 XML 命名空间。
-
-   嵌套@规则, 是嵌套语句的子集,不仅可以作为样式表里的一个语句，也可以用在条件规则组里：
-
-   @media, 如果满足媒介查询的条件则条件规则组里的规则生效。
-
-   @page, 描述打印文档时布局的变化.
-
-   @font-face, 描述将下载的外部的字体。 
-
-   @keyframes, 描述 CSS 动画的中间步骤 . 
-
-   @supports, 如果满足给定条件则条件规则组里的规则生效。 
-
-   @document, 如果文档样式表满足给定条件则条件规则组里的规则生效。 (推延至 CSS Level 4 规范)
-* 字体类型
-** 英文字体  
-   #+begin_verse
-   "Times New Roman"
-   "华文仿宋"
-   "华文细黑"
-   "微软雅黑"
-   'New Century Schoolbook'
-   'New York'
-   Arial
-   Courier 
-   Georgia
-   Helvetica
-   Times
-   TimesNR
-   Verdana
-   sans-serif
-   serif
-   Courier New
-   Geneva
-   Helvetica
-   #+end_verse
-** 中文字体
-   #+begin_verse
-   仿宋 FangSong
-   仿宋_GB2312 FangSong_GB2312
-   儷宋 Pro LiSong Pro Light
-   儷黑 Pro LiHei Pro Medium
-   华文中宋 STZhongsong
-   华文仿宋 STFangsong
-   华文宋体 STSong
-   华文彩云 STCaiyun
-   华文新魏 STXinwei
-   华文楷体 STKaiti
-   华文琥珀 STHupo
-   华文细黑 STHeiti Light [STXihei]
-   华文细黑 STXihei
-   华文行楷 STXingkai
-   华文隶书 STLiti
-   华文黑体 STHeiti
-   宋体 SimSun
-   幼圆 YouYuan
-   微软正黑体 Microsoft JhengHei
-   微软雅黑 Microsoft YaHei
-   新宋体 NSimSun
-   新细明体 PMingLiU
-   方正姚体 FZYaoti
-   方正舒体 FZShuTi
-   标楷体 DFKai-SB
-   楷体 KaiTi
-   楷体_GB2312 KaiTi_GB2312
-   標楷體 BiauKai
-   標楷體 DFKai-SB
-   细明体 MingLiU
-   蘋果儷中黑 Apple LiGothic Medium
-   蘋果儷細宋 Apple LiSung Light
-   隶书 LiSu
-   黑体 SimHei
-   "方正姚体" 
-   "黑体"
-   #+end_verse
-* less 动态样式语言
-** 变量
-   变量允许我们单独定义一系列通用的样式，然后在需要的时候去调用。所以在做全局样式调
-   整的时候我们可能只需要修改几行代码就可以了。
-
-   #+BEGIN_SRC less
-@color: #4D926F;
-
-#header {
-    color: @color;
-}
-h2 {
-    color: @color;
-}
-编译后的 CSS：
-
-#header {
-    color: #4D926F;
-}
-h2 {
-    color: #4D926F;
-}
-   #+END_SRC
-** 混合（Mixins）
-   混合可以将一个定义好的 class A 轻松的引入到另一个 class B 中，从而简单实现 class B 继承 class A 中的所有属性。我们还可以带参数地调用，就像使用函数一样。
-
-   LESS 源码：
-   #+BEGIN_SRC less
-
-.rounded-corners (@radius: 5px) {
-    -webkit-border-radius: @radius;
-    -moz-border-radius: @radius;
-    -ms-border-radius: @radius;
-    -o-border-radius: @radius;
-    border-radius: @radius;
-}
-
-#header {
-    .rounded-corners;
-}
-#footer {
-    .rounded-corners(10px);
-}
-编译后的 CSS：
-
-#header {
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    -ms-border-radius: 5px;
-    -o-border-radius: 5px;
-    border-radius: 5px;
-}
-#footer {
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    -ms-border-radius: 10px;
-    -o-border-radius: 10px;
-    border-radius: 10px;
-}
-
-   #+END_SRC
-** 嵌套
-   我们可以在一个选择器中嵌套另一个选择器来实现继承，这样很大程度减少了代码量，并且代码看起来更加的清晰。
-
-   LESS 源码：
-
-   #+BEGIN_SRC less
-
-#header {
-    h1 {
-        font-size: 26px;
-        font-weight: bold;
-    }
-    p {
-        font-size: 12px;
-        a {
-            text-decoration: none;
-            &:hover {
-                border-width: 1px
-            }
-        }
-    }
-}
-编译后的 CSS：
-
-#header h1 {
-    font-size: 26px;
-    font-weight: bold;
-}
-#header p {
-    font-size: 12px;
-}
-#header p a {
-    text-decoration: none;
-}
-#header p a:hover {
-    border-width: 1px;
-}
-
-   #+END_SRC
-** 函数和运算
-   运算提供了加，减，乘，除操作；我们可以做属性值和颜色的运算，这样就可以实现属性值之间的复杂关系。LESS 中的函数一一映射了 JavaScript 代码，如果你愿意的话可以操作属性值。
-
-   LESS 源码：
-
-   @the-border: 1px;
-   @base-color: #111;
-   @red:        #842210;
-
-   #header {
-   color: (@base-color * 3);
-   border-left: @the-border;
-   border-right: (@the-border * 2);
-   }
-   #footer {
-   color: (@base-color + #003300);
-   border-color: desaturate(@red, 10%);
-   }
-   编译后的 CSS：
-
-   #header {
-   color: #333;
-   border-left: 1px;
-   border-right: 2px;
-   }
-   #footer {
-   color: #114411;
-   border-color: #7d2717;
-   }
-   更多说明
-   更多更详细的语法特性请参见语言文档
-
-** 快速上手
-   LESSCSS 的使用是很容易的，首先，使用你最常使用的代码编辑器，按 LESSCSS 的语法规
-   则写好.less 文件，接下来，使用编译工具它编译成.css，最后再引入页面即可。
-
-   GUI 编译工具
-   为方便起见，建议初学者使用 GUI 编译工具来编译.less 文件，以下是一些可选 GUI 编译工具：
-
-
-   Codekit(Mac)
-   一款自动编译 Less/Sass/Stylus/CoffeeScript/Jade/Haml 的工具，含语法检查、图片优化、自动刷新等附加功能。下载地址 http://incident57.com/codekit/
-   WinLess(Win)
-   一款 LESS 编译软件。下载地址 http://winless.org/
-
-   SimpleLess(Win/Mac/Linux)
-   一款 LESS 编译软件。下载地址 http://wearekiss.com/simpless
-*** Node.js 库
-    LESSCSS 官方有一款基于 Node.js 的库，用于编译.less 文件。
-    使用时，首先全局安装 less（部分系统下可能需要在前面加上 sudo 切换为超级管理员权限）：
-
-    npm install -g less
-    接下来就可以使用 lessc 来编译.less 文件了：
-
-    lessc example/example.less example/example.css
-    更多选项可以直接运行 lessc 查看说明。
-
-    浏览器端使用
-    LESSCSS 也可以不经编译，直接在浏览器端使用。
-
-    使用方法：
-
-    下载 LESSCSS 的.js 文件，例如 lesscss-1.4.0.min.js。
-    在页面中引入.less 文件
-
-    <link rel="stylesheet/less" href="example.less" />
-    需要注意 rel 属性的值是 stylesheet/less，而不是 stylesheet。
-
-    引入第 1 步下载的.js 文件
-
-    <script src="lesscss-1.4.0.min.js"></script>
-    需要特别注意的是，由于浏览器端使用时是使用 ajax 来拉取.less 文件，因此直接在本机文件系统打开（即地址是 file://开头）或者是有跨域的情况下会拉取不到.less 文件，导致样式无法生效。
-
-    还有一种情况容易导致样式无法生效，就是部分服务器（以 IIS 居多）会对未知后缀的文件返回 404，导致无法正常读取.less 文件。解决方案是在服务器中为.less 文件配置 MIME 值为 text/css（具体方法请搜索）。或者还有一种更简单的方法，即是直接将.less 文件改名为.css 文件即可。
-
-    更多说明
-    更多使用上的说明请参见使用说明。
-
-
-    @import-once 被移除，现在@import 的默认行为就是只引入一次（和旧版本@import-once 功能一样）。
-    像(~".myclass_@{index}") {...}这样在选择器中插入变量的语法不再被支持，请使用.myclass_@{index} {...}来代替，这种新语法在 1.3.1 以上版本中都支持。
-    用于浏览器的 less.js 不再包含 es5-shim.js。因为我们之前用的 es5-shim.js 版本中有一些错误，而新版本的体积又明显变大了。使用时请根据需要选用 es5-shim 或者是只在现代浏览器中使用。
-    引入了一种“严格运算模式”（可选），在严格运算模式中，数学运算必须被括号包裹，如：
-
-    (1 + 1)  // 2
-    1 + 1    // 1+1
-    在 1.4.0 中，这个选项默认被关闭，但我们希望在未来的某个时间将它默认设置为开启。我们建议你升级代码的写法，并打开严格运算模式。（在命令行中加上-strict-math=on 或者是在 JavaScript 代码中加入 strictMath:true。）带括号的写法与旧版的 less 编译器兼容。
-
-    引入了一种“严格单位模式”（strictUnits:true 或者 strict-units=on），这将强制让 lessc 验证单位的合法性。例如 4px/2px 结果为 2，而不是 2px，而 4em/2px 将报错。目前没有将这个选项默认打开的计划，但它可能在排查 bug 的时候有用。
-    单位的运算功能已完成，所以(4px * 3em) / 4px 以前结果是 3px，但现在是 3em。但是，我们没有取消有单位数字向无单位数字转换的功能，除非“严格单位模式”被开启。
-    你可以现在就将选择器中插入变量、运算、单位的涉及到的变化应用到代码中去，这些变化能很好地与 less 1.3.3 兼容。
-* 技巧
+** 尺寸
+   font-size:默认大小是 16 像素 (16px=1em(当前尺寸,当前是 16px))
+   相对尺寸 1em=16px。那么 12px=0.75em,10px=0.625em
+   rem
+* 外观及排版技巧
 ** 样式初始化
    为了消除各浏览器对 css 默认的设置，保持网页在各浏览器中的外观保持一致
 *** 1.最耗资源的，最简单的
@@ -843,37 +479,37 @@ h2 {
     #+end_src
 ** 声明图片的尺寸
    为了提高页面渲染的速度，声明图片的尺寸是很好的办法：
- #+begin_src html
- <img src="img/logo.png" style="width: 100px; height: 100px;">
- #+end_src
+   #+begin_src html
+     <img src="img/logo.png" style="width: 100px; height: 100px;">
+   #+end_src
 
- 因为浏览器是分开下载各个图片的，声明了尺寸就可以提前确定排版，否则等到图片下载
- 完成后才知道图片的尺寸信息，渲染过程就明显变慢了。
+   因为浏览器是分开下载各个图片的，声明了尺寸就可以提前确定排版，否则等到图片下载
+   完成后才知道图片的尺寸信息，渲染过程就明显变慢了。
 
- 还有就是，声明图片尺寸的时候，应该是实际的尺寸。例如：一个图片实际尺寸是 50*50，
- 但是你希望它小一点，把尺寸声明为 20*20，那么调整图片尺寸的过程就会耗费 CPU 资源、
- 内存资源等，使渲染速度变慢。其次，这还会避免下载一个不必要的较大的图片，手机流
- 量是有限的，这也是为用户节约资源。
+   还有就是，声明图片尺寸的时候，应该是实际的尺寸。例如：一个图片实际尺寸是 50*50，
+   但是你希望它小一点，把尺寸声明为 20*20，那么调整图片尺寸的过程就会耗费 CPU 资源、
+   内存资源等，使渲染速度变慢。其次，这还会避免下载一个不必要的较大的图片，手机流
+   量是有限的，这也是为用户节约资源。
 ** 使用 css 精灵（sprites）
    css 精灵即把多个小图片放到一个大图片中，这样就可以减少 http 请求的数量。使用
    时，就进行相应的裁剪，这在各大网站中常被用到。放在一个大图片中，也更容易对图
    片进行统一管理，这对于按钮、导航图标等非常合适。
 
-#+begin_src css
-  #navcontainer li {
-      background-image: url('spritebg.jpg'); /* single image */
-  }
-  #navcontainer ul li:nth-child(1) {
-      background-position: -130px -700px; /* position = xpos ypos */
-  }
-  #navcontainer ul li:nth-child(2) {
-      background-position: -130px -718px;
-  }
-  #navcontainer a {
-      width: 250px; /* size */
-      height: 18px;
-  }
-#+end_src
+   #+begin_src css
+     #navcontainer li {
+         background-image: url('spritebg.jpg'); /* single image */
+     }
+     #navcontainer ul li:nth-child(1) {
+         background-position: -130px -700px; /* position = xpos ypos */
+     }
+     #navcontainer ul li:nth-child(2) {
+         background-position: -130px -718px;
+     }
+     #navcontainer a {
+         width: 250px; /* size */
+         height: 18px;
+     }
+   #+end_src
 ** 启用硬件加速
    如果你的应用中含有动画，那么就可以启用硬件加速功能来提升用户体验。默认情况下，
    大多数浏览器是没有开硬件加速的，使用该功能的典型情况是 WebGL 组件、3D 动画等。
@@ -905,7 +541,8 @@ h2 {
  但是开启硬件加速并不会加速其他元素的执行，它只是加速了动画的转换（使用 GPU）。
  最后，硬件的资源是很宝贵的，有必要的时候才考虑使用。
 ** 图片自适应
- 首先是设置 background:url(图片地址) 0 0 no-repeat scroll transparent;background-size:100% 100%;
+ 首先是设置 background:url(图片地址) 0 0 no-repeat scroll
+ transparent;background-size:100% 100%;
 
  #+begin_src html
    <div class="msg_desc">
@@ -916,14 +553,7 @@ h2 {
  这里就把图片固定在 msg_desc 里面了，方便吧。
  -------------
  注：在 html 里面插入图片，如果想让图片自适应屏幕的小而不是宽高固定不变可以在 css 代码里加入
- img { height: auto; width: auto\9; width:100%; }
+ img { height: auto; width: auto; width:100%; }
  
  width:auto;是宽度自动的意思。
 
- \9 是 hack css 的一种写法，这种在正常 css 代码后面加"\9"的方式，只有 IE 浏览器才能识别，
- 其他浏览器会忽略这条语句。这样就能做到差异化浏览器，来达到兼容浏览器的目的。
-
-* 尺寸
-  font-size:默认大小是 16 像素 (16px=1em(当前尺寸,当前是 16px))
-  相对尺寸 1em=16px。那么 12px=0.75em,10px=0.625em
-  rem

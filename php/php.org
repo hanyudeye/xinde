@@ -1,4 +1,4 @@
-#+TITLE: php 使用简介
+#+TITLE: php 简介
 #+DESCRIPTION: 关于 php 的文档啦
 #+TAGS: php
 #+CATEGORIES: 语言使用
@@ -222,6 +222,7 @@
       echo Maths::PI;
     #+end_src
 **** 预定义常量
+     #+begin_verse
      __FILE__  当前的文件名  在哪个文件中使用，就代表哪个文件名称  
      __LINE__  当前的行数  在代码的哪行使用，就代表哪行的行号  
      __FUNCTION__  当前的函数名  在哪个函数中使用，就代表哪个函数名  
@@ -238,87 +239,35 @@
      E_WARNING  2  警告，不会导致 PHP 脚本运行终止  
      E_PARSE  4  解析错误，由程序解析器报告  
      E_NOTICE  8  关键的错误，例如变量末初始化  
-     M_PI  3.1415926535898  Π  
+     M_PI  3.1415926535898 π   
      PHP_EOL 回车断行符
+     #+end_verse
 *** 操作符
-   算术，逻辑，位 
+    算术，逻辑，位 
    
-   加减乘除余数平方
-   #+begin_verse
+    加减乘除余数平方
+    #+begin_verse
    + - * /  % **
-   #+end_verse
+    #+end_verse
    
-   错误控制 ,在表达式前面加 ~@~ 就不报错了。
+    错误控制 ,在表达式前面加 ~@~ 就不报错了。
    
-   类型操作 是否类的实例
-#+begin_src php
-  class MyClass
-  {
-  }
-  $a = new MyClass;
-  var_dump($a instanceof MyClass);
-#+end_src
+    类型操作 是否类的实例
+    #+begin_src php
+      class MyClass
+      {
+      }
+      $a = new MyClass;
+      var_dump($a instanceof MyClass);
+    #+end_src
 
-数组操作
-| $a + $b   | 合并,键名去重,保留前一个 |
-| $a == $b  | 判等,键值对一样          |
-| $a === $b | 判等,连顺序也一样        |
-| $a != $b  | 判不等                   |
-| $a <> $b  | 判不等                   |
-| $a !== $b | 完全不等                 |
-*** 控制结构
-**** 分支 
-**** 循环
-**** 加载 (参数是路径)
-***** require_once : 
-      #+begin_src php
-        // A.php
-        <?php namespace A_NAMESPACE;
-
-        function foo()
-        {
-            // What foo does...
-        }
-        ?>
-
-        // B.php
-
-        <?php
-        require_once( 'A.php' );
-        use \A_NAMESPACE as common;
-
-        common\foo(); // Does that foo thing...
-
-        foo();  // Fatal Error...
-        ?>
-      #+end_src
-
-      include_once:
-      #+begin_src php
-        <?php
-        include_once "a.php"; // this will include a.php
-        include_once "A.php"; // this will include a.php again! (PHP 4 only)
-        ?>
-      #+end_src
-***** 自动加载
-      找不到的定义会调用此文件 
-    : 现在不推介用__autoload()了。
-      #+begin_src php
-        // autoload.php
-        function __autoload($classname) {
-            if ($classname === 'xxx.php'){
-                $filename = "./". $classname .".php";
-                include_once($filename);
-            } else if ($classname === 'yyy.php'){
-                $filename = "./other_library/". $classname .".php";
-                include_once($filename);
-            } else if ($classname === 'zzz.php'){
-                $filename = "./my_library/". $classname .".php";
-                include_once($filename);
-            }
-            // blah
-        }
-      #+end_src
+    数组操作
+    | $a + $b   | 合并,键名去重,保留前一个 |
+    | $a == $b  | 判等,键值对一样          |
+    | $a === $b | 判等,连顺序也一样        |
+    | $a != $b  | 判不等                   |
+    | $a <> $b  | 判不等                   |
+    | $a !== $b | 完全不等                 |
 *** 函数
     匿名函数: 只用一次的函数，命名浪费了名字空间
     
@@ -437,7 +386,6 @@
 
 *** 命名空间
     #+begin_verse
-    封装项目的方式,跟文件的目录组织差不多
     php 中，命名空间解决两个问题，一个是整体用命名空间，另一个是局部用别名
     不区分大小写  
     使用命名空间 不能解决加载的问题，用自动加载
@@ -475,6 +423,56 @@
       use constant Namespace\CONST_NAME;
       echo CONST_NAME;
 #+end_src
+*** 加载
+**** require_once : 
+     #+begin_src php
+       // A.php
+       <?php namespace A_NAMESPACE;
+
+       function foo()
+       {
+           // What foo does...
+       }
+       ?>
+
+       // B.php
+
+       <?php
+       require_once( 'A.php' );
+       use \A_NAMESPACE as common;
+
+       common\foo(); // Does that foo thing...
+
+       foo();  // Fatal Error...
+       ?>
+     #+end_src
+
+     include_once:
+     #+begin_src php
+       <?php
+       include_once "a.php"; // this will include a.php
+       include_once "A.php"; // this will include a.php again! (PHP 4 only)
+       ?>
+     #+end_src
+**** 自动加载
+     找不到的定义会调用此文件 
+     : 现在不推介用__autoload()了。
+     #+begin_src php
+       // autoload.php
+       function __autoload($classname) {
+           if ($classname === 'xxx.php'){
+               $filename = "./". $classname .".php";
+               include_once($filename);
+           } else if ($classname === 'yyy.php'){
+               $filename = "./other_library/". $classname .".php";
+               include_once($filename);
+           } else if ($classname === 'zzz.php'){
+               $filename = "./my_library/". $classname .".php";
+               include_once($filename);
+           }
+           // blah
+       }
+     #+end_src
 *** 错误
 **** 使用 PHP 处理错误 
      #+begin_verse

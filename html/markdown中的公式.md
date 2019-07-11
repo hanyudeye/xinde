@@ -1,28 +1,3 @@
----
-
-#Cmd Markdown 公式指导手册
-
-标签： Tutorial
-
-> 2018-03-20 补档：
-> 收到很多小伙伴对本文的源文档转载需求，故传了一份 md 文件，请按需 [下载](http://file.ericp.cn/work/mathjax_cmdeditor.md) 。
-> 本文固定链接: https://www.zybuluo.com/codeep/note/163962
-
----
-> 点击跳转至 [Cmd Markdown 简明语法手册](https://www.zybuluo.com/mdeditor?url=https://www.zybuluo.com/static/editor/md-help.markdown) ，立刻开始 Cmd Markdown 编辑阅读器的记录和写作之旅！
-
----
-
-> 本文为 MathJax 在 Cmd Markdown 环境下的语法指引。
-
-> Cmd Markdown 编辑阅读器支持 $\LaTeX​$ 编辑显示支持，例如：$\sum_{i=1}^n a_i=0​$，访问 [MathJax](http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference) 以参考更多使用方法。
-
-> 右键点击每一个公式，选择 **[Show Math As] → [TeX Commands]** 以查看该公式的命令详情。
-
-[TOC]
-
----
-
 # 一、公式使用参考
 
 ## 1．如何插入公式
@@ -1306,11 +1281,3 @@ Use `\,`, to insert a thin space before differentials; without this $\TeX$ will 
   \iiint_V f(x){\rm d}z {\rm d}y {\rm d}x & \iiint_V f(x)\,{\rm d}z\,{\rm d}y\,{\rm d}x
   \end{array}
 
----
-
-感谢您花费时间阅读这份指导手册，本手册内容可能有疏漏之处，欢迎更改指正。
-更多语法请参见：[Cmd Markdown 简明语法手册](https://www.zybuluo.com/mdeditor?url=https://www.zybuluo.com/static/editor/md-help.markdown)，[Cmd Markdown 高阶语法手册](https://www.zybuluo.com/mdeditor?url=https://www.zybuluo.com/static/editor/md-help.markdown#cmd-markdown-高阶语法手册)。
-祝您记录、阅读、分享愉快！
-
-Drafted & Translated by [Eric P.](https://ericp.cn/)
-2015-10-02

@@ -6,20 +6,27 @@
 
 * emacs 
 ** 简介 
-   最初由大神  Richard Stallman 于 1975 年在 MIT 协同盖伊·史提尔二世共同完成的一款 ~文字修改软件~ 。
-   
    #+begin_verse
-   他是一款可扩展的编辑器,因为他本身又是一个 ~elisp~ 程序语言,我们在写文字的时候，可以写写 ~elisp~ 脚本来增加一点快捷操作。
+   最初由大神  *Richard Stallman* 于 1975 年在 MIT 协同 *盖伊·史提尔二世* 共同完成的一款 ~文字修改软件~ 。
+   源自 Editor MACroS，宏编辑器 , 宏是大的意思，就是自己可以 ~放大功能~ 的一款编辑器。
+   #+end_verse
+   #+begin_quote
+   相当于 *Stallman* 大神把编辑器搭好了基本框架，你可以在上面 ~继续搭积木~ 来扩展功能。
+   积木的材料是 ~emacs lisp~ 专用语言。
+   #+end_quote
+   
+#+HTML: <!-- more -->
+   #+begin_verse
    他除了底层是 ~C~ 写的,其他的扩展都是 ~elisp~ 写的,扩展有很多，可以找来用用。
    键盘上的 ~Alt~ 键，在 emacs 中 称 ~Meta~ 键，简写 @@html:<kbd>@@ M @@html:</kbd>@@  (由于古老的历史) 
    初学者帮助，（help-with-tutorial）,快捷键为  @@html:<kbd>@@ C-h t @@html:</kbd>@@ 
    #+end_verse
    
    #+begin_quote
-   这个编辑器的基本用法是你输入文字，看到哪些要更改的就执行要如何更改的命令，就像 ~ps~ 给选区加 ~滤镜~ 一样 , 没有那个滤镜就要自己写或者找找了。
+   实现方法可能是： 此程序监视键盘输入，判断输入是否绑定特定的函数，然后执行函数。如此循环。你要做的是写些函数绑定自己的 ~键盘输入~ 。
+   下面是已绑定或未绑定的函数( 命令 )。
    #+end_quote
    
-#+HTML: <!-- more -->
 ** 选项
    | +<行号>          | 将光标移动到制定行号的行；                              |
    | q                | 不加载初始化文件                                        |
@@ -31,7 +38,6 @@
    | script=file      | 执行文件                                                |
    | insert=file      | 插入文件                                                |
 ** 屏幕结构
-   从上往下
       #+begin_verse
       - 菜单 (顶部)
       - 工具栏(顶部)
@@ -129,7 +135,7 @@
     It can be toggled on and off with toggle-input-method, bound to C-\ and C-<.
 
 ** 文本操作命令
-*** Mark (标记) 选中一段文本
+*** Mark (标记) 
     图形窗口下直接用鼠标选中就可以 
     #+begin_verse
     命令行下包括以下步骤
@@ -192,46 +198,77 @@
     插入 16 进制     ~hexl-insert-hex-char~
 
 ** 编码 
-   一般能正常的理解编码，当乱码的时候，查看下文字的编码信息 ~what-cursor-position~ 
+   #+begin_verse
+   当乱码的时候，查看下文字的编码信息 ~what-cursor-position~ 
    然后在网上查查那个数字是什么汉字 ， https://www.qqxiuzi.cn/bianma/zifuji.php ,可能会失效，网上搜个。
-  
-   1. 命令行编码转换用 ~iconv~ ,如  
-      iconv -f 原编码 -t 转换后的编码 inputfile -o outputfile
-      #+begin_src js
-        iconv -f gb2312 -t utf-8 file > filenew
-      #+end_src
-   2. emacs 手动设置编码格式 ~set-buffer-file-coding-system~  
-
-** 服务 (把这编辑器作为一个服务程序)
-- 开启服务
-  1. 在 emacs 中 server-start, 或放在 init file 中,
-  2.用 --daemon 作为启动 emacs 的参数
-- 设置客户端
-  EDITOR=emacsclient -c
+   手动设置编码格式 ~set-buffer-file-coding-system~  
+   #+end_verse
+   
+** 服务 
+   - 开启服务
+     1. 在 emacs 中 server-start, 或放在 init file 中,
+     2. 用 --daemon 作为启动 emacs 的参数
+   - 设置客户端
+     EDITOR=emacsclient -c
 ** 扩展
    #+begin_verse
-  两步 1 下载，2 使用  
-  有些使用前要配置下，看扩展的帮助
-  #+end_verse
-  
+   两步 1 下载，2 使用  
+   #+end_verse
 *** 列出扩展 list-packages
-*** 重新安装包 package-reinstall
+*** 重新安装 package-reinstall
 *** 加载扩展
-    require <sysbol name>
-    
-    load load-path
-    
-    autoload (调用时加载)
-    
-    (load 'auto-complete-autoloads)
-    包管理器 elpa(Emacs package system)
+**** load-file
+     #+begin_src elisp
+       (load-file "~/elisp/foo.el")
+     #+end_src
+**** require
+     #+BEGIN_SRC emacs-lisp
+       ;; Your code goes here ...
+
+       (provide 'my-feature)
+     #+END_SRC
+
+     #+BEGIN_SRC emacs-lisp
+       (add-to-list 'load-path "/some/path/")
+       (require 'my-feature)
+     #+END_SRC
+
+**** Auto-loading
+     文件 helm-autoloads.el
+     #+BEGIN_SRC emacs-lisp
+       ;;;###autoload  ;;这个是 magic 注释,自动生成
+       (defun my-function ()
+         ;; Source code...
+         )
+     #+END_SRC
+
+     #+BEGIN_SRC emacs-lisp
+       ;;;###autoload
+       (require 'helm)
+     #+END_SRC
+**** use-package
+     #+BEGIN_SRC emacs-lisp
+       (use-package helm
+         :defer t
+         :init
+         ;; Code to execute before Helm is loaded
+         :config
+         ;; Code to execute after Helm is loaded
+         )
+     #+END_SRC
+
+
+     #+BEGIN_SRC emacs-lisp
+       (use-package ruby-mode
+         :mode "\\.rb\\'")
+     #+END_SRC
+
 *** 字节编译 byte-recompile-directory
 ** 排错
    使用函数 debug-on-error,就会捕捉错误，重新执行下错误内容就捕捉到了
 
 ** 调试
    使用 GUD (Grand Unified Debugger) 提供统一接口
-
 *** 开启 GUD 
 **** gdb (开启一个多界面的调试器,IDE-like) 
 **** gud-gdb 

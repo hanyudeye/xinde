@@ -1,86 +1,46 @@
-* docker 容器中的程序
-  
-( client )    ======= ( server)  ======== (容器 集装箱 )  
- ( 执行 )                    ( 管理 )                        私人环境                
-                                  2375 
-                                                                      
-差别   docker 的函数调用是操作系统提供的                                                                    
-           虚拟机 的函数调用是安装环境的操作系统提供的
+#+TITLE: Docker 简介
+#+DESCRIPTION: Docker 简介
+#+TAGS: Docker 
+#+CATEGORIES: 软件使用
+
+
+* docker 
+** 简介 
+   软件虚拟机 , 不是不同系统的软件不兼容嘛，这个 docker 就是创建跨平台软件的。
+   在 docker 概念里，软件叫做 ~镜像~ , 执行的软件进程 叫  ~容器~ 。
+   
 ** 基础 
 *** 安装与启动
 **** 安装
       #+begin_src shell
-        sudo	apt install	docker.io
-        sudo	ln	-sf	/usr/bin/docker.io	/usr/local/bin/docker
-        sudo	sed	-i	'$acomplete	-F	_docker	docker'	/etc/bash_completion.d/docker.io
+        sudo	apt install	docker
       #+END_SRC
 **** 启动服务
-     sudo	service	docker	start
-*** 运作过程
-   1. The Docker client contacted the Docker daemon.
-   2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
-   3. The Docker daemon created a new container from that image which runs the executable that produces the output you are currently reading.
-   4. The Docker daemon streamed that output to the Docker client, which sent it to your terminal.
-
-*** 镜像库 https://hub.docker.com
-** 使用 
-   attach    Attach to a running container            
-   build     Build an image from a Dockerfile              # 通过 Dockerfile 定制镜像
-   commit    Create a new image from a container's changes # 提交当前容器为新的镜像
-   cp        Copy files/folders from the containers filesystem to the host path # 从容器中拷贝指定文件或者目录到宿主机中
-   create    Create a new container                        # 创建一个新的容器，同 run，但不启动容器
-   diff      Inspect changes on a container's filesystem   # 查看 docker 容器变化
-   events    Get real time events from the server          # 从 docker 服务获取容器实时事件
-   exec      Run a command in an existing container        # 在已存在的容器上运行命令
-   export    Stream the contents of a container as a tar archive # 导出容器的内容流作为一个 tar 归档文件[对应 import ]
-    history   Show the history of an image                  # 展示一个镜像形成历史
-    images    List images                                   # 列出系统当前镜像
-    import    Create a new filesystem image from the contents of a tarball # 从 tar 包中的内容创建一个新的文件系统映像[对应 export]
-    info      Display system-wide information               # 显示系统相关信息
-    inspect   Return low-level information on a container   # 查看容器详细信息
-    kill      Kill a running container                      # kill 指定 docker 容器
-    load      Load an image from a tar archive              # 从一个 tar 包中加载一个镜像[对应 save]
-    login     Register or Login to the docker registry server # 注册或者登陆一个 docker 源服务器
-    logout    Log out from a Docker registry server         # 从当前 Docker registry 退出
-    logs      Fetch the logs of a container                 # 输出当前容器日志信息
-    port      Lookup the public-facing port which is NAT-ed to PRIVATE_PORT
-              # 查看映射端口对应的容器内部源端口
-    pause     Pause all processes within a container        # 暂停容器
-    ps        List containers                               # 列出容器列表
-    pull      Pull an image or a repository from the docker registry server
-              # 从 docker 镜像源服务器拉取指定镜像或者库镜像
-    push      Push an image or a repository to the docker registry server
-              # 推送指定镜像或者库镜像至 docker 源服务器
-    restart   Restart a running container                   # 重启运行的容器
-    rm        Remove one or more containers                 # 移除一个或者多个容器
-    rmi       Remove one or more images                 
-              # 移除一个或多个镜像[无容器使用该镜像才可删除，否则需删除相关容器才可继续或 -f 强制删除]
-    run       Run a command in a new container
-              # 创建一个新的容器并运行一个命令
-    save      Save an image to a tar archive                # 保存一个镜像为一个 tar 包[对应 load]
-    search    Search for an image on the Docker Hub         # 在 docker hub 中搜索镜像
-    start     Start a stopped containers                    # 启动容器
-    stop      Stop a running containers                     # 停止容器
-    tag       Tag an image into a repository                # 给源中镜像打标签
-    top       Lookup the running processes of a container   # 查看容器中运行的进程信息
-    unpause   Unpause a paused container                    # 取消暂停容器
-    version   Show the docker version information           # 查看 docker 版本号
-    wait      Block until a container stops, then print its exit code   
-              # 截取容器停止时的退出状态值
-              Run 'docker COMMAND --help' for more information on a command.
-** image 操作
-*** 查找镜像
+     #+begin_src sh
+       sudo	service	docker	start
+     #+end_src
+     
+*** 库 https://hub.docker.com
+** 镜像操作
+*** 查找
+    #+begin_src sh
     docker search ubuntu
     docker search -s 100 ubuntu # 查找 star 数至少为 100 的镜像，找出只有官方镜像 start 数超过 100，默认不加 s 选项找出所有相关 ubuntu 镜像
-*** 列出镜像
+    #+end_src
+*** 列出
+    #+begin_src sh
     sudo docker images -a # 显示当前系统所有镜像，包括过渡层镜像 
     sudo docker images ubuntu # 显示当前系统 docker ubuntu 库中的所有镜像
-*** 获取镜像
-    $sudo	docker	pull	ubuntu:12.04
-    相当于
-    $sudo	docker	pull	registry.hub.docker.com/ubuntu:12.04	 	
-    $sudo	docker	pull	dl.dockerpool.com:5000/ubuntu:12.04
-*** 构建镜像
+    #+end_src
+    
+*** 获取
+    #+begin_src sh
+    sudo	docker	pull	ubuntu:12.04
+    # 相当于
+    sudo	docker	pull	registry.hub.docker.com/ubuntu:12.04	 	
+    #+end_src
+
+*** 构建
 **** Dockerfile   
     #+BEGIN_SRC docker
       #	T his	is	a	comment
@@ -94,22 +54,21 @@
      $	sudo	docker	build	-t="ouruser/sinatra:v2"	.
 
  还可以利用 ADD 命令复制本地文件到镜像;用 EXPOSE 命令来向外部开放端口;用 CMD 命令来描述容器启动后运行的程序等。例如
- #+BEGIN_SRC docker
+ #+BEGIN_SRC Dockerfile
    #	put	my	local	web	site	in	myApp	folder	to	/var/www
    ADD	myApp	/var/www
    #	expose	httpd	port
    EXPOSE	80
    #	the	command	to	run
    CMD	["/usr/sbin/apachectl",	"-D",	"FOREGROUND"]
- #+END_SRC
+   #+END_SRC
 **** 修改镜像标签
  	   sudo	docker	tag	5db5f8471261	ouruser/sinatra:devel
  	   sudo	docker	images	ouruser/sinatra
-*** 删除镜像 
-    sudo docker rmi --help
-    Usage: docker rmi IMAGE [IMAGE...] Remove one or more images
-    -f, --force=false Force removal of the image # 强制移除镜像不管是否有容器使用该镜像 
-    --no-prune=false Do not delete untagged parents # 不要删除未标记的父镜像 
+*** 删除
+    #+begin_src sh
+      docker rmi IMAGE [IMAGE...] Remove one or more images
+    #+end_src
 *** 导入导出
     #+BEGIN_SRC shell
       sudo	docker	ps	-a
@@ -117,46 +76,29 @@
       7691a814370e								ubuntu:14.04								"/bin/bash"									36	hours	ago								Exited	(0)	21	hours	a
       sudo	docker	export	7691a814370e	>	ubuntu.tar
     #+END_SRC
-    #+BEGIN_SRC bash
+    #+BEGIN_SRC sh
       cat	ubuntu.tar	|	sudo	docker	import	-	test/ubuntu:v1.0
-      sudo	docker	images
     #+END_SRC
 *** 从本地文件系统导入
-    sudo	cat	ubuntu-14.04-x86_64-minimal.tar.gz|docker	import	-	ubuntu:14.04
-*** 4、创建镜像
-创建镜像有很多方法，用户可以从 Docker Hub 获取已有镜像并更新，也可以利用本地文件
-系统创建一个。
-**** 4.1 修改已有镜像
-先使用下载的镜像启动容器。
+    #+begin_src sh
+      cat	ubuntu-14.04-x86_64-minimal.tar.gz|docker	import	-	ubuntu:14.04
+    #+end_src
+    
+*** 创建镜像
+**** 修改已有镜像
+     $ sudo docker run -t -i training/sinatra /bin/bash
+     
+     $ sudo docker commit -m "Added json gem" -a "Docker Newbee" 0b2616b0e5a8 ouruser/sinatra:v2
+     
+     其中，-m 来指定提交的说明信息，跟我们使用的版本控制工具一样；-a 可以指定更
+     新的用户信息；之后是用来创建镜像的容器的 ID；最后指定目标镜像的仓库名和 tag
+     信息。创建成功后会返回这个镜像的 ID 信息。
+**** 利用 Dockerfile 来创建镜像
+     使用 docker commit 来扩展一个镜像比较简单，但是不方便在一个团队中分享。我们可以
+     使用 docker build 来创建一个新的镜像。为此，首先需要创建一个 Dockerfile，包含一
+     些如何创建镜像的指令。
 
-$ sudo docker run -t -i training/sinatra /bin/bash
-root@0b2616b0e5a8:/#
-注意：记住容器的 ID，稍后还会用到。
-
-在容器中添加 json 和 gem 两个应用。
-
-root@0b2616b0e5a8:/# gem install json
-当结束后，我们使用 exit 来退出，现在我们的容器已经被我们改变了，使用 docker commit 命令来提交更新后的副本。
-
-$ sudo docker commit -m "Added json gem" -a "Docker Newbee" 0b2616b0e5a8 ouruser/sinatra:v2
-4f177bd27a9ff0f6dc2a830403925b5360bfe0b93d476f7fc3231110e7f71b1c
-其中，-m 来指定提交的说明信息，跟我们使用的版本控制工具一样；-a 可以指定更新的用户信息；之后是用来创建镜像的容器的 ID；最后指定目标镜像的仓库名和 tag 信息。创建成功后会返回这个镜像的 ID 信息。
-
-使用 docker images 来查看新创建的镜像。
-
-$ sudo docker images
-REPOSITORY          TAG     IMAGE ID       CREATED       VIRTUAL SIZE
-training/sinatra    latest  5bc342fa0b91   10 hours ago  446.7 MB
-ouruser/sinatra     v2      3c59e02ddd1a   10 hours ago  446.7 MB
-ouruser/sinatra     latest  5db5f8471261   10 hours ago  446.7 MB
-之后，可以使用新的镜像来启动容器
-
-$ sudo docker run -t -i ouruser/sinatra:v2 /bin/bash
-root@78e82f680994:/#
-4.2 利用 Dockerfile 来创建镜像
-使用 docker commit 来扩展一个镜像比较简单，但是不方便在一个团队中分享。我们可以使用 docker build 来创建一个新的镜像。为此，首先需要创建一个 Dockerfile，包含一些如何创建镜像的指令。
-
-新建一个目录和一个 Dockerfile
+     新建一个目录和一个 Dockerfile
 
 $ mkdir sinatra
 $ cd sinatra
@@ -286,6 +228,51 @@ Docker 镜像是怎么实现增量的修改和维护的？ 每个镜像都由很
 
 通常 Union FS 有两个用途, 一方面可以实现不借助 LVM、RAID 将多个 disk 挂到同一个目录下,另一个更常用的就是将一个只读的分支和一个可写的分支联合在一起，Live CD 正是基于此方法可以允许在镜像不变的基础上允许用户在其上进行一些写操作。Docker 在 AUFS 上构建的容器也是利用了类似的原理。
 
+** 使用 
+   attach    Attach to a running container            
+   build     Build an image from a Dockerfile              # 通过 Dockerfile 定制镜像
+   commit    Create a new image from a container's changes # 提交当前容器为新的镜像
+   cp        Copy files/folders from the containers filesystem to the host path # 从容器中拷贝指定文件或者目录到宿主机中
+   create    Create a new container                        # 创建一个新的容器，同 run，但不启动容器
+   diff      Inspect changes on a container's filesystem   # 查看 docker 容器变化
+   events    Get real time events from the server          # 从 docker 服务获取容器实时事件
+   exec      Run a command in an existing container        # 在已存在的容器上运行命令
+   export    Stream the contents of a container as a tar archive # 导出容器的内容流作为一个 tar 归档文件[对应 import ]
+    history   Show the history of an image                  # 展示一个镜像形成历史
+    images    List images                                   # 列出系统当前镜像
+    import    Create a new filesystem image from the contents of a tarball # 从 tar 包中的内容创建一个新的文件系统映像[对应 export]
+    info      Display system-wide information               # 显示系统相关信息
+    inspect   Return low-level information on a container   # 查看容器详细信息
+    kill      Kill a running container                      # kill 指定 docker 容器
+    load      Load an image from a tar archive              # 从一个 tar 包中加载一个镜像[对应 save]
+    login     Register or Login to the docker registry server # 注册或者登陆一个 docker 源服务器
+    logout    Log out from a Docker registry server         # 从当前 Docker registry 退出
+    logs      Fetch the logs of a container                 # 输出当前容器日志信息
+    port      Lookup the public-facing port which is NAT-ed to PRIVATE_PORT
+              # 查看映射端口对应的容器内部源端口
+    pause     Pause all processes within a container        # 暂停容器
+    ps        List containers                               # 列出容器列表
+    pull      Pull an image or a repository from the docker registry server
+              # 从 docker 镜像源服务器拉取指定镜像或者库镜像
+    push      Push an image or a repository to the docker registry server
+              # 推送指定镜像或者库镜像至 docker 源服务器
+    restart   Restart a running container                   # 重启运行的容器
+    rm        Remove one or more containers                 # 移除一个或者多个容器
+    rmi       Remove one or more images                 
+              # 移除一个或多个镜像[无容器使用该镜像才可删除，否则需删除相关容器才可继续或 -f 强制删除]
+    run       Run a command in a new container
+              # 创建一个新的容器并运行一个命令
+    save      Save an image to a tar archive                # 保存一个镜像为一个 tar 包[对应 load]
+    search    Search for an image on the Docker Hub         # 在 docker hub 中搜索镜像
+    start     Start a stopped containers                    # 启动容器
+    stop      Stop a running containers                     # 停止容器
+    tag       Tag an image into a repository                # 给源中镜像打标签
+    top       Lookup the running processes of a container   # 查看容器中运行的进程信息
+    unpause   Unpause a paused container                    # 取消暂停容器
+    version   Show the docker version information           # 查看 docker 版本号
+    wait      Block until a container stops, then print its exit code   
+              # 截取容器停止时的退出状态值
+              Run 'docker COMMAND --help' for more information on a command.
 ** 容器
 *** 运行容器
     $ sudo docker run -i -t ubuntu:14.04 /bin/bash
@@ -469,7 +456,7 @@ Docker 镜像是怎么实现增量的修改和维护的？ 每个镜像都由很
    trusting_newton
    如果要删除一个运行中的容器，可以添加 -f 参数。Docker 会发送 SIGKILL 信号给容器。
 
-** 1、数据卷
+** 数据卷
 数据卷是一个可供一个或多个容器使用的特殊目录，它绕过 UFS，可以提供很多有用的特性：
 
 数据卷可以在容器之间共享和重用
@@ -1245,22 +1232,7 @@ docker logs CONTAINER
 *** Java 引用程序
 *** redis
 *** node
-* docker 
-** 命令 
-     docker ps //查看系统中运行的 docker 容器
-   docker kill [container] //删除 docker 容器
-   docker stop [container] //停止正在运行的 docker 容器
-   docker attach/exec [container] //进入容器
-   docker run //运行镜像，生成容器
-   docker images //查看系统中存在的 docker 镜像
-   docker rmi [image] //删除镜像
-   docker build //生成镜像
-   docker pull //拉取镜像
-   docker push //上传镜像 
-   docker search //搜索镜像
-
-** Dockerfile 详解
-
+* Dockerfile 详解
    指定基础 image
    FROM <image>:<tag>  
 
@@ -1503,10 +1475,6 @@ docker logs CONTAINER
    来源：简书
    简书著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。
 * docker 查看端口被占用进程
-2018 年 04 月 18 日 14:51:34 自由乐 阅读数：7312 标签：docker 端口占用  更多
-个人分类：docker linux
-以下找到相应进程或容器后，可以将对于进程或容器停止或删除
-
 现在希望启动一个 docker container, 把 container 中的 80 端口映射到宿主机。
 
 [root@cmdb2 ~]# docker run -p 80:80  -it 9d1c954badc7 /bin/bash

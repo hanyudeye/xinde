@@ -7,30 +7,16 @@
 * 汇编语言 
 ** 简介 
    #+begin_verse
-   讲完高级语言，讲点低级语言吧。 
+   汇编语言是计算机编程的 *原始结构* 。
    写汇编是很头疼的事情，那时用汇编写出那么多好程序很了不起。
-   汇编是面向机器的，我们原来的数学运算什么都是抽象出来的,数据类型也是抽象出来的。 
+   理论基础是冯诺依曼的存储程序，程序控制。
    #+end_verse
- 
-  在机器层，我们能操作的是寄存器，内存，硬件设备。每种硬件处理方法也不一样，非常复杂
  #+HTML: <!-- more -->
-
- 因为操作的是机器，就要配置好一个环境来好好展示机器各方面的数据。
- 
-** 计算理论
-   #+begin_verse
-   图灵理论
-   基本思想是用机器来模拟人们用纸笔进行数学运算的过程，他把这样的过程看作下列两种简单的动作：
-   在纸上写上或擦除某个符号；
-   把注意力从纸的一个位置移动到另一个位置；
-   #+end_verse
-   
-   #+begin_verse
-   就像我们完成一件事情一样，例如我们 盖一座房子，那我们要有一张建筑图纸。 
-   建筑图纸就相当于软件，或图灵里面的纸带，我们相当于硬件，我们按照图纸一条一条解析，执行图纸上的内容，执行完，房子就造好了。
-   #+end_verse
-   
-** 具体实现
+ #+begin_quote
+ 使用汇编语言就像用 *石子* 造房子，而不是 *砖头* 造房子那样，抽象层次低,看的层次也低。
+ 希望那些设计硬件的科学家可以把抽象层次高一点来处理计算机
+ #+end_quote
+** 计算机体系结构
    #+DOWNLOADED: https://upload-images.jianshu.io/upload_images/7111365-68ff109722f28e90?imageMogr2/auto-orient/ @ 2019-06-23 18:20:15
    [[file:image/liucheng.jpeg]]
 
@@ -52,14 +38,14 @@ cpu 那块芯片上有这么 3 块单元
 第二步：指令译码，对指令寄存器里面的指令进行译码，确定指令进行的操作，操作数地址。
 第三步：执行指令，利用操作数地址找到操作数，进行运算。
 第四步：修改指令计数器，确定下一条指令的地址。
-   #+end_verse
+#+end_verse
    #+begin_quote
    跟人的计算过程差不多吧 
    #+end_quote
 
-** 图纸结构
+** 基本结构
    #+begin_src nasm
-       #显示器设备显示一行文字
+       ##显示器设备显示一行文字
      .data
      msg: .ascii "Hello world, hello AT&T asm!\n"
        len = . - msg
@@ -79,43 +65,17 @@ cpu 那块芯片上有这么 3 块单元
        movl	$1,	%eax	# 系统调用号，_exit
        int	$0x80		# 系统调用
    #+end_src
-
-   #+begin_src nasm
-       # 显示器显示 CPUID：
-     .section .data
-     output:
-     .ascii "The processor Vendor ID is 'XXXXXXXXXXXX'\n"
-
-     .section .text
-     .global _start
-
-     _start:
-       movl	$0,	%eax		# The CPUID output option(the Vendor ID string)	
-       cpuid #cpuid 指令根据不同的 eax,输出不同的值 
-       movl	$output,%edi
-       movl	%ebx, 	28(%edi)
-       movl	%edx,	32(%edi)
-       movl	%ecx,	36(%edi)
-
-       movl	$42,	%edx	# 显示的字符数
-       movl	$output,%ecx	# 缓冲区指针
-       movl	$1,	%ebx	# 文件描述符
-       movl	$4,	%eax	# 系统调用号，_write
-       int	$0x80		# 系统调用
-
-       movl	$0,	%ebx	# 传给_exit 的参数
-       movl	$1,	%eax	# 系统调用号，_exit
-       int	$0x80		# 系统调用
-
-   #+end_src
 ** 程序结构
-   基本结构是有两个区块，一个区块是 数据区，放置你声明的变量
-   一个区块是代码区，你的函数都放在那里。 
-   数据区用 ~.data~ 表示
-   代码区用 ~.text~ 表示
+   #+begin_verse
+   根据冯氏理论一个程序分两个区块，一个区块放置数据，另一个区块放置代码
+   数据区用 *.data* 表示
+   代码区用 *.text* 表示
+   #+end_verse
 
-*** 数据放置区 .data .rodata(只读)
-*** 数据定义 msg: .asciz "hello"
+*** 数据放置区
+    .data .rodata(只读)
+*** 数据定义 
+    msg: .asciz "hello"
 *** 数据类型
     .ascii 文本字符串
     .asciz 以空字符结尾的字符串
@@ -139,7 +99,8 @@ cpu 那块芯片上有这么 3 块单元
     .equ LINUX_SYS_CALL, 0x80
     .section .text
     movl $LINUX_SYS_CALL, %eax
-*** 临时数据区 bss  .comm  .lcomm
+*** 临时数据区 
+    bss  .comm  .lcomm
     #+begin_verse
     .comm 声明为未初始化的通用内存区域
     .lcomm 声明为未初始化的本地内存区域
@@ -150,20 +111,28 @@ cpu 那块芯片上有这么 3 块单元
     不占用程序空间，会在分配内存是分配空间
     #+end_verse
     
-*** 代码放置区 .text
-*** 代码入口处 .global
-*** 寄存器
-    32-bit 寄存器 %eax %ebx %ecx %edx %edi %esi %ebp %esp
-    16-bit 寄存器 %ax %bx %cx %dx %di %si %bp %sp
-    8-bit 寄存器 %ah,%al,%bh,%bl,%ch,%cl,%dh,%dl
-    段寄存器 %cs(code),%ds(data),%ss(stack), %es,%fs,%gs
-    控制寄存器 %cr0 %cr2,%cr3
-    debug 寄存器 %db0 %db1,%db2,%db3,%db6,%db7
-    测试寄存器 %tr6 %tr7
-    浮点寄存器栈 %st(0),%st(1),%st(2),%st(3),%st(4),%st(5),%st(6),%st(7)。
-*** 编译代码类型 .code16 .code32
-*** 当前地址  . 
+*** 代码放置区
+    .text
+*** 代码入口处 
+    .global
+*** 编译代码类型
+    .code16 .code32
+*** 当前地址  
+    *.*
     len:  .int  .-msg
+    
+** 寄存器
+   #+begin_verse
+   32-bit 寄存器 %eax %ebx %ecx %edx %edi %esi %ebp %esp
+   16-bit 寄存器 %ax %bx %cx %dx %di %si %bp %sp
+   8-bit 寄存器 %ah,%al,%bh,%bl,%ch,%cl,%dh,%dl
+   段寄存器 %cs(code),%ds(data),%ss(stack), %es,%fs,%gs
+   控制寄存器 %cr0 %cr2,%cr3
+   debug 寄存器 %db0 %db1,%db2,%db3,%db6,%db7
+   测试寄存器 %tr6 %tr7
+   浮点寄存器栈 %st(0),%st(1),%st(2),%st(3),%st(4),%st(5),%st(6),%st(7)。
+   #+end_verse
+
 ** 命令
 **** 传送指令
 ***** move 指令
