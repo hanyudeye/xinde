@@ -1,28 +1,20 @@
  #+TITLE: JavaScript 简介
 #+TAGS: JavaScript 
 #+CATEGORIES: 语言使用
-#+DESCRIPTION: 写点关于 JavaScript 这门语言的使用方法
+#+DESCRIPTION: JavaScript 简介
 #+DATE: <2019-06-02 05:07:53>
 
 * Javascript 
 ** 简介  
-  通常给 ~静态视觉界面~ 一些动态属性的 ~小语言~ 。
-  现在扩展了好多库(Nodejs)，可以开发大项目了。
-
-  面向对象，也面向函数 。
- 
- #+HTML: <!-- more -->
-
-: 现代浏览器都编译执行了,加快了速度
+   通常用于 *web 页面* 与用户交互的，因为静态页面太无趣了。
+   #+HTML: <!-- more -->
+   
 ** 开发环境
 *** 解析器 
 **** 浏览器控制台 
      - 打开控制台: 按键 @@html:<kbd>@@ Ctrl  + Shift + J @@html:</kbd>@@ 
      - 换行继续打命令    @@html:<kbd>@@ Shift +  Enter @@html:</kbd>@@ 
      - 执行命令  @@html:<kbd>@@  Enter @@html:</kbd>@@
-**** node 
-    
-*** 测试工具 
 ** 基本操作 
 *** 数字操作
     整数小数 ，更复杂的功能用 ~Math~  库
@@ -82,24 +74,21 @@
     Base64 转码
     一种编码方法，可以将任意值转成 0～9、A～Z、a-z、`+`和`/`这 64 个字符组成的可打印字符
     
-  #+begin_src js -n
-    var string = 'Hello World!';
-    btoa(string) // "SGVsbG8gV29ybGQh"
-    atob('SGVsbG8gV29ybGQh') // "Hello World!"
-  #+end_src
-  : 注意，这两个方法不适合非 ASCII 码的字符，会报错。
+    #+begin_src js -n
+      var string = 'Hello World!';
+      btoa(string) // "SGVsbG8gV29ybGQh"
+      atob('SGVsbG8gV29ybGQh') // "Hello World!"
+    #+end_src
+    : 注意，这两个方法不适合非 ASCII 码的字符，会报错。
 
-  索引位置
-  #+BEGIN_SRC js
-    var s="helo world";
-    var i=s.search(/wo/i);
-    i: 不区分大小写
-  #+END_SRC
+    索引位置
+    #+BEGIN_SRC js
+      var s="helo world";
+      var i=s.search(/wo/i);
+      i: 不区分大小写
+    #+END_SRC
 
-** 数组 (对象集合)
-   任何类型的数据，都可以放入数组。
-   也有 length 属性
-
+** 数组
    #+begin_src js -n
      var arr = [
          {a: 1},
@@ -120,9 +109,7 @@
      4 in arr // false
    #+end_src
       
-   for...in 循环和数组的遍历
    `for...in`循环不仅可以遍历对象，也可以遍历数组，毕竟数组只是一种特殊对象。
-
    #+begin_src js
      var a = [1, 2, 3];
      a.foo = true;
@@ -130,13 +117,9 @@
      for (var key in a) {
          console.log(key);
      }
-     // 0
-     // 1
-     // 2
-     // foo
    #+end_src
 
-   forEach ,内部行为好像
+   forEach 
    #+begin_src js -n
      var colors = ['red', 'green', 'blue'];
      colors.forEach(function (color) {
@@ -259,67 +242,6 @@
    该对象求值: valueOf 
    #+end_verse
       
-** 流程控制 [ 条件语句 ，满足条件才做事情  ]
-*** if - else  结构  
-    #+begin_src js -n
-      if (m === 3) {
-          // 满足条件时，执行的语句
-      } else {
-          // 不满足条件时，执行的语句
-      }
-    #+end_src
-*** switch 结构   
-    #+begin_src js -n
-      switch (fruit) {
-      case "banana":
-          // ...
-          break;
-      case "apple":
-          // ...
-          break;
-      default:
-          // ...
-      }
-    #+end_src
-
-      
-    if...else
-    Executes a statement if a specified condition is true. If the condition is false, another statement can be executed.
-    switch
-    Evaluates an expression, matching the expression's value to a case clause, and executes statements associated with that case.
-    throw
-    Throws a user-defined exception.
-    try...catch
-    Marks a block of statements to try, and specifies a response, should an exception be thrown.
-*** while 循环
-    #+begin_src js -n
-      while (条件)
-      语句;
-
-      // 或者
-      while (条件) 语句;
-    #+end_src
-*** for 循环 
-    #+begin_src js -n
-      for (初始化表达式; 条件; 递增表达式)
-      语句
-
-      // 或者
-
-      for (初始化表达式; 条件; 递增表达式) {
-          语句
-      }
-    #+end_src
-** 声明语句
-*** var Declares a variable, optionally initializing it to a value.
-*** let Declares a block scope local variable, optionally initializing it to a value.
-*** const Declares a read-only named constant.
-** 其他
-*** export
-    Used to export functions to make them available for imports in external
-    modules, and other scripts.
-*** import
-    Used to import functions exported from an external module, another script.
 ** 错误处理
 *** Try...Catch 
     #+BEGIN_SRC js
@@ -678,37 +600,12 @@
      },10);
      console.log(sum); //25
 #+end_src
-** 时钟对象
+** 定时器
+   #+begin_verse
    执行一次 setTimeout
-   
    重复执行 setInterval
-   #+BEGIN_SRC js -n
-     var str = "这个是测试用的范例文字";
-     var seq = 0;
-     var second=1000; //间隔时间 1 秒钟
-
-     function scroll() {
-         msg = str.substring(0, seq+1);
-         document.getElementByIdx_x_x('word').innerHTML = msg;
-         seq++;
-         if (seq >= str.length) seq = 0;
-     }
-
-     setInterval('scroll()',second)
-
-     var myVar=setInterval(function(){myTimer()},1000);
-     function myTimer(){
-         var d=new Date();
-         var t=d.toLocaleTimeString();
-         // document.getElementById("demo").innerHTML=t;
-         console.log(t);
-     }
-
-     function myStopFunction(){
-         clearInterval(myVar);
-     }
-
-   #+END_SRC
+   #+end_verse
+   
 * web 移动开发最佳实践
 ** 避免使用全局变量和函数
    #+begin_src js
@@ -769,391 +666,7 @@
      }, false); // type, listener, useCapture (true=beginning, false=end)
    #+end_src
 ** 尽量减少 DOM 操作
-   DOM 是一个包含了很多信息的复杂的 API，因此即使是很小的操作可能会花费较长的时
-   间执行（如果要重绘页面的话）。为了提高程序性能，应尽量减少 DOM 操作，这里有一
-   些建议：
-*** 1.减少 DOM 的数目
-    DOM 节点的数目会影响与它相关的所有操作，要尽量使 DOM 树小一些：
-
-    避免多余的标记和嵌套的表格
-    元素数尽量控制在 500 个以内（document.getElementsByTagName('*').length）
-*** 2.缓存已经访问过的节点
-    当访问过一个 DOM 元素后，就应该把它缓存起来，因为你的程序往往要重复访问某个对象的，例如：
-
-    #+begin_src js
-      for (var i = 0; i < document.images.length; i++) {
-          document.images[i].src = "blank.gif";
-      }
-    #+end_src
-    以上例子中，docum.images 对象被访问了多次，这并不高效，因为每一次循环中，浏
-    览器都要查找这个元素两次：第一次读取它的长度，第二次改变相应的 src 值。更好
-    的做法是先把这个对象存储起来：
-
-    #+begin_src js
-    var imgs = document.images;
-    for (var i = 0; i < imgs.length; i++) {　　//当然也可以把 imgs.length 提前算出来，这里不是重点
-    imgs[i].src = "blank.gif";
-    }
-    #+end_src
 ** 减少页面重绘
-   在控制 DOM 元素数目的同时，你还可以通过减少修改元素（减少页面的重绘）的方法来提高性能。重绘有两种方式：repaint、reflow。
-
-   1.repaint，也叫 redraw，即改变了元素的视觉效果，但是不影响它的排版（比如改变背景颜色）
-   2.reflow，会影响部分或者全部页面的排版，浏览器不仅要计算该元素的位置，还要计算它影响到的周围的元素位置
-
-   当你要改变页面布局的时候，reflow 就发生了，主要有如下情况：
-
-   增加或删除 DOM 节点
-   改变元素的位置
-   改变元素的尺寸（如 margin，padding，border，font，width，height 等）
-   调整浏览器窗口的尺寸
-   增加或删除 css
-   改变内容（如用户输入表单）
-   命中 css 选择器（如 hover）
-   更改了 class 属性
-   利用脚本更改了 DOM
-   检索一个必须被计算的尺寸（如 offsetWidth，offsetHeight）
-   设置了一个 css 属性
-   这里有一些减少页面重绘的建议：
-
- css 的建议：
-
- 改变 class 属性时应尽量少的影响到周围的元素节点
- 避免声明多个内联的样式（把多个样式放在一个外部文件里）
- 有动画的元素使用绝对定位，这样不会影响其他元素
- 避免使用 table 来排版，如果需要使用保存数据，那么要固定排版（table-layout:fixed）
- js 的建议：
-
- 缓存计算过的样式
- 对于固定的样式，改变 class 的名词而不是样式；对于动态的样式，改变 cssText 属性：
-
- // bad - changing the stle - accessing DOM multiple times
- var myElement = document.getElementById('mydiv');
- myElement.style.borderLeft = '2px';
- myElement.style.borderRight = '3px';
- myElement.style.padding = '5px';
- 
- // good - use cssText and modify DOM once
- var myElement = document.getElementById('mydiv');
- myElement.style.cssText = 'border-left: 2px; border-right: 3px; padding: 5px;';
-
- 当你要对一个 DOM 元素做出很多修改时，可以先进行一些‘预处理’，批量修改后再替换原始的元素
- 创建一个副本（cloneNode()），对这个副本进行更新，然后替代原来的节点
-
- // slower - multiple reflows
- var list = ['foo', 'bar', 'baz'], elem, contents;
- for (var i = 0; i < list.length; i++) {
-     elem = document.createElement('div');
-     content = document.createTextNode(list[i]);
-     elem.appendChild(content);
-     document.body.appendChild(elem); // multiple reflows
- }
-             
- // faster - create a copy
- var orig = document.getElementById('container'),
-     clone = orig.cloneNode(true), // create a copy
-     list = ['foo', 'bar', 'baz'], elem, contents;
- clone.setAttribute('width', '50%');
-
- 修改一个不可见的元素，可以先让其不可见（display:none），修改完成后，再恢复其可见（display:block），这样就会减少 reflow 的次数
-
- // slower
- var subElem = document.createElement('div'),
-     elem = document.getElementById('animated');
- elem.appendChild(subElem);
- elem.style.width = '320px';
-             
- // faster
- var subElem = document.createElement('div'),
-     elem = document.getElementById('animated');
- elem.style.display = 'none'; // will not be repainted
- elem.appendChild(subElem);
- elem.style.width = '320px';
- elem.style.display = 'block';
-
- 创建一个文档片段（使用 DocumentFragment()），修改完成后，再把它追加到原始文档中
-
- // slower
- var list = ['foo', 'bar', 'baz'], elem, contents;
- for (var i = 0; i < list.length; i++) {
-     elem = document.createElement('div');
-     content = document.createTextNode(list[i]);
-     elem.appendChild(content);
-     document.body.appendChild(elem); // multiple reflows
- }
-             
- // faster
- var fragment = document.createDocumentFragment(),
-     list = ['foo', 'bar', 'baz'], elem, contents;
- for (var i = 0; i < list.length; i++) {
-     elem = document.createElement('div');
-     content = document.createTextNode(list[i]);
-     fragment.appendChild(content);
- }
- document.body.appendChild(fragment); // one reflow
-
-* 异步操作
-** 同步任务和异步任务
-   程序里面所有的任务，可以分成两类：同步任务（synchronous）和异步任务（asynchronous）。
-   
-   同步任务是那些没有被引擎挂起、在主线程上排队执行的任务。只有前一个任务执行完毕，才能执行后一个任务。
-
-   异步任务是那些被引擎放在一边，不进入主线程、而进入任务队列的任务。只有引擎认为某个异步任务可以执行了（比如 Ajax 操作从服务器得到了结果），该任务（采用回调函数的形式）才会进入主线程执行。排在异步任务后面的代码，不用等待异步任务结束会马上运行，也就是说，异步任务不具有”堵塞“效应。
-
-   举例来说，Ajax 操作可以当作同步任务处理，也可以当作异步任务处理，由开发者决定。如果是同步任务，主线程就等着 Ajax 操作返回结果，再往下执行；如果是异步任务，主线程在发出 Ajax 请求以后，就直接往下执行，等到 Ajax 操作有了结果，主线程再执行对应的回调函数。
-
-   ## 任务队列和事件循环
-
-   JavaScript 运行时，除了一个正在运行的主线程，引擎还提供一个任务队列（task queue），里面是各种需要当前程序处理的异步任务。（实际上，根据异步任务的类型，存在多个任务队列。为了方便理解，这里假设只存在一个队列。）
-
-   首先，主线程会去执行所有的同步任务。等到同步任务全部执行完，就会去看任务队列里面的异步任务。如果满足条件，那么异步任务就重新进入主线程开始执行，这时它就变成同步任务了。等到执行完，下一个异步任务再进入主线程开始执行。一旦任务队列清空，程序就结束执行。
-
-   异步任务的写法通常是回调函数。一旦异步任务重新进入主线程，就会执行对应的回调函数。如果一个异步任务没有回调函数，就不会进入任务队列，也就是说，不会重新进入主线程，因为没有用回调函数指定下一步的操作。
-
-   JavaScript 引擎怎么知道异步任务有没有结果，能不能进入主线程呢？答案就是引擎在不停地检查，一遍又一遍，只要同步任务执行完了，引擎就会去检查那些挂起来的异步任务，是不是可以进入主线程了。这种循环检查的机制，就叫做事件循环（Event Loop）。[维基百科](http://en.wikipedia.org/wiki/Event_loop)的定义是：“事件循环是一个程序结构，用于等待和发送消息和事件（a programming construct that waits for and dispatches events or messages in a program）”。
-
- ## 异步操作的模式
-
- 下面总结一下异步操作的几种模式。
-
- ### 回调函数
-
- 回调函数是异步操作最基本的方法。
-
- 下面是两个函数`f1`和`f2`，编程的意图是`f2`必须等到`f1`执行完成，才能执行。
-
- ```javascript
- function f1() {
-   // ...
- }
-
- function f2() {
-   // ...
- }
-
- f1();
- f2();
- ```
-
- 上面代码的问题在于，如果`f1`是异步操作，`f2`会立即执行，不会等到`f1`结束再执行。
-
- 这时，可以考虑改写`f1`，把`f2`写成`f1`的回调函数。
-
- ```javascript
- function f1(callback) {
-   // ...
-   callback();
- }
-
- function f2() {
-   // ...
- }
-
- f1(f2);
- ```
-
- 回调函数的优点是简单、容易理解和实现，缺点是不利于代码的阅读和维护，各个部分之间高度[耦合](http://en.wikipedia.org/wiki/Coupling_(computer_programming))（coupling），使得程序结构混乱、流程难以追踪（尤其是多个回调函数嵌套的情况），而且每个任务只能指定一个回调函数。
-
- ### 事件监听
-
- 另一种思路是采用事件驱动模式。异步任务的执行不取决于代码的顺序，而取决于某个事件是否发生。
-
- 还是以`f1`和`f2`为例。首先，为`f1`绑定一个事件（这里采用的 jQuery 的[写法](http://api.jquery.com/on/)）。
-
- ```javascript
- f1.on('done', f2);
- ```
-
- 上面这行代码的意思是，当`f1`发生`done`事件，就执行`f2`。然后，对`f1`进行改写：
-
- ```javascript
- function f1() {
-   setTimeout(function () {
-     // ...
-     f1.trigger('done');
-   }, 1000);
- }
- ```
-
- 上面代码中，`f1.trigger('done')`表示，执行完成后，立即触发`done`事件，从而开始执行`f2`。
-
- 这种方法的优点是比较容易理解，可以绑定多个事件，每个事件可以指定多个回调函数，而且可以”[去耦合](http://en.wikipedia.org/wiki/Decoupling)“（decoupling），有利于实现模块化。缺点是整个程序都要变成事件驱动型，运行流程会变得很不清晰。阅读代码的时候，很难看出主流程。
-
- ### 发布/订阅
-
- 事件完全可以理解成”信号“，如果存在一个”信号中心“，某个任务执行完成，就向信号中心”发布“（publish）一个信号，其他任务可以向信号中心”订阅“（subscribe）这个信号，从而知道什么时候自己可以开始执行。这就叫做”[发布/订阅模式](http://en.wikipedia.org/wiki/Publish-subscribe_pattern)”（publish-subscribe pattern），又称“[观察者模式](http://en.wikipedia.org/wiki/Observer_pattern)”（observer pattern）。
-
- 这个模式有多种[实现](http://msdn.microsoft.com/en-us/magazine/hh201955.aspx)，下面采用的是 Ben Alman 的 [Tiny Pub/Sub](https://gist.github.com/661855)，这是 jQuery 的一个插件。
-
- 首先，`f2`向信号中心`jQuery`订阅`done`信号。
-
- ```javascript
- jQuery.subscribe('done', f2);
- ```
-
- 然后，`f1`进行如下改写。
-
- ```javascript
- function f1() {
-   setTimeout(function () {
-     // ...
-     jQuery.publish('done');
-   }, 1000);
- }
- ```
-
- 上面代码中，`jQuery.publish('done')`的意思是，`f1`执行完成后，向信号中心`jQuery`发布`done`信号，从而引发`f2`的执行。
-
- `f2`完成执行后，可以取消订阅（unsubscribe）。
-
- ```javascript
- jQuery.unsubscribe('done', f2);
- ```
-
- 这种方法的性质与“事件监听”类似，但是明显优于后者。因为可以通过查看“消息中心”，了解存在多少信号、每个信号有多少订阅者，从而监控程序的运行。
-
- ## 异步操作的流程控制
-
- 如果有多个异步操作，就存在一个流程控制的问题：如何确定异步操作执行的顺序，以及如何保证遵守这种顺序。
-
- ```javascript
- function async(arg, callback) {
-   console.log('参数为 ' + arg +' , 1 秒后返回结果');
-   setTimeout(function () { callback(arg * 2); }, 1000);
- }
- ```
-
- 上面代码的`async`函数是一个异步任务，非常耗时，每次执行需要 1 秒才能完成，然后再调用回调函数。
-
- 如果有六个这样的异步任务，需要全部完成后，才能执行最后的`final`函数。请问应该如何安排操作流程？
-
- ```javascript
- function final(value) {
-   console.log('完成: ', value);
- }
-
- async(1, function(value){
-   async(value, function(value){
-     async(value, function(value){
-       async(value, function(value){
-         async(value, function(value){
-           async(value, final);
-         });
-       });
-     });
-   });
- });
- ```
-
- 上面代码中，六个回调函数的嵌套，不仅写起来麻烦，容易出错，而且难以维护。
-
- ### 串行执行
-
- 我们可以编写一个流程控制函数，让它来控制异步任务，一个任务完成以后，再执行另一个。这就叫串行执行。
-
- ```javascript
- var items = [ 1, 2, 3, 4, 5, 6 ];
- var results = [];
-
- function async(arg, callback) {
-   console.log('参数为 ' + arg +' , 1 秒后返回结果');
-   setTimeout(function () { callback(arg * 2); }, 1000);
- }
-
- function final(value) {
-   console.log('完成: ', value);
- }
-
- function series(item) {
-   if(item) {
-     async( item, function(result) {
-       results.push(result);
-       return series(items.shift());
-     });
-   } else {
-     return final(results[results.length - 1]);
-   }
- }
-
- series(items.shift());
- ```
-
- 上面代码中，函数`series`就是串行函数，它会依次执行异步任务，所有任务都完成后，才会执行`final`函数。`items`数组保存每一个异步任务的参数，`results`数组保存每一个异步任务的运行结果。
-
- 注意，上面的写法需要六秒，才能完成整个脚本。
-
- ### 并行执行
-
- 流程控制函数也可以是并行执行，即所有异步任务同时执行，等到全部完成以后，才执行`final`函数。
-
- ```javascript
- var items = [ 1, 2, 3, 4, 5, 6 ];
- var results = [];
-
- function async(arg, callback) {
-   console.log('参数为 ' + arg +' , 1 秒后返回结果');
-   setTimeout(function () { callback(arg * 2); }, 1000);
- }
-
- function final(value) {
-   console.log('完成: ', value);
- }
-
- items.forEach(function(item) {
-   async(item, function(result){
-     results.push(result);
-     if(results.length === items.length) {
-       final(results[results.length - 1]);
-     }
-   })
- });
- ```
-
- 上面代码中，`forEach`方法会同时发起六个异步任务，等到它们全部完成以后，才会执行`final`函数。
-
- 相比而言，上面的写法只要一秒，就能完成整个脚本。这就是说，并行执行的效率较高，比起串行执行一次只能执行一个任务，较为节约时间。但是问题在于如果并行的任务较多，很容易耗尽系统资源，拖慢运行速度。因此有了第三种流程控制方式。
-
- ### 并行与串行的结合
-
- 所谓并行与串行的结合，就是设置一个门槛，每次最多只能并行执行`n`个异步任务，这样就避免了过分占用系统资源。
-
- ```javascript
- var items = [ 1, 2, 3, 4, 5, 6 ];
- var results = [];
- var running = 0;
- var limit = 2;
-
- function async(arg, callback) {
-   console.log('参数为 ' + arg +' , 1 秒后返回结果');
-   setTimeout(function () { callback(arg * 2); }, 1000);
- }
-
- function final(value) {
-   console.log('完成: ', value);
- }
-
- function launcher() {
-   while(running < limit && items.length > 0) {
-     var item = items.shift();
-     async(item, function(result) {
-       results.push(result);
-       running--;
-       if(items.length > 0) {
-         launcher();
-       } else if(running == 0) {
-         final(results);
-       }
-     });
-     running++;
-   }
- }
-
- launcher();
- ```
-
- 上面代码中，最多只能同时运行两个异步任务。变量`running`记录当前正在运行的任务数，只要低于门槛值，就再启动一个新的任务，如果等于`0`，就表示所有任务都执行完了，这时就执行`final`函数。
-
- 这段代码需要三秒完成整个脚本，处在串行执行和并行执行之间。通过调节`limit`变量，达到效率和资源的最佳平衡。
 * 模块
   Javascript 不是一种模块化编程语言，在 es6 以前，它是不支持”类”（class），所以也
   就没有”模块”（module）了。

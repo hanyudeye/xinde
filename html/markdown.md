@@ -131,6 +131,10 @@ vhdl
 vue
 xml - XML and also used for HTML with inline CSS and Javascript
 yaml
+ARM汇编	armasm
+AVR汇编	avrasm
+MIPS汇编	mipsasm
+x86汇编	x86asm
 ```
 
   

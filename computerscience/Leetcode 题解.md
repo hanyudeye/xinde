@@ -1,4 +1,3 @@
-
 # 算法思想
 ## 双指针
 双指针主要用于遍历数组，两个指针指向不同的元素，从而协同完成任务。
@@ -230,11 +229,11 @@ private boolean isValid(String s, String target) {
 ```
 
 ## 排序
-
 ### 快速选择
 
 用于求解  **Kth Element**  问题，使用快速排序的 partition() 进行实现。
 
+leetcode
 需要先打乱数组，否则最坏情况下时间复杂度为 O(N<sup>2</sup>)。
 
 ### 堆排序
@@ -3973,7 +3972,6 @@ public int maximumProduct(int[] nums) {
 ```
 
 # 数据结构相关
-
 ## 链表
 
 链表是空节点，或者有一个值和一个指向下一个链表的指针，因此很多链表问题可以用递归来处理。
@@ -6991,11 +6989,3 @@ public int[] countBits(int num) {
 }
 ```
 
-# 参考资料
-
-- [Leetcode](https://leetcode.com/problemset/algorithms/?status=Todo)
-- Weiss M A, 冯舜玺. 数据结构与算法分析——C 语言描述[J]. 2004.
-- Sedgewick R. Algorithms[M]. Pearson Education India, 1988.
-- 何海涛, 软件工程师. 剑指 Offer: 名企面试官精讲典型编程题[M]. 电子工业出版社, 2014.
-- 《编程之美》小组. 编程之美[M]. 电子工业出版社, 2008.
-- 左程云. 程序员代码面试指南[M]. 电子工业出版社, 2015.

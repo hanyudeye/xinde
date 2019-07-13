@@ -1,6 +1,6 @@
-#+TITLE: 构建工具
-#+DESCRIPTION: 自从有了计算机，无数计算机爱好者围着他开发各种工具，及制造工具的工具,以下便是制造工具的工具。
-#+TAGS: 构建工具
+#+TITLE: 编程工具
+#+DESCRIPTION: 编程工具
+#+TAGS: 编程工具
 #+CATEGORIES: 软件使用
 
 
@@ -130,6 +130,7 @@
     -O: 优化等级
     -m32/-m64: 机器机型
 ** 汇编 (-c)
+   汇编 *程序* 或者 *库* 到 *目标程序*
 *** gcc 
     
     把汇编文件编译成目标文件 o
@@ -155,321 +156,27 @@
      -o：指定要生成的目标文件；
      --statistics：打印汇编所用的最大空间和总时间。
 *** as
-   直接汇编就好，不用关心 ~main~ 函数  
     #+begin_src sh
     as --gstabs asm.S -o asm.o 
     #+end_src
     
-** 链接  -> 执行文件
-   gcc -m32 data.o -o data
+** 链接 (不加选项)
+   链接到 *执行文件*
    
+   #+begin_src sh
+   gcc -m32 data.o -o data
+   #+end_src
    #+begin_quote
    目标文件机器架构与链接架构要一致   
     #+end_quote
+   
+   #+begin_verse
    指定架构 -m elf_i386
    显示架构列表  ld -V 
 
    ld -m elf_i386 -o
    ld --oformat binary -N -Ttext 0x7c00 -o $@ $<
-*** 选项
-    $ ld -o output /lib/crt0.o hello.o -lc
-    它 告诉 ld 生成 一个 叫做 output 的 文件 , 其中 连接了 文件 /lib/crt0.o 和 hello.o 以
-    及 库文件 libc.a (在 标准搜索目录下).
-
-    -b input-format
-    指定  输入目标文件 的 二进制格式, 目标文件 在 命令行 上 给出, 放在 这个选项 的
-    后面. 一般 不需要 指定 这个选项, ld 的 缺省输入格式 配置为 各个机器 上  最常用
-    的  格式. input-format 是 字符串, BFD 库 支持的 格式 名称. 选项 -format input-
-    format 起 相同的 作用, 脚本命令 TARGET 也是 一样.
-
-    连接 某些 不寻常的 二进制文件 时 需要 这个选项. 或者 使用 -b 选项 强调  格式切
-    换 (连接 不同格式 的 目标文件), 比如说, 在 每组 特定格式 的 目标文件 前面 使用
-    -b input-format 选项.
-
-    环境变量 GNUTARGET 用于 指定 缺省格式. 也可以 在 脚本文件 中 用 TARGET 命令 定
-    义 输入格式.
-
-    -Bstatic
-    禁止 连接 共享库. 这个选项 只在 支持 共享库 的 平台 上 有意义.
-
-    -Bdynamic
-    连接  动态库. 这个选项 只在 支持 共享库 的 平台 上 有意义, 一般说来 它 是 缺省
-    选项.
-
-    -Bsymbolic
-    当 创建 共享库 的 时候, 只要 有可能, 在 共享库 内 编联(bind reference)  全局符
-    号  和 定义(definition). 一般说来, 允许 连接了 某个 共享库 的 程序 覆盖 共享库
-    内 的 定义. 这个选项 只在 支持 共享库 的 ELF 平台 上 有意义.
-
-    -c commandfile
-    告诉 ld 从 文件 commandfile 中 读取 连接 命令. 这些 命令 彻底的 覆盖 ld 的  缺
-    省 连接 格式 (而不是 添加); commandfile 必须 详尽的 描述 目标格式 的 所有细节.
-
-    你 也可以 在 命令行 上 直接嵌入 连接命令, 把 脚本 嵌在 大括弧 `{' 和 `}' 中间.
-
-    --cref 输出 交叉引用表(cross reference).  如果 创建了 连接映像(linker map) 文件, 交叉
-    引用表 就 输出到 映像文件 中, 否则 送往 标准输出.
-
-    -d
-    -dc
-    -dp    这 三个选项 是 一回事, 为了 兼容 其他 linker 而 同时提供.  即使 已经  指定  ld
-    生成 可重定位文件 (-r), 它们 能为 公共符号(common symbol) 分配 空间.  脚本命令
-    FORCE_COMMON_ALLOCATION 起 同样作用.
-
-    -defsym symbol = expression
-    在 输出文件 中 创建 一个 全局符号, 它 含有 expression 给出的 绝对地址. 可以 在
-    命令行  使用 多个 这样的 选项. 这个 expression 只能 使用 有限的 数学形式: 十六
-    进制常数, 已经存在 的 符号名字.  或者 使用 + 和 - 加减 十六进制常数  或  符号.
-    如果 需要 更复杂的 表达式, 考虑 使用 命令语言脚本.
-
-    --demangle
-    --no-demangle
-    这些选项  控制 是否在 出错信息 和 其他信息 中, 输出 可读的(demangle) 符号名称.
-    如果 使用了 demangle 选项, linker 尽量使 符号名称 容易理解: 去掉 领头的 下划线
-    (如果  被 目标文件格式 采用); 把 C++ 难懂的 符号名称 (symbol name) 转换成 可读
-    的  名称.  缺省情况下  linker  输出  可读的  符号名称,  除非  设置了  环境变量
-    COLLECT_NO_DEMANGLE .  这些选项 能够 覆盖 缺省行为.
-
-    -e entry
-    使用  entry (入口) 标识符 作为 程序 执行 的 开始端, 而不是 缺省入口. 关于 缺省
-    入口 和 其他 设置 入口 的 方法 参见 `info' 的 ld' 项.
-
-    -embedded-relocs
-    这个选项 仅用于 连接 MIPS 上 嵌入的 PIC  代码,  GNU  的  编译器  和  汇编器  用
-    -membedded-pic 选项 能够 生成 这种代码. 它使 linker 创建 一张 表格, 用于 在 运
-    行的时候, 重定位 任何 被 静态初始化 为 指针值 的 数据. 详见 testsuite/ld-empic
-    的 代码.
-
-    -E
-
-    -export-dynamic
-    当  创建 ELF 文件 时, 把 所有 符号 加入 动态符号表.  一般说来, 动态符号表 只包
-    含 动态目标库(dynamic object) 需要的 符号. 用 dlopen 的 时候 需要 这个 选项.
-
-    -f name
-
-    --auxiliary name
-    创建 ELF 共享目标库 时, 把 内部的 DT_AUXILIARY 字段 设置为 name.  它  告诉  动
-    态 linker,  把 该 共享目标库 的 符号表 用做 共享目标 name 的 符号表 的 辅助过滤
-    器.
-
-    -F name
-    --filter name
-    创建 ELF 共享目标库 时, 把 内部的 DT_FILTER 字段  设置为  name.   它  告诉  动
-    态 linker,  把 该 共享目标库 的 符号表 用做 共享目标 name 的 符号表 的 辅助过滤
-    器.
-
-    -format input-format
-    等同于 -b input-format.
-
-    -g     虚设项; 用于 兼容 其他 工具.
-
-    -G size
-    把 使用 GP 寄存器 优化的 目标(文件) 大小 限制为 size .  用于 MIPS ECOFF, 对 其
-    他 目标文件格式 无效.
-
-    -h name
-
-    -soname name
-    创建  ELF 共享目标库 时, 把 内部的 DT_SONAME 字段 设置为 name.  如果 某个 可执
-    行文件 连接了 含有 DT_SONAME 字段 的  共享目标库,  当  该程序  运行  时,  动态
-    linker 试图 根据 DT_SONAME 字段 调入 共享的 目标库, 而 不使用 提供给 linker 的
-    文件名.
-
-    --help 在 标准输出 显示 命令行选项 的 摘要, 然后 结束. 这个选项 和 --version 选项  使
-    用了  两个  短横线, 不是 一个, 目的是 兼容 其他 GNU 程序.  只用 一个 短横线 的
-    选项 是为了 兼容 其他 linker.
-
-    -i     执行 增量连接(incremental link), 等同于 -r 选项.
-
-    -lar   在 连接文件 列表 中 增加 归档库文件 ar.  可以 多次 使用 这个选项. 凡指定  一项
-    ar , ld 就会 在 路径列表 中 增加 一项 对 libar.a 的 搜索.
-
-    -Lsearchdir
-    这个选项 将 路径 searchdir 添加 到 路径列表 中去, ld 在 这个 列表 中 搜索 归档
-    库. 可以 多次 使用 这个选项.
-
-    缺省的 搜索路径集 (不使用 -L 时) 取决于 ld 使用的 模拟模式(emulation) 及其  配
-    置.  在 连接脚本 中, 可以 用 SEARCH_DIR 命令 指定 路径.
-
-    -M     在  标准输出 显示  连接映像 — 有关 ld 把 符号 映射到 何处 的 诊断信息, 以及 全
-    局公共存储器 的 分配 信息.
-
-    -Map mapfile
-    把 连接映像 输出到 mapfile 文件 中 — 有关 ld 把 符号 映射到 何处 的  诊断信息,
-    以及 全局公共存储器 的 分配 信息.
-
-    -m emulation
-    模仿 emulation 连接器.  可以 用 --verbose 或 -V 选项 列出 有效的 模拟项.  这个
-    选项 覆盖 编译 进去 的 缺省项.
-
-    -N     指定 可读写 的 正文 和 数据 节(section). 如果 输出格式  支持  Unix  风格的  幻
-    数(magic number), 则 输出文件 标记为 OMAGIC.
-
-    当 使用 `-N' 选项 时, linker 不做 数据段 的 页对齐(page-align).
-
-    -n     设置 正文段 为 只读, 如果 有可能, NMAGIC 为 可写.
-
-    -noinhibit-exec
-    一般说来,  如果 连接的 时候 发生 错误, linker 不会 产生 输出文件.  使用了 这个
-    标志选项, 只要 不出 致命差错, 仍能够 产生 输出文件.
-
-    -no-keep-memory
-    linker 通常 牺牲 内存, 优化 速度, 它 把 输入文件 的 符号表 缓冲在 内存中.   这
-    个选项  使 linker 必要时 重复读取 符号表, 以便 优化 内存使用. 连接 大型 可执行
-    文件 的 时候, linker 有可能 内存 不够, 此时 可以 试试 这个选项.
-
-    -no-warn-mismatch
-    一般情况下, 如果 试图 连接 某些 不匹配 的 输入文件, 比如说, 按 不同 处理器  编
-    译 的, 或者 具有 不同的 字节顺序(endianness), linker 就会 报错.  这个选项 告诉
-    linker 默许 这种 错误. 要 小心使用 这个选项, 除非 你 正在做 某些 特殊 操作, 而
-    且 能够 确定 不需要 linker 报错.
-
-    -o output
-    output  用来  指定  ld  生成的  程序名;  如果  没有 使用 这个选项, 缺省名字 是
-    `a.out'.  脚本命令 OUTPUT 起 同样 作用.
-
-    -Olevel
-    生成 优化的 输出文件. 这个选项 占用 比较多 的 时间, 因此 仅 常用于 最终文件 的
-    生成.  level 是 数值参数. 任何 大于零 的 参数 意味着 要求 优化.
-
-    -oformat output-format
-    指定  输出目标文件 的 二进制格式. 一般 不需要 指定 这个选项, ld 的 缺省 输出格
-    式 配置为 各个机器 上 最常用 的 格式. output-format 是 一个 字符串, BFD 库  支
-    持的  格式 名称. 脚本命令 OUTPUT_FORMAT 也可以 指定 输出格式, 但是 这个选项 能
-    够 覆盖 掉 它.
-
-    -R filename
-    从 文件 filename 中 读取 符号名称 及其 地址, 但是 不做 重定位,  不传送到  输出
-    端.  它 可以 使 输出文件 符号引用 其他程序中 定义的 绝对地址.
-
-    -relax 这个选项 的 效果 取决于 机器, 目前 只支持 H8/300.
-
-    在 某些 平台 上 可以 使用 这个选项 做 全局优化, 它 让 linker 解决 程序中 的 地
-    址处理, 例如 在 输出目标文件 中 缓和(relax) 地址模式 以及 合成 (synthesize) 新
-    指令.
-
-    其他平台 也接受 `-relax' 选项, 但是 不起作用.
-
-    -r     生成  可重定位  输出 — 就是说, 生成的 输出文件 能够 依次 成为 ld 的 输入, 一般
-    称之为 不完全(partial) 连接. 它 有 一个 副效应, 在 支持 标准  Unix  幻数(magic
-    number) 的 环境 中, 这个选项 把 输出文件 的 幻数 设置成 OMAGIC. 如果 没有 指定
-    这个选项, linker 生成 绝对定位 的 文件.  连接 C++ 程序时, 这个选项 不会   解析
-    出 对 构造子(constructor) 的 引用(reference); 不妨 改用 -Ur 选项.
-
-    这个选项 的 效果 和 -i 一样.
-
-    -rpath directory
-    增加 一条 对 运行时(runtime)库 的 搜索路径. 这个选项 用于 连接 ELF 可执行 文件
-    和 共享目标库. 所有 -rpath 选项 的 参数 被 合并,  然后  一起  传递  给  运行时
-    linker,  运行时 linker 在 运行 的 时候 使用 这些 路径 寻找 共享目标库.  -rpath
-    也可以 用来 定位 共享目标库 引用的 共享目标库; 参见 对 -rpath-link 选项 的  叙
-    述.  如果 连接 ELF 可执行文件 时 没有 指定 -rpath 选项, linker 就使用 环境变量
-    LD_RUN_PATH 的 内容 — 只要 这个 环境变量 存在.
-
-    -rpath 选项 能够 用在 SunOS 上, 缺省状况下, linker 可以 根据 给出的 -L 选项 形
-    成  运行时 搜索路径.  如果 使用了 -rpath 选项, 运行时 搜索路径 从 -rpath 中 产
-    生, 而 忽略 -L 选项.  这一点 有利于 使用 gcc, 在 NFS 文件系统 上, gcc 可能  产
-    生 许多 -L 选项.
-
-    -rpath-link directory
-    使用  ELF  或 SunOS 的 时候, 某些 共享库 可能 需要 其他 共享库.  这种情况 一般
-    发生在 某个 ld -shared 连接 中, 输入文件 包含了 共享库.
-
-    如果 linker 遇到 这样的 依赖情况, 当 它 执行 非共享, 不可重定位  的  连接  时,
-    linker  将 自动 寻找 所需的 共享库, 如果 它们 没有 被 显明 包含, 就 把 它们 包
-    含到 连接 中. 在 这种情况下, -rpath-link 选项  指定了  最先  搜索  的  目录集.
-    -rpath-link 能够 指定 一批 目录, 目录 用 冒号 隔开. 也可以 用 这些 目录名 作为
-    参数, 重复 使用 这个 选项.
-
-    如果 没有 找到 需要的 共享库, linker 产生 一个 警告, 但是 继续 连接.
-
-    -S     去掉 输出文件 中的 调试符号信息 (但不是 所有符号).
-
-    -s     去掉 输出文件 中的 全部 符号信息.
-
-    -shared
-    创建 一个 共享库. 目前 只支持 ELF 和 SunOS 平台 (在 SunOS 上, 这个选项 不是 必
-    须的, 如果 没有 使用 -e 选项, 而且 存在 不确定 的 符号, linker 将 自动 创建 共
-    享库).
-
-    -sort-common
-    ld 通常 把 全局公共符号 放到 适当的 输出节, 按照 大小 排序.   首先是  单字节符
-    号, 然后是 双字节, 接下来是 四字节, 随后是 其他的.  它的 目的是 防止 符号间 因
-    为 排布限制 出现 间隙.  使用 这个选项 可以 禁止 排序.
-
-    -split-by-reloc count
-    在 输出文件 中 创建 附加节(extra section), 使得 输出文件 中, 没有 某一个  输出
-    节 包含 大于 count 个 重定位项. 它 用于 产生 大型 可重定位 COFF 目标文件, 可以
-    插入到 某些 实时内核 中; 因为 COFF 不能 在 单一节内 存放 65535  以上的  重定位
-    项.   注意,  有些 目标文件格式 不支持 任意 分节, 此时 这个选项 将会 操作 失败.
-    此外, linker 不能够 分割 输入节, 然后 重新分配, 因此  如果  某个  输入节  包含
-    count 以上的 重定位项, 相应的 输出节 将 包含 同样多的 重定位项.
-
-    -split-by-file
-    类似于 -split-by-reloc , 但是 它为 每个 输入文件 建立一个 新的 输出节.
-
-    -Tbss org
-
-    -Tdata org
-
-    -Ttext org
-    把  org 作为 输出文件 的 段 起始地址 — 特别是 — bss, data, 或 text 段.  org 必
-    须是 十六进制整数.
-
-    -T commandfile
-    等同于 -c commandfile; 用于 兼容 其他工具.
-
-    -t     在 ld 处理 输入文件 的 时候 显示 文件名.
-
-    -u sym 把 sym 作为 未定义(undefined) 的 符号 送入 输出文件.  这样做 可以, 例如,  促使
-    linker  从 标准库 连接 某个 附加的模块.  允许 使用 多个 -u 选项 输入 多个 未定
-    义 符号.
-
-    -Ur    对于 除 C++ 以外的 任何 程序, 这个选项 等同于 -r: 生成 可重定位 的 输出 — 就是
-    说,  能够 依次 输入 ld 的 输出文件. 连接 C++ 程序 的 时候, -Ur 将 解析 对 构造
-    子(constructor) 的 引用(reference), 这一点 和 -r 不同.
-
-    -v, -V 显示 ld 的 版本号.  此外 -V 选项 能够 列出 支持的 模拟项.
-
-    -warn-common
-    当 公共符号 和 其他 公共符号 合并 时, 或者 和 某个 符号定义 合并 时, linker 就
-    发出 警告. Unix 系统的 linker 允许 这种 有些 草率 的 做法, 其他 操作系统 则 不
-    行. 这个选项 帮助你 在 合并 全局符号 的 时候 发现 潜在问题.
-
-    -warn-constructors
-    如果  使用了 全局构造子(global constructor), linker 就发出 警告.  它 只对 某些
-    目标文件结构 有用, 对于 如 COFF 或 ELF, 此 linker 不能够 检测 全局构造子 的 使
-    用情况.
-
-    -warn-multiple-gp
-    如果  输出文件 需要 多个 全局指针值, linker 就发出 警告. 这个选项 只能 用于 某
-    些 处理器, 如 Alpha.
-
-    -warn-once
-    对 每个 未定义符号 只 警告 一次, 而不是 每次 引用 这个符号 都 警告.
-
-    -warn-section-align
-    如果 某个 输出节(section) 的 地址 因为 边界对齐 而 发生 改变, linker 就发出 警
-    告. 典型情况下 由 输入节 设置 边界, 只有 不做 明确指定 的 时候 地址 才会 改变;
-    就是说, SECTIONS 命令 没有 指出 该节 的 开始地址.
-
-    --whole-archive
-    对于 命令行 上 --whole-archive 选项 提到的 每个 归档库, 连接时 连入 归档库  的
-    全部  目标文件, 而不是 在 归档库 中 搜索 所需的 目标文件. 一般用于 把 归档库文
-    件 转变成 共享库文件, 迫使 全部 目标文件 进入 共享库.
-
-    --no-whole-archive
-    关闭 --whole-archive 选项 对 归档库 的 影响.
-
-    --wrap symbol
-    对 symbol 使用 包装函数(wrapper function).  任何  对  symbol  未定义  的  引用
-    (undefined  reference)  将 解析为 __wrap_symbol.  任何 对 __real_symbol 未定义
-    的 引用 将 解析为 symbol.
-
-    -X     删除 全部 临时的 局部符号. 大多数 目的文件 中, 这些 局部符号 的 名字 用 `L' 做
-    开头.
-    -x     删除 全部 局部符号.
+   #+end_verse
 ** 其他选项
 *** 调试 
     --gstabs
@@ -485,8 +192,10 @@
     gcc –L /usr/dev/mysql/lib –static –lmysqlclient test.o –o test
 * 其他工具       
 ** 文件转换和拷贝[ dd ] 
+   #+begin_src sh
 	 dd if=boot of=boot.img bs=512 count=1
-  
+   #+end_src
+   
    | bs=<字节数>    | 将输入与输出设成指定的字节数   |
    | cbs=<字节数>   | 转换时，每次只转换指定的字节数 |
    | conv=<关键字>  | 指定文件转换的方式             |
@@ -498,61 +207,12 @@
    | skip=<区块数>  | 一开始读取时，跳过指定的区块数 |
 
 ** 模拟器[ qemu ]
-   qemu-system-x86_64 -hda archlinux.vmdk -boot d -cdrom /home/wuming/soft/tar/archlinux-2017.03.01-dual.iso -m 512
+   #+begin_src sh
+     qemu-system-x86_64 -hda archlinux.vmdk -boot d -cdrom /home/wuming/soft/tar/archlinux-2017.03.01-dual.iso -m 512
+   #+end_src
+   
 ** 查看程序依赖库[ ldd ] 
-   作用：用来查看程式运行所需的共享库,常用来解决程式因缺少某个库文件而不能运行的一些问题。
-   示例：查看 test 程序运行所依赖的库:
-
-   /opt/app/todeav1/test$ldd test
-   libstdc++.so.6 => /usr/lib64/libstdc++.so.6 (0x00000039a7e00000)
-   libm.so.6 => /lib64/libm.so.6 (0x0000003996400000)
-   libgcc_s.so.1 => /lib64/libgcc_s.so.1 (0x00000039a5600000)
-   libc.so.6 => /lib64/libc.so.6 (0x0000003995800000)
-   /lib64/ld-linux-x86-64.so.2 (0x0000003995400000)
-   第一列：程序需要依赖什么库
-   第二列: 系统提供的与程序需要的库所对应的库
-   第三列：库加载的开始地址
-   通过上面的信息，我们可以得到以下几个信息：
-
-   通过对比第一列和第二列，我们可以分析程序需要依赖的库和系统实际提供的，是否相匹配
-   通过观察第三列，我们可以知道在当前的库中的符号在对应的进程的地址空间中的开始位置
-   如果依赖的某个库找不到，通过这个命令可以迅速定位问题所在；
-
-   注解
-
-   原理：ldd 不是个可执行程式，而只是个 shell 脚本；ldd 显示可执行模块的 dependency 的工作原理，其实质是通过 ld-linux.so（elf 动态库的装载器）来实现的。ld-linux.so 模块会先于 executable 模块程式工作，并获得控制权，因此当上述的那些环境变量被设置时，ld-linux.so 选择了显示可执行模块的 dependency。
 ** 归档[ ar ] 
-   ar：支持的目标：elf64-x86-64 elf32-i386 elf32-x86-64 a.out-i386-linux
-   pei-i386 pei-x86-64 elf64-l1om elf64-k1om elf64-little elf64-big
-   elf32-little elf32-big plugin srec symbolsrec verilog tekhex binary ihex
-*** 选项
-    d            - 从归档文件中删除文件
-    m[ab]        - 在归档文件中移动文件
-    p            - 打印在归档文件中找到的文件
-    q[f]         - 将文件快速追加到归档文件中
-    r[ab][f][u]  - 替换归档文件中已有的文件或加入新文件
-    s            - act as ranlib
-    t            - 显示归档文件的内容
-    x[o]         - 从归档文件中分解文件
-    特定命令修饰符：
-    [a]          - 将文件置于 [成员名] 之后
-    [b]          - 将文件置于 [成员名] 之前 (于 [i] 相同)
-    [D]          - use zero for timestamps and uids/gids
-    [U]          - use actual timestamps and uids/gids (default)
-    [N]          - use instance [count] of name
-    [f]          - truncate inserted file names
-    [P]          - 在匹配时使用完整的路径名
-    [o]          - 保留原来的日期
-    [u]          - 只替换比当前归档内容更新的文件
-    通用修饰符：
-    [c]          - 不在必须创建库的时候给出警告
-    [s]          - 创建归档索引 (cf. ranlib)
-    [S]          - 不要创建符号表
-    [T]          - 做一个压缩档案
-    [v]          - 输出较多信息
-    [V]          - 显示版本号
-    @<file>      - 从<file>读取选项
-    --target=BFDNAME - 将目标对象格式指定为 BFDNAME
 ** lsof 
    lsof（list open files）是一个查看当前系统文件的工具。在 linux 环境下，任何事物都以文件的形式存在，通过文件不仅仅可以访问常规数据，还可以访问网络连接和硬件。如传输控制协议 (TCP) 和用户数据报协议 (UDP) 套接字等，系统在后台都为该应用程序分配了一个文件描述符，该文件描述符提供了大量关于这个应用程序本身的信息。
 
@@ -580,146 +240,15 @@
    -u 列出 UID 号进程详情
    -h 显示帮助信息
    -v 显示版本信息
-   3.2. 使用实例
-   实例 1：无任何参数
-   $lsof| more
-   COMMAND     PID      USER   FD      TYPE             DEVICE SIZE/OFF       NODE NAME
-   init          1      root  cwd       DIR              253,0     4096          2 /
-   init          1      root  rtd       DIR              253,0     4096          2 /
-   init          1      root  txt       REG              253,0   150352    1310795 /sbin/init
-   init          1      root  mem       REG              253,0    65928    5505054 /lib64/libnss_files-2.12.so
-   init          1      root  mem       REG              253,0  1918016    5521405 /lib64/libc-2.12.so
-   init          1      root  mem       REG              253,0    93224    5521440 /lib64/libgcc_s-4.4.6-20120305.so.1
-   init          1      root  mem       REG              253,0    47064    5521407 /lib64/librt-2.12.so
-   init          1      root  mem       REG              253,0   145720    5521406 /lib64/libpthread-2.12.so
-   ...
-   说明：
-
-   lsof 输出各列信息的意义如下：
-
-   COMMAND：进程的名称
-
-   PID：进程标识符
-
-   PPID：父进程标识符（需要指定-R 参数）
-
-   USER：进程所有者
-
-   PGID：进程所属组
-
-   FD：文件描述符，应用程序通过文件描述符识别该文件。如 cwd、txt 等:
-
-   （1）cwd：表示 current work dirctory，即：应用程序的当前工作目录，这是该应用程序启动的目录，除非它本身对这个目录进行更改
-   （2）txt：该类型的文件是程序代码，如应用程序二进制文件本身或共享库，如上列表中显示的 /sbin/init 程序
-   （3）lnn：library references (AIX);
-   （4）er：FD information error (see NAME column);
-   （5）jld：jail directory (FreeBSD);
-   （6）ltx：shared library text (code and data);
-   （7）mxx：hex memory-mapped type number xx.
-   （8）m86：DOS Merge mapped file;
-   （9）mem：memory-mapped file;
-   （10）mmap：memory-mapped device;
-   （11）pd：parent directory;
-   （12）rtd：root directory;
-   （13）tr：kernel trace file (OpenBSD);
-   （14）v86  VP/ix mapped file;
-   （15）0：表示标准输入
-   （16）1：表示标准输出
-   （17）2：表示标准错误
-   一般在标准输出、标准错误、标准输入后还跟着文件状态模式：r、w、u 等
-   （1）u：表示该文件被打开并处于读取/写入模式
-   （2）r：表示该文件被打开并处于只读模式
-   （3）w：表示该文件被打开并处于
-   （4）空格：表示该文件的状态模式为 unknow，且没有锁定
-   （5）-：表示该文件的状态模式为 unknow，且被锁定
-   同时在文件状态模式后面，还跟着相关的锁
-   （1）N：for a Solaris NFS lock of unknown type;
-   （2）r：for read lock on part of the file;
-   （3）R：for a read lock on the entire file;
-   （4）w：for a write lock on part of the file;（文件的部分写锁）
-   （5）W：for a write lock on the entire file;（整个文件的写锁）
-   （6）u：for a read and write lock of any length;
-   （7）U：for a lock of unknown type;
-   （8）x：for an SCO OpenServer Xenix lock on part      of the file;
-   （9）X：for an SCO OpenServer Xenix lock on the      entire file;
-   （10）space：if there is no lock.
-   TYPE：文件类型，如 DIR、REG 等，常见的文件类型:
-
-   （1）DIR：表示目录
-   （2）CHR：表示字符类型
-   （3）BLK：块设备类型
-   （4）UNIX：UNIX 域套接字
-   （5）FIFO：先进先出 (FIFO) 队列
-   （6）IPv4：网际协议 (IP) 套接字
-   DEVICE：指定磁盘的名称
-
-   SIZE：文件的大小
-
-   NODE：索引节点（文件在磁盘上的标识）
-
-   NAME：打开文件的确切名称
-
-   实例 2：查找某个文件相关的进程
-   $lsof /bin/bash
-   COMMAND     PID USER  FD   TYPE DEVICE SIZE/OFF    NODE NAME
-   mysqld_sa  2169 root txt    REG  253,0   938736 4587562 /bin/bash
-   ksmtuned   2334 root txt    REG  253,0   938736 4587562 /bin/bash
-   bash      20121 root txt    REG  253,0   938736 4587562 /bin/bash
-   实例 3：列出某个用户打开的文件信息
-   $lsof -u username
-
-   -u 选项，u 是 user 的缩写
-   实例 4：列出某个程序进程所打开的文件信息
-   $lsof -c mysql
-   -c 选项将会列出所有以 mysql 这个进程开头的程序的文件，其实你也可以写成 lsof | grep mysql, 但是第一种方法明显比第二种方法要少打几个字符；
-
-   实例 5：列出某个用户以及某个进程所打开的文件信息
-   $lsof  -u test -c mysql
-   实例 6：通过某个进程号显示该进程打开的文件
-   $lsof -p 11968
-   实例 7：列出所有的网络连接
-   $lsof -i
-   实例 8：列出所有 tcp 网络连接信息
-   $lsof -i tcp
-
-   $lsof -n -i tcp
-   COMMAND     PID  USER   FD   TYPE  DEVICE SIZE/OFF NODE NAME
-   svnserve  11552 weber    3u  IPv4 3799399      0t0  TCP *:svn (LISTEN)
-   redis-ser 25501 weber    4u  IPv4  113150      0t0  TCP 127.0.0.1:6379 (LISTEN)
-   实例 9：列出谁在使用某个端口
-   $lsof -i :3306
-   实例 10：列出某个用户的所有活跃的网络端口
-   $lsof -a -u test -i
-   实例 11：根据文件描述列出对应的文件信息
-   $lsof -d description(like 2)
-   示例:
-
-   $lsof -d 3 | grep PARSER1
-   tail      6499 tde    3r   REG    253,3   4514722     417798 /opt/applog/open/log/HOSTPARSER1_ERROR_141217.log.001
-   说明：0 表示标准输入，1 表示标准输出，2 表示标准错误，从而可知：所以大多数应用程序所打开的文件的 FD 都是从 3 开始
-
-   实例 12：列出被进程号为 1234 的进程所打开的所有 IPV4 network files
-   $lsof -i 4 -a -p 1234
-   实例 13：列出目前连接主机 nf5260i5-td 上端口为：20，21，80 相关的所有文件信息，且每隔 3 秒重复执行
-   lsof -i @nf5260i5-td:20,21,80 -r 3
-** 进程打印[ ps ] 
-   Linux 中的 ps 命令是 Process Status 的缩写。ps 命令用来列出系统中当前运行的那些进程。ps 命令列出的是当前那些进程的快照，就是执行 ps 命令的那个时刻的那些进程，如果想要动态的显示进程信息，就可以使用 top 命令。
-
-   要对进程进行监测和控制，首先必须要了解当前进程的情况，也就是需要查看当前进程，而 ps 命令就是最基本同时也是非常强大的进程查看命令。使用该命令可以确定有哪些进程正在运行和运行的状态、进程是否结束、进程有没有僵死、哪些进程占用了过多的资源等等。总之大部分信息都是可以通过执行该命令得到的。
-
-   ps 为我们提供了进程的一次性的查看，它所提供的查看结果并不动态连续的；如果想对进程时间监控，应该用 top linux 下的任务管理器 工具。
-
-   注：kill 命令用于杀死进程。
-
-   linux 上进程有 5 种状态:
-
+** ps
+  linux 上进程有 5 种状态:
    运行(正在运行或在运行队列中等待)
    中断(休眠中, 受阻, 在等待某个条件的形成或接受到信号)
    不可中断(收到信号不唤醒和不可运行, 进程必须等待直到有中断发生)
    僵死(进程已终止, 但进程描述符存在, 直到父进程调用 wait4()系统调用后释放)
    停止(进程收到 SIGSTOP, SIGTSTP, SIGTTIN, SIGTTOU 信号后停止运行运行)
+   
    ps 工具标识进程的 5 种状态码:
-
    D 不可中断 uninterruptible sleep (usually IO)
    R 运行 runnable (on run queue)
    S 中断 sleeping
@@ -760,81 +289,7 @@
    TTY 登入者的终端机位置
    TIME 使用掉的 CPU 时间。
    CMD 所下达的指令为何
-   4.3. 使用实例
-   实例 1：显示所有进程信息
-   [root@localhost test6]# ps -A
-   PID TTY          TIME CMD
-   1 ?        00:00:00 init
-   2 ?        00:00:01 migration/0
-   3 ?        00:00:00 ksoftirqd/0
-   4 ?        00:00:01 migration/1
-   5 ?        00:00:00 ksoftirqd/1
-   6 ?        00:29:57 events/0
-   7 ?        00:00:00 events/1
-   8 ?        00:00:00 khelper
-   49 ?        00:00:00 kthread
-   54 ?        00:00:00 kblockd/0
-   55 ?        00:00:00 kblockd/1
-   56 ?        00:00:00 kacpid
-   217 ?        00:00:00 cqueue/0
-   ……省略部分结果
-   实例 2：显示指定用户信息
-   [root@localhost test6]# ps -u root
-   PID TTY          TIME CMD
-   1 ?        00:00:00 init
-   2 ?        00:00:01 migration/0
-   3 ?        00:00:00 ksoftirqd/0
-   4 ?        00:00:01 migration/1
-   5 ?        00:00:00 ksoftirqd/1
-   6 ?        00:29:57 events/0
-   7 ?        00:00:00 events/1
-   8 ?        00:00:00 khelper
-   49 ?        00:00:00 kthread
-   54 ?        00:00:00 kblockd/0
-   55 ?        00:00:00 kblockd/1
-   56 ?        00:00:00 kacpid
-   ……省略部分结果
-   实例 3：显示所有进程信息，连同命令行
-   [root@localhost test6]# ps -ef
-   UID        PID  PPID  C STIME TTY          TIME CMD
-   root         1     0  0 Nov02 ?        00:00:00 init [3]
-   root         2     1  0 Nov02 ?        00:00:01 [migration/0]
-   root         3     1  0 Nov02 ?        00:00:00 [ksoftirqd/0]
-   root         4     1  0 Nov02 ?        00:00:01 [migration/1]
-   root         5     1  0 Nov02 ?        00:00:00 [ksoftirqd/1]
-   root         6     1  0 Nov02 ?        00:29:57 [events/0]
-   root         7     1  0 Nov02 ?        00:00:00 [events/1]
-   root         8     1  0 Nov02 ?        00:00:00 [khelper]
-   root        49     1  0 Nov02 ?        00:00:00 [kthread]
-   root        54    49  0 Nov02 ?        00:00:00 [kblockd/0]
-   root        55    49  0 Nov02 ?        00:00:00 [kblockd/1]
-   root        56    49  0 Nov02 ?        00:00:00 [kacpid]
-   实例 4：ps 与 grep 组合使用，查找特定进程
-   [root@localhost test6]# ps -ef|grep ssh
-   root      2720     1  0 Nov02 ?        00:00:00 /usr/sbin/sshd
-   root     17394  2720  0 14:58 ?        00:00:00 sshd: root@pts/0
-   root     17465 17398  0 15:57 pts/0    00:00:00 grep ssh
-   实例 5：将与这次登入的 PID 与相关信息列示出来
-   [root@localhost test6]# ps -l
-   F S   UID   PID  PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
-   4 S     0 17398 17394  0  75   0 - 16543 wait   pts/0    00:00:00 bash
-   4 R     0 17469 17398  0  77   0 - 15877 -      pts/0    00:00:00 ps
-   实例 6：列出目前所有的正在内存中的程序
-   [root@localhost test6]# ps aux
-   USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
-   root         1  0.0  0.0  10368   676 ?        Ss   Nov02   0:00 init [3]
-   root         2  0.0  0.0      0     0 ?        S<   Nov02   0:01 [migration/0]
-   root         3  0.0  0.0      0     0 ?        SN   Nov02   0:00 [ksoftirqd/0]
-   root         4  0.0  0.0      0     0 ?        S<   Nov02   0:01 [migration/1]
-   root         5  0.0  0.0      0     0 ?        SN   Nov02   0:00 [ksoftirqd/1]
-   root         6  0.0  0.0      0     0 ?        S<   Nov02  29:57 [events/0]
-   root         7  0.0  0.0      0     0 ?        S<   Nov02   0:00 [events/1]
-   root         8  0.0  0.0      0     0 ?        S<   Nov02   0:00 [khelper]
-   root        49  0.0  0.0      0     0 ?        S<   Nov02   0:00 [kthread]
-   root        54  0.0  0.0      0     0 ?        S<   Nov02   0:00 [kblockd/0]
-   root        55  0.0  0.0      0     0 ?        S<   Nov02   0:00 [kblockd/1]
-   root        56  0.0  0.0      0     0 ?        S<   Nov02   0:00 [kacpid]
-** 跟踪进程中的系统调用[ strace ] 
+** strace
    strace 常用来跟踪进程执行时的系统调用和所接收的信号。 在 Linux 世界，进程不能直接访问硬件设备，当进程需要访问硬件设备(比如读取磁盘文件，接收网络数据等等)时，必须由用户态模式切换至内核态模式，通过系统调用访问硬件设备。strace 可以跟踪到一个进程产生的系统调用,包括参数，返回值，执行消耗的时间。
 
    6.1. 输出参数含义
@@ -1239,75 +694,8 @@
    Owner                 Data size   Description
    GNU                  0x00000014   NT_GNU_BUILD_ID (unique build ID bitstring)
    Build ID: 17fb9651029b6a8543bfafec9eea23bd16454e65
-** readelf 用于显示 elf 格式文件的信息 
-   -a 
-   --all 显示全部信息,等价于 -h -l -S -s -r -d -V -A -I. 
-
-   -h 
-   --file-header 显示 elf 文件开始的文件头信息. 
-
-   -l 
-   --program-headers  
-   --segments 显示程序头（段头）信息(如果有的话)。 
-
-   -S 
-   --section-headers  
-   --sections 显示节头信息(如果有的话)。 
-
-   -g 
-   --section-groups 显示节组信息(如果有的话)。 
-     
-   -t 
-   --section-details 显示节的详细信息(-S 的)。 
-
-   -s 
-   --syms        
-   --symbols 显示符号表段中的项（如果有的话）。 
-
-   -e 
-   --headers 显示全部头信息，等价于: -h -l -S 
-
-   -n 
-   --notes 显示 note 段（内核注释）的信息。 
-
-   -r 
-   --relocs 显示可重定位段的信息。 
-
-   -u 
-   --unwind 显示 unwind 段信息。当前只支持 IA64 ELF 的 unwind 段信息。 
-
-   -d 
-   --dynamic 显示动态段的信息。 
-
-   -V 
-   --version-info 显示版本段的信息。 
-
-   -A 
-   --arch-specific 显示 CPU 构架信息。 
-
-   -D 
-   --use-dynamic 使用动态段中的符号表显示符号，而不是使用符号段。 
-
-   -x <number or name> 
-   --hex-dump=<number or name> 以 16 进制方式显示指定段内内容。number 指定段表中段的索引,或字符串指定文件中的段名。 
-
-   -w[liaprmfFsoR] or 
-   --debug-dump[=line,=info,=abbrev,=pubnames,=aranges,=macro,=frames,=frames-interp,=str,=loc,=Ranges] 显示调试段中指定的内容。 
-
-   -I 
-   --histogram 显示符号的时候，显示 bucket list 长度的柱状图。 
-
-   -v 
-   --version 显示 readelf 的版本信息。 
-
-   -H 
-   --help 显示 readelf 所支持的命令行选项。 
-
-   -W 
-   --wide 宽行输出。 
-
-   @file 可以将选项集中到一个文件中，然后使用这个@file 选项载入。 
-** 查询可用内存[ free ] 
+** readelf 
+** free
    free 工具用来查看系统可用内存:
 
    /opt/app/tdev1$free

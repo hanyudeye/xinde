@@ -13,98 +13,97 @@
 		阅读量 <span id="busuanzi_value_page_pv"></span>
 		</span>
     <% } %>
-* 主题
-** [[https://theme-next.org/docs/getting-started/][NexT]]
-*** 安装 
-**** 下载最新 release 版本
-     #+BEGIN_SRC sh 
-       $ mkdir themes/next
-       $ curl -s https://api.github.com/repos/theme-next/hexo-theme-next/releases/latest | grep tarball_url | cut -d '"' -f 4 | wget -i - -O- | tar -zx -C themes/next --strip-components=1
-     #+END_SRC
-**** 指定 branch 使用 git 安装：
-     #+begin_src js
-       $ git clone --branch v6.0.0 https://github.com/theme-next/hexo-theme-next themes/next
-     #+end_src
+* [[https://theme-next.org/docs/getting-started/][NexT]]
+** 安装 
+*** 下载最新 release 版本
+    #+BEGIN_SRC sh 
+      $ mkdir themes/next
+      $ curl -s https://api.github.com/repos/theme-next/hexo-theme-next/releases/latest | grep tarball_url | cut -d '"' -f 4 | wget -i - -O- | tar -zx -C themes/next --strip-components=1
+    #+END_SRC
+*** 指定 branch 使用 git 安装：
+    #+begin_src js
+      $ git clone --branch v6.0.0 https://github.com/theme-next/hexo-theme-next themes/next
+    #+end_src
      
-**** 下载最新 master 分支
-     #+begin_src js
-     $ git clone https://github.com/theme-next/hexo-theme-next themes/next
-     #+end_src
+*** 下载最新 master 分支
+    #+begin_src js
+    $ git clone https://github.com/theme-next/hexo-theme-next themes/next
+    #+end_src
      
-     获取 tags 列表：
-     #+BEGIN_SRC shell
-       $ cd themes/next
-       $ git tag -l
-       $ git checkout tags/v6.0.1
-     #+END_SRC
-**** 完成配置
-     在 hexo 根配置文件 _config.yml 中设置你的主题：
-     #+begin_src yaml
-     theme: next
-     #+end_src
+    获取 tags 列表：
+    #+BEGIN_SRC shell
+      $ cd themes/next
+      $ git tag -l
+      $ git checkout tags/v6.0.1
+    #+END_SRC
+*** 完成配置
+    在 hexo 根配置文件 _config.yml 中设置你的主题：
+    #+begin_src yaml
+    theme: next
+    #+end_src
      
-*** 配置
-**** 主题风格设定
-     通过修改 next 主题下的_config.yml 的 scheme 字段，配置不同的风格。
-     #+begin_src yaml
-       # Schemes
-       scheme: Muse
-       #scheme: Mist
-       #scheme: Pisces
-  #+end_src
-**** 菜单设置
-  通过修改 next 主题下的_config.yml 的 menu 字段，选定显示的菜单项。
+** 配置
+*** 主题风格设定
+    通过修改 next 主题下的_config.yml 的 scheme 字段，配置不同的风格。
+    #+begin_src yaml
+      # Schemes
+      scheme: Muse
+      #scheme: Mist
+      #scheme: Pisces
+ #+end_src
+*** 菜单设置
+ 通过修改 next 主题下的_config.yml 的 menu 字段，选定显示的菜单项。
 
-  #+begin_src yaml
-      menu:
-        home: /
-        categories: /categories
-        about: /about
-        archives: /archives
-        tags: /tags
-        commonweal: /404.html
-  #+end_src
-  其中，home 代表主页，categories 代表分类页，about 代表关于页面，archives 代表
-  归档页，commonweal 代表 404 页面（page not found 时候显示的页面）。
+ #+begin_src yaml
+     menu:
+       home: /
+       categories: /categories
+       about: /about
+       archives: /archives
+       tags: /tags
+       commonweal: /404.html
+ #+end_src
+ 其中，home 代表主页，categories 代表分类页，about 代表关于页面，archives 代表
+ 归档页，commonweal 代表 404 页面（page not found 时候显示的页面）。
 
-  菜单项文本修改是在对 next 主题下的 language 文件夹下的文件进行修改，若当前语言
-  是简体中文，直接修改 language/zh-Hans.yml 里的对应字段即可。
+ 菜单项文本修改是在对 next 主题下的 language 文件夹下的文件进行修改，若当前语言
+ 是简体中文，直接修改 language/zh-Hans.yml 里的对应字段即可。
 
-  本站点显示主页，分类页，关于页面和归档页。
-**** 头像设置
-  在主题下的 source/images/下放置头像文件 avatar.gif 即可。
-**** 设置文章代码主题
-     Next 主题总共支持 5 种主题，默认主题是白色的 normal。通过修改 next 主题下
-     的_config.yml 的 highlight 字段，来设置代码主题。
+ 本站点显示主页，分类页，关于页面和归档页。
+*** 头像设置
+ 在主题下的 source/images/下放置头像文件 avatar.gif 即可。
+*** 设置文章代码主题
+    Next 主题总共支持 5 种主题，默认主题是白色的 normal。通过修改 next 主题下
+    的_config.yml 的 highlight 字段，来设置代码主题。
 
-     本站点使用的是 night 主题。即令 highlight 为 night。
-**** 添加标签页面
-     前面通过修改 next 主题下的_config.yml 文件中的 menu 选项，可以在主页面的菜单栏添加标签选项，但是此时点击标签，跳转的页面会显示 page not found。
+    本站点使用的是 night 主题。即令 highlight 为 night。
+*** 添加标签页面
+    前面通过修改 next 主题下的_config.yml 文件中的 menu 选项，可以在主页面的菜单栏添加标签选项，但是此时点击标签，跳转的页面会显示 page not found。
 
-     添加标签页面的具体方法是：
+    添加标签页面的具体方法是：
 
-     新建页面
-     输入如下命令：
+    新建页面
+    输入如下命令：
 
-     $ cd myBlog
-     $ hexo new page tags
-     输入命令后，在 myBlog/source 下会新生成一个新的文件夹 tags，在该文件夹下会有一个 index.md 文件。
+    $ cd myBlog
+    $ hexo new page tags
+    输入命令后，在 myBlog/source 下会新生成一个新的文件夹 tags，在该文件夹下会有一个 index.md 文件。
      
-**** 加入站点内容搜索功能
-     本站点使用的是 Local Search。加入站点内容搜索功能步骤如下：
+*** 加入站点内容搜索功能
+    本站点使用的是 Local Search。加入站点内容搜索功能步骤如下：
 
-     安装 hexo-generator-searchdb
-     $ npm install hexo-generator-searchdb --save
-  注意：安装时应在站点根目录下，即 myBlog 目录下
-**** 添加 search 字段
-  在站点 myBlog/_config.yml 中添加 search 字段，如下：
+    安装 hexo-generator-searchdb
+    $ npm install hexo-generator-searchdb --save
+ 注意：安装时应在站点根目录下，即 myBlog 目录下
+*** 添加 search 字段
+ 在站点 myBlog/_config.yml 中添加 search 字段，如下：
 
-  search:
-    path: search.xml
-    field: post
-    format: html
-    limit: 10000
-*** 提交合并请求
+ search:
+   path: search.xml
+   field: post
+   format: html
+   limit: 10000
+** 提交合并请求
 
 提交合并请求前，请再次确认您已经查看了[你需要了解的](#before-submitting-an-issue)内
 容，避免提交重复的合并请求。确定相关仓库后，创建合并请求。更多详细操作过程可以查
@@ -140,12 +139,12 @@
 合并请求需要在所有主题样式中测试通过，并提供所表现功能的样例，如图像文件、在线演示网址等等。
 <a name="creating-releases"></a>
   
-* 帮助文档
+* 帮助
 ** 标签插件  
-标签插件和 Front-matter 中的标签不同，它们是用于在文章中快速插入特定内容的插件。
-
-引用块
-在文章中插入引言，可包含作者、来源和标题。
+   标签插件和 Front-matter 中的标签不同，它们是用于在文章中快速插入特定内容的插件。
+   
+   引用块
+   在文章中插入引言，可包含作者、来源和标题。
 
 别号：quote
 
@@ -398,8 +397,8 @@ index.ejs
 <%- partial('header', {}, {cache: true});
 但是，如果您开启了 relative_link 参数的话，请勿使用局部缓存功能，因为相对链接在每个页面可能不同。
 ** 变量
-全局变量
-变量	描述
+   全局变量
+   变量	描述
 site	网站变量
 page	针对该页面的内容以及 front-matter 所设定的变量。
 config	网站配置
@@ -468,1285 +467,18 @@ page.category	分类名称
 
 变量	描述
 page.tag	标签名称
-** 辅助函数（Helpers）
-辅助函数帮助您在模版中快速插入内容。辅助函数不能在源文件中使用。
-
-网址
-url_for
-在路径前加上根路径，从 Hexo 2.7 开始您应该使用此函数而不是 config.root + path。
-
-<%- url_for(path) %>
-relative_url
-取得与 from 相对的 to 路径。
-
-<%- relative_url(from, to) %>
-gravatar
-插入 Gravatar 图片。
-如果你不指定 options 参数，将会应用默认参数。否则，你可以将其设置为一个数字，这个数字将会作为 Gravatar 的大小参数。最后，如果你设置它一个对象，它将会被转换为 Gravatar 的一个查询字符串参数。
-
-<%- gravatar(email, [options]);
-示例：
-
-<%- gravatar('a@abc.com') %>
-// http://www.gravatar.com/avatar/b9b00e66c6b8a70f88c73cb6bdb06787
-
-<%- gravatar('a@abc.com', 40) %>
-// http://www.gravatar.com/avatar/b9b00e66c6b8a70f88c73cb6bdb06787?s=40
-
-<%- gravatar('a@abc.com' {s: 40, d: 'http://example.com/image.png'}) %>
-// http://www.gravatar.com/avatar/b9b00e66c6b8a70f88c73cb6bdb06787?s=40&d=http%3A%2F%2Fexample.com%2Fimage.png
-HTML 标签
-css
-载入 CSS 文件。path 可以是数组或字符串，如果 path 开头不是 / 或任何协议，则会自动加上根路径；如果后面没有加上 .css 扩展名的话，也会自动加上。
-
-<%- css(path, ...) %>
-示例：
-
-<%- css('style.css') %>
-// <link rel="stylesheet" href="/style.css" type="text/css">
-
-<%- css(['style.css', 'screen.css']) %>
-// <link rel="stylesheet" href="/style.css" type="text/css">
-// <link rel="stylesheet" href="/screen.css" type="text/css">
-js
-载入 JavaScript 文件。path 可以是数组或字符串，如果 path 开头不是 / 或任何协议，则会自动加上根路径；如果后面没有加上 .js 扩展名的话，也会自动加上。
-
-<%- js(path, ...) %>
-示例：
-
-<%- js('script.js') %>
-// <script type="text/javascript" src="/script.js"></script>
-
-<%- js(['script.js', 'gallery.js']) %>
-// <script type="text/javascript" src="/script.js"></script>
-// <script type="text/javascript" src="/gallery.js"></script>
-link_to
-插入链接。
-
-<%- link_to(path, [text], [options]) %>
-参数	描述	默认值
-external	在新视窗打开链接	false
-class	Class 名称	
-id	ID	
-示例：
-
-<%- link_to('http://www.google.com') %>
-// <a href="http://www.google.com" title="http://www.google.com">http://www.google.com</a>
-
-<%- link_to('http://www.google.com', 'Google') %>
-// <a href="http://www.google.com" title="Google">Google</a>
-
-<%- link_to('http://www.google.com', 'Google', {external: true}) %>
-// <a href="http://www.google.com" title="Google" target="_blank" rel="external">Google</a>
-mail_to
-插入电子邮箱链接。
-
-<%- mail_to(path, [text], [options]) %>
-参数	描述
-class	Class 名称
-id	ID
-subject	邮件主题
-cc	抄送（CC）
-bcc	密送（BCC）
-body	邮件内容
-示例：
-
-<%- mail_to('a@abc.com') %>
-// <a href="mailto:a@abc.com" title="a@abc.com">a@abc.com</a>
-
-<%- mail_to('a@abc.com', 'Email') %>
-// <a href="mailto:a@abc.com" title="Email">Email</a>
-image_tag
-插入图片。
-
-<%- image_tag(path, [options]) %>
-参数	描述
-alt	图片的替代文字
-class	Class 名称
-id	ID
-width	图片宽度
-height	图片高度
-favicon_tag
-插入 favicon。
-
-<%- favicon_tag(path) %>
-feed_tag
-插入 feed 链接。
-
-<%- feed_tag(path, [options]) %>
-参数	描述	默认值
-title	Feed 标题	
-type	Feed 类型	atom
-条件函数
-is_current
-检查 path 是否符合目前页面的网址。开启 strict 选项启用严格比对。
-
-<%- is_current(path, [strict]) %>
-is_home
-检查目前是否为首页。
-
-<%- is_home() %>
-is_post
-检查目前是否为文章。
-
-<%- is_post() %>
-is_archive
-检查目前是否为存档页面。
-
-<%- is_archive() %>
-is_year
-检查目前是否为年度归档页面。
-
-<%- is_year() %>
-is_month
-检查目前是否为月度归档页面。
-
-<%- is_month() %>
-is_category
-检查目前是否为分类归档页面。
-如果给定一个字符串作为参数，将会检查目前是否为指定分类。
-
-<%- is_category() %>
-<%- is_category('hobby') %>
-is_tag
-检查目前是否为标签归档页面。
-如果给定一个字符串作为参数，将会检查目前是否为指定标签。
-
-<%- is_tag() %>
-<%- is_tag('hobby') %>
-字符串处理
-trim
-清除字符串开头和结尾的空格。
-
-<%- trim(string) %>
-strip_html
-清除字符串中的 HTML 标签。
-
-<%- strip_html(string) %>
-示例：
-
-<%- strip_html('It's not <b>important</b> anymore!') %>
-// It's not important anymore!
-titlecase
-把字符串转换为正确的 Title case。
-
-<%- titlecase(string) %>
-示例：
-
-<%- titlecase('this is an apple') %>
-# This is an Apple
-markdown
-使用 Markdown 解析字符串。
-
-<%- markdown(str) %>
-示例：
-
-<%- markdown('make me **strong**') %>
-// make me <strong>strong</strong>
-render
-解析字符串。
-
-<%- render(str, engine, [options]) %>
-word_wrap
-使每行的字符串长度不超过 length。length 预设为 80。
-
-<%- word_wrap(str, [length]) %>
-示例：
-
-<%- word_wrap('Once upon a time', 8) %>
-// Once upon\n a time
-truncate
-移除超过 length 长度的字符串。
-
-<%- truncate(text, length) %>
-示例：
-
-<%- truncate('Once upon a time in a world far far away', {length: 17}) %>
-// Once upon a ti...
-
-<%- truncate('Once upon a time in a world far far away', {length: 17, separator: ' '}) %>
-// Once upon a...
-
-<%- truncate('And they found that many people were sleeping better.', {length: 25, omission: '... (continued)'}) %>
-// And they f... (continued)
-模板
-partial
-载入其他模板文件，您可在 locals 设定区域变量。
-
-<%- partial(layout, [locals], [options]) %>
-参数	描述	默认值
-cache	缓存（使用 Fragment cache）	false
-only	限制局部变量。在模板中只能使用 locals 中设定的变量。	false
-fragment_cache
-局部缓存。它储存局部内容，下次使用时就能直接使用缓存。
-
-<%- fragment_cache(id, fn);
-示例：
-
-<%- fragment_cache('header', function(){
-  return '<header></header>';
-}) %>
-日期与时间
-date
-插入格式化的日期。date 可以是 UNIX 时间、ISO 字符串、Date 对象或 Moment.js 对象。format 默认为 date_format 配置信息。
-
-<%- date(date, [format]) %>
-示例：
-
-<%- date(Date.now()) %>
-// 2013-01-01
-
-<%- date(Date.now(), 'YYYY/M/D') %>
-// Jan 1 2013
-date_xml
-插入 XML 格式的日期。date 可以是 UNIX 时间、ISO 字符串、Date 对象或 Moment.js 对象。
-
-<%- date_xml(date) %>
-示例：
-
-<%- date_xml(Date.now()) %>
-// 2013-01-01T00:00:00.000Z
-time
-插入格式化的时间。date 可以是 UNIX 时间、ISO 字符串、Date 对象或 Moment.js 对象。format 默认为 time_format 配置信息。
-
-<%- time(date, [format]) %>
-示例：
-
-<%- time(Date.now()) %>
-// 13:05:12
-
-<%- time(Date.now(), 'h:mm:ss a') %>
-// 1:05:12 pm
-full_date
-插入格式化的日期和时间。date 可以是 UNIX 时间、ISO 字符串、Date 对象或 Moment.js 对象。format 默认为 date_format + time_format。
-
-<%- full_date(date, [format]) %>
-示例：
-
-<%- full_date(new Date()) %>
-// Jan 1, 2013 0:00:00
-
-<%- full_date(new Date(), 'dddd, MMMM Do YYYY, h:mm:ss a') %>
-// Tuesday, January 1st 2013, 12:00:00 am
-moment
-Moment.js 函数库。
-
-列表
-list_categories
-插入分类列表。
-
-<%- list_categories([options]) %>
-参数	描述	默认值
-orderby	分类排列方式	name
-order	分类排列顺序。1, asc 升序；-1, desc 降序。	1
-show_count	显示每个分类的文章总数	true
-style	分类列表的显示方式。使用 list 以无序列表（unordered list）方式显示。	list
-separator	分类间的分隔符号。只有在 style 不是 list 时有用。	,
-depth	要显示的分类层级。0 显示所有层级的分类；-1 和 0 很类似，但是显示不分层级；1 只显示第一层的分类。	0
-class	分类列表的 class 名称。	category
-transform	改变分类名称显示方法的函数	
-list_tags
-插入标签列表。
-
-<%- list_tags([options]) %>
-选项	描述	预设值
-orderby	标签排列方式	name
-order	标签排列顺序。1, asc 升序；-1, desc 降序。	1
-show_count	显示每个标签的文章总数	true
-style	标签列表的显示方式。使用 list 以无序列表（unordered list）方式显示。	list
-separator	标签间的分隔符号。只有在 style 不是 list 时有用。	,
-class	标签列表的 class 名称。	tag
-transform	改变标签名称显示方法的函数	
-amount	要显示的标签数量（0 = 无限制）	0
-list_archives
-插入归档列表。
-
-<%- list_archives([options]) %>
-参数	描述	默认值
-type	类型。此设定可为 yearly 或 monthly。	monthly
-order	排列顺序。1, asc 升序；-1, desc 降序。	1
-show_count	显示每个归档的文章总数	true
-format	日期格式	MMMM YYYY
-style	归档列表的显示方式。使用 list 以无序列表（unordered list）方式显示。	list
-separator	归档间的分隔符号。只有在 style 不是 list 时有用。	,
-class	归档列表的 class 名称。	archive
-transform	改变归档名称显示方法的函数	
-list_posts
-插入文章列表。
-
-<%- list_posts([options]) %>
-参数	描述	默认值
-orderby	文章排列方式	date
-order	文章排列顺序。1, asc 升序；-1, desc 降序。	-1
-style	文章列表的显示方式。使用 list 以无序列表（unordered list）方式显示。	list
-separator	文章间的分隔符号。只有在 style 不是 list 时有用。	,
-class	文章列表的 class 名称。	post
-amount	要显示的文章数量（0 = 无限制）	6
-transform	改变文章名称显示方法的函数	
-tagcloud
-插入标签云。
-
-<%- tagcloud([tags], [options]) %>
-参数	描述	默认值
-min_font	最小字体尺寸	10
-max_font	最大字体尺寸	20
-unit	字体尺寸的单位	px
-amount	标签总量	40
-orderby	标签排列方式	name
-order	标签排列顺序。1, sac 升序；-1, desc 降序	1
-color	使用颜色	false
-start_color	开始的颜色。您可使用十六进位值（#b700ff），rgba（rgba(183, 0, 255, 1)），hsla（hsla(283, 100%, 50%, 1)）或 颜色关键字。此变量仅在 color 参数开启时才有用。	
-end_color	结束的颜色。您可使用十六进位值（#b700ff），rgba（rgba(183, 0, 255, 1)），hsla（hsla(283, 100%, 50%, 1)）或 颜色关键字。此变量仅在 color 参数开启时才有用。	
-其他
-paginator
-插入分页链接。
-
-<%- paginator(options) %>
-参数	描述	默认值
-base	基础网址	/
-format	网址格式	page/%d/
-total	分页总数	1
-current	目前页数	0
-prev_text	上一页链接的文字。仅在 prev_next 设定开启时才有用。	Prev
-next_text	下一页链接的文字。仅在 prev_next 设定开启时才有用。	Next
-space	空白文字	…
-prev_next	显示上一页和下一页的链接	true
-end_size	显示于两侧的页数	1
-mid_size	显示于中间的页数	2
-show_all	显示所有页数。如果开启此参数的话，end_size 和 mid_size 就没用了。	false
-search_form
-插入 Google 搜索框。
-
-<%- search_form(options) %>
-参数	描述	默认值
-class	表单的 class name	search-form
-text	搜索提示文字	Search
-button	显示搜索按钮。此参数可为布尔值（boolean）或字符串，当设定是字符串的时候，即为搜索按钮的文字。	false
-number_format
-格式化数字。
-
-<%- number_format(number, [options]) %>
-参数	描述	默认值
-precision	数字精度。此选项可为 false 或非负整数。	false
-delimiter	千位数分隔符号	,
-separator	整数和小数之间的分隔符号	.
-示例：
-
-<%- number_format(12345.67, {precision: 1}) %>
-// 12,345.68
-
-<%- number_format(12345.67, {precision: 4}) %>
-// 12,345.6700
-
-<%- number_format(12345.67, {precision: 0}) %>
-// 12,345
-
-<%- number_format(12345.67, {delimiter: ''}) %>
-// 12345.67
-
-<%- number_format(12345.67, {separator: '/'}) %>
-// 12,345/67
-open_graph
-插入 open graph 资源。
-
-<%- open_graph([options]) %>
-参数	描述	默认值
-title	页面标题 (og:title)	page.title
-type	页面类型 (og:type)	blog
-url	页面网址 (og:url)	url
-image	页面图片 (og:image)	内容中的图片
-site_name	网站名称 (og:site_name)	config.title
-description	页面描述 (og:desription)	内容摘要或前 200 字
-twitter_card	Twitter 卡片类型 (twitter:card)	summary
-twitter_id	Twitter ID (twitter:creator)	
-twitter_site	Twitter 网站 (twitter:site)	
-google_plus	Google+ 个人资料链接	
-fb_admins	Facebook 管理者 ID	
-fb_app_id	Facebook 应用程序 ID	
-toc
-解析内容中的标题标签 (h1~h6) 并插入目录。
-
-<%- toc(str, [options]) %>
-参数	描述	默认值
-class	Class 名称	toc
-list_number	显示编号	true
-示例：
-
-<%- toc(page.content) %>
-** 国际化（i18n）
-若要让您的网站以不同语言呈现，您可使用国际化（internationalization）功能。请先在 _config.yml 中调整 language 设定，这代表的是预设语言，您也可设定多个语言来调整预设语言的顺位。
-
-language: zh-tw
-
-language: 
-- zh-tw
-- en
-语言文件
-语言文件可以使用 YAML 或 JSON 编写，并放在主题文件夹中的 languages 文件夹。您可以在语言文件中使用 printf 格式。
-
-模板
-在模板中，透过 __ 或 _p 辅助函数，即可取得翻译后的字符串，前者用于一般使用；而后者用于复数字符串。例如：
-
-en.yml
-index:
-  title: Home
-  add: Add
-  video:
-    zero: No videos
-    one: One video
-    other: %d videos
-<%= __('index.title') %>
-// Home
-
-<%= _p('index.video', 3) %>
-// 3 videos
-路径
-您可在 front-matter 中指定该页面的语言，也可在 _config.yml 中修改 i18n_dir 设定，让 Hexo 自动侦测。
-
-i18n_dir: :lang
-i18n_dir 的预设值是 :lang，也就是说 Hexo 会捕获网址中的第一段以检测语言，举例来说：
-
-/index.html => en
-/archives/index.html => en
-/zh-tw/index.html => zh-tw
-捕获到的字符串唯有在语言文件存在的情况下，才会被当作是语言，因此例二 /archives/index.html 中的 archives 就不被当成是语言。
-** 插件系统
-Hexo 有强大的插件系统，使您能轻松扩展功能而不用修改核心模块的源码。在 Hexo 中有两种形式的插件：
-
-脚本（Scripts）
-如果您的代码很简单，建议您编写脚本，您只需要把 JavaScript 文件放到 scripts 文件夹，在启动时就会自动载入。
-
-插件（Packages）
-如果您的代码较复杂，或是您想要发布到 NPM 上，建议您编写插件。首先，在 node_modules 文件夹中建立文件夹，文件夹名称开头必须为 hexo-，如此一来 Hexo 才会在启动时载入否则 Hexo 将会忽略它。
-
-文件夹内至少要包含 2 个文件：一个是主程序，另一个是 package.json，描述插件的用途和所依赖的插件。
-
-.
-├── index.js
-└── package.json
-package.json 中至少要包含 name, version, main 属性，例如：
-
-package.json
-{
-  "name": "hexo-my-plugin",
-  "version": "0.0.1",
-  "main": "index"
-}
-工具
-您可以使用 Hexo 提供的官方工具插件来加速开发：
-
-hexo-fs：文件 IO
-hexo-util：工具程式
-hexo-i18n：本地化（i18n）
-hexo-pagination：生成分页资料
-发布
-当您完成插件后，可以考虑将它发布到 插件列表，让更多人能够使用您的插件。发布插件的步骤和 更新文件 非常类似。
-
-Fork hexojs/site
-把库（repository）复制到电脑上，并安装所依赖的插件。
-
-$ git clone https://github.com/<username>/site.git
-$ cd site
-$ npm install
-编辑 source/_data/plugins.yml，在档案中新增您的插件，例如：
-
-- name: hexo-server
-  description: Server module for Hexo.
-  link: https://github.com/hexojs/hexo-server
-  tags:
-    - official
-    - server
-    - console
-推送（push）分支。
-
-建立一个新的合并申请（pull request）并描述改动。
 ** 插入视频
+   #+begin_src html
    <video src=' ' type='video/mp4' controls='controls'  width='100%' height='100%'>
-</video>
-** 更多 <!-- more -->
-** 前言
-在万网购买自己喜欢的域名（.com 的会贵一点，.site 和.xyz 的相对便宜一些，有的只需要几块钱一年就可以）
-解析 DNS
-在 hexo 中添加 CNAME 文件
-购买域名
-之前没有买域名的时候我想使用网易云跟帖，发现在注册网易云跟帖的时候使用原来的域名提示“url 已被使用”，这是因为网易云跟帖不认可二级域名，所以要自己买域名。
-我选择的是万网，阿里下面的。我选择了一个.site 的域名，原价 8 元，使用阿里云 app 支付还优惠 5 元，等于 3 元到手一个域名（一年）~
-按照官网的步骤一步一来就可以了~
-
-解析 DNS
-购买完域名之后我们需要解析 DNS 地址，在管理控制台中的左侧有域名选项，然后找到你的域名，点击后面的“解析”
-这里写图片描述
-
-点击添加解析，记录类型选 A 或 CNAME，
-
-A 记录的记录值就是 ip 地址，github(官方文档)提供了两个 IP 地址，192.30.252.153 和 192.30.252.154，这两个 IP 地址为 github 的服务器地址，两个都要填上，
-解析记录设置两个 www 和@，线路就默认就行了，CNAME 记录值填你的 github 博客网址。如我的是 sunshine940326.github.io。
-
-在 hexo 中添加 CNAME 文件
-接下来在你的 hexo 文件夹下 source 文件夹下新建一个 CANME 文件,里面加上你刚刚购买的域名比如我的 cherryblog.site
-这里写图片描述
-然后你就可以 hexo clean,hexo g，hexo d 发布你的博客看看效果啦~
-这里写图片描述
-在这里我出现一个问题，就是单独输入域名是可以访问的，但是前面加上 www 之后就访问不聊了= =了，我感觉应该是可以的，但是不行，再等几天看看效果= =
-
-* 添加菜单页 (左侧那玩意,怎么不能二级分类)
-1. 命令 hexo new page MENUNAME
-2. 在主题的配置文件中添加 menu 路径( 会指定默认文件 index.md) ~参照 category 那些目录~ ,icon 也一并加上
-3. 在主题的配置文件添加 menu_icon 字段设置对应的
-4. 修改 language 文件下 zh-hans 语言包
-
-在发表文章的时候添加对应的 menu 字段就可以看到
-
-刚开始的时候不理解怎么添加分类页和添加文章的区别，公司有一个项目用到了 wordpress，
-然后发现两者有相似的地方，不同的就是 wordpress 是有可视化的操作后台，而 hexo 是
-需要 git bash 自己创建首先我们要分清什么是页面，什么是文章，
-
-在 hexo 中 menu 下的内容都是新的页面我们可以通过 hexo new page "pagename" 创建，hexo 默认的页面只有 home,archives,tags 三个，之后我们写的博文就是文章，通过 hexo new "name" 创建的 name.md 文件在根目录的 source\_posts 下，在每一个文章的头部，我们可以配置其 tags 或者 categories 内容，相当于文章是页面的下一级
-
-在配置文件中添加 menu 索引路径
-我们可以在主题配置的_config 文件下找到相应的字段，字段前加# 表示被注释掉，我们也可以自己添加 menu 的内容，比如我又新增了两个 menulife 和 photo
-这里写图片描述
-这里添加的字段其实是加上文件索引的路径，这里 hexo 设置的根路径是 hexo/source 接下来我们在这个根路径下建立相应的文件夹就可以实现点击 mune 跳转到相应的页面上了
-这里写图片描述,
-没有明白什么意思的同学看下图
-
-在 source 文件添加 menu 文件夹
-我们需要在这个路径下自己建立对应的页面，比如说我新建了 menulife 和 photos，然后再 source 文件夹下面新建两个名字为 life 和 photo 的文件夹，里面添加一个 index.md markdown 文件，内容是类似这样的
-
-title: photo
-date: 2017-04-04 22:14:07
-type: "photo"
-comments: false
----
-啦啦啦~
-这里写图片描述
-这是一个 markdown 文件，你可以自己编写，但是我还不知道怎么把添加 html 文件= =，回来研究一下
-
-给 menu 添加 icon
-如果只是上面的步骤，那么你可能会创建出一个新的页面，但是显示的效果会是这样：这里写图片描述
-怎么 icon 没有换？？？其实 hexo 中换 icon 是一个很简单的事情，因为 hexo 集成了 FontAwsome 所以我们只需要在主题的配置文件中加入相应的 icon 名字即可
-这里写图片描述
-
-查找 FontAwsome icon
-这时候你想要换一个自己喜欢的 icon 怎么办，这就需要自己动手，丰衣足食了，你需要自己到 FontAwsome 官网，然后鼠标往下拉，在图标集中选择自己喜欢的 icon，然后记住名字，保存在上面的 menu_icon 字段中就可以啦~
-这里写图片描述 tips：在字段中只需要填写 icon-name 后面跟的 name 即可，不需要加上前面的”icon-“
-
-在 language 添加 zh-hans 翻译字段
-上面的步骤完成之后你会发现，在你的博客首页显示的仍然是英文名，而我们想要有一个中文的名字，并且想要个性化定制我们的页面，我们可以在主题的 language 文件下的 zh-hans（中文）语言包下增加相应的字段（做过翻译的童鞋应该都知道什么意思~）还可以修改其他的字段，这样就可以定制我们的博客了呢~
-这里写图片描述
-
-在发表文章的时候添加对应的 menu 字段
-在我们写文章的时候只要在头部信息添加相应的字段就在 tags 页面和 categories 中显示相应的分类，例如:
-
-title: Git 使用中的报错情况
-date: 2017-03-11 23:54:11
-tags: [git,实战经验] 
-categories: git
----
-tags、categories 都是支持数组的形式的，可以添加多个 tags、categories。这样我们在 tags、categories 页面就可以看见相应的分类了
-这里写图片描述
-
-添加头像
-我使用的主题头像是位于侧边栏，显示的效果如下，
-这里写图片描述要添加一个这个的头像要怎么操作呢，其实思路就是将你要上传的头像放在你的文件夹中，然后再配置文件中引用正确的路径即可，当然也可以上传绝对路径。在你的主题配置文件找到 avatar 字段，然后将你得图片路径写在后面，我是新建了一个 uploads 文件夹，将图片放在下面
-
-# Sidebar Avatar
-# in theme directory(source/images): /images/avatar.jpg
-# in site  directory(source/uploads): /uploads/avatar.jpg
-avatar: /uploads/avatar.png
-这里写图片描述
-
-设置网站 logo
-跟设置头像其实是一个思路，都是在配置文件中引入正确的地址就可以了，不过网站的 logo 是对图片有要求的，我们需要在 Favicon 在线制作工具中制作 32*32 的.ico 图片，然后放在 source/images 下面。然后在主题配置文件下添加主题配置文件中添加：favicon: images/favicon.ico
-
-自定义样式
-不得不说 next 还是很人性化的，你可以个性化定制你的网站，你所有的改动（css）需要放在主题文件的 source/css/_costum/costum.styl 文件中，会覆盖原来的 css，所以只要你不想要你修改的样式，只需要删除这个文件夹就可以了，再也不用担心还原不回去了~
-这里写图片描述
-
-炫酷动态背景
-2017.5.8 更新，具体过程往下看仿知乎动态背景
-之前做过一个类似的 canvas-nest 的效果。新版本的 next 已经支持 canvas-nest 了，但是效果不怎么样，就不用了，但是也介绍一下，毕竟简单，只有两步就可以了。
-添加修改代码 next/layout/_layout.swig 在</body>之前加上
-
-{% if theme.canvas_nest %}
-<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
-{% endif %}
-打开 next/_config.yml，添加以下代码就可以了：
-
- # Canvas-nest
-canvas_nest: true
-这种虽然简单，但是我认为效果不够好，于是我决定添加原生的 js 来仿知乎的登录界面做背景，这就需要修改模板来实现了。首先我们要知道 next 文件的结构，这样我们想改什么就知道在什么位置了~
-这里写图片描述
-所以我们需要在 layout 下面的_layout.swig 添加一个 canvas
-
-然后使用原生 js 写一个仿知乎页面,详情 script 代码可以从 github 上 clone：
-https://github.com/sunshine940326/canvas-nest
-
-<script>
-class Circle {
-    //创建对象
-    //以一个圆为对象
-    //设置随机的 x，y 坐标，r 半径，_mx，_my 移动的距离
-    //this.r 是创建圆的半径，参数越大半径越大
-    //this._mx,this._my 是移动的距离，参数越大移动
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.r = Math.random() * 10 ;
-        this._mx = Math.random() ;
-        this._my = Math.random() ;
-    }
-    //canvas 画圆和画直线
-    //画圆就是正常的用 canvas 画一个圆
-    //画直线是两个圆连线，为了避免直线过多，给圆圈距离设置了一个值，距离很远的圆圈，就不做连线处理
-    drawCircle(ctx) {
-        ctx.beginPath();
-        //arc() 方法使用一个中心点和半径，为一个画布的当前子路径添加一条弧。
-        ctx.arc(this.x, this.y, this.r, 0, 360)
-        ctx.closePath();
-        ctx.fillStyle = 'rgba(204, 204, 204, 0.3)';
-        ctx.fill();
-    }
-    drawLine(ctx, _circle) {
-        let dx = this.x - _circle.x;
-        let dy = this.y - _circle.y;
-        let d = Math.sqrt(dx * dx + dy * dy)
-        if (d < 150) {
-            ctx.beginPath();
-            //开始一条路径，移动到位置 this.x,this.y。创建到达位置 _circle.x,_circle.y 的一条线：
-            ctx.moveTo(this.x, this.y);   //起始点
-            ctx.lineTo(_circle.x, _circle.y);   //终点
-            ctx.closePath();
-            ctx.strokeStyle = 'rgba(204, 204, 204, 0.3)';
-            ctx.stroke();
-        }
-    }
-    // 圆圈移动
-    // 圆圈移动的距离必须在屏幕范围内
-    move(w, h) {
-        this._mx = (this.x < w && this.x > 0) ? this._mx : (-this._mx);
-        this._my = (this.y < h && this.y > 0) ? this._my : (-this._my);
-        this.x += this._mx / 2;
-        this.y += this._my / 2;
-    }
-}
-//鼠标点画圆闪烁变动
-class currentCirle extends Circle {
-    constructor(x, y) {
-        super(x, y)
-    }
-    drawCircle(ctx) {
-        ctx.beginPath();
-        //注释内容为鼠标焦点的地方圆圈半径变化
-        //this.r = (this.r < 14 && this.r > 1) ? this.r + (Math.random() * 2 - 1) : 2;
-        this.r = 8;
-        ctx.arc(this.x, this.y, this.r, 0, 360);
-        ctx.closePath();
-        //ctx.fillStyle = 'rgba(0,0,0,' + (parseInt(Math.random() * 100) / 100) + ')'
-        ctx.fillStyle = 'rgba(255, 77, 54, 0.3)'
-        ctx.fill();
-    }
-}
-//更新页面用 requestAnimationFrame 替代 setTimeout
-window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-let canvas = document.getElementById('canvas');
-let ctx = canvas.getContext('2d');
-let w = canvas.width = canvas.offsetWidth;
-let h = canvas.height = canvas.offsetHeight;
-let circles = [];
-let current_circle = new currentCirle(0, 0)
-let draw = function () {
-    ctx.clearRect(0, 0, w, h);
-    for (let i = 0; i < circles.length; i++) {
-        circles[i].move(w, h);
-        circles[i].drawCircle(ctx);
-        for (j = i + 1; j < circles.length; j++) {
-            circles[i].drawLine(ctx, circles[j])
-        }
-    }
-    if (current_circle.x) {
-        current_circle.drawCircle(ctx);
-        for (var k = 1; k < circles.length; k++) {
-            current_circle.drawLine(ctx, circles[k])
-        }
-    }
-    requestAnimationFrame(draw)
-}
-let init = function (num) {
-    for (var i = 0; i < num; i++) {
-        circles.push(new Circle(Math.random() * w, Math.random() * h));
-    }
-    draw();
-}
-window.addEventListener('load', init(60));
-window.onmousemove = function (e) {
-    e = e || window.event;
-    current_circle.x = e.clientX;
-    current_circle.y = e.clientY;
-}
-window.onmouseout = function () {
-    current_circle.x = null;
-    current_circle.y = null;
-};
-</script>
-仿知乎动态背景
-2017.5.8 更新，很多朋友都私信我说这个动态背景没有效果，发现上面的 js 代码是 es6 写的，兼容性不好，并且中间也漏了一步添加 css 样式的，导致好多显示的不完全，特此更新
-，完整步骤如下
-
-1：首先在主题文件的 layout 中的_layout.swigC:\Hexo\themes\next\layout\_layout.swig 中加入
-
- <div class="bg_content">
-      <canvas id="canvas"></canvas>
- </div>
-'use strict';
-   var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-   function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-   function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-   var Circle = function () {
-      function Circle(x, y) {
-           _classCallCheck(this, Circle);
-           this.x = x;
-           this.y = y;
-           this.r = Math.random() * 10;
-           this._mx = Math.random();
-           this._my = Math.random();
-       }
-      _createClass(Circle, [{
-           key: 'drawCircle',
-           value: function drawCircle(ctx) {
-               ctx.beginPath();
-               //arc() 方法使用一个中心点和半径，为一个画布的当前子路径添加一条弧。
-               ctx.arc(this.x, this.y, this.r, 0, 360);
-               ctx.closePath();
-               ctx.fillStyle = 'rgba(204, 204, 204, 0.3)';
-               ctx.fill();
-           }
-       }, {
-           key: 'drawLine',
-           value: function drawLine(ctx, _circle) {
-               var dx = this.x - _circle.x;
-               var dy = this.y - _circle.y;
-               var d = Math.sqrt(dx * dx + dy * dy);
-               if (d < 150) {
-                   ctx.beginPath();
-                   ctx.moveTo(this.x, this.y); //起始点
-                   ctx.lineTo(_circle.x, _circle.y); //终点
-                   ctx.closePath();
-                   ctx.strokeStyle = 'rgba(204, 204, 204, 0.3)';
-                   ctx.stroke();
-               }
-           }
-       }, {
-           key: 'move',
-           value: function move(w, h) {
-               this._mx = this.x < w && this.x > 0 ? this._mx : -this._mx;
-               this._my = this.y < h && this.y > 0 ? this._my : -this._my;
-               this.x += this._mx / 2;
-               this.y += this._my / 2;
-           }
-       }]);
-       return Circle;
-   }();
-   var currentCirle = function (_Circle) {
-       _inherits(currentCirle, _Circle);
-       function currentCirle(x, y) {
-           _classCallCheck(this, currentCirle);
-           return _possibleConstructorReturn(this, (currentCirle.__proto__ || Object.getPrototypeOf(currentCirle)).call(this, x, y));
-       }
-       _createClass(currentCirle, [{
-           key: 'drawCircle',
-           value: function drawCircle(ctx) {
-               ctx.beginPath();
-               //this.r = (this.r < 14 && this.r > 1) ? this.r + (Math.random() * 2 - 1) : 2;
-               this.r = 8;
-               ctx.arc(this.x, this.y, this.r, 0, 360);
-               ctx.closePath();
-               //ctx.fillStyle = 'rgba(0,0,0,' + (parseInt(Math.random() * 100) / 100) + ')'
-               ctx.fillStyle = 'rgba(255, 77, 54, 0.6)';
-               ctx.fill();
-           }
-       }]);
-       return currentCirle;
-   }(Circle);
-   window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-   var canvas = document.getElementById('canvas');
-   var ctx = canvas.getContext('2d');
-   var w = canvas.width = canvas.offsetWidth;
-   var h = canvas.height = canvas.offsetHeight;
-   var circles = [];
-   var current_circle = new currentCirle(0, 0);
-   var draw = function draw() {
-       ctx.clearRect(0, 0, w, h);
-       for (var i = 0; i < circles.length; i++) {
-           circles[i].move(w, h);
-           circles[i].drawCircle(ctx);
-           for (j = i + 1; j < circles.length; j++) {
-               circles[i].drawLine(ctx, circles[j]);
-           }
-       }
-       if (current_circle.x) {
-           current_circle.drawCircle(ctx);
-           for (var k = 1; k < circles.length; k++) {
-               current_circle.drawLine(ctx, circles[k]);
-           }
-       }
-       requestAnimationFrame(draw);
-   };
-   var init = function init(num) {
-       for (var i = 0; i < num; i++) {
-           circles.push(new Circle(Math.random() * w, Math.random() * h));
-       }
-       draw();
-   };
-   window.addEventListener('load', init(60));
-   window.onmousemove = function (e) {
-       e = e || window.event;
-       current_circle.x = e.clientX;
-       current_circle.y = e.clientY;
-   };
-   window.onmouseout = function () {
-       current_circle.x = null;
-       current_circle.y = null;
-   };
-2：在主题文件的 C:\Hexo\themes\next\source\css\_custom\custom.styl 文件中加上 css 代码
-
-/*设置背景*/
-.bg_content{
-  position: fixed;
-  top: 0;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-}
-#canvas{
-  width: 100%;
-  height:100%;
-}
-/*将头部背景变为透明*/
-.header{
-  background: transparent ;
-}
-添加网易云音乐
-在知道了页面的结构之后，你就可以将你的播放器添加在页面的任意位置，开始我是放在了首页，然后发现一上来就自动播放太吵了，于是就放在了侧边栏，想要听得朋友可以手动点击播放，
-我们可以直接在网易云音乐中搜索我们想要插入的音乐，然后点击生成外链播放器
-这里写图片描述
-然后可以根据你得设置生成相应的 html 代码，将获得的 html 代码插入到你想要插入的位置即可
-这里写图片描述
-我放在了 layout/_macro/sidebar.swig 文件下
-
-<div id="music163player">
-    <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=280 height=86 src="//music.163.com/outchain/player?type=2&id=38358214&auto=0&height=66">
-    </iframe>
-</div>
-
-然后就可以在侧边栏看见我的播放器了~
-这里写图片描述
-
-
-#添加 Fork me on GitHub
-去网址 https://github.com/blog/273-github-ribbons 挑选自己喜欢的样式，并复制代码，添加到 themes\next\layout_layout.swig 的 body 标签之内即可
-记得把里面的 url 换成自己的!
-
-hexo-wordcount 实现统计功能
-这里写图片描述
-wordcount 可以实现字数统计，阅读时常还有总字数的统计功能
-只需要 npm install hexo-wordcount --save 就可以安装 wordcount 插件，
-主要功能
-
-字数统计:WordCount
-阅读时长预计:Min2Read
-总字数统计: TotalCount
-安装完插件之后在主题的配置文件中开启该功能就可以~
-
-# Post wordcount display settings
-# Dependencies: https://github.com/willin/hexo-wordcount
-post_wordcount:
-  item_text: true
-  wordcount: true
-  min2read: true
-** 生成网易云音乐外链
-把审查的元素插在这个链接后面 http://music.163.com/#
-例如：http://music.163.com/#/outchain/2/254574/
-** 评论系统 gitment 
-基础使用
-1. 注册 OAuth Application
-点击此处 来注册一个新的 OAuth Application。其他内容可以随意填写，但要确保填入正确的 callback URL（一般是评论页面对应的域名，如 https://imsun.net）。
-https://github.com/settings/applications/new
-你会得到一个 client ID 和一个 client secret，这个将被用于之后的用户登录。
-我自己的是 
-Client ID
-a0dc2bc5e40d25adfcaa
-Client Secret
-1945a52f996559e61f5cb0a55317d1a0838c4901
-
-2. 引入 Gitment
-将下面的代码添加到你的页面：
-
-<div id="container"></div>
-<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
-<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
-<script>
-var gitment = new Gitment({
-  id: '页面 ID', // 可选。默认为 location.href
-  owner: '你的 GitHub ID',
-  repo: '存储评论的 repo',
-  oauth: {
-    client_id: '你的 client ID',
-    client_secret: '你的 client secret',
-  },
-})
-gitment.render('container')
-</script>
-注意，上述代码引用的 Gitment 将会随着开发变动。如果你希望始终使用最新的界面与特性即可引入上述代码。
-
-如果你希望引用确定版本的 Gitment，则应该使用 npm 进行安装。
-
-$ npm install --save gitment
-关于构造函数中的更多可用参数请查看 Gitment Options
-
-3. 初始化评论
-页面发布后，你需要访问页面并使用你的 GitHub 账号登录（请确保你的账号是第二步所填 repo 的 owner），点击初始化按钮。
-
-之后其他用户即可在该页面发表评论。
-
-自定义
-Gitment 很容易进行自定义，你可以写一份自定义的 CSS 或者使用一个新的主题。（主题可以改变 DOM 结构而自定义 CSS 不能）
-
-比如你可以通过自定义主题将评论框放在评论列表前面：
-
-const myTheme = {
-  render(state, instance) {
-    const container = document.createElement('div')
-    container.lang = "en-US"
-    container.className = 'gitment-container gitment-root-container'
-    container.appendChild(instance.renderHeader(state, instance))
-    container.appendChild(instance.renderEditor(state, instance))
-    container.appendChild(instance.renderComments(state, instance))
-    container.appendChild(instance.renderFooter(state, instance))
-    return container
-  },
-}
-const gitment = new Gitment({
-  // ...
-  theme: myTheme,
-})
-gitment.render('container')
-更多自定义内容请查看文档。
-
-其他问题
-语言问题
-考虑到 GitHub 本身使用英文，而本项目面向用户均为 GitHub 用户，所以作者没有提供中文支持的打算。实在有需求的可以通过自定义主题支持中文。
-
-** 写作
-
-你可以执行下列命令来创建一篇新文章。
-
-$ hexo new [layout] <title>
-您可以在命令中指定文章的布局（layout），默认为 post，可以通过修改 _config.yml 中的 default_layout 参数来指定默认布局。
-
-布局（Layout）
-Hexo 有三种默认布局：post、page 和 draft，它们分别对应不同的路径，而您自定义的其他布局和 post 相同，都将储存到 source/_posts 文件夹。
-
-布局	路径
-post	source/_posts
-page	source
-draft	source/_drafts
-不要处理我的文章
-如果你不想你的文章被处理，你可以将 Front-Matter 中的 layout: 设为 false。
-
-文件名称
-Hexo 默认以标题做为文件名称，但您可编辑 new_post_name 参数来改变默认的文件名称，举例来说，设为 :year-:month-:day-:title.md 可让您更方便的通过日期来管理文章。
-
-变量	描述
-:title	标题（小写，空格将会被替换为短杠）
-:year	建立的年份，比如，2015
-:month	建立的月份（有前导零），比如，04
-:i_month	建立的月份（无前导零），比如，4
-:day	建立的日期（有前导零），比如，07
-:i_day	建立的日期（无前导零），比如，7
-草稿
-刚刚提到了 Hexo 的一种特殊布局：draft，这种布局在建立时会被保存到 source/_drafts 文件夹，您可通过 publish 命令将草稿移动到 source/_posts 文件夹，该命令的使用方式与 new 十分类似，您也可在命令中指定 layout 来指定布局。
-
-$ hexo publish [layout] <title>
-草稿默认不会显示在页面中，您可在执行时加上 --draft 参数，或是把 render_drafts 参数设为 true 来预览草稿。
-
-模版（Scaffold）
-在新建文章时，Hexo 会根据 scaffolds 文件夹内相对应的文件来建立文件，例如：
-
-$ hexo new photo "My Gallery"
-在执行这行指令时，Hexo 会尝试在 scaffolds 文件夹中寻找 photo.md，并根据其内容建立文章，以下是您可以在模版中使用的变量：
-
-变量	描述
-layout	布局
-title	标题
-date	文件建立日期
-
-** 标签插件（Tag Plugins）
-标签插件和 Front-matter 中的标签不同，它们是用于在文章中快速插入特定内容的插件。
-
-引用块
-在文章中插入引言，可包含作者、来源和标题。
-
-别号：quote
-
-{% blockquote [author[, source]] [link] [source_link_title] %}
-content
-{% endblockquote %}
-样例
-没有提供参数，则只输出普通的 blockquote
-
-{% blockquote %}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque hendrerit lacus ut purus iaculis feugiat. Sed nec tempor elit, quis aliquam neque. Curabitur sed diam eget dolor fermentum semper at eu lorem.
-{% endblockquote %}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque hendrerit lacus ut purus iaculis feugiat. Sed nec tempor elit, quis aliquam neque. Curabitur sed diam eget dolor fermentum semper at eu lorem.
-
-引用书上的句子
-
-{% blockquote David Levithan, Wide Awake %}
-Do not just seek happiness for yourself. Seek happiness for all. Through kindness. Through mercy.
-{% endblockquote %}
-Do not just seek happiness for yourself. Seek happiness for all. Through kindness. Through mercy.
-
-David LevithanWide Awake
-引用 Twitter
-
-{% blockquote @DevDocs https://twitter.com/devdocs/status/356095192085962752 %}
-NEW: DevDocs now comes with syntax highlighting. http://devdocs.io
-{% endblockquote %}
-NEW: DevDocs now comes with syntax highlighting. http://devdocs.io
-
-@DevDocstwitter.com/devdocs/status/356095192085962752
-引用网络上的文章
-
-{% blockquote Seth Godin http://sethgodin.typepad.com/seths_blog/2009/07/welcome-to-island-marketing.html Welcome to Island Marketing %}
-Every interaction is both precious and an opportunity to delight.
-{% endblockquote %}
-Every interaction is both precious and an opportunity to delight.
-
-Seth GodinWelcome to Island Marketing
-代码块
-在文章中插入代码。
-
-别名：code
-
-{% codeblock [title] [lang:language] [url] [link text] %}
-code snippet
-{% endcodeblock %}
-样例
-普通的代码块
-
-{% codeblock %}
-alert('Hello World!');
-{% endcodeblock %}
-alert('Hello World!');
-指定语言
-
-{% codeblock lang:objc %}
-[rectangle setX: 10 y: 10 width: 20 height: 20];
-{% endcodeblock %}
-[rectangle setX: 10 y: 10 width: 20 height: 20];
-附加说明
-
-{% codeblock Array.map %}
-array.map(callback[, thisArg])
-{% endcodeblock %}
-Array.map
-array.map(callback[, thisArg])
-附加说明和网址
-
-{% codeblock _.compact http://underscorejs.org/#compact Underscore.js %}
-_.compact([0, 1, false, 2, '', 3]);
-=> [1, 2, 3]
-{% endcodeblock %}
-_.compactUnderscore.js
-_.compact([0, 1, false, 2, '', 3]);
-=> [1, 2, 3]
-反引号代码块
-另一种形式的代码块，不同的是它使用三个反引号来包裹。
-
-``` [language] [title] [url] [link text] code snippet ```
-Pull Quote
-在文章中插入 Pull quote。
-
-{% pullquote [class] %}
-content
-{% endpullquote %}
-jsFiddle
-在文章中嵌入 jsFiddle。
-
-{% jsfiddle shorttag [tabs] [skin] [width] [height] %}
-Gist
-在文章中嵌入 Gist。
-
-{% gist gist_id [filename] %}
-iframe
-在文章中插入 iframe。
-
-{% iframe url [width] [height] %}
-Image
-在文章中插入指定大小的图片。
-
-{% img [class names] /path/to/image [width] [height] [title text [alt text]] %}
-Link
-在文章中插入链接，并自动给外部链接添加 target="_blank" 属性。
-
-{% link text url [external] [title] %}
-Include Code
-插入 source 文件夹内的代码文件。
-
-{% include_code [title] [lang:language] path/to/file %}
-Youtube
-在文章中插入 Youtube 视频。
-
-{% youtube video_id %}
-Vimeo
-在文章中插入 Vimeo 视频。
-
-{% vimeo video_id %}
-引用文章
-引用其他文章的链接。
-
-{% post_path slug %}
-{% post_link slug [title] %}
-引用资源
-引用文章的资源。
-
-{% asset_path slug %}
-{% asset_img slug [title] %}
-{% asset_link slug [title] %}
-Raw
-如果您想在文章中插入 Swig 标签，可以尝试使用 Raw 标签，以免发生解析异常。
-
-{% raw %}
-content
-{% endraw %}
-
-** 资源文件夹
-   资源（Asset）代表 source 文件夹中除了文章以外的所有文件，例如图片、CSS、JS 文件等。比方说，如果你的 Hexo 项目中只有少量图片，那最简单的方法就是将它们放在 source/images 文件夹中。然后通过类似于 ![](/images/image.jpg) 的方法访问它们。
-
-   文章资源文件夹
-   对于那些想要更有规律地提供图片和其他资源以及想要将他们的资源分布在各个文章上的人来说，Hexo 也提供了更组织化的方式来管理资源。这个稍微有些复杂但是管理资源非常方便的功能可以通过将 config.yml 文件中的 post_asset_folder 选项设为 true 来打开。
-
-   _config.yml
-   post_asset_folder: true
-   当资源文件管理功能打开后，Hexo 将会在你每一次通过 hexo new [layout] <title> 命令创建新文章时自动创建一个文件夹。这个资源文件夹将会有与这个 markdown 文件一样的名字。将所有与你的文章有关的资源放在这个关联文件夹中之后，你可以通过相对路径来引用它们，这样你就得到了一个更简单而且方便得多的工作流。
-
-   相对路径引用的标签插件
-   通过常规的 markdown 语法和相对路径来引用图片和其它资源可能会导致它们在存档页或者主页上显示不正确。在 Hexo 2 时代，社区创建了很多插件来解决这个问题。但是，随着 Hexo 3 的发布，许多新的标签插件被加入到了核心代码中。这使得你可以更简单地在文章中引用你的资源。
-
-   {% asset_path slug %}
-   {% asset_img slug [title] %}
-   {% asset_link slug [title] %}
-   比如说：当你打开文章资源文件夹功能后，你把一个 example.jpg 图片放在了你的资源文件夹中，如果通过使用相对路径的常规 markdown 语法 ![](/example.jpg) ，它将 不会 出现在首页上。（但是它会在文章中按你期待的方式工作）
-
-正确的引用图片方式是使用下列的标签插件而不是 markdown：
-
-{% asset_img example.jpg This is an example image %}
-通过这种方式，图片将会同时出现在文章和主页以及归档页中。
-
-** 数据文件
-   有时您可能需要在主题中使用某些资料，而这些资料并不在文章内，并且是需要重复使
-   用的，那么您可以考虑使用 Hexo 3.0 新增的「数据文件」功能。此功能会载入
-   source/_data 内的 YAML 或 JSON 文件，如此一来您便能在网站中复用这些文件了。
-
-   举例来说，在 source/_data 文件夹中新建 menu.yml 文件：
-
-   Home: /
-   Gallery: /gallery/
-   Archives: /archives/
-   您就能在模板中使用这些资料：
-
-   <% for (var link in site.data.menu) { %>
-   <a href="<%= site.data.menu[link] %>"> <%= link %> </a>
-   <% } %>
-   渲染结果如下 :
-
-   <a href="/"> Home </a>
-   <a href="/gallery/"> Gallery </a>
-   <a href="/archives/"> Archives </a>
-
-** 音频插件 aplay
- 安装  npm install --save hexo-tag-aplayer
-   https://github.com/MoePlayer/hexo-tag-aplayer
-   使用 {% aplayer title author url [picture_url, narrow, autoplay, width:xxx, lrc:xxx] %}
-
-   {% aplayer "但愿你明白" "杨采妮" "a.mp3" lrc:"understand.lrc"%}
+   </video>
+   #+end_src
    
-   {% aplayer "Caffeine" "Jeff Williams" "caffeine.mp3" "picture.jpg" "lrc:caffeine.txt" %}
+** 更多 <!-- more -->
 * 评论头像
 ** Gravatar 
    请自行登录或注册 Gravatar，然后修改自己的头像。
    评论的时候，留下在 Gravatar 注册时所使用的邮箱即可。
-* 插入图片 hexo-asset-image (不用这功能了，安装不了)
-npm install hexo-asset-image --save
-
-   Make sure post_asset_folder: true in your _config.yml.
-
-Just use ![logo](logo.jpg) to insert logo.jpg.
-* 配合使用 Hexo 的文章资源文件夹
-Hexo3 加入了文章资源文件夹 的支持, 文章相关的图片可以放在文章同名文件夹里面, 并使用以下代码引用图片
-
-#+begin_src yaml
-  {% raw %}
-  {% asset_img slug [title] %}
-  {% endraw %}
-#+end_src
-
-而在 org 文档中配合 org-download, 我们还可以实现更强大的功能. 在 Hexo 博客文件夹中创建 .dir-local.el, 添加以下代码
-
-
-           
-
-
-
-#+begin_src lisp
-((nil .
-   ((eval .
-          (progn
-
-            ;; make drag-and-drop image save in the same name folder as org file
-            ;; ex: `aa-bb-cc.org' then save image test.png to `aa-bb-cc/test.png'
-            (defun my-org-download-method (link)
-              (let ((filename
-                     (file-name-nondirectory
-                      (car (url-path-and-query
-                            (url-generic-parse-url link)))))
-                    (dirname (file-name-sans-extension buffer-file-name ) ))
-                ;; if directory not exist, create it
-                (unless (file-exists-p dirname)
-                  (make-directory dirname))
-                ;; return the path to save the download files
-                (expand-file-name filename dirname)))
-
-            ;; only modify `org-download-method' in this project
-            (setq-local org-download-method 'my-org-download-method)
-
-            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-            ;; for using hexo config post_asset_folder: true             ;;
-            ;; https://hexo.io/docs/asset-folders.html#Post-Asset-Folder ;;
-            ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-            ;; only modify `org-download-link-format' in this project
-            (setq-local org-download-link-format "{%% asset_img %s %%}")
-
-            ;; only modify `org-download-abbreviate-filename-function' in
-            ;; this project
-            (setq-local org-download-abbreviate-filename-function #'file-name-nondirectory)
-            )))))
-#+end_src
-
-现在你可以将图片支持拖拽到 org 文档中, emacs 会自动创建文章同名文件夹并异步下载图片, 在光标所在处自动插入对应的引用代码.
-* 技巧
-有时候需要直接在 org 文档中包含 hexo 特殊标签字符时会 hexo g 会出错, 或者输出会消失, 比如本文中的 {%% asset_img %%} {% asset_img %} .
-
-这是因为这些字符会被 Hexo 引擎特殊处理, 当你需要输出这些特殊字符, 可以在外面用 raw 标签包围, 这样 hexo 引擎就不会处理这些字符了.
-#+begin_src yaml
-  {% raw %}
-  {% asset_img %}
-  {% endraw %}
-#+end_src
-* 设置首页隐藏指定文章 [有些文章不想在首页显示]
+* 设置首页隐藏指定文章 
 1. 自定义 front-matter 的参数
 #+begin_src yaml
   notshow: true
@@ -1786,3 +518,67 @@ org 中 bool 是 yes/no 哦，记住
 #+begin_src js
 {% include '_custom/custom.swig' %}
 #+end_src
+* 开启 Valine 评论邮件通知
+  云引擎”一键”部署
+  打开服务就好了
+* aplay 音乐插件
+** aplay  
+  安装 
+  npm install --save hexo-tag-aplayer
+
+  用法： 
+  {% aplayer title author url [picture_url, narrow, autoplay, width:xxx, lrc:xxx] %}
+
+  title : 音乐名称
+  author: 艺人
+  url: 音乐 URL
+  picture_url: 音乐图片 URL(可选)
+  narrow: optional, narrow style
+  autoplay: 音乐自动播放, 不被移动端浏览器支持(可选)
+  width:xxx: 前缀 width:,播放器的宽度 (default: 100%), (可选)
+  lrc:xxx: 前缀 lrc:, 歌词文件 url (可选)
+
+  外链用法 
+  {% aplayer "你怎麼說" "Jay && 邓丽君" "http://fs.open.kugou.com/15ad66aa2470482df1919a5538a6c663/5c1eea95/G008/M04/0B/05/qIYBAFUGzV-ADtHPAExveQ6d2Rs873.mp3" "autoplay" %}
+  
+  使用音乐外链带歌词的示例:
+  {% aplayerlrc "你怎麼說" "Jay && 邓丽君" "http://fs.open.kugou.com/15ad66aa2470482df1919a5538a6c663/5c1eea95/G008/M04/0B/05/qIYBAFUGzV-ADtHPAExveQ6d2Rs873.mp3" "autoplay" %}
+  [00:04.76]你怎么说[00:26.31]我没忘记你忘记我[00:32.53]连名字你都说错[00:50.51]你说过两天来看我[00:56.04]一走就是一年多[01:01.36]三百六十五个日子不好过[01:07.93]你心里根本没有我[01:14.37]把我的爱情还给我[01:43.60]我没忘记你忘记我[01:49.80]连名字你都说错[01:55.97]证明你一切都是在骗我[02:01.95]看今天你怎么说[02:07.16]你说过两天来看我[02:13.20]一等就是一年多[02:18.26]三百六十五个日子不好过[02:25.22]你心里根本没有我[02:31.43]把我的爱情还给我[02:36.75]红尘客栈[02:39.13]天涯的尽头是风沙[02:44.59]红尘的故事叫牵挂[02:50.01]封刀隐没在寻常人家东篱下[02:55.53]闲云野鹤古剎[03:03.19]快马在江湖里厮杀[03:08.92]无非是名跟利放不下[03:14.01]心中有江山的人岂能快意潇洒[03:19.91]我只求与你共华发[03:27.01]剑出鞘 恩怨了 谁笑[03:31.61]我只求今朝拥你入怀抱[03:37.02]红尘客栈风似刀[03:41.08]骤雨落宿命敲[03:46.26]任武林谁领风骚我却[03:49.76]只为你折腰[03:52.82]你回眸多娇我泪中带笑[03:58.36]酒招旗风中萧萧[04:02.41]剑出鞘恩怨了[04:08.58]千里之外[04:13.09]我送你离开千里之外[04:17.64]你无声黑白[04:21.62]沉默年代或许不该[04:25.62]太遥远的相爱[04:29.59]我送你离开天涯之外[04:33.79]你是否还在[04:37.85]琴声何来生死难猜[04:41.90]用一生去等待
+  {% endaplayerlrc %}
+** MeingJS
+根配置 
+aplayer:
+  meting: true
+meting 单曲示例:
+
+这里的参数: 歌曲 ID、服务器、播放器类型 ,具体的 ID 怎么获取我在文章最后给出参考链接.
+
+参考链接
+https://github.com/MoePlayer/hexo-tag-aplayer/blob/master/docs/README-zh_cn.md#meingjs-%E6%94%AF%E6%8C%81-30-%E6%96%B0%E5%8A%9F%E8%83%BD
+
+{% meting "000IAEln10GWew" "tencent" "song" %}
+meting 播放列表示例:
+
+<!-- 简单示例 (id, server, type)  -->
+{% meting "60198" "netease" "playlist" %}
+
+<!-- 进阶示例 -->
+{% meting "60198" "netease" "playlist" "autoplay" "mutex:false" "listmaxheight:340px" "preload:none" "theme:#ad7a86"%}
+
+至于歌单 id 怎么获取嘛，你在网易云音乐的歌单上按右键，复制链接，拿去浏览器里打开，地址栏里面可以看到这个歌单的 id┌( ಠ_ಠ)┘
+
+我的歌单 *白噪音*
+ {% meting "884528449" "netease" "playlist" %}
+
+ 其他地方插入播放器的方法：在 md 里插入播放器后你们去看生成的 html 文件。直接复制那段代码到你想要的地方，改下歌单 id 就好了。
+* dplayer 视频
+  安装
+  npm install hexo-tag-dplayer --save
+
+  使用
+  {% dplayer "url=mp4 的地址" "pic=图片的地址" "loop=yes" "theme=#FADFA3" "autoplay" "token=tokendemo" %}
+
+  “pic=图片的地址”不写也是没问题的
+
+实例
+{% dplayer "url=http://music.yuti.site/mv-%E5%AD%A6%E4%B8%8D%E4%BC%9A.mp4" "loop=yes" "theme=#FADFA3" "token=tokendemo" %}
