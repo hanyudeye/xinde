@@ -3,105 +3,178 @@
 #+TAGS: C
 #+CATEGORIES: 语言使用
 
+
 * C 语言
+** 简介
+  比 *汇编* 语言好懂很多
+  #+begin_verse
+  编程模型是：
+  做什么，做什么。。用什么做什么，用什么做什么 。。。
+  如果参数是方法就是: 用某种方法做什么。。，做什么。。。
+  #+end_verse
+  
+  #+HTML: <!-- more -->
+  #+begin_quote
+  所以程序的结构是一个 *过程序列* ，叫 *面向过程* 程序语言。
+  #+end_quote
+  
 ** 数据
-   short int ,char,double,float,long
-*** 类型长度 [ sizeof ]
-*** 枚举
-   #+begin_src c
-     1、先定义枚举类型，再定义枚举变量
-     enum DAY
-       {
-        MON=1, TUE, WED, THU, FRI, SAT, SUN
-       };
-     enum DAY day;
+   数据就是 *用什么做什么* 中的 *用什么* 。 *用什么* 有一个类型的属性。
+*** 基本数据类型 
+    | 数字-整数         | int       |
+    | 数字-短整数       | short int |
+    | 数字-长整数       | long int  |
+    | 数字-小数(双精度) | double    |
+    | 数字-小数(单精度) | float     |
+    | 字符              | char      |
 
-     2、定义枚举类型的同时定义枚举变量
-     enum DAY
+    #+begin_quote
+    #+begin_verse
+    这些东西一般用于数学计算和显示文字
+    因为数学运算要用数字作参数
+    #+end_verse
+    #+end_quote
+*** 复杂数据类型    
+**** 枚举
+     #+begin_quote
+     枚举用来定义 *有限可能性* 的数据
+     #+end_quote
+     #+begin_src c
+       enum DAY
+         {
+          MON=1, TUE, WED, THU, FRI, SAT, SUN
+         };
+       enum DAY day;
+     #+end_src
+**** 结构体
+     #+begin_quote
+     结构体用来构造复杂数据
+     #+end_quote
+     
+     #+begin_src c
+       struct [structure tag]
        {
-        MON=1, TUE, WED, THU, FRI, SAT, SUN
-       } day;
-
-     3、省略枚举名称，直接定义枚举变量
-     enum
-       {
-        MON=1, TUE, WED, THU, FRI, SAT, SUN
-       } day;
-
-     enum identifier(optional) { enumerator-list }		
-
-     enum DAY
-       {
-        MON=1, TUE, WED, THU, FRI, SAT, SUN
-       };
-       #+end_src
-*** 结构体 [声明分号，赋值逗号]
-   #+begin_src c
-        struct [structure tag]
-        {
          member definition;
          member definition;
          ...
+           member definition;
+       } [one or more structure variables];  
+       structure tag 是可选的，每个 member definition 是标准的变量定义
+
+       struct point {double x,y,z;} p = {1.2, 1.3}; // p.x=1.2, p.y=1.3, p.z=0.0
+       div_t answer = {.quot = 2, .rem = -1 };      // order of elements in div_t may vary
+
+     #+end_src
+**** 共用体
+     #+begin_quote
+     节约内存用的
+     #+end_quote
+     #+begin_src c
+       union [union tag]
+       {
          member definition;
-         } [one or more structure variables];  
-      structure tag 是可选的，每个 member definition 是标准的变量定义
-
-      struct point {double x,y,z;} p = {1.2, 1.3}; // p.x=1.2, p.y=1.3, p.z=0.0
-     div_t answer = {.quot = 2, .rem = -1 };      // order of elements in div_t may vary
-
-   #+end_src
-*** 共用体
- #+begin_src c
-   union [union tag]
-   {
-     member definition;
-     member definition;
-     ...
-       member definition;
-   } [one or more union variables];  
-   union tag 是可选的
- #+end_src
+         member definition;
+         ...
+           member definition;
+       } [one or more union variables];  
+       union tag 是可选的
+     #+end_src
  
+**** 位域
+     #+begin_quote
+     节约内存用的
+     #+end_quote
+     #+begin_src c -n
+       struct
+       {
+         unsigned int widthValidated : 1;
+         unsigned int heightValidated : 1;
+       } status;
+
+       #include <stdio.h>
+       #include <string.h>
+
+       /* 定义简单的结构 */
+       struct
+       {
+         unsigned int widthValidated;
+         unsigned int heightValidated;
+       } status1;
+
+       /* 定义位域结构 */
+       struct
+       {
+         unsigned int widthValidated : 1;
+         unsigned int heightValidated : 1;
+       } status2;
+
+       int main( )
+       {
+         printf( "Memory size occupied by status1 : %d\n", sizeof(status1));
+         printf( "Memory size occupied by status2 : %d\n", sizeof(status2));
+
+         return 0;
+       }
+       #+end_src
+     当上面的代码被编译和执行时，它会产生下列结果：
+
+     #+begin_verse
+     Memory size occupied by status1 : 8
+     Memory size occupied by status2 : 4
+     #+end_verse
+
+     #+begin_src c
+       struct
+       {
+         unsigned int age : 3;
+       } Age;
+     #+end_src
+ 
+     上面的结构定义指示 C 编译器，age 变量将只使用 3 位来存储这个值，如果您试图使用
+     超过 3 位，则无法完成。让我们来看下面的实例：
 *** 指针
-地址，数据标签，或者文件的符号链接（快捷键）那种。
- #+begin_verse
- int    *ip;    /* 一个整型的指针 */
- double *dp;    /* 一个 double 型的指针 */
- float  *fp;    /* 一个浮点型的指针 */
- char   *ch;     /* 一个字符型的指针 */
- #+end_verse
-#+begin_quote
-标签有类型。
-#+end_quote
+    对象链接，这里的对象包括数据和命令(函数)。
+    #+begin_quote
+    其实能链接到任何地方，包括链接自己。
+    本质是一个内存地址，内存又是放程序和数据的地方，但是操作系统对内存的保护，所以只能链接到程序自己包含的内容。
+    #+end_quote
+    
+    #+begin_src c
+      int    *ip;    /* 一个整型的指针 */
+      double *dp;    /* 一个 double 型的指针 */
+      float  *fp;    /* 一个浮点型的指针 */
+      char   *ch;     /* 一个字符型的指针 */
+    #+end_src
 
- NULL 指针是一个定义在标准库中的值为零的常量。请看下面的程序：
+    NULL 指针是一个定义在标准库中的值为零的常量。请看下面的程序：
+    #+begin_src c
+      #include <stdio.h>
 
- #+begin_src c
- #include <stdio.h>
- 
- int main ()
- {
-    int  *ptr = NULL;
- 
-    printf("ptr 的地址是 %p\n", ptr  );
- 
-    return 0;
- }
- #+end_src
- #+begin_quote
- ptr 的地址是 0x0
- #+end_quote
- 
-在大多数的操作系统上，程序不允许访问地址为 0 的内存，因为该内存是操作系统保留的。
-然而，内存地址 0 有特别重要的意义，它表明该指针不指向一个可访问的内存位置。但按
-照惯例，如果指针包含空值（零值），则假定它不指向任何东西。
+      int main ()
+      {
+        int  *ptr = NULL;
 
- 如需检查一个空指针，您可以使用 if 语句，如下所示：
+        printf("ptr 的地址是 %p\n", ptr  );
 
- #+begin_src c
- if(ptr)     /* 如果 p 非空，则完成 */
- if(!ptr)    /* 如果 p 为空，则完成 */
- #+end_src
+        return 0;
+      }
+    #+end_src
+    #+begin_quote
+    ptr 的地址是 0x0
+    #+end_quote
+ 
+    #+begin_verse
+    在大多数的操作系统上，程序不允许访问地址为 0 的内存，因为该内存是操作系统保留的。
+    然而，内存地址 0 有特别重要的意义，它表明该指针不指向一个可访问的内存位置。但按
+    照惯例，如果指针包含空值（零值），则假定它不指向任何东西。
+    #+end_verse
+
+    如需检查一个空指针，您可以使用 if 语句，如下所示：
+
+    #+begin_src c
+      if(ptr){}     /* 如果 p 非空，则完成 */
+      if(!ptr){}    /* 如果 p 为空，则完成 */
+    #+end_src
  
 *** 函数指针
     函数指针是指向函数的指针变量。
@@ -126,452 +199,80 @@
 
         /* 与直接调用函数等价，d = max(max(a, b), c) */
         d = p(p(a, b), c); 
-
         printf("最大的数字是: %d\n", d);
 
         return 0;
       }
     #+end_src
-*** 位域
- #+begin_src c -n
- struct
- {
-   unsigned int widthValidated : 1;
-   unsigned int heightValidated : 1;
- } status;
-
- #include <stdio.h>
- #include <string.h>
- 
- /* 定义简单的结构 */
- struct
- {
-   unsigned int widthValidated;
-   unsigned int heightValidated;
- } status1;
- 
- /* 定义位域结构 */
- struct
- {
-   unsigned int widthValidated : 1;
-   unsigned int heightValidated : 1;
- } status2;
- 
- int main( )
- {
-    printf( "Memory size occupied by status1 : %d\n", sizeof(status1));
-    printf( "Memory size occupied by status2 : %d\n", sizeof(status2));
- 
-    return 0;
- }
- #+end_src
- 当上面的代码被编译和执行时，它会产生下列结果：
-
- Memory size occupied by status1 : 8
- Memory size occupied by status2 : 4
-
- struct
- {
-   unsigned int age : 3;
- } Age;
- 
- 上面的结构定义指示 C 编译器，age 变量将只使用 3 位来存储这个值，如果您试图使用
- 超过 3 位，则无法完成。让我们来看下面的实例：
-** 别名
-   typedef char* String_t;
-   #define String_d char *
-** 可变参数
-   #+begin_src c 
-     int func(int, ... ) 
-     {
-       .
-       .
-       .
-     }
-
-     int main()
-     {
-       func(1, 2, 3);
-       func(1, 2, 3, 4);
-     }
-
- #+end_src
- #+begin_src c -n
- #include <stdio.h>
- #include <stdarg.h>
-
- double average(int num,...)
- {
-
-     va_list valist;
-     double sum = 0.0;
-     int i;
-
-     /* 为 num 个参数初始化 valist */
-     va_start(valist, num);
-
-     /* 访问所有赋给 valist 的参数 */
-     for (i = 0; i < num; i++)     {
-         sum += va_arg(valist, int);
-     }     /* 清理为 valist 保留的内存 */
-     va_end(valist);
-     return sum/num;
-     }
- int main() {
- printf("Average of 2, 3, 4, 5 = %f\n", average(4, 2,3,4,5));
- printf("Average of 5, 10, 15 = %f\n", average(3, 5,10,15));
- } 
- #+end_src
- Average of 2, 3, 4, 5 = 3.500000
- Average of 5, 10, 15 = 10.000000
-
-** 动态分配内存
-如果您预先不知道需要存储的文本长度，例如您向存储有关一个主题的详细描述。在这里，
-我们需要定义一个指针，该指针指向未定义所学内存大小的字符，后续再根据需求来分配
-内存，如下所示：
-#+begin_src c
-
-  #include <stdio.h>
-  #include <stdlib.h>
-  #include <string.h>
-
-  int main()
-  {
-    char name[100];
-    char *description;
-
-    strcpy(name, "Zara Ali");
-
-    /* 动态分配内存 */
-    description = malloc( 200 * sizeof(char) );
-    if( description == NULL )
-      {
-        fprintf(stderr, "Error - unable to allocate required memory\n");
-      }
-    else
-      {
-        strcpy( description, "Zara ali a DPS student in class 10th");
-      }
-    printf("Name = %s\n", name );
-    printf("Description: %s\n", description );
-  }
-#+end_src
-当上面的代码被编译和执行时，它会产生下列结果：
-
-Name = Zara Ali
-Description: Zara ali a DPS student in class 10th
-** 错误处理
- C 语言不提供对错误处理的直接支持，但是作为一种系统编程语言，它以返回值的形式允许
- 您访问底层数据。在发生错误时，大多数的 C 或 UNIX 函数调用返回 1 或 NULL，同时会
- 设置一个错误代码 errno，该错误代码是全局变量，表示在函数调用期间发生了错误。您可
- 以在 <error.h> 头文件中找到各种各样的错误代码。
-
- 所以，C 程序员可以通过检查返回值，然后根据返回值决定采取哪种适当的动作。开发人员
- 应该在程序初始化时，把 errno 设置为 0，这是一种良好的编程习惯。0 值表示程序中没
- 有错误。
-
- errno、perror() 和 strerror()
- C 语言提供了 perror() 和 strerror() 函数来显示与 errno 相关的文本消息。
-
- perror() 函数显示您传给它的字符串，后跟一个冒号、一个空格和当前 errno 值的文本表示形式。
- strerror() 函数，返回一个指针，指针指向当前 errno 值的文本表示形式。
- 
- 让我们来模拟一种错误情况，尝试打开一个不存在的文件。您可以使用多种方式来输出错
- 误消息，在这里我们使用函数来演示用法。另外有一点需要注意，您应该使用 stderr 文
- 件流来输出所有的错误。
-
- #+begin_src c -n
- #include <stdio.h>
- #include <errno.h>
- #include <string.h>
-
- extern int errno ;
-
- int main ()
- {
-    FILE * pf;
-    int errnum;
-    pf = fopen ("unexist.txt", "rb");
-    if (pf == NULL)
-    {
-       errnum = errno;
-       fprintf(stderr, "Value of errno: %d\n", errno);
-       perror("Error printed by perror");
-       fprintf(stderr, "Error opening file: %s\n", strerror( errnum ));
-    }
-    else
-    {
-       fclose (pf);
-    }
-    return 0;
- }
- #+end_src
- 当上面的代码被编译和执行时，它会产生下列结果：
-
- Value of errno: 2
- Error printed by perror: No such file or directory
- Error opening file: No such file or directory
- 被零除的错误
- 
- 在进行除法运算时，不检查除数是否为零，这是程序员编程时常见的问题，会导致一个运
- 行时错误。
-
- 为了避免这种情况发生，下面的代码在进行除法运算前会先检查除数是否为零：
-
- #+begin_src c -n
- #include <stdio.h>
- #include <stdlib.h>
-
- main()
- {
-    int dividend = 20;
-    int divisor = 0;
-    int quotient;
- 
-    if( divisor == 0){
-       fprintf(stderr, "Division by zero! Exiting...\n");
-       exit(-1);
-    }
-    quotient = dividend / divisor;
-    fprintf(stderr, "Value of quotient : %d\n", quotient );
-
-    exit(0);
- }
- #+end_src
- 当上面的代码被编译和执行时，它会产生下列结果：
-
- Division by zero! Exiting...
- 程序退出状态
- 
- 通常情况下，程序成功执行完一个操作正常退出的时候会带有值 EXIT_SUCCESS。在这里，
- EXIT_SUCCESS 是宏，它被定义为 0。
-
- 如果程序中存在一种错误情况，当您退出程序时，会带有状态值 EXIT_FAILURE，被定义为
- -1。所以，上面的程序可以写成：
-
- #include <stdio.h>
- #include <stdlib.h>
-
- main()
- {
-    int dividend = 20;
-    int divisor = 5;
-    int quotient;
- 
-    if( divisor == 0){
-       fprintf(stderr, "Division by zero! Exiting...\n");
-       exit(EXIT_FAILURE);
-    }
-    quotient = dividend / divisor;
-    fprintf(stderr, "Value of quotient : %d\n", quotient );
-
-    exit(EXIT_SUCCESS);
- }
- 当上面的代码被编译和执行时，它会产生下列结果：
-
- Value of quotient : 4
-* C 标准库
-** ctype.h  
-*** 字符判断
-    字母或数字 isalnum(int c) 
-    字母 int isalpha(int c)
-    控制字符  int iscntrl(int c)   
-    十进制数字 isdigit(int c)
-    有图形表示法 isgraph(int c)
-    小写字母 islower(int c)
-    可打印的 isprint(int c)
-    标点符号字符 ispunct(int c)
-    空白字符 isspace(int c)
-    大写字母 isupper(int c)
-    十六进制数字 isxdigit(int c)
-*** 转换
-    大写字母转换为小写字母 tolower(int c)
-    小写字母转换为大写字母 toupper(int c)
-** errno.h
-	extern int errno
- 这是通过系统调用设置的宏，在错误事件中的某些库函数表明了什么发生了错误。
- 
-EDOM Domain Error
- 这个宏表示一个域错误，它在输入参数超出数学函数定义的域时发生，errno 被设置为 EDOM。
- 
-ERANGE Range Error
-
- 这个宏表示一个范围错误，它在输入参数超出数学函数定义的范围时发生，errno 被设置
- 为 ERANGE。
-** float.h
-*** 宏 
-    FLT_ROUNDS	定义浮点加法的舍入模式，它可以是下列任何一个值：
-    -1 - 无法确定
-    0 - 趋向于零
-    1 - 去最近的值
-    2 - 趋向于正无穷
-    3 - 趋向于负无穷
-
-  FLT_RADIX 2	这个宏定义了指数表示的基数。基数 2 表示二进制，基数 10 表示十进制，基数 16 表示十六进制。
-  FLT_MANT_DIG
-  DBL_MANT_DIG
-  LDBL_MANT_DIG
-
-  这些宏定义了 FLT_RADIX 基数中的位数。
-  FLT_DIG 6
-  DBL_DIG 10
-  LDBL_DIG 10
-
-  这些宏定义了舍入后不会改变表示的十进制数字的最大值（基数 10）。
-  FLT_MIN_EXP
-  DBL_MIN_EXP
-  LDBL_MIN_EXP
-
-  这些宏定义了基数为 FLT_RADIX 时的指数的最小负整数值。
-  FLT_MIN_10_EXP -37
-  DBL_MIN_10_EXP -37
-  LDBL_MIN_10_EXP -37
-
-  这些宏定义了基数为 10 时的指数的最小负整数值。
-  FLT_MAX_EXP
-  DBL_MAX_EXP
-  LDBL_MAX_EXP
-
-  这些宏定义了基数为 FLT_RADIX 时的指数的最大整数值。
-  FLT_MAX_10_EXP +37
-  DBL_MAX_10_EXP +37
-  LDBL_MAX_10_EXP +37
-
-  这些宏定义了基数为 10 时的指数的最大整数值。
-  FLT_MAX 1E+37
-  DBL_MAX 1E+37
-  LDBL_MAX 1E+37
-
-  这些宏定义最大的有限浮点值。
-  FLT_EPSILON 1E-5
-  DBL_EPSILON 1E-9
-  LDBL_EPSILON 1E-9
-
-  这些宏定义了可表示的最小有效数字。
-  FLT_MIN 1E-37
-  DBL_MIN 1E-37
-  LDBL_MIN 1E-37
-
-  这些宏定义了最小的浮点值。
-  实例
-  下面的实例演示了 float.h 文件中定义的一些常量的使用。
-
-  #include <stdio.h>
-  #include <float.h>
-
-  int main()
-  {
-     printf("The maximum value of float = %.10e\n", FLT_MAX);
-     printf("The minimum value of float = %.10e\n", FLT_MIN);
-
-     printf("The number of digits in the number = %.10e\n", FLT_MANT_DIG);
-  }
-  让我们编译和运行上面的程序，这将产生下列结果：
-
-  The maximum value of float = 3.4028234664e+38
-  The minimum value of float = 1.1754943508e-38
-  The number of digits in the number = 7.2996655210e-312
-** time.h
-- 库变量
-  - size_t 是无符号整数类型，它是 sizeof 关键字的结果。
-  - clock_t 这是一个适合存储处理器时间的类型。
-  - time_t 这是一个适合存储日历时间类型。
-  - struct tm 这是一个用来保存时间和日期的结构。
-  - 
-  - tm 结构的定义如下：
-   struct tm {
-     int tm_sec;         /* 秒，范围从 0 到 59       */
-     int tm_min;         /* 分，范围从 0 到 59      */
-     int tm_hour;        /* 小时，范围从 0 到 23     */
-     int tm_mday;        /* 一月中的第几天，范围从 1 到 31    */
-     int tm_mon;         /* 月，范围从 0 到 11      */
-     int tm_year;        /* 自 1900 年起的年数      */
-     int tm_wday;        /* 一周中的第几天，范围从 0 到 6 */
-     int tm_yday;        /* 一年中的第几天，范围从 0 到 365   */
-     int tm_isdst;       /* 夏令时               */
-   };
-  - 
-
- 结构 timeptr 的日期和时间 char *asctime(const struct tm *timeptr)
- 处理器时钟所使用的时间 clock_t clock(void)
-当地时间的字符串 char *ctime(const time_t *timer)
- time1 和 time2 之间相差的秒数 double difftime(time_t time1, time_t time2)
-  timer 的值被分解为 tm 结构，并用协调世界时（UTC）也被称为格林尼治标准时间（GMT）表示。struct tm *gmtime(const time_t *timer)
-  timer 的值被分解为 tm 结构，并用本地时区表示。struct tm *localtime(const time_t *timer)
-  
-  把 timeptr 所指向的结构转换为一个依据本地时区的 time_t 值。time_t mktime(struct tm *timeptr)
-  格式化结构 timeptr 表示的时间  size_t strftime(char *str, size_t maxsize, const char *format, const struct tm *timeptr)
-  计算当前日历时间，并把它编码成 time_t 格式 time_t time(time_t *timer)
-** stdio.h
-*** int printf( const char *format, ... );​
-    
-    打印无符号整数 
-    : C89 printf("foo = %lu\n", (unsigned long) foo);
-    : C99 printf("%zu\n", x);  // prints as unsigned decimal
-*** int printf( const char *restrict format, ... );​
-***  int scanf(const char *format, ...)
-    ( 很复杂 )
-    
-    格式化输入,每段格式化 ( %X ) 以 ( RET )标示结束
-    返回的是满足格式化的个数
-    
-    在输入多个数值数据时，若格式控制串中没有非格式字符作输入数据之间的间隔则可用
-    空格，TAB 或回车作间隔。C 编译在碰到空格，TAB，回车或非法数据(如对“%d”输入
-    “12A”时，A 即为非法数据)时即认为该数据结束。
-    
-    在输入字符数据时，若格式控制串中无非格式字符，则认为所有输入的字符均为有效字符。  
-    
-   | 格式 | 字符意义                         |
-   | d    | 输入十进制整数                   |
-   | o    | 输入八进制整数                   |
-   | x    | 输入十六进制整数                 |
-   | u    | 输入无符号十进制整数             |
-   | f 或 e | 输入实型数(用小数形式或指数形式) |
-   | c    | 输入单个字符                     |
-   | s    | 输入字符串                       |
-    
-    scanf("%c%c%c",&a,&b,&c);
-    输入 d、e、f 则把'd'赋予 a，' ' 赋予 b，'e'赋予 c。只有当输入为 def 时，才能把'd'赋于 a，'e'赋予 b，'f'赋予 c。
-*** int fscanf(FILE *stream, const char *format, ...);
-*** int sscanf(const char *str, const char *format, ...);
-** stdarg.h
-   int vscanf(const char *format, va_list ap);
-   int vsscanf(const char *str, const char *format, va_list ap);
-   int vfscanf(FILE *stream, const char *format, va_list ap);
-** unistd.h
-   ssize_t write(int fd, const void *buf, size_t count);
-   ssize_t read(int fd, void *buf, size_t count);
-** string.h
-	 strcpy(s1, s2); 复制字符串 s2 到字符串 s1。
-   strcat(s1, s2); 连接字符串 s2 到字符串 s1 的末尾。
-   strlen(s1); 返回字符串 s1 的长度。
-   strcmp(s1, s2); 如果 s1 和 s2 是相同的，则返回 0；如果 s1<s2 则返回小于 0；如果 s1>s2 则返回大于 0。
-   strchr(s1, ch); 返回一个指针，指向字符串 s1 中字符 ch 的第一次出现的位置。
-   strstr(s1, s2); 返回一个指针，指向字符串 s1 中字符串 s2 的第一次出现的位置。
-** limits.h 
-   SHRT_MAX
-** stdlib.h
-    - void *calloc(int num, int size);
-   该函数分配有 num 个元素数组，每个元素的大小为 size 字节
- - void free(void *address);
-  该函数释放 address 所指向的内存块
- - void *malloc(int num);
-  该函数分配一个 num 字节的数组，并把它们进行初始化。
- - void *realloc(void *address, int newsize);
-  该函数重新分配内存，把内存扩展到 newsize。
-
-* 非 C 标准库
-** conio.h
-   conio.h 是一个 C 头文件，用于 MS-DOS C 编译器里。此头文件宣告了数个有用的函数，提供程
-   序设计者主控台的输出入操作接口。
-
-   int kbhit(void)
-   int getch(void)
-   int getche(void)
-   int ungetch(int c)
-   char *cgets(char *buffer)
-   int cscanf(char *format, arg0,... argn)
-   int putch(int c)
-   int cputs(const char *string)
-   int cprintf(const char *format, arg0,... argn)
+*** 数据长度  ( sizeof ) 
+** 类型别名
+   #+begin_src c
+     typedef char* String_t;
+     #define String_d char *
+   #+end_src
    
+** 函数   
+   #+begin_quote
+   *做什么* ，或者用什么做什么的 *做什么*
+   #+end_quote
+   
+   如:
+   #+begin_src c
+     printf("hello");/* 显示器显示 hello */ 
+     int a,b=2,c=3;
+     a=b+c; /* 把 b 与 c 的和给 a */
+     printf("%d\n",a); /* 显示器显示 a 的值并换行*/
+     exit 0; /* 程序退出 */
+   #+end_src
+
+*** 定义做什么   
+    结构:
+    #+begin_verse
+      返回结果 做什么(用什么)
+    #+end_verse
+      
+*** 可变参数
+    #+begin_src c 
+      int func(int, ... ) 
+      {
+        .
+        .
+        .
+      }
+
+      int main()
+      {
+        func(1, 2, 3);
+        func(1, 2, 3, 4);
+      }
+
+    #+end_src
+    #+begin_src c -n
+      #include <stdio.h>
+      #include <stdarg.h>
+
+      double average(int num,...)
+      {
+
+        va_list valist;
+        double sum = 0.0;
+        int i;
+
+        /* 为 num 个参数初始化 valist */
+        va_start(valist, num);
+
+        /* 访问所有赋给 valist 的参数 */
+        for (i = 0; i < num; i++)     {
+          sum += va_arg(valist, int);
+        }     /* 清理为 valist 保留的内存 */
+        va_end(valist);
+        return sum/num;
+      }
+      int main() {
+        printf("Average of 2, 3, 4, 5 = %f\n", average(4, 2,3,4,5));
+        printf("Average of 5, 10, 15 = %f\n", average(3, 5,10,15));
+      } 
+    #+end_src
+    Average of 2, 3, 4, 5 = 3.500000
+    Average of 5, 10, 15 = 10.000000
+

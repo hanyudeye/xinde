@@ -1,8 +1,32 @@
-#+TITLE: Linux 环境下编一些小程序
-#+DESCRIPTION: 
-#+TAGS: linux,program
+#+TITLE: UNIX 系统编程
+#+DESCRIPTION: UNIX 系统编程
+#+TAGS: linux,unix,program
 #+CATEGORIES: 语言使用
 
+* UNIX 系统编程
+** 简介 
+   *UNIX 系统编程* 就是使用操作系统提供的接口进行编程啊，因为 *Linux* 继承自 *Unix* ，所以也适用于 *Linux*。
+   *Unix* 提供的标准有好几个，我们用 *Posix* 标准哈，提供的接口少一点。  
+** 文件 I/O 接口   
+   #+begin_quote
+   *Unix* 对文件的抽象是 : 要使用文件时，必须先打开文件。
+   *文件* 操作:  打开，读，写，关闭，索引到文件哪一段。(open,read,write,close,lseek)
+   #+end_quote
+   
+   #+begin_src c
+     /* 打开，读，写 */
+     int fd=open("file.c",O_RDONLY);
+     while( read(fd,buf,sizeof(buf)) >0){
+       write(STDOUT_FILENO,buf,sizeof(buf));
+      }
+
+     /* 创建读写文件  */
+     int s= creat("helloworld",S_IRWXU | S_IRWXG);
+
+     /* 关掉文件  */
+     close(fd);
+   #+end_src
+   
 * linux 接口　[ 文件,进程,计时器,进程线程通信,网络]
  hapter 1: History and Standards .................................................................................... 1
  hapter 2: Fundamental Concepts ................................................................................. 21

@@ -8,69 +8,49 @@
 ** 简介 
    #+begin_verse
    汇编语言是计算机编程的 *原始结构* 。
-   写汇编是很头疼的事情，那时用汇编写出那么多好程序很了不起。
-   理论基础是冯诺依曼的存储程序，程序控制。
+   汇编语言编写的程序不能直接运行，因为汇编的也可能是个库，所以此过程叫汇编(*as*)。
+   汇编完后是链接，才能运行程序(*ld*)。
    #+end_verse
    #+HTML: <!-- more -->
    #+begin_quote
+   #+begin_verse
    使用汇编语言就像用 *石子* 造房子，而不是 *砖头* 造房子那样，抽象层次低,看的层次也低。
    希望那些设计硬件的科学家可以把抽象层次高一点来处理计算机
-   #+end_quote
-** 计算机体系结构
-   #+DOWNLOADED: https://upload-images.jianshu.io/upload_images/7111365-68ff109722f28e90?imageMogr2/auto-orient/ @ 2019-06-23 18:20:15
-   [[file:image/liucheng.jpeg]]
-
-
-   #+begin_verse
-cpu 那块芯片上有这么 3 块单元
-1.控制单元
-2.存储单元
-3.运算单元
-
-然后
-
-控制单元又可以分成：指令寄存器（内存里面读取到的指令会在这里），指令译码器（吧读取到指令翻译成具体操作），操作控制器。
-存储单元就是寄存器，用来存放等待处理和处理过的数据，用来减少 cpu 对内存的访问次数。
-运算单元的话就是进行算术运算和逻辑运算这些。
-
-接下来说一下工作的流程
-第一步：取指令，cpu 的控制器读取一条指令放到指令寄存器里面。
-第二步：指令译码，对指令寄存器里面的指令进行译码，确定指令进行的操作，操作数地址。
-第三步：执行指令，利用操作数地址找到操作数，进行运算。
-第四步：修改指令计数器，确定下一条指令的地址。
    #+end_verse
+   #+end_quote
+** CPU 工作的流程
+*** CPU 内部结构: 
+    #+begin_quote
+    #+DOWNLOADED: https://upload-images.jianshu.io/upload_images/7111365-68ff109722f28e90?imageMogr2/auto-orient/ @ 2019-06-23 18:20:15
+    [[file:image/liucheng.jpeg]]
+    #+end_quote
+*** 寄存器
+    #+begin_verse
+    32-bit 寄存器 %eax %ebx %ecx %edx %edi %esi %ebp %esp
+    16-bit 寄存器 %ax %bx %cx %dx %di %si %bp %sp
+    8-bit 寄存器 %ah,%al,%bh,%bl,%ch,%cl,%dh,%dl
+    段寄存器 %cs(code),%ds(data),%ss(stack), %es,%fs,%gs
+    控制寄存器 %cr0 %cr2,%cr3
+    debug 寄存器 %db0 %db1,%db2,%db3,%db6,%db7
+    测试寄存器 %tr6 %tr7
+    浮点寄存器栈 %st(0),%st(1),%st(2),%st(3),%st(4),%st(5),%st(6),%st(7)。
+    #+end_verse
+*** 工作的流程: 
+    #+begin_quote
+    第一步：取指令，cpu 的控制器读取一条指令放到指令寄存器里面。
+    第二步：指令译码，对指令寄存器里面的指令进行译码，确定指令进行的操作，操作数地址。
+    第三步：执行指令，利用操作数地址找到操作数，进行运算。
+    第四步：修改指令计数器，确定下一条指令的地址。
+    #+end_quote
+
+    #+begin_quote
+    跟人的计算过程差不多吧 
+    #+end_quote
+
+** 伪指令
    #+begin_quote
-   跟人的计算过程差不多吧 
+   伪指令给编译器用的，用来布局程序。
    #+end_quote
-
-** 基本结构
-   #+begin_src  x86asm -n
-     #显示器设备显示一行文字
-     .data
-     msg: .ascii "Hello world, hello AT&T asm!\n"
-       len = . - msg
-
-     .text
-     .global _start
-     _start:
-       movl	$len,	%edx	# 显示的字符数
-       movl	$msg,	%ecx	# 缓冲区指针
-       movl	$1,	%ebx	# 文件描述符
-       movl	$4,	%eax	# 系统调用号，_write
-       int	$0x80		# 系统调用
-
-     #ssize_t write(int fd, const void *buf, size_t count);
-
-       movl	%eax,	%ebx	# 传给_exit 的参数, 这里是 write 的返回值，打印的数量
-       movl	$1,	%eax	# 系统调用号，_exit
-       int	$0x80		# 系统调用
-   #+end_src
-** 程序结构
-   #+begin_verse
-   根据冯氏理论一个程序分两个区块，一个区块放置数据，另一个区块放置代码
-   数据区用 *.data* 表示
-   代码区用 *.text* 表示
-   #+end_verse
 
 *** 数据放置区
     .data .rodata(只读)
@@ -120,324 +100,320 @@ cpu 那块芯片上有这么 3 块单元
 *** 当前地址  
     *.*
     len:  .int  .-msg
+*** org 0x7c00
+    #+begin_quote
+    数据和代码的位置默认是向下递增的，如果想设置 数据和代码的位置，可以用 *org* 指令。
+    #+end_quote
     
-** 寄存器
-   #+begin_verse
-   32-bit 寄存器 %eax %ebx %ecx %edx %edi %esi %ebp %esp
-   16-bit 寄存器 %ax %bx %cx %dx %di %si %bp %sp
-   8-bit 寄存器 %ah,%al,%bh,%bl,%ch,%cl,%dh,%dl
-   段寄存器 %cs(code),%ds(data),%ss(stack), %es,%fs,%gs
-   控制寄存器 %cr0 %cr2,%cr3
-   debug 寄存器 %db0 %db1,%db2,%db3,%db6,%db7
-   测试寄存器 %tr6 %tr7
-   浮点寄存器栈 %st(0),%st(1),%st(2),%st(3),%st(4),%st(5),%st(6),%st(7)。
-   #+end_verse
-** 命令
-**** 传送指令
-***** move 指令
-***** cmove 指令(条件转移)
-      #+begin_verse
-      cmovex 源操作数, 目的操作数. x 的取值为:
-      无符号数:
-      a/nbe 大于/不小于或者等于
-      ae/nb 大于或者等于/不小于
-      nc 无进位
-      b/nae 小于/不大于等于
-      c 进位
-      be/na 小于或等于/不大于
-      e/z 等于/零
-      ne/nz 不等于/不为零
-      p/pe 奇偶校验/偶校验
-      np/po 非奇偶校验/奇校验
-      有符号数:
-      ge/nl 大于或者等于/不小于
-      l/nge 小于/不大于或者等于
-      le/ng 小于或者等于/不大于
-      o 溢出
-      no 未溢出
-      s 带符号(负)
-      ns 无符号(非负)
-      #+end_verse
-**** 交换数据
-***** xchg 
-      #+begin_verse
-      xchg 操作数, 操作数, 要求两个操作数必须长度相同且不能同时都是内存位置其中寄
-      存器可以是 32,16,8 位的 bswap 反转一个 32 位寄存器的字节顺序如: bswap %ebx
-        
-      xadd 交换两个值 并把两个值只和存储在目标操作数中如: xadd 源操作数,目标操作数
-        
-      其中源操作数必须是寄存器, 目标操作数可以是内存位置也可以是寄存器其中寄存器可
-      以是 32,16,8 位的
-      #+end_verse
-***** cmpxchg
-      #+begin_verse
-      cmpxchg source, destination
-        
-      其中 source 必须是寄存器, destination 可以是内存或者寄存器, 用来比较两者
-      的值, 如果相等,就把源操作数的值加载到目标操作数中, 如果不等就把目标操作
-      数加载到源操作数中,其中寄存器可以是 32,16,8 位的, 其中源操作数是 EAX,AX
-      或者 AL 寄存器中的值
-      #+end_verse
-***** cmpxchg8b 同 cmpxchg, 但是它处理 8 字节值, 同时它只有一个操作数
-      #+begin_verse
-      cmpxchg8b destination 其中 destination 引用一个内存位置, 其中的 8 字节值
-      会与 EDX 和 EAX 寄存器中包含的值(EDX 高位寄存器,EAX 低位寄存器)进行比较,
-      如果目标值和 EDX:EAX 对中的值相等, 就把 EDX:EAX 对中的 64 位值传递给内存
-      位置, 如果不匹配就把内存地址中的值加载到 EDX:EAX 对中
-      #+end_verse
-***** 堆栈
-      #+begin_verse
-      ESP 寄存器保存了当前堆栈的起始位置, 当一个数据压入栈时, 它就会自动递减, 反之其自动递增
-      压入堆栈操作:
-      pushx source, x 取值为:
-      l 32 位长字
-      w 16 位字
-      弹出堆栈操作:
-      popx source
-      其中 source 必须是 16 或 32 位寄存器或者内存位置, 当 pop 最后一个元素时 ESP 值应该和以前的相等
-      5,压入和弹出所有寄存器
-      pusha/popa 压入或者弹出所有 16 位通用寄存器
-      pushad/popad 压入或者弹出所有 32 位通用寄存器
-      pushf/popf 压入或者弹出 EFLAGS 寄存器的低 16 位
-      pushfd/popfd 压入或者弹出 EFLAGS 寄存器的全部 32 位
-      #+end_verse
-***** 数据地址对齐
-      #+begin_verse
-      gas 汇编器支持.align 命令, 它用于在特定的内存边界对准定义的数据元素, 在
-      数据段中.align 命令紧贴在数据定义的前面
-      #+end_verse
-**** 控制流程
-***** 无条件跳转
-****** 跳转
-       jmp location 其中 location 为要跳转到的内存地址, 在汇编中为定义的标签
-****** 调用
-       #+begin_verse
-       调用指令分为两个部分:
-       1, 调用 call address 跳转到指定位置
-       2, 返回指令 ret, 它没有参数紧跟在 call 指令后面的位置
-       执行 call 指令时,它把 EIP 的值放到堆栈中, 然后修改 EIP 以指向被调用的函数地址, 当被调用函数完成后, 它从堆栈获取过去的 EIP 的
-       值, 并把控制权返还给原始程序。
-       #+end_verse
-****** 中断
-       #+begin_verse
-       由硬件设备生成中断。 程序生成软件中断当一个程序产生中断调用时, 发出调用
-       的程序暂停, 被调用的程序接替它运行, 指令指针被转移到被调用的函数地址,
-       当调用完成时使用中断返回指令可以返回调原始程序。
-       #+end_verse
-***** 条件跳转
-      #+begin_verse
-      条件跳转按照 EFLAGS 中的值来判断是否该跳转, 格式为:
-      jxx address, 其中 xx 是 1-3 个字符的条件代码, 取值如下:
-        
-      a 大于时跳转
-      ae 大于等于
-      b 小于
-      be 小于等于
-      c 进位
-      cxz 如果 CX 寄存器为 0
-      ecxz 如果 ECS 寄存器为 0
-      e 相等
-      na 不大于
-      nae 不大于或者等于
-      nb 不小于
-      nbe 不小于或等于
-      nc 无进位
-      ne 不等于
-      g 大于(有符号)
-      ge 大于等于(有符号)
-      l 小于(有符号)
-      le 小于等于(有符号)
-      ng 不大于(有符号)
-      nge 不大于等于(有符号)
-      nl 不小于
-      nle 不小于等于
-      no 不溢出
-      np 不奇偶校验
-      ns 无符号
-      nz 非零
-      o 溢出
-      p 奇偶校验
-      pe 如果偶校验
-      po 如果奇校验
-      s 如果带符号
-      z 如果为零
-        
-      条件跳转不支持分段内存模型下的远跳转, 如果在该模式下进行程序设计必须使用
-      程序逻辑确定条件是否存在, 然后实现无条件跳转, 跳转前必须设置 EFLAGS 寄存
-      器
-      #+end_verse
-***** 比较
-      #+begin_verse
-      cmp operend1, operend2
-      进位标志修改指令:
-      CLC 清空进位标志(设置为 0)
-      CMC 对进位标志求反(把它改变为相反的值)
-      STC 设置进位标志(设置为 1)
-      #+end_verse
-***** 循环
-      #+begin_verse
-      loop 循环直到 ECX 寄存器为 0
-      loope/loopz 循环直到 ecx 寄存器为 0 或者没有设置 ZF 标志
-      loopne/loopnz 循环直到 ecx 为 0 或者设置了 ZF 标志
-      指令格式为: loopxx address 注意循环指令只支持 8 位偏移地址
-      #+end_verse
-**** 数学运算
-***** 加法
-      #+begin_verse
-      ADD source, destination 
-      其中 source 可以是立即数内存或者寄存器, destination 可以是内存或者寄存器, 但是两者不能同时都是内存位置
-      ADC 和 ADD 相似进行加法运算, 但是它把前一个 ADD 指令的产生进位标志的值包含在其中, 在处理位数大于 32(如 64)
-      位的整数时, 该指令非常有用
-      #+end_verse
-***** 减法
-      #+begin_verse
-      SUB source, destination 把两个整数相减
-      NEG 它生成值的补码
-      SBB 指令, 和加法操作一样, 可以使用进位情况帮助执行大的无符号数值的减法运算. SBB 在多字节减法操作中利用进位和溢出标志实现跨
-      数据边界的的借位特性
-      #+end_verse
-***** 递增和递减
-      #+begin_verse
-      dec destination 递减
-      inc destination 递增
-      其中 dec 和 inc 指令都不会影响进位标志, 所以递增或递减计数器的值都不会影响程序中涉及进位标志的其他任何运算
-      #+end_verse
-***** 乘法
-      #+begin_verse
-      mul source 进行无符号数相乘
-      它使用隐含的目标操作数, 目标位置总是使用 eax 的某种形式, 这取决与源操作数的长度, 因此根据源操作数的长度,目标操作数必须放在
-      AL, AX, EAX 中。 此外由于乘法可能产生很大的值, 目标位置必须是源操作数的两倍位置, 源为 8 时, 应该是 16, 源为 16 时, 应该为 32, 但
-      是当源为 16 位时 intel 为了向下兼容, 目标操作数不是存放在 eax 中, 而是分别存放在 DX:AX 中, 结果高位存储在 DX 中, 地位存储在 AX 中。
-      对于 32 位的源, 目标操作数存储在 EDX:EAX 中, 其中 EDX 存储的是高 32 位, EAX 存储的是低 32 位
-      imul source 进行有符号数乘法运算, 其中的目标操作数和 mul 的一样
-      imul source, destination 也可以执行有符号乘法运算, 但是此时可以把目标放在指定的位置, 使用这种格式的缺陷
-      在与乘法的操作结果被限制为单一目标寄存器的长度.
-      imul multiplier, source, destination
-      其中 multiplier 是一个立即数, 这种方式允许一个值与给定的源操作数进行快速的乘法运算, 然后把结果存储在通用寄存器中
-      #+end_verse
-***** 除法
-      #+begin_verse
-      div divisor 执行无符号数除法运算
-      除数的最大值取决与被除数的长度, 对于 16 位被除数 ,除数只能为 8 位, 32 或 64 位同上
-      被除数 被除数长度 商 余数
-      AX 16 位 AL AH
-      DX:AX 32 位 AX DX
-      EDX:EAX 64 位 EAX EDX
-      idiv divisor 执行有符号数的除法运算, 方式和 div 一样
-      #+end_verse
-***** 浮点数
-      #+begin_verse
-      fld 指令用于把浮点数字传送入和传送出 FPU 寄存器, 格式:
-      fld source
-      其中 source 可以为 32 64 或者 80 位整数值
-       
-      IA-32 使用 FLD 指令用于把存储在内存中的单精度和双精度浮点值 FPU 寄存器堆
-      栈中, 为了区分这两种长度 GNU 汇编器使用
-       
-      FLDS 加载单精度浮点数, FLDL 加载双精度浮点数
-       
-      类似 FST 用于获取 FPU 寄存器堆栈中顶部的值, 并且把这个值放到内存位置中,对
-      于单精度使用 FSTS, 对于双精度使用 FSTL
-      #+end_verse
-***** 左移位
-      #+begin_verse
-      sal 向左移位
-      sal destination 把 destination 向左移动 1 位
-      sal %cl, destination 把 destination 的值向左移动 CL 寄存器中指定的位数
-      sal shifter, destination 把 destination 的值向左移动 shifter 值指定的位数
-       
-      向左移位可以对带符号数和无符号数执行向左移位的操作, 移位造成的空位用零填
-      充, 移位造成的超过数据长度的任何位都被存放在进位标志中, 然后在下一次移位
-      操作中被丢弃
-      #+end_verse
-***** 右移位
-      #+begin_verse
-      shr 向右移位
-      sar 向右移位
-      SHR 指令清空移位造成的空位, 所以它只能对无符号数进行移位操作
-       
-      SAR 指令根据整数的符号位, 要么清空, 要么设置移位造成的空位, 对于负数, 空
-      位被设置为 1
-      #+end_verse
-***** 循环移位
-      #+begin_verse
-      和移位指令类似, 只不过溢出的位被存放回值的另一端, 而不是丢弃
-      ROL 向左循环移位
-      ROR 向右循环移位
-      RCL 向左循环移位, 并且包含进位标志
-      RCR 向右循环移位, 并且包含进位标志
-      #+end_verse
-**** 逻辑运算
+** 指令
+   #+begin_quote
+   指令给 *CPU* 解释执行的
+   #+end_quote
+*** 传送指令
+*** move 指令
+*** cmove 指令(条件转移)
+    #+begin_verse
+    cmovex 源操作数, 目的操作数. x 的取值为:
+    无符号数:
+    a/nbe 大于/不小于或者等于
+    ae/nb 大于或者等于/不小于
+    nc 无进位
+    b/nae 小于/不大于等于
+    c 进位
+    be/na 小于或等于/不大于
+    e/z 等于/零
+    ne/nz 不等于/不为零
+    p/pe 奇偶校验/偶校验
+    np/po 非奇偶校验/奇校验
+    有符号数:
+    ge/nl 大于或者等于/不小于
+    l/nge 小于/不大于或者等于
+    le/ng 小于或者等于/不大于
+    o 溢出
+    no 未溢出
+    s 带符号(负)
+    ns 无符号(非负)
+    #+end_verse
+*** 交换数据
+**** xchg 
      #+begin_verse
-     AND OR XOR
-     这些指令使用相同的格式:
-     and source, destination
-       
-     其中 source 可以是 8 位 16 位或者 32 位的立即值 寄存器或内存中的值,
-     destination 可以是 8 位 16 位或者 32 位寄存器或内存中的值,
-       
-     不能同时使用内存值作为源和目标。 布尔逻辑功能对源和目标执行按位操作。
-     也就是说使用指定的逻辑功能按照顺序对数据的元素的每个位进行单独比较。
-     NOT 指令使用单一操作数, 它即是源值也是目标结果的位置
-       
-     清空寄存器的最高效方式是使用 OR 指令对寄存器和它本身进行异或操作.当和本身
-     进行 XOR 操作时, 每个设置为 1 的位就变为 0, 每个设置为 0 的位也变位 0。
-       
-     位测试可以使用以上的逻辑运算指令, 但这些指令会修改 destination 的值, 因此
-     intel 提供了 test 指令, 它不会修改目标值而是设置相应的标志
+     xchg 操作数, 操作数, 要求两个操作数必须长度相同且不能同时都是内存位置其中寄
+     存器可以是 32,16,8 位的 bswap 反转一个 32 位寄存器的字节顺序如: bswap %ebx
+        
+     xadd 交换两个值 并把两个值只和存储在目标操作数中如: xadd 源操作数,目标操作数
+        
+     其中源操作数必须是寄存器, 目标操作数可以是内存位置也可以是寄存器其中寄存器可
+     以是 32,16,8 位的
      #+end_verse
-**** 字符串处理
-***** 传送字符串
-      #+begin_verse
-      movs 有三种格式
-      movsb 传送单一字节
-      movsw 传送一个字
-      movsl 传送双字
-      movs 指令使用隐含的源和目的操作数, 隐含的源操作数是 ESI, 隐含的目的操作数是 EDI, 有两种方式加载内存地址到 ESI 和 EDI,
-      第一种是使用标签间接寻址 movl $output, %ESI, 第二种是使用 lea 指令, lea 指令加载对象的地址到指定的目的操作数如 lea output,
-      %esi, 每次执行 movs 指令后, 数据传送后 ESI 和 EDI 寄存器会自动改变,为另一次传送做准备, ESI 和 EDI 可能随着标志 DF 的不同自动
-      递增或者自动递减, 如果 DF 标志为 0 则 movs 指令后 ESI 和 EDI 会递增, 反之会递减, 为了设置 DF 标志, 可以使用一下指令:
-      CLD 将 DF 标志清零
-      STD 设置 DF 标志
-      #+end_verse
-***** rep 前缀
-      #+begin_verse
-      REP 指令的特殊之处在与它不执行什么操作, 这条指令用于按照特定次数重复执行字符串指令, 有 ECX 寄存器控制,但不需要额外的 loop 指
-      令, 如 rep movsl
-      rep 的其他格式:
-      repe 等于时重复
-      repne 不等于时重复
-      repnz 不为零时重复
-      repz 为零时重复
-      #+end_verse
-***** 存储和加载字符串
-      #+begin_verse
-      LODS 加载字符串, ESI 为源, 当一次执行完 lods 时会递增或递减 ESI 寄存器, 然后把字符串值存放到 EAX 中
-      STOS 使用 lods 把字符串值加载到 EAX 后, 可以使用它把 EAX 中的值存储到内存中去:
-      stos 使用 EDI 作为目的操作数, 执行 stos 指令后, 会根据 DF 的值自动递增或者递减 EDI 中的值
-      #+end_verse
-***** 比较字符串
-      #+begin_verse
-      cmps 和其他的操作字符串的指令一样, 隐含的源和目标操作数都为 ESI 和 EDI, 每次执行时都会根据 DF 的值把
-      ESI 和 EDI 递增或者递减, cmps 指令从目标字符串中减去源字符串, 执行后会设置 EFLAGS 寄存器的状态.
-      #+end_verse
-***** 扫描字符串
-      scas 把 EDI 作为目标, 它把 EDI 中的字符串和 EAX 中的字符串进行比较 ,然后根据 DF 的值递增或者递减 EDI
-**** 使用函数
+**** cmpxchg
      #+begin_verse
-     GNU 汇编语言定义函数的语法:
-     .type 标签(也就是函数名), @function
-     ret 返回到调用处
+     cmpxchg source, destination
+        
+     其中 source 必须是寄存器, destination 可以是内存或者寄存器, 用来比较两者
+     的值, 如果相等,就把源操作数的值加载到目标操作数中, 如果不等就把目标操作
+     数加载到源操作数中,其中寄存器可以是 32,16,8 位的, 其中源操作数是 EAX,AX
+     或者 AL 寄存器中的值
      #+end_verse
-**** 符号扩展指令
+**** cmpxchg8b 同 cmpxchg, 但是它处理 8 字节值, 同时它只有一个操作数
      #+begin_verse
-     其它的 Intel 格式的符号扩展指令还有:
-     cbw -- sign-extend byte in %al to word in %ax;
-     cwde -- sign-extend word in %ax to long in %eax;
-     cwd -- sign-extend word in %ax to long in %dx:%ax;
-     cdq -- sign-extend dword in %eax to quad in %edx:%eax;
-     对应的 AT&T 语法的指令为 cbtw,cwtl,cwtd,cltd。
+     cmpxchg8b destination 其中 destination 引用一个内存位置, 其中的 8 字节值
+     会与 EDX 和 EAX 寄存器中包含的值(EDX 高位寄存器,EAX 低位寄存器)进行比较,
+     如果目标值和 EDX:EAX 对中的值相等, 就把 EDX:EAX 对中的 64 位值传递给内存
+     位置, 如果不匹配就把内存地址中的值加载到 EDX:EAX 对中
      #+end_verse
+**** 堆栈
+     #+begin_verse
+     ESP 寄存器保存了当前堆栈的起始位置, 当一个数据压入栈时, 它就会自动递减, 反之其自动递增
+     压入堆栈操作:
+     pushx source, x 取值为:
+     l 32 位长字
+     w 16 位字
+     弹出堆栈操作:
+     popx source
+     其中 source 必须是 16 或 32 位寄存器或者内存位置, 当 pop 最后一个元素时 ESP 值应该和以前的相等
+     5,压入和弹出所有寄存器
+     pusha/popa 压入或者弹出所有 16 位通用寄存器
+     pushad/popad 压入或者弹出所有 32 位通用寄存器
+     pushf/popf 压入或者弹出 EFLAGS 寄存器的低 16 位
+     pushfd/popfd 压入或者弹出 EFLAGS 寄存器的全部 32 位
+     #+end_verse
+**** 数据地址对齐
+     #+begin_verse
+     gas 汇编器支持.align 命令, 它用于在特定的内存边界对准定义的数据元素, 在
+     数据段中.align 命令紧贴在数据定义的前面
+     #+end_verse
+*** 控制流程
+**** 无条件跳转
+***** 跳转
+      jmp location 其中 location 为要跳转到的内存地址, 在汇编中为定义的标签
+***** 调用
+      #+begin_verse
+      调用指令分为两个部分:
+      1, 调用 call address 跳转到指定位置
+      2, 返回指令 ret, 它没有参数紧跟在 call 指令后面的位置
+      执行 call 指令时,它把 EIP 的值放到堆栈中, 然后修改 EIP 以指向被调用的函数地址, 当被调用函数完成后, 它从堆栈获取过去的 EIP 的
+      值, 并把控制权返还给原始程序。
+      #+end_verse
+***** 中断
+      #+begin_verse
+      由硬件设备生成中断。 程序生成软件中断当一个程序产生中断调用时, 发出调用
+      的程序暂停, 被调用的程序接替它运行, 指令指针被转移到被调用的函数地址,
+      当调用完成时使用中断返回指令可以返回调原始程序。
+      #+end_verse
+**** 条件跳转
+     #+begin_verse
+     条件跳转按照 EFLAGS 中的值来判断是否该跳转, 格式为:
+     jxx address, 其中 xx 是 1-3 个字符的条件代码, 取值如下:
+        
+     a 大于时跳转
+     ae 大于等于
+     b 小于
+     be 小于等于
+     c 进位
+     cxz 如果 CX 寄存器为 0
+     ecxz 如果 ECS 寄存器为 0
+     e 相等
+     na 不大于
+     nae 不大于或者等于
+     nb 不小于
+     nbe 不小于或等于
+     nc 无进位
+     ne 不等于
+     g 大于(有符号)
+     ge 大于等于(有符号)
+     l 小于(有符号)
+     le 小于等于(有符号)
+     ng 不大于(有符号)
+     nge 不大于等于(有符号)
+     nl 不小于
+     nle 不小于等于
+     no 不溢出
+     np 不奇偶校验
+     ns 无符号
+     nz 非零
+     o 溢出
+     p 奇偶校验
+     pe 如果偶校验
+     po 如果奇校验
+     s 如果带符号
+     z 如果为零
+        
+     条件跳转不支持分段内存模型下的远跳转, 如果在该模式下进行程序设计必须使用
+     程序逻辑确定条件是否存在, 然后实现无条件跳转, 跳转前必须设置 EFLAGS 寄存
+     器
+     #+end_verse
+**** 比较
+     #+begin_verse
+     cmp operend1, operend2
+     进位标志修改指令:
+     CLC 清空进位标志(设置为 0)
+     CMC 对进位标志求反(把它改变为相反的值)
+     STC 设置进位标志(设置为 1)
+     #+end_verse
+**** 循环
+     #+begin_verse
+     loop 循环直到 ECX 寄存器为 0
+     loope/loopz 循环直到 ecx 寄存器为 0 或者没有设置 ZF 标志
+     loopne/loopnz 循环直到 ecx 为 0 或者设置了 ZF 标志
+     指令格式为: loopxx address 注意循环指令只支持 8 位偏移地址
+     #+end_verse
+*** 数学运算
+**** 加法
+     #+begin_verse
+     ADD source, destination 
+     其中 source 可以是立即数内存或者寄存器, destination 可以是内存或者寄存器, 但是两者不能同时都是内存位置
+     ADC 和 ADD 相似进行加法运算, 但是它把前一个 ADD 指令的产生进位标志的值包含在其中, 在处理位数大于 32(如 64)
+     位的整数时, 该指令非常有用
+     #+end_verse
+**** 减法
+     #+begin_verse
+     SUB source, destination 把两个整数相减
+     NEG 它生成值的补码
+     SBB 指令, 和加法操作一样, 可以使用进位情况帮助执行大的无符号数值的减法运算. SBB 在多字节减法操作中利用进位和溢出标志实现跨
+     数据边界的的借位特性
+     #+end_verse
+**** 递增和递减
+     #+begin_verse
+     dec destination 递减
+     inc destination 递增
+     其中 dec 和 inc 指令都不会影响进位标志, 所以递增或递减计数器的值都不会影响程序中涉及进位标志的其他任何运算
+     #+end_verse
+**** 乘法
+     #+begin_verse
+     mul source 进行无符号数相乘
+     它使用隐含的目标操作数, 目标位置总是使用 eax 的某种形式, 这取决与源操作数的长度, 因此根据源操作数的长度,目标操作数必须放在
+     AL, AX, EAX 中。 此外由于乘法可能产生很大的值, 目标位置必须是源操作数的两倍位置, 源为 8 时, 应该是 16, 源为 16 时, 应该为 32, 但
+     是当源为 16 位时 intel 为了向下兼容, 目标操作数不是存放在 eax 中, 而是分别存放在 DX:AX 中, 结果高位存储在 DX 中, 地位存储在 AX 中。
+     对于 32 位的源, 目标操作数存储在 EDX:EAX 中, 其中 EDX 存储的是高 32 位, EAX 存储的是低 32 位
+     imul source 进行有符号数乘法运算, 其中的目标操作数和 mul 的一样
+     imul source, destination 也可以执行有符号乘法运算, 但是此时可以把目标放在指定的位置, 使用这种格式的缺陷
+     在与乘法的操作结果被限制为单一目标寄存器的长度.
+     imul multiplier, source, destination
+     其中 multiplier 是一个立即数, 这种方式允许一个值与给定的源操作数进行快速的乘法运算, 然后把结果存储在通用寄存器中
+     #+end_verse
+**** 除法
+     #+begin_verse
+     div divisor 执行无符号数除法运算
+     除数的最大值取决与被除数的长度, 对于 16 位被除数 ,除数只能为 8 位, 32 或 64 位同上
+     被除数 被除数长度 商 余数
+     AX 16 位 AL AH
+     DX:AX 32 位 AX DX
+     EDX:EAX 64 位 EAX EDX
+     idiv divisor 执行有符号数的除法运算, 方式和 div 一样
+     #+end_verse
+**** 浮点数
+     #+begin_verse
+     fld 指令用于把浮点数字传送入和传送出 FPU 寄存器, 格式:
+     fld source
+     其中 source 可以为 32 64 或者 80 位整数值
+       
+     IA-32 使用 FLD 指令用于把存储在内存中的单精度和双精度浮点值 FPU 寄存器堆
+     栈中, 为了区分这两种长度 GNU 汇编器使用
+       
+     FLDS 加载单精度浮点数, FLDL 加载双精度浮点数
+       
+     类似 FST 用于获取 FPU 寄存器堆栈中顶部的值, 并且把这个值放到内存位置中,对
+     于单精度使用 FSTS, 对于双精度使用 FSTL
+     #+end_verse
+**** 左移位
+     #+begin_verse
+     sal 向左移位
+     sal destination 把 destination 向左移动 1 位
+     sal %cl, destination 把 destination 的值向左移动 CL 寄存器中指定的位数
+     sal shifter, destination 把 destination 的值向左移动 shifter 值指定的位数
+       
+     向左移位可以对带符号数和无符号数执行向左移位的操作, 移位造成的空位用零填
+     充, 移位造成的超过数据长度的任何位都被存放在进位标志中, 然后在下一次移位
+     操作中被丢弃
+     #+end_verse
+**** 右移位
+     #+begin_verse
+     shr 向右移位
+     sar 向右移位
+     SHR 指令清空移位造成的空位, 所以它只能对无符号数进行移位操作
+       
+     SAR 指令根据整数的符号位, 要么清空, 要么设置移位造成的空位, 对于负数, 空
+     位被设置为 1
+     #+end_verse
+**** 循环移位
+     #+begin_verse
+     和移位指令类似, 只不过溢出的位被存放回值的另一端, 而不是丢弃
+     ROL 向左循环移位
+     ROR 向右循环移位
+     RCL 向左循环移位, 并且包含进位标志
+     RCR 向右循环移位, 并且包含进位标志
+     #+end_verse
+*** 逻辑运算
+    #+begin_verse
+    AND OR XOR
+    这些指令使用相同的格式:
+    and source, destination
+       
+    其中 source 可以是 8 位 16 位或者 32 位的立即值 寄存器或内存中的值,
+    destination 可以是 8 位 16 位或者 32 位寄存器或内存中的值,
+       
+    不能同时使用内存值作为源和目标。 布尔逻辑功能对源和目标执行按位操作。
+    也就是说使用指定的逻辑功能按照顺序对数据的元素的每个位进行单独比较。
+    NOT 指令使用单一操作数, 它即是源值也是目标结果的位置
+       
+    清空寄存器的最高效方式是使用 OR 指令对寄存器和它本身进行异或操作.当和本身
+    进行 XOR 操作时, 每个设置为 1 的位就变为 0, 每个设置为 0 的位也变位 0。
+       
+    位测试可以使用以上的逻辑运算指令, 但这些指令会修改 destination 的值, 因此
+    intel 提供了 test 指令, 它不会修改目标值而是设置相应的标志
+    #+end_verse
+*** 字符串处理
+**** 传送字符串
+     #+begin_verse
+     movs 有三种格式
+     movsb 传送单一字节
+     movsw 传送一个字
+     movsl 传送双字
+     movs 指令使用隐含的源和目的操作数, 隐含的源操作数是 ESI, 隐含的目的操作数是 EDI, 有两种方式加载内存地址到 ESI 和 EDI,
+     第一种是使用标签间接寻址 movl $output, %ESI, 第二种是使用 lea 指令, lea 指令加载对象的地址到指定的目的操作数如 lea output,
+     %esi, 每次执行 movs 指令后, 数据传送后 ESI 和 EDI 寄存器会自动改变,为另一次传送做准备, ESI 和 EDI 可能随着标志 DF 的不同自动
+     递增或者自动递减, 如果 DF 标志为 0 则 movs 指令后 ESI 和 EDI 会递增, 反之会递减, 为了设置 DF 标志, 可以使用一下指令:
+     CLD 将 DF 标志清零
+     STD 设置 DF 标志
+     #+end_verse
+**** rep 前缀
+     #+begin_verse
+     REP 指令的特殊之处在与它不执行什么操作, 这条指令用于按照特定次数重复执行字符串指令, 有 ECX 寄存器控制,但不需要额外的 loop 指
+     令, 如 rep movsl
+     rep 的其他格式:
+     repe 等于时重复
+     repne 不等于时重复
+     repnz 不为零时重复
+     repz 为零时重复
+     #+end_verse
+**** 存储和加载字符串
+     #+begin_verse
+     LODS 加载字符串, ESI 为源, 当一次执行完 lods 时会递增或递减 ESI 寄存器, 然后把字符串值存放到 EAX 中
+     STOS 使用 lods 把字符串值加载到 EAX 后, 可以使用它把 EAX 中的值存储到内存中去:
+     stos 使用 EDI 作为目的操作数, 执行 stos 指令后, 会根据 DF 的值自动递增或者递减 EDI 中的值
+     #+end_verse
+**** 比较字符串
+     #+begin_verse
+     cmps 和其他的操作字符串的指令一样, 隐含的源和目标操作数都为 ESI 和 EDI, 每次执行时都会根据 DF 的值把
+     ESI 和 EDI 递增或者递减, cmps 指令从目标字符串中减去源字符串, 执行后会设置 EFLAGS 寄存器的状态.
+     #+end_verse
+**** 扫描字符串
+     scas 把 EDI 作为目标, 它把 EDI 中的字符串和 EAX 中的字符串进行比较 ,然后根据 DF 的值递增或者递减 EDI
+*** 使用函数
+    #+begin_verse
+    GNU 汇编语言定义函数的语法:
+    .type 标签(也就是函数名), @function
+    ret 返回到调用处
+    #+end_verse
+*** 符号扩展指令
+    #+begin_verse
+    其它的 Intel 格式的符号扩展指令还有:
+    cbw -- sign-extend byte in %al to word in %ax;
+    cwde -- sign-extend word in %ax to long in %eax;
+    cwd -- sign-extend word in %ax to long in %dx:%ax;
+    cdq -- sign-extend dword in %eax to quad in %edx:%eax;
+    对应的 AT&T 语法的指令为 cbtw,cwtl,cwtd,cltd。
+    #+end_verse
 ** 高级功能
 *** 内联汇编
     #+begin_verse
@@ -472,23 +448,139 @@ cpu 那块芯片上有这么 3 块单元
      : [value2] "=r"(data2)
      : [value1] "r"(data1), "0"(data2));
      #+end_verse
-** 优化代码
-   GNU 编译器提供-O 选项供程序优化使用:
-   -O 提供基础级别的优化
-   -O2 提供更加高级的代码优化
-   -O3 提供最高级的代码优化
-** 系统调用 
-   系统提供了增强功能，就不用自己写了，使用方法简单，只要指定要用什么功能，然后，把需要的数据传进去就可以用了。 
-   
-   - int $0x80
-   - 调用号: %eax 
-   - 参数
-     - 第一个参数 EBX 
-     - 第二个参数 ECX 
-     - 第三个参数  EDX 
-     - 第四个参数  ESI 
-     - 第五个参数  EDI 
+** 使用 BIOS 函数
+   例子: 
+   #+begin_src x86asm -n 
+.section .data
+output:
+.ascii "The processor Vendor ID is 'XXXXXXXXXXXX'\n"
 
-   #+begin_quote
-   超过 6 个参数的系统调用, EBX 指向参数数组
-   #+end_quote
+.section .text
+.global _start
+.code16
+
+_start:
+    jmp entry
+    /*定义 fat12 文件格式*/
+    .byte 0x00
+    .ascii "helloOSX"
+    .word  512
+    .byte  1
+    .word  1
+    .byte  2
+    .word  224
+    .word  2880
+    .byte  0xf0
+    .word  9
+    .word  18
+    .word  2
+    .long  0
+    .long  2880
+    .byte  0,0,0x29
+    .long  0xffffffff
+    .ascii  "myosudisk  "
+    .ascii  "fat12   "
+    .fill 18
+
+
+entry:
+    mov $0,%ax
+    mov %ax,%ds
+    mov %ax,%es
+    mov %ax,%ss
+    mov $0x7c00,%sp
+
+
+puts:
+  ;# 输出字符 'A'
+  movb $0x0e,%ah
+  movb $0x41,%al
+  movw $0x0e,%bx
+  int $0x10
+
+
+  ;# 输出字符 'a'
+  movb $0x0e,%ah
+  movb $0x61,%al
+  movw $0x0e,%bx
+  int $0x10
+ 
+  jmp .
+
+msg:
+	.asciz "\r\nmy bootloader is running"
+my: .asciz "\r\nwelcome to our course "
+
+.org 510
+.word 0xaa55
+   #+end_src
+** make 用法
+*** 简介 
+    make 程序可以把分步的命令集中写在文件里，然后给这个 *步骤* 取一个别名
+*** bios 测试 
+    #+begin_src makefile 
+      file=asm
+      src=$(file).S
+      obj=$(file).o
+
+      elf=boot.elf
+      boot=boot.out
+      asm=boot.asm
+
+      # 链接程序
+      $(boot):$(src)
+      gcc -c $(src) -m32 -o $(obj)
+      ld -m elf_i386 $(obj) -e _start -Ttext 0x7c00 -o $(elf)
+      objcopy -S -O binary -j .text $(elf)  $(boot)
+      objdump -S $(elf) > $(asm)
+
+      # 制作软盘
+      fat12:
+      @dd if=/dev/zero of=$(boot) seek=1 count=2879 >> /dev/zero
+      @ls -al $(boot)
+
+      # 执行模拟器
+      run:$(asm)
+      qemu-system-x86_64 -fda $(boot)
+
+      # 清除中间文件
+      clean:
+      -rm -f $(obj) $(elf) $(boot) $(asm)
+
+    #+end_src
+** 使用 linux 函数
+*** 例子 
+    #+begin_src  x86asm -n
+      #显示器设备显示一行文字
+      .data
+      msg: .ascii "Hello world, hello AT&T asm!\n"
+        len = . - msg
+
+      .text
+      .global _start
+      _start:
+        movl	$len,	%edx	# 显示的字符数
+        movl	$msg,	%ecx	# 缓冲区指针
+        movl	$1,	%ebx	# 文件描述符
+        movl	$4,	%eax	# 系统调用号，_write
+        int	$0x80		# 系统调用
+
+      #ssize_t write(int fd, const void *buf, size_t count);
+
+        movl	%eax,	%ebx	# 传给_exit 的参数, 这里是 write 的返回值，打印的数量
+        movl	$1,	%eax	# 系统调用号，_exit
+        int	$0x80		# 系统调用
+    #+end_src
+*** 用法   
+    - int $0x80
+    - 调用号: %eax 
+    - 参数
+      - 第一个参数 EBX 
+      - 第二个参数 ECX 
+      - 第三个参数  EDX 
+      - 第四个参数  ESI 
+      - 第五个参数  EDI 
+
+    #+begin_quote
+    超过 6 个参数的系统调用, EBX 指向参数数组
+    #+end_quote

@@ -3,7 +3,6 @@
 #+TAGS: php
 #+CATEGORIES: 软件使用
 
-
 * 例子
 ** 简单文件上传 
    注意路径都是相对路径，绝对路径 必须是/home/wuming 这种的，要么用常量 ROOT 这种
@@ -151,235 +150,19 @@
    #+BEGIN_SRC php
      <?php
      header("Content-type: text/html; charset=utf-8");
-     /********************
-       1、写入内容到文件,追加内容到文件
-       2、打开并读取文件内容
-     ,********************/
      $file  = 'log.txt';//要写入文件的文件名（可以是任意文件名），如果文件不存在，将会创建一个
      $content = "第一次写入的内容\n";
 
-     if($f  = file_put_contents($file, $content,FILE_APPEND)){// 这个函数支持版本(PHP 5) 
+     if($f  = file_put_contents($file, $content,FILE_APPEND)){
          echo "写入成功。<br />";
      }
-     if($data = file_get_contents($file)){; // 这个函数支持版本(PHP 4 >= 4.3.0, PHP 5) 
+     if($data = file_get_contents($file)){
          echo "写入文件的内容是：$data";
      }
      ?>
    #+END_SRC
 ** 临时域名
    ./natapp -authtoken=e5eb817e91aeee83 
-* 树的节点
-  #+begin_src php
-    /**
-     ,* Class TNode
-     ,* 节点类
-     ,*/
-    class TNode
-    {
-        public $lnode = null;
-        public $rnode = null;
-        public $val = 0;
-
-        public function __construct($val, $lnode = null, $rnode = null)
-        {
-            $this->val = $val;
-            $this->lnode = $lnode;
-            $this->rnode = $rnode;
-        }
-    }
-
-    /**
-     ,* Class BinarySearchTree
-     ,* 二叉查找树容器
-     ,*/
-    class BinarySearchTree
-    {
-
-        /**
-         ,* 用于存放根节点
-         ,* @var null|TNode
-         ,*/
-        protected $head = null;
-
-        /**
-         ,* 内部节点的指向引用
-         ,* @var null|TNode
-         ,*/
-        protected $pointer = null;
-
-        public function __construct(TNode &$node)
-        {
-            $this->head = &$node;
-            $this->pointer = $this->head;
-        }
-
-        /**
-         ,* 重置指针到根节点
-         ,*/
-        public function rewind()
-        {
-            $this->pointer = &$this->head;
-        }
-
-        /**
-         ,* 插入操作
-         ,* @param $val
-         ,*/
-        public function insert($val)
-        {
-            $this->rewind();
-            //遍历插入
-            while (true) {
-                if ($val > $this->pointer->val) {
-                    //大于当前节点则向右查
-                    if (!empty($this->pointer->rnode)) {
-                        $this->pointer = &$this->pointer->rnode;
-                    } else {
-                        $this->pointer->rnode = new TNode($val);
-                        break;
-                    }
-                } else {
-                    //小于当前节点则向左查
-                    if (!empty($this->pointer->lnode)) {
-                        $this->pointer = &$this->pointer->lnode;
-                    } else {
-                        $this->pointer->lnode = new TNode($val);
-                        break;
-                    }
-                }
-            }
-        }
-
-        /**
-         ,* 查找操作
-         ,* @param $val
-         ,* @return bool|null|TNode
-         ,*/
-        public function search($val)
-        {
-            //与插入类似
-            $this->rewind();
-            while (true) {
-                if ($val > $this->pointer->val) {
-                    if (!empty($this->pointer->rnode)) {
-                        $this->pointer = &$this->pointer->rnode;
-                    } else {
-                        return false;
-                    }
-                } else if ($val < $this->pointer->val) {
-                    if (!empty($this->pointer->lnode)) {
-                        $this->pointer = &$this->pointer->lnode;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return $this->pointer;
-                }
-            }
-        }
-
-        /**
-         ,* 删除操作
-         ,* @param $val
-         ,* @return bool
-         ,*/
-        public function delete($val)
-        {
-            $this->rewind();
-            $flag = true;
-            $prev_pointer = null;
-            //遍历寻找需要被删除的数据
-            while (true) {
-                if ($val > $this->pointer->val) {
-                    if (!empty($this->pointer->rnode)) {
-                        $prev_pointer = $this->pointer;
-                        $this->pointer = &$this->pointer->rnode;
-                    } else {
-                        $flag = false;
-                        break;
-                    }
-                } else if ($val < $this->pointer->val) {
-                    if (!empty($this->pointer->lnode)) {
-                        $prev_pointer = $this->pointer;
-                        $this->pointer = &$this->pointer->lnode;
-                    } else {
-                        $flag = false;
-                        break;
-                    }
-                } else {
-                    break;
-                }
-            }
-
-            if ($flag === false) {
-                return false;
-            }
-
-            if ($this->pointer->rnode == null || $this->pointer->lnode == null) {
-                //存在左边
-                if ($this->pointer == $prev_pointer->lnode) {
-                    unset($prev_pointer->lnode);
-                    $prev_pointer->lnode = $this->pointer->lnode;
-                } else {
-                    unset($prev_pointer->rnode);
-                    $prev_pointer->rnode = $this->pointer->lnode;
-                }
-                unset($this->pointer);
-            } else if ($this->pointer->rnode != null && $this->pointer->rnode == null) {
-                //存在右边分支
-                if ($this->pointer == $prev_pointer->lnode) {
-                    unset($prev_pointer->lnode);
-                    $prev_pointer->lnode = $this->pointer->rnode;
-                } else {
-                    unset($prev_pointer->rnode);
-                    $prev_pointer->rnode = $this->pointer->rnode;
-                }
-                unset($this->pointer);
-            } else if ($this->pointer->rnode == null && $this->pointer->lnode == null) {
-                //不存在两边分支
-                if ($this->pointer == $prev_pointer->lnode) {
-                    unset($prev_pointer->lnode);
-                } else {
-                    unset($prev_pointer->rnode);
-                }
-                unset($this->pointer);
-            } else {
-                //两边都存在分支
-                $temp = &$this->pointer;
-                //先转向左节点
-                $search = &$this->pointer->lnode;
-                //一直向右寻找
-                while (!empty($search->rnode)) {
-                    $temp = &$search;
-                    $search = &$search->rnode;
-                }
-                $this->pointer->val = $search->val;
-                //如果第一次寻找存在右节点
-                if ($temp != $this->pointer) {
-                    //重置右节点
-                    $temp->rnode = $search->lnode;
-                } else {
-                    //重置左节点
-                    $temp->lnode = $search->lnode;
-                }
-            }
-        }
-
-    }
-
-    // 实例演示
-
-    $tree = new BinarySearchTree(new TNode(1));
-    $tree->insert(2);
-    $tree->insert(5);
-    $tree->insert(7);
-    $tree->insert(3);
-    $tree->insert(6);
-    $tnode = $tree->search(5);
-    var_dump($tnode);
-    $tree->delete(5);
-    var_dump($tree);
-  #+end_src
 * 数据库调试
   echo mysql_errno();  
   echo mysql_error();
@@ -1306,9 +1089,10 @@
     sudo mv phpunit-6.2.phar /usr/local/bin/phpunit
     phpunit --version
    #+end_src
-** 依赖管理器 (仅安装依赖哦，不是一套完整程序)
+** 依赖管理器 
 *** Composer 
-**** composer.json  
+**** 配置文件   
+     composer.json
      #+begin_src json
        {
            "require": {
@@ -1378,7 +1162,7 @@
      克隆仓库 composer create-project doctrine/orm path 2.2.0
      #+end_verse
 
-** 数据库哦   
+** 数据库
 ***** predis/[[https://github.com/nrk/predis/wiki/Quick-tour][predis]]
 ****** 连接到服务器 
        连接到默认主机（127.0.0.1）和端口（6379）
@@ -1390,192 +1174,5 @@
        'port' => 6380, 
        ));
 
-* 对象，模式，实践    
-** 模式
-   设计模式，就是设计过的模式，就是设计过的完美的解决方案。
-   使用模式，就不用再重复开发解决问题的方案了。
-   设计模式只是定义大体的规范，而不是面面俱到。
-   我们在此学习面向对象软件开发的模式
-   
-   设计模式包含 4 个核心内容 : 命名，问题，解决方案和效果。
-   为什么使用设计模式呢？
-   1. 一个设计模式定义了一个问题。
-   2. 一个设计模式定义了解决方案。
-   3. 语言无关
-   4. 定义了一组词汇
 
-   组合与继承 ： 组合优于继承,两个不同的东西优于一个大的复杂的东西。
-   针对接口编程，而不是针对实现编程 ,这样，需要改动的就少了，方便移植到不同的地方。(有移植需求的地方要这样设计) 
-   
-   面向场景 
-   生成对象模式
-   面向任务的模式 
-   企业模式
-   数据库模式
-
-   单例模式 全局变量
-** 实践
-   不要重复造轮子，要善于利用工具 ，工具在 PEAR 找 
-   使用版本工具
-   使用项目管理工具,PEAR 用于小项目 ， Phing 用于大项目 
-   写清晰的文档，文档会回忆思路，而且如果没有说明，以后都看不懂代码啦。
-   使用测试工具测试类
-*** PEAR (php extension and application repository) ,不解决依赖问题的哦
-    PHP 扩展和应用程序库 ,仓库地址为 https://pear.php.net 
-    使用人家的库，和使用自带的库都是库啦，又不是写汇编的年代，现在时间就是金钱
-    php 默认自带了 pear 核心包
-    获取包安装的路径 pear config-get php_dir
-    查看所有配置 pear config-show
-    安装 pear 包 ，要用管理员权限，包都是安装在(php_dir )中的 sudo pear install <PackageName>
-    安装时顺便安装强制依赖包   pear install -o <PackageName> ,对于全部的(包含非强制 ，用 -a 选项)
-    下载下来的包，安装时,指定文件就好了  pear install -o http://PackageName.tgz
-    卸载 pear uninstall <PackageName>
-    
-    使用 pear 包，目录要在 include_path 中才能使用哦，要不来是白安装的,默认是在的。
-    包含路径一般包含文件的当前路径和 pear 包路径，可以自己增加
-    
-    - 使用 Pear_Config 包 
-      1. 先安装 pear install -a Config
-      2. 使用,在代码中 require_once("Config.php"); new Config()->parseConfig("xmlFileName","xml")
-      3. 类型包含 apache，genericconf，inifile，inicommented，phparray，xml
-    
-      创建自己的 pear 包 ,没细研究  
-      构建文件,必须的,跟 maven 的 pom.xml 差不多哦 package.xml
-*** 使用 phpDocumentor 生成文档,从 javadoc 移植过来的，看，多会重用
-    这个好像废弃了 
-    安装  pear upgrade PhpDocumentor
-    使用  phpdoc -d <项目目录 > -t <文档生成到哪个目录>  -ti " 项目标题 "  -dn "默认包名"  
-
-    文档结构 
-    #+begin_src php
-      /*
-       ,* @package  包名
-       ,* @author 作者名
-       ,* @copyright 版权声明
-       ,* @license 许可证
-       ,* @var 属性
-       ,* @param 参数
-       ,* @return 返回值
-       ,* @see 链接
-       ,* @link 链接
-       ,* 
-       ,*/
-    #+end_src
-
-** 测试
-   php 中没有主函数，main
-*** phpunit 
-    功能测试和单元测试 , 测试员用功能测试(外部测试)，程序员单元测试(测试类,内部测试)
-    我们程序员当然是内部测试了。而且内部测试能发现细节
-    
-    手工测试，手工把测试代码放在最后测试啦。
-    
-    测试单元 
-    安装,或用 composer 安装
-    
-    如果用 Composer 来管理项目的依赖关系，只要在项目的 composer.json 文件中简单地加上对 phpunit/phpunit 的依赖关系即可：
-    composer require --dev phpunit/phpunit ^|version|
-#+begin_src shell
-  $  chmod +x phpunit-7.0.phar
-  $  sudo mv phpunit-7.0.phar /usr/local/bin/phpunit
-  $  phpunit --version
-  PHPUnit x.y.z by Sebastian Bergmann and contributors.
-  也可以直接使用下载的 PHAR 文件：
-
-  $  wget https://phar.phpunit.de/phpunit-7.0.phar
-  $  php phpunit-7.0.phar --version
-  PHPUnit x.y.z by Sebastian Bergmann and contributors.
-#+end_src
-
-创建测试用例 
-#+begin_src php
-  // 用 PHPUnit 测试数组操作
-    <?php
-    use PHPUnit\Framework\TestCase;
-
-    class StackTest extends TestCase
-    {
-        public function testPushAndPop()
-        {
-            $stack = [];
-            $this->assertEquals(0, count($stack));
-
-            array_push($stack, 'foo');
-            $this->assertEquals('foo', $stack[count($stack)-1]);
-            $this->assertEquals(1, count($stack));
-
-            $this->assertEquals('foo', array_pop($stack));
-            $this->assertEquals(0, count($stack));
-        }
-    }
-    ?>
-
-    // *Martin Fowler*:
-
-    // 当你想把一些东西写到 ``print`` 语句或者调试表达式中时，别这么做，将其写成一
-    // 个测试来代替。
-#+end_src
-
-** 构建
-*** Phabricator 
-    用于敏捷开发的项目管理软件, 含代码托管、Code Review、任务管理、文档管理、问
-    题跟踪、构建与持续集成、博客、内部聊天等
-*** Phing - PHP 项目构建工具
-** 错误处理 
-   设置错误开关，配置错误等级 
-   ini_set("display_errors","On");
-   error_reporting(E_ALL); //-1 是关闭
-    
-   异常使用异常处理函数 Exception
-   抛出异常  throw new Exception("MSG");
-
-   异常监控 try{}catch(Exception $e){die($e->__toString())}
-** 类
-- 类使用 class 关键字后加上类名定义。
-- 类名后的一对大括号({})内可以定义变量和方法。
-- 类的变量使用 var 来声明(不用 var 也可以), 变量也可以初始化值。
-- 类的函数定义类似 PHP 函数的定义，但函数只能通过该类及其实例化的对象访问。
-*** 构造函数 (实例化函数,只能有一个，不能简单重载)
-    用 new 创建对象实例时默认调用的函数 。
-#+begin_src php
-    void __construct ([ mixed $args [, $... ]] )
-#+end_src
-**** 重载方法 
-     #+begin_src php -n
-       <?php 
-       class A 
-       { 
-           function __construct() 
-           { 
-               $a = func_get_args(); 
-               $i = func_num_args(); 
-               if (method_exists($this,$f='__construct'.$i)) { 
-                   call_user_func_array(array($this,$f),$a); 
-               } 
-           } 
-    
-           function __construct1($a1) 
-           { 
-               echo('__construct with 1 param called: '.$a1.PHP_EOL); 
-           } 
-    
-           function __construct2($a1,$a2) 
-           { 
-               echo('__construct with 2 params called: '.$a1.','.$a2.PHP_EOL); 
-           } 
-    
-           function __construct3($a1,$a2,$a3) 
-           { 
-               echo('__construct with 3 params called: '.$a1.','.$a2.','.$a3.PHP_EOL); 
-           } 
-       } 
-       $o = new A('sheep'); 
-       $o = new A('sheep','cat'); 
-       $o = new A('sheep','cat','dog'); 
-
-       // results: 
-       // __construct with 1 param called: sheep 
-       // __construct with 2 params called: sheep,cat 
-       // __construct with 3 params called: sheep,cat,dog 
-       ?>
-     #+end_src
+       

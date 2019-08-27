@@ -7,278 +7,167 @@
 * emacs 
 ** 简介 
    #+begin_verse
-   最初由大神  *Richard Stallman* 于 1975 年在 MIT 协同 *盖伊·史提尔二世* 共同完成的一款 ~文字修改软件~ 。
-   源自 Editor MACroS，宏编辑器 , 宏是大的意思，就是自己可以 ~放大功能~ 的一款编辑器。
+   最初由大神  *Richard Stallman* 于 1975 年在 MIT 协同 *盖伊·史提尔二世* 共同完成的一款 ~文字编辑软件~ 。
+   源自 Editor MACroS，宏编辑器 , 宏是大的意思，大编辑器，就是一款功能  *很强* 的编辑器。
    #+end_verse
    #+begin_quote
-   相当于 *Stallman* 大神把编辑器搭好了基本框架，你可以在上面 ~继续搭积木~ 来扩展功能。
-   积木的材料是 ~emacs lisp~ 专用语言。
+   功能强体现在，你可以在上面扩展 *无穷* 的功能，只需了解 *lisp* 的语法。
    #+end_quote
    
-#+HTML: <!-- more -->
+   #+HTML: <!-- more -->
    #+begin_verse
-   他除了底层是 ~C~ 写的,其他的扩展都是 ~elisp~ 写的,扩展有很多，可以找来用用。
-   键盘上的 ~Alt~ 键，在 emacs 中 称 ~Meta~ 键，简写 @@html:<kbd>@@ M @@html:</kbd>@@  (由于古老的历史) 
    初学者帮助，（help-with-tutorial）,快捷键为  @@html:<kbd>@@ C-h t @@html:</kbd>@@ 
    #+end_verse
+** 抽象概念
+   在 *emacs* 中，存在着以下对象
    
-   #+begin_quote
-   实现方法可能是： 此程序监视键盘输入，判断输入是否绑定特定的函数，然后执行函数。如此循环。你要做的是写些函数绑定自己的 ~键盘输入~ 。
-   下面是已绑定或未绑定的函数( 命令 )。
-   #+end_quote
+   #+begin_verse
+   *buffer* : 文件映射，保存 *buffer* 后文件就修改了。
+   *Point* (光标) : 指示文本修改的位置
+   *echo area* : 命令输入区，也用来提示消息的一小块区域。  
+   *mode line* : 相当于 *buffer* 对应的 *状态栏*
+   *menu bar*: 菜单，一般把它关掉，如果你不记得某条命令，可以打开参考一下。
+   *mark* : 一块选区 
+   *rectangle* : 矩形选区
+   *kill-ring* : kill(切除)长一点的文本，emacs 会自动保存文本片段到  *kill-ring* 列表
    
-** 选项
-   | +<行号>          | 将光标移动到制定行号的行；                              |
-   | q                | 不加载初始化文件                                        |
-   | u<用户>          | 加载指定用户的初始化文件；                              |
-   | f<函数>          | 执行指定 lisp（广泛应用于人工智能领域的编程语言）函数； |
-   | l<lisp 代码文件> | 加载指定的 lisp 代码文件                                |
-   | batch            | 以批处理模式运行 emacs 编辑器                           |
-   | debug-init       | 程序启动时，加载调试器                                  |
-   | script=file      | 执行文件                                                |
-   | insert=file      | 插入文件                                                |
-** 屏幕结构
-      #+begin_verse
-      - 菜单 (顶部)
-      - 工具栏(顶部)
-      - 窗口 (中部) [ 多个 ]
-        - 滚动条
-        - 模式行
-      - echo area (底部)
-      #+end_verse
-      
-** 基本编辑命令
-   都可以用@@html:<kbd>@@ <tab> @@html:</kbd>@@ 补全
-*** 插入文本
-    可见字符( 键盘上有的字符 )可以直接输入( 用输入法 )。(~self-insert~)
-
+   #+end_verse
+   
+** 基本功能
+*** 插入文字
     #+begin_verse
-    不可见, 用 ~C-q~ ( ~quoted-insert~ ) 命令
+    键盘字母区的文字可以直接输入 *(insert ?a)*  或 *insert-char*
+    不可见字符 *quoted-insert*
     键盘控制键 : 如  @@html:<kbd>@@ C-q  DEL @@html:</kbd>@@ , @@html:<kbd>@@  C-q RET @@html:</kbd>@@ 
     八进制数字 : @@html:<kbd>@@ C-q  1 0 1 @@html:</kbd>@@ 插入 ~A~ 
     #+end_verse
-    
-    还有，就是用 ~insert-char~ 命令
 
-*** 移动光标：将光标移动到您想要更改某些内容的位置
-    #+begin_verse
-    后一个字：forward-char
-    前一个字：backward-char
-    下一行：next-line
-    上一行：previous-line
-    行首： move-beginning-of-line
-    行尾： move-end-of-line
-    后一个词组: forward-word
-    。。。
-    #+end_verse
+*** 移动光标 (point)
+    | 后一个字   | forward-char           |
+    | 前一个字   | backward-char          |
+    | 下一行     | next-line              |
+    | 上一行     | previous-line          |
+    | 行首       | move-beginning-of-line |
+    | 行尾       | move-end-of-line       |
+    | 后一个词组 | forward-word           |
+    | 跳到某行   | goto-line              |
 
-*** 删除：删除和删除文本。
-    #+begin_verse
-    删除光标前面的字    delete-forward-char
-    删除光标后面的字 delete-char
-    把光标那行后面都删掉 kill-line
-    删掉光标后面词组 kill-word
-    ....
-    #+end_verse
+*** 删除文字
+    | 删除光标前面的字     | delete-forward-char |
+    | 删除光标后面的字     | delete-char         |
+    | 把光标那行后面都删掉 | kill-line           |
+    | 删掉光标后面词组     | kill-word           |
 
 *** 撤消与恢复
-    #+begin_verse
-    撤消   undo
-    恢复(取消撤销) undo-tree-redo
-    恢复整个 buffer revert-buffer
-    #+end_verse
+    | 撤消            | undo           |
+    | 恢复(取消撤销)  | undo-tree-redo |
+    | 恢复整个 buffer | revert-buffer  |
 
-*** 文件：访问，创建和保存文件。
-    访问 find-file
-    保存 save-buffer
-*** 帮助：询问角色的作用。
-    #+begin_verse
-    不会的键  describe-key
-    不会的命令 describe-function
-    不会的变量 describe-variable
-    #+end_verse
-
-*** 长行的显示
-    长行显示截断开关 : toggle-truncate-lines 
-*** 长行截断 (一段文字显示在一行了)
-    自动填充: 在插入到一定长度时自动给你换行。 ~auto-fill-mode~
-    截断当前(光标处)长行: ~fill-paragraph~ 
-    把选中的区域 (region) 截断 ~fill-region-as-paragraph~
-    设置行的长度： ~set-fill-column~
-
-    填充前缀: 用前缀来填充截断的长行
-    设置填充前缀:   ~set-fill-prefix~
-    使用当前填充前缀填充长行: ~fill-paragraph~  , 插入时也会填充前缀哦。 (就是上面的截断命令)
+*** 文件操作
+    | 访问 | find-file   |
+    | 保存 | save-buffer |
+*** 长行
+    | 长行换行                 | toggle-truncate-lines    |
+    | 自动填充(自动插入换行符) | auto-fill-mode           |
+    | 截断长行                 | fill-paragraph           |
+    | 截断区域                 | fill-region-as-paragraph |
+    | 设置断行的长度           | set-fill-column          |
+    | 设置填充前缀             | set-fill-prefix          |
     
-*** 光标信息
-    哪一行 what-line    
-    模式行开关: 
-       - 行号  line-number-mode
-       - 列号  column-number-mode
-         
-     #+begin_verse
-     区域信息(region)  count-words-region
-     缓冲区信息  count-words
-     字符信息  what-cursor-position
-     高亮行 hl-line-mode
-     缓冲区大小 size-indication-mode
-     #+end_verse
+*** 文本信息
+    | 哪一行         | what-line            |
+    | 模式行显示行号 | line-number-mode     |
+    | 模式行显示列号 | column-number-mode   |
+    | 区域信息       | count-words-region   |
+    | 缓冲区信息     | count-words          |
+    | 字符信息       | what-cursor-position |
+    | 高亮行         | hl-line-mode         |
+    | 缓冲区大小     | size-indication-mode |
      
-     : 用原生的哦 ~emacs -q ~ ，我这装了插件有些改了不起效果
 *** 数字参数
     有些命令要执行多次，可以加一个数字参数 
-   @@html:<kbd>@@ M @@html:</kbd>@@ 键加一个数字 N 就能执行 N 次命令
+    @@html:<kbd>@@ M @@html:</kbd>@@ 键加一个数字 N 就能执行 N 次命令
 *** 输入法
+    | 设置输入法 | set-input-method    |
+    | 输入法开关 | toggle-input-method |
+
+    #+begin_quote
     M-x set-input-method RET TeX will allow you to write e.g. \beta to get β,
     \sum or \Sigma to get Σ etc.
+    #+end_quote
 
-    It can be toggled on and off with toggle-input-method, bound to C-\ and C-<.
-
-** 文本操作命令
+** 高级一点的功能
 *** Mark (标记) 
-    图形窗口下直接用鼠标选中就可以 
+    | 拖动标记              | set-mark-command        |
+    | 标记词                | mark-word               |
+    | 标记段 mark-paragraph |                         |
+    | 切换标记点            | exchange-point-and-mark |
+*** kill
+    | kill 行                       | kill-line      |
+    | kill 选区                     | kill-region    |
+    | 复制选区                      | kill-ring-save |
+    | 粘贴 *kill-ring* 顶部条目     | yank           |
+    | 弹出 *kill-ring* 列表余下条目 | yank-pop       |
+
+    #+begin_quote
     #+begin_verse
-    命令行下包括以下步骤
-    开始标记 ~set-mark-command~
-    然后执行光标移动命令，拉大选区，就可以了
-
-    直接标记
-    标记词 mark-word
-    标记段 mark-paragraph  。。。
-    
-    交换标记开始点 ~exchange-point-and-mark~ , 可以更改选区方向
-   
-   #+end_verse
-*** kill 和粘贴 
-    用 ~kill~ 命令 删除的文本一般都保存在 ~kill-ring~ 这个地方，
     不保存在 ~kill-ring~   的命令叫 ~delete~ 命令，通常删除字，词这些删的少的。 
-    
-    kill 行： kill-line
-    kill 选区 ~kill-region~
-    复制选区 ~kill-ring-save~ ,不删，加到  ~kill-ring~ 
- 
-    粘贴到光标： ~yank~ ,在 ~kill-ring~ 最上面的，就是你最后一次执行 ~kill~ 的内容。
-    弹出早些的 ~kill~ 的内容 : ~yank-pop~ ,多次执行就遍历 ~kill-ring~ 中的内容
-    : 如果要执行 ~yank-pop~ , 上一次命令 必须是 ~yank~ 命令哦
-
-*** 矩形区域 rectangles
-    对表格很有用     
-
-    矩形标记: rectangle-mark-mode
-
-*** 暂存器 
-    保存文本，矩形，位置和其他内容供以后使用
-**** 访问寄存器内容 ~view-register~
-**** 位置寄存器
-     记录位置 ~point-to-register~
-     跳转到位置 ~jump-to-register~
-
-**** text registers
-     拷贝到寄存器 ~copy-to-register~
-     弹出寄存器内容 ~insert-register~
-     内容追加 ~append-to-register~
-**** rectangle registers
-     copy-rectangle-to-register
-     insert-register
+    如果要执行 ~yank-pop~ , 上一次命令 必须是 ~yank~ 命令哦
+    #+end_verse
+    #+end_quote
+*** rectangle (矩形标记)
+    | 标记矩形 | rectangle-mark-mode |
+*** 暂存器  ( 临时存储 ) 
+    | 访问寄存器内容       | view-register              |
+    | 记录位置             | point-to-register          |
+    | 跳转到位置           | jump-to-register           |
+    | 拷贝 *text* 到寄存器 | copy-to-register           |
+    | 弹出寄存器内容       | insert-register            |
+    | 内容追加             | append-to-register         |
+    | 拷贝矩形到寄存器     | copy-rectangle-to-register |
      
-**** number registers
-     number-to-register
 *** 搜索和替换 
-    向后搜： ~isearch-forward~
-    向前搜： ~isearch-backward~
-    替换： ~replace-string~
-*** 大小转化 [ upcase, lowcase ]
-*** 键盘宏  记录键盘序列
-*** 文件处理
-**** 文件目录
-     显示目录列表  ~list-directory~
-     创建目录 ~make-directory~
-     删除目录 ~delete-directory~
-*** hexl  mode
-    插入 16 进制     ~hexl-insert-hex-char~
+    | 向后搜 | isearch-forward  |
+    | 向前搜 | isearch-backward |
+    | 替换   | replace-string   |
 
-** 编码 
-   #+begin_verse
-   当乱码的时候，查看下文字的编码信息 ~what-cursor-position~ 
-   然后在网上查查那个数字是什么汉字 ， https://www.qqxiuzi.cn/bianma/zifuji.php ,可能会失效，网上搜个。
-   手动设置编码格式 ~set-buffer-file-coding-system~  
-   #+end_verse
+*** 大小转化  ( upcase, lowcase ) 
+*** 键盘宏  
+    | 记录键盘序列                   | kmacro-start-macro-or-insert-counter |
+    | 结束记录键盘宏，作为当前可用宏 | kmacro-end-or-call-macro             |
+
+*** 目录
+    | 显示目录列表 | list-directory   |
+    | 创建目录     | make-directory   |
+    | 删除目录     | delete-directory |
+*** 十六进制
+    | 插入 16 进制 | hexl-insert-hex-char |
+
+** 编码
+   | 查看文字编码信息       | what-cursor-position          |
+   | 设置 *buffer* 编码格式 | set-buffer-file-coding-system |
+   
+   #+begin_quote
+   网上查看编码信息， https://www.qqxiuzi.cn/bianma/zifuji.php ,可能会失效，网上搜个。
+   #+end_quote
    
 ** 服务 
-   - 开启服务
-     1. 在 emacs 中 server-start, 或放在 init file 中,
-     2. 用 --daemon 作为启动 emacs 的参数
-   - 设置客户端
-     EDITOR=emacsclient -c
+   | 开启服务         | server-start          |
+   | 设置客户端编辑器 | EDITOR=emacsclient -c |
+
 ** 扩展
-   #+begin_verse
-   两步 1 下载，2 使用  
-   #+end_verse
-*** 列出扩展 list-packages
-*** 重新安装 package-reinstall
-*** 加载扩展
-**** load-file
-     #+begin_src elisp
-       (load-file "~/elisp/foo.el")
-     #+end_src
-**** require
-     #+BEGIN_SRC emacs-lisp
-       ;; Your code goes here ...
-
-       (provide 'my-feature)
-     #+END_SRC
-
-     #+BEGIN_SRC emacs-lisp
-       (add-to-list 'load-path "/some/path/")
-       (require 'my-feature)
-     #+END_SRC
-
-**** Auto-loading
-     文件 helm-autoloads.el
-     #+BEGIN_SRC emacs-lisp
-       ;;;###autoload  ;;这个是 magic 注释,自动生成
-       (defun my-function ()
-         ;; Source code...
-         )
-     #+END_SRC
-
-     #+BEGIN_SRC emacs-lisp
-       ;;;###autoload
-       (require 'helm)
-     #+END_SRC
-**** use-package
-     #+BEGIN_SRC emacs-lisp
-       (use-package helm
-         :defer t
-         :init
-         ;; Code to execute before Helm is loaded
-         :config
-         ;; Code to execute after Helm is loaded
-         )
-     #+END_SRC
-
-
-     #+BEGIN_SRC emacs-lisp
-       (use-package ruby-mode
-         :mode "\\.rb\\'")
-     #+END_SRC
-
-*** 字节编译 byte-recompile-directory
+   | 列出扩展 | list-packages            |
+   | 重新安装 | package-reinstall        |
+   | 加载扩展 | load-file                |
+   | 加载扩展 | require                  |
+   | 字节编译 | byte-recompile-directory |
 ** 排错
-   使用函数 debug-on-error,就会捕捉错误，重新执行下错误内容就捕捉到了
+   | 捕捉错误 | debug-on-error |
 
-** 调试
-   使用 GUD (Grand Unified Debugger) 提供统一接口
-*** 开启 GUD 
-**** gdb (开启一个多界面的调试器,IDE-like) 
-**** gud-gdb 
-**** perldb
-**** jdb
-**** pdb
-**** guiler (Scheme)
-**** dbx (DBX)
-**** xdb (XDB)
-**** sdb (SDB)
-*** gdb
-*** lisp debugger
+** 帮助
+   | 初学者帮助 | help-with-tutorial |
+   | emacs 文档 | info-emacs-manual  |
+   | 按键信息   | describe-key       |
+   | 命令帮助   | describe-function  |
+   | 变量信息   | describe-variable  |
 

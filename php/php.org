@@ -1,52 +1,36 @@
 #+TITLE: php 简介
-#+DESCRIPTION: 关于 php 的文档啦
+#+DESCRIPTION: php 简介
 #+TAGS: php
 #+CATEGORIES: 语言使用
 
 * PHP 
 ** 简介  
    #+begin_verse
-   PHP 最初叫“Personal Home Page”（个人主页），现在更名为“PHP：超文本预处
-   理器(Hypertext Preprocessor)”
-
-   ~CGI~ 程序, 语法来自 ~Perl~ ,它将 ~程序~ 嵌入到 ~HTML~ 中，比 完全生成 ~HTML~ 的 ~CGI~ 效率高(界面部分利用了 HTML 技术)。
+   PHP : 超文本预处理器(Hypertext Preprocessor)，可以作为 *服务器* 的 *CGI* 程序
+   也可以作为脚本语言编写小程序。
    #+end_verse
-#+HTML: <!-- more -->
+   #+HTML: <!-- more -->
 
-   代码格式 
-   #+begin_src html -n
-     <html>
-       <body>
-         ... 省略
-         <?php echo "hello"; ?>
-         <?php echo 1+2; ?>
-       </body>
-     </html>
-   #+end_src
-  : 对于嵌套在 ~HTML~ 中的程序，不光文件名要改为 ~php~ ，也要包含上面的 ~<?php ?>~ ,才会当成程序执行。
-  : 不包含此标签的数据原样返回
-  
-  程序执行
-  #+begin_src sh
-    # php -S addr:port
-    # 比如 
-    php -S 127.0.0.1:7788 
-  #+end_src
-  然后在浏览器地址栏输入 ~127.0.0.1:7788/PHPFILENAME~ , 就能看到被解析过的 ~HTML~ 了。
-  
+   开启服务程序
+   #+begin_src sh
+     php -S addr:port
+     #+end_src
+
+   #+begin_quote
+   *浏览器* 客户端发送的请求 *通过服务器* 转向到 *php* 了 。
+   当然，php 自带 *http* 服务监控了。 *php --server*
+   #+end_quote
 ** 安装配置
 *** 安装
     #+begin_src sh
       apt-get install php5-common libapache2-mod-php5 php5-cli
     #+end_src
-   
-    如果是源码编译，需要特别小心，还要安装依赖 
-**** 对 apache 服务器设置
+**** apache 模块 
      #+begin_src sh 
        apt install libapache2-mod-php php-common
      #+end_src
      
-**** 对 nginx 设置
+**** nginx 设置
      #+begin_verse
      vim /usr/local/nginx/conf/nginx.conf
      修改默认的 location 块，使其支持 .php 文件：
@@ -68,46 +52,41 @@
      }
      #+end_verse
 *** 安装模块
-    apt-get install php5-mysql php5-curl
+    #+begin_src sh
+      apt-get install php5-mysql php5-curl
+    #+end_src
+    
 **** 手动加载模块 
+     #+begin_verse
      1. a2enmod rewrite 加载 rewrite 模块
      2. 创建 到 mods-enabled 的软链接 ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
      3. 注意 虚拟主机 中 AllowOverride 为 All
+     #+end_verse
+
 **** 模块安装路径
+     #+begin_quote
      查找扩展路径 php -ini |grep extension
      extension_dir => /usr/lib/php/20151012
+     #+end_quote
+     
+*** pecl 安装模块
+    安装扩展 [ so, 全局扩展 ]
+    #+begin_src sh
+      pecl install EXTNAME
+      pecl install EXTNAME-VERSION
+    #+end_src
+    #+begin_quote
+    扩展不会直接加载，需要配置 ~php.ini~  文件。
+    #+end_quote
+    
 *** php 配置  
-**** php.ini 文件
-     #+begin_verse
+    php.ini 文件
+    #+begin_verse
      short_open_tag = Off（是否允许使用 PHP 代码开始标志的缩写形式（<? ?> ）
      memory_limit = 128M（最大使用内存的大小）；
      upload_max_filesize = 2M（上传附件的最大值）
-     #+end_verse
+    #+end_verse
      
-*** php 选项
-    | a/--interactive                   | 进入交互模式                                                  |
-    | q / --no-header                   | 不输出 http header                                            |
-    | i /--info                         | 显示 PHP 的配置信息                                           |
-    | m                                 | Show compiled in modules                                      |
-    | s/--syntax-highlight              | 高亮代码 ~HTML~ 格式输出
-    | S addr:port  /--server addr:port/ | 开启 指定了 address:port 的 web 服务软件
-
-*** pecl (php 扩展库管理)
-    安装 共享扩展 [ so, 全局扩展 ]
-    #+begin_src sh
-      pecl install EXTNAME
-    #+end_src
-    #+begin_src sh
-      pecl install EXTNAME-VERSION
-    #+end_src
-    shared 扩展不会直接加载，需要配置 ~php.ini~  文件。
-    
-也可以自己编译扩展
-    #+begin_src sh
-      pecl download EXTNAME
-      # 编译 ....
-      ./buildconf --force 
-    #+end_src
 ** 语言参考
 *** 数据类型 
     布尔，整数，浮点，数组，对象 。。。等等都支持
@@ -422,7 +401,7 @@
 
       use constant Namespace\CONST_NAME;
       echo CONST_NAME;
-#+end_src
+    #+end_src
 *** 加载
 **** require_once : 
      #+begin_src php

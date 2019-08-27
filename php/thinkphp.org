@@ -1,32 +1,15 @@
+#+TITLE: thinkphp 简介
+#+DESCRIPTION: thinkphp 简介
+#+TAGS: thinkphp 
+#+CATEGORIES: 框架使用
+
+
 * Thinkphp 
-  
-  (url)------> (thinkphp)-------->(html)
-
-  ( 入口  public/index.php )
-                 ||
-     (  引导 start.php )
-                 ||
-   注册自动加载 (加载库)
-                 ||
-   注册错误和异常处理机制  
-                 ||
-   应用初始化  （加载项目配置)
-                 ||
-   URL 访问检测 （检测请求 URL)
-                 ||
-   路由检测 （url_route_on)
-                 ||
-            分发请求
-                 ||
-           响应输出 
-                 ||
-           应用结束
-
 ** 安装运行
 *** 安装
-     composer	create-project	topthink/think	tp5		--prefer-dist
-     应用项目: https://github.com/top-think/think
-     核心框架: https://github.com/top-think/framework
+    composer	create-project	topthink/think	tp5		--prefer-dist
+    应用项目: https://github.com/top-think/think
+    核心框架: https://github.com/top-think/framework
      
     [ 码云 ]
     应用项目: https://git.oschina.net/liu21st/thinkphp5.git
@@ -40,30 +23,28 @@
     两个仓库克隆完成后,就完成了 ThinkPHP5.0 的 Git 方式下载,如果需要更新核心框架的时候,只需要
     切换到 thinkphp 核心目录下面,然后执行:
     git pull https://github.com/top-think/framework
-
 *** 运行
     启动服务:php	-S	localhost:8888	router.php
     运行 localhost:8888/模块/控制器类名/类方法
 ** 架构
 *** url 访问 
-    路径形式
-    http://serverName/index.php(或者其它应用入口文件)/模块/控制器/操作/[参数名/参数值...]
-    
-    普通形式
-    php.exe index.php(或者其它应用入口文件) 模块/控制器/操作?参数名=参数值&...
-    
-    兼容模式
-    php.exe index.php(或者其它应用入口文件) 模块/控制器/操作?参数名=参数值&...
+**** 路径形式
+     http://serverName/index.php(或者其它应用入口文件)/模块/控制器/操作/[参数名/参数值...]
+**** 普通形式
+     php.exe index.php(或者其它应用入口文件) 模块/控制器/操作?参数名=参数值&...
+**** 兼容模式
+     php.exe index.php(或者其它应用入口文件) 模块/控制器/操作?参数名=参数值&...
 *** url 大小写 (不区分)
-#+begin_src php
-// 关闭 URL 中控制器和操作名的自动转换
-'url_convert' => false,
-#+end_src
+    #+begin_src php
+      // 关闭 URL 中控制器和操作名的自动转换
+      'url_convert' => false,
+    #+end_src
 *** 隐藏入口文件
     apache 配置
     1、httpd.conf 配置文件中加载了 mod_rewrite.so 模块
     2、AllowOverride None 将 None 改为 All
     3、在应用入口文件同级目录添加 .htaccess 文件,内容如下:
+    #+begin_src apache
     <IfModule mod_rewrite.c>
     Options +FollowSymlinks -Multiviews
     RewriteEngine on
@@ -71,6 +52,8 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]
     </IfModule>
+    #+end_src
+    
 *** 模块和控制器隐藏
     // 绑定当前访问到 index 模块
     define('BIND_MODULE','index');

@@ -130,53 +130,26 @@
     -O: 优化等级
     -m32/-m64: 机器机型
 ** 汇编 (-c)
-   汇编 *程序* 或者 *库* 到 *目标程序*
-*** gcc 
-    
-    把汇编文件编译成目标文件 o
-    
-    #+begin_quote
-   要关心 ~main~ 函数,一般汇编 ~c~ 语言
-    #+end_quote
-    
-**** 选项   
-     -ac：忽略失败条件；
-     -ad：忽略调试指令；
-     -ah：包括高级源；
-     -al：包括装配；
-     -am：包括宏扩展；
-     -an：忽略形式处理；
-     -as：包括符号；
-     =file：设置列出文件的名字；
-     --alternate：以交互宏模式开始；
-     -f：跳过空白和注释预处理；
-     -g：产生调试信息；
-     -J：对于有符号溢出不显示警告信息；
-     -L：在符号表中保留本地符号；
-     -o：指定要生成的目标文件；
-     --statistics：打印汇编所用的最大空间和总时间。
-*** as
+   汇编 *程序* 或者 *库* 到 *目标文件*
+   
     #+begin_src sh
-    as --gstabs asm.S -o asm.o 
+      gcc -c $(src) -m32 -o $(obj)
+
+      as --gstabs asm.S -o asm.o 
     #+end_src
     
-** 链接 (不加选项)
+** 链接 
    链接到 *执行文件*
    
    #+begin_src sh
    gcc -m32 data.o -o data
-   #+end_src
-   #+begin_quote
-   目标文件机器架构与链接架构要一致   
-    #+end_quote
    
-   #+begin_verse
-   指定架构 -m elf_i386
-   显示架构列表  ld -V 
-
    ld -m elf_i386 -o
    ld --oformat binary -N -Ttext 0x7c00 -o $@ $<
-   #+end_verse
+   #+end_src
+   
+   显示架构列表  ld -V 
+
 ** 其他选项
 *** 调试 
     --gstabs

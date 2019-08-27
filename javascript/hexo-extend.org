@@ -467,12 +467,6 @@ page.category	分类名称
 
 变量	描述
 page.tag	标签名称
-** 插入视频
-   #+begin_src html
-   <video src=' ' type='video/mp4' controls='controls'  width='100%' height='100%'>
-   </video>
-   #+end_src
-   
 ** 更多 <!-- more -->
 * 评论头像
 ** Gravatar 
@@ -521,7 +515,13 @@ org 中 bool 是 yes/no 哦，记住
 * 开启 Valine 评论邮件通知
   云引擎”一键”部署
   打开服务就好了
-* aplay 音乐插件
+* 音乐
+** 普通音频  
+   #+begin_src html
+     <audio src="Tune for a Found Harmonium.mp3" controls="controls">
+     </audio>
+   #+end_src
+
 ** aplay  
   安装 
   npm install --save hexo-tag-aplayer
@@ -571,14 +571,119 @@ meting 播放列表示例:
  {% meting "884528449" "netease" "playlist" %}
 
  其他地方插入播放器的方法：在 md 里插入播放器后你们去看生成的 html 文件。直接复制那段代码到你想要的地方，改下歌单 id 就好了。
-* dplayer 视频
-  安装
-  npm install hexo-tag-dplayer --save
+* 视频
 
-  使用
-  {% dplayer "url=mp4 的地址" "pic=图片的地址" "loop=yes" "theme=#FADFA3" "autoplay" "token=tokendemo" %}
+** 通用  
+   #+begin_src html
+   <video src=' ' type='video/mp4' controls='controls'  width='100%' height='100%'>
+   </video>
+   #+end_src
+  
+   自适应 
+   #+begin_src html
+     <video src="example.mp4" height=498 width='100%' controls="controls">
+     </video>
+   #+end_src
 
-  “pic=图片的地址”不写也是没问题的
+  #+begin_src html
+  <iframe src="//player.bilibili.com/player.html?aid=57577386&cid=100512806&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width='100%' height='100%'> </iframe>
+  #+end_src
+ 
+  自适应 
+  #+begin_src html
+  <iframe src="example.mp4" height=360 width='100%' controls="controls" allowfullscreen></iframe>
+  #+end_src
 
-实例
-{% dplayer "url=http://music.yuti.site/mv-%E5%AD%A6%E4%B8%8D%E4%BC%9A.mp4" "loop=yes" "theme=#FADFA3" "token=tokendemo" %}
+** dplayer 视频 
+   安装
+   npm install hexo-tag-dplayer --save
+
+   使用
+   {% dplayer "url=mp4 的地址" "pic=图片的地址" "loop=yes" "theme=#FADFA3" "autoplay" "token=tokendemo" %}
+
+   “pic=图片的地址”不写也是没问题的
+
+ 实例
+ #+begin_src js
+   {% dplayer "url=http://music.yuti.site/mv-%E5%AD%A6%E4%B8%8D%E4%BC%9A.mp4" "loop=yes" "theme=#FADFA3" "token=tokendemo" %}
+   {% dplayer "url=https://moeplayer.b0.upaiyun.com/dplayer/hikarunara.mp4" "addition=https://dplayer.daoapp.io/bilibili?aid=4157142" "api=https://api.prprpr.me/dplayer/" "pic=https://moeplayer.b0.upaiyun.com/dplayer/hikarunara.jpg" "id=9E2E3368B56CDBB4" "loop=yes" "theme=#FADFA3" "autoplay=false" "token=tokendemo" %}
+   {% dplayer 'url=some.mp4' "id=someid" "api=https://api.prprpr.me/dplayer/" "addition=/some.json" 'code=player.on("loadstart",function(){console.log("loadstart")})' "autoplay" %} 
+ #+end_src
+
+ #+begin_src js
+dplayer options:
+    'autoplay', 'loop', 'screenshot', 'hotkey', 'mutex', 'dmunlimited' : bool options, use "yes" "y" "true" "1" "on" or just without value to enable
+    'preload', 'theme', 'lang', 'logo', 'url', 'pic', 'thumbnails', 'vidtype', 'suburl', 'subtype', 'subbottom', 'subcolor', 'subcolor', 'id', 'api', 'token', 'addition', 'dmuser' : string arguments
+    'volume', 'maximum' : number arguments
+container options:
+    'width', 'height' : string, used in container element style
+other:
+    'code' : value of this key will be append to script tag
+ #+end_src
+ 
+#+begin_src js
+{
+    container: "you needn't set this",
+    autoplay: 'autoplay',
+    theme: 'theme',
+    loop: 'loop',
+    lang: 'lang',
+    screenshot: 'screenshot',
+    hotkey: 'hotkey',
+    preload: 'preload',
+    logo: 'logo',
+    volume: 'volume',
+    mutex: 'mutex',
+    video: {
+        url: 'url',
+        pic: 'pic',
+        thumbnails: 'thumbnails',
+        type: 'vidtype',
+    },
+    subtitle: {
+        url: 'suburl',
+        type: 'subtype',
+        fontSize: 'subsize',
+        bottom: 'subbottom',
+        color: 'subcolor',
+    },
+    danmaku: {
+        id: 'id',
+        api: 'api',
+        token: 'token',
+        maximum: 'maximum',
+        addition: ['addition'],
+        user: 'dmuser',
+        unlimited: 'dmunlimited',
+    },
+    icons: 'icons',
+    contextmenu: 'menu',
+}
+#+end_src
+
+***  framer
+
+    自适应 
+    #+begin_src css
+      .bilibili{
+          position: relative;
+          width: 100%;
+          height: 35em;
+      }
+      @media only screen and (max-width: 768px) {
+          .bilibili {
+              height: 15em;
+          }
+      }
+    #+end_src
+
+* 思维导图
+  {% pullquote mindmap mindmap-md %}
+- [在 Hexo 中使用思维导图](https://hunterx.xyz/use-mindmap-in-hexo.html)
+  - 前言
+  - 操作指南
+    - 准备需要的文件
+    - 为主题添加 CSS/JS 文件
+  - 使用方法
+{% endpullquote %}
+

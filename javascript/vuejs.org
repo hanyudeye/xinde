@@ -2,46 +2,72 @@
 #+DESCRIPTION: vuejs 简介
 #+TAGS: vue,vuejs
 #+CATEGORIES: 框架使用
+#+DATE: <2019-07-18 20:45:35>
 
 * vue js 简介                                                      
 ** 简介 
-   Vue.js（读音 /vjuː/, 类似于 view） 是一套构建界面的形式。
-
-   功能是 数据晚绑定 和 界面组件 
+   Vue.js（读音 /vjuː/, 类似于 view）: 是一个用于创建用户界面的开源 JavaScript 框架，也是一个创建单页应用的 Web 应用框架
+   
+   Vue.js 的核心是一个允许采用简洁的模板语法来声明式地将数据渲染进 DOM 的系统：
+  #+HTML: <!-- more -->
   
-   相当于 ~HTML~  只创建一个结构，跟切入式 ~php~  一样的 ,就是现在由后端完成改为前端完成了。
-   整个的含义是 ~js~ 里面定义 ~DOM~  的属性和方法,在 ~html~  里面使用所定义的属性方法 。
-
    #+begin_quote
-   就一套 ~代码化~ 界面元素的工具。 
+   #+begin_verse
+   页面组件化了，而不是平面化，这样不同的页面可以共用同一个组件。
+   就是分类，大类，小类这样分，像函数定义一样，一处定义，到处使用。
+   哈哈，什么东西都编程化了。
+   作者设计了好多语法糖，哈哈，下次用再写详细点。
+   #+end_verse
    #+end_quote
-
+** 前端历史
+   前端开发是创建 *Web* 页面或 *app* 等前端界面呈现给用户的过程
+   #+begin_quote
+   #+begin_verse
+   是图形化程序产生后设计 *程序外观* 的开发者。
+   就像一个电饭锅，外观是设计师 ( 前端 ) 设计的，功能是工程师 ( 后端 ) 创造的。
+   #+end_verse
+   #+end_quote
+  
+   这里简述一下历史，（有些术语不大精确，不大熟悉前端!）
+   #+begin_verse
+   *html* ， *javascript* , *css* 技术相继出来，前端工程师已能够做好软件的 *界面样式* 与 *交互* 那些需求了，但处理浏览器兼容性还是非常麻烦。
+   *ajax* 技术的出现，使与用户的 *交互* 柔顺化了,而不是刷新页面那么突兀。
+   *jQuery* 的产生处理了浏览器兼容的问题，而且提供了语法糖，扩展了 js 库，使生产力提高了。
+   *angularjs*  等前端框架出现，改变着 传统网页的设计模式
+   *nodejs* 的出现， *javascript* 能调用系统函数了,使得前端工程师也能参与到后端功能的开发。
+   *其他框架* 的出现，继续改变 *网页型* 的设计模式，还在发展中 。。。。
+   以后都是 *全栈工程师* (前后端统一了)...
+   #+end_verse
+   #+begin_quote
+   继续设计吧。。。 (我觉得要学的东西还是很多，最好学会 123，就能造宇宙，白日做梦了。)
+   #+end_quote
 ** 安装   
 *** Vue Devtools   
-    安装浏览器插件
-*** 直接引入 (推荐)
-     在 ~cdn.jsdelivr.net/npm/vue~ 浏览源代码查看最新的发行版版本号
-     在生产环境中，要把 vue.js 换成 vue.min.js
-     #+begin_src html
-       <script src="https://cdn.jsdelivr.net/npm/vue@2.6.6/dist/vue.js"></script>
-     #+end_src
+    浏览器插件，用来调试。
+*** HTML 中引入库
+    #+begin_src html
+      <script src="https://cdn.jsdelivr.net/npm/vue@2.6.6/dist/vue.js"></script>
+    #+end_src
      
-     #+begin_src html
-       <!-- 开发版，包括有用的控制台警告  -->
-       <script  src = "https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-       <!-- 生产版本，针对大小和速度进行了优化 -->
-       <script  src = "https://cdn.jsdelivr.net/npm/vue"></script>
-     #+end_src
+    #+begin_quote
+    生产环境，把 vue.js 换成 vue.min.js
+    #+end_quote
+    
+    或者
+    #+begin_src html
+      <!-- 开发版-->
+      <script  src = "https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+      <!-- 生产版-->
+      <script  src = "https://cdn.jsdelivr.net/npm/vue"></script>
+    #+end_src
 *** npm
-    用于大型应用，配合其他组件
     #+begin_src sh
       # 最新稳定版
       $ npm install vue
     #+end_src
 *** 命令行工具 (vue-cli)
-    快速构建单页应用
+    直接生成
     #+begin_src sh
-      # 全局安装 vue-cli
       $ npm install --global vue-cli
       # 创建一个基于 webpack 模板的新项目
       $ vue init webpack my-project
@@ -52,162 +78,106 @@
     #+end_src
     
     用法
-   | init   | generate a new project from a template |
-   | list   | list available official templates      |
-   | build  | prototype a new project                |
-   | create | (for v3 warning only)                  |
+    | init   | generate a new project from a template |
+    | list   | list available official templates      |
+    | build  | prototype a new project                |
+    | create | (for v3 warning only)                  |
+** 特性    
+*** 组件
+    组件是 Vue 最为强大的特性之一。为了更好地管理一个大型的应用程序，往往需要将应用
+    切割为小而独立、具有复用性的组件。在 Vue 中，组件是基础 HTML 元素的拓展，可方便
+    地自定义其数据与行为。下方的代码是 Vue 组件的一个示例，渲染为一个能计算鼠标
+    点击次数的按钮。
+    #+begin_quote
+    每个组件就是一个显示对象，有自己的行为。
+    #+end_quote
+**** 简单 
+     #+begin_src js
+       // Define a new component called todo-item
+       Vue.component('todo-item', {
+           template: '<li>This is a todo</li>'
+       })
+     #+end_src
 
-** 初始化主环境
-*** el 绑定主环境
-    #+begin_src js
-    new Vue({
-    el: '#app'
-    })
-    #+end_src
-*** $mount 手动挂载
-    #+begin_src js
-    new Vue({
 
-    }).$mount('#app');
-    #+end_src
-     
-*** 实例$mount 挂载
-    #+begin_src js
-    let app = new Vue({
-    });
-
-    app.$mount('#app');
-    #+end_src
-
-** 定义数据 (data)
-  #+begin_src html
-    <div id="app">
-      {{ message }}
-    </div>
-  #+end_src
-
- #+begin_src javascript
-   var app = new Vue（{ 
-       el：'＃app'，
-       data：{ 
-           message：'Hello Vue！'
-       } 
-   }）
- #+end_src
-*** DOM 设置属性
-    #+begin_src html
-      <div id="app-2">
-        <span v-bind:title="message">
-          将鼠标悬停在我身上几秒钟 ，看看我动态绑定的标题！
-        </span>
-      </div>
-        #+end_src
-** 定义方法 (methods)
-   #+begin_src js
-     new Vue({
-         el: '#app',
-         methods: {
-             fun(){
-                 alert(1);
-             }
-         }
-     })
-   #+end_src
-** 使用条件和循环
-   #+begin_src html
-     <div id="app-3">
-          <span v-if="seen">Now you see me</span>
-     </div>
-   #+end_src
-
-   #+begin_src html
-     <div id="app-4">
+     #+begin_src html
        <ol>
-         <li v-for="todo in todos">
-           {{ todo.text }}
-         </li>
+         <!-- Create an instance of the todo-item component -->
+         <todo-item></todo-item>
        </ol>
-     </div>
-   #+end_src
-   
-   #+begin_src js
-     var app4 = new Vue({
-         el: '#app-4',
-         data: {
-             todos: [
-                 { text: 'Learn JavaScript' },
-                 { text: 'Learn Vue' },
-                 { text: 'Build something awesome' }
-             ]
-         }
-     })
-#+end_src
-** 事件绑定指令 (v-on/@)
-   #+begin_src html
-     <div id="app">
-       <input type="button" value="点击我" v-on:click="fun()">
-     </div>
-   #+end_src
-   
-   #+begin_src js
-     new Vue({
-         el: '#app',
-         methods: {
-             fun(){
-                 alert('Hello World !');
-             }
-         }
-     })
-   #+end_src
-   
-   #+begin_src html
-     <div id="app-5">
-       <p>{{ message }}</p>
-       <button v-on:click="reverseMessage">Reverse Message</button>
-     </div>
-   #+end_src
+     #+end_src
 
-   #+begin_src js
-     var app5 = new Vue({
-         el: '#app-5',
-         data: {
-             message: 'Hello Vue.js!'
-         },
-         methods: {
-             reverseMessage: function () {
-                 this.message = this.message.split('').reverse().join('')
-             }
-         }
-     })
-   #+end_src
+**** 复杂
+     #+begin_src js -n
+       Vue.component('buttonclicked', {
+           props: [
+               'initial_count'
+           ],
+           data() {
+               return {
+                   count: 0
+               }
+           },
+           template: '<button v-on:click="onclick">Clicked {{ count }} times</button>',
+           methods: {
+               onclick() {
+                   this.count += 1;
+               }
+           },
+           mounted() {
+               this.count = this.initial_count;
+           }
+       });
+     #+end_src
+*** 模板
+    Vue 使用基于 HTML 的模板语法，允许开发者将 DOM 元素与底层 Vue 实例中的数据相绑定。
+    
+    #+begin_quote
+    定义变量的设计方式，因为变量的属性是一处修改，其他使用的地方都会改变。
+    还设计了条件与循环来判断变量，进入分支
+    #+end_quote
+**** 变量模板 
+    #+begin_src html
+      <div id="app">
+        {{ message }}
+      </div>
+    #+end_src
 
-   v-on 指令的简写方式 @
-   #+begin_src html
-     <input type="button" value="点击我" @:click="fun()">
-   #+end_src
-   
-** v-model 用于非成对 DOM 的数据绑定({{}}模板数据绑定只适合成对标签)
-   #+begin_src html
-   <input type="input" v-model="">
-   #+end_src
-   
-** v-show 用于显示或隐藏 DOM 元素，配合布尔值表示显示状态，使用场景较多
-** 使用组件
-   #+begin_src js
-     // Define a new component called todo-item
-     Vue.component('todo-item', {
-         template: '<li>This is a todo</li>'
-     })
-#+end_src
+    #+begin_src javascript
+      var app = new Vue（{ 
+          el:'＃app'，
+          data:{ 
+              message:'Hello Vue！'
+          } 
+      }）
+    #+end_src
+**** 绑定变量
+     #+begin_src js
+     v-bind:title="message"
+     #+end_src
+     
+**** 分支(  v-if )
+**** 循环 
+     #+begin_src js
+       v-for="todo in todos"
+     #+end_src
+     
+*** 响应式设计
+    响应式是指 MVC 模型中的视图随着模型变化而变化。在 Vue 中，开发者只需将视图与对应
+    的模型进行绑定，Vue 便能自动观测模型的变动，并重绘视图。这一特性使得 Vue 的状态
+    管理变得相当简单直观。
+*** 过渡效果
+    Vue 在插入、更新或者移除 DOM 时，提供多种不同方式的应用过渡效果。 包括以下工具：
 
-Now you can compose it in another component’s template:
-
-
-#+begin_src html
-  <ol>
-    <!-- Create an instance of the todo-item component -->
-    <todo-item></todo-item>
-  </ol>
-#+end_src
+    #+begin_verse
+    在 CSS 过渡和动画中自动应用 class
+    可以配合使用第三方 CSS 动画库，如 Animate.css
+    在过渡钩子函数中使用 JavaScript 直接操作 DOM
+    可以配合使用第三方 JavaScript 动画库，如 Velocity.js.
+    #+end_verse
+*** 单文件组件
+    为了更好地适应复杂的项目，Vue 支持以.vue 为扩展名的文件来定义一个完整组件，
+    用以替代使用 Vue.component 注册组件的方式。开发者可以使用 Webpack 或
+    Browserify 等构建工具来打包单文件组件。
 
 

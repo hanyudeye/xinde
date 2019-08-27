@@ -6,241 +6,172 @@
 
 * Javascript 
 ** 简介  
-   通常用于 *web 页面* 与用户交互的，因为静态页面太无趣了。
+   #+begin_verse
+   计算机语言，想象下你作为一个 *CPU* ，会怎样解释语言代码。
+   面向对象的语言
+   #+end_verse
    #+HTML: <!-- more -->
    
-** 开发环境
-*** 解析器 
-**** 浏览器控制台 
-     - 打开控制台: 按键 @@html:<kbd>@@ Ctrl  + Shift + J @@html:</kbd>@@ 
-     - 换行继续打命令    @@html:<kbd>@@ Shift +  Enter @@html:</kbd>@@ 
-     - 执行命令  @@html:<kbd>@@  Enter @@html:</kbd>@@
-** 基本操作 
-*** 数字操作
-    整数小数 ，更复杂的功能用 ~Math~  库
-     
+** 语言核心
+*** 词法结构 
+**** 字符集    
+     Unicode 且区分大小写。
+**** 保留字
+    有些字不能作为变量名。 
+*** 类型，值，变量
+*** 数组
     #+begin_src js -n
-      //加减运算
-      1+3;
-      3-7;
-      33*3;
-      3.5/2;
+      var arr = [
+          {a: 1},
+          [1, 2, 3],
+          function() {return true;}
+      ];
 
-      //数字是否相等，小数因为存储问题最好不要直接这样判断
-      3==3.0  //true
-      3===3.0   //true
-      0.1 + 0.2 === 0.3  //false
+      arr[0] // Object {a: 1}
+      arr[1] // [1, 2, 3]
+      arr[2] // function (){return true;}
+    #+end_src
 
+    in 运算符,检查键名是否存在
+    #+begin_src js -n
+      var arr = [ 'a', 'b', 'c' ];
+      2 in arr  // true
+      '2' in arr // true
+      4 in arr // false
     #+end_src
       
-    将字符串转换整数 parseInt
-    #+begin_src js -n
-      parseInt('12.34') // 12
-      parseInt('15e2') // 15
-      parseInt('abc') // NaN
-      parseInt('.3') // NaN
-      parseInt('0x10') // 16
-      parseInt('011') // 11
-      parseInt('1000', 2) // 8
-      parseInt('1000', 6) // 216
+    `for...in`循环不仅可以遍历对象，也可以遍历数组，毕竟数组只是一种特殊对象。
+    #+begin_src js
+      var a = [1, 2, 3];
+      a.foo = true;
 
+      for (var key in a) {
+          console.log(key);
+      }
+    #+end_src
+
+    forEach 
+    #+begin_src js -n
+      var colors = ['red', 'green', 'blue'];
+      colors.forEach(function (color) {
+          console.log(color);
+      });
+      // red
+      // green
+      // blue
     #+end_src
       
-    parseFloat     
-    #+begin_src js -n
-      parseFloat('314e-2') // 3.14
-      parseFloat('0.0314E+2') // 3.14
-      parseFloat('3.14more non-digit characters') // 3.14
-      parseFloat('FF2') // NaN
-
-    #+end_src
-
-    isNaN()
-    #+begin_src js -n
-      isNaN(NaN) // true
-      isNaN(123) // false
-    #+end_src
-
-    isFinite(),表示某个值是否为正常的数值
-
-    #+begin_src js -n
-      isFinite(Infinity) // false
-      isFinite(-Infinity) // false
-    #+end_src
-
-*** 字符串操作
-    获取长度  "hello".length
+    delete ,会产生空位
+    : 但是 length 属性不变，要注意
       
-    Base64 转码
-    一种编码方法，可以将任意值转成 0～9、A～Z、a-z、`+`和`/`这 64 个字符组成的可打印字符
-    
     #+begin_src js -n
-      var string = 'Hello World!';
-      btoa(string) // "SGVsbG8gV29ybGQh"
-      atob('SGVsbG8gV29ybGQh') // "Hello World!"
+      var a = [1, 2, 3];
+      delete a[1];
+
+      a[1] // undefined
+      a.length // 3
     #+end_src
-    : 注意，这两个方法不适合非 ASCII 码的字符，会报错。
 
-    索引位置
-    #+BEGIN_SRC js
-      var s="helo world";
-      var i=s.search(/wo/i);
-      i: 不区分大小写
-    #+END_SRC
-
-** 数组
+    push 方法
+   对象转数组  
    #+begin_src js -n
-     var arr = [
-         {a: 1},
-         [1, 2, 3],
-         function() {return true;}
-     ];
+     var arr = Array.prototype.slice.call(arrayLike);
+     //或
 
-     arr[0] // Object {a: 1}
-     arr[1] // [1, 2, 3]
-     arr[2] // function (){return true;}
-   #+end_src
-
-   in 运算符,检查键名是否存在
-   #+begin_src js -n
-     var arr = [ 'a', 'b', 'c' ];
-     2 in arr  // true
-     '2' in arr // true
-     4 in arr // false
-   #+end_src
-      
-   `for...in`循环不仅可以遍历对象，也可以遍历数组，毕竟数组只是一种特殊对象。
-   #+begin_src js
-     var a = [1, 2, 3];
-     a.foo = true;
-
-     for (var key in a) {
-         console.log(key);
+     function print(value, index) {
+         console.log(index + ' : ' + value);
      }
+
+     Array.prototype.forEach.call(arrayLike, print);
+
    #+end_src
 
-   forEach 
-   #+begin_src js -n
-     var colors = ['red', 'green', 'blue'];
-     colors.forEach(function (color) {
-         console.log(color);
-     });
-     // red
-     // green
-     // blue
-   #+end_src
-      
-   delete ,会产生空位
-   : 但是 length 属性不变，要注意
-      
-   #+begin_src js -n
-     var a = [1, 2, 3];
-     delete a[1];
+*** 函数
+**** 声明方式 
+     1. function 命令
+     #+begin_src js -n
+       function print(s) {
+           console.log(s);
+       }
+     #+end_src
 
-     a[1] // undefined
-     a.length // 3
-   #+end_src
+     2. 函数表达式
+     #+begin_src js -n
+       var print = function(s) {
+           console.log(s);
+       };
+     #+end_src
+     3. Function 构造函数
+     #+begin_src js -n
+       var add = new Function(
+           'x',
+           'y',
+           'return x + y'
+       );
 
-   push 方法
-  对象转数组  
-  #+begin_src js -n
-    var arr = Array.prototype.slice.call(arrayLike);
-    //或
+       // 等同于
+       function add(x, y) {
+           return x + y;
+       }
+     #+end_src
+**** 属性 
+     看它的结构 ,包含者属性
+       
+     函数名属性 name
+       
+     函数的`length`属性返回函数预期传入的参数个数，即函数定义之中的参数个数。
+       
+     函数的`toString`方法返回一个字符串，内容是函数的源码。
 
-    function print(value, index) {
-        console.log(index + ' : ' + value);
-    }
+**** 递归 [ 每次只做一部分，循环调用自身的过程 (记得把余下的部分作参数哦)]
 
-    Array.prototype.forEach.call(arrayLike, print);
+     #+begin_src js -n
+       function fib(num) {
+           if (num === 0) return 0;
+           if (num === 1) return 1;
+           return fib(num - 2) + fib(num - 1);
+       }
 
-  #+end_src
+       fib(6) // 8
+     #+end_src
+       
+**** 闭包
+     定义在一个函数内部的函数，就是能获取函数内部属性
+     #+begin_src js -n
+       function createIncrementor(start) {
+           return function () {
+               return start++;
+           };
+       }
 
-** 函数
-*** 声明方式 
-    1. function 命令
+       var inc = createIncrementor(5);
+
+       inc() // 5
+       inc() // 6
+       inc() // 7
+     #+end_src
+       
+*** Object 
+    读取对象的属性
     #+begin_src js -n
-      function print(s) {
-          console.log(s);
-      }
-    #+end_src
-
-    2. 函数表达式
-    #+begin_src js -n
-      var print = function(s) {
-          console.log(s);
+      var obj = {
+          p: 'Hello World'
       };
+
+      obj.p // "Hello World"
+      obj['p'] // "Hello World"
     #+end_src
-    3. Function 构造函数
-    #+begin_src js -n
-      var add = new Function(
-          'x',
-          'y',
-          'return x + y'
-      );
 
-      // 等同于
-      function add(x, y) {
-          return x + y;
-      }
-    #+end_src
-*** 属性 
-    看它的结构 ,包含者属性
-       
-    函数名属性 name
-       
-    函数的`length`属性返回函数预期传入的参数个数，即函数定义之中的参数个数。
-       
-    函数的`toString`方法返回一个字符串，内容是函数的源码。
-
-*** 递归 [ 每次只做一部分，循环调用自身的过程 (记得把余下的部分作参数哦)]
-
-    #+begin_src js -n
-      function fib(num) {
-          if (num === 0) return 0;
-          if (num === 1) return 1;
-          return fib(num - 2) + fib(num - 1);
-      }
-
-      fib(6) // 8
-    #+end_src
-       
-*** 闭包
-    定义在一个函数内部的函数，就是能获取函数内部属性
-    #+begin_src js -n
-      function createIncrementor(start) {
-          return function () {
-              return start++;
-          };
-      }
-
-      var inc = createIncrementor(5);
-
-      inc() // 5
-      inc() // 6
-      inc() // 7
-    #+end_src
-       
-** Object 
-   读取对象的属性
-   #+begin_src js -n
-     var obj = {
-         p: 'Hello World'
-     };
-
-     obj.p // "Hello World"
-     obj['p'] // "Hello World"
-   #+end_src
-
-   #+begin_verse
-   静态方法
-   返回对象的属性: keys 
-   #+end_verse
+    #+begin_verse
+    静态方法
+    返回对象的属性: keys 
+    #+end_verse
       
-   #+begin_verse
-   实例方法
-   属性的删除：delete 命令 ,继承的属性不能删 ,比如 toString
-   该对象求值: valueOf 
-   #+end_verse
+    #+begin_verse
+    实例方法
+    属性的删除：delete 命令 ,继承的属性不能删 ,比如 toString
+    该对象求值: valueOf 
+    #+end_verse
       
 ** 错误处理
 *** Try...Catch 
