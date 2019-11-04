@@ -5,88 +5,8 @@
 
 * PHP 
 ** 简介  
-   #+begin_verse
-   PHP : 超文本预处理器(Hypertext Preprocessor)，可以作为 *服务器* 的 *CGI* 程序
-   也可以作为脚本语言编写小程序。
-   #+end_verse
+   一种简单的编程语言
    #+HTML: <!-- more -->
-
-   开启服务程序
-   #+begin_src sh
-     php -S addr:port
-     #+end_src
-
-   #+begin_quote
-   *浏览器* 客户端发送的请求 *通过服务器* 转向到 *php* 了 。
-   当然，php 自带 *http* 服务监控了。 *php --server*
-   #+end_quote
-** 安装配置
-*** 安装
-    #+begin_src sh
-      apt-get install php5-common libapache2-mod-php5 php5-cli
-    #+end_src
-**** apache 模块 
-     #+begin_src sh 
-       apt install libapache2-mod-php php-common
-     #+end_src
-     
-**** nginx 设置
-     #+begin_verse
-     vim /usr/local/nginx/conf/nginx.conf
-     修改默认的 location 块，使其支持 .php 文件：
-
-     location / {
-     root   html;
-     index  index.php index.html index.htm;
-     }
-     
-     下一步配置来保证对于 .php 文件的请求将被传送到后端的 PHP-FPM 模块， 取消默
-     认的 PHP 配置块的注释，并修改为下面的内容：
-
-     location ~* \.php$ {
-     fastcgi_index   index.php;
-     fastcgi_pass    127.0.0.1:9000;
-     include         fastcgi_params;
-     fastcgi_param   SCRIPT_FILENAME    $document_root$fastcgi_script_name;
-     fastcgi_param   SCRIPT_NAME        $fastcgi_script_name;
-     }
-     #+end_verse
-*** 安装模块
-    #+begin_src sh
-      apt-get install php5-mysql php5-curl
-    #+end_src
-    
-**** 手动加载模块 
-     #+begin_verse
-     1. a2enmod rewrite 加载 rewrite 模块
-     2. 创建 到 mods-enabled 的软链接 ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
-     3. 注意 虚拟主机 中 AllowOverride 为 All
-     #+end_verse
-
-**** 模块安装路径
-     #+begin_quote
-     查找扩展路径 php -ini |grep extension
-     extension_dir => /usr/lib/php/20151012
-     #+end_quote
-     
-*** pecl 安装模块
-    安装扩展 [ so, 全局扩展 ]
-    #+begin_src sh
-      pecl install EXTNAME
-      pecl install EXTNAME-VERSION
-    #+end_src
-    #+begin_quote
-    扩展不会直接加载，需要配置 ~php.ini~  文件。
-    #+end_quote
-    
-*** php 配置  
-    php.ini 文件
-    #+begin_verse
-     short_open_tag = Off（是否允许使用 PHP 代码开始标志的缩写形式（<? ?> ）
-     memory_limit = 128M（最大使用内存的大小）；
-     upload_max_filesize = 2M（上传附件的最大值）
-    #+end_verse
-     
 ** 语言参考
 *** 数据类型 
     布尔，整数，浮点，数组，对象 。。。等等都支持

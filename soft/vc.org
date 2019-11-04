@@ -1,37 +1,23 @@
 #+TITLE: 版本控制简介 
 #+DESCRIPTION: 版本控制
-#+TAGS: git
+#+TAGS: git,svn
 #+CATEGORIES: 软件使用
 #+DATE: <2019-06-15 20:37:03>
 
 * 版本控制
-  拷贝  --> 本地版本(补丁) --> 集中式(远程)  --> 分布式
-** 快进式合并
-   "快进式合并"（fast-farward merge），会直接将 master 分支指向合并的分支，这种模式
-   下进行分支合并会丢失分支信息，也就不能在分支历史上看出分支信息。
-
-   可以在合并时加上 --no-ff 参数来禁用 Fast forward 模式，并且加上 -m 参数让合并时
-   产生一个新的 commit。
-  
-   #+begin_src shell
-     $ git merge --no-ff -m "merge with no-ff" dev
-   #+end_src
-** 储藏（Stashing）,还不想存本地库，又想切分支时可用
-   在一个分支上操作之后，如果还没有将修改提交到分支上，此时进行切换分支，那么另一个
-   分支上也能看到新的修改。这是因为所有分支都共用一个工作区的缘故。
-
-   可以使用 git stash 将当前分支的修改储藏起来，此时当前工作区的所有修改都会被存到
-   栈上，也就是说当前工作区是干净的，没有任何未提交的修改。此时就可以安全的切换到其
-   它分支上了。
-#+begin_src shell
-  $ git stash
-#+end_src
-
-该功能可以用于 bug 分支的实现。如果当前正在 dev 分支上进行开发，但是此时 master
-上有个 bug 需要修复，但是 dev 分支上的开发还未完成，不想立即提交。在新建 bug 分
-支并切换到 bug 分支之前就需要使用 git stash 将 dev 分支的未提交修改储藏起来。
+** 简介 
+   保存文件修改的历史内容，并且可以作为服务，与其他人协作修改(社会化编程，接触不同文化)。
+   #+HTML: <!-- more -->
 * git 
-** 配置
+** 主要功能
+   #+begin_verse
+   Git 仓库
+   Organization
+   Issue
+   Wiki
+   Pull Request
+   #+end_verse
+** 初始配置
    git config [--system,--global]
    
    用户名 user.name = "用户名或者用户 ID"
@@ -520,6 +506,30 @@ experiment）后续的历次提交对象（这里只有一个 C3），生成一�
    git fetch upstream
    git merge upstream/master
    git push 
+** 快进式合并
+   "快进式合并"（fast-farward merge），会直接将 master 分支指向合并的分支，这种模式
+   下进行分支合并会丢失分支信息，也就不能在分支历史上看出分支信息。
+
+   可以在合并时加上 --no-ff 参数来禁用 Fast forward 模式，并且加上 -m 参数让合并时
+   产生一个新的 commit。
+  
+   #+begin_src shell
+     $ git merge --no-ff -m "merge with no-ff" dev
+   #+end_src
+** 储藏（Stashing）,还不想存本地库，又想切分支时可用
+   在一个分支上操作之后，如果还没有将修改提交到分支上，此时进行切换分支，那么另一个
+   分支上也能看到新的修改。这是因为所有分支都共用一个工作区的缘故。
+
+   可以使用 git stash 将当前分支的修改储藏起来，此时当前工作区的所有修改都会被存到
+   栈上，也就是说当前工作区是干净的，没有任何未提交的修改。此时就可以安全的切换到其
+   它分支上了。
+#+begin_src shell
+  $ git stash
+#+end_src
+
+该功能可以用于 bug 分支的实现。如果当前正在 dev 分支上进行开发，但是此时 master
+上有个 bug 需要修复，但是 dev 分支上的开发还未完成，不想立即提交。在新建 bug 分
+支并切换到 bug 分支之前就需要使用 git stash 将 dev 分支的未提交修改储藏起来。
 * svn
 ** svn 重新验证证书 ->会在用户名和密码错误的情况下重新验证 
    Error:  “Server certificate verification failed: issuer is not trusted”

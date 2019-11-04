@@ -2,90 +2,27 @@
 #+DESCRIPTION: thinkphp 简介
 #+TAGS: thinkphp 
 #+CATEGORIES: 框架使用
+#+DATE: <2019-09-18 07:18:21>
+#+LAYOUT: noshow
 
+* Thinkphp 简介
+ #+begin_verse
+ 此框架遵循 *MVC* 模式 ，做了一下 逻辑和视图的封装，使得程序的逻辑处理(完成事情)和界面设计(把事情的结果美化)可以分工化，专注于一方面。
+ 这些程序框架是便于结构化写具体功能的啊，通用的都给你弄好了。
+ #+end_verse
+ 
+#+HTML: <!-- more -->
 
-* Thinkphp 
-** 安装运行
-*** 安装
-    composer	create-project	topthink/think	tp5		--prefer-dist
-    应用项目: https://github.com/top-think/think
-    核心框架: https://github.com/top-think/framework
-     
-    [ 码云 ]
-    应用项目: https://git.oschina.net/liu21st/thinkphp5.git
-    核心框架: https://git.oschina.net/liu21st/framework.git
-    
-    [github]   
-    首先克隆下载应用项目仓库
-    git clone https://github.com/top-think/think tp5
-    然后切换到 tp5 目录下面,再克隆核心框架仓库:
-    git clone https://github.com/top-think/framework thinkphp
-    两个仓库克隆完成后,就完成了 ThinkPHP5.0 的 Git 方式下载,如果需要更新核心框架的时候,只需要
-    切换到 thinkphp 核心目录下面,然后执行:
-    git pull https://github.com/top-think/framework
-*** 运行
-    启动服务:php	-S	localhost:8888	router.php
-    运行 localhost:8888/模块/控制器类名/类方法
+** 测试运行
+   启动服务:php	-S	localhost:8888	router.php
+   运行 localhost:8888/模块/控制器类名/类方法
 ** 架构
-*** url 访问 
-**** 路径形式
-     http://serverName/index.php(或者其它应用入口文件)/模块/控制器/操作/[参数名/参数值...]
+*** 路由 (对 url 路径的设计，你会如何设计?)
+**** 默认路由
+     http://serverName/index.php/module/controller/function/arg/value...
 **** 普通形式
-     php.exe index.php(或者其它应用入口文件) 模块/控制器/操作?参数名=参数值&...
-**** 兼容模式
-     php.exe index.php(或者其它应用入口文件) 模块/控制器/操作?参数名=参数值&...
-*** url 大小写 (不区分)
-    #+begin_src php
-      // 关闭 URL 中控制器和操作名的自动转换
-      'url_convert' => false,
-    #+end_src
-*** 隐藏入口文件
-    apache 配置
-    1、httpd.conf 配置文件中加载了 mod_rewrite.so 模块
-    2、AllowOverride None 将 None 改为 All
-    3、在应用入口文件同级目录添加 .htaccess 文件,内容如下:
-    #+begin_src apache
-    <IfModule mod_rewrite.c>
-    Options +FollowSymlinks -Multiviews
-    RewriteEngine on
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]
-    </IfModule>
-    #+end_src
-    
-*** 模块和控制器隐藏
-    // 绑定当前访问到 index 模块
-    define('BIND_MODULE','index');
-    http://serverName/index.php/控制器/操作/[参数名/参数值...]
-
-    // 绑定当前访问到 index 模块的 index 控制器
-    define('BIND_MODULE','index/index');
-    http://serverName/index.php/操作/[参数名/参数值...]
-*** 手动注册
-    \think\Loader::addNamespace('my','../application/extend/my/');
-
-    如果要同时注册多个根命名空间,可以使用:
-    \think\Loader::addNamespace([
-    'my' => '../application/extend/my/',
-    'org' => '../application/extend/org/',
-    ]);
-*** 类库导入 (没有命名空间)
-
-    Loader::import('org.util.array');
-    Loader::import('@.util.upload');
-    
-    // 引入 extend/qrcode.php
-    Loader::import('qrcode', EXTEND_PATH);
-    // 助手函数
-import('qrcode', EXTEND_PATH);
-// 引入 extend/wechat-sdk/wechat.class.php
-Loader::import('wechat-sdk.wechat', EXTEND_PATH, '.class.php');
-// 助手函数
-import('wechat-sdk.wechat', EXTEND_PATH, '.class.php');
-
-
-    @: 当前模块类库
+     php index.php(或者其它应用入口文件) 模块/控制器/操作?参数名=参数值&...
+**** 自定义规则
 ** 配置
 *** 配置目录 APP_PATH
     config.php 应用配置文件
@@ -735,32 +672,3 @@ notice	警告,程序可以运行但是还不够完美的错误
 *** MongoDb
 *** SAE
 *** 标签扩展
-** 命令行
-*** 自动生成目录结构
-*** 创建类库文件
-*** 生成类库映射文件
-*** 生成路由缓存
-*** 清除缓存文件
-*** 生成配置缓存文件
-*** 生成数据表字段缓存
-*** 自定义命令行
-** 部署
-*** 虚拟主机环境
-*** Linux 主机环境
-*** URL 重写 (隐藏入口文件)
-    地址重写是一种配对规则，会把匹配的输入参数转成规则设定的那样，起到隐藏文件的作用
-    
-**** apache 设置 
-    1. 加载并启用重写模块 加载 mod_rewrite.so(httpd.conf),启动
-         加载功能模块 LoadModule rewrite_module modules/mod_rewrite.so 
-    2. 修改配置 AllowOverride None 讲 None 改为 All      //在 APACHE 里面去配置
-    3. 在应用入口文件同级目录添加 .htaccess 文件,内容如下:
-       #+begin_src apache
-         <IfModule	mod_rewrite.c>
-         Options	+FollowSymlinks	-Multiviews
-         RewriteEngine	on
-         RewriteCond	%{REQUEST_FILENAME}	!-d
-         RewriteCond	%{REQUEST_FILENAME}	!-f
-         RewriteRule	^(.*)$	index.php/$1	[QSA,PT,L]
-         </IfModule>
-         #+end_src

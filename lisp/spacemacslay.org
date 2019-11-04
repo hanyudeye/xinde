@@ -4,194 +4,11 @@
 #+CATEGORIES: 软件使用
 #+DATE: <2019-06-03 14:36:36>
 
-* 包 (package)
-** 绘图模式 artist-mode
-   Shift+中键 选择画什么图形
-   Shift+ 右键 删除一个区域
-   
-  | 操作       | 无 shift                                                                                    | shift                                                                             |
-  | pen        | 单击，在鼠标点填充一个“填充符号”，默认为”.”；按下左键，拖动，抬起，绘制填充符号组成的线 | 单击，在鼠标点填充一个“o”；按下左键，拖动，抬起，绘制一条从初始点到最终点的直线 |
-  | Line       | 任意方向的线                                                                                | 直线                                                                              |
-  | Rectangle  | 矩形                                                                                        | 正方形 1                                                                          |
-  | Poly-line  | 任意方向的多边形                                                                            | 每条线都是直线的多边形                                                            |
-  | Ellipses   | 椭圆                                                                                        | 圆 2                                                                              |
-  | Text       | 文本                                                                                        | 覆盖式文本                                                                        |
-  | Spray-can  | 喷雾器 3                                                                                    | 设置喷雾器的大小                                                                  |
-  | Erase      | 橡皮，擦掉一个字符                                                                          | 擦掉矩形内字符                                                                    |
-  | Vaporize   | 擦除一行                                                                                    | 擦除所有相连的行                                                                  |
-  | Cut        | 剪切矩形                                                                                    | 剪切正方形                                                                        |
-  | copy       | 复制矩形                                                                                    | 复制正方形                                                                        |
-  | paste      | 粘贴                                                                                        | 粘贴                                                                              |
-  | Flood-fill | 填充工具，填充                                                                              | 填充                                                                              |
-** hackernews
-** skewer [实时 Web 开发]
-   在 Web 浏览器中提供与 JavaScript，CSS 和 HTML 的实时交互。表达式是从 emacs 的
-   ~编辑缓冲区~ ~实时~ 发送给浏览器进行求值
-   
-   查看所有当前连接的客户端的列表 list-skewer-clients
-   如果 ~浏览器~ 与 ~skewer~ 的连接丢失，可以在 浏览器控制台  用 ~skewer()~ 重新连接
-*** CSS 
-    Load the declaration at the point.
-    Load the entire rule around the point.
-    Load the current buffer as a stylesheet.
-*** HTML
-    Load the HTML tag immediately around the point   
-*** 提供 REPL 交互 
-    repl 的控制台输出 是 ~skewer.log()~
-*** bower (亭子) [ 动态加载没有包含的库 ]
-    使用 skewer-bower-load，但是这个 bower infrastructure 不好，不推介使用
-*** 名字由来 skewer
-    Emacs is skewering the browser from server-side
-
-** org-brain 脑图 [ 不太好操作 ，废弃了 ]
-*** 概述 
-    维基和思维导图的组合，其中每个维基页/思维导图节点都是 org-mode 驻留在您的文件中
-  ~org-brain-path~, 可以自己设置。
-  
-    脑图浏览模式  org-brain-visualize =SPC a o b= , 能把这些节点链接起来
-    刷新   org-brain-update-id-locations
-
-    节点之间有四种不同类型的关系
-    - Parents
-    - Children
-    - Siblings (兄弟)
-    - Friends( 朋友 )
- 
-    固定节点 ， index , 节点资源(链接和附件)
- 
-*** 概览
-  PINNED：索引
-
-               + -Python 游戏开发 -  +  - 游戏设计
-               + - 编程书籍|
-   编程 -  +  -  Emacs |
-         |   |
-         + ----------------- + ----------------- +
-                           |
-                           ▽
-                    游戏编程←→电脑游戏
-
-*** 快捷键
-**** 使用
- | ~SPC a o B v~ | 可视化进入脑图 |
- | ~SPC a o B a~ | Go to the org-brain agenda   |
-**** 在 org  文件中编写
- | ~SPC m B a c~ | Add child    |
- | ~SPC m B a f~ | Add friend   |
- | ~SPC m B a p~ | Add parent   |
- | ~SPC m B g c~ | Go to child  |
- | ~SPC m B g f~ | Go to friend |
- | ~SPC m B g p~ | Go to parent |
- | ~SPC m B R~   | Refile entry |
- | ~SPC m B x~   | Delete entry |
- | ~SPC m B v~   | 创建一个节点 |
-
-
-**** 在可是化环境中编写 (Visualization) 
- | ~j / TAB~   | Goto next link                     |
- | ~k / S-TAB~ | Goto previous link                 |
- | ~C-y~       | 粘贴资源链接                       |
- | ~a~         | Add resource [[http://orgmode.org/manual/Attachments.html][attachment]]            |
- | ~c~         | Add child                          |
- | ~f~         | 查找/访问另一个条目以显示          |
- | ~l~         | 添加资源链接                       |
- | ~p~         | Add parent                         |
- | ~o~         | Open and edit the visualized entry |
- | ~r~         | 重命名                             |
-** evil-mc(多光标) ~g r~
-   给选定的区域创建匹配的光标 ~evil-mc-make-all-cursors~ , ~g r m~
-   移除所有光标 ~evil-mc-undo-all-cursors~ , ~g r q~
-   对于当前选定的区域，移到下一个匹配处 ~evil-mc-skip-and-goto-next-match~, ~g r n~
-   对于当前选定的区域，创建下一个光标  ~evil-mc-make-and-goto-next-match~  , ~g r j~
-   暂停光标, ~evil-mc-pause-cursors~, ~g r s~
-   恢复光标 ~evil-mc-resume-cursors~ , ~g r r~
-** tern
-   智能的 Javascript 工具
-*** 配置文件    
-    工程配置文件 .tern-project 按目录树向上遍历，没有就采用默认配置
-    主配置文件 .tern-config
-    
-    选项 
-    --port <number> : 指定监听端口
-    --host <host>; h 指定监听主机（默认 127.0.0.1)
-*** JSON 协议
-    请求方式是 ~POST~ 的 ~JSON~ 。
-    
-json 文档结构包含可选的  query, files, and timeout
-*** 功能
-    type 查询某事物的类型。
-    file，end（必填），start（可选）
-
-    completions 向服务器询问给定点的一组完成情况集合
-    接受的字段是： file，end（必填） 指定要完成的位置
-    types（可选，默认 false） 是否在结果数据中包含完成的类型
-    docs，urls，origins（可选，默认 false）
-    
-
-    documentation 获取给定表达式的文档字符串和 URL（如果有）。
-    使用 file，end（必需）和 start（可选）字段来指定我们感兴趣的表达式。
-    
-
-    file 指向定义文件的位置 
-    end 字段是此文件的偏移量
-*** 编程接口
-    基本服务功能 (不含 HTTP 或读配置文件) 的实现在 ~lib/tern.js~
-   
-    自带的插件有 
-    CommonJS module plugin: 
-    Node.js 插件 : node
-    Node.js 解析插件
-    RequireJS plugin
-    每种插件有自己的配置方式
-*** 服务器插件
-    为服务器添加额外的功能
-    #+begin_src json
-      {
-          "libs": [
-              "browser",
-              "jquery"
-          ],
-          "loadEagerly": [
-              "importantfile.js"
-          ],
-          "plugins": {
-              "requirejs": {
-                  "baseURL": "./",
-                  "paths": {}
-              },"node":{
-
-              }
-          }
-      }
-    #+end_src
-    
-loadEagerly: 指定的文件永远加载
-plugins 用于包含插件(可在里面配置插件的具体属性)
-** gnuplot-mode
- | C-M-i   | completion-at-point                                                       |
- | M-RET   | completion-at-point                                                       |
- | C-M-x   | gnuplot-send-line-to-gnuplot                                              |
- | C-c C-b | gnuplot-send-buffer-to-gnuplot                                            |
- | C-c C-c | comment-region                                                            |
- | C-c C-d | gnuplot-info-lookup-symbol                                                |
- | C-c C-e | gnuplot-show-gnuplot-buffer                                               |
- | C-c C-f | gnuplot-send-file-to-gnuplot                                              |
- | C-c TAB | gnuplot-insert-filename                                                   |
- | C-c C-j | gnuplot-forward-script-line                                               |
- | C-c C-k | gnuplot-kill-gnuplot-buffer                                               |
- | C-c C-l | gnuplot-send-line-to-gnuplot                                              |
- | C-c C-n | gnuplot-negate-option                                                     |
- | C-c C-o | gnuplot-gui-set-options-and-insert                                        |
- | C-c C-p | gnuplot-show-gnuplot-version                                              |
- | C-c C-r | gnuplot-send-region-to-gnuplot                                            |
- | C-c C-u | gnuplot-bug-report                                                        |
- | C-c C-v | gnuplot-send-line-and-forward                                             |
- | C-c C-w | gnuplot-show-version (that binding is currently shadowed by another mode) |
- | C-c C-z | gnuplot-customize                                                         |
- | C-c ESC | Prefix Command                                                            |
- | C-c M-i | gnuplot-inline-image-mode                                                 |
-
 * layer
+** 简介 
+  *spacemacs* 中层的功能及使用说明。 
+ #+HTML: <!-- more -->
+ 
 ** auto-completion
    #+begin_verse
    语法片段 *默认* 不在 *完成项* 里面。
@@ -267,13 +84,9 @@ plugins 用于包含插件(可在里面配置插件的具体属性)
    导入词库就可以了, 词库地址 
    http://tumashu.github.io/pyim-bigdict/pyim-bigdict.pyim.gz
    可以安装搜狗输入法中的词库，用转化工具转化
-** cscope  代码浏览
+** cscope  
    用法: 先要创建 *Cscope 索引文件 * ,  通过  ~SPC m g i~.
    
-   Before using any helm-cscope commands, remember to create a Cscope index file.
-   Do it by running the command =cscope-index-files= for C and C++ projects, or the
-   command =cscope/run-pycscope= for Python projects, bound to ~SPC m g i~.
-
    | ~SPC m g =~ | Find assignments to a symbol                  |
    | ~SPC m g c~ | find which functions are called by a function |
    | ~SPC m g C~ | find where a function is called               |
@@ -1203,11 +1016,11 @@ plugins 用于包含插件(可在里面配置插件的具体属性)
    2. =vendor/autoload.php=
 
 
-   | 查关键词  | php-search-documentation |
-   | 浏览手册  | php-browse-manual        |
-   | 标记函数  | mark-defun               |
-   | 跳到定义  | ~SPC m g g~              |
-   | jump back | ~C-t~                    |
+   | 查关键词           | php-search-documentation |
+   | 浏览手册           | php-browse-manual        |
+   | 标记函数           | mark-defun               |
+   | 跳到定义           | ~SPC m g g~              |
+   | jump back 调回返回 | ~C-t~                    |
 ** project  
    配置文件 .projectile 
    排除相对目录/文件  /path/to/somefile 
@@ -1478,7 +1291,7 @@ virtualenvwrapper，相较于使用 virtualenv， 好处就是把所有环境都
    打开英语提示 (toggle-company-english-helper)
 ** 调试服务 [ dap,Debug Adapter Protocol ] 
    默认功能
-   编辑调试魔板 , ~SPC m d d e~
+   编辑调试模板 ~SPC m d d e~
    开始调试 ~SPC m d d d~
    调试最后的配置 ~SPC m d d l~
 
@@ -1524,5 +1337,190 @@ virtualenvwrapper，相较于使用 virtualenv， 好处就是把所有环境都
    | ~SPC m d w s~ | list sessions                      |
    | ~SPC m d w b~ | 列出断点                           |
 
-** 调试管理器 [ realgud ] [ 每个语言不同调试器 ]
-   自动调试 set annotate 1
+* package
+** 绘图模式 artist-mode
+   Shift+中键 选择画什么图形
+   Shift+ 右键 删除一个区域
+   
+  | 操作       | 无 shift                                                                                    | shift                                                                             |
+  | pen        | 单击，在鼠标点填充一个“填充符号”，默认为”.”；按下左键，拖动，抬起，绘制填充符号组成的线 | 单击，在鼠标点填充一个“o”；按下左键，拖动，抬起，绘制一条从初始点到最终点的直线 |
+  | Line       | 任意方向的线                                                                                | 直线                                                                              |
+  | Rectangle  | 矩形                                                                                        | 正方形 1                                                                          |
+  | Poly-line  | 任意方向的多边形                                                                            | 每条线都是直线的多边形                                                            |
+  | Ellipses   | 椭圆                                                                                        | 圆 2                                                                              |
+  | Text       | 文本                                                                                        | 覆盖式文本                                                                        |
+  | Spray-can  | 喷雾器 3                                                                                    | 设置喷雾器的大小                                                                  |
+  | Erase      | 橡皮，擦掉一个字符                                                                          | 擦掉矩形内字符                                                                    |
+  | Vaporize   | 擦除一行                                                                                    | 擦除所有相连的行                                                                  |
+  | Cut        | 剪切矩形                                                                                    | 剪切正方形                                                                        |
+  | copy       | 复制矩形                                                                                    | 复制正方形                                                                        |
+  | paste      | 粘贴                                                                                        | 粘贴                                                                              |
+  | Flood-fill | 填充工具，填充                                                                              | 填充                                                                              |
+** hackernews
+** skewer [实时 Web 开发]
+   在 Web 浏览器中提供与 JavaScript，CSS 和 HTML 的实时交互。表达式是从 emacs 的
+   ~编辑缓冲区~ ~实时~ 发送给浏览器进行求值
+   
+   查看所有当前连接的客户端的列表 list-skewer-clients
+   如果 ~浏览器~ 与 ~skewer~ 的连接丢失，可以在 浏览器控制台  用 ~skewer()~ 重新连接
+*** CSS 
+    Load the declaration at the point.
+    Load the entire rule around the point.
+    Load the current buffer as a stylesheet.
+*** HTML
+    Load the HTML tag immediately around the point   
+*** 提供 REPL 交互 
+    repl 的控制台输出 是 ~skewer.log()~
+*** bower (亭子) [ 动态加载没有包含的库 ]
+    使用 skewer-bower-load，但是这个 bower infrastructure 不好，不推介使用
+*** 名字由来 skewer
+    Emacs is skewering the browser from server-side
+
+** org-brain 脑图 [ 不太好操作 ，废弃了 ]
+*** 概述 
+    维基和思维导图的组合，其中每个维基页/思维导图节点都是 org-mode 驻留在您的文件中
+  ~org-brain-path~, 可以自己设置。
+  
+    脑图浏览模式  org-brain-visualize =SPC a o b= , 能把这些节点链接起来
+    刷新   org-brain-update-id-locations
+
+    节点之间有四种不同类型的关系
+    - Parents
+    - Children
+    - Siblings (兄弟)
+    - Friends( 朋友 )
+ 
+    固定节点 ， index , 节点资源(链接和附件)
+ 
+*** 概览
+  PINNED：索引
+
+               + -Python 游戏开发 -  +  - 游戏设计
+               + - 编程书籍|
+   编程 -  +  -  Emacs |
+         |   |
+         + ----------------- + ----------------- +
+                           |
+                           ▽
+                    游戏编程←→电脑游戏
+
+*** 快捷键
+**** 使用
+ | ~SPC a o B v~ | 可视化进入脑图 |
+ | ~SPC a o B a~ | Go to the org-brain agenda   |
+**** 在 org  文件中编写
+ | ~SPC m B a c~ | Add child    |
+ | ~SPC m B a f~ | Add friend   |
+ | ~SPC m B a p~ | Add parent   |
+ | ~SPC m B g c~ | Go to child  |
+ | ~SPC m B g f~ | Go to friend |
+ | ~SPC m B g p~ | Go to parent |
+ | ~SPC m B R~   | Refile entry |
+ | ~SPC m B x~   | Delete entry |
+ | ~SPC m B v~   | 创建一个节点 |
+
+
+**** 在可是化环境中编写 (Visualization) 
+ | ~j / TAB~   | Goto next link                     |
+ | ~k / S-TAB~ | Goto previous link                 |
+ | ~C-y~       | 粘贴资源链接                       |
+ | ~a~         | Add resource [[http://orgmode.org/manual/Attachments.html][attachment]]            |
+ | ~c~         | Add child                          |
+ | ~f~         | 查找/访问另一个条目以显示          |
+ | ~l~         | 添加资源链接                       |
+ | ~p~         | Add parent                         |
+ | ~o~         | Open and edit the visualized entry |
+ | ~r~         | 重命名                             |
+** evil-mc(多光标) ~g r~
+   给选定的区域创建匹配的光标 ~evil-mc-make-all-cursors~ , ~g r m~
+   移除所有光标 ~evil-mc-undo-all-cursors~ , ~g r q~
+   对于当前选定的区域，移到下一个匹配处 ~evil-mc-skip-and-goto-next-match~, ~g r n~
+   对于当前选定的区域，创建下一个光标  ~evil-mc-make-and-goto-next-match~  , ~g r j~
+   暂停光标, ~evil-mc-pause-cursors~, ~g r s~
+   恢复光标 ~evil-mc-resume-cursors~ , ~g r r~
+** tern
+   智能的 Javascript 工具
+*** 配置文件    
+    工程配置文件 .tern-project 按目录树向上遍历，没有就采用默认配置
+    主配置文件 .tern-config
+    
+    选项 
+    --port <number> : 指定监听端口
+    --host <host>; h 指定监听主机（默认 127.0.0.1)
+*** JSON 协议
+    请求方式是 ~POST~ 的 ~JSON~ 。
+    
+json 文档结构包含可选的  query, files, and timeout
+*** 功能
+    type 查询某事物的类型。
+    file，end（必填），start（可选）
+
+    completions 向服务器询问给定点的一组完成情况集合
+    接受的字段是： file，end（必填） 指定要完成的位置
+    types（可选，默认 false） 是否在结果数据中包含完成的类型
+    docs，urls，origins（可选，默认 false）
+    
+
+    documentation 获取给定表达式的文档字符串和 URL（如果有）。
+    使用 file，end（必需）和 start（可选）字段来指定我们感兴趣的表达式。
+    
+
+    file 指向定义文件的位置 
+    end 字段是此文件的偏移量
+*** 编程接口
+    基本服务功能 (不含 HTTP 或读配置文件) 的实现在 ~lib/tern.js~
+   
+    自带的插件有 
+    CommonJS module plugin: 
+    Node.js 插件 : node
+    Node.js 解析插件
+    RequireJS plugin
+    每种插件有自己的配置方式
+*** 服务器插件
+    为服务器添加额外的功能
+    #+begin_src json
+      {
+          "libs": [
+              "browser",
+              "jquery"
+          ],
+          "loadEagerly": [
+              "importantfile.js"
+          ],
+          "plugins": {
+              "requirejs": {
+                  "baseURL": "./",
+                  "paths": {}
+              },"node":{
+
+              }
+          }
+      }
+    #+end_src
+    
+loadEagerly: 指定的文件永远加载
+plugins 用于包含插件(可在里面配置插件的具体属性)
+** gnuplot-mode
+ | C-M-i   | completion-at-point                                                       |
+ | M-RET   | completion-at-point                                                       |
+ | C-M-x   | gnuplot-send-line-to-gnuplot                                              |
+ | C-c C-b | gnuplot-send-buffer-to-gnuplot                                            |
+ | C-c C-c | comment-region                                                            |
+ | C-c C-d | gnuplot-info-lookup-symbol                                                |
+ | C-c C-e | gnuplot-show-gnuplot-buffer                                               |
+ | C-c C-f | gnuplot-send-file-to-gnuplot                                              |
+ | C-c TAB | gnuplot-insert-filename                                                   |
+ | C-c C-j | gnuplot-forward-script-line                                               |
+ | C-c C-k | gnuplot-kill-gnuplot-buffer                                               |
+ | C-c C-l | gnuplot-send-line-to-gnuplot                                              |
+ | C-c C-n | gnuplot-negate-option                                                     |
+ | C-c C-o | gnuplot-gui-set-options-and-insert                                        |
+ | C-c C-p | gnuplot-show-gnuplot-version                                              |
+ | C-c C-r | gnuplot-send-region-to-gnuplot                                            |
+ | C-c C-u | gnuplot-bug-report                                                        |
+ | C-c C-v | gnuplot-send-line-and-forward                                             |
+ | C-c C-w | gnuplot-show-version (that binding is currently shadowed by another mode) |
+ | C-c C-z | gnuplot-customize                                                         |
+ | C-c ESC | Prefix Command                                                            |
+ | C-c M-i | gnuplot-inline-image-mode                                                 |
+
