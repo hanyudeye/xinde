@@ -1,60 +1,43 @@
 #+TITLE: 算法简介
 #+DESCRIPTION: 算法简介
-#+TAGS: 算法
-#+CATEGORIES: 软件使用
+#+TAGS[]: 算法
+#+CATEGORIES[]: 软件使用
+#+DATE: 2019-12-08T05:32:47+08:00
 
-* 算法
-  #+begin_verse
-  算法就是 你做某件事想到的 *方法*，展示的是 *方法* 的细节 。
-  计算机真是小气的，既要你把事情做正确，还要你做的快，还要少占用资源。就是” *多快好省* “里面把“ *多* ”去掉就是好的算法的要求啦。
-  下面就一些算法问题，给出“ *好快省* ”的参考。
-  #+end_verse
-  
-  #+HTML: <!-- more -->
- 
-** 数组中重复的数字 
-*** 题目 
-    在一个长度为 *n* 的数组里的所有数字都在 0 到 n-1 的范围内。数组中某些数字是重复的，
-    但不知道有几个数字是重复的，也不知道每个数字重复几次。请找出数组中任意一个重复
-    的数字。
-*** 思路
-    #+begin_quote
-    目的就是在一堆东西中查找重复的东西，并计算重复次数
-    #+end_quote
-    
-    要求复杂度为 O(N) + O(1)
+简单举个例子，给你一个废铁，我要打造一枚铁戒，不管你用什么方法。这种对解题方法的
+研究，就是算法研究。
+如果要想打造一枚金戒，以现有的技术，很难实现，所以称为不可解决算法。
+#+begin_quote
+在面向现实中，可能会有很多约束条件，解题方法会苛刻的多。
+#+end_quote
+# more
 
-    #+begin_src java -n
-      public boolean duplicate(int[] nums, int length, int[] duplication) {
-          if (nums == null || length <= 0)
-              return false;
-          for (int i = 0; i < length; i++) {
-              while (nums[i] != i) {
-                  if (nums[i] == nums[nums[i]]) {
-                      duplication[0] = nums[i];
-                      return true;
-                  }
-                  swap(nums, i, nums[i]);
-              }
-          }
-          return false;
-      }
-
-      private void swap(int[] nums, int i, int j) {
-          int t = nums[i];
-          nums[i] = nums[j];
-          nums[j] = t;
-      }
-
-    #+end_src
-** 二维数组中的查找
+** 替换空格
 *** 题目描述
-    在一个二维数组中，每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递
-    增的顺序排序。请完成一个函数，输入这样的一个二维数组和一个整数，判断数组中是
-    否含有该整数。
+    将一个字符串中的空格替换成 "%20"。
+    #+begin_src text
+      Input:
+      "We Are Happy"
 
-* 算法
-  
+      Output:
+      "We%20Are%20Happy"
+    #+end_src
+*** 解题思路
+    一个空格变成了三个东西了，怎么处理？
+    #+begin_quote
+    方法 1：可以把要替换的空格处的东西先往后移动两格，就放的下了，然后在往下查找替换。
+    #+end_quote
 
-
-
+#+caption: 空格替换问题
+[[file:/pic/algorithm/1.jpg]]
+** 从尾到头打印链表
+*** 题目描述
+    输入链表的第一个节点，从尾到头反过来打印出每个结点的值。
+*** 解题思路
+**** 使用栈
+     把东西放到栈里，再存到堆里，然后输出
+**** 使用递归
+     递归放到堆里
+**** 使用头插法
+     不会   
+*** 数组循环移位

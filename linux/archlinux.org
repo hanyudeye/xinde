@@ -1,12 +1,7 @@
 * Archlinux 安装笔记
-身为一个小小弱菜，却有个不安分的心，不停的尝试发行版，Arch 应该是在 7月多去掉了 AIF
-安装框架，安装过程相对就比较麻烦了，不过还好它 wiki 是相当的全面，网上还有很多资料
-可以参考下载镜像烧进 U盘就不多说了，主菜单选择 "Boot Arch Linux" 并按回车，系统将
-加载并给出登录提示，自动以 'root' 登录。系统默认使用美式键盘映射。
-
 网络连接
 
-archlinux 安装是特别依赖网络的，没有网络安装的话就 X疼了。 安装程序会自动执行
+archlinux 安装是特别依赖网络的，没有网络安装的话就 X 疼了。 安装程序会自动执行
 dhcpcd 建立连接，可以试试 ping 一下百度什么的，不行的话用以下方法手动配置
 
 如果是有线连接：
@@ -85,7 +80,7 @@ gparted 则是两者都支持。
 
 # mkswap /dev/sdaX && swapon /dev/sdaX ##分区格式化为 swap,并且创造 swap 分区
 # mount /dev/sdaX /mnt ##挂载/分区到/mnt 上
-# mkdir /mnt/home && mount /dev/sdaY /mnt/home ##创建 home 文件,并且将 Y分区挂载到上面
+# mkdir /mnt/home && mount /dev/sdaY /mnt/home ##创建 home 文件,并且将 Y 分区挂载到上面
 
 把 163 的源放在最前面
 
@@ -207,9 +202,9 @@ grub 我是用的 grub
 # grub-mkconfig -o /boot/grub/grub.cfg
 安装桌面
 pacman -S lxde 或者 pacman -S gnome-core
-这个自己选择，kde、gnome、lxde 或者可以选用 openbox、awesome 等WM
+这个自己选择，kde、gnome、lxde 或者可以选用 openbox、awesome 等 WM
 
-安装完成后, 复制/etc/xdg/openbox 里的 3个文件到 ~/.config/openbox :
+安装完成后, 复制/etc/xdg/openbox 里的 3 个文件到 ~/.config/openbox :
 menu.xml rc.xml autostart
 也可以运行以下命令
 
@@ -252,7 +247,7 @@ Server = http://repo.archlinux.fr/$arch
 安装 nvidia-all 脚本
 
 yaourt -S nvidia-all
-假如使用的是最新的显卡，也许需要使用 AUR 上的驱动 nvidia-beta 和nvidia-utils-beta，因为稳定版的驱动不支持一些新引入的特性。
+假如使用的是最新的显卡，也许需要使用 AUR 上的驱动 nvidia-beta 和 nvidia-utils-beta，因为稳定版的驱动不支持一些新引入的特性。
 安装的时候，如果 pacman 询问您移除 libgl 并且因为依赖无法移除，可以使用 # pacman -Rdd libgl 移除 libgl.
 自动配置 nvidia,创建一个基本的配置文件/etc/X11/xorg.conf
 
@@ -361,10 +356,10 @@ xrdb -merge ~/.Xresources
 LANG=zh_CN.UTF-8
 export XMODIFIERS="@im=fcitx"
 fcitx &
-接下来就是使用 sudo，自动挂载 U盘，配置 vim zsh 看个人需要了。
+接下来就是使用 sudo，自动挂载 U 盘，配置 vim zsh 看个人需要了。
 到这里弱菜君的安装笔记就算是结束了，Arch 采用 systemed，表示很不习惯，也不是很经常用，也没有用过逆天的 aur，现在不怎么进 Arch 了，主要用 Debian，寒假准备最后换成 Gentoo 后稳定下来
 * arch 安装
-原文主要针对的是使用 BIOS 和MBR 的计算机，不过考虑到目前大家都开始使用支持 UEFI 的机
+原文主要针对的是使用 BIOS 和 MBR 的计算机，不过考虑到目前大家都开始使用支持 UEFI 的机
 器，并且可能由于部分原因需要使用 GPT，此文也就更新了相关内容(其实是我换新机器
 了。。。)。
 
@@ -384,13 +379,13 @@ Archlinux 的缺点：
 ===Changelog===
 [2015-4-20] 添加 ibus-rime 的相关配置，fcitx-sogoupinyin 不再作为首选方案。
 [2016-1-28] 添加 deepin 桌面的配置，并将其作为首选方案，重新启用 fcitx-sogoupinyin
-[2016-4-15] 修正 EFI 的boot loader，使用 bootctl
+[2016-4-15] 修正 EFI 的 boot loader，使用 bootctl
 [2017-4-22] 修正 DDE 潜在的依赖缺失问题，感谢 Dr. Xie
 
 0x00 安装准备
 1.安装介质
 我是从 USTC 的源上下载镜像文件的，教育网速度飞快，点击进入，非教育网用户，点击进入。
-你可以选择刻录到光盘或者 U盘，或者放到手机里等等，在此不再复述，如果你不会，请先学习相关内容。
+你可以选择刻录到光盘或者 U 盘，或者放到手机里等等，在此不再复述，如果你不会，请先学习相关内容。
 
 2.测试网络
 如果你使用有线网，直接 ping 任何网站(当然不能是局域网内的)。
@@ -408,7 +403,7 @@ EFI Default Loader
 如果你忘记了是否出现过上述选项，你也可以使用如下命令：
 
 efivar -l
-如果你看到了一大串内容，那就是进入了 UEFI 安装模式。否则，请记住，你的电脑可能不支持 UEFI 或者你没进入 UEFI 安装模式，在后续内容中，你应该选择 BIOS 和MBR。
+如果你看到了一大串内容，那就是进入了 UEFI 安装模式。否则，请记住，你的电脑可能不支持 UEFI 或者你没进入 UEFI 安装模式，在后续内容中，你应该选择 BIOS 和 MBR。
 
 2.创建分区
 在这里设计到一个很大的内容，如何安排分区，这个看每个人如何规划了，下面我将使用一个比较普遍的方案：
@@ -437,9 +432,9 @@ gdisk /dev/sda
 
 3.安装文件系统
 
-接下来是安装文件系统，在这里 GPT 和MBR 的区别只有/dev/sda1 这个分区，我们放到最后解
+接下来是安装文件系统，在这里 GPT 和 MBR 的区别只有/dev/sda1 这个分区，我们放到最后解
 释。这里我们使用的 FS 是比较成熟的 ext4，至于最新的 btrfs，老实说我没用过，即使我用
-的是 SSD，并且“据说”btrfs 对SSD 有优化，大家可以尝试下。
+的是 SSD，并且“据说”btrfs 对 SSD 有优化，大家可以尝试下。
 
 mkfs.ext4 /dev/sda2
 mkfs.ext4 /dev/sda3
@@ -494,7 +489,7 @@ alias ls='ls --color'
 
 1.设置 Locale
 nano /etc/locale.gen
-这里你至少开启 en_US.UTF-8 和zh_CN.UTF-8。
+这里你至少开启 en_US.UTF-8 和 zh_CN.UTF-8。
 
 locale-gen
 echo LANG=zh_CN.UTF-8 >> /etc/locale.conf
@@ -596,14 +591,14 @@ pacman -S mesa xf86-video-intel
 3.安装触摸板驱动
 pacman -S xf86-input-synaptics
 4. 安装显示服务器
-这里可选 wayland 和xorg-server，gnome 对于前者已经支持的比较完善了，当然大家亦可选择全装。
+这里可选 wayland 和 xorg-server，gnome 对于前者已经支持的比较完善了，当然大家亦可选择全装。
 
 # xorg 及其 utils
 pacman -S xorg-server xorg-xinit
 # wayland
 pacman -S wayland
 0x05 桌面环境
-在 Archlinux 中，有很多可用的桌面环境，以下简称 DE，比如 Gnome，KDE，Xfce 等。截至 2016 年1 月底，Gnome 的最新版本为 3.18.3，可以称之为稳定的 DE。KDE5 依旧一团糟，不建议读者使用。
+在 Archlinux 中，有很多可用的桌面环境，以下简称 DE，比如 Gnome，KDE，Xfce 等。截至 2016 年 1 月底，Gnome 的最新版本为 3.18.3，可以称之为稳定的 DE。KDE5 依旧一团糟，不建议读者使用。
 
 另外有一个好消息，Deepin DE 正式从 AUR 并入 package group，也就是说大家再也无需担心依赖问题了，本次更新，新增 DDE 的配置。
 
@@ -637,7 +632,7 @@ pacman -S chromium
 makepkg
 pacman -U 生成的文件名，以.xz 结尾
 4.配置输入法
-关于输入法，大致有 2个选择，ibus 和fcitx，分别有 ibus-rime 和fcitx-sogoupinyin。
+关于输入法，大致有 2 个选择，ibus 和 fcitx，分别有 ibus-rime 和 fcitx-sogoupinyin。
 
 4.1 rime 输入法配置
 安装 ibus-rime 很简单
@@ -648,7 +643,7 @@ pacman -S ibus-rime
 export GTK_IM_MODULE=ibus
 export QT_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
-然后，在设置的输入源中就能找到 rime 了，你会发现 ibus 和gnome 的集成比 fcitx 好多了，而且现在 ibus 也比原来快多了。
+然后，在设置的输入源中就能找到 rime 了，你会发现 ibus 和 gnome 的集成比 fcitx 好多了，而且现在 ibus 也比原来快多了。
 Tip：关于半角全角和简体繁体切换，只需要在输入的时候按 F4 即可看到选项。
 
 4.2 sogou 输入法安装
@@ -686,7 +681,7 @@ systemctl enable gdm
 
 systemctl enable lightdm
 另外对于 deepin，我们还需要修改 lightdm 的一个配置文件/etc/lightdm/lightdm.conf。
-在如下段中添加 deepin 的greeter-session。
+在如下段中添加 deepin 的 greeter-session。
 
 [Seat:*]
 ...
@@ -854,7 +849,7 @@ myhostname
 Initramfs
 你通常不需要创建 initramfs，因为在你执行 pacstrap 时已经安装 linux，这时 mkinitcpio 会被自动运行。
 
-如果修改了 mkinitcpio.conf，用以下命令创建一个Initramfs：
+如果修改了 mkinitcpio.conf，用以下命令创建一个 Initramfs：
 
 # mkinitcpio -p linux
 Root 密码
