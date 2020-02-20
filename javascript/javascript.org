@@ -1,195 +1,47 @@
- #+TITLE: JavaScript 简介
-#+TAGS: JavaScript 
-#+CATEGORIES: 语言使用
+ #+TITLE: JavaScript 与 DOM简介
+#+TAGS[]: JavaScript 
+#+CATEGORIES[]: 技术
 #+DESCRIPTION: JavaScript 简介
-#+DATE: <2019-06-02 05:07:53>
+#+DATE: 2020-02-11T18:47:24+08:00
 
-* Javascript 
-** 简介  
-   #+begin_verse
-   计算机语言，想象下你作为一个 *CPU* ，会怎样解释代码文章，或者想象你觉得代码文章应该怎么写简约。
-   简单来说，计算机语言就是 *行为* 与 *事物* 的的文字表达。
-   #+end_verse
-   #+HTML: <!-- more -->
-   #+begin_quote
-   对于资源文件，如音频，图片，用的是二进制文字，我们一般直接看不懂的啊，要算的。
-   #+end_quote
-   
-** 语言核心
-*** 数组
+Javascript技术原来也是用在网页里面的，弄一些花里胡哨的动态效果，但现在它满足了一
+个现实，人有时懒的连报纸都不想翻，就想在报纸上用手指划划就想翻页，Javascript 的
+技术能够实现，所以现在又发达起来了。
+# more
+
+Nodejs 技术的出现也使 Javascript  风光了起来。
+
+* JavaScript 
+** 安装
+   安装好浏览器和代码编辑器，打开浏览器控制台进行执行和测试。
+** 函数
+*** function命令
     #+begin_src js -n
-      var arr = [
-          {a: 1},
-          [1, 2, 3],
-          function() {return true;}
-      ];
-
-      arr[0] // Object {a: 1}
-      arr[1] // [1, 2, 3]
-      arr[2] // function (){return true;}
-    #+end_src
-
-    in 运算符,检查键名是否存在
-    #+begin_src js -n
-      var arr = [ 'a', 'b', 'c' ];
-      2 in arr  // true
-      '2' in arr // true
-      4 in arr // false
-    #+end_src
-      
-    `for...in`循环不仅可以遍历对象，也可以遍历数组，毕竟数组只是一种特殊对象。
-    #+begin_src js
-      var a = [1, 2, 3];
-      a.foo = true;
-
-      for (var key in a) {
-          console.log(key);
+      function print(s) {
+          console.log(s);
       }
     #+end_src
-
-    forEach 
+*** 表达式
     #+begin_src js -n
-      var colors = ['red', 'green', 'blue'];
-      colors.forEach(function (color) {
-          console.log(color);
-      });
-      // red
-      // green
-      // blue
-    #+end_src
-      
-    delete ,会产生空位
-    : 但是 length 属性不变，要注意
-      
-    #+begin_src js -n
-      var a = [1, 2, 3];
-      delete a[1];
-
-      a[1] // undefined
-      a.length // 3
-    #+end_src
-
-    push 方法
-   对象转数组  
-   #+begin_src js -n
-     var arr = Array.prototype.slice.call(arrayLike);
-     //或
-
-     function print(value, index) {
-         console.log(index + ' : ' + value);
-     }
-
-     Array.prototype.forEach.call(arrayLike, print);
-
-   #+end_src
-
-*** 函数
-**** 声明方式 
-     1. function 命令
-     #+begin_src js -n
-       function print(s) {
-           console.log(s);
-       }
-     #+end_src
-
-     2. 函数表达式
-     #+begin_src js -n
-       var print = function(s) {
-           console.log(s);
-       };
-     #+end_src
-     3. Function 构造函数
-     #+begin_src js -n
-       var add = new Function(
-           'x',
-           'y',
-           'return x + y'
-       );
-
-       // 等同于
-       function add(x, y) {
-           return x + y;
-       }
-     #+end_src
-**** 属性 
-     看它的结构 ,包含者属性
-       
-     函数名属性 name
-       
-     函数的`length`属性返回函数预期传入的参数个数，即函数定义之中的参数个数。
-       
-     函数的`toString`方法返回一个字符串，内容是函数的源码。
-
-**** 递归 [ 每次只做一部分，循环调用自身的过程 (记得把余下的部分作参数哦)]
-
-     #+begin_src js -n
-       function fib(num) {
-           if (num === 0) return 0;
-           if (num === 1) return 1;
-           return fib(num - 2) + fib(num - 1);
-       }
-
-       fib(6) // 8
-     #+end_src
-       
-**** 闭包
-     定义在一个函数内部的函数，就是能获取函数内部属性
-     #+begin_src js -n
-       function createIncrementor(start) {
-           return function () {
-               return start++;
-           };
-       }
-
-       var inc = createIncrementor(5);
-
-       inc() // 5
-       inc() // 6
-       inc() // 7
-     #+end_src
-       
-*** Object 
-    读取对象的属性
-    #+begin_src js -n
-      var obj = {
-          p: 'Hello World'
+      var print = function(s) {
+          console.log(s);
       };
-
-      obj.p // "Hello World"
-      obj['p'] // "Hello World"
     #+end_src
-
-    #+begin_verse
-    静态方法
-    返回对象的属性: keys 
-    #+end_verse
-      
-    #+begin_verse
-    实例方法
-    属性的删除：delete 命令 ,继承的属性不能删 ,比如 toString
-    该对象求值: valueOf 
-    #+end_verse
-      
-** 错误处理
-*** Try...Catch 
-    #+BEGIN_SRC js
-      var txt=""
-      function message()
-      {
-          try
-          {
-              adddlert("Welcome guest!")
-          }
-          catch(err)
-          {
-              txt="此页面存在一个错误。\n\n"
-              txt+="错误描述: " + err.description + "\n\n"
-              txt+="点击 OK 继续。\n\n"
-              alert(txt)
-          }
+*** 函数参数的解构赋值
+    #+begin_src js
+      const person = { name: '小明', age: 11}
+      function printPerson({name, age}) { // 函数参数可以解构一个对象
+          console.log(`姓名：${name} 年龄：${age}`);
       }
-    #+END_SRC
-* web 移动开发最佳实践
+      #+end_src
+*** 箭头函数
+    #+begin_src js
+      let getSum2=(x, y)=> {
+          return x + y;
+      }
+      // 简写，只能用于一行代码
+      let getSum2=(x, y)=> x + y;
+    #+end_src
 ** 避免使用全局变量和函数
    #+begin_src js
      var myApp = {
@@ -201,59 +53,69 @@
          this.lang = arg;
      }
    #+end_src
-** 高效的使用 try catch 语句
-   #+begin_src js
-     var object = ['foo', 'bar'], i;
-     try {
-         for (i = 0; i < object.length; i++) {
-             // do something
-         }
-     } catch (e) {
-         // handle exception
-     }
-   #+end_src
-** 使用赋值运算来连接字符串
-   #+begin_src js
-     str += "x";
-     str += "y";
-   #+end_src
-** 避免使用 eval()方法
-** 使用事件委托
-   在处理 DOM 事件的时候，你可以仅对一个父元素绑定一个事件而不是每一个子元素。
-   这种技术即事件委托，它利用事件冒泡来分配事件处理程序，可以提高脚本的性能
-
-   #+begin_src html
-   <a href="javascript:handleClick();">Click</a>
-   <button id="btn1" onclick="handleClick();">One</button>
-   <button id="btn2" onclick="handleClick();">Two</button>
-   #+end_src
-   
-   为了提高代码的性能，我们可以加一个 div 父元素，事件会向上冒泡，直到被处理。事件对象是触发事件的元素，我们可以根据它的 id 属性来判断是哪一个元素触发了事件：
- 
-
-   #+begin_src html
-     <div id="btngroup">
-       <button id="btn1">One</button>
-       <button id="btn2">Two</button>
-     </div>
-   #+end_src
-   #+begin_src js
-     document.getElementById("btngroup").addEventListener("click", function (event) {
-         switch (event.srcElement.id) {　　//firefox 下为 event.target.id
-                                       case "btn1":
-                                       handleClick();
-                                       break;
-                                       default:
-                                       handleClick();
-                                      }
-     }, false); // type, listener, useCapture (true=beginning, false=end)
-   #+end_src
-** 尽量减少 DOM 操作
-** 减少页面重绘
-* 模块
-  Javascript 不是一种模块化编程语言，在 es6 以前，它是不支持”类”（class），所以也
-  就没有”模块”（module）了。
+* DOM (文档对象模型)
+  这个技术的产生是因为我们看报纸，不光是看，还想直接跟报纸互动。怎么跟报纸互动呢，
+  就是浏览器把报纸上的内容提供接口，然后用JavaScript 语言具体编码
   
-  ES6 标准发布后，module 成为标准，标准使用是以 export 指令导出接口，以 import
-  引入模块，但是在我们一贯的 node 模块中，我们依然采用的是 CommonJS 规范，使用
-  require 引入模块，使用 module.exports 导出接口。
+** document  接口
+*** 属性
+    - cookie        设置或返回与当前文档有关的所有 cookie 
+    - domain        返回当前文档的域名                    
+    - lastModified  返回文档被最后修改的日期和时间        
+    - referrer      返回载入当前文档的文档的 URL          
+    - title         返回当前文档的标题                    
+    - URL           返回当前文档的 URL                    
+*** 方法
+    - getElementById()          返回对拥有指定 id 的第一个对象的引用                                        
+    - getElementsByName()       返回带有指定名称的对象集合 	                                               
+    - getElementsByTagName()    返回带有指定标签名的对象集合                                                
+    - getElementsByClassName()  返回带有指定 class 的对象集合                                               
+    - write()                   向文档写 HTML 表达式 或 JavaScript 代码                                     
+** 节点接口
+   因为HTML是按照 树的模型构造的，所以里面都是枝枝叉叉，操作的也是枝枝叉叉(节点)。
+*** 节点属性
+    - innerHTML  获取元素内容   
+    - nodeName   规定节点的名称 
+    - nodeValue  规定节点的值   
+
+*** 修改
+    #+begin_src js
+      var para=document.createElement("p");
+      var node=document.createTextNode("This is new.");
+      para.appendChild(node);
+    #+end_src
+    
+    - insertBefore 插到节点前面
+    - removeChild 删除子节点
+    - replaceChild 替换节点
+
+** 事件接口
+   报纸的行为不仅可以内部控制，外部还能触发。
+*** window 
+    - onload    页面结束加载之后触发(最慢，要所有图片都下载完)    
+    - onresize  当浏览器窗口被调整大小时触发                     
+*** 页面或图像
+    - onload 
+    - onUnload
+*** 表单
+    - onFocus
+    - onBlur 
+    - onChange
+    - onselect      在元素中文本被选中后触发            
+    - onsubmit     在提交表单时触发                   
+*** 键盘
+    - onkeydown   在用户按下按键时触发 
+    - onkeypress  在用户敲击按钮时触发 
+    - onkeyup     当用户释放按键时触发 
+*** 鼠标
+    - onclick
+    - ondblclick
+    - onmousedown
+    - onmouseup 
+    - onscroll
+    - onMouseOver 
+    - onMouseOut
+*** Media 
+    - onabort
+    - onplay
+

@@ -1,221 +1,238 @@
 #+TITLE: 版本控制简介 
 #+DESCRIPTION: 版本控制
-#+TAGS: git,svn
-#+CATEGORIES: 软件使用
-#+DATE: <2019-06-15 20:37:03>
+#+TAGS[]: git
+#+CATEGORIES[]: 技术
+#+DATE: 2019-12-25T06:23:31+08:00
 
-* 版本控制
-** 简介 
-   保存文件修改的历史内容，并且可以作为服务，与其他人协作修改(社会化编程，接触不同文化)。
-   #+HTML: <!-- more -->
+备份工具，比如你做了一个椅子，然后用这工具备份一下，误删以后可以用这工具恢复（不能误删椅子的备份）。然后呢，你的椅子可能不是很完美，还要修修改改，这是你可以同时备份椅子的新的版本，如此而已。
+
+# more   
+基本概念
+- 仓库 (存放"椅子"的地方)
+- 基线 (基本的椅子)
+- 分支 (基本椅子分出来的具体功能的椅子，如人体工学椅，躺椅。。)
+- 冲突 (多人合作修改同一把椅子，给出的提示)
+  
+下面以比较流行的 ~git~ 为例说明吧
+
 * git 
-** 主要功能
-   #+begin_verse
-   Git 仓库
-   Organization
-   Issue
-   Wiki
-   Pull Request
-   社交功能，follow, star
-   #+end_verse
 ** 初始配置
-   #+begin_verse
-   git config [--system,--global]
+   设置一下仓库作者的个人信息什么的 
+   #+begin_src 
+   git config [--system,--global, --list]
    
-   用户名 user.name = "用户名或者用户 ID"
+   用户名 user.name = "用户名"
    邮箱 user.email = "邮箱"
+   #+end_src
    
-   - 配置颜色
-      git config --global color.branch auto
-      git config --global color.diff auto
-      git config --global color.interactive auto
-      git config --global color.status auto
-
-   忽略文件全写 git config core.filemode fasle
-
-   列出配置 git config --list
-   配置 git config --global color.ui auto
-   #+end_verse
-   
-*** 配置 SSH 传输
+*** 配置 SSH 远程传输
        创建 SSH Key：
        #+begin_src shell
          $ ssh-keygen -t rsa -C "youremail@example.com"
        #+end_src
        然后把公钥 id_rsa.pub 的内容复制到 Github "Account settings" 的 SSH Keys 中。
        : 可以使用 ssh -v git@github.com 命令来测试链接是否畅通
-** 使用方法
-*** 初始化版本系统 [git init <DIR>]
+** 用法
+*** 初始化版本系统 
+    #+begin_src sh
+      git init <DIR>
+    #+end_src
+    
 *** 暂存区管理
-**** 把文件加入暂存区 [ git add <modified files>/git add . ]
-**** 删除暂存区里的文件,如需纳入版本库，需要重新添加 [ git rm --cached <file> ]  
-**** 重置暂存,就是恢复成未暂存的状态(暂存区是上一次的内容) [ git reset HEAD <file> ]
-**** 用两次确认的恢复草稿
-     此次操作之前和之后的 commit 和 history 都会保留，并且把这次撤销作为一次最新的提交
-**** 改名文件，并且将这个改名放入暂存区
+    #+begin_quote
+    暂存区保存你历史记录的一个缓存区，为的就是让你"多此一举"，进行下一步确认是否保存快照
+    #+end_quote
+**** 把文件加入暂存区 
+      #+begin_src sh
+        git add <modified files>
+        git add . 
+      #+end_src
+**** 删除暂存区里的文件,如需纳入版本库，需要重新添加   
+     #+begin_src sh
+       git rm --cached <file> 
+     #+end_src
+ 
+**** 重置暂存,就是恢复成未暂存的状态
+      #+begin_src sh
+        git reset HEAD <file> 
+        #+end_src
+**** 改名文件
+     #+begin_src sh
      git mv [file-original] [file-renamed]
+     #+end_src
 
 *** 本地库管理
-**** 保存到本地库 [ git commit -m "msg" ]
-     也可以将 git add 与 git commit 用一个指令完成
-     git commit -a -m "msg"
-**** 撤销 [ 恢复到修改前] git checkout <file>
-     从另一个分支恢复修改 git checkout <branch>  <file>
-**** 反转(用本地版本库的东西替换掉本地的文件,再执行一次反过来)
-     git revert HEAD                  撤销前一次 commit
-     git revert HEAD^               撤销前前一次 commit
-     git revert commit-id（比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进行保存。
-     git revert 是提交一个新的版本，将需要 revert 的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。
-**** 版本库分支管理(分支相当于面向对象的继承，创建一个儿子)
-***** 创建分支 [ git branch <BRANCHNAME> ]
-      从某分支创建分支 git checkout -b <ALTERNATE> <BRANCHNAME> 
-***** 切换分支 [ git checkout <BRANCHNAME> ]
-***** 合并分支间的修改[ git merge <BRANCHNAME> ] 把 BRANCHNAME 分支合并到当前分支
-****** 直接合并 把两条分支上的历史轨迹合并 
-       
-     它会把两个分支最新的快照（C3 和 C4）以及二者最新的共同祖先（C2）进行三方合
-     并，合并的结果是产生一个新的提交对象（C5）。
-****** 压合合并 如果想把某个分支的提交作为一个整体记录时，可以使用压合合并。
-       git merge --squash <BRANCH>
-       然后提交一下  git commit 
-****** 拣选合并 只需合并某个提交，而不是全部改动.
-       git cherry-pick <ID>
-       然后重新提交下
-***** 修改分支名称[ git branch -m <BRANCHNAME> <NEWBRANCHNAME> ]
-***** 删除分支 [ git branch -d <BRANCHNAME> ]
-***** 隐藏
-      git stash
-      git pull
-      git stash pop
-      接下来 diff 一下此文件看看自动合并的情况，并作出相应修改。
+**** 保存到本地库   
+     #+begin_src sh
+       git commit -m "msg"
+     #+end_src
 
-      git stash: 备份当前的工作区的内容，从最近的一次提交中读取相关内容，让工作区保证和上次提交的内容一致。同时，将当前的工作区内容保存到 Git 栈中。
-      git stash pop: 从 Git 栈中读取最近一次保存的内容，恢复工作区的相关内容。由于可能存在多个 Stash 的内容，所以用栈来管理，pop 会从最近的一个 stash 中读取内容并恢复。
-      git stash list: 显示 Git 栈内的所有备份，可以利用这个列表来决定从那个地方恢复。
-      git stash clear: 清空 Git 栈。此时使用 gitg 等图形化工具会发现，原来 stash 的哪些节点都消失了。
+**** 撤销 [ 恢复到修改前] 
+     #+begin_src sh
+       git checkout <file>
+       # 从另一个分支恢复修改 
+       git checkout <branch>  <file>
+     #+end_src
      
-      2.放弃本地修改，直接覆盖之
-      git reset --hard
-      git pull
-***** 忘了切分支
-      可以先用 git stash save xxx 来保存工作区的内容，然后新建 一个分支并调用 git stash pop
-**** 本地修改的文件，想要撤销，并且还没有暂存，可以用签出命令
-     git checkout . # 抛弃工作区修改
-     git checkout <file>
-**** 用别的分支的文件替换同名文件
-     用 HEAD 指向的 master(默认主分支) 分支中的全部或者部分文件替换
-     git checkout HEAD .
-     git checkout HEAD <file>
-**** 分支的变基 rebase
-其实，还有另外一个选择：你可以把在 C3 里产生的变化补丁在 C4 的基础上重新打一遍。
-在 Git 里，这种操作叫做变基（rebase）。有了 rebase 命令，就可以把在一个分支里提
-交的改变移到另一个分支里重放一遍。
+**** 反转(用本地版本库的东西替换掉本地的文件,再执行一次反过来)
+     #+begin_src sh
+       git revert HEAD                  撤销前一次 commit
+       git revert HEAD^               撤销前前一次 commit
+       git revert commit-id（比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进行保存。
+       git revert 是提交一个新的版本，将需要 revert 的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。
+     #+end_src
+     
+**** 分支管理
+***** 创建分支 
+      #+begin_src sh
+        git branch <BRANCHNAME> 
+        # 从某分支创建分支 
+        git checkout -b <ALTERNATE> <BRANCHNAME> 
+      #+end_src
 
-在上面这个例子中，运行：
-
-#+begin_src shell
-$ git checkout experiment
-$ git rebase master
+***** 切换分支 
+      #+begin_src sh
+        git checkout <BRANCHNAME> 
+      #+end_src
+***** 合并分支
+****** 直接合并 把两条分支上的历史轨迹合并 
+       #+begin_src sh
+       git merge
+       #+end_src
+       
+****** 压合合并 如果想把某个分支的提交作为一个整体记录时，可以使用压合合并。
+       #+begin_src sh
+       git merge --squash <BRANCH>
+       #+end_src
+****** 拣选合并 只需合并某个提交，而不是全部改动.
+       #+begin_src sh
+       git cherry-pick <ID>
+       #+end_src
+***** 修改分支名称
+#+begin_src sh
+git branch -m <BRANCHNAME> <NEWBRANCHNAME> 
 #+end_src
+***** 删除分支 
+      #+begin_src sh
+        git branch -d <BRANCHNAME> 
+      #+end_src
+***** stash(储藏) 
+      可以先用 git stash save xxx 来保存工作区的内容，然后新建 一个分支并调用 git stash pop
+      
+**** 分支的变基 rebase
+     #+begin_src shell
+       git checkout experiment
+       git rebase master
+     #+end_src
 
-它的原理是回到两个分支最近的共同祖先，根据当前分支（也就是要进行变基的分支
-experiment）后续的历次提交对象（这里只有一个 C3），生成一系列文件补丁，然后以基
-底分支（也就是主干分支 master）最后一个提交对象（C4）为新的出发点，逐个应用之前
-准备好的补丁文件，最后会生成一个新的合并提交对象（C3'），从而改写 experiment 的
-提交历史，使它成为 master 分支的直接下游
-
-现在的 C3' 对应的快照，其实和普通的三方合并，即上个例子中的 C5 对应的快照内容一
-模一样了。虽然最后整合得到的结果没有任何区别，但变基能产生一个更为整洁的提交历史。
-如果视察一个变基过的分支的历史记录，看起来会更清楚：仿佛所有修改都是在一根线上先
-后进行的，尽管实际上它们原本是同时并行发生的。
-
-实际上是把解决分支补丁同最新主干代码之间冲突的责任，化转为由提交补丁的人来解决
 *** 远程仓库管理
-**** 克隆远程到本地仓库,本地会有一个拷贝
+**** 克隆远程到本地仓库
+     #+begin_src sh
      git clone RESP
      git clone --depth=1 RESP 只克隆最新的
-**** 添加要提交的中心服务器
-     git remote add origin https://github.com/hanyudeye/test.git 添加远程源 
-**** 远程的东西与本地同步
-     git push -u origin master
-     将本地分支上的提交推送到远程某分支 git push origin <BRANCH>:<REMOTEBRANCH>
-**** 更新本地的版本库
+     #+end_src
+**** 添加远程源 
+     #+begin_src sh
+       git remote add origin https://github.com/hanyudeye/test.git 
+     #+end_src
+     
+**** 远程同步
+     #+begin_src sh
+       git push -u origin master
+       # 将本地分支上的提交推送到远程某分支 
+       git push origin <BRANCH>:<REMOTEBRANCH>
+     #+end_src
+**** 更新本地
+     #+begin_src sh
      git pull
      git pull git://github.com/tom/test.git
+     #+end_src
 **** 查看远程分支情况
+     #+begin_src sh 
      git branch -r # 查看远程 branch
      git checkout -b bug_fix_local bug_fix_remote #把本地端切换为远程的 bug_fix_remote branch 并命名为 bug_fix_local
+     #+end_src
 **** 修改远程仓库 
-***** 1.修改命令
+***** 修改
+     #+begin_src sh
      git remote  set-url origin [url]
-***** 2.先删后加
+     #+end_src
+***** 先删后加
+     #+begin_src sh
      git remote rm origin
      git remote add origin [url]
-**** 强制覆盖本地, 这里不想覆盖的也要覆盖
+     #+end_src
+**** 强制覆盖本地
+     #+begin_src sh
      git fetch --all
      git reset --hard origin/master
      git pull
-*** 搭建 git 服务
-    git 服务支持三种协议   
-    ssh   git@github.com/xx/bb  安全好
-    git    git://github.com/xx/bb  速度快
-    http/https  http://github.com/xx/bb.git  不用改防火墙
-*** 文件日志查看
-**** 状态 status   
+     #+end_src
+*** 日志查看
+**** 仓库状态 
+     #+begin_src sh
      git status
      git status -s 简短信息
      git remote -v 列出服务器地址
+     #+end_src
 **** 查看提交历史
-     git log
-     git log --oneline 简洁--graph 拓扑图 '--reverse'逆向显示
+     #+begin_src sh
+       git log
+       git log --oneline 简洁--graph 拓扑图 '--reverse'逆向显示
+     #+end_src
      --author 指定用户日志
-     如果你要指定日期，可以执行几个选项：--since 和 --before，但
-     是你也可以用 --until 和 --after。
-**** 查看某次提交的内容 [ git show <id> ]
-**** 更详细的信息 git blame <FILE>
-     git blame -L 12,13 <FILE> 具体行的细节
-     显示文件内容变更细节
+     如果你要指定日期，可以执行几个选项：--since 和 --before，但是你也可以用 --until 和 --after。
+**** 查看某次提交的内容   
+#+begin_src sh
+git show <id>
+#+end_src
+**** 更详细的信息 
+     #+begin_src sh 
+       git blame <FILE>
+       # 具体行的细节
+       git blame -L 12,13 <FILE>
+     #+end_src
 *** 比较区别
-         比较修改文件与暂存区的区别  git diff <FILE>
-         比较暂存区和版本库的区别 git diff --cached <FILE>   
-         比较不同版本区别 git diff <HEAD>
-   
-         git diff branch1 branch2 --stat   //显示出所有有差异的文件列表
-         git diff branch1 branch2 文件名(带路径)   //显示指定文件的详细差异
-         git diff branch1 branch2                   //显示出所有有差异的文件的详细差异
+    #+begin_src sh
+      比较修改文件与暂存区的区别  git diff <FILE>
+      比较暂存区和版本库的区别 git diff --cached <FILE>   
+      比较不同版本区别 git diff <HEAD>
 
-         git diff --stat   显示摘要而非整个 diff
-         A: 你本地新增的文件（服务器上没有）.
-         C: 文件的一个新拷贝.
-         D: 你本地删除的文件（服务器上还在）.
-         M: 文件的内容或者 mode 被修改了.
-         R: 文件名被修改了。
-         T: 文件的类型被修改了。
-         U: 文件没有被合并(你需要完成合并才能进行提交)。
-         X: 未知状态(很可能是遇到 git 的 bug 了，你可以向 git 提交 bug report)。
-         在 man git diff-files 中可以查到这些标志的说明
+      git diff branch1 branch2 --stat   //显示出所有有差异的文件列表
+      git diff branch1 branch2 文件名(带路径)   //显示指定文件的详细差异
+      git diff branch1 branch2                   //显示出所有有差异的文件的详细差异
+         #+end_src
 
-*** TAG  [只读]
-**** 使用标签标记里程碑 [ git tag 1.0  [branch] ]
-     为某个分支创建标签 git tag  [ TAG ] [BRANCH] 
-**** 查看可发布版本[  git tag ]
-**** 签出标签 [git checkout 1.0],此时不在某个分支上，可以在此签出到某分支  [ git checkout -b [ BRANCH1.0 ] ]
-*** 把分支合并到 master 分支
-    git checkout master 
-    git rebase  [developversion]
-    git brancd -d [developversion] 删除[developversion]分支
-*** 管理本地版本库
+*** TAG  
+    #+begin_quote
+    这是版本信息
+    #+end_quote
+**** 某个分支创建标签
+     #+begin_src sh
+       git tag  [ TAG ] [BRANCH] 
+       git tag 1.0  [branch] 
+     #+end_src
+     
+**** 查看可发布版本 
+     #+begin_src sh
+       git tag 
+     #+end_src
+**** 签出标签
+     #+begin_src sh
+       git checkout 1.0
+     #+end_src
+
 *** 使用 Git 子模块跟踪外部版本库
+    #+begin_src 
     添加子模块 git submodule add <RESP> <MODULENAME>
     显示子模块 git submodule
     
-克隆含子模块的版本库
-还要初始化子模块  git submodule init <MODULENAME>
-然后更细 git submodule update <MODULENAME>
-*** 高级功能
-**** 压缩
-**** 导出
-** gitignore 版本忽略文件
+    克隆含子模块的版本库
+    还要初始化子模块  git submodule init <MODULENAME>
+    然后更细 git submodule update <MODULENAME>
+    #+end_src
+** gitignore 忽略文件
+   #+begin_src 
    以斜杠“/”开头表示目录； 
    以星号“*”通配多个字符；
    以问号“?”通配单个字符
@@ -223,383 +240,16 @@ experiment）后续的历次提交对象（这里只有一个 C3），生成一�
    以叹号“!”表示不忽略(跟踪)匹配到的文件或目录；
    规则：/fd1/*
    说明：忽略根目录下的 /fd1/ 目录的全部内容；根目录指项目的的根目录
-** Git 常用命令
-   在当前目录新建一个 Git 代码库
-   git init
-
-   新建一个目录，将其初始化为 Git 代码库
-   git init [project-name]
-
-   下载一个项目和它的整个代码历史
-   git clone [url]
-
-   显示当前的 Git 配置
-   git config --list
-
-   编辑 Git 配置文件
-   git config -e [--global]
-   
-   设置提交代码时的用户信息
-   git config [--global] user.name "[name]"
-   git config [--global] user.email "[email address]"
-   
-
-   添加指定文件到暂存区
-   git add [file1] [file2] ...
-
-   添加指定目录到暂存区，包括子目录
-   git add [dir]
-
-   添加当前目录的所有文件到暂存区
-   git add .
-
-   添加每个变化前，都会要求确认
-   对于同一个文件的多处变化，可以实现分次提交
-   git add -p
-
-   删除工作区文件，并且将这次删除放入暂存区
-   git rm [file1] [file2] ...
-
-   停止追踪指定文件，但该文件会保留在工作区
-   git rm --cached [file]
-
-   改名文件，并且将这个改名放入暂存区
-   git mv [file-original] [file-renamed]
-
-   提交暂存区到仓库区
-   git commit -m [message]
-
-   提交暂存区的指定文件到仓库区
-   git commit [file1] [file2] ... -m [message]
-
-   提交工作区自上次 commit 之后的变化，直接到仓库区
-   git commit -a
-
-   提交时显示所有 diff 信息
-   git commit -v
-
-   使用一次新的 commit，替代上一次提交
-   如果代码没有任何新变化，则用来改写上一次 commit 的提交信息
-   git commit --amend -m [message]
-
-   重做上一次 commit，并包括指定文件的新变化
-   git commit --amend [file1] [file2] ...
-
-   列出所有本地分支
-   git branch
-
-   列出所有远程分支
-   git branch -r
-
-   列出所有本地分支和远程分支
-   git branch -a
-
-   新建一个分支，但依然停留在当前分支
-   git branch [branch-name]
-
-   新建一个分支，并切换到该分支
-   git checkout -b [branch]
-
- 新建一个分支，指向指定 commit
- git branch [branch] [commit]
-
- 新建一个分支，与指定的远程分支建立追踪关系
- git branch --track [branch] [remote-branch]
-
- 切换到指定分支，并更新工作区
- git checkout [branch-name]
-
- 切换到上一个分支
- git checkout -
-
- 建立追踪关系，在现有分支与指定的远程分支之间
- git branch --set-upstream [branch] [remote-branch]
-
- 合并指定分支到当前分支
- git merge [branch]
-
- 选择一个 commit，合并进当前分支
- git cherry-pick [commit]
-
- 删除分支
- git branch -d [branch-name]
-
- 删除远程分支
- git push origin --delete [branch-name]
- git branch -dr [remote/branch]
-
- 列出所有 tag
- git tag
-
- 新建一个 tag 在当前 commit
- git tag [tag]
-
- 新建一个 tag 在指定 commit
- git tag [tag] [commit]
-
- 删除本地 tag
- git tag -d [tag]
-
- 删除远程 tag
- git push origin :refs/tags/[tagName]
-
- 查看 tag 信息
- git show [tag]
-
- 提交指定 tag
- git push [remote] [tag]
-
- 提交所有 tag
- git push [remote] --tags
-
- 新建一个分支，指向某个 tag
- git checkout -b [branch] [tag]
-
- 显示有变更的文件
- git status
-
- 显示当前分支的版本历史
- git log
-
- 显示 commit 历史，以及每次 commit 发生变更的文件
- git log --stat
-
- 搜索提交历史，根据关键词
- git log -S [keyword]
-
- 显示某个 commit 之后的所有变动，每个 commit 占据一行
- git log [tag] HEAD --pretty=format:%s
-
- 显示某个 commit 之后的所有变动，其"提交说明"必须符合搜索条件
- git log [tag] HEAD --grep feature
-
- 显示某个文件的版本历史，包括文件改名
- git log --follow [file]
- git whatchanged [file]
-
- 显示指定文件相关的每一次 diff
- git log -p [file]
-
- 显示过去 5 次提交
- git log -5 --pretty --oneline
-
- 显示所有提交过的用户，按提交次数排序
- git shortlog -sn
-
- 显示指定文件是什么人在什么时间修改过
- git blame [file]
-
- 显示暂存区和工作区的差异
- git diff
-
- 显示暂存区和上一个 commit 的差异
- git diff --cached [file]
-
- 显示工作区与当前分支最新 commit 之间的差异
- git diff HEAD
-
- 显示两次提交之间的差异
- git diff [first-branch]...[second-branch]
-
- 显示今天你写了多少行代码
- git diff --shortstat "@{0 day ago}"
-
- 显示某次提交的元数据和内容变化
- git show [commit]
-
- 显示某次提交发生变化的文件
- git show --name-only [commit]
-
- 显示某次提交时，某个文件的内容
- git show [commit]:[filename]
-
- 显示当前分支的最近几次提交
- git reflog
-程同步
- 下载远程仓库的所有变动
- git fetch [remote]
-
- 显示所有远程仓库
- git remote -v
-
- 显示某个远程仓库的信息
- git remote show [remote]
-
- 增加一个新的远程仓库，并命名
- git remote add [shortname] [url]
-
- 取回远程仓库的变化，并与本地分支合并
- git pull [remote] [branch]
-
- 上传本地指定分支到远程仓库
- git push [remote] [branch]
-
- 强行推送当前分支到远程仓库，即使有冲突
- git push [remote] --force
-
- 推送所有分支到远程仓库
- git push [remote] --all
-
- 恢复暂存区的指定文件到工作区
- git checkout [file]
-
- 恢复某个 commit 的指定文件到暂存区和工作区
- git checkout [commit] [file]
-
- 恢复暂存区的所有文件到工作区
- git checkout .
-
- 重置暂存区的指定文件，与上一次 commit 保持一致，但工作区不变
- git reset [file]
-
- 重置暂存区与工作区，与上一次 commit 保持一致
- git reset --hard
-
- 重置当前分支的指针为指定 commit，同时重置暂存区，但工作区不变
- git reset [commit]
-
- 重置当前分支的 HEAD 为指定 commit，同时重置暂存区和工作区，与指定 commit 一致
- git reset --hard [commit]
-
- 重置当前 HEAD 为指定 commit，但保持暂存区和工作区不变
- git reset --keep [commit]
-
- 新建一个 commit，用来撤销指定 commit
- 后者的所有变化都将被前者抵消，并且应用到当前分支
- git revert [commit]
-
-时将未提交的变化移除，稍后再移入
- git stash
- git stash pop
-他
- 生成一个可供发布的压缩包
- git archive
-** 帮助 
-   git help <command>
-** 日志 [git log]
-** 提交合并请求
-   Fork,然后克隆项目，然后创建新分支 
-   
-   #+begin_src shell
-    $ git checkout -b patchname
    #+end_src
-    
-   本地修改并测试，推送分支。
-   
-    #+begin_src shell
-    $ git add .
-    $ git commit -m "add commit messamge"
-    $ git push origin patchname
-    #+end_src
+* github
+  免费给你放照片的地方，如果想要隐私，就要付费了啊
+** 主要功能
 
-   进入 ~fork~ 后的仓库，切换到新提交的 ~patchname~ 分支，点击 ~patchname~ 分支
-   右侧的 **New pull request** 。在 PR 对比页面，正确选择你需要发起合并请求的分
-   支，然后点击 **Create pull request** ，建立一个新的合并申请并描述变动。
-** 提交合并
-   git remote -v 
-   git remote add upstream git@github.com:xxx/xxx.git
-   git fetch upstream
-   git merge upstream/master
-   git push 
-** 快进式合并
-   "快进式合并"（fast-farward merge），会直接将 master 分支指向合并的分支，这种模式
-   下进行分支合并会丢失分支信息，也就不能在分支历史上看出分支信息。
-
-   可以在合并时加上 --no-ff 参数来禁用 Fast forward 模式，并且加上 -m 参数让合并时
-   产生一个新的 commit。
-  
-   #+begin_src shell
-     $ git merge --no-ff -m "merge with no-ff" dev
+   #+begin_src 
+   Git 仓库
+   Issue
+   Wiki
+   Pull Request
+   社交功能，follow(关注), star(赞)，Organization (组织)
    #+end_src
-** 储藏（Stashing）,还不想存本地库，又想切分支时可用
-   在一个分支上操作之后，如果还没有将修改提交到分支上，此时进行切换分支，那么另一个
-   分支上也能看到新的修改。这是因为所有分支都共用一个工作区的缘故。
-
-   可以使用 git stash 将当前分支的修改储藏起来，此时当前工作区的所有修改都会被存到
-   栈上，也就是说当前工作区是干净的，没有任何未提交的修改。此时就可以安全的切换到其
-   它分支上了。
-#+begin_src shell
-  $ git stash
-#+end_src
-
-该功能可以用于 bug 分支的实现。如果当前正在 dev 分支上进行开发，但是此时 master
-上有个 bug 需要修复，但是 dev 分支上的开发还未完成，不想立即提交。在新建 bug 分
-支并切换到 bug 分支之前就需要使用 git stash 将 dev 分支的未提交修改储藏起来。
-* svn
-** svn 重新验证证书 ->会在用户名和密码错误的情况下重新验证 
-   Error:  “Server certificate verification failed: issuer is not trusted”
-   
-   使用终端执行如下命令：svn list https://your.repository.url 接下来选择对应的
-   （临时）/（永久）即可。
-** 功能
-   :LOGBOOK:
-   CLOCK: [2019-05-26 日 19:42]--[2019-05-26 日 20:07] =>  0:25
-   :END:
-   查看修改的文件记录
-   svn cat -- 显示特定版本的某文件内容。
-   svn list -- 显示一个目录或某一版本存在的文件列表。
-   svn log -- 显示 svn 的版本 log，含作者、日期、路径等。
-   svn diff -- 显示特定修改的行级详细信息。
-
-   list 示例：
-
-   svn list http://svn.test.com/svn     #查看目录中的文件。
-   svn list -v http://svn.test.com/svn  #查看详细的目录的信息(修订人,版本号,文件大小等)。
-   svn list [-v]                        #查看当前当前工作拷贝的版本库 URL。
-   cat 示例：
-
-   svn cat -r 4 test.c     #查看版本 4 中的文件 test.c 的内容,不进行比较。
-   diff 示例：
-
-   svn diff               #什么都不加，会坚持本地代码和缓存在本地.svn 目录下的信息的不同;信息太多，没啥用处。
-   svn diff -r 3          #比较你的本地代码和版本号为 3 的所有文件的不同。
-   svn diff -r 3 text.c   #比较你的本地代码和版本号为 3 的 text.c 文件的不同。
-   svn diff -r 5:6        #比较版本 5 和版本 6 之间所有文件的不同。
-   svn diff -r 5:6 text.c #比较版本 5 和版本 6 之间的 text.c 文件的变化。
-   svn diff -c 6 test.c    #比较版本 5 和版本 6 之间的 text.c 文件的变化。
-   log 示例：
-
-   svn log         #什么都不加会显示所有版本 commit 的日志信息:版本、作者、日期、comment。
-   svn log -r 4:20 #只看版本 4 到版本 20 的日志信息，顺序显示。
-   svn log -r 20:5 #显示版本 20 到 4 之间的日志信息，逆序显示。
-   svn log test.c  #查看文件 test.c 的日志修改信息。
-   svn log -r 8 -v #显示版本 8 的详细修改日志，包括修改的所有文件列表信息。
-   svn log -r 8 -v -q   #显示版本 8 的详细提交日志，不包括 comment。
-   svn log -v -r 88:866 #显示从版本 88 到版本 866 之间，当前代码目录下所有变更的详细信息 。
-   svn log -v dir  #查看目录的日志修改信息,需要加 v。
-   svn log http://foo.com/svn/trunk/code/  #显示代码目录的日志信息。
-   常用命令
-
-   svn add file|dir -- 添加文件或整个目录
-   svn checkout -- 获取 svn 代码
-   svn commit  -- 提交本地修改代码
-   svn status    -- 查看本地修改代码情况：修改的或本地独有的文件详细信息
-   svn merge   -- 合并 svn 和本地代码
-   svn revert   -- 撤销本地修改代码
-   svn resolve -- 合并冲突代码
-
-   svn help [command] -- 查看 svn 帮助，或特定命令帮助
-   svn diff 个性化定制
-   svn 配置文件: ~/.subversion/config
-
-   修改~/.subversion/config，找到如下配置行：
-
-   # diff-cmd = diff_program (diff, gdiff, etc.)
-   将上面那个脚本的路径添加进去就行，修改为
-
-   diff-cmd = /usr/local/bin/diffwrap.sh  #绝对路径
-   这样 svn diff 命令就会默认使用 vimdiff 比较文件。
-
-   diffwrap.sh 文件
-   #! /bin/bash
-
-   # for svn diff: 修改~/.subversion/config，找到如下配置行：
-   # diff-cmd = diff_program (diff, gdiff, etc.)
-   # diff-cmd = ~/bin/diffwrap.sh
-
-   # 参数大于 5 时，去掉前 5 个参数；参数小于 5，失败，什么也不做
-   shift 5
-
-   # 使用 vimdiff 比较
-   vimdiff "$@"
 

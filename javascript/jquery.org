@@ -1,17 +1,28 @@
-#+TITLE: Jquery 简介
-#+DESCRIPTION: Jquery 简介
-#+TAGS: Jquery,javascript
-#+CATEGORIES: 框架使用
+#+TITLE: jQuery简介
+#+DESCRIPTION: jQuery简介
+#+TAGS[]: jQuery
+#+CATEGORIES[]: 技术
+#+DATE: 2020-02-11T20:46:44+08:00
 
-* jquery 
-** 简介 
-   给 window 对象扩展了两个函数(其实一个) ~jQuery~ 和 ~$~ , ~$~ 是  ~jQuery~ 的别名。
-   #+begin_src js
-     window.$
-     window.jQuery
+jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节点的遍历和操作，事件
+处理，动画和Ajax等，使得操作起来极为简化，当然自己也扩展了一些功能。
+#+begin_quote
+相当与原来用 *DOM* 操作的方式都可以用 *jQuery* 方式了
+#+end_quote
+# more 
+
+** 优点
+   - *jQuery* 提供的选择器比 *DOM* 提供的几个函数方便的多。
+   - 浏览器兼容性做的比较好，不要自己再写兼容代码
+   - 帮助文档也多，插件多，容易扩展
+   - 链式操作,每一步的jQuery操作，返回的都是一个jQuery对象，所以不同操作可以连在一起。(这是方便的来由)
+
+** 安装与初始化
+   在 *HTML* 页面中引入就可以了。
+   #+begin_src html
+     <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
    #+end_src
-  
-   启动: 在页面加载完成事件触发后(文档就绪)就执行
+   初始化
    #+begin_src js
      $(document).ready(function(){
 
@@ -22,1007 +33,370 @@
 
      })
    #+end_src
-  #+HTML: <!-- more -->
- 
-   阻止事件的默认行为 ： ~preventDefault~
+
+** 选择器 
+   #+begin_quote
+   以下都是来源网上，整理的挺好的就不自己写了，也会整理下，
+   #+end_quote
+   
+   选择网页元素jQuery的基本设计和主要用法，就是"选择某个网页元素，然后对其进行某种
+   操作"。这是它区别于其他函数库的根本特点。
+
+   使用jQuery的第一步，往往就是将一个选择表达式，放进构造函数jQuery()(简写为$)，然
+   后得到被选中的元素。
+
+
    #+begin_src js
-     $( document ).ready(function() {
-         $( "a" ).click(function( event ) {
-             alert( "As you can see, the link no longer took you to jquery.com" );
-             event.preventDefault();
-         });
-     });
-#+end_src
-   
-ready 的实现 
-#+begin_src js
-     document.ready = function (callback) {
-            ///兼容 FF,Google
-            if (document.addEventListener) {
-                document.addEventListener('DOMContentLoaded', function () {
-                    document.removeEventListener('DOMContentLoaded', arguments.callee, false);
-                    callback();
-                }, false)
-            }
-             //兼容 IE
-            else if (document.attachEvent) {
-                document.attachEvent('onreadystatechange', function () {
-                      if (document.readyState == "complete") {
-                                document.detachEvent("onreadystatechange", arguments.callee);
-                                callback();
-                       }
-                })
-            }
-            else if (document.lastChild == document.body) {
-                callback();
-            }
-        }
-#+end_src
-** 引入
-   <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.js"></script>
-   安装 npm install jquery
-** 选择器
-   jQuery( "*" ) jQuery( ".class" )
-   jQuery( "element" )
-   jQuery( "#id" )
-   jQuery( "selector1, selector2, selectorN" )  多个选择
+     $(document)//选择整个文档对象
+     $('#myId')//选择ID为myId的网页元素  
+     $('div.myClass')//选择class为myClass的div元素    
+     $('input[name=first]')//选择name属性等于first的input元素
+     $('a:first')//选择网页中第一个a元素  
+     $('tr:odd')//选择表格的奇数行  
+     $('#myForm :input')//选择表单中的input元素  
+     $('div:visible') //选择可见的div元素  
+     $('div:gt(2)')//选择所有的div元素，除了前三个  
+     $('div:animated')//选择当前处于动画状态的div元素  
+   #+end_src
 
-*** 表达式查找
-    jQuery.find(expr)	不会有初始集合中的内容
-    jQuery.filter(expr)	从初始的 jQuery 对象集合中筛选出一部分
-    $("p").find("span");//是从元素 p 的后代开始找，等于$("p span")
-*** this 对象
-    在任何事件内部，this 引用的都是 Dom 对象
-    在任何插件内部，this 引用的都是当前的 jquery 对象
-    在$(…).each 方法中，this 引用的都是 Dom 或正被遍历的元素对象
-   
-    在 ajax 事件中，this 默认指向的是调用本次 AJAX 请求时传递的 options 参数，可以通过设
-    定 ajax options 的 context 参数进行修改;
-   
-** 属性 
-*** 属性值
-    $(…).attr	属性值
-    $(…).prop	访问 html 规范定义的属性
+   #+begin_quote
+   理念和css 一样，css 是定位东西，赋予样式，jQuery 是定位东西，赋予行为。
+   #+end_quote
 
-    <input id="chk1" type="checkbox" />是否可见
-    <input id="chk2" type="checkbox" checked="checked" />是否可见
-    分别用 prop 和 attr 的操作结果如下：
-    $("#chk1").prop("checked") == false
-    $("#chk2").prop("checked") == true
+** 改变结果集
+   如果选中多个元素，jQuery提供过滤器，可以缩小结果集：
 
-    $("#chk1").attr("checked") == undefined
-    $("#chk2").attr("checked") == "checked"
-*** 节点漫游
-    $.parent(expr)	找父元素
-    $.parents(expr)	找到所有祖先元素，不限于父元素
-    $.children(expr)	查找所有子元素，只会找到直接的孩子节点，不会返回所有子孙
-    $.prev()	查找上一个兄弟节点，不是所有的兄弟节点
-    $.prevAll()	查找所有之前的兄弟节点
-    $.next()	查找下一个兄弟节点，不是所有的兄弟节点
-    $.nextAll()	查找所有之后的兄弟节点
-    $.siblings()	查找兄弟节点，不分前后
-*** 节点定义事件
-    基本只需要使用 on、once、off 三个即可 
-    尽可能使用命名空间（bootstrap 比较常见）
-   
-    $("#main").on("click.test",function(){
-    this;//指向当前的 Dom 元素
-    });
-   
- 灵活运用事件委托，利用时间冒泡机制，将事件绑定到祖先元素
- $("#parent").on("click.test",function(event){
-     var $target=$(event.target);
-     if($target.is("#child1")){//是否为 child1
-     //...
-     }
-     if($target.is("#child2")){//是否为 child2
-     //...
-     }
-     return false;//=event.stopPropagation();event.preventDefault();
- });
+   #+begin_src js
+     $('div').has('p'); //选择包含p元素的div元素  
+     $('div').not('.myClass'); //选择class不等于myClass的div元素  
+     $('div').filter('.myClass'); //选择class等于myClass的div元素  
+     $('div').first(); //选择第1个div元素  
+     $('div').eq(5); //选择第6个div元素  
+   #+end_src
 
- 使用命名函数代替匿名函数可以解决事件重复绑定问题，因为同一个命名函数绑定同一个事
- 件只会绑定一次。
-*** 动态创建节点
-    #+begin_src js
-      $('<input />',{
-          type:"checkbox",
-          name:"cbox",
-          val:"1",
-          checked:"checked"
-      }).appendTo("body");
-    #+end_src
-*** 遍历
-    $.each(data,function(index,item){})
-    $.each(data,function(k,v,object){})
-*** 表单对象
-    //用 Form 传递表单数据
-    var formData=new FormData();//方式 1，new 一个 FormData
-    formData.append("username","张三");
+   有一些时候，我们需要从结果集出发，移动到附近的相关元素，jQuery也提供了在DOM树上的移动方法：
+   #+begin_src js
+     $('div').next('p'); //选择div元素后面的第一个p元素  
+     $('div').parent(); //选择div元素的父元素  
+     $('div').closest('form'); //选择离div最近的那个form父元素  
+     $('div').children(); //选择div的所有子元素  
+     $('div').siblings(); //选择div的同级元素  
+   #+end_src
 
-    var form=document.getElementById("myForm");
-    var formData=new FormData(form);//方式 2，根据 Form 创建 FormData
-    formData.append(...);//添加额外内容
-    //xhr.open("POST",form.action);
-    //xhr.send(formData);//使用 xhr 发送数据
+   #+begin_quote
+   相当于更好的定位了哇，选择器很耗资源，可以从已有的节点相对定位，省点资源。
+   #+end_quote
+  
+** 链式操作
 
-    $.ajax({//使用 jquery 发送数据
-    url:"example.php",
-    type:"POST",
-    data=formData,
-    processData:false,//告诉 jquery 不要处理待发送的数据
-    contentType:false//告诉 jquery 不要设置 Content-Type 请求头，默认为“application/x-www-form-urlencoded”
-    });
-** Dom 对象 与 jQuery 对象转换
-   var $v =$("#v");    //jQuery 对象
-   var v=$v[0];       //DOM 对象 
-   var v=$v.get(0);   //DOM 对象 
+   选中网页元素以后，就可以对它进行某种操作。
+   jQuery允许将所有操作连接在一起，以链条的形式写出来，比如：
+   #+begin_src js
+     $('div').find('h3').eq(2).html('Hello');  
+   #+end_src
 
-** 实用 jQuery 代码
-*** 2. 重用你的元素查询
+   我们可以这样拆封开来，就是下面这样：
+   #+begin_src js
+     $('div')//找到div元素  
+         .find('h3')//选择其中的h3元素  
+         .eq(2)//选择第3个h3元素  
+         .html('Hello'); //将它的内容改为Hello  
+   #+end_src
+   这是jQuery最令人称道、最方便的特点。它的原理在于每一步的jQuery操作，返回的都是
+   一个jQuery对象，所以不同操作可以连在一起。
+
+   jQuery还提供了.end()方法，使得结果集可以后退一步：
+
+   #+begin_src js
+     $('div')  
+         .find('h3')  
+         .eq(2)  
+         .html('Hello')  
+         .end()//退回到选中所有的h3元素的那一步  
+         .eq(0)//选中第一个h3元素  
+         .html('World'); //将它的内容改为World  
+   #+end_src
+
+** 元素的操作：取值和赋值
+
+   操作网页元素，最常见的需求是取得它们的值，或者对它们进行赋值。
+
+   jQuery使用同一个函数，来完成取值(getter)和赋值(setter)。到底是取值还是赋值，由函数的参数决定。
+
+   #+begin_src js
+     $('h1').html(); //html()没有参数，表示取出h1的值 
+     $('h1').html('Hello'); //html()有参数Hello，表示对h1进行赋值  
+   #+end_src
+   常见的取值和赋值函数如下：
+
+   - .html() 取出或设置html内容 取出某个表单元素的值  
+   - .text() 取出或设置text内容  
+   - .attr() 取出或设置某个属性的值  
+   - .width() 取出或设置某个元素的宽度  
+   - .height() 取出或设置某个元素的高度  
+   - .val() 取出或设置html内容 取出某个表单元素的值  
+
+   #+begin_quote
+   需要注意的是，如果结果集包含多个元素，那么赋值的时候，将对其中所有的元素赋值;取
+   值的时候，则是只取出第一个元素的值(.text()例外，它取出所有元素的text内容)。
+   #+end_quote
+
+** 元素的操作：移动
+   如果要移动选中的元素，有两种方法：一种是直接移动该元素，另一种是移动其他元素，使得目标元素达到我们想要的位置。
+
+   假定我们选中了一个div元素，需要把它移动到p元素后面。
+
+   第一种方法是使用.insertAfter()，把div元素移动p元素后面：
+
+   #+begin_src js
+     $('div').insertAfter('p');
+   #+end_src
+
+   第二种方法是使用.after()，把p元素加到div元素前面：
+
+   #+begin_src js
+     $('p').after('div');
+   #+end_src
+ 
+
+   表面上看，这两种方法的效果是一样的，唯一的不同似乎只是操作视角的不同。但是实际上，它们有一个重大差别，那就是返回的元素不一样。第一种方法返回div元素，第二种方法返回p元素。你可以根据需要，选择到底使用哪一种方法。
+
+   使用这种模式的操作方法，一共有四对
+
+   - .insertAfter()和.after()：在现存元素的外部，从后面插入元素  
+   - .insertBefore()和.before()：在现存元素的外部，从前面插入元素  
+   - .appendTo()和.append()：在现存元素的内部，从后面插入元素  
+   - .prependTo()和.prepend() ：在现存元素的内部，从前面插入元素
+
+** 元素的操作：复制、删除和创建
+
+     - 复制元素使用.clone()。
+     - 删除元素使用.remove()和.detach()。两者的区别在于，前者不保留被删除元素的事件，后者保留，有利于重新插入文档时使用。
+     - 清空元素内容(但是不删除该元素)使用.empty()。
+     - 创建新元素的方法非常简单，只要把新元素直接传入jQuery的构造函数就行了：
+
+       #+begin_src js
+         $('<p>Hello</p>');  
+         $('<li class="new">new list item</li>');  
+         $('ul').append('<li>list item</li>');  
+       #+end_src
+
+       #+begin_src js
+         $('select#car-brands')
+             .append($('<option>')
+                     .attr({ value: 'VAG' })
+                     .text('Volkswagen')
+                    );
+       #+end_src
+
+
      #+begin_src js
-       var allItems = $("div.item");  
-       var keepList = $("div#container1 div.item");
-       $(formToLookAt + " input:checked").each(function() {     keepListkeepList = keepList.filter("." + $(this).attr("name")); });
+       $('<input />',{
+           type:"checkbox",
+           name:"cbox",
+           val:"1",
+           checked:"checked"
+       }).appendTo("body");
      #+end_src
-     
-*** 3. 使用 has()来判断一个元素是否包含特定的 class 或者元素
-    #+begin_src js
-      $("input").has(".email").addClass("email_icon");
-    #+end_src
-    
-*** 4. 使用 jQuery 切换样式
-    #+begin_src js
-    //Look for the media-type you wish to switch then set the href to your new style sheet  
-    $('link[media='screen']').attr('href', 'Alternative.css');
-    #+end_src
-    
-*** 5. 限制选择的区域
-    #+begin_src html
-      <ul id="shopping_cart_items">  
-       <li>  
-       <input value="Item-X" name="item" class="is_in_stock" type="radio"> Item X</li>  
-       <li>  
-       <input value="Item-Y" name="item" class="3-5_days" type="radio"> Item Y</li>  
-       <li>  
-       <input value="Item-Z" name="item" class="unknown" type="radio"> Item Z</li>  
-       </ul>
-    #+end_src
-    #+begin_src js
-    //Where possible, pre-fix your class names with a tag name  
-     //so that jQuery doesn't have to spend more time searching  
-     //for the element you're after. Also remember that anything  
-     //you can do to be more specific about where the element is  
-     //on your page will cut down on execution/search times  
-     var in_stock = $('#shopping_cart_items input.is_in_stock');
-    #+end_src
-     
-*** 6. 如何正确使用 ToggleClass
-    #+begin_src js
-      //Toggle class allows you to add or remove a class  
-       //from an element depending on the presence of that  
-       //class. Where some developers would use:  
-       a.hasClass('blueButton') ? a.removeClass('blueButton') : a.addClass('blueButton');  
-       //toggleClass allows you to easily do this using  
-       a.toggleClass('blueButton');
-    #+end_src
-     
-*** 7. 设置 IE 指定的功能
-         if ($.browser.msie) { // Internet Explorer is a sadist. }
-*** 8. 使用 jQuery 来替换一个元素
-        $('#thatdiv').replaceWith('fnuh');
-*** 9. 验证一个元素是否为空
-        if ($('#keks').html()) { //Nothing found ;}
-*** 10. 在无序的 set 中查找一个元素的索引
-           $("ul > li").click(function () {  
-         var index = $(this).prevAll().length;  
+
+     这种创建的方式要好一点 
+     #+begin_src js
+       var e = $("", { href: "#", class: "a-class another-class", title: "..." });
+     #+end_src
+** 工具方法
+   除了对选中的元素进行操作以外，jQuery还提供一些工具方法(utility)，不必选中元素，就可以直接使用。
+
+   如果你懂得Javascript语言的继承原理，那么就能理解工具方法的实质。它是定义在jQuery构造函数上的方法，即jQuery.method()，所以可以直接使用。而那些操作元素的方法，是定义在构造函数的prototype对象上的方法，即jQuery.prototype.method()，所以必须生成实例(即选中元素)后使用。如果不理解这种区别，问题也不大，只要把工具方法理解成，是像javascript原生函数那样，可以直接使用的方法就行了。
+
+   常用的工具方法有以下几种：
+
+   - $.trim() 去除字符串两端的空格。  
+   - $.each() 遍历一个数组或对象。  
+   - $.inArray() 返回一个值在数组中的索引位置。如果该值不在数组中，则返回-1。  
+   - $.grep() 返回数组中符合某种标准的元素。   
+   - $.extend() 将多个对象，合并到第一个对象。   
+   - $.makeArray() 将对象转化为数组。  
+   - $.type() 判断对象的类别（函数对象、日期对象、数组对象、正则对象等等）。  
+   - $.isArray() 判断某个参数是否为数组。  
+   - $.isEmptyObject() 判断某个对象是否为空（不含有任何属性）。  
+   - $.isFunction() 判断某个参数是否为函数。  
+   - $.isPlainObject() 判断某个参数是否为用"{}"或"new Object"建立的对象。  
+   - $.support() 判断浏览器是否支持某个特性。  
+
+** 事件操作
+   jQuery可以对网页元素绑定事件。根据不同的事件，运行相应的函数。
+
+   #+begin_src js
+     $('p').click(function(){  
+         alert('Hello');  
+     }); 
+   #+end_src
+
+   目前，jQuery主要支持以下事件：
+
+   - .blur() 表单元素失去焦点。  
+   - .change() 表单元素的值发生变化  
+   - .click() 鼠标单击  
+   - .dblclick() 鼠标双击  
+   - .focus() 表单元素获得焦点  
+   - .focusin() 子元素获得焦点  
+   - .focusout() 子元素失去焦点  
+   - .hover() 同时为mouseenter和mouseleave事件指定处理函数  
+   - .keydown() 按下键盘（长时间按键，只返回一个事件）  
+   - .keypress() 按下键盘（长时间按键，将返回多个事件）  
+   - .keyup() 松开键盘  
+   - .load() 元素加载完毕  
+   - .mousedown() 按下鼠标  
+   - .mouseenter() 鼠标进入（进入子元素不触发）  
+   - .mouseleave() 鼠标离开（离开子元素不触发）  
+   - .mousemove() 鼠标在元素内部移动  
+   - .mouseout() 鼠标离开（离开子元素也触发）  
+   - .mouseover() 鼠标进入（进入子元素也触发）  
+   - .mouseup() 松开鼠标  
+   - .ready() DOM加载完成  
+   - .resize() 浏览器窗口的大小发生改变  
+   - .scroll() 滚动条的位置发生变化  
+   - .select() 用户选中文本框中的内容  
+   - .submit() 用户递交表单  
+   - .toggle() 根据鼠标点击的次数，依次运行多个函数  
+   - .unload()  用户离开页面  
+
+     以上这些事件在jQuery内部，都是.bind()的便捷方式。使用.bind()可以更灵活地控制事件，比如为多个事件绑定同一个函数：
+
+     #+begin_src js
+       $('input').bind(  
+           'click change'， //同时绑定click和change事件  
+           function(){  
+               alert('Hello');  
+           }  
+       );  
+     #+end_src
+
+
+   如果你只想让事件运行一次，这时可以使用.one()方法。
+
+   #+begin_src js
+     $("p").one("click"， function(){  
+         alert("Hello"); //只运行一次，以后的点击不会运行  
+     });  
+   #+end_src
+
+   .unbind()用来解除事件绑定。
+
+   #+begin_src js
+     $('p').unbind('click'); 
+   #+end_src
+
+   所有的事件处理函数，都可以接受一个事件对象(event object)作为参数，比如下面例子中的e：
+
+   #+begin_src js
+     $("p").click(function(e){  
+         alert(e.type); //"click"  
+     }); 
+   #+end_src
+
+   这个事件对象有一些很有用的属性和方法：
+
+   - event.pageX 事件发生时，鼠标距离网页左上角的水平距离
+   - event.pageY 事件发生时，鼠标距离网页左上角的垂直距离
+   - event.type 事件的类型(比如click)
+   - event.which 按下了哪一个键
+   - event.data 在事件对象上绑定数据，然后传入事件处理函数
+   - event.target 事件针对的网页元素
+   - event.preventDefault() 阻止事件的默认行为(比如点击链接，会自动打开新页面)
+   - event.stopPropagation() 停止事件向上层元素冒泡
+
+     在事件处理函数中，可以用this关键字，返回事件针对的DOM元素：
+
+     #+begin_src js
+       $('a').click(function(){  
+           if ($(this).attr('href').match('evil')){//如果确认为有害链接  
+               e.preventDefault(); //阻止打开  
+               $(this).addClass('evil'); //加上表示有害的class  
+           }  
+       });  
+     #+end_src
+     有两种方法，可以自动触发一个事件。一种是直接使用事件函数，另一种是使用.trigger()或.triggerHandler()。
+
+     #+begin_src js
+       $('a').click();
+       $('a').trigger('click');
+     #+end_src
+
+** 特殊效果
+   jQuery允许对象呈现某些特殊效果。
+
+   #+begin_src js
+     $('h1').show(); //展现一个h1标题 
+   #+end_src
+
+   常用的特殊效果如下：
+
+   - .fadeIn() 淡入
+   - .fadeOut() 淡出
+   - .fadeTo() 调整透明度
+   - .hide() 隐藏元素
+   - .show() 显示元素
+   - .slideDown() 向下展开
+   - .slideUp() 向上卷起
+   - .slideToggle() 依次展开或卷起某个元素
+   - .toggle() 依次展示或隐藏某个元素
+
+
+   除了.show()和.hide()，所有其他特效的默认执行时间都是400ms(毫秒)，但是你可以改变这个设置。
+
+   #+begin_src js
+     $('h1').fadeIn(300); // 300毫秒内淡入  
+     $('h1').fadeOut('slow'); //缓慢地淡出 
+   #+end_src
+
+   在特效结束后，可以指定执行某个函数。
+
+   #+begin_src js
+     $('p').fadeOut(300, function(){$(this).remove(); }); 
+   #+end_src
+
+   更复杂的特效，可以用.animate()自定义。
+
+   #+begin_src js
+     $('div').animate(  
+         {  
+             left : "+=50"，//不断右移  
+             opacity : 0.25 //指定透明度  
+         },
+         300,// 持续时间  
+         function(){ alert('done!'); }//回调函数  
+     ); 
+   #+end_src
+
+   - .stop()和.delay()用来停止或延缓特效的执行。
+   - $.fx.off如果设置为true，则关闭所有网页特效。
+** ajax
+   ajax 是后台处理数据的技术，比前台处理数据（网页刷新） 感官上好点。
+   
+   #+begin_src js
+     $.ajax({
+         type: 'POST',
+         url: '/process/submit.php',
+         data: {
+             name : 'John',
+             location : 'Boston',
+         },
+     }).then(function(msg) {
+         alert('Data Saved: ' + msg);
+     }).catch(function(xmlHttpRequest, statusText, errorThrown) {
+         alert(
+             'Your form submission failed.\n\n'
+                 + 'XML Http Request: ' + JSON.stringify(xmlHttpRequest)
+                 + ',\nStatus Text: ' + statusText
+                 + ',\nError Thrown: ' + errorThrown);
      });
-*** 11. 绑定一个函数到一个事件
- $('#foo').bind('click', function() {
-   alert('User clicked on "foo."'); 
- });
-*** 12. 添加 HTML 到一个元素
- $('#lal').append('sometext');
-*** 13. 创建元素时使用对象来定义属性
- var e = $("", { href: "#", class: "a-class another-class", title: "..." });
-*** 14. 使用过滤器过滤多属性
- //This precision-based approached can be useful when you use  
- //lots of similar input elements which have different types  
- var elements = $('#someid input[type=sometype][value=somevalue]').get();
-*** 15. 使用 jQuery 预加载图片
- jQuery.preloadImages = function() { for(var i = 0; i').attr('src', arguments[i]); } };  
- // Usage $.preloadImages('image1.gif', '/path/to/image2.png', 'some/image3.jpg');
-*** 16. 设置任何匹配一个选择器的事件处理程序
-     $('button.someClass').live('click', someFunction);
-       //Note that in jQuery 1.4.2, the delegate and undelegate options have been
-       //introduced to replace live as they offer better support for context
-         //For example, in terms of a table where before you would use..
-       // .live()
-       $("table").each(function(){
-         $("td", this).live("hover", function(){
-         $(this).toggleClass("hover");
-         });
-       });
-       //Now use..
-       $("table").delegate("td", "hover", function(){
-       $(this).toggleClass("hover");
-     });
-*** 17. 找到被选择到的选项(option)元素
- $('#someElement').find('option:selected');
-*** 18. 隐藏包含特定值的元素
- $("p.value:contains('thetextvalue')").hide();
-*** 19. 自动的滚动到页面特定区域
-     jQuery.fn.autoscroll = function(selector) {
-       $('html,body').animate(
-         {scrollTop: $(selector).offset().top},
-         500
-       );
-     }
-     //Then to scroll to the class/area you wish to get to like this:
-     $('.area_name').autoscroll();
-*** 20. 检测各种浏览器
-     Detect Safari (if( $.browser.safari)),
-     Detect IE6 and over (if ($.browser.msie && $.browser.version > 6 )),
-     Detect IE6 and below (if ($.browser.msie && $.browser.version <= 6 )),
-     Detect FireFox 2 and above (if ($.browser.mozilla && $.browser.version >= '1.8' ))
-*** 21. 替换字符串中的单词
-     var el = $('#id');
-     el.html(el.html().replace(/word/ig, ''));
-*** 22. 关闭右键的菜单
-  $(document).bind('contextmenu',function(e){ return false; });
-*** 23. 定义一个定制的选择器
-     $.expr[':'].mycustomselector = function(element, index, meta, stack){
-     // element- is a DOM element
-     // index - the current loop index in stack
-     // meta - meta data about your selector
-     // stack - stack of all elements to loop
-     // Return true to include current element
-     // Return false to explude current element
-     };
-     // Custom Selector usage:
-     $('.someClasses:test').doSomething();
-*** 24. 判断一个元素是否存在
- if ($('#someDiv').length) {//hooray!!! it exists...}
-*** 25. 使用 jQuery 判断鼠标的左右键点击
-     $("#someelement").live('click', function(e) {
-         if( (!$.browser.msie && e.button == 0) || ($.browser.msie && e.button == 1) ) {
-             alert("Left Mouse Button Clicked");
-         }
-         else if(e.button == 2)
-             alert("Right Mouse Button Clicked");
-     });
-*** 26. 显示或者删除输入框的缺省值
-     //This snippet will show you how to keep a default value
-     //in a text input field for when a user hasn't entered in
-     //a value to replace it
-     swap_val = [];
-     $(".swap").each(function(i){
-         swap_val[i] = $(this).val();
-         $(this).focusin(function(){
-             if ($(this).val() == swap_val[i]) {
-                 $(this).val("");
-             }
-         }).focusout(function(){
-             if ($.trim($(this).val()) == "") {
-                 $(this).val(swap_val[i]);
-             }
-         });
-     });
- 1
-  <input class="swap" type="text" value="Enter Username here.." />
-*** 27. 指定时间后自动隐藏或者关闭元素(1.4 支持）
-     //Here's how we used to do it in 1.3.2 using setTimeout
-     setTimeout(function() {
-       $('.mydiv').hide('blind', {}, 500)
-     }, 5000);
-     //And here's how you can do it with 1.4 using the delay() feature (this is a lot like sleep)
-     $(".mydiv").delay(5000).hide('blind', {}, 500);
-*** 28. 动态创建元素到 DOM
-     var newgbin1Div = $('');
-     newgbin1Div.attr('id','gbin1.com').appendTo('body');
-*** 29. 限制 textarea 的字符数量
-     jQuery.fn.maxLength = function(max){
-       this.each(function(){
-         var type = this.tagName.toLowerCase();
-         var inputType = this.type? this.type.toLowerCase() : null;
-         if(type == "input" && inputType == "text" || inputType == "password"){
-           //Apply the standard maxLength
-           this.maxLength = max;
-         }
-         else if(type == "textarea"){
-           this.onkeypress = function(e){
-             var ob = e || event;
-             var keyCode = ob.keyCode;
-             var hasSelection = document.selection? document.selection.createRange().text.length > 0 : this.selectionStart != this.selectionEnd;
-             return !(this.value.length >= max && (keyCode > 50 || keyCode == 32 || keyCode == 0 || keyCode == 13) && !ob.ctrlKey && !ob.altKey && !hasSelection);
-           };
-           this.onkeyup = function(){
-             if(this.value.length > max){
-               this.value = this.value.substring(0,max);
-             }
-           };
-         }
-       });
-     };
-     //Usage:
-     $('#gbin1textarea').maxLength(500);
-*** 30. 为函数创建一个基本测试用例
-     //Separate tests into modules.
-     module("Module B");
-     test("some other gbin1.com test", function() {
-       //Specify how many assertions are expected to run within a test.
-       expect(2);
-       //A comparison assertion, equivalent to JUnit's assertEquals.
-       equals( true, false, "failing test" );
-       equals( true, true, "passing test" );
-     });
-*** 31. 使用 jQuery 克隆元素
- var cloned = $('#gbin1div').clone();
-*** 32. 测试一个元素在 jQuery 中是否可见
- if($(element).is(':visible') == 'true') { //The element is Visible }
-*** 33. 元素屏幕居中
-     jQuery.fn.center = function () {
-       this.css('position','absolute');
-       this.css('top', ( $(window).height() - this.height() ) / +$(window).scrollTop() + 'px');
-       this.css('left', ( $(window).width() - this.width() ) / 2+$(window).scrollLeft() + 'px');return this;
-     }
-     //Use the above function as: $('#gbin1div').center();
- 34. 使用特定名字的元素对应的值生成一个数组
+   #+end_src
 
- 1
- 2
- 3
- 4
-     var arrInputValues = new Array();
-     $("input[name='table[]']").each(function(){
-          arrInputValues.push($(this).val());
-     });
- 35. 剔除元素中的 HTML
+** Dom 对象 与 jQuery 对象转换
+   #+begin_src js
+     var $v =$("#v");    //jQuery 对象
+     var v=$v[0];       //DOM 对象 
+     var v=$v.get(0);   //DOM 对象 
+   #+end_src
 
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
- 10
- 11
- 12
- 13
-     (function($) {
-         $.fn.stripHtml = function() {
-             var regexp = /<("[^"]*"|'[^']*'|[^'">])*>/gi;
-             this.each(function() {
-                 $(this).html(
-                     $(this).html().replace(regexp,"")
-                 );
-             });
-             return $(this);
-         }
-     })(jQuery);
-     //usage:
-     $('p').stripHtml();
- 36. 使用 closest 来得到父元素
-
- 1
- $('#searchBox').closest('div');
- 37. 使用 firebug 来记录 jQuery 事件
-
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
-     // Allows chainable logging
-     // Usage: $('#someDiv').hide().log('div hidden').addClass('someClass');
-     jQuery.log = jQuery.fn.log = function (msg) {
-           if (console){
-              console.log("%s: %o", msg, this);
-           }
-           return this;
-     };
- 38. 点击链接强制弹出新窗口
-
- 1
- 2
- 3
- 4
- 5
-     jQuery('a.popup').live('click', function(){
-       newwindow=window.open($(this).attr('href'),'','height=200,width=150');
-       if (window.focus) {newwindow.focus()}
-       return false;
-     });
- 39. 点击链接强制打开新标签页
-
- 1
- 2
- 3
- 4
- 5
-     jQuery('a.newTab').live('click', function(){
-       newwindow=window.open($(this).href);
-       jQuery(this).target = "_blank";
-       return false;
-     });
- 40. 使用 siblings()来处理同类元素
-
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
-     // Rather than doing this
-     $('#nav li').click(function(){
-         $('#nav li').removeClass('active');
-         $(this).addClass('active');
-     });
-     // Do this instead
-     $('#nav li').click(function(){
-         $(this).addClass('active').siblings().removeClass('active');
-     });
- 41. 选择或者不选页面上全部复选框
-
- 1
- 2
- 3
- 4
- 5
-     var tog = false; // or true if they are checked on load
-     $('a').click(function() {
-         $("input[type=checkbox]").attr("checked",!tog);
-         tog = !tog;
-     });
- 42. 基于输入文字过滤页面元素
-
- 1
- 2
- 3
- 4
- 5
-     //If the value of the element matches that of the entered text
-     //it will be returned
-     $('.gbin1Class').filter(function() {
-         return $(this).attr('value') == $('input#gbin1Id').val() ;
-      })
- 43. 取得鼠标的 X 和 Y 坐标
-
- 1
- 2
- 3
- 4
- 5
- 6
-     $(document).mousemove(function(e){
-     $(document).ready(function() {
-     $().mousemove(function(e){
-     $('#XY').html("Gbin1 X Axis : " + e.pageX + " | Gbin1 Y Axis " + e.pageY);
-     });
-     });
- 44. 使得整个列表元素(LI)可点击
-
- 1
- 2
- 3
-     $("ul li").click(function(){
-       window.location=$(this).find("a").attr("href"); return false;
-     });
- GBin1 Link 1
- 
-
- GBin1 Link 2
- 
-
- 
-
- GBin1 Link 3
- 
-
- 
-
- GBin1 Link 4
- 
-
- 
-
- 45. 使用 jQuery 来解析 XML
-
- 1
- 2
- 3
- 4
- 5
- 6
- 7
-     function parseXml(xml) {
-       //find every Tutorial and print the author
-       $(xml).find("Tutorial").each(function()
-       {
-       $("#output").append($(this).attr("author") + "");
-       });
-     }
- 46. 判断一个图片是否加载完全
-
- 1
- 2
- 3
-     $('#theGBin1Image').attr('src', 'image.jpg').load(function() {
-     alert('This Image Has Been Loaded');
-     });
- 47. 使用 jQuery 命名事件
-
- 1
- 2
- 3
- 4
- 5
- 6
-     //Events can be namespaced like this
-     $('input').bind('blur.validation', function(e){
-         // ...
-     });
-     //The data method also accept namespaces
-     $('input').data('validation.isValid', true);
- 48. 判断 cookie 是否激活或者关闭
-
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
-     var dt = new Date();
-     dt.setSeconds(dt.getSeconds() + 60);
-     document.cookie = "cookietest=1; expires=" + dt.toGMTString();
-     var cookiesEnabled = document.cookie.indexOf("cookietest=") != -1;
-     if(!cookiesEnabled)
-     {
-       //cookies have not been enabled
-     }
- 49. 强制过期 cookie
-
- 1
- 2
- 3
-     var date = new Date();
-     date.setTime(date.getTime() + (x * 60 * 1000));
-     $.cookie('example', 'foo', { expires: date });
- 50. 使用一个可点击的链接替换页面中所有 URL
-
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
- 10
- 11
- $.fn.replaceUrl = function() {
-         var regexp = /((ftp|http|https)://(w+:{0,1}w*@)?(S+)(:[0-9]+)?(/|/([w#!:.?+=&%@!-/]))?)/gi;
-         this.each(function() {
-             $(this).html(
-                 $(this).html().replace(regexp,'<a href="$1">$1</a>')
-             );
-         });
-         return $(this);
-     }
- //usage
- $('#GBin1div').replaceUrl();
- 51: 在表单中禁用“回车键”
-
- 大家可能在表单的操作中需要防止用户意外的提交表单，那么下面这段代码肯定非常有帮助：
-
- 1
- 2
- 3
- 4
- 5
-     $("#form").keypress(function(e) {
-       if (e.which == 13) {
-         return false;
-       }
-     });
- 52: 清除所有的表单数据
-
- 可能针对不同的表单形式，你需要调用不同类型的清楚方法，不过使用下面这个现成方法，绝对能让你省不少功夫。
-
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
- 10
- 11
- 12
- 13
- 14
- 15
- 16
- 17
- 18
- 19
- 20
-     function clearForm(form) {
-       // iterate over all of the inputs for the form
-       // element that was passed in
-       $(':input', form).each(function() {
-         var type = this.type;
-         var tag = this.tagName.toLowerCase(); // normalize case
-         // it's ok to reset the value attr of text inputs,
-         // password inputs, and textareas
-         if (type == 'text' || type == 'password' || tag == 'textarea')
-           this.value = "";
-         // checkboxes and radios need to have their checked state cleared
-         // but should *not* have their 'value' changed
-         else if (type == 'checkbox' || type == 'radio')
-           this.checked = false;
-         // select elements need to have their 'selectedIndex' property set to -1
-         // (this works for both single and multiple select elements)
-         else if (tag == 'select')
-           this.selectedIndex = -1;
-       });
-     };
- 53: 将表单中的按钮禁用
-
- 下面的代码对于 ajax 操作非常有用，你可以有效的避免用户多次提交数据，个人也经常使用：
-
- 1
-  $("#somebutton").attr("disabled", true);//禁用按钮
- 1
-     $("#submit-button").removeAttr("disabled");//启动按钮
- 可能大家往往会使用.attr(‘disabled’,false);，不过这是不正确的调用。
-
- 54: 输入内容后启用递交按钮
- 这个代码和上面类似，都属于帮助用户控制表单递交按钮。使用这段代码后，递交按钮只有在用户输入指定内容后才可以启动。
-
- 1
- 2
- 3
-     $('#username').keyup(function() {
-         $('#submit').attr('disabled', !$('#username').val()); 
-     });
- 55: 禁止多次递交表单
- 多次递交表单对于 web 应用来说是个比较头疼的问题，下面的代码能够很好的帮助你解决这个问题：
-
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
- 10
- 11
- 12
- 13
- 14
- 15
-     $(document).ready(function() {
-       $('form').submit(function() {
-         if(typeof jQuery.data(this, "disabledOnSubmit") == 'undefined') {
-           jQuery.data(this, "disabledOnSubmit", { submited: true });
-           $('input[type=submit], input[type=button]', this).each(function() {
-             $(this).attr("disabled", "disabled");
-           });
-           return true;
-         }
-         else
-         {
-           return false;
-         }
-       });
-     });
- 56: 高亮显示目前聚焦的输入框标示
- 有时候你需要提示用户目前操作的输入框，你可以使用下面代码高亮显示标示：
-
- 1
- 2
- 3
- 4
- 5
-     $("form :input").focus(function() {
-       $("label[for='" + this.id + "']").addClass("labelfocus");
-     }).blur(function() {
-       $("label").removeClass("labelfocus");
-     });
- 57: 动态方式添加表单元素
- 这个方法可以帮助你动态的添加表单中的元素，比如，input 等：
-
- 1
- 2
- 3
- 4
- 5
-     //change event on password1 field to prompt new input
-     $('#password1').change(function() {
-             //dynamically create new input and insert after password1
-             $("#password1").append("<input id="password2" name="password2" type="text" />");
-     });
- 58: 自动将数据导入 selectbox 中
-
- 下面代码能够使用 ajax 数据自动生成选择框的内容
-
- 1
- 2
- 3
- 4
- 5
- 6
- 7
- 8
- 9
- 10
- 11
-     $(function(){
-       $("select#ctlJob").change(function(){
-         $.getJSON("/select.php",{id: $(this).val(), ajax: 'true'}, function(j){
-           var options = '';
-           for (var i = 0; i < j.length; i++) {
-             options += '' + j[i].optionDisplay + '';
-           }
-           $("select#ctlPerson").html(options);
-         })
-       })
-     })
- 59: 判断一个复选框是否被选中
-
- 1
- $('#checkBox').attr('checked');
- 60: 使用代码来递交表单
-
- 1
- $("#myform").submit();
- 希望大家觉得这些 jQuery 代码会对你的开发有帮助，如果你也有类似的 jQuery 代码或者 jQuery 插件，欢迎一起分享！
-
- 注：部分代码原文应该是英文的。但是看见转的几个链接已经打不开了。所以就这样吧。
-* [[http://jquery.cuishifeng.cn/index.html][速查表]]
-** 选择符 
-   | 选择符              | 匹配                                                     |
- | *                   | 所有元素                                                 |
- | #id                 | 带有给定 ID 的元素                                       |
- | element             | 给定类型的所有元素，比如说 html 标签                     |
- | .class              | 带有给定类的所有元素                                     |
- | a,b                 | 匹配 a 或者匹配 b 的元素                                 |
- | a b                 | 作为 a 后代的匹配 b 的元素（包括孙子辈的）               |
- | a > b               | 作为 a 子元素的匹配 b 的元素（只包括儿子辈）             |
- | :first              | 结果集中的第一个元素                                     |
- | :last               | 结果集中的最后一个元素                                   |
- | :not(a)             | 结果集中与 a 不匹配的所有元素                            |
- | :even               | 结果集中的偶数元素（从 0 开始计数）                      |
- | :odd                | 结果集中的奇数元素（从 0 开始计数）                      |
- | :eq(index)          | 结果集中索引为 index 的元素（从 0 开始计数）             |
- | :gt(index)          | 结果集中所有位于给定索引之后的元素（从 0 开始计数）      |
- | :lt(index)          | 结果集中所有位于给定索引之前的元素（从 0 开始计数）      |
- | :header            | 标题元素（<h1><h2>）                                     |
- | :animated          | 其动画正在播放的元素                                     |
- | :contains(text)    | 包含给定文本 text 的元素                                 |
- | :empty              | 不包含子节点的元素                                       |
- | :has(a)             | 后代元素中至少有一个匹配 a 的元素                        |
- | :parent             | 当前元素的直接父元素                                     |
- | :hidden             | 隐藏的元素，包括通过 css 隐藏以及<input type="hidden" /> |
- | :visible            | 与:hidden 匹配的元素相反                                |
- | [attr]              | 带有属性 attr 的元素                                     |
- | [attr=value]        | attr 属性的值为 value 的元素                             |
- | [attr!=value]       | attr 属性的值不为 value 的元素                           |
- | [attr^=value]       | attr 属性的值以 value 开头的元素                         |
- | [attr$=value]       | attr 属性的值以 value 结尾的元素                         |
- | [attr*=value]       | attr 属性的值包含字符串 value 的元素                     |
- | :nth-child(index)   | 匹配集合中每个元素的第 index 个子元素（从 1 开始计数）   |
- | :nth-child(even)    | 匹配集合中每个元素的排在偶数位的子元素（从 1 开始计数）  |
- | :nth-child(formula) | Formula 是个公式，格式为 an+b，a、b 为整数               |
- | :first-child        | 匹配集合中每个元素的第一个子元素                         |
- | :last-child         | 匹配集合中每个元素的最后一个子元素                       |
- | :only-child         | 匹配集合中每个元素的惟一子元素,如果不唯一,则不执行       |
- | :input              | 所有<input><select><textarea>和<button>元素              |
- | :text               | Type＝“text”的<input>元素                              |
- | :password           | Type＝“password”的<input>元素                          |
- | :radio              | Type=“radio”的<input>元素                              |
- | :checkbox           | Type＝“checkbox”的<input>元素                          |
- | :submit             | Type＝“submit”的<input>元素                            |
- | :image              | Type＝“image”的<input>元素                             |
- | :reset              | Type＝“reset”的<input>元素                             |
- | :button             | Type＝“button”的<input>元素及<button>元素              |
- | :file               | Type＝“file”的<input>元素                              |
- | :enabled            | 启用的表单元素                                           |
- | :disabled           | 禁用的表单元素                                           |
- | :checked            | 选中的复选框和单选按钮元素                               |
- | :selected           | 选中的<option>元素                                       |
-** 遍历方法
- |遍历方法| 返回值的 jQuery 对象包含|
- |.filter(selector)| 与给定的选择符匹配的选中元素|
- |.filter(callback)| 回调函数 callback 返回 true 的选中元素|
- |.eq(index)| 从 0 开始计数的第 index 个选中元素|
- |.slice(start,[end])| 从 0 开始计数的给定范围的选中元素|
- |.not(selector)| 与给定的选择符不匹配的选中元素|
- |.add(selector)| 选中元素再加上与给定选择符匹配的元素|
- |.find(selector)| 与给定选择符匹配的后代元素|
- |.contents| 子节点，包括文本节点|
- |.children([selector])| 匹配选择符的子节点|
- |.next([selector])| 每个选中元素的下一个匹配选择符的同辈元素|
- |.nextAll([selector])| 每个选中元素之后的所有匹配选择符的同辈元素|
- |.prev([selector])| 每个选中元素的上一个匹配选择符的同辈元素|
- |.prevAll([selector])| 每个选中元素之后的所有匹配选择符的同辈元素|
- |.siblings([selector])| 匹配选择符的所有同辈元素|
- |.parent([selector])| 每个选中元素的匹配选择符的父元素|
- |.parents([selector])| 每个选中元素的匹配选择符的所有祖先元素|
- |.offsetParent()| 第一个选中元素被定位的父元素(用 relative 或者 absolute 定位)|
- |.andSelf()| 选中元素再加上内部 jQuery 栈中之前选中的元素|
- |.end()| 内部 jQuery 栈中之前选中的元素|
- |.map(callback)| 对每个选中元素调用回调函数 callback 之后的结果|
-** 事件方法
- |事件方法| 说明|
- |.ready(fun)| 绑定在 DOM 和 CSS 完全加载后调用的处理程序 fun|
- |.bind(type,[data],fun)| 绑定在给定类型的事件 type 发送到元素时调用的处理程序 fun|
- |.one(type,[data],fun)| fun 方法只执行一次|
- |.unbind(type,[fun])| 解除元素上绑定的处理程序|
- |.live(type,fun)| 绑定当给定事件发送到元素后调用的处理程序，动态生成使用这个|
- |.die(type,[fun])| 移除前面通过 live()绑定到元素上的处理程序|
- |.blur(fun)| 失去焦点事件|
- |.change(fun)| 当前值改变事件|
- |.click(fun)| 点击事件|
- |.dbclick(fun)| 双击事件|
- |.error(fun)| 错误事件|
- |.focus(fun)| 获取键盘焦点事件|
- |.keydown(fun)| 获取键盘焦点且有键被按下事件|
- |.keypress(fun)| 获取键盘焦点且有按键事件发生事件|
- |.keyup(fun)| 获取键盘焦点且有键被释放事件|
- |.load(fun)| 元素加载完成事件|
- |.mousedown(fun)| 按下鼠标键事件|
- |.mouseenter(fun)| 鼠标指针进入元素事件，不受事件冒泡影响|
- |.mouseleave(fun)| 鼠标指针离开元素事件，不受事件冒泡影响|
- |.mousemove(fun)| 移动鼠标指针事件|
- |.mouseout(fun)| 鼠标指针离开事件|
- |.mouseover(fun)| 鼠标指针进入事件|
- |.mouseup(fun)| 鼠标指针释放事件|
- |.resize(fun)| 调整元素大小事件|
- |.scroll(fun)| 元素滚动位置改变事件|
- |.select(fun)| 文本被选中事件|
- |.submit(fun)| 提交事件|
- |.unload(fun)| 元素从内存被卸载后调用事件|
- |.hover(enter,leave)| 进入执行 enter，离开执行 leave|
- |.toggle(fun1,fun2)| 顺序执行事件，来回循环|
- |.trigger(type,[data])| 触发元素事件，并执行该事件默认操作|
- |.triggerHandler(type,[data])| 触发元素事件，不执行该事件默认操作|
- |.blur()| 触发 blur 事件，下面道理一样，方法变动|
- |.change()| ...|
- |.click()| ...|
- |.dbclick()| ...|
- |.error()| ...|
- |.focus()| ...|
- |.keydown()| ...|
- |.keypress()| ...|
- |.keyup()| ...|
- |.select()| ...|
- |.submit()| ...|
-** 效果方法
-| 效果方法                          | 说明                                 |
-| .show()                           | 显示                                 |
-| .hide()                           | 隐藏                                 |
-| .show(speed,[callback])           | 显示速度                             |
-| .hide(speed,[callback])           | 隐藏速度                             |
-| .toggle(speed,[callback])         | 显示或者隐藏                         |
-| .slideDown(speed,[callback])      | 滑入显示                             |
-| .slideUp(speed,[callback])        | 滑出显示                             |
-| .slideToggle(speed,[callback])    | 滑动显示或者隐藏                     |
-| .fadeIn(speed,[callback])         | 淡入显示                             |
-| .fadeOut(speed,[callback])        | 淡入隐藏                             |
-| .fadeTo(speed,opacity,[callback]) | 匹配调整元素的不透明度               |
-| .animate(attr,[speed],[easing])   | 针对指定的 css 属性执行自定义动画    |
-| .animate(attr,options)            | 动画队列                             |
-| .stop([clearQueue],[jumpToEnd])   | 停止当前播放动画，然后启动排列的动画 |
-| .queue()                          | 取得第一个匹配元素上的动画队列       |
-| .queue(callback)                  | 动画队列最后添加函数                 |
-| .queue(newQueue)                  | 新队列替换原队列                     |
-| .dequeue()                        | 执行队列中的下一个动画               |
-** 方法                        
- | 方法                        | 说明                                                          |
- | .attr(key)                  | 获取属性 key 的值                                             |
- | .attr(key,value)            | 设置属性 key 的值为 value                                     |
- | .attr(key,fun)              | 设置属性 key 的值为 fun 函数的返回值                          |
- | .attr(map)                  | 根据传入的键值对参数设置属性的值                              |
- | .removeAttr(key)            | 移除属性 key                                                  |
- | .addClass(class)            | 添加 css 样式                                                 |
- | .removeClass(class)         | 移除 css 样式                                                 |
- | .toggleClass(class)         | 不存在就添加，存在就删除 css                                  |
- | .hasClass(class)            | 匹配元素至少有一个包含传入的类，就返回 true                   |
- | .html()                     | 取得第一个匹配元素的 html 内容                                |
- | .html(value)                | 将每个匹配元素的 html 内容设置为传入的 value                  |
- | .text()                     | 取得所有匹配元素的文本内容，返回一个字符串                    |
- | .text(value)                | 设置每个匹配元素的文本内容为 value                            |
- | .val()                      | 取得第一个匹配元素的 value 属性的值                           |
- | .val(value)                 | 设置每个匹配元素的 value 属性值为传入的 value                 |
- | .css(key)                   | 取得 css 属性的 key 的值                                      |
- | .css(key,value)             | 设置 css 属性的 key 值为传入的 value                          |
- | .css(map)                   | 根据传入的键值对参数设置 css 属性的值                         |
- | .offset()                   | 取得第一个匹配元素相对于适口的上左坐标值（单位为像素）        |
- | .position()                 | 取得第一个匹配元素相对于.offsetParent()返回元素的上、左坐标值 |
- | .scrollTop()                | 取得第一个匹配元素的垂直滚动位置                              |
- | .scrollTop(value)           | 设置每个匹配元素的垂直滚动位置为传入的 vlaue                  |
- | .scrollLeft()               | 取得第一个匹配元素的水平滚动位置                              |
- | .scrollLeft(value)          | 设置每个匹配元素的水平滚动位置为传入的 vlaue                  |
- | .height()                   | 取得第一个匹配元素的高度                                      |
- | .height(value)              | 设置每个匹配元素的高度为传入的 value                          |
- | .width()                    | 取得第一个匹配元素的宽度                                      |
- | .width(value)               | 设置每个匹配元素的宽度为传入的 value                          |
- | .innerHeight()              | 取得第一个匹配元素的包含内边距但不包含边框的高度              |
- | .innerWidth()               | 取得第一个匹配元素的包含内边距但不包含边框的宽度              |
- | .outerHeight(includeMargin) | 取得第一个匹配元素的包含内边距、边框及可选的外边距的高度      |
- | .outWidth(includeMargin)    | 取得第一个匹配元素的包含内边距、边框及可选的外边距的宽度      |
- | .append(content)            | 在每个匹配元素内部的末尾插入 content                          |
- | .appendTo(selector)         | 将匹配的元素插入到 selector 选择符匹配的元素内部的末尾        |
- | .prepend(content)           | 在每个匹配元素内部的开头插入 content                          |
- | .prependTo(selector)        | 将匹配的元素插入到 selector 选择符匹配的元素内部的开头        |
- | .after(content)             | 在每个匹配元素的后面插入 content                              |
- | .insertAfter(selector)      | 将匹配元素插入到 selector 选择符匹配的元素的后面              |
- | .before(content)            | 在每个匹配元素的前面插入 content                              |
- | .insertBefore(selector)     | 将匹配元素插入到 selector 选择符匹配的元素的前面              |
- | .wrap(content)              | 将匹配的每个元素包装在 content 中                             |
- | .wrapAll(content)           | 将匹配的所有元素作为一个单元包装在 content 中                 |
- | .wrapInner(content)         | 将匹配的每个元素内部的内容包装在 content 中                   |
- | .replaceWith(content)       | 将匹配的元素替换成 content                                    |
- | .replaceAll(selector)       | 将 selector 选择符匹配的元素替换成匹配的元素                  |
- | .empty()                    | 移除每个匹配元素的子节点                                      |
- | .remove([selector])         | 从 dom 中移除匹配的节点，可以通过 selector 筛选               |
- | .clone([withHandlers])      | 返回所有匹配元素的副本                                        |
- | .data(key)                  | 取得与第一个匹配元素关联的 key 键的数据项                     |
- | .data(key,value)            | 设置与每个匹配元素关联的 key 键的数据项为 value               |
- | .removeData(key)            | 移除与每个匹配元素关联的 key 键的数据项                       |
-** AJAX 方法
- | AJAX 方法                                  | 说明                                                    |
- | $.ajax(options)                            | 使用传入的 options 生成一次 ajax 请求                   |
- | .load(url,[data],[callback])               | 向传入的 url 生成一次 ajax 请求，然后将响应放入匹配元素 |
- | $.get(url,[data],[callback],[returnType])  | 使用 get 方法向传入的 url 生成一次 ajax 请求            |
- | $.getJSON(url,[data],[callback])           | 向传入的 url 生成一次请求，将响应作为 json 数据结构解析 |
- | $.getScript(url,[callback])                | 向传入的 url 生成一次请求，将响应作为 js 脚本执行       |
- | $.post(url,[data],[callback],[returnType]) | 使用 post 方法向传入的 url 生成一次 ajax 请求           |
- | .ajaxComplete(handler)                     | 绑定当任意 ajax 事务完成后调用 fun                      |
- | .ajaxError(handler)                        | 绑定当任意 ajax 事务发生错误时调用 fun                  |
- | .ajaxSend(handler)                         | 绑定当任意 ajax 事务开始时调用 fun                      |
- | .ajaxStart(handler)                        | 绑定当任意 ajax 事务开始没有其他事务还在活动时调用 fun  |
- | .ajaxStop(handler)                         | 绑定当任意 ajax 事务结束没有其他事务还在活动时调用 fun  |
- | .ajaxSuccess(handler)                      | 绑定当任意 ajax 事务成功完成时调用的程序                |
- | $.ajaxSetup(options)                       | 为后续的 ajax 事务设置默认选项                          |
- | .serialize()                               | 将一组表单控件的值编码为一个查询字符串                  |
- | .serializeArray()                          | 将一组表单控件的值编码为一个 json 数据结构              |
- | $.param(map)                               | 将任意值的映射编码为一个查询字符串                      |
-** 方法或属性                     
-| 方法或属性                    | 说明                                                   |
-| $.support                     | 返回一个属性的映射，表示浏览器是否支持各种特性和标准   |
-| $.each(collection,callback)   | 迭代遍历集合，针对集合中的每一项执行回调函数           |
-| $.extend(target,addition,...) | 扩展 target 对象，即将后面传入对象的属性添加入这个对象 |
-| $.makeArray(object)           | 将对象转换为一个数组                                   |
-| $.map(array,callback)         | 针对数组中每一项执行回调函数，返回新数组               |
-| $.inArray(value,array)        | 确定数组 array 中是否包含值 value                      |
-| $.merge(array1,array2)        | 合并两个数组                                           |
-| $.unique(array)               | 从数组中移除重复的 dom 元素                            |
-| $.isFunction(object)          | 确定对象是否一个函数                                   |
-| $.trim(String)                | 从字符串末尾移除空白符                                 |
-| $.noConflict([extreme])       | 让渡$符号使用权，恢复使用 jquery 标识符                |
-| .hasClass(className)          | 确定匹配元素是否包含给定的类                           |
-| .is(selector)                 | 确定是否有匹配元素与给定的选择符表达式匹配             |
-| .each(callback)               | 迭代遍历匹配元素，针对每个元素执行回调函数             |
-| .length                       | 取得匹配元素的个数                                     |
-| .get()                        | 取得与匹配元素对应的 dom 节点的数组                    |
-| .get(index)                   | 取得匹配元素中与传入的索引值对应的 dom 节点            |
-| .index(element)               | 取得给定 dom 节点在匹配元素集合中的索引值              |

@@ -1,407 +1,56 @@
 #+TITLE: php 简介
 #+DESCRIPTION: php 简介
-#+TAGS: php
-#+CATEGORIES: 语言使用
+#+TAGS[]: php
+#+CATEGORIES[]: 技术
+#+DATE: 2020-02-13T19:01:28+08:00
 
-* PHP 
-** 简介  
-   一种简单的编程语言
-   #+HTML: <!-- more -->
-** 语言参考
-*** 数据类型 
-    布尔，整数，浮点，数组，对象 。。。等等都支持
-    boolean,string,integer,double,array,object
-    #+begin_src php
-      <?php
-      $a_bool = TRUE;   // a boolean
-      $a_str  = "foo";  // a string
-      $a_str2 = 'foo';  // a string
-      $an_int = 12;     // an integer
+一种简单的语言，一般用在 *web* 开发里，给网页生成动态内容用的。当然，如果你喜欢的话，用来编写其它程序也可以的。
 
-      echo gettype($a_bool); // prints out:  boolean
-      echo gettype($a_str);  // prints out:  string
+# more
+#+begin_quote
+出来的早，命比较好，用到现在
+#+end_quote
 
-      //数组
-      $a_array=["a","b",3];
-      echo gettype($a_array);
-
-      //对象 
-      class foo{
-          var $name;
-      }
-
-      $f=new foo();
-      echo gettype($f);
-
-      // If this is an integer, increment it by four
-      if (is_int($an_int)) {
-          $an_int += 4;
-      }
-
-      // If $a_bool is a string, print it out
-      // (does not print out anything)
-      if (is_string($a_bool)) {
-          echo "String: $a_bool";
-      }
-      ?>
-    #+end_src
-*** 变量
-**** 自定义变量 
-     美元符号后跟变量名称表示变量
-     #+begin_src php
-       <?php
-       $var = 'Bob';
-       $Var = 'Joe';
-       echo "$var, $Var";      // outputs "Bob, Joe"
-       ?>
-     #+end_src
-**** 预定义变量 [ php 提供大量预定义变量 ]
-***** $GLOBALS [ 所有变量 ]
-***** $_SERVER [ 服务器和执行环境信息 ]
-***** $_GET [ HTTP GET 变量 ]
-***** $_POST [ HTTP POST 变量 ]
-***** $_FILES  [ HTTP 文件上传变量 ]
-***** $_REQUEST
-      包含  $_GET, $_POST and $_COOKI E 的内容
-***** $_SESSION[ 会话变量 ]
-      保存在服务器上的浏览器相关的独立数据
-      
-      服务器创建 session 出来后，会把 session 的 id 号，以 cookie 的形式回写给客
-      户机，这样，只要客户机的浏览器不关，再去访问服务器时，都会带着 session 的
-      id 号去，服务器发现客户机浏览器带 session id 过来了，就会使用内存中与之对
-      应的 session 为之服务
-      
-      session 的工作原理
-      #+begin_verse
-      （1）当一个 session 第一次被启用时，一个唯一的标识被存储于本地的 cookie 中。
-      （2）首先使用 session_start()函数，PHP 从 session 仓库中加载已经存储的 session 变量。
-      （3）当执行 PHP 脚本时，通过使用 session_register()函数注册 session 变量。
-      （4）当 PHP 脚本执行结束时，未被销毁的 session 变量会被自动保存在本地一定路径下的 session 库中，这个路径可以通过 php.ini 文件中的 session.save_path 指定，下次浏览网页时可以加载使用。
-      #+end_verse
-      
-***** $_ENV — Environment variables
-***** $_COOKIE — HTTP Cookies
-      服务器储存在用户本地终端上的数据
-***** $http_response_header — HTTP response headers
-      发起 HTTP 请求获取的 header 
-      #+begin_src php
-        file_get_contents("http://example.com");
-        print_r($http_response_header);
-      #+end_src
-
-      同 get_headers 用法一样 
-      
-      #+begin_src php
-        $v=get_headers("http://example.com");
-        print_r($v);
-      #+end_src
-
-***** $argc — The number of arguments passed to script
-      命令行执行才有
-***** $argv — Array of arguments passed to script
-      命令行执行才有
-*** 常量 (不变的数据)
-    通常大写，且不含 ~$~ 符号
+** 安装
+   需要安装服务器，和 php 解析器，当然，光解析器也是可以的。数据库也可以选择装上
+** web 流程
+   浏览器 ====== 服务器 [ ==== PHP 解析器 ==== 数据库 ]
     
-    定义常量字段 
+   #+begin_quote
+   就这么一个沟通顺序( 服务器内部可能发生与PHP或数据库的交流)， 直线型的。
+   #+end_quote
+** 语法
+   - 特点是定义或引用变量时，要加个 *$* 号，但不要定义类型。
+   - 支持面向对象了
+   - 其他略过。。。
+** 错误处理
+*** 打开错误提示
     #+begin_src php
-      define("PII",3.133);
-      echo PII;
+      ini_set("display_errors","On");
+      error_reporting(E_ALL); 
     #+end_src
 
+*** 捕捉错误
     #+begin_src php
-      const PI=3.1314;
+      try {}
+      catch (Throwable $t) {}
+      catch(Error $e){}
     #+end_src
-    
-    #+begin_src php
-      class Maths{
-          const PI=3.14;
-      }
+** 单元测试 phpunit
+** 功能选项
+   - 显示 PHP information and configuration (  -i )
+   - 显示配置文件 (--ini)
+   - 显示编译好的模块 (-m)
+   - 打开自带服务器监听端口 (-S addr:port)
+   - 显示一些信息 ( --rf 函数，--rc 类名 ,--re 扩展名)
+** Apache2 选项
+   - 对配置文件进行语法测试 (-t)
+   - 测试后另外输出虚拟主机信息 (-t   -D DUMP_VHOSTS )
+   - 测试后另外输出加载的模块 (-t   -D DUMP_MODULES)
 
-      echo Maths::PI;
-    #+end_src
-**** 预定义常量
-     #+begin_verse
-     __FILE__  当前的文件名  在哪个文件中使用，就代表哪个文件名称  
-     __LINE__  当前的行数  在代码的哪行使用，就代表哪行的行号  
-     __FUNCTION__  当前的函数名  在哪个函数中使用，就代表哪个函数名  
-     __CLASS__  当前的类名  在哪个类中使用，就代表哪个类的类名  
-     __METHOD__  当前对象的方法名  在对象中的哪个方法中使用，就代表这个方法名  
-     PHP_OS  UNIX 或 WINNT 等  执行 PHP 解析的操作系统名称  
-     PHP_VERSION  5.2.6 等  当前 PHP 服务器的版本  
-     TRUE  TRUE  代表布尔值，真  
-     FALSE  FALSE  代表布尔值，假  
-     NULL  NULL  代表空值  
-     DIRECTORY_SEPARATOR  \或/  根据操作系统决定目录的分隔符  
-     PATH_SEPARATOR  ；或：  根据操作系统决定环境变量的目录列表分隔符  
-     E_ERROR  1  错误，导致 PHP 脚本运行终止  
-     E_WARNING  2  警告，不会导致 PHP 脚本运行终止  
-     E_PARSE  4  解析错误，由程序解析器报告  
-     E_NOTICE  8  关键的错误，例如变量末初始化  
-     M_PI  3.1415926535898 π   
-     PHP_EOL 回车断行符
-     #+end_verse
-*** 操作符
-    算术，逻辑，位 
-   
-    加减乘除余数平方
-    #+begin_verse
-   + - * /  % **
-    #+end_verse
-   
-    错误控制 ,在表达式前面加 ~@~ 就不报错了。
-   
-    类型操作 是否类的实例
-    #+begin_src php
-      class MyClass
-      {
-      }
-      $a = new MyClass;
-      var_dump($a instanceof MyClass);
-    #+end_src
-
-    数组操作
-    | $a + $b   | 合并,键名去重,保留前一个 |
-    | $a == $b  | 判等,键值对一样          |
-    | $a === $b | 判等,连顺序也一样        |
-    | $a != $b  | 判不等                   |
-    | $a <> $b  | 判不等                   |
-    | $a !== $b | 完全不等                 |
-*** 函数
-    匿名函数: 只用一次的函数，命名浪费了名字空间
-    
-*** 类和对象
-    #+begin_verse
-    对象的内容包含它所拥有的 数据和行为。
-    有些数据和行为，别人不知道，就是对象把可见性隐藏掉了。
-    对象的这些属性通过类，这个模板实现，便于重用和扩展。
-    复制对象 ，则需要实现 __clone() 方法,调用是 $o2= clone $o1;
-     注意，有些对象 clone 时要初始化一些值,在__clone 中完备。
- 
-    #+end_verse
-**** 属性
-     属性重载
-     __get()，__set()，__isset() 和 __unset()
-     
-     #+begin_src php
-       function __get($property) {
-           if ( isset($this->$property) ) 
-               return $this->$property;
-           else
-               return NULL;
-       }
-     #+end_src
-
-     禁止动态创建类属性，__set() ,定义的属性才能创建
-     #+begin_src php
-       public function __set($property, $value) {
-           if ( isset($this->$property) )
-               $this->$property = $value;
-           else
-               return NULL;
-       }
-     #+end_src
-
-     当对象调用类中一个不存在或者没有权限访问的方法的时候，就会自动调用__call()方法
-     和__call()对应的是__callStatic()方法，是位静态类的静态方法服务的。
- 
-**** 可见性 
-**** 继承
-**** 构造函数和析构函数
-     #+begin_src php
-       __construct ([ mixed $args [, $... ]] )
-           __destruct ( void )
-     #+end_src
-     
-**** 静态关键词
-     #+begin_verse
-     类内部 self::$property
-     继承 parent::$property
-     类外部 CLASSNAME::$property
-     外部方法 CLASSNAME::method()
-     #+end_verse
-
-**** 抽象类 
-     #+begin_verse
-     抽象类 abstract class C{ abstract public function write();}
-     抽象类中至少有一个抽象方法。
-     继承至抽象类的子类必须实现父类的抽象方法。
-     #+end_verse
-**** 接口对象
-     继承接口  implements
-     #+begin_src php
-       class TuanHezi extends Hezi implements Tuan{
-       }
-     #+end_src
-**** final (终结)
-     终止类的继承性 final class CN{}
-
-**** Traits
-**** 重载
-     动态 创建属性和方法
-     #+begin_verse
-     注意：
-     PHP 对重载的解释与大多数面向对象的语言不同。传统上，重载提供了具有相同名称但不同数量和类型的参数的多个方法的能力。
-     #+end_verse
-     
-     构造函数重载
-     #+begin_src php -n
-       <?php //函数重载
-       class A
-       {
-           function __call ($name, $args )
-           {
-               if($name=='f')
-               {
-                   $i=count($args);
-                   if (method_exists($this,$f='f'.$i)) { //检查类中是否存在该函数，this 指调用该函数的对象
-                       call_user_func_array(array($this,$f),$args); //调用函数，array($this,$f)为要调用的函数名，$args 为参数数组
-                   }
-               }
-           }
-           function f1($a1)
-           {
-               echo "1 个参数".$a1."<br/>";
-           }
-           function f2($a1,$a2)
-           {
-               echo "2 个参数".$a1.",".$a2."<br/>";
-           }
-           function f3($a1,$a2,$a3)
-           {
-               echo "3 个参数".$a1.",".$a2.",".$a3."<br/>";
-           }
-       }
-       $a = new A;
-       $a->f('a');
-       $a->f('a','b');
-       $a->f('a','b','c');
-       ?>
-
-     #+end_src
-**** 对象序列化
-     serialize() 返回一个字符串化的对象 
-     unserialize()  从字符串中重塑对象。
-
-*** 命名空间
-    #+begin_verse
-    php 中，命名空间解决两个问题，一个是整体用命名空间，另一个是局部用别名
-    不区分大小写  
-    使用命名空间 不能解决加载的问题，用自动加载
-     所有非 PHP 代码包括空白符都不能出现在命名空间的声明之前：
-    : 命名空间也有相对命名空间和绝对命名空间， ~\~ 开头的是全局命名空间
-    全局的 ~不用 use~ 关键字,非全局，要用 ~use  Namespace\ClassName;~ 引进来
-    #+end_verse
-    
-    #+begin_src php
-      <?php
-      namespace my\name; // see "Defining Namespaces" section
-
-      class MyClass {}
-      function myfunction() {}
-      const MYCONST = 1;
-
-      $a = new MyClass;
-      $c = new \my\name\MyClass; // see "Global Space" section
-
-      $a = strlen('hi'); // see "Using namespaces: fallback to global
-      // function/constant" section
-
-      $d = namespace\MYCONST; // see "namespace operator and __NAMESPACE__
-      // constant" section
-      $d = __NAMESPACE__ . '\MYCONST';
-      echo constant($d); // see "Namespaces and dynamic language features" section
-      ?>
-    #+end_src
-    
-    #+begin_src php
-      <?php
-      use func Namespace\functionName;
-      functionName();
-
-      use constant Namespace\CONST_NAME;
-      echo CONST_NAME;
-    #+end_src
-*** 加载
-**** require_once : 
-     #+begin_src php
-       // A.php
-       <?php namespace A_NAMESPACE;
-
-       function foo()
-       {
-           // What foo does...
-       }
-       ?>
-
-       // B.php
-
-       <?php
-       require_once( 'A.php' );
-       use \A_NAMESPACE as common;
-
-       common\foo(); // Does that foo thing...
-
-       foo();  // Fatal Error...
-       ?>
-     #+end_src
-
-     include_once:
-     #+begin_src php
-       <?php
-       include_once "a.php"; // this will include a.php
-       include_once "A.php"; // this will include a.php again! (PHP 4 only)
-       ?>
-     #+end_src
-**** 自动加载
-     找不到的定义会调用此文件 
-     : 现在不推介用__autoload()了。
-     #+begin_src php
-       // autoload.php
-       function __autoload($classname) {
-           if ($classname === 'xxx.php'){
-               $filename = "./". $classname .".php";
-               include_once($filename);
-           } else if ($classname === 'yyy.php'){
-               $filename = "./other_library/". $classname .".php";
-               include_once($filename);
-           } else if ($classname === 'zzz.php'){
-               $filename = "./my_library/". $classname .".php";
-               include_once($filename);
-           }
-           // blah
-       }
-     #+end_src
-*** 错误
-**** 使用 PHP 处理错误 
-     #+begin_verse
-    全局配置错误报告, ~php.ini~ 
-    error_reporting
-    最高级    E_ALL
-    低等级    E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED
-     #+end_verse
-     
-     执行环境中,局部配置 
-     #+begin_src php
-       ini_set("display_errors","On");
-       error_reporting(E_ALL); //-1 是关闭
-     #+end_src
-
-**** 自定义错误处理程序
-     #+begin_src php
-       try
-       {
-           // Code that may throw an Exception or Error.
-       }
-       catch (Throwable $t)
-       {
-           // Executed only in PHP 7, will not match in PHP 5
-       }
-       catch (Exception $e)
-       {
-           // Executed only in PHP 5, will not be reached in PHP 7
-       }
-
-     #+end_src
-*** 异常
-*** 生成器
+   #+begin_src shell
+     # 例子
+     apachectl -t -D DUMP_MODULES
+   #+end_src
+** Composer 
+   php的包管理器

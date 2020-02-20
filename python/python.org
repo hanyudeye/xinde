@@ -1,17 +1,256 @@
 #+TITLE: Python 简介
 #+DESCRIPTION: Python 语言学习笔记
-#+CATEGORIES[]: 语言用法
+#+CATEGORIES[]: 技术
 #+TAGS[]: Python
 #+DATE: 2019-11-29T21:57:09+08:00
 
 
-一门抽象程度高的语言。
-  # more 
+一门抽象程度高的语言，语言技术是给那些喜欢折腾计算机的或者计算机软件开发人员用的。
+# more 
+** 安装
+   折腾环境的安装就不说了。
+** 编码问题
+   *python2* 默认是认不得中文等世界语的，只认得英文， *python3* 改掉了，这点注意看下版本。
+   
+   #+begin_src py
+     # python2 中加上一句说明。
+     #-*-coding:utf-8-*-
+   #+end_src
 
-** 环境管理
-   因为 *python* 最大的问题是各版本不兼容，所以要管理版本问题。  
-*** pipenv 
+** 计算机可以处理的东西 ( 数据类型 )
+   每个东西有一种类型的属性.
+*** 列表类型 (list)
     
+    列表表示一串东西，一般一个包含子项目的东西，用列表表示比较好。
+    #+begin_src python
+      [ 'name', 786 , 2.23, 'john', 70.2 ]
+    #+end_src
+ 
+ 
+    #+begin_src python
+      # 列表里的东西可以修改，增减。 
+      # 增加
+        myMoney[4] = [ "老九"]
+        # 是否含有 
+        "老九" in myMoney
+        # 删除
+        del myMoney[1]
+    #+end_src
+ 
+    一些方法 
+    | len(list)               | 列表元素个数                                                       |
+    | max(list)               | 返回列表元素最大值                                                 |
+    | min(list)               | 返回列表元素最小值                                                 |
+    | list(seq)               | 将元组转换为列表                                                   |
+    | list.append(obj)        | 在列表末尾添加新的对象                                             |
+    | list.count(obj)         | 统计某个元素在列表中出现的次数                                     |
+    | list.extend(seq)        | 在列表末尾一次性追加另一个序列中的多个值（用新列表扩展原来的列表） |
+    | list.index(obj)         | 从列表中找出某个值第一个匹配项的索引位置                           |
+    | list.insert(index, obj) | 将对象插入列表                                                     |
+    | list.pop(obj=list[-1])  | 移除列表中的一个元素（默认最后一个元素），并且返回该元素的值       |
+    | list.reverse()          | 反向列表中元素                                                     |
+    | list.sort([func])       | 对原列表进行排序                                                   |
+
+*** 元组 (tuple)  
+    
+    子项目不能修改的列表
+    
+    #+begin_src python
+      ( 'runoob', 786 , 2.23, 'john', 70.2 )
+    #+end_src
+    
+    
+    - 创建元组 x=[ (person.name,person.age) for person in people ]
+    - 有条件地创建元组    x=[ (person.name,person.age) for person in people if person.age<34]
+    - 表达式化数组 xx=[(person.age**2 if person.age<34 else person.age) for person in people]
+
+*** 字典 (dictionary) 
+    
+    子项目可以另外命名的列表
+    
+    #+begin_src python
+      {'name': 'john','code':6734, 'dept': 'sales'}
+    #+end_src
+    
+*** 集合 
+    无序不重复的列表
+    #+begin_src python
+      set([1,3,4])
+    #+end_src
+    
+*** 空值 None
+*** 类型转换
+    
+    | 将 字符串 x 转换为一个整数                            | int(x [,base])         |
+    | 将 字符串 x 转换到一个浮点数                          | float(x)               |
+    | 创建一个复数                                          | complex(real [,imag])  |
+    | 将对象 x 转换为字符串                                 | str(x)                 |
+    | 将对象 x 转换为表达式字符串                           | repr(x)                |
+    | 用来计算在字符串中的有效 Python 表达式,并返回一个对象 | eval(str)              |
+    | 将序列 s 转换为一个元组                               | tuple(s)               |
+    | 将序列 s 转换为一个列表                               | list(s)                |
+    | 将一个整数转换为一个字符                              | chr(x)                 |
+    | 将一个整数转换为 Unicode 字符                         | unichr(x)              |
+    | 将一个字符转换为它的整数值                            | ord(x)                 |
+    | 将一个整数转换为一个十六进制字符串                    | hex(x)                 |
+    | 将一个整数转换为一个八进制字符串                      | oct(x)                 |
+*** 自定义类型  
+    系统提供的东西不满足你要处理的东西的复杂性，就可以自定义
+**** 定义类 
+     #+begin_src python -n
+       class ClassName:
+           # 构造函数
+           def __init__(self,...):
+               return
+           # 析构函数
+           def __del__(self,...):
+               return 
+     #+end_src
+     
+     实例 
+     #+BEGIN_SRC python
+       class wa:
+        def __init__(self, items={}):
+         '''items'''
+            if type(item)!=type({}):
+                raise TypeError("类型错误")
+               self.items=items
+            return
+           def	deposit(self,	amount):
+            self.balance	=	self.balance	+	amount
+            return	self.balance
+           def	withdraw(self,	amount):
+            if	amount	>	self.balance:
+             return	'Insufficient	funds'
+     #+END_SRC
+**** 专有方法
+     | __init__                      | 构造函数，在生成对象时调用                                                                                       |
+     | __del__                       | 析构函数，释放对象时使用                                                                                         |
+     | __repr__                      | 打印，转换                                                                                                       |
+     | __setitem__                   | 按照索引赋值                                                                                                     |
+     | __getitem__                   | 按照索引获取值                                                                                                   |
+     | __len__                       | 获得长度                                                                                                         |
+     | __call__                      | 函数调用                                                                                                         |
+     | __add__                       | 加运算                                                                                                           |
+     | __sub__                       | 减运算                                                                                                           |
+     | __mul__                       | 乘运算                                                                                                           |
+     | __div__                       | 除运算                                                                                                           |
+     | __mod__                       | 求余运算                                                                                                         |
+     | __pow__                       | 乘方                                                                                                             |
+     | type(obj)                     | 来获取对象的相应类型；                                                                                           |
+     | isinstance(obj, type)         | 判断对象是否为指定的 type 类型的实例；                                                                           |
+     | hasattr(obj, attr)            | 判断对象是否具有指定属性/方法；                                                                                  |
+     | getattr(obj, attr[, default]) | 获取属性/方法的值, 要是没有对应的属性则返回 default 值（前提是设置了 default），否则会抛出 AttributeError 异常； |
+     | setattr(obj, attr, value)     | 设定该属性/方法的值，类似于 obj.attr=value；                                                                     |
+     | dir(obj)                      | 可以获取相应对象的所有属性和方法名的列表：不带参数，显示环境下的变量，引入的模块数组                             |
+    
+**** 类的继承
+     类是面向对象中的技术，为了东西和方法方便扩展
+
+     #+begin_src python
+       # 单继承
+       class ClassName(BaseClassName):
+        # 多继承
+        class ClassName(Base1,Base2,Base3):
+     #+end_src
+**** 类的私有属性与私有方法
+     - 私有属性 __private_attrs：两个下划线开头，声明该属性为私有，不能在类地外部被使用或直接访问。在类内部的方法中使用时 self.__private_attrs 类的方法
+     - 私有方法 __private_method：两个下划线开头，声明该方法为私有方法，不能在类地外部调用。在类的内部调用 self.__private_methods 
+** 定义处理事情的方式 (函数)
+   怎么处理事情，除了计算机自带的，还能自己手动编写
+*** 定义函数
+    #+BEGIN_SRC python
+      def functionname( parameters ):
+          "函数_文档字符串"
+          function_suite
+          return [expression]
+    #+END_SRC
+*** 不定长参数函数
+    就是函数的参数长度不定
+    #+begin_src python
+      def print_user_info( name ,  age  , sex = '男' , * hobby):
+          # 打印用户信息
+          print('爱好：{}'.format(hobby))
+          return;
+
+      # 调用 print_user_info 函数
+      print_user_info( '两点水' ,18 , '女', '打篮球','打羽毛球','跑步')
+    #+end_src
+*** 关键字参数 ( 给参数命名)
+    #+begin_src python
+      def print_user_info( name ,  age  , sex = '男' ):
+          # 打印用户信息
+          print('性别：{}'.format(sex))
+          return;
+
+      # 调用 print_user_info 函数
+      print_user_info( name = '两点水' ,age = 18 , sex = '女')
+    #+end_src
+
+*** 匿名函数 lambda (不要重复使用的函数，就不给名字了)
+    #+begin_src python
+      lambda [arg1 [,arg2,.....argn]]:expression
+    #+end_src
+     
+    #+begin_src python
+      # -*- coding: UTF-8 -*-
+
+      sum = lambda num1 , num2 : num1 + num2;
+      print( sum( 1 , 2 ) )
+    #+end_src
+*** 入口函数
+    #+begin_src python
+      if __name__ == '__main__':
+    #+end_src
+      
+** 控制处理流程
+   分支 ( if 或if not )
+   #+begin_src python
+     if cond:
+        语句... 
+   #+end_src
+   
+   重复多做几次
+   #+begin_src python
+     for var in collection:
+             语句... 
+        #+end_src
+** 模块
+   #+begin_quote
+   模块是为了合理组织东西，便于重用
+   #+end_quote
+   #+begin_export type
+   #+end_export 
+   一个文件就是一个模块了，文件名表示模块名
+   
+*** 使用模块 
+    #+begin_src python
+      from person_start import Person
+      from pymodule import name
+    #+end_src
+
+** 包
+   #+begin_quote
+   包和模块是一样的目的，就是包是由模块组成的，模块是包的一部分。
+   #+end_quote
+   #+begin_src python
+     import 目录名.模块名
+   #+end_src
+** 测试
+   预防性编程的一种方式
+   #+begin_src python
+     try:
+      "nihao".index('bao')
+     except Exception:
+      print "some error"
+   #+end_src
+
+** 帮助
+   - help()  函数或类的详细说明
+   - dir() 函数或类的简单说明
+** 环境管理
+   因为 *Python* 最大的问题是各版本不兼容，所以还要要管理版本问题。  
+*** pipenv 
     #+begin_src sh
       # 创建 Python 2/3 版本的项目
       $ pipenv --two/--three
@@ -35,427 +274,3 @@
       # 定位 Python 解释器路径
       $ pipenv --py
     #+end_src
-** 编码
-   默认是认不得 ~Unicode~ 的，只认得英文
-   
-   识别 *Unicode* 
-   #+begin_src python
-     #-*-coding:utf-8-*-
-   #+end_src
-
-** 数据类型
-   数字，字符串这些数据类型都有,用来做做计算，显示显示消息的软件就能做了
-*** 列表 (list)
-    就这东西
-    #+begin_src python
-      [ 'runoob', 786 , 2.23, 'john', 70.2 ]
-    #+end_src
- 
-    #+begin_quote
-    对于相关的东西 ,  可以放在列表里 , 比如欠我钱的人的名单。 ~我还欠别人钱~ ，可怜
-    #+end_quote
-    #+begin_src python
-      myMoney = [ "张三","李四","王八"]
-    #+end_src
- 
-    列表里的东西可以修改，增减。 
-    #+begin_src python
-      # 增加
-      myMoney[4] = [ "老九"]
-      # 是否含有 
-      "老九" in myMoney
-      # 删除
-      del myMoney[1]
-    #+end_src
- 
-    一些方法: 
-    | cmp(list1, list2)       | 比较两个列表的元素                                                 |
-    | len(list)               | 列表元素个数                                                       |
-    | max(list)               | 返回列表元素最大值                                                 |
-    | min(list)               | 返回列表元素最小值                                                 |
-    | list(seq)               | 将元组转换为列表                                                   |
-    | list.append(obj)        | 在列表末尾添加新的对象                                             |
-    | list.count(obj)         | 统计某个元素在列表中出现的次数                                     |
-    | list.extend(seq)        | 在列表末尾一次性追加另一个序列中的多个值（用新列表扩展原来的列表） |
-    | list.index(obj)         | 从列表中找出某个值第一个匹配项的索引位置                           |
-    | list.insert(index, obj) | 将对象插入列表                                                     |
-    | list.pop(obj=list[-1])  | 移除列表中的一个元素（默认最后一个元素），并且返回该元素的值       |
-    | list.reverse()          | 反向列表中元素                                                     |
-    | list.sort([func])       | 对原列表进行排序                                                   |
-
-*** 元组 (tuple)  
-    #+begin_src python
-      ( 'runoob', 786 , 2.23, 'john', 70.2 )
-    #+end_src
-    
-    #+begin_quote
-    东西不能修改的列表, 但元组包含的是列表字典什么的变量的话，变量一修改，元组也就改了
-    #+end_quote
-    
-    #+begin_quote
-    创建元组 x=[ (person.name,person.age) for person in people ]
-    有条件地创建元组    x=[ (person.name,person.age) for person in people if person.age<34]
-    表达式化数组 xx=[(person.age**2 if person.age<34 else person.age) for person in people]
-    #+end_quote
- 
-*** 字典 (dictionary) 
-    #+begin_src python
-      {'name': 'john','code':6734, 'dept': 'sales'}
-    #+end_src
-    #+begin_quote
-    能够自定义索引的列表,就能表达层次化的东西 
-    #+end_quote
-    
-    | cmp(dict1, dict2) | 比较两个字典元素                                 |
-    | len(dict)         | 计算字典元素个数                                 |
-    | str(dict)         | 输出字典可打印的字符串表示                       |
-    | type(variable)    | 返回输入的变量类型，如果变量是字典就返回字典类型 |
-    | dict.clear()      | 删除字典内所有元素                               |
-    | dict.copy()       | 返回一个字典的浅复制                             |
-    | dict.values()     | 以列表返回字典中的所有值                         |
-    | popitem()         | 随机返回并删除字典中的一对键和值                 |
-    | dict.items()      | 以列表返回可遍历的(键, 值) 元组数组              |
-   
-*** 集合 
-    set([1,3,4])
-    #+begin_quote
-    无序不重复元素集,也是列表啦,就是列表要去重。返回的是一个没有值的字典,不能用索引操作了  
-    #+end_quote
-   
-    #+begin_src python
-      # 添加
-      set1.add(100)
-      # 删除
-      set1.remove(456)
-
-      # 交集 (求两个 set 集合中相同的元素)
-      set3=set1 & set2
-      # 并集 （合并两个 set 集合的元素并去除重复的值）
-      set4=set1 | set2
-      # 差集
-      set5=set1 - set2
-    #+end_src
-*** 空值 None
-*** 类型转换
-    
-    | 将 字符串 x 转换为一个整数                            | int(x [,base])         |
-    | 将 字符串 x 转换到一个浮点数                          | float(x)               |
-    | 创建一个复数                                          | complex(real [,imag])  |
-    | 将对象 x 转换为字符串                                 | str(x)                 |
-    | 将对象 x 转换为表达式字符串                           | repr(x)                |
-    | 用来计算在字符串中的有效 Python 表达式,并返回一个对象 | eval(str)              |
-    | 将序列 s 转换为一个元组                               | tuple(s)               |
-    | 将序列 s 转换为一个列表                               | list(s)                |
-    | 将一个整数转换为一个字符                              | chr(x)                 |
-    | 将一个整数转换为 Unicode 字符                         | unichr(x)              |
-    | 将一个字符转换为它的整数值                            | ord(x)                 |
-    | 将一个整数转换为一个十六进制字符串                    | hex(x)                 |
-    | 将一个整数转换为一个八进制字符串                      | oct(x)                 |
-    #+begin_quote
-    要能转才给转，能不能转看你要转化的东西 
-    #+end_quote
-*** 自定义类型  
-    基本类型还不能表达我要创建的东西，那么你就可以自己定义自己的东西是什么样的结构。
-    #+begin_quote
-    就是用那些基本类型拼装起来更复杂的结构
-    #+end_quote
-
-**** 定义类 
-     #+begin_src python -n
-       class ClassName:
-           # 构造函数
-           def __init__(self,...):
-               return
-           # 析构函数
-           def __del__(self,...):
-               return 
-     #+end_src
-     
-    实例 
-     #+BEGIN_SRC python
-       class wa:
-        def __init__(self, items={}):
-         '''items'''
-            if type(item)!=type({}):
-                raise TypeError("类型错误")
-               self.items=items
-            return
-           def	deposit(self,	amount):
-            self.balance	=	self.balance	+	amount
-            return	self.balance
-           def	withdraw(self,	amount):
-            if	amount	>	self.balance:
-             return	'Insufficient	funds'
-     #+END_SRC
-**** 专有方法
-     | __init__                      | 构造函数，在生成对象时调用                                                                                       |
-     | __del__                       | 析构函数，释放对象时使用                                                                                         |
-     | __repr__                      | 打印，转换                                                                                                       |
-     | __setitem__                   | 按照索引赋值                                                                                                     |
-     | __getitem__                   | 按照索引获取值                                                                                                   |
-     | __len__                       | 获得长度                                                                                                         |
-     | __cmp__                       | 比较运算                                                                                                         |
-     | __call__                      | 函数调用                                                                                                         |
-     | __add__                       | 加运算                                                                                                           |
-     | __sub__                       | 减运算                                                                                                           |
-     | __mul__                       | 乘运算                                                                                                           |
-     | __div__                       | 除运算                                                                                                           |
-     | __mod__                       | 求余运算                                                                                                         |
-     | __pow__                       | 乘方                                                                                                             |
-     | type(obj)                     | 来获取对象的相应类型；                                                                                           |
-     | isinstance(obj, type)         | 判断对象是否为指定的 type 类型的实例；                                                                           |
-     | hasattr(obj, attr)            | 判断对象是否具有指定属性/方法；                                                                                  |
-     | getattr(obj, attr[, default]) | 获取属性/方法的值, 要是没有对应的属性则返回 default 值（前提是设置了 default），否则会抛出 AttributeError 异常； |
-     | setattr(obj, attr, value)     | 设定该属性/方法的值，类似于 obj.attr=value；                                                                     |
-     | dir(obj)                      | 可以获取相应对象的所有属性和方法名的列表：不带参数，显示环境下的变量，引入的模块数组                             |
-    
-**** 类的继承
-***** 继承已经定义的类
-      #+begin_src python
-        class ClassName(BaseClassName):
-      #+end_src
-
-      在定义类的时候，可以在括号里写继承的类，一开始也提到过，如果不用继承类的时
-      候，也要写继承 object 类，因为在 Python 中 object 类是一切类的父类。
-
-      当然上面的是单继承，Python 也是支持多继承的，具体的语法如下：
-
-      #+begin_src python
-      class ClassName(Base1,Base2,Base3):
-      #+end_src
-*****  调用父类的方法
-      一个类继承了父类后，可以直接调用父类的方法的，比如下面的例子，`UserInfo2`
-      继承自父类 `UserInfo` ，可以直接调用父类的 `get_account` 方法。
-      #+begin_src python
-      #!/usr/bin/env python
-      # -*- coding: UTF-8 -*-
-
-      class UserInfo(object):
-      lv = 5
-
-      def __init__(self, name, age, account):
-      self.name = name
-      self._age = age
-      self.__account = account
-
-      def get_account(self):
-      return self.__account
-
-
-      class UserInfo2(UserInfo):
-      pass
-
-
-      if __name__ == '__main__':
-      userInfo2 = UserInfo2('两点水', 23, 347073565);
-      print(userInfo2.get_account())
-      #+end_src
-***** 父类方法的重写 
-      当然，也可以重写父类的方法。
-     #+begin_src python
-     #!/usr/bin/env python3
-      # -*- coding: UTF-8 -*-
-
-      class UserInfo(object):
-      lv = 5
-
-      def __init__(self, name, age, account):
-      self.name = name
-      self._age = age
-      self.__account = account
-
-      def get_account(self):
-      return self.__account
-
-      @classmethod
-      def get_name(cls):
-      return cls.lv
-
-      @property
-      def get_age(self):
-      return self._age
-
-
-      class UserInfo2(UserInfo):
-      def __init__(self, name, age, account, sex):
-      super(UserInfo2, self).__init__(name, age, account)
-      self.sex = sex;
-
-
-      if __name__ == '__main__':
-      userInfo2 = UserInfo2('两点水', 23, 347073565, '男');
-      # 打印所有属性
-      print(dir(userInfo2))
-      # 打印构造函数中的属性
-      print(userInfo2.__dict__)
-      print(UserInfo2.get_name())
-     #+end_src
-***** 子类的类型判断 
-
-      可以使用 isinstance() 函数,
-
-      一个例子就能看懂 isinstance() 函数的用法了。
-
-**** 类属性与方法
-     #+begin_verse
-     类的私有属性
-      __private_attrs：两个下划线开头，声明该属性为私有，不能在类地外部被使用或直接访问。在类内部的方法中使用时 self.__private_attrs 类的方法
-     #+end_verse
-      
-     #+begin_verse
-     类的私有方法
-      __private_method：两个下划线开头，声明该方法为私有方法，不能在类地外部调用。在类的内部调用 self.__private_methods 
-     #+end_verse
-      
-**** 类的多态
-     多态的概念其实不难理解，它是指对不同类型的变量进行相同的操作，它会根据对象
-     （或类）类型的不同而表现出不同的行为。
-
-     事实上，我们经常用到多态的性质，比如：
-     #+begin_src python
-     >>> 1 + 2
-     3
-     >>> 'a' + 'b'
-     'ab'
-     #+end_src
-
-     可以看到，我们对两个整数进行 + 操作，会返回它们的和，对两个字符进行相同的 +
-     操作，会返回拼接后的字符串。也就是说，不同类型的对象对同一消息会作出不同的
-     响应。
-
-** 自定义操作 
-*** 定义函数
-    #+BEGIN_SRC python
-      def functionname( parameters ):
-          "函数_文档字符串"
-          function_suite
-          return [expression]
-    #+END_SRC
-*** 返回多个值 return b , a
-    其实返回了一个元组
-*** 不定长参数
-    你指望多
-    #+begin_src python
-      def print_user_info( name ,  age  , sex = '男' , * hobby):
-          # 打印用户信息
-          print('爱好：{}'.format(hobby))
-          return;
-
-      # 调用 print_user_info 函数
-      print_user_info( '两点水' ,18 , '女', '打篮球','打羽毛球','跑步')
-    #+end_src
-*** 关键字参数 
-    不用关心参数列表定义时的顺序
-    #+begin_src python
-      def print_user_info( name ,  age  , sex = '男' ):
-          # 打印用户信息
-          print('性别：{}'.format(sex))
-          return;
-
-      # 调用 print_user_info 函数
-      print_user_info( name = '两点水' ,age = 18 , sex = '女')
-    #+end_src
-
-*** 匿名函数 lambda 
-    这种函数不用给名字，就用一次，因为下次不用了
-    
-    #+begin_src python
-      lambda [arg1 [,arg2,.....argn]]:expression
-    #+end_src
-     
-    #+begin_src python
-      # -*- coding: UTF-8 -*-
-
-      sum = lambda num1 , num2 : num1 + num2;
-      print( sum( 1 , 2 ) )
-    #+end_src
-*** 入口函数
-   相当于其他语言中的 ~main~ 函数，这不是一个函数，暂且这么叫吧，这表达式一定成立
-      #+begin_src python
-      if __name__ == '__main__':
-      #+end_src
-      
-** 控制流程(决定了操作的走向)
-   #+begin_verse
-    判断条件的 if else
-    多次操作的 for while
-   #+end_verse
-** 模块
-   #+begin_verse
-   数据类型扩展了好多，天南海北的，有操作硬件的，有控制界面的，有控制数字处理的，有控制音乐什么的，好多呢
-   怎么处理，就想文件夹一样，给分个级，再加一层，就想到了用模块的方法。
-   #+end_verse
-   
-*** 定义模块   
-   一个 ~python~ 代码文件就是模块了，用文件名表示模块名 (后缀不需要的啊) 
-   
-   这个文件名叫 ~pymodule.py~ ,模块名就叫 ~pymodule~
-   #+begin_src python -n
-     # 这个是一个杂乱的模块
-     class animal:
-         def show():
-             print("i am animal")
-
-     name="aming"
-     __myname__="aming"
-     _myname="aming"
-
-     def wel():
-         print("i am wel function")
-   #+end_src
-*** 使用模块 
-    使用模块中的一个东西 ,使用全部用通配符 ~*~
-    #+begin_src python
-      from person_start import Person
-    #+end_src
-
-    使用模块中的所有东西
-    #+begin_src python
-    import module1[, module2[,... moduleN]
-    #+end_src
-    
-   用法 
-   #+begin_src python
-     #!/usr/bin/env python3
-     # -*- coding: utf-8 -*-
-
-     from pymodule import name
-     print(name)
-
-     import pymodule
-     print(pymodule.__myname__)
-   #+end_src
-   
-   #+begin_quote
-   区别在使用时名字的约束
-   #+end_quote
-*** 模块属性
-    __name__ 
-*** 作用域
-    正常的函数和变量名是公开的（public），可以被直接引用，比如：abc，ni12，PI 等
-    `__xxx__`这样的变量是特殊变量，可以被直接引用，但是有特殊用途
-    `_xxx` 和 `__xxx` 这样的函数或变量就是非公开的（private），不应该被直接引用
-    这是约定吧 !
-** 包
-   光模块不够啊，一个文件放不了什么东西啊，可以用包，包里有很多模块，这样的层次，
-   包是一个目录
-   
-  包的使用
-  #+begin_src python
-    import 目录名.模块名
-  #+end_src
-  模块名前加一个目录名和一个 点就可以了 
-** 测试
-   有时，有些操作我们会筛选掉，这时用报错的方法挺好的。用来测试
-   #+begin_src python
-     try:
-      "nihao".index('bao')
-     except Exception:
-      print "some error"
-   #+end_src
-
-*** 触发异常
-    : raise [Exception [, args [, traceback]]]
-** 帮助
-   help()  函数或类文档字串说明
-   dir() 函数或类的属性

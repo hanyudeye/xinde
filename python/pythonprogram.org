@@ -3,7 +3,6 @@
 #+TAGS: 
 #+CATEGORIES: 软件使用
 
-
 * python 
 ** 系统工具接口,操作系统 os 
 *** 系统编程，涉及流，命令行参数，环境变量 
@@ -39,48 +38,7 @@ import subprocess
   # 行分隔符
   print("%d"  % ord( os.linesep ))
 
-*** python 为预处理文件,目录和目录树提供的工具
-*** 处理并行的标准工具,进程,线程，队列，管道，信号等
-*** 字符串操作
-    屏蔽转义 os.path.getsize(r'C:\autoexec.bat')
-**** 截断文本到文本行列表,去除换行符 splitlines  
-     能识别的字符,都当做换行符，分隔  
-     \n 换行
-     \r 回程
-     \r\n 回车+换行
-     \v  或\x0b 行列表
-     \f 或 \x0c 换页
-     \x1c 文件分隔符
-     \x1d 组分隔符
-**** 截断文本，但不去除换行符 split 
-     例子 
-     #+begin_src python
-       line = 'aaa\nbbb\nccc\n'
-
-       >>> line.split('\n')
-       ['aaa', 'bbb', 'ccc', '']
-
-       >>> line.splitlines()
-       ['aaa', 'bbb', 'ccc']
-     #+end_src
-**** 查找需要的字符串所在索引号  find
-     str.find("hello")
-     找不到，就返回 -1
-**** 替换
-     #+begin_src python
-       #替换字符串的一部分
-       r=mystr.replace("nice","很高兴")
-       print(r)
-     #+end_src
-**** 字符串是否包含  "str1"  in "str2"
-     返回布尔 
-**** 是否 isappha,isdigit,
-**** 大小转换
-**** string 库
-     string.ascii_lowercase
-     whitespace 空格字符
-     
-*** 输入输出,输入输出是函数，不再是语句了,注意用法,不然报错
+*** 输入输出
 **** print 
      错误的用法  print  "hello,world"
      正确用法 print("hello","world") 用逗号的参数，拼接时会自动加一个空格
@@ -645,12 +603,10 @@ SERVER_SOFTWARE	这个环境变量的值包含了调用 CGI 程序的 HTTP 服�
  ['u', 'a', 'v', '_', 'u', 'b', 'v', '_', 'u', 'c', 'v', '_', 'u', 'w', 'v', '_', 'u', 'z', 'v', '_', 'u', 'c', 'v', '_', 'u', 'o', 'v', '1', '2', '3', '4', '5', '6', '7', '8', '9']
  ```
 ** 调用 shell 程序
-   #+begin_src python
           import os
           os.system("ls")
-   #+end_src
-
-连接 shell 输出 
+          
+          连接 shell 输出 
 
 text= os.popen("type hello.py").read()
 ** 子进程
@@ -659,164 +615,6 @@ text= os.popen("type hello.py").read()
      subprocess.call('python helloshello.py')
    #+end_src
 
-* python 环境
-  git clone https://github.com/yyuu/pyenv.git ~/.pyenv
-  git clone https://github.com/yyuu/pyenv-virtualenv.git ~/.pyenv/plugins/pyenv-virtualenv
-  echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
-  echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
-  echo 'eval "$(pyenv init -)"' >> ~/.zshrc
-  echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.zshrc
-  
-  # 不喜写兼容代码，所有代码均向 3.5+ 靠拢
-  v=3.5.2|wget http://mirrors.sohu.com/python/$v/Python-$v.tar.xz -P ~/.pyenv/cache/;pyenv install $v
-  v=3.6.0|wget http://mirrors.sohu.com/python/$v/Python-$v.tar.xz -P ~/.pyenv/cache/;pyenv install $v
-  v=2.7.9|wget http://mirrors.sohu.com/python/$v/Python-$v.tar.xz -P ~/.pyenv/cache/;pyenv install $v
-
-# 设置 Global Python 为 2.7.9, 备注：尽量不要把 Py3 设置为全局，否则由于 Homebrew 本身有一些应用是依赖于 Py2 的，设置为 Py2 容易出现一些奇怪的问题。
-pyenv global 2.7.9
-pip install -i https://pypi.doubanio.com/simple requests
-# 下面这个是用于安装基本的代码补全功能
-pip install -i https://pypi.doubanio.com/simple --upgrade "jedi>=0.9.0" "json-rpc>=1.8.1" "service_factory>=0.1.5" flake8 pytest autoflake hy
-
-# 先激活环境??? 
-pyenv virtualenv 3.5.2 py3-daily
-pyenv activate py3-daily
-pip install -i https://pypi.doubanio.com/simple requests
-pip install -i https://pypi.doubanio.com/simple beatutifulsoup4
-pip install -i https://pypi.doubanio.com/simple ipython[notebook]
-pip install -i https://pypi.doubanio.com/simple jupyter
-# 下面这个是用于安装基本的代码补全功能
-pip install -i https://pypi.doubanio.com/simple --upgrade "jedi>=0.9.0" "json-rpc>=1.8.1" "service_factory>=0.1.5" flake8 pytest autoflake hy
-pyenv deactivate
-# pyenv uninstall py3-daily
-
-2.1 代码补全
-当你按照前面的所有配置走一圈下来，基本上就已经可以完美的进行补全了。
-比如，当我编辑一个 py 文件的时候，
-# 先激活虚拟环境
-pyenv activate 3.5.2/envs/py3-daily
-emacs py.py
-
-如图所示，因为请求，numpy 这种第三方库都可以完美补全，其他自然不在话下。
-
-代码补全
-
-代码补全还有另一个神器，就是可以内嵌 lisp 的 Snippet 模板 -  yasnippet，由于模板功能基本上和其他编辑器相同，而使用 elisp 语言进行编写动态 Snippet 模板则需要会 elisp，这以后有机会再学学。
-2.2 代码跳转
-
-文件代码跳转 spc-spc-helm-imenu 查看文件结构
-文件跳转在 normal-mode 下，gd 即可跳转到函数定义上，但是不能跨文件跳转。
-
-
-
-
-
-
-单文件使用 helm_imenu 进行浏览
-
-
-
-
-
-
-使用 ag 进行代码搜索
-
-2.3 pytest 测试
-
-spc-ms-py3-daily 进入选择 py3-daily 虚拟环境
-spc-spc-pytest-all 进入即可运行所有 pytest 测试。
-
-测试过程：
-运行测试失败，运行测试失败，使用 cwj 跳转到下面窗口，对红色标记处输入，即可跳转到出错文件行。
-
-
-
-
-
-pytest 运行测试失败
-
-修正运行测试成功，如图：
-
-
-
-
-
-pytest 运行测试成功
-
-×03。IPython 笔记本
-通常情况下我使用 IPython Notebook 都是在 Web 端，因为是 Web 端，实际上大量的 Dom 渲染对浏览器的渲染速度还是有一定的影响的，我还是比较喜欢客户端，因为客户端的快捷键可以定制，而 Web 端的快捷键实在是相当的不方便。
-是不是 IPython Notebook 的 web 端没有好处呢？有的，比如我可以借用外部的 JS 可视化图表对 js 进行可视化呀。
-比如我发在简书上的这篇技术文 IPython Notebook 引入 ECharts 做可视化
-但，如果不需要 js 功能的话，还是用客户端舒服一些。
-3.1 IPython Notebook 基本配置
-spacemacs 貌似只支持密码访问 IPython Notebook，那么我们就生成密码。
-# 首先激活 py3-daily 环境
-python -c "from notebook.auth import passwd;print(passwd())" | pbcopy
-# 恩，于是剪切板上就有如下的字符串
-sha1:9bf4c48a6b83:26bc24a78a1e4aea7baa36874f5e86bafac0dbb9
-# 打开 config 文件取消注释并修改 c.NotebookApp.password
-vim ~/.jupyter/jupyter_notebook_config.py
-c.NotebookApp.password = 'sha1:35543659622f:f9a78f0b20132f3e04aa1d4ed4060f9fd9eb7663'
-
-3.2 Emacs IPython Notebook
-# 首先在终端打开 IPython Notebook
-ipython notebook
-
-接着打开 emacs，输入 spc-ain，默认端口，然后输入密码即可。首次登陆后还需要在输入一次 spc-ain 即可看到 IPython Notebook 的主界面。
-
-
-
-
-
-IPYNB 的主界面
-
-光标移到[新笔记本]键击进入新建 IPython Notebook。
-输入如下代码：
-# The %... is an iPython thing, and is not part of the Python language.
-# In this case we're just telling the plotting library to draw things on
-# the notebook, instead of on a separate window.
-%matplotlib inline
-# See all the "as ..." contructs? They're just aliasing the package names.
-# That way we can call methods like plt.plot() instead of matplotlib.pyplot.plot().
-import numpy as np
-import scipy as sp
-import matplotlib as mpl
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
-import pandas as pd
-import time
-pd.set_option('display.width', 1000)
-pd.set_option('display.max_columns', 100)
-pd.set_option('display.notebook_repr_html', True)
-import seaborn as sns
-sns.set_style("darkgrid")
-sns.set_context("poster")
-sns.set()
-
-# Load the example flights dataset and conver to long-form
-flights_long = sns.load_dataset("flights")
-flights = flights_long.pivot("month", "year", "passengers")
-
-# Draw a heatmap with the numeric values in each cell
-sns.heatmap(flights, annot=True, fmt="d", linewidths=.5)
-
-
-shift + enter，咣
-热力图就出来了
-
-
-
-
-
-热力图
-
-0×04。扩展
-看完上文，就可以深入文档进行探索了。
-
-作者：无与童比
-链接：https://www.jianshu.com/p/c5cc672aae63
-来源：简书
-简书著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。
 * 语言配套工具
 ** 包管理工具 
 *** pip 

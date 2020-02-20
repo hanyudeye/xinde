@@ -1,16 +1,14 @@
 ---
-title: mathjax latex简介
-date: 2019-05-27 13:48:49
-tags: latex
-categories: 软件使用
-mathjax: ture
+title: latex简介
+tags: [ latex ]
+categories: [ 技术 ]
+date: 2019-12-22T05:32:47+08:00
+<!-- draft: true -->
 ---
 
-# latex
-## 简介
-> 书写数学书籍等印刷作品的标记语言
+> 书写数学书籍等印刷作品的标记
 
-<!-- more -->
+<!--more-->
 
 ## 希腊字母
 | 显示                      | LaTeX标记               | 显示                | LaTeX标记         |
@@ -28,6 +26,13 @@ mathjax: ture
 | $\lambda \Lambda$         | \lambda \Lambda         | $\psi \Psi$         | \psi \Psi         |
 | $\mu$M                    | \mu M                   | $\omega \Omega$     | \omega \Omega     |
 
+## 算术
+| 显示             | LaTeX标记      | 显示           | LaTeX标记    |
+| :-----:          | :-------:      | :-----:        | :-------:    |
+| $a \cdot b$        |      a \cdot b         | $a \times b$ | a \times b|
+|$a \div b$|a \div b||
+
+
 ## 函数、符号及特殊字符 声调
 | 显示             | LaTeX标记      | 显示           | LaTeX标记    |
 | :-----:          | :-------:      | :-----:        | :-------:    |
@@ -35,7 +40,7 @@ mathjax: ture
 | $\dot{x}$        | \dot{x}        | $\acute{\eta}$ | \acute{\eta} |
 | $\breve{a}$      | \breve{a}      | $\hat{\alpha}$ | \hat{\alpha} |
 | $\check{\alpha}$ | \check{\alpha} | $	\ddot{y}$ | \ddot{y}     |
-| $\tilde{\iota}$  | \tilde{\iota}  | $$             |              |
+| $\tilde{\iota}$  | \tilde{\iota}  |              |              |
 
 
 ## 同余
@@ -50,17 +55,17 @@ mathjax: ture
 | $\nabla$ | \nabla    | $\partial x$ | \partial x | $\mathrm{d}x$ | \mathrm{d}x |
 | $\dot x$ | \dot x    | $\ddot y$    | \ddot y    |               |             |
 ## 集合
-| 显示    | LaTeX标记 | 显示    | LaTeX标记 | 显示    | LaTeX标记 |
-| :-----: | :-------: | :-----: | :-------: | :-----: | :-------: |
-| $\forall$      |         \forall  | $\exists$      |       \exists    | $\empty$      |\empty           |
-| $\emptyset$      |\emptyset           | $\varnothing$      |\varnothing           | $\in$      |\in           |
-| $\ni$      |\ni           | $\not\in$      |\not\in           | $\notin$      |\notin           |
-| $\subset$      |\subset           | $\subseteq$      |\subseteq           | $\supset$      |\supset           |
-| $\supseteq$      |\supseteq           | $\cap$      |\cap           | $\bigcap$      |\bigcap           |
-| $\cup$      |\cup           | $\bigcup$      |\bigcup           | $\biguplus$      |\biguplus           |
-| $	\sqsubset$      |	\sqsubset           | $\sqsubseteq$      |\sqsubseteq           | $\sqsupset$      |\sqsupset           |
-| $\sqsupseteq$      |\sqsupseteq           | $\sqcap$      |\sqcap           | $\sqcup$      |\sqcup           |
-| $\bigsqcup$      |\bigsqcup           | $$      |           | $$      |           |
+| 显示            | LaTeX标记   | 显示          | LaTeX标记   | 显示        | LaTeX标记 |
+| :-----:         | :-------:   | :-----:       | :-------:   | :-----:     | :-------: |
+| $\forall$       | \forall     | $\exists$     | \exists     | $\bigsqcup$ | \bigsqcup |
+| $\emptyset$     | \emptyset   | $\varnothing$ | \varnothing | $\in$       | \in       |
+| $\ni$           | \ni         | $\not\in$     | \not\in     | $\notin$    | \notin    |
+| $\subset$       | \subset     | $\subseteq$   | \subseteq   | $\supset$   | \supset   |
+| $\supseteq$     | \supseteq   | $\cap$        | \cap        | $\bigcap$   | \bigcap   |
+| $\cup$          | \cup        | $\bigcup$     | \bigcup     | $\biguplus$ | \biguplus |
+| $	\sqsubset$ | \sqsubset   | $\sqsubseteq$ | \sqsubseteq | $\sqsupset$ | \sqsupset |
+| $\sqsupseteq$   | \sqsupseteq | $\sqcap$      | \sqcap      | $\sqcup$    | \sqcup    |
+
 ## 逻辑
 
 | 显示    | LaTeX标记 | 显示    | LaTeX标记 | 显示    | LaTeX标记 |
@@ -90,7 +95,7 @@ mathjax: ture
 | $\downharpoonleft$ | \downharpoonleft | $\downharpoonright$             | \downharpoonright             | $\Leftarrow$          | \Leftarrow      |
 | $\Rightarrow$      | \Rightarrow      | $\Leftrightarrow$               | \Leftrightarrow               | $\Longleftarrow$      | \Longleftarrow  |
 | $\Longrightarrow$  | \Longrightarrow  | $\Longleftrightarrow (or \iff)$ | \Longleftrightarrow (or \iff) | $\Uparrow$            | \Uparrow        |
-| $\Downarrow$       | \Downarrow       | $\Updownarrow$                  | \Updownarrow                  | $$                    |                 |
+| $\Downarrow$       | \Downarrow       | $\Updownarrow$                  | \Updownarrow                  | |                 |
 
 ## 特殊符号
 
@@ -114,7 +119,7 @@ mathjax: ture
 | $\sinh g$               | \sinh g               | $\cosh h$               | \cosh h               | $\tanh i$               | \tanh i               |
 | $\operatorname{sh}j$    | \operatorname{sh}j    | $\operatorname{argsh}k$ | \operatorname{argsh}k | $\operatorname{ch}h$    | \operatorname{ch}h    |
 | $\operatorname{argch}l$ | \operatorname{argch}l | $\operatorname{th}i$    | \operatorname{th}i    | $\operatorname{argth}m$ | \operatorname{argth}m |
-| $$                      |                       | $\limsup S$             | \limsup S             | $\liminf I$             | \liminf I             |
+| $\liminf I$             | \liminf I             |                         |                       | $\limsup S$             | \limsup S             |
 | $\max H$                | \max H                | $\min L$                | \min L                | $\inf s$                | \inf s                |
 | $\sup t$                | \sup t                | $\exp\!t$               | \exp\!t               | $\ln X$                 | \ln X                 |
 | $\lg X$                 | \lg X                 | $\log X$                | \log X                | $\log_\alpha X$         | \log_\alpha X         |

@@ -1,562 +1,245 @@
 #+TITLE: css 简介
 #+DESCRIPTION: css 简介
-#+TAGS: css
-#+CATEGORIES: 语言使用
+#+TAGS[]: css
+#+CATEGORIES[]: 技术
+#+DATE: 2020-02-11T18:20:43+08:00
 
+设定网页外观的技术。你看一张报纸，或者图书的封面，花花绿绿的颜色还有排版，把这些
+效果用在网页里的技术叫做样式技术 ( *CSS* )。
+# more
 * css
-  对 ~html~ 表现的视觉元素进行排版和定义元素外观的。
-  
-  层叠样式表（英语：Cascading Style Sheets，缩写：CSS；又称串样式列表、级联样式
-  表、串接样式表、阶层式样式表）是一种用来为结构化文档（如 HTML 文档或 XML 应用）
-  添加样式（字体、间距和颜色等）的计算机语言，由 W3C 定义和维护。
-  #+HTML: <!-- more -->
+** 安装  
+   需要浏览器和代码编辑器。 
+** 用法
+*** HTML 文件 
+    在 头部(head)标签中  嵌入样式文件的路径  
+    #+begin_src html
+      <link rel="stylesheet" href="style.css">
+    #+end_src
+
+*** 样式文件样例  
+    #+begin_src css -n
+      #para1
+      {
+          text-align:center;
+          color:red;
+      }
+      .center {text-align:center;}
+    #+end_src
+    
+    #+begin_quote
+    基本结构就是选择器 + 大括号括起来的具体样式
+    #+end_quote
 ** 选择器
-   对视觉元素进行定位 
-  
-*** 用相对位置定位 ( 派生选择器 )   
-    li strong {a:v;b:v}
-*** 用 id 定位
-    #red {color:red;}
-*** 用类名定位 ( 类选择器 ) 
+   对页面内容进行定位的技术 ，定位到内容后，就可以设置内容的外观了。
+*** 用标签定位
+    根据标签在网页中的层次位置来定位
+    #+begin_src css
+      div p  {text-align:center;}
+    #+end_src
+*** 用 id名定位
+    含有 id属性的元素，一个网页中不能有相同id名的元素
+    #+begin_src css
+      #red {color:red;}
+    #+end_src
+    
+*** 用class名定位
+   含有 class 属性的元素，可以有多个同class名的元素
+    #+begin_src css
     .center {text-align: center}
-*** 用属性名定位 ( 属性选择器 ) 
-    input [title="value"] //也可以不要 value 修饰
+    #+end_src
+    
+*** 用属性名定位 
+    #+begin_src css
+      //也可以不要 value 修饰
+      input [title="value"] {text-align: center}
+    #+end_src
+    
 *** 用函数 (伪元素)
-  | :first-line                   | 向文本的首行设置特殊样式。                      |
-  | :first-letter                 | 向文本的首字母设置特殊样式                      |
-  | :before                       | 在元素的内容前面插入新内容。                    |
-  | :link	a:link                 | 选择所有未访问链接                              |
-  | :visited	a:visited           | 选择所有访问过的链接                            |
-  | :active	a:active             | 选择正在活动链接                                |
-  | :hover	a:hover               | 把鼠标放在链接上的状态                          |
-  | :focus	input:focus           | 选择元素输入后具有焦点                          |
-  | :first-letter	p:first-letter | 选择每个<p> 元素的第一个字母                    |
-  | :first-line	p:first-line     | 选择每个<p> 元素的第一行                        |
-  | :first-child	p:first-child   | 选择器匹配属于任意元素的第一个子元素的 <p> 元素 |
-  | :before	p:before             | 在每个<p>元素之前插入内容                       |
-  | :after	p:after               | 在每个<p>元素之后插入内容                       |
-  | :lang(language)	p:lang(it)   | 为<p>元素的 lang 属性选择一个开始值             |
-    
-** 元素外观 
-*** 背景 
-    #+begin_verse
-    background-color: 默认 transparent 透明
-    background-image:默认 none,url(path) 可以放两张背景
-    background-repeat:默认 padding 左上角开始 repeat-x repeat-y no-repeat(重复图像) 
-    background-position: top ,center,bottom,left,center,right(上中下,左中右) 100px 4com 2%,一个值得话,纵坐标默认居中
-    background-attachment:fixed/scroll/local 背景关联
-    background-size: 长宽 px 或 %,相对于父元素而不是图形
-    background-origin 背景图片相对于(content-box、padding-box 或 border-box )的定位
-    background-clip:content-box; 规定背景的绘制区域
-    #+end_verse
-    
-*** 轮廓 [ 元素周围的一条线 ]
-    outline-color:
-    outline-style
-    outline-width
+      - :first-line                   向文本的首行设置特殊样式                  
+      - :first-letter                 向文本的首字母设置特殊样式                  
+      - :before                       在元素的内容前面插入新内容                
+      - :link	               选择所有未访问链接                           
+      - :visited	a:visited           选择所有访问过的链接                        
+      - :active	a:active             选择正在活动链接                             
+      - :hover	a:hover               把鼠标放在链接上的状态                      
+      - :focus	input:focus           选择元素输入后具有焦点                      
+      - :first-letter 元素的第一个字母                 
+      - :first-line	元素的第一行                     
+      - :first-child	  选择器匹配属于元素的第一个子元素
+      - :before	在元素之前插入内容                    
+      - :after	在元素之后插入内容                   
+      - :lang(language) 为元素的 lang 属性选择一个开始值          
+
+** 样式设计     
+*** 元素外观 
+**** 背景 
      
-    | 值      | 描述                                                |
-    | none    | 默认。定义无轮廓。                                  |
-    | dotted  | 定义点状的轮廓。                                    |
-    | dashed  | 定义虚线轮廓。                                      |
-    | solid   | 定义实线轮廓。                                      |
-    | double  | 定义双线轮廓。双线的宽度等同于 outline-width 的值。 |
-    | groove  | 定义 3D 凹槽轮廓。此效果取决于 outline-color 值。   |
-    | ridge   | 定义 3D 凸槽轮廓。此效果取决于 outline-color 值。   |
-    | inset   | 定义 3D 凹边轮廓。此效果取决于 outline-color 值。   |
-    | outset  | 定义 3D 凸边轮廓。此效果取决于 outline-color 值。   |
-    | inherit | 规定应该从父元素继承轮廓样式的设置。                |
-    *** 边框
-*** 内边距
-    padding
-*** 边框
-    #+begin_verse
-    border-style
-    border-width
-    border-color:transparent 有宽度的不可见边框
-    border-radius: 边框圆角 四个角顺序是 top right bottom left
-    box-shadow:边框阴影 (灯光的照射形成的)
-    #+end_verse
+     - background-color: 默认 transparent 透明
+     - background-image:默认 none,url(path 可以放两张背景)
+     - background-repeat:默认 padding 左上角开始 repeat-x repeat-y no-repeat(重复图像) 
+     - background-position: 
+     - background-attachment:fixed/scroll/local 背景关联
+     - background-size: 长宽 px 或 %,相对于父元素而不是图形
+     - background-origin 背景图片相对于(content-box、padding-box 或 border-box )的定位
+     - background-clip:content-box; 规定背景的绘制区域
+     - 
+**** 轮廓
+     - outline-color: 轮廓色
+     - outline-style: 轮廓样式,点 dotted ,实线 solid ，双实线 double 
+     - outline-width: 轮廓大小
+**** 内边距
+     - padding
+**** 边框
+     - border-style
+     - border-width
+     - border-color:transparent 有宽度的不可见边框
+     - border-radius: 边框圆角 四个角顺序是 top right bottom left
+     - box-shadow:边框阴影 
+     - border-image-source 	用在边框的图片的路径。
+     - border-image-slice 	图片边框向内偏移。 	
+     - border-image-width 	图片边框的宽度。 	
+     - border-image-outset 	边框图像区域超出边框的量。 	
+     - border-image-repeat 	图像边框是否应平铺(repeated)、铺满(rounded)或拉伸(stretched)。
 
-    box-shadow: h-shadow v-shadow blur spread color inset;
-    h-shadow 	必需。水平阴影的位置。允许负值。 
-    v-shadow 	必需。垂直阴影的位置。允许负值。 
-    blur 	 可选。模糊距离。 
-    spread 	可选。阴影的尺寸。 
-    color 	可选。阴影的颜色。请参阅 CSS 颜色值。
-    inset 	可选。将外部阴影 (outset) 改为内部阴影。
+**** 外边距
+     - margin
+*** 文本外观    
+**** 文本属性
+     - text-indent: -5em 2% 2px 用于块元素,行元素可以用 padding,可以继承
+     - text-align: left,center,right 行内元素
+     - word-spacing: 单词之间距离
+     - letter-spacing:字间距离
+     - text-transform:capitalize uppercase lowercase 
+     - text-decoration:underline overline(上划线) line-through(穿透线) blink(闪烁)文本装饰
+     - direction：ltr 和 rtl 文本方向
+     - text-shadow:5px 5px 5px #FF0000;
+     - word-wrap: 长单词,(超过一行)允许截断到下一行 break-word /normal
+     - text-outline: 文本轮廓
 
-    #+begin_verse
-    border-image-source 	用在边框的图片的路径。(特别要注意图片是框型的,跟 border 设定要一样,就是把图片套到边框上面) 	
-    border-image-slice 	图片边框向内偏移。 	
-    border-image-width 	图片边框的宽度。 	
-    border-image-outset 	边框图像区域超出边框的量。 	
-    border-image-repeat 	图像边框是否应平铺(repeated)、铺满(rounded)或拉伸(stretched)。
-    #+end_verse
-    
-*** 外边距
-    margin
-** 文本外观    
-*** 文本属性
-    #+begin_verse
-    text-indent: -5em 2% 2px 用于块元素,行元素可以用 padding,可以继承
-    text-align: left,center,right 行内元素
-    word-spacing:定义为由空白符包围的一个字符串,中英文混合文本中。其默认值 normal 与设置值为 0 是一样的
-    letter-spacing:字间距离
-    text-transform:capitalize uppercase lowercase 
-    text-decoration:underline overline(上划线) line-through(穿透线) blink(闪烁)文本装饰
-    direction：ltr 和 rtl 文本方向
-    text-shadow:5px 5px 5px #FF0000;
-    word-wrap: 长单词,(超过一行)允许截断到下一行 break-word /normal
-    text-outline: 文本轮廓
-    #+end_verse
-    
-*** 字体
-    #+begin_verse
-    font-family: 使用字体系列,字体名中有空格时 要用引号
-    font-style:字体风格 normal italic(normal 版本的倾斜改动) oblique(字体的倾斜版本)
-    font-variant:字体变形 small-caps (另一种格式的大写英文)
-    font-weigth: bold  normal
-    font-size:默认大小是 16 像素 (16px=1em(当前尺寸,当前是 16px))
-    #+end_verse
+**** 字体
+     - font-family: 使用字体系列,字体名中有空格时 要用引号
+     - font-style:字体风格 normal italic(normal 版本的倾斜改动) oblique(字体的倾斜版本)
+     - font-variant:字体变形 small-caps (另一种格式的大写英文)
+     - font-weigth: bold  normal
+     - font-size:默认大小是 16 像素 (16px=1em(当前尺寸,当前是 16px))
 
-**** 自定义字体
-      在新的 @font-face 规则中，您必须首先定义字体的名称（比如 myFirstFont），然后指向该字体文件。
-      如需为 HTML 元素使用字体，请通过 font-family 属性来引用字体的名称 (myFirstFont)：
-      #+BEGIN_SRC css
-        @font-face
-        {
-            font-family: myFirstFont;
-            src: url('Sansation_Light.ttf'),
-                 url('Sansation_Light.eot'); /* IE9+ */
-        }
+       自定义字体
+       #+BEGIN_SRC css
+         @font-face
+         {
+             font-family: myFirstFont;
+             src: url('Sansation_Light.ttf'),
+                  url('Sansation_Light.eot'); /* IE9+ */
+         }
 
-        div
-        {
-            font-family:myFirstFont;
-        }
-    #+END_SRC
-** 链接外观
-    #+begin_verse
-    a:link - 普通的、未被访问的链接
-    a:visited - 用户已访问的链接
-    a:hover - 鼠标指针位于链接的上方
-    a:active - 链接被点击的时刻
-    #+end_verse
-    
-    text-decoration 属性大多用于去掉链接中的下划线
-** 列表外观
-    #+begin_verse
-    list-style-type: square(方块)circle,decimal
-    list-style-image: url(xxx.gif) 点,用图像替代
-    list-style-position: [ outside ,inside ]
-    #+end_verse
-    
-** 设定位置
-*** 相对定位 (相对当前布局)
-    #+begin_src css
-      position:relative
-      left:-20px
-    #+end_src
-    top right bottom
-*** 绝对定位
-      #+begin_src css
-      position:absolute
-      #+end_src
-      
-*** 浮动 
-    float
-*** 堆叠顺序,先要设定 position 属性
-    #+begin_verse
-    z-index 正数,接近用户,负数,远离用户
-    #+end_verse
-    
-*** 居中定位
-    #+begin_src css
-      section{
-          width:500px;
-          margin: 0 auto;
-      }
-    #+end_src
-** 条件规则组
-   #+begin_verse
-   @规则, 由它们的标示符指定, 每种规则都有不同的语法:
-   @charset, 定义样式表使用的字符集.
-   @import, 告诉 CSS 引擎引入一个外部样式表.
-   @namespace, 告诉 CSS 引擎必须考虑 XML 命名空间。
-   嵌套@规则, 是嵌套语句的子集,不仅可以作为样式表里的一个语句，也可以用在条件规则组里：
-   @media, 如果满足媒介查询的条件则条件规则组里的规则生效。
-   @page, 描述打印文档时布局的变化.
-   @font-face, 描述将下载的外部的字体。 
-   @keyframes, 描述 CSS 动画的中间步骤 . 
-   @supports, 如果满足给定条件则条件规则组里的规则生效。 
-   @document, 如果文档样式表满足给定条件则条件规则组里的规则生效。 (推延至 CSS Level 4 规范)
-   #+end_verse
-** 设定简单特效
-*** 转换
-    #+begin_verse
-    transform:
+         div
+         {
+             font-family:myFirstFont;
+         }
+        #+END_SRC
+*** 链接外观
+    - a:link  普通的、未被访问的链接
+    - a:visited  用户已访问的链接
+    - a:hover -鼠标指针位于链接的上方
+    - a:active  链接被点击的时刻
 
-    translate()转化,平移 px em %
-    rotate()旋转,正时针 -30deg 角度,角(degree)
-    scale(2,4) 原始宽度的 2 倍和高度的 4 倍 会变形的
-    skew(30deg,20deg)倾斜,歪斜 围绕 X 轴把元素翻转 30 度，围绕 Y 轴翻转 20 度
-    matrix() 方法需要六个参数，包含数学函数，允许您：旋转、缩放、移动以及倾斜元素。
-    transform-origin 	允许你改变被转换元素的位置
-    rotateX() 元素围绕其 X 轴以给定的度数进行旋转。
-    rotateY() 
-    #+end_verse
-*** 过渡 
-    transition 转化,过度
-    规定您希望把效果添加到哪个 CSS 属性上,可以多个属性
-    规定效果的时长
-    #+BEGIN_SRC css 
-      div{transition:width 2s;}
-      div:hover{width:300px;}
-    #+END_SRC
-    #+begin_verse
-    transition-property 	规定应用过渡的 CSS 属性的名称。 
-    transition-duration 	定义过渡效果花费的时间。默认是 0。
-    transition-timing-function 	规定过渡效果的时间曲线。默认是 "ease"。
-    transition-delay 	规定过渡效果何时开始。默认是 0。
-    #+end_verse
-    
-*** 动画
-    如需在 CSS3 中创建动画，您需要学习 @keyframes 规则。用户创建动画
-    #+BEGIN_SRC css 
-      @keyframes myfirst
-      {
-          from {background: red;}
-          to {background: yellow;}
-      }
+*** 列表外观
 
-      @-moz-keyframes myfirst /* Firefox */
-      {
-          from {background: red;}
-          to {background: yellow;}
-      }
+          - list-style-type: square(方块)circle,decimal
+          - list-style-image: url(xxx.gif) 点,用图像替代
+          - list-style-position: [ outside ,inside ]
 
-      @-webkit-keyframes myfirst /* Safari 和 Chrome */
-      {
-          from {background: red;}
-          to {background: yellow;}
-      }
+*** 定位
+          - position 定位relative,absolute
+          - float 浮动 
+          - z-index 堆叠顺序，正数,接近用户,负数,远离用户
 
-      @-o-keyframes myfirst /* Opera */
-      {
-          from {background: red;}
-          to {background: yellow;}
-      }
-    #+END_SRC
-    通过规定至少以下两项 CSS3 动画属性，即可将动画绑定到选择器：
+*** 简单特效
+**** 变换
+     - transform:
+       - translate(X,Y) 平移多少位置 
+       - rotate() 旋转多少角度 ( 30deg )  多少圈 (0.5turn半圈)
+       - scale(2,4) 缩放
+       - skew(30deg,20deg) 倾斜
+       - matrix() 需要六个参数，包含数学函数，旋转、缩放、移动以及倾斜
+       - transform-origin 	允许你改变被转换元素的位置
+**** 过渡效果 
+     #+BEGIN_SRC css 
+       div{transition:width 2s;}
+       div:hover{width:300px;}
+       #+END_SRC
 
-    规定动画的名称
-    规定动画的时长
+     - transition-property 	规定应用过渡的 CSS 属性的名称 
+     - transition-duration 	定义过渡效果花费的时间
+     - transition-timing-function 	规定过渡效果的时间曲线
+     - transition-delay 	规定过渡效果何时开始
+** 初始化样式
+   #+begin_src css 
+     body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,legend,button,form,fieldset,input,textarea,p,blockquote,th,td {   
+         　　padding: 0;   
+         　　margin: 0;   
+     }
+     /* 酌情修改 */
+     body {
+         background:#fff;color:#333;font-size:12px; margin-top:5px;font-family:"SimSun","宋体","Arial Narrow";
+     }
 
-    实例
+     /* 短引用的内容可取值：''或"" */
+     q:before,q:after {content:”;}  
 
-    把 "myfirst" 动画捆绑到 div 元素，时长：5 秒：
+     /* 缩写，图片等无边框 */
+     fieldset,img,abbr,acronym {border: 0 none;}
+     abbr,acronym {font-variant: normal;}
+     legend {color:#000;}
 
-    #+BEGIN_SRC css 
-      div
-      {
-          animation: myfirst 5s;
-          -moz-animation: myfirst 5s;	/* Firefox */
-          -webkit-animation: myfirst 5s;	/* Safari 和 Chrome */
-          -o-animation: myfirst 5s;	/* Opera */
-      }
-    #+END_SRC
-** 尺寸
-   font-size:默认大小是 16 像素 (16px=1em(当前尺寸,当前是 16px))
-   相对尺寸 1em=16px。那么 12px=0.75em,10px=0.625em
-   rem
-* 外观及排版技巧
-** 样式初始化
-   为了消除各浏览器对 css 默认的设置，保持网页在各浏览器中的外观保持一致
-*** 1.最耗资源的，最简单的
-    * { padding: 0; margin: 0; border: 0; }
-*** 2.选择性初始化举例（综合）
-    #+begin_src css
-      body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,legend,button
-                                                                       form,fieldset,input,textarea,p,blockquote,th,td {   
-          　　padding: 0;   
-          　　margin: 0;   
-      }
-      /* 酌情修改 */
-      body {
-          background:#fff;color:#333;font-size:12px; margin-top:5px;font-family:"SimSun","宋体","Arial Narrow";
-      }
+     /* 清除特殊标记的字体和字号 */
+     address,caption,cite,code,dfn,em,strong,th,var {   
+         　　font-weight: normal;   
+         　　font-style: normal;   
+     }
 
-      /* 短引用的内容可取值：''或"" */
-      q:before,q:after {content:”;}  
+     /* 上下标 */
+     sup {vertical-align: text-top;}
+     sub {vertical-align: text-bottom;}
 
-      /* 缩写，图片等无边框 */
-      fieldset,img,abbr,acronym {border: 0 none;}
-      abbr,acronym {font-variant: normal;}
-      legend {color:#000;}
+     /* 设置表格的边框被合并为一个单一的边框, 指定分隔边框模型中单元格边界之间的距离为 0*/
+     table {   
+         　　border-collapse: collapse;   
+         　　border-spacing: 0;   
+     }   
 
-      /* 清除特殊标记的字体和字号 */
-      address,caption,cite,code,dfn,em,strong,th,var {   
-          　　font-weight: normal;   
-          　　font-style: normal;   
-      }
+     /* 表格标题及内容居左显示 */
+     caption,th {text-align: left;}
+     input,img,select {vertical-align:middle;}
 
-      /* 上下标 */
-      sup {vertical-align: text-top;}
-      sub {vertical-align: text-bottom;}
+     /* 清除列表样式 */
+     ol,ul {list-style: none;}  
 
-      /* 设置表格的边框被合并为一个单一的边框, 指定分隔边框模型中单元格边界之间的距离为 0*/
-      table {   
-          　　border-collapse: collapse;   
-          　　border-spacing: 0;   
-      }   
+     /* 输入控件字体 */
+     input,button,textarea,select,optgroup,option {
+         font-family:inherit;
+         font-size:inherit;
+         font-style:inherit;
+         font-weight:inherit;
+     }
 
-      /* 表格标题及内容居左显示 */
-      caption,th {text-align: left;}
-      input,img,select {vertical-align:middle;}
+     /* 标题元素样式清除 */ 
+     h1,h2,h3,h4,h5,h6 {   
+         　　font-weight: normal;   
+         　　font-size: 100%;   
+     }   
 
-      /* 清除列表样式 */
-      ol,ul {list-style: none;}  
+     /* 链接样式，颜色可酌情修改 */
+     del,ins,a {text-decoration:none;}
+     a:link {color:#009;}
+     a:visited {color:#800080;}
+     a:hover,a:active,a:focus {color:#c00; text-decoration:underline;} 
 
-      /* 输入控件字体 */
-      input,button,textarea,select,optgroup,option {
-          font-family:inherit;
-          font-size:inherit;
-          font-style:inherit;
-          font-weight:inherit;
-      }
+     /* 鼠标样式 */
+     input[type="submit"] {cursor: pointer;}
+     button {cursor: pointer;}
+     input::-moz-focus-inner { border: 0; padding: 0;}
 
-      /* 标题元素样式清除 */ 
-      h1,h2,h3,h4,h5,h6 {   
-          　　font-weight: normal;   
-          　　font-size: 100%;   
-      }   
-
-      /* 链接样式，颜色可酌情修改 */
-      del,ins,a {text-decoration:none;}
-      a:link {color:#009;}
-      a:visited {color:#800080;}
-      a:hover,a:active,a:focus {color:#c00; text-decoration:underline;} 
-
-      /* 鼠标样式 */
-      input[type="submit"] {cursor: pointer;}
-      button {cursor: pointer;}
-      input::-moz-focus-inner { border: 0; padding: 0;}
-
-      .clear {clear:both;}
-    #+end_src
-*** 3.sina 的
-    #+begin_src css
-      /* 全局样式 */
-      body,ul,ol,li,p,h1,h2,h3,h4,h5,h6,form,fieldset,table,td,img,div{
-          margin:0;padding:0;border:0;
-      }
-      body{
-          background:#fff;color:#333;font-size:12px; margin-top:5px;font-family:"SimSun","宋体","Arial Narrow";
-      }
-      ul,ol{
-          list-style-type:none;
-      }
-      select,input,img,select{
-          vertical-align:middle;
-      }
-      a{text-decoration:none;}
-      a:link{color:#009;}
-      a:visited{color:#800080;}
-      a:hover,a:active,a:focus{color:#c00;text-decoration:underline;} 
-    #+end_src
-*** 4.yahoo 的
-    #+begin_src css
-
-      html {
-          background: none repeat scroll 0 0 #FFFFFF;
-          color: #000000;
-      }
-      body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td {
-          margin: 0;
-          padding: 0;
-      }
-      table {
-          border-collapse: collapse;
-          border-spacing: 0;
-      }
-      fieldset, img {
-          border: 0 none;
-      }
-      address, caption, cite, code, dfn, em, strong, th, var {
-          font-style: normal;
-          font-weight: normal;
-      }
-      li {
-          list-style: none outside none;
-      }
-      caption, th {
-          text-align: left;
-      }
-      h1, h2, h3, h4, h5, h6 {
-          font-size: 100%;
-          font-weight: normal;
-      }
-      q:before, q:after {
-          content: "";
-      }
-      abbr, acronym {
-          border: 0 none;
-          font-variant: normal;
-      }
-      sup {
-          vertical-align: text-top;
-      }
-      sub {
-          vertical-align: text-bottom;
-      }
-      input, textarea, select {
-          font-family: inherit;
-          font-size: inherit;
-          font-weight: inherit;
-      }
-      input, textarea, select {
-      }
-      legend {
-          color: #000000;
-      }
-      body {
-          font: 13px/1.231 arial,helvetica,clean,sans-serif;
-      }
-      select, input, button, textarea {
-          font: 99% arial,helvetica,clean,sans-serif;
-      }
-      table {
-          font-size: inherit;
-      }
-      pre, code, kbd, samp, tt {
-          font-family: monospace;
-          line-height: 100%;
-      }
-      a {
-          text-decoration: none;
-      }
-      a:hover, a:focus {
-          text-decoration: underline;
-      }
-      strong {
-          font-weight: bold;
-      }
-      input[type="submit"] {
-          cursor: pointer;
-      }
-      button {
-          cursor: pointer;
-      }
-    #+end_src
-*** 5.博客园的
-    #+begin_src css
-      /*version: 2.7.0*/
-      html,body{color:#000;background:#FFF;}
-      body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,p,blockquote,th,td{
-          margin:0;padding:0;
-      }
-      table{border-collapse:collapse;border-spacing:0;}
-      fieldset,img{border:0;}
-      address,caption,cite,code,dfn,em,strong,th,var,optgroup{
-          font-style:inherit;font-weight:inherit;
-      }
-      del,ins{text-decoration:none;}
-      li{list-style:none;}
-      caption,th{text-align:left;}
-      h1,h2,h3,h4,h5,h6{    font-size:100%;font-weight:normal;}
-      q:before,q:after{content:'';}
-      abbr,acronym{border:0;font-variant:normal;}
-      sup{vertical-align:baseline;}
-      sub{vertical-align:baseline;}
-      legend{color:#000;}
-      input,button,textarea,select,optgroup,option{
-          font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;
-      }
-      input,button,textarea,select{*font-size:100%;}
-      .clear{clear:both;}
-      input::-moz-focus-inner{ border: 0;padding: 0;}
-
-      /*added*/
-      input[type=button],input[type=submit] {-webkit-appearance: button;}
-    #+end_src
-** 声明图片的尺寸
-   为了提高页面渲染的速度，声明图片的尺寸是很好的办法：
-   #+begin_src html
-     <img src="img/logo.png" style="width: 100px; height: 100px;">
+     .clear {clear:both;}
    #+end_src
-
-   因为浏览器是分开下载各个图片的，声明了尺寸就可以提前确定排版，否则等到图片下载
-   完成后才知道图片的尺寸信息，渲染过程就明显变慢了。
-
-   还有就是，声明图片尺寸的时候，应该是实际的尺寸。例如：一个图片实际尺寸是 50*50，
-   但是你希望它小一点，把尺寸声明为 20*20，那么调整图片尺寸的过程就会耗费 CPU 资源、
-   内存资源等，使渲染速度变慢。其次，这还会避免下载一个不必要的较大的图片，手机流
-   量是有限的，这也是为用户节约资源。
-** 使用 css 精灵（sprites）
-   css 精灵即把多个小图片放到一个大图片中，这样就可以减少 http 请求的数量。使用
-   时，就进行相应的裁剪，这在各大网站中常被用到。放在一个大图片中，也更容易对图
-   片进行统一管理，这对于按钮、导航图标等非常合适。
-
-   #+begin_src css
-     #navcontainer li {
-         background-image: url('spritebg.jpg'); /* single image */
-     }
-     #navcontainer ul li:nth-child(1) {
-         background-position: -130px -700px; /* position = xpos ypos */
-     }
-     #navcontainer ul li:nth-child(2) {
-         background-position: -130px -718px;
-     }
-     #navcontainer a {
-         width: 250px; /* size */
-         height: 18px;
-     }
-   #+end_src
-** 启用硬件加速
-   如果你的应用中含有动画，那么就可以启用硬件加速功能来提升用户体验。默认情况下，
-   大多数浏览器是没有开硬件加速的，使用该功能的典型情况是 WebGL 组件、3D 动画等。
-   但是，如果你希望某个特定的元素使用硬件加速，可以手动触发：
-
- #+begin_src css
- ... {
-     -webkit-transform: <transform function>;
- }
- #+end_src
- 
- transform 属性会把 2D 或 3D 转换应用到一个元素中，可以使用这个属性来进行旋转、
- 缩放等操作。例如：
-
-#+begin_src css
-
- img.rotate3d {
-     -webkit-transition: -webkit-transform 1s ease-in-out;
-     -webkit-transform: rotate3d(0, 0, 1, 0deg);
- }
-       
- img.rotate3d:hover {
-     -webkit-transform: rotate3d(0, 0, 1, 15deg);
- }
-#+end_src
-
- 以上代码对图片进行 15 度的旋转
-
- 但是开启硬件加速并不会加速其他元素的执行，它只是加速了动画的转换（使用 GPU）。
- 最后，硬件的资源是很宝贵的，有必要的时候才考虑使用。
-** 图片自适应
- 首先是设置 background:url(图片地址) 0 0 no-repeat scroll
- transparent;background-size:100% 100%;
-
- #+begin_src html
-   <div class="msg_desc">
-     <img style="max-width:100%;overflow:hidden;" src="http://www.tao3w.com/upload/kindeditor/image/20140724/20140724172508_15817.jpg" alt="">
-   </div>
- #+end_src
- 
- 这里就把图片固定在 msg_desc 里面了，方便吧。
- -------------
- 注：在 html 里面插入图片，如果想让图片自适应屏幕的小而不是宽高固定不变可以在 css 代码里加入
- img { height: auto; width: auto; width:100%; }
- 
- width:auto;是宽度自动的意思。
-

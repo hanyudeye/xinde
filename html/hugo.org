@@ -1,3 +1,183 @@
+#+HUGO_BASE_DIR: ../
+#+TITLE: hugo简介
+#+DATE: 2019-12-26T19:38:50+08:00
+#+HUGO_AUTO_SET_LASTMOD: t
+#+HUGO_TAGS:
+#+HUGO_CATEGORIES:
+#+HUGO_DRAFT: false
+
+这东西，只要你有主题，然后有文章，就能给你生成一个静态站点。  
+
+#more
+
+** 简介
+建站
+#+begin_src sh
+hugo new site quickstart
+#+end_src
+
+添加主题
+
+#+begin_src sh
+  git submodule add https://github.com/budparr/gohugo-theme-ananke.git themes/ananke;
+  # 编辑你的 config.toml 配置文件使用该主题
+  echo 'theme = "ananke"' >> config.toml
+#+end_src
+
+
+写作
+#+begin_src sh
+hugo new post/my-first-post.md
+#+end_src
+
+启动站点
+#+begin_src sh
+hugo server -D
+#+end_src
+你的网站已经在http://localhost:1313/开启了。
+
+Hugo 中的类型
+
+content/下的内容可能不仅仅只有文章，还可能有照片甚至其他不同形式的内容。hugo通过type属性来标记不同形式的内容，根据不同的type值，hugo会选择合适的模板来渲染内容。
+
+默认情况下type被赋值为section。例如：使用hugo new posts/new-post.md命令得到的新文件会被默认为posts类型。当然你也可以在下文提到的front matter中显式的将文章的type指定为其他值。
+
+#+begin_src yaml
+---
+title: "文章标题"
+description: "文章的描述信息"
+tags: [ "标签1", "标签2", "标签3" ]
+categories: [ "分类1", "分类2" ]
+keywords: [ "Hugo", "keyword" ]
+date: 2012-04-06
+lastmod: 2015-12-23
+# CJKLanguage: Chinese, Japanese, Korean
+isCJKLanguage: true
+
+# 如果draft为true，除非使用 --buildDrafts 参数，否则不会发布文章
+draft: false
+
+# 设置文章的过期时间，如果是已过期的文章则不会发布，除非使用 --buildExpired 参数
+expiryDate: 2020-01-01
+
+# 设置文章的发布时间，如果是未来的时间则不会发布，除非使用 --buildFuture 参数
+publishDate: 2020-01-01
+
+# 排序你的文章
+weight: 40
+
+# 使用这两个参数将会重置permalink，默认使用文件名
+url: 
+slug: 
+
+# 别名将通过重定向实现
+aliases:
+  - 别名1
+  - /posts/my-original-url/
+  - /2010/01/01/another-url.html
+
+# type 与 layout 参数将会改变 Hugo 寻找该文章模板的顺序，将在下一节细述
+type: review
+layout: reviewarticle
+
+# 三个比较复杂的参数
+taxonomies:
+linkTitle: 
+outputs:
+# 实验性的参数
+markup: "md"
+
+# 你还可以自定义任何参数，这些参数可以在模板中使用
+include_toc: true
+show_comments: false
+---
+#+end_src
+
+** 模板选择顺序
+ 这是一篇content/posts/下的文章寻找模板的顺序（此时我们未在文章的Front Matter指定type与layout属性）：
+ #+begin_src 
+ /layouts/UNSPECIFIED/UNSPECIFIED.html
+ /layouts/posts/UNSPECIFIED.html
+ /layouts/UNSPECIFIED/single.html
+ /layouts/posts/single.html
+ /layouts/_default/single.html
+ /themes/<THEME>/layouts/UNSPECIFIED/UNSPECIFIED.html
+ /themes/<THEME>/layouts/posts/UNSPECIFIED.html
+ /themes/<THEME>/layouts/UNSPECIFIED/single.html
+ /themes/<THEME>/layouts/posts/single.html
+ /themes/<THEME>/layouts/_default/single.html
+ #+end_src
+ 
+ 如果我们在Front Matter中添加以下代码
+
+ type: review
+ layout: reviewarticle
+ 该文章现在的寻找模板顺序为：
+
+ #+begin_src 
+ /layouts/review/reviewarticle.html
+ /layouts/posts/reviewarticle.html
+ /layouts/review/single.html
+ /layouts/posts/single.html
+ /layouts/_default/single.html
+ /themes/<THEME>/layouts/review/reviewarticle.html
+ /themes/<THEME>/layouts/posts/reviewarticle.html
+ /themes/<THEME>/layouts/review/single.html
+ /themes/<THEME>/layouts/posts/single.html
+ /themes/<THEME>/layouts/_default/single.html
+ #+end_src
+ 值得注意的是，/layouts/ 目录下模板优先级总是高于 /themes/<THEME>/layouts/ 。同理，若根目录下存在与 /themes/ 文件夹下同名的文件夹，根目录下的文件优先级总是高于 /themes/ 文件夹。
+
+ 因此，在我们只是需要别人提供的主题做一些小修改时，尤其是对于一些静态资源需要进行覆盖时，将新的文件置于根目录的文件夹下而不是直接对主题进行修改，日后需要更新主题时就无需解决 git 冲突的问题了。
+
+ 当然，如果是需要直接对 /layouts/ 目录下的模板进行修改，还是建议新建一个 git 分支进行更改。
+
+** URL管理
+ 正如前文所言，hugo会将content/目录下的结构反映到生成的静态网站中，但config.toml中的permalinks参数允许你自由更改内容的URL。例如：你想从hexo迁移到hugo，你可以将permalinks定义为下面这种形式以适应之前的URL。
+
+ #+begin_src 
+ [permalinks]
+   post = "/:year/:month/:title/"
+ #+end_src
+ 上面的配置将改变content/post/文件夹下所有文章的URL。
+
+ 举个栗子，content/post/sample-entry.md的URL将从默认的https://example.com/post/sample-entry/改变为https://example.com/2013/11/sample-entry/。
+
+ 所有可用的属性如下：
+ #+begin_src 
+ /:monthname/:day/:weekday/:weekdayname/:yearday/:section/:title/:slug/:filename/
+ #+end_src
+ 
+** 内容摘要
+ Hugo会自动提取文章的前70个字符作为摘要。（注意：该功能在中文环境下需要在config.toml中添加hasCJKLanguage = true才能发挥更好的效果。）
+
+ 当然你也可以在文章内使用<!--more-->针对文章手动进行摘要提取，在<!--more-->之前出现的内容都会作为摘要使用，且能够保持渲染后的结构而不是纯文字版本。
+
+** Shortcodes
+ Shortcodes帮助你在编写markdown时快捷的插入HTML代码，功能上类似于Hexo的标签插件。
+
+  #+begin_src 
+  {{< ref "blog/post.md" >}} => https://example.com/blog/post/
+ {{< ref "post.md#tldr" >}} => https://example.com/blog/post/#tldr:caffebad
+ {{< relref "post.md" >}} => /blog/post/
+ {{< relref "blog/post.md#tldr" >}} => /blog/post/#tldr:caffebad
+ {{< ref "#tldr" >}} => #tldr:badcaffe
+ {{< relref "#tldr" >}} => #tldr:badcaffe
+  #+end_src
+ 上述代码通过内置的rel与relref帮助你快速引用站点内的其他文章。
+
+ 注意: 如果你的 content/ 目录下有多个同名的文件，引用该文章必须使用 blog/post.md 这样的相对路径而不是只提供 post.md 这样的文件名。
+
+ hugo还内置了instagram、tweet、youtube等Shortcodes，可以阅读官方文档了解更多信息，你使用的主题可能也会提供Shortcodes，当然你也可以定制你自己的Shortcodes。
+
+** 分类系统
+ 默认情况下即tags与categories，通常来说这已经足够我们使用了，但你也可以在config.toml文件中添加下面的代码来添加更多的分类。
+ #+begin_src 
+ [taxonomies]
+   tag = "tags"
+   category = "categories"
+   series = "series"
+ #+end_src
 * 特效
 ** 文字逐字显示
    #+begin_src html 
@@ -28,52 +208,14 @@ Without title.
    
    #+begin_src 
    {{% admonition abstract abstract %}}
-biu biu biu.
 {{% /admonition %}}
    #+end_src
 
-   info
-
-biu biu biu.
-
-tip
-
-biu biu biu.
-
-success
-
-biu biu biu.
-
-question
-
-biu biu biu.
-
-warning
-
-biu biu biu.
-
-failure
-
-biu biu biu.
-
-danger
-
-biu biu biu.
-
-bug
-
-biu biu biu.
-
-example
-
-biu biu biu.
-
-quote
-
-biu biu biu.
+   info tip success question warning failure danger bug example quote
+   
 *** 图片
- center, right, left
- #+begin_src 
+    center, right, left
+    #+begin_src 
  ## default
  ![img](/path/to/img.gif "img")
 
@@ -91,13 +233,12 @@ biu biu biu.
  ## left
  ![img](/path/to/img.gif "img")
  {{% /left %}}
- #+end_src
+    #+end_src
 ** 网易音乐
    #+begin_src 
 {{% music id="28196554" auto="1" %}}
    #+end_src
 * 包含库
-  前题
 ---
 title: Some catchy title
 js: https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.js
