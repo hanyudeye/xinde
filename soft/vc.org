@@ -4,65 +4,69 @@
 #+CATEGORIES[]: 技术
 #+DATE: 2019-12-25T06:23:31+08:00
 
-备份工具，比如你做了一个椅子，然后用这工具备份一下，误删以后可以用这工具恢复（不能误删椅子的备份）。然后呢，你的椅子可能不是很完美，还要修修改改，这是你可以同时备份椅子的新的版本，如此而已。
+对 *文件的更改* 进行 *信息跟踪* 的软件，一般给开发软件的人用的，用于团队协作。
 
+基本功能就是给改动的文件进行 *编号* ，然后我们就可以按照 *编号* 查看文件的历史记录。
 # more   
-基本概念
-- 仓库 (存放"椅子"的地方)
-- 基线 (基本的椅子)
-- 分支 (基本椅子分出来的具体功能的椅子，如人体工学椅，躺椅。。)
-- 冲突 (多人合作修改同一把椅子，给出的提示)
+#+begin_quote
+实际中，版本控制软件是按照目录对文件进行批量管理的，而不是一个一个管理。
+#+end_quote
   
 下面以比较流行的 ~git~ 为例说明吧
 
 * git 
-** 初始配置
-   设置一下仓库作者的个人信息什么的 
-   #+begin_src 
-   git config [--system,--global, --list]
-   
-   用户名 user.name = "用户名"
-   邮箱 user.email = "邮箱"
+** 安装配置
+   #+begin_src shell 
+     git config [--system,--global, --list]
+     git config user.name = "用户名"
+     git config user.email = "邮箱"
    #+end_src
    
-*** 配置 SSH 远程传输
-       创建 SSH Key：
-       #+begin_src shell
-         $ ssh-keygen -t rsa -C "youremail@example.com"
-       #+end_src
-       然后把公钥 id_rsa.pub 的内容复制到 Github "Account settings" 的 SSH Keys 中。
-       : 可以使用 ssh -v git@github.com 命令来测试链接是否畅通
+*** 配置远程登录 
+    1. 创建 SSH Key
+    #+begin_src shell
+      $ ssh-keygen -t rsa -C "youremail@example.com"
+    #+end_src
+    2. 把公钥 id_rsa.pub 的内容复制到 Github "Account settings" 的 SSH Keys 中
+    3. 测试  ssh -v git@github.com 
 ** 用法
-*** 初始化版本系统 
+*** 初始化版本控制目录
     #+begin_src sh
       git init <DIR>
     #+end_src
     
+    #+begin_quote
+    你要进行版本控制的目录用这命令初始化一下
+    #+end_quote
 *** 暂存区管理
     #+begin_quote
-    暂存区保存你历史记录的一个缓存区，为的就是让你"多此一举"，进行下一步确认是否保存快照
+    你的文件修改后，就可以进行追踪了。进行追踪的文件先要存放在暂存区，然后存放到本地仓库。这是 *git* 软件的一个特点。
     #+end_quote
 **** 把文件加入暂存区 
-      #+begin_src sh
-        git add <modified files>
-        git add . 
-      #+end_src
-**** 删除暂存区里的文件,如需纳入版本库，需要重新添加   
+     #+begin_src sh
+       git add <modified files>
+       git add . 
+     #+end_src
+**** 把文件从暂存区删除 (不追踪) 
      #+begin_src sh
        git rm --cached <file> 
      #+end_src
- 
-**** 重置暂存,就是恢复成未暂存的状态
+**** 用暂存文件恢复文件
       #+begin_src sh
-        git reset HEAD <file> 
-        #+end_src
+        git checkout <file> 
+      #+end_src
+
+**** 重置暂存,就是恢复成未暂存的状态
+     #+begin_src sh
+       git reset HEAD <file> 
+     #+end_src
 **** 改名文件
      #+begin_src sh
-     git mv [file-original] [file-renamed]
+       git mv [file-original] [file-renamed]
      #+end_src
 
 *** 本地库管理
-**** 保存到本地库   
+**** 把暂存文件保存到本地库   
      #+begin_src sh
        git commit -m "msg"
      #+end_src
@@ -97,21 +101,21 @@
 ***** 合并分支
 ****** 直接合并 把两条分支上的历史轨迹合并 
        #+begin_src sh
-       git merge
+         git merge
        #+end_src
        
 ****** 压合合并 如果想把某个分支的提交作为一个整体记录时，可以使用压合合并。
        #+begin_src sh
-       git merge --squash <BRANCH>
+         git merge --squash <BRANCH>
        #+end_src
 ****** 拣选合并 只需合并某个提交，而不是全部改动.
        #+begin_src sh
-       git cherry-pick <ID>
+         git cherry-pick <ID>
        #+end_src
 ***** 修改分支名称
-#+begin_src sh
-git branch -m <BRANCHNAME> <NEWBRANCHNAME> 
-#+end_src
+      #+begin_src sh
+        git branch -m <BRANCHNAME> <NEWBRANCHNAME> 
+      #+end_src
 ***** 删除分支 
       #+begin_src sh
         git branch -d <BRANCHNAME> 
@@ -241,8 +245,7 @@ git show <id>
    规则：/fd1/*
    说明：忽略根目录下的 /fd1/ 目录的全部内容；根目录指项目的的根目录
    #+end_src
-* github
-  免费给你放照片的地方，如果想要隐私，就要付费了啊
+* github (远程仓库)
 ** 主要功能
 
    #+begin_src 
