@@ -1,4 +1,344 @@
-思路的实现,在此之前,整个网上都是没有的。
+   下面,我将再具体深入阐述下此 STL 里的 rotate 算法,由于 stl 里的 rotate 算法,用到
+了 gcd 的原理,下面,我将先介绍此辗转相除法,或欧几里得算法,gcd 的算法思路及原
+理。
+  gcd,即辗转相除法,又称欧几里得算法,是求最大公约数的算法,即求两个正整数之最
+大公因子的算法。此算法作为 TAOCP 第一个算法被阐述,足见此算法被重视的程度。
+                                                                       25
+   gcd 算法:给定俩个正整数 m,n(m>=n),求它们的最大公约数。(注意,一般要求
+m>=n,若 m<n,则要先交换 m<->n。下文,会具体解释)。以下,是此算法的具体流程:
+   1、[求余数],令 r=m%n,r 为 n 除 m 所得余数(0<=r<n);
+   2、[余数为 0?],若 r=0,算法结束,此刻,n 即为所求答案,否则,继续,转到 3;
+   3、[重置],置 m<-n,n<-r,返回步骤 1.
+   此算法的证明,可参考计算机程序设计艺术第一卷:基本算法。证明,此处略。
+   ok,下面,举一个例子,你可能看的更明朗点。
+   比如,给定 m=544,n=119,
+     则余数 r=m%n=544%119=68; 因 r!=0,所以跳过上述步骤 2,执行步骤 3。;
+     置 m<-119,n<-68,=>r=m%n=119%68=51;
+     置 m<-68,n<-51,=>r=m%n=68%51=17;
+     置 m<-51,n<-17,=>r=m%n=51%17=0,算法结束,
+   此时的 n=17,即为 m=544,n=119 所求的俩个数的最大公约数。
+   再解释下上述 gcd(m,n)算法开头处的,要求 m>=n 的原因:举这样一个例子,如 m<n,
+即 m=119,n=544 的话,那么 r=m%n=119%544=119,
+   因为 r!=0,所以执行上述步骤 3,注意,看清楚了:m<-544,n<-119。看到了没,尽管刚
+开始给的 m<n,但最终执行 gcd 算法时,还是会把 m,n 的值交换过来,以保证 m>=n。
+   ok,我想,现在,你已经彻底明白了此 gcd 算法,下面,咱们进入主题,stl 里的 rotate
+算法的具体实现。//待续。
+   熟悉 stl 里的 rotate 算法的人知道,对长度为 n 的数组(ab)左移 m 位,可以用 stl 的 rotate
+函数(stl 针对三种不同的迭代器,提供了三个版本的 rotate)。但在某些情况下,用 stl 的
+rotate 效率极差。
+    对数组循环移位,可以采用的方法有(也算是对上文思路一,和思路二的总结):
+     flyinghearts:
+     1 动态分配一个同样长度的数组,将数据复制到该数组并改变次序,再复制回原数组。
+(最最普通的方法)
+     2 利用 ba=(br)^T(ar)^T=(arbr)^T,通过三次反转字符串。(即上述思路一,首先对序
+列前部分逆序,再对序列后部分逆序,再对整个序列全部逆序)
+     3 分组交换(尽可能使数组的前面连续几个数为所要结果):
+     若 a 长度大于 b,将 ab 分成 a0a1b,交换 a0 和 b,得 ba1a0,只需再交换 a1 和 a0。
+                                                              26
+      若 a 长度小于 b,将 ab 分成 ab0b1,交换 a 和 b0,得 b0ab1,只需再交换 a 和 b0。
+      通过不断将数组划分,和交换,直到不能再划分为止。分组过程与求最大公约数很相似。
+      4 所有序号为 (j+i *m) % n (j 表示每个循环链起始位置,i 为计数变量,m 表示左旋转
+位数,n 表示字符串长度),会构成一个循环链(共有 gcd(n,m)个,gcd 为 n、m 的最大公
+约数),每个循环链上的元素只要移动一个位置即可,最后整个过程总共交换了 n 次(每一
+次循环链,是交换 n/gcd(n,m)次,总共 gcd(n,m)个循环链。所以,总共交换 n 次)。
+   stl 的 rotate 的三种迭代器,即是,分别采用了后三种方法。
+    在给出 stl rotate 的源码之前,先来看下我的朋友 ys 对上述第 4 种方法的评论:
+    ys:这条思路个人认为绝妙,也正好说明了数学对算法的重要影响。
+    通过前面思路的阐述,我们知道对于循环移位,最重要的是指针所指单元不能重复。例
+如要使 abcd 循环移位变成 dabc(这里 m=3,n=4),经过以下一系列眼花缭乱的赋值过程就可
+以实现:
+    ch[0]->temp, ch[3]->ch[0], ch[2]->ch[3], ch[1]->ch[2], temp->ch[1]; (*)
+    字符串变化为:abcd->_bcd->dbc_->db_c->d_bc->dabc;
+是不是很神奇?其实这是有规律可循的。
+    请先看下面的说明再回过头来看。
+ 对于左旋转字符串,我们知道每个单元都需要且只需要赋值一次,什么样的序列能保证每
+个单元都只赋值一次呢?
+      1、对于正整数 m、n 互为质数的情况,通过以下过程得到序列的满足上面的要求:
+ for i = 0: n-1
+      k = i * m % n;
+ end
+    举个例子来说明一下,例如对于 m=3,n=4 的情况,
+       1、我们得到的序列:即通过上述式子求出来的 k 序列,是 0, 3, 2, 1。
+       2、然后,你只要只需按这个顺序赋值一遍就达到左旋 3 的目的了:
+    ch[0]->temp, ch[3]->ch[0], ch[2]->ch[3], ch[1]->ch[2],
+temp->ch[1];     (*)
+    ok,这是不是就是按上面(*)式子的顺序所依次赋值的序列阿?哈哈,很巧妙吧。当然,
+以上只是特例,作为一个循环链,相当于 rotate 算法的一次内循环。
+                                                                            27
+   2、对于正整数 m、n 不是互为质数的情况(因为不可能所有的 m,n 都是互质整数对),
+那么我们把它分成一个个互不影响的循环链,正如 flyinghearts 所言,所有序号为 (j + i *
+m) % n(j 为 0 到 gcd(n, m)-1 之间的某一整数,i = 0:n-1)会构成一个循环链,一共有 gcd(n,
+m)个循环链,对每个循环链分别进行一次内循环就行了。
+   综合上述两种情况,可简单编写代码如下:
+    1. //4 所有序号为 (j+i *m) % n (j 表示每个循环链起始位置,i 为计数变量,m 表示左旋转位
+        数,n 表示字符串长度),
+    2. //会构成一个循环链(共有 gcd(n,m)个,gcd 为 n、m 的最大公约数),
+    3.
+    4. //每个循环链上的元素只要移动一个位置即可,最后整个过程总共交换了 n 次
+    5. //(每一次循环链,是交换 n/gcd(n,m)次,共有 gcd(n,m)个循环链,所以,总共交换 n 次)。
+    6.
+    7. void rotate(string &str, int m)
+    8. {
+    9.      int lenOfStr = str.length();
+    10.     int numOfGroup = gcd(lenOfStr, m);
+    11.     int elemInSub = lenOfStr / numOfGroup;
+    12.
+    13.     for(int j = 0; j < numOfGroup; j++)
+    14.          //对应上面的文字描述,外循环次数 j 为循环链的个数,即 gcd(n, m)个循环链
+    15.     {
+    16.          char tmp = str[j];
+    17.
+    18.          for (int i = 0; i < elemInSub - 1; i++)
+    19.              //内循环次数 i 为,每个循环链上的元素个数,n/gcd(m,n)次
+    20.              str[(j + i * m) % lenOfStr] = str[(j + (i + 1) * m) % lenOfStr];
+    21.          str[(j + i * m) % lenOfStr] = tmp;
+    22.     }
+    23. }
+后来有网友针对上述的思路 4,给出了下述的证明:
+   1、首先,直观的看肯定是有循环链,关键是有几条以及每条有多长,根据(i+j *m) % n
+这个表达式可以推出一些东东,                一个 j 对应一条循环链,现在要证明(i+j *m) % n 有 n/gcd(n,m)
+个不同的数。
+   2、假设 j 和 k 对应的数字是相同的, 即(i+j*m)%n = (i+k*m)%n, 可以推出 n|(j-k)*m,
+m=m’*gcd(n.m), n=n’*gcd(n,m), 可以推出 n’|(j-k)*m’,而 m’和 n’互素,于是 n’|(j-k),即
+(n/gcd(n,m))|(j-k),
+   3、所以(i+j*m) % n 有 n/gcd(n,m)个不同的数。则总共有 gcd(n,m)个循环链。符号“|”
+                                                                                    28
+是整除的意思。
+以上的 3 点关于为什么一共有 gcd(n, m)个循环链的证明,应该是来自 qq3128739xx 的,非
+常感谢这位朋友。
+3.2、以下,便是摘自 sgi stl v3.3 版中的 stl_algo_h 文件里,有关 rotate 的实现
+的代码:
+       1. // rotate and rotate_copy, and their auxiliary functions
+       2. template <class _EuclideanRingElement>
+       3. _EuclideanRingElement __gcd(_EuclideanRingElement __m,
+       4.                                _EuclideanRingElement __n)
+       5. {   //gcd(m,n)实现
+       6.      while (__n != 0) {
+       7.           _EuclideanRingElement __t = __m % __n;
+       8.           __m = __n;
+       9.           __n = __t;
+       10.     }
+       11.     return __m;     //....
+       12. }
+       13.
+       14. //3 分组交换(尽可能使数组的前面连续几个数为所要结果):
+       15. //若 a 长度大于 b,将 ab 分成 a0a1b,交换 a0 和 b,得 ba1a0,只需再交换 a1 和 a0。
+       16. //若 a 长度小于 b,将 ab 分成 ab0b1,交换 a 和 b0,得 b0ab1,只需再交换 a 和 b0。
+       17. //通过不断将数组划分,和交换,直到不能再划分为止。分组过程与求最大公约数很相
+           似。
+       18. template <class _ForwardIter, class _Distance>
+       19. _ForwardIter __rotate(_ForwardIter __first,
+       20.                         _ForwardIter __middle,
+       21.                         _ForwardIter __last,
+       22.                         _Distance*,
+       23.                         forward_iterator_tag)
+       24. {
+       25.     if (__first == __middle)
+       26.          return __last;
+       27.     if (__last   == __middle)
+       28.          return __first;
+       29.
+       30.     _ForwardIter __first2 = __middle;
+       31.     do {
+       32.          swap(*__first++, *__first2++);   //
+       33.          if (__first == __middle)
+       34.              __middle = __first2;
+       35.     } while (__first2 != __last);
+                                                                      29
+36.
+37.     _ForwardIter __new_middle = __first;
+38.     __first2 = __middle;
+39.
+40.     while (__first2 != __last)
+41.     {
+42.         swap (*__first++, *__first2++);   //
+43.         if (__first == __middle)
+44.             __middle = __first2;
+45.         else if (__first2 == __last)
+46.             __first2 = __middle;
+47.     }
+48.
+49.     return __new_middle;
+50. }
+51.
+52. //2 利用 ba=(br)^T(ar)^T=(arbr)^T,通过三次反转字符串。
+53. //(即上述思路一,首先对序列前部分逆序,再对序列后部分逆序,再对整个序列全部
+    逆序)
+54. template <class _BidirectionalIter, class _Distance>
+55. _BidirectionalIter __rotate(_BidirectionalIter __first,
+56.                              _BidirectionalIter __middle,
+57.                              _BidirectionalIter __last,
+58.                              _Distance*,
+59.                              bidirectional_iterator_tag)
+60. {
+61.     __STL_REQUIRES(_BidirectionalIter, _Mutable_BidirectionalIterator
+    );
+62.     if (__first == __middle)
+63.         return __last;
+64.     if (__last  == __middle)
+65.         return __first;
+66.
+67.     __reverse(__first,   __middle, bidirectional_iterator_tag()); //
+    交换序列前半部分
+68.     __reverse(__middle, __last,    bidirectional_iterator_tag()); //
+    交换序列后半部分
+69.
+70.     while (__first != __middle && __middle != __last)
+71.         swap (*__first++, *--__last);    //整个序列全部交换
+72.
+73.     if (__first == __middle)   //
+74.     {
+                                                                        30
+75.         __reverse(__middle, __last,    bidirectional_iterator_tag());
+76.         return __last;
+77.     }
+78.     else {
+79.         __reverse(__first,   __middle, bidirectional_iterator_tag());
+80.         return __first;
+81.     }
+82. }
+83.
+84. //4 所有序号为 (i+t*k) % n (i 为指定整数,t 为任意整数),
+85. //会构成一个循环链(共有 gcd(n,k)个,gcd 为 n、k 的最大公约数),
+86. //每个循环链上的元素只要移动一个位置即可,总共交换了 n 次。
+87. template <class _RandomAccessIter, class _Distance, class _Tp>
+88. _RandomAccessIter __rotate(_RandomAccessIter __first,
+89.                             _RandomAccessIter __middle,
+90.                             _RandomAccessIter __last,
+91.                             _Distance *, _Tp *)
+92. {
+93.     __STL_REQUIRES(_RandomAccessIter, _Mutable_RandomAccessIterator);
+94.     _Distance __n = __last    - __first;
+95.     _Distance __k = __middle - __first;
+96.     _Distance __l = __n - __k;
+97.     _RandomAccessIter __result = __first + (__last - __middle);
+98.
+99.     if (__k == 0)
+100.           return __last;
+101.
+102.      else if (__k == __l) {
+103.           swap_ranges(__first, __middle, __middle);
+104.           return __result;
+105.      }
+106.
+107.      _Distance __d = __gcd(__n, __k);     //令 d 为 gcd(n,k)
+108.
+109.      for (_Distance __i = 0; __i < __d; __i++) {
+110.           _Tp __tmp = *__first;
+111.           _RandomAccessIter __p = __first;
+112.
+113.           if (__k < __l) {
+114.               for (_Distance __j = 0; __j < __l/__d; __j++) {
+115.                   if (__p > __first + __l) {
+                                                                         31
+        116.                        *__p = *(__p - __l);
+        117.                        __p -= __l;
+        118.                   }
+        119.
+        120.                   *__p = *(__p + __k);
+        121.                   __p += __k;
+        122.               }
+        123.           }
+        124.           else {
+        125.               for (_Distance __j = 0; __j < __k/__d - 1; __j ++) {
+        126.                   if (__p < __last - __k) {
+        127.                        *__p = *(__p + __k);
+        128.                        __p += __k;
+        129.                   }
+        130.
+        131.                   *__p = * (__p - __l);
+        132.                   __p -= __l;
+        133.               }
+        134.           }
+        135.
+        136.           *__p = __tmp;
+        137.           ++__first;
+        138.       }
+        139.
+        140.       return __result;
+        141.   }
+由于上述 stl rotate 源码中,方案 4 的代码,较复杂,难以阅读,下面是对上述第 4 方案
+的简单改写:
+        1. //对上述方案 4 的改写。
+        2. //4 所有序号为 (i+t*k) % n (i 为指定整数,t 为任意整数),....
+        3. //copyright@ hplonline && July 2011.04.18。
+        4. //July、sahala、yansha,updated,2011.06.02。
+        5. void my_rotate(char *begin, char *mid, char *end)
+        6. {
+        7.       int n = end - begin;
+        8.       int k = mid - begin;
+        9.       int d = gcd(n, k);
+        10.      int i, j;
+        11.      for (i = 0; i < d; i ++)
+        12.      {
+        13.          int tmp = begin[i];
+        14.          int last = i;
+        15.
+                                                                                32
+           16.           //i+k 为 i 右移 k 的位置,%n 是当 i+k>n 时从左重新开始。
+           17.           for (j = (i + k) % n; j != i; j = (j + k) % n) //多谢
+               laocpp 指正。
+           18.           {
+           19.               begin[last] = begin[j];
+           20.               last = j;
+           21.           }
+           22.           begin[last] = tmp;
+           23.      }
+           24. }
+   对上述程序的解释:关于第二个 for 循环中,j 初始化为(i+)%n,程序注释中已经说了,
+i+k 为 i 右移 k 的位置,%n 是当 i+k>n 时从左重新开始。为什么要这么做呢?很简单,n 个
+数的数组不管循环左移多少位,用上述程序的方法一共需要交换 n 次。当 i+k>=n 时 i+k 表
+示的位置在数组中不存在了,所以又从左边开始的(i+k)%n 是下一个交换的位置。
+           1.好比 5 个学生,,编号从 0 开始,即 0 1 2 3 4,老师说报数,规则是从第一个
+               学生开始,中间隔一个学生报数。报数的学生编号肯定是 0 2 4 1 3。这里就
+               相当于 i 为 0,k 为 2,n 为 5
+           2.然后老师又说,编号为 0 的学生出列,其他学生到在他前一个报数的学生位置
+               上去,那么学生从 0 1 2 3 4=》2 3 4 _ 1,最后老师说,编号 0 到剩余空位
+               去,得到最终排位 2 3 4 0 1。此时的结果,实际上就是相当于上述程序中左
+               移 k=2 个位置了。而至于为什么让 编号为 0 的学生 出列。实际是这句:int
+               last = i; 因为要达到这样的效果 0 1 2 3 4 => 2 3 4 0 1,那么 2 3 4 必须要
+               移到前面去。怎么样,明白了么?。
+关于本题,不少网友也给出了他们的意见,具体请参见此帖子微软 100 题,维护地址。
+第五节、总结
+    如 nossiac 所说,对于这个数组循环移位的问题,真正最靠谱的其实只有俩种:一种是
+上文的思路一,前后部分逆置翻转法,第二种是思路三,即 stl 里的 rotate 算法,其它的思
+路或方法,都是或多或少在向这俩种方法靠拢。
+   下期更新:程序员面试题狂想曲:第二章。时间:本周周日 04.24 晚。非常感谢各位朋友
+的,支持与关注。本人宣告:本程序员面试题狂想曲系列,永久更新。
+本章完。
+                                                                             33
+版权声明:转载本 BLOG 内任何文章和内容,务必以超链接形式注明出处。
+                  第二章、字符串是否包含及相关问题扩展
+作者:July,yansha。
+时间:二零一一年四月二十三日。
+致谢:老梦,nossiac,Hession,Oliver,luuillu,雨翔,啊菜,及微软 100 题实现小组所
+有成员。
+微博:http://weibo.com/julyweibo。
+出处:http://blog.csdn.net/v_JULY_v。
+-------------------------------------------
+目录
+曲之前奏
+第一节、一道俩个字符串是否包含的问题
+  1.1、O(n*m)的轮询方法
+  1.2、O(mlogm)+O(nlogn)+O(m+n)的排序方法
+  1.3、O(n+m)的计数排序方法
+第二节
+  2.1、O(n+m)的 hashtable 的方法
+  2.2、O(n+m)的数组存储方法
+第三节、O(n)到 O(n+m)的素数方法
+第四节、字符串是否包含问题的继续补充
+  4.1、Bit-map
+  4.2、移位操作
+第五节、字符串相关问题扩展
+  5.1、字符串匹配问题
+  5.2、在字符串中查找子串
+                                                        34
+   扩展:在一个字符串中找到第一个只出现一次的字符
+  5.3、字符串转换为整数
+  5.4、字符串拷贝
+前奏
+   前一章,请见这:程序员面试题狂想曲:第一章、左旋转字符串。本章里出现的所有代
+码及所有思路的实现,在此之前,整个网上都是没有的。
    文中的思路,聪明点点的都能想到,巧的思路,大师也已奉献了。如果你有更好的思路,
 欢迎提供。如果你对此狂想曲系列有任何建议,欢迎微博上交流或来信指导。任何人,有任
 何问题,欢迎随时不吝指正。
@@ -20,6 +360,7 @@ String 2: DCGSRQPOZ
    点评:
    1、题目描述虽长,但题意简单明了,就是给定一长一短的俩个字符串 A,B,假设 A 长
 B 短,现在,要你判断 B 是否包含在字符串 A 中,即 B?(-A。
+                                            35
    2、题意虽简单,但实现起来并不轻松,且当如果面试官步步紧逼,一个一个否决你能想
 到的方法,要你给出更好、最好的方案时,你恐怕就要伤不少脑筋了。
    ok,在继续往下阅读之前,您最好先想个几分钟,看你能想到的最好方案是什么,是否

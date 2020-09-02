@@ -3,6 +3,7 @@
 #+TAGS[]: nodejs
 #+CATEGORIES[]: 技术
 #+DATE: 2020-02-16T18:13:56+08:00
+#+draft: true
 
 JavaScript 命令行语言解析器
 
@@ -15,15 +16,17 @@ JavaScript 命令行语言解析器
 ** 安装
    安装 *node* 即可
 *** nvm   
-    对于多个版本，可以安装 *nvm* 版本管理工具，用来管理node的版本 
-    - 安装最新node  nvm install node
+    对于多个版本，可以安装 *nvm* 版本管理工具，用来管理 node 的版本 
+    - 安装最新 node  nvm install node
     - 安装某个版本  nvm install 6.14.4
     - 使用某个版本 nvm use v10.1.1
     - 列出版本  nvm ls
-    - 列出远程node版本   nvm ls-remote
-    - 安装最近版本的npm  nvm install-latest-npm
+    - 列出远程 node 版本   nvm ls-remote
+    - 卸载 nvm uninstall
+    - 安装最近版本的 npm  nvm install-latest-npm
 ** 模块
-   本来 *javascript*  刚开发的时候是做为脚本使用的，代码量少，所以没有提供模块。现在脚本复杂了，就引入了模块的概念 
+   本来 *javascript* 刚开发的时候是做为脚本使用的，代码量少，所以没有提供模块。
+   现在脚本复杂了，就引入了模块的概念
 *** 原生语法 (import/export)
     定义模块并导出模块的功能
     #+begin_src js
@@ -35,7 +38,7 @@ JavaScript 命令行语言解析器
       import { name, draw, reportArea, reportPerimeter } from '/js-examples/modules/basic-modules/modules/square.mjs';
     #+end_src
     
-    应用模块到你的HTML
+    应用模块到你的 HTML
     #+begin_src html
       <script type="module" src="main.mjs"></script>
     #+end_src
@@ -43,19 +46,19 @@ JavaScript 命令行语言解析器
 *** 库所支持的语法
 **** node 
 ***** 导出 
-     #+begin_src js
-       let name={
-           sayHello(){
-               console.log("hello")
-           }
-       }
+      #+begin_src js
+        let name={
+            sayHello(){
+                console.log("hello")
+            }
+        }
 
-       module.exports=name 
-     #+end_src
+        module.exports=name 
+      #+end_src
 ***** 引入
-     #+begin_src js
-       let module=require(MODULEPATH');
-     #+end_src
+      #+begin_src js
+        let module=require("MODULEPATH");
+      #+end_src
 ** 全局变量
    - __dirname：当前文件的目录
    - __filename：当前文件的绝对路径
@@ -65,9 +68,9 @@ JavaScript 命令行语言解析器
    - setInterval/clearInterval：定时器
 
 ** 常用内置模块
-*** path模块
+*** path 模块
     #+begin_quote
-    path模块供了一些工具函数，用于处理文件与目录的路径
+    path 模块供了一些工具函数，用于处理文件与目录的路径
     #+end_quote
 
     - path.basename：返回一个路径的最后一部分
@@ -76,7 +79,7 @@ JavaScript 命令行语言解析器
     - path.join：用于拼接给定的路径片段
     - path.normalize：将一个路径正常化
 
-*** fs模块
+*** fs 模块
     文件操作相关的模块
 
     - fs.stat/fs.statSync：访问文件的元数据，比如文件大小，文件的修改时间
@@ -87,7 +90,7 @@ JavaScript 命令行语言解析器
     - fs.rmdir/fs.rmdirSync：只能删除空文件夹，思考：如何删除非空文件夹？
     - fs.watchFile：监视文件的变化
 
-    stream操作大文件
+    stream 操作大文件
     #+begin_src js
       // 读取大文件
       let readStream = fs.createReadStream("ideaIU-2018.1.5.win.zip");
@@ -108,7 +111,7 @@ JavaScript 命令行语言解析器
     #+end_src
 
 *** http 模块
-    封装了http server 和 client的功能，就是说可以充当server处理请求，也可以发出请求。
+    封装了 http server 和 client 的功能，就是说可以充当 server 处理请求，也可以发出请求。
 *** events 模块
     监听并触发事件
     #+begin_src js
@@ -121,10 +124,10 @@ JavaScript 命令行语言解析器
           event.emit('some_event');
       }, 1000);
     #+end_src
-*** url模块
+*** url 模块
 *** Buffer 类
-*** util模块
-    util 是一个Node.js 核心模块，提供常用函数的集合，用于弥补核心JavaScript 的功能 过于精简的不足。
+*** util 模块
+    util 是一个 Node.js 核心模块，提供常用函数的集合，用于弥补核心 JavaScript 的功能 过于精简的不足。
     
 *** OS 模块
     提供了一些基本的系统操作函数。
@@ -134,13 +137,13 @@ JavaScript 命令行语言解析器
 *** DNS 模块
     Node.js DNS 模块用于解析域名。
 *** Domain 模块
-    Node.js Domain(域) 简化异步代码的异常处理，可以捕捉处理try catch无法捕捉的异常。
+    Node.js Domain(域) 简化异步代码的异常处理，可以捕捉处理 try catch 无法捕捉的异常。
 *** Web 模块
 * npm 
-  npm 是 一家 管理 *Javascript* 项目为主的公司，同名的 npm 软件可以用来管理 *js项目* 。
+  npm 是 一家 管理 *Javascript* 项目为主的公司，同名的 npm 软件可以用来管理 *js 项目* 。
  
   #+begin_quote
-  目录中包含以 * package.json*  作为文件名的项目一般视为npm项目，npm 中称呼为包。
+  目录中包含以 * package.json*  作为文件名的项目一般视为 npm 项目，npm 中称呼为包。
   包中对其他项目的引用放在 *node_modules* 中，叫做依赖
   #+begin_export type
   #+end_export 
@@ -153,17 +156,17 @@ JavaScript 命令行语言解析器
   - npm install 安装所有项目依赖
   - npm help 查看帮助信息
   - npm search 搜索项目信息
-  - npm install 包名 (局部安装，安装在当前项目的 node_modules目录下)
+  - npm install 包名 (局部安装，安装在当前项目的 node_modules 目录下)
   - -g 全局安装
-  - -D 安装并将依赖信息写在package.json中的devDependencies中
+  - -D 安装并将依赖信息写在 package.json 中的 devDependencies 中
   - npm uninstall 卸载包
   - npm list 列出已安装依赖
   - npm outdated 检查过期依赖
   - npm update 更新依赖
-  - npm root 查看依赖安装路径（也就是node_modules的路径）
+  - npm root 查看依赖安装路径（也就是 node_modules 的路径）
   - npm view 查看模块的注册信息
-    - xxx versions 列出xxx的所有版本
-    - xxx dependencies 列出xxx的所有依赖， 如：npm view gulp dependencies
+    - xxx versions 列出 xxx 的所有版本
+    - xxx dependencies 列出 xxx 的所有依赖， 如：npm view gulp dependencies
 
       #+begin_src shell
         npm install npm@latest -g

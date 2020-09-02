@@ -133,11 +133,13 @@
 **** 克隆远程到本地仓库
      #+begin_src sh
      git clone RESP
-     git clone --depth=1 RESP 只克隆最新的
+     git clone --depth 1 RESP 只克隆最新的
      #+end_src
 **** 添加远程源 
      #+begin_src sh
        git remote add origin https://github.com/hanyudeye/test.git 
+       # ssh
+       git remote add origin git@github.com:hanyudeye/demo.git
      #+end_src
      
 **** 远程同步
@@ -172,12 +174,20 @@
      git reset --hard origin/master
      git pull
      #+end_src
+**** 拒绝合并无关的历史
+     #+begin_src sh
+       # 首先将远程仓库和本地仓库关联起来：
+       git branch --set-upstream-to=origin/master master
+       # 然后使用 git pull 整合远程仓库和本地仓库，
+       git pull --allow-unrelated-histories    (忽略版本不同造成的影响)
+       #+end_src
+     
 *** 日志查看
 **** 仓库状态 
      #+begin_src sh
-     git status
-     git status -s 简短信息
-     git remote -v 列出服务器地址
+       git status
+       git status -s 简短信息
+       git remote -v 列出服务器地址
      #+end_src
 **** 查看提交历史
      #+begin_src sh
@@ -187,9 +197,9 @@
      --author 指定用户日志
      如果你要指定日期，可以执行几个选项：--since 和 --before，但是你也可以用 --until 和 --after。
 **** 查看某次提交的内容   
-#+begin_src sh
-git show <id>
-#+end_src
+     #+begin_src sh
+       git show <id>
+     #+end_src
 **** 更详细的信息 
      #+begin_src sh 
        git blame <FILE>
@@ -236,23 +246,9 @@ git show <id>
     然后更细 git submodule update <MODULENAME>
     #+end_src
 ** gitignore 忽略文件
-   #+begin_src 
-   以斜杠“/”开头表示目录； 
-   以星号“*”通配多个字符；
-   以问号“?”通配单个字符
-   以方括号“[]”包含单个字符的匹配列表；
-   以叹号“!”表示不忽略(跟踪)匹配到的文件或目录；
-   规则：/fd1/*
-   说明：忽略根目录下的 /fd1/ 目录的全部内容；根目录指项目的的根目录
-   #+end_src
-* github (远程仓库)
-** 主要功能
-
-   #+begin_src 
-   Git 仓库
-   Issue
-   Wiki
-   Pull Request
-   社交功能，follow(关注), star(赞)，Organization (组织)
-   #+end_src
-
+   - “/”目录 
+   - “*”多个字符
+   - “?”单个字符
+   - “[]”单个字符匹配列表
+   - “!”不忽略
+   - /fd1/* 忽略根目录下的 /fd1/ 目录的全部内容

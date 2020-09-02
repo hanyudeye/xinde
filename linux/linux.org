@@ -1,156 +1,105 @@
-#+TITLE: Gnu/Linux 简介
+#+TITLE: 【三楼】UNIX命令简介
 #+DESCRIPTION: linux 系统简介
-#+TAGS[]:  linux os 
+#+TAGS[]:  linux unix
 #+CATEGORIES[]: 技术
 #+DATE: 2019-11-29T21:49:26+08:00
-#+lastmod: 2020-02-11T07:26:07+08:00
+#+lastmod: 2020-03-24T06:15:52+08:00
+#+weight: 3
 
-计算机现在做的事情越来越多，似乎比人都要全能了。
+记录一下用命令操控计算机的用法
 
- *Gnu/Linux* 以前最为人诟病的估计是它的命令行的操作方式，做某件事都要手工输入命令，而且软件界面都没有的，一点都不直观，这对于刚刚接触那种操作方式的人可能不习惯，觉的难用。
- 不过现在也很好了，也是图形的操作，对初学者也能上手了，可以去学学，跟 *windows* 用法一样的了。
  # more
+* 历史
+在 UNIX (或 Linux)  系统下，程序基本是没啥外观的，东西要做某件事情，需要输入东西的名称和输入的数据，然后东西会把功能操作的结果以某种形式展示出来。 
 
+为什么东西如此的不直观，不想我们人类一样，要求做某件事客客气气的，回馈也很热情，或者像图形界面那样，有友好的菜单与直观的输入输出环境。我觉得是跟以前图形显示器的文字显示形式和程序员的稀少有关。
+好吧，我们就学习这些简陋的东西吧，这些东西难的是写法的怪异和个别参数很多，但搞清楚功能后记忆还是不太难的。
+
+* Linux 系统
+ 我们日常用的手机，一般买回家之后就有一个 *系统* 了，然后如果我们想使用手机的其它功能，可以安装 *应用软件* 。 
  
- Gnu/linux 提供的是一个功能丰富的系统以及便利的操作，提供这些功能不容易，全世界的爱好者都在完善它。
- #+begin_quote
- 说实话，我对那些命令也不是很上手，我用电脑主要是写文字，常用的操作都在 *emacs* 中完成，当然，如果你把命令用熟的话， 就很节省时间了，也不用学其它花里胡哨的应用了。
- #+end_quote
-
-* Gnu/Linux
-** 机器组成 (计算机组成原理)  
-   - 执行指令的 *CPU*
-   - 存放指令的 *内存*
-   - 对外展示的 *显示器*  
-   - 对内接收的 *键鼠*  
-   - 保存文件的 *硬盘* 
+ 所以，我们一般把计算机软件分为 操作系统和应用软件两部分，应用软件需要操作系统提供的功能。
   
-   计算机的处理方式是参照人处理事情的方式设计出来的，有一个大脑（磁盘）存储处理方法（程序），遇到事情就用对应的方法（程序）去处理它。
-   日常我们处理完就结束了，但计算机的显示器还需给出结果呈现(或其他输出设备)
-** 基本概念
-   - *文件*: 我们大脑保存资料是用脑细胞，计算机不用脑细胞，它们用磁盘，光盘的形式，以树型的结构保存资料
-   - *进程*:  人一次只能做一件事，叫单进程的，但计算机一次能做好几件事，所以计算机不是单线程的 (在做的事情)
-   - *设备* : 人是骨头和肉组成的，计算机是铁和塑料组成的，但更形象的是叫设备组成的。
-   - *基本输入输出* : 基本输入就是 *键盘* 设备, 基本输出是 *显示屏* 设备 。
-
-** 用户
-   #+begin_quote
-   *Gnu/Linux*  给计算机的资源一个拥有者的概念，每个拥有者拥有自己私有的财产，所以要登录计算机，当然你的计算机要共享的话就不要创建用户了。
-   #+end_quote
+ 简单来说，系统这个东西就是做一些管理方面的事情，统筹规划，提供服务什么的，方便 *人类* 友好的用好电脑这个机器。
+* 命令
+  人们用机器来干什么，就要知道机器里有什么东西，能用这个东西来做什么。
+  
+- 文件的概念，简单说，机器里的东西，也叫做文件 ，是按照目录树的结构放置起来的。有些东西像书本一样作为资料，有些东西像电饭锅一样作为工具。
+- 文件这东西占用一定的空间，我们叫它文件大小，文件还有创建时间，文件名字等几个属性。
+- 当作为工具的东西运行起来后，就变成了进程，有时我们想让工具停止运行，就要关掉东西，我们一般用发送消息的方式来关掉东西。
+- 用户登录的概念是为了多个用户使用同一个机器，或者远程操作机器而创造出来的。
+- 计算机里的东西很多都是已有东西的一个电子化抽象（比如文本编辑器对应现实中的练习本，图像编辑器对应现实中的画画本），所以没有趁手的工具时，可以上网搜
+- 很多基础的命令都是 *GNU* 组织提供。
+ 
+** 用户管理
    
-   - 登录 login 
+   - 登录 login (我们用某个机器，一般用自己的账号来使用机器，这样就避免干涉到别人的隐私)
    - 登出 logout
-   - 新建用户 useradd
+   - 新建用户 useradd (新建一个能够使用机器的人)
    - 设置密码 passwd
    - 设置用户属性  usermod
 
-     #+begin_quote
-     你要使用我的功能，必须给我钱，不然就从我的尸体跨过，哈哈。。
-     #+end_quote
-** 基本信息
-   #+begin_quote
-   你想看看  *Gnu/Linux* 系统里有些什么信息，就用这些命令。
-   #+end_quote
+** 东西管理
+   - 列出文件  ls (list)
+   - 删除文件 rm(remove)
+   - 编辑文件 一般用 vim 或者 emacs
+   - 改变文件所有者 chown (设置东西的归属人)
+   - 改变文件读写属性 chmod (设置东西的权限)
+** 系统信息
    #+begin_src shell -n
      cat /etc/lsb-release # 查看软件( 系统 )信息
      uname -a                # 查看内核/操作系统/CPU 信息
      cat /proc/cpuinfo       # 查看 CPU 信息
-     nproc #打印可用处理器的数量
      hostname                # 查看计算机名
      lspci -tv               # 列出所有 PCI 设备
      lsusb -tv               # 列出所有 USB 设备
      lsmod                   # 列出加载的内核模块
      free -m                # 查看内存使用量和交换区使用量
-     df -h                  # 查看各分区使用情况
-     du -sh         # 查看指定目录的大小
      uptime                 # 查看系统运行时间、用户数、负载
      cat /proc/loadavg      # 查看系统负载
    #+end_src
-** 进程管理和调度
-   #+begin_quote
-   计算机比人强的一件事就是它一次能做好几件事，不像人，做另一件事的同时要停下手边的事。计算机要做或正在做的事情用进程表示。  
-   #+begin_export HTML
-   #+end_export 
-   为什么进程有这种区分呢？因为计算机的速度很快，它的同时只是人不停切换的一种假象，因为时间太短所以看起来像同时了(但现在 *CPU 多核* 出现，有些事情是同时处理的)。
-   #+end_quote
-   - ps   显示进程信息
+** 进程管理
+   - ps(process)   显示进程信息
    - kill   给进程发信号 
    - pgrep  通过 *进程名* 查找进程 
    - pkill   通过 *进程名* 给进程发信号
 
-*** 进程属性
-    | UID         | 用户 ID                                 |
-    | PID         | 进程 ID                                 |
-    | PPID        | 父进程 ID                               |
-    | C           | CPU 占用率                              |
-    | STIME       | 开始时间                                |
-    | TTY         | 开始此进程的 TTY----终端设备            |
-    | TIME        | 此进程运行的总时间                      |
-    | CMD         | 命令名                                  |
-    | %CPU | 进程占用 CPU 百分比                       |
-    | %MEM        | 进程占用内存百分比                      |
-    | VSZ         | 虚拟内存占用大小 单位：kb（killobytes） |
-    | RSS         | 实际内存占用大小 单位：kb（killobytes） |
-    | STAT        | 进程状态                                |
-    | START       | 进程启动时刻                            |
 *** 进程状态
     - R (TASK_RUNNING)，可执行状态。
     - S (TASK_INTERRUPTIBLE)，可中断的睡眠状态
     - D (TASK_UNINTERRUPTIBLE)，不可中断的睡眠状态
 
-*** 进程间通信和同步
-    - 信号 [signals,SIGxxxx]
-    - pipes 
-    - sockets
-    - file locking
-    - message queues
-    - semaphores
-    - shared memory
-** 内存管理
-   我们专注于做某件事的时候，脑子里的东西是与处理事情相关的东西，不会想到其它东
-   西。计算机内存虽然很大了，但现在的软件也是很大，所以提供了按需载入软件一部分
-   和内存分段分页的技术。
+** 磁盘管理
+   磁盘这个东西，分区以后，可以一个东西当两个或三个东西用（按照分区数量）。这样能更好的使用磁盘。分区后的磁盘要挂载下才能使用磁盘的存储功能。 
    
-   #+begin_quote
-   这里 *Linux* 内核给我们摆平了，不用自己动手了。
-#+end_quote
-** 磁盘和分区
-   这里有自主性的，但要注意 */home* 分区要给大点，最好买大点的磁盘自己折腾，不想折腾就多看看教程怎么分配。
-   #+begin_src sh -n
-     df #显示分区信息 
-     mount | column -t      # 查看挂接的分区状态
-     fdisk -l               # 查看所有分区
-     swapon -s              # 查看所有交换分区
-   #+end_src
-** 文件系统
-   #+begin_quote
-   折腾永无止境，不如说是技术多样性. 文件系统有好几种，一般尽量用新的。
-   #+end_quote
-   | 创建文件系统     | mkfs -V -t msdos -c /dev/hda5                                                                         |
-   | 更新分区表信息   | partprobe                                                                                             |
-   | 加载分区         | mount                                                                                                 |
-   | 加载 smb         | sudo mount -t smbfs -o username=user,password='' //10.0.1.1/windowsshare /mnt 浏览 windows 共享文件夹 |
-   | 自动加载配置文件 | fstab                                                                                                 |
-   | 卸载分区         | umount                                                                                                |
-   | 列出文件         | ls                                                                                                    |
-   | 编辑文件         | vim                                                                                                   |
+        - 显示分区信息   df 
+        - 查看挂接的分区状态  mount | column -t       
+        - 查看所有分区  fdisk -l               
+        - 查看所有交换分区  swapon -s 
+        - 创建文件系统      mkfs -V -t msdos -c /dev/hda5                                                                         
+        - 更新分区表信息    partprobe                                                                                             
+        - 加载分区          mount                                                                                                 
+        - 加载 smb          sudo mount -t smbfs -o username=user,password='' //10.0.1.1/windowsshare /mnt 浏览 windows 共享文件夹 
+        - 自动加载配置文件  fstab                                                                                                 
+        - 卸载分区          umount                                                                                                
 
-** 交换分区文件系统
-        - 创建 Linux 交换分区 mkswap
-        - 启用交换分区  swapon -s
-        - 禁用交换分区  swapoff /dev/sda7
-        - 用新 UUID 重新创建交换分区：  mkswap -U random /dev/sda7
-        - 激活交换分区  swapon /dev/sda7
+*** 交换分区
+    内存缓存用的，早期内存小的产物，现在不需要了吧 
+  
+    - 创建 Linux 交换分区 mkswap
+    - 启用交换分区  swapon -s
+    - 禁用交换分区  swapoff /dev/sda7
+    - 用新 UUID 重新创建交换分区：  mkswap -U random /dev/sda7
+    - 激活交换分区  swapon /dev/sda7
 
-** 模块
-   #+begin_quote
-   不用的东西就不用放到内核了，就不用加载到内存造成浪费了。这里是 *Linux* 内核提供的技术。
-   #+end_quote
+** 模块管理
    - rmmod 从运行的内核中移除指定的内核模块
    - insmod 将给定的模块加载到内核中
    - lsmod 显示已载入系统的模块
      
 ** 网络管理
+   网，就像我们的家门一样，有些东西，家里没有，就可以找到别的机器，问别人家借。所以入网的机器，有一个网名（IP 地址）
+   入网的机器，还能看到我们跟谁家在联系。
    
    - netstat 显示网络连接，路由表，接口状态，伪装连接，网络链路信息和组播成员组。
      - netstat -lntp 查看所有监听端口
@@ -159,45 +108,37 @@
      - rounte -n 查看本机路由表
    - ifconfig - 配置网络接口
    - iptables - IP 包过滤器管理
-   - ip - show / manipulate routing, network devices, interfaces and tunnels(以后就用这)
-     - address
+   - ip 
+     - address (机器在网中的网名)
      - addrlabel
-     - link   - network device.
-     - route  - routing table entry.
-     - rule   - rule in routing policy database.
-     - tcp_metrics/tcpmetrics
-     - token  - manage tokenized interface identifiers.
-     - tunnel - tunnel over IP.
-     - tuntap - manage TUN/TAP devices.
+     - link   (入网的设备)
+     - route (路由表，不同的机器，分配不同的出口) 
        
    - 查公网 IP
      - curl cip.cc
      - curl icanhazip.com
      - curl ident.me
 
-** 任务 
-   #+begin_quote
-   这是 *shell* 里的概念，因为黑白文字界面的终端一次只能操作一个程序，等程序结束
-   后才能在文字输入处重新输入指令，这时可以把当前未完成的程序先挂起来，优先执行
-   马上要做的事情，如果是图形界面下，就不用管了，想执行哪一个用鼠标随便点。
-   #+end_quote
- - 任务放在前、后台 fg bg jobs 
- - 周期任务 crontab
+** 计划任务
+   给东西的行为设置一个计时器，或一个后台状态
+   
+   - 任务放在前、后台 fg bg jobs 
+   - 周期任务 crontab
 
      #+begin_src 
-     * * * * *                  # 每隔一分钟执行一次任务  
-     0 * * * *                  # 每小时的 0 点执行一次任务，比如 6:00，10:00  
-     6,10 * 2 * *               # 每个月 2 号，每小时的 6 分和 10 分执行一次任务  
-     0 * * * *                  # 每小时的 0 点执行一次任务，比如 6:00，10:00  
-     6,10 * 2 * *               # 每个月 2 号，每小时的 6 分和 10 分执行一次任务  
+       * * * * *                  # 每隔一分钟执行一次任务  
+       0 * * * *                  # 每小时的 0 点执行一次任务，比如 6:00，10:00  
+       6,10 * 2 * *               # 每个月 2 号，每小时的 6 分和 10 分执行一次任务  
+       0 * * * *                  # 每小时的 0 点执行一次任务，比如 6:00，10:00  
+       6,10 * 2 * *               # 每个月 2 号，每小时的 6 分和 10 分执行一次任务  
      #+end_src
 
 ** 帮助文档    
-  - man [manual]  简单文档
-  - info 详细文档
-   
+   - man [manual] 命令手册
+   - manpages-zh  中文命令手册
+   - info 详细文档
+
 ** 工具软件    
-   下面是处理特定事情的软件
 *** 压缩解压
 **** unar
      解压缩，中文不会乱码
@@ -214,24 +155,15 @@
       #+end_src
 *** 图片处理
 **** 压缩转换 convert
-
-* 发行版
-** 字体
-*** 安装字体
-    #+begin_src sh -n
-    sudo mv Monaco.ttf /usr/share/fonts/custom
-    sudo chmod 744 /usr/share/fonts/custom/Monaco.ttf
-
-    sudo mkfontscale  #生成核心字体信息
-    sudo mkfontdir
-    sudo fc-cache -fv
-    #+end_src
-*** 显示已安装的字体
+     
+*** 录制视频短片 peek
     #+begin_src sh
-      fc-list
+      sudo add-apt-repository ppa:peek-developers/stable
+      sudo apt update
+      sudo apt install peek
     #+end_src
-    
-** 用户目录配置
-   #+begin_src sh
-     ~/.config/user-dirs.dirs
-   #+end_src
+*** 像素识别
+    #+begin_src sh
+      sudo snap install pick-colour-picker 
+    #+end_src
+

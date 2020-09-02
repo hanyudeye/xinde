@@ -3,6 +3,8 @@ title: "chrome 插件"
 tags: [ chrome ]
 categories: [ 技术 ]
 date: 2020-02-12T20:54:47+08:00
+draft: true
+
 ---
 
 最近又淘到两个 **chrome** 插件，把以前的插件拼一拼，凑个一篇文字。用的少的就不写

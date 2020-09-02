@@ -3,7 +3,7 @@ title: latex简介
 tags: [ latex ]
 categories: [ 技术 ]
 date: 2019-12-22T05:32:47+08:00
-<!-- draft: true -->
+draft: true
 ---
 
 > 书写数学书籍等印刷作品的标记

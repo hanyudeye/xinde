@@ -1,88 +1,125 @@
 #+TITLE: spacemacs 简介
 #+DESCRIPTION: spacemacs 简介
-#+DATE: <2019-11-03 19:27:56>
-#+HUGO_TAGS: spacemacs
-#+HUGO_CATEGORIES: 软件使用
-#+HUGO_DRAFT: false
+#+TAGS[]: spacemacs
+#+CATEGORIES[]: 技术
+#+DRAFT: true
+#+DATE: 2020-02-24T12:46:44+08:00
 
-增强功能的 *emacs* ，需要什么功能自己简单加上就可以，省去了很多折腾。
+对 *emacs* 编辑器的一套配置框架，需要什么功能修改下配置文件就可以，省去了很多折腾。此文是对官方文档的简单翻译。
+# more
 
-#more
-
-** 概念
-*** 输入模式
-    提供三种输入模式， *Vim* ， *Emacs* , *Hybrid* (vim 和 emacs 的混合模式)，可以配置自己偏爱的风格。
-*** leader key(前导键)
-    呼出命令的按键 ，*emacs* 自带的是 *Meta-x* ，现在一般改成了 *SPC* 键了。
-*** 数字参数
-    原来输入数字参数的按键 @@html:<kbd>@@ C-u @@html:</kbd>@@  用@@html:<kbd>@@ SPC u @@html:</kbd>@@  代替了。
-*** Toggles( 开关 )
-    开关一般以@@html:<kbd>@@ SPC t @@html:</kbd>@@  或@@html:<kbd>@@ SPC T @@html:</kbd>@@ 开头
-** 环境变量和 PATH
-   *spacemacs* 有自己的环境变量 *dotspacemacs/user-env*  
+** 安装和使用
+   #+begin_src sh
+     # 安装
+     $ git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
+     # 更新
+     $ git pull origin master
+   #+end_src
+   
+** 配置 layers
+   spacemacs 的功能包含在 layers 里面，你要哪一个功能，就选定哪一层就好了。默认帮你配好了很多层了，足够用了。
+   
+** 配置 Dotfile (最重要的配置文件)
+   *~/.spacemacs*   文件是 *spacemacs* 总的配置文件，你可以在里面配置需要安装的层和其他选项。
+*** Dotfile 的 同步 
+    当修改完 ~.spacemacs~ 文件后，可以执行  *sync-configuration-layers* 命令同步配置，就不用重启 *spacemacs* 了。
+    
+*** 层中排除 package (not) 
+    #+BEGIN_SRC emacs-lisp
+      (defun dotspacemacs/layers ()
+        ;; List of configuration layers to load.
+        (setq-default dotspacemacs-configuration-layers
+                      '(auto-completion
+                        (spacemacs-ui-visual :packages (not treemacs fancy-battery))))
+    #+END_SRC
+** 环境变量
+   *spacemacs* 有自己的环境变量， 通过 =spacemacs/edit-env= 编辑
+** 设置文件默认的主模式
+   #+begin_src lisp
+     (add-to-list 'auto-mode-alist '("\\.js\\'" . react-mode))
+   #+end_src
+   
 ** 键绑定 
-   一般会设置成 *前导键* 式的绑定样式
+   按键方式一般会设置成 *前导键* 式的绑定样式
    #+begin_src lisp
      (spacemacs/declare-prefix "o" "custom")
      (spacemacs/set-leader-keys "oc" 'my-custom-command)
    #+end_src
-  
+   
 ** 界面 
 *** 主题 
-    可以安装别的主题
-    
     设置默认主题组
     #+begin_src lisp
       (setq-default dotspacemacs-themes '(spacemacs-light leuven zenburn))
     #+end_src
-*** 字体
-*** Frame
-**** Title  
-     边框的标题，可以修改标题的内容
-**** Transparency 
-     设置界面的透明度
+*** 字体设置
+    #+BEGIN_SRC emacs-lisp
+      (setq-default dotspacemacs-default-font '("Source Code Pro"
+                                                :size 10.0
+                                                :weight normal
+                                                :width normal))
+    #+END_SRC
+
 ** 布局和工作空间
-   对打开的 *文件 buffer* 进行归类管理 ，一般是一个项目文件夹 
 *** 布局 
-    一般是某个工程，可以进行布局管理 
+    相当于一种历史状态，可以保存，以备下次使用。
+    
+    | ~L~ | load layouts from file                                     |
+    | ~o~ | open a custom layout                                       |
+    | ~r~ | remove current buffer from layout                          |
+    | ~R~ | rename current layout                                      |
+    | ~s~ | save layouts                                               |
+    | ~t~ | display a buffer without adding it to the current layout   |
+    | ~w~ | workspaces transient state (needs eyebrowse layer enabled) |
+*** 工作空间
+    布局还能划分工作空间
+
 ** 导航
 *** 光标   
     光标移动用 *vim* 样式的快捷键就好了，如果选择 *Vim* 编辑样式的话。
 *** 快速跳转 avy    
+    | ~SPC j b~   | go back to the previous location (before the jump) |
+    | ~SPC j j~   | initiate avy jump char                             |
+    | ~SPC j w~   | initiate avy jump word                             |
+    | ~SPC j l~   | initiate avy jump line                             |
 *** 快速跳转到链接 ace-link
-*** 窗口管理
-    对于窗口，可以进行分割，可以跳到某个编号的窗口，对窗口进行移动位置
+    默认只有 =help-mode= and =info-mode= 开着的。
+*** 窗口跳转
+    #+begin_quote
+    通过窗口编号跳转，移动窗口
+    #+end_quote
+    | ~SPC 1~     | go to window number 1 |
+    | ~SPC 2~     | go to window number 2 |
 *** Buffers 管理
-*** 文件管理
-*** Frame 管理
-*** Emacs 文件
-*** 书签文件
-*** 寄存器
-    @@html:<kbd>@@ SPC r @@html:</kbd>@@ 
+*** 书签
+    打开书签  ~SPC f b~
+    | ~C-d~       | delete the selected bookmark                 |
+    | ~C-e~       | edit the selected bookmark                   |
+    | ~C-f~       | toggle filename location                     |
+    | ~C-o~       | open the selected bookmark in another window |
+
 ** 搜索    
+*** 关闭高亮 
+    ~SPC s c~
 ** 编辑 
-*** 粘贴 
-    粘贴 *kill ring* 可以用@@html:<kbd>@@ C-j @@html:</kbd>@@ 与@@html:<kbd>@@ C-k @@html:</kbd>@@ 上下遍历 
 *** 文本操作 
-    以@@html:<kbd>@@ SPC x @@html:</kbd>@@ 开头
+    以 ~SPC x~ 开头，排序，比较什么的。
 *** 文本输入
-    插入特殊的文本，以@@html:<kbd>@@ SPC i @@html:</kbd>@@  开头
+    插入特殊的文本，以 ~SPC i~ 开头
 *** 缩放显示区域 
     narrow
 *** 替换 
-**** 选中替换 iedit 
-     @@html:<kbd>@@ SPC s e @@html:</kbd>@@
-*** 正则表达式
-    @@html:<kbd>@@ SPC x r @@html:</kbd>@@  开头
-
-*** 字符复制上面行 CTL-y   下面行 CTL-e  
+      ~SPC s e~
+** 比较
+   比较 *buffer* 的不同 ，以 ~SPC D~ 开头
+** Compiling
 ** 服务
 *** 保证服务不关闭
     #+BEGIN_SRC emacs-lisp
       (setq-default dotspacemacs-persistent-server t)
     #+END_SRC
 *** 退出 emacs
-    @@html:<kbd>@@ SPC q q @@html:</kbd>@@ 
+   退出服务 ~SPC q q~ 
 *** 禁止服务
     #+BEGIN_SRC emacs-lisp
       (setq-default dotspacemacs-enable-server nil)
@@ -94,32 +131,3 @@
     spacemacs/recompile-elpa
 *** 打开调试开关 
     toggle-debug-on-error
-*** 常规单步调试
-    - Start emacs with ~emacs -q~, this will load a vanilla emacs without any non-system packages loaded.
-    - There open a scratch buffer with ~C-x b *scratch* RET~
-    - Add initialization code for your package there
-
-      #+BEGIN_SRC elisp
-        ;; Load the package
-        (require 'package)
-
-        ;; Mention all packages you wish to have loaded
-        (setq package-load-list
-              '((package1 t)
-                (package2 t)
-                (package3 t)))
-
-        ;; Do package specific configuration if required
-        ;; (package-local-init)
-
-        ;; Intialize your package list
-        (package-initialize)
-      #+END_SRC
-
-    - Now press ~M-x eval-buffer~ to evaluate the code.
-    - Reproduce your issue. Note down step by step instructions.
-    - With this information open an upstream issue following
-      their issue templates. If they have non its a good idea
-      to start with the infos required in the spacemacs issue
-      template and add missing information when required from
-      the package maintainers.

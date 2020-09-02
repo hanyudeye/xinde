@@ -3,9 +3,11 @@
 #+TAGS[]: jQuery
 #+CATEGORIES[]: 技术
 #+DATE: 2020-02-11T20:46:44+08:00
+#+draft: true
 
-jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节点的遍历和操作，事件
-处理，动画和Ajax等，使得操作起来极为简化，当然自己也扩展了一些功能。
+
+jQuery 是一个 JavaScript 库，主要对 *DOM* 进行了封装， 例如对节点的遍历和操作，事件
+处理，动画和 Ajax 等，使得操作起来极为简化，当然自己也扩展了一些功能。
 #+begin_quote
 相当与原来用 *DOM* 操作的方式都可以用 *jQuery* 方式了
 #+end_quote
@@ -15,7 +17,7 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
    - *jQuery* 提供的选择器比 *DOM* 提供的几个函数方便的多。
    - 浏览器兼容性做的比较好，不要自己再写兼容代码
    - 帮助文档也多，插件多，容易扩展
-   - 链式操作,每一步的jQuery操作，返回的都是一个jQuery对象，所以不同操作可以连在一起。(这是方便的来由)
+   - 链式操作,每一步的 jQuery 操作，返回的都是一个 jQuery 对象，所以不同操作可以连在一起。(这是方便的来由)
 
 ** 安装与初始化
    在 *HTML* 页面中引入就可以了。
@@ -39,10 +41,10 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
    以下都是来源网上，整理的挺好的就不自己写了，也会整理下，
    #+end_quote
    
-   选择网页元素jQuery的基本设计和主要用法，就是"选择某个网页元素，然后对其进行某种
+   选择网页元素 jQuery 的基本设计和主要用法，就是"选择某个网页元素，然后对其进行某种
    操作"。这是它区别于其他函数库的根本特点。
 
-   使用jQuery的第一步，往往就是将一个选择表达式，放进构造函数jQuery()(简写为$)，然
+   使用 jQuery 的第一步，往往就是将一个选择表达式，放进构造函数 jQuery()(简写为$)，然
    后得到被选中的元素。
 
 
@@ -60,11 +62,11 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
    #+end_src
 
    #+begin_quote
-   理念和css 一样，css 是定位东西，赋予样式，jQuery 是定位东西，赋予行为。
+   理念和 css 一样，css 是定位东西，赋予样式，jQuery 是定位东西，赋予行为。
    #+end_quote
 
 ** 改变结果集
-   如果选中多个元素，jQuery提供过滤器，可以缩小结果集：
+   如果选中多个元素，jQuery 提供过滤器，可以缩小结果集：
 
    #+begin_src js
      $('div').has('p'); //选择包含p元素的div元素  
@@ -74,7 +76,7 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
      $('div').eq(5); //选择第6个div元素  
    #+end_src
 
-   有一些时候，我们需要从结果集出发，移动到附近的相关元素，jQuery也提供了在DOM树上的移动方法：
+   有一些时候，我们需要从结果集出发，移动到附近的相关元素，jQuery 也提供了在 DOM 树上的移动方法：
    #+begin_src js
      $('div').next('p'); //选择div元素后面的第一个p元素  
      $('div').parent(); //选择div元素的父元素  
@@ -90,7 +92,7 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
 ** 链式操作
 
    选中网页元素以后，就可以对它进行某种操作。
-   jQuery允许将所有操作连接在一起，以链条的形式写出来，比如：
+   jQuery 允许将所有操作连接在一起，以链条的形式写出来，比如：
    #+begin_src js
      $('div').find('h3').eq(2).html('Hello');  
    #+end_src
@@ -102,10 +104,10 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
          .eq(2)//选择第3个h3元素  
          .html('Hello'); //将它的内容改为Hello  
    #+end_src
-   这是jQuery最令人称道、最方便的特点。它的原理在于每一步的jQuery操作，返回的都是
-   一个jQuery对象，所以不同操作可以连在一起。
+   这是 jQuery 最令人称道、最方便的特点。它的原理在于每一步的 jQuery 操作，返回的都是
+   一个 jQuery 对象，所以不同操作可以连在一起。
 
-   jQuery还提供了.end()方法，使得结果集可以后退一步：
+   jQuery 还提供了.end()方法，使得结果集可以后退一步：
 
    #+begin_src js
      $('div')  
@@ -121,7 +123,7 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
 
    操作网页元素，最常见的需求是取得它们的值，或者对它们进行赋值。
 
-   jQuery使用同一个函数，来完成取值(getter)和赋值(setter)。到底是取值还是赋值，由函数的参数决定。
+   jQuery 使用同一个函数，来完成取值(getter)和赋值(setter)。到底是取值还是赋值，由函数的参数决定。
 
    #+begin_src js
      $('h1').html(); //html()没有参数，表示取出h1的值 
@@ -129,37 +131,37 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
    #+end_src
    常见的取值和赋值函数如下：
 
-   - .html() 取出或设置html内容 取出某个表单元素的值  
-   - .text() 取出或设置text内容  
+   - .html() 取出或设置 html 内容 取出某个表单元素的值  
+   - .text() 取出或设置 text 内容  
    - .attr() 取出或设置某个属性的值  
    - .width() 取出或设置某个元素的宽度  
    - .height() 取出或设置某个元素的高度  
-   - .val() 取出或设置html内容 取出某个表单元素的值  
+   - .val() 取出或设置 html 内容 取出某个表单元素的值  
 
    #+begin_quote
    需要注意的是，如果结果集包含多个元素，那么赋值的时候，将对其中所有的元素赋值;取
-   值的时候，则是只取出第一个元素的值(.text()例外，它取出所有元素的text内容)。
+   值的时候，则是只取出第一个元素的值(.text()例外，它取出所有元素的 text 内容)。
    #+end_quote
 
 ** 元素的操作：移动
    如果要移动选中的元素，有两种方法：一种是直接移动该元素，另一种是移动其他元素，使得目标元素达到我们想要的位置。
 
-   假定我们选中了一个div元素，需要把它移动到p元素后面。
+   假定我们选中了一个 div 元素，需要把它移动到 p 元素后面。
 
-   第一种方法是使用.insertAfter()，把div元素移动p元素后面：
+   第一种方法是使用.insertAfter()，把 div 元素移动 p 元素后面：
 
    #+begin_src js
      $('div').insertAfter('p');
    #+end_src
 
-   第二种方法是使用.after()，把p元素加到div元素前面：
+   第二种方法是使用.after()，把 p 元素加到 div 元素前面：
 
    #+begin_src js
      $('p').after('div');
    #+end_src
  
 
-   表面上看，这两种方法的效果是一样的，唯一的不同似乎只是操作视角的不同。但是实际上，它们有一个重大差别，那就是返回的元素不一样。第一种方法返回div元素，第二种方法返回p元素。你可以根据需要，选择到底使用哪一种方法。
+   表面上看，这两种方法的效果是一样的，唯一的不同似乎只是操作视角的不同。但是实际上，它们有一个重大差别，那就是返回的元素不一样。第一种方法返回 div 元素，第二种方法返回 p 元素。你可以根据需要，选择到底使用哪一种方法。
 
    使用这种模式的操作方法，一共有四对
 
@@ -173,7 +175,7 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
      - 复制元素使用.clone()。
      - 删除元素使用.remove()和.detach()。两者的区别在于，前者不保留被删除元素的事件，后者保留，有利于重新插入文档时使用。
      - 清空元素内容(但是不删除该元素)使用.empty()。
-     - 创建新元素的方法非常简单，只要把新元素直接传入jQuery的构造函数就行了：
+     - 创建新元素的方法非常简单，只要把新元素直接传入 jQuery 的构造函数就行了：
 
        #+begin_src js
          $('<p>Hello</p>');  
@@ -204,9 +206,9 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
        var e = $("", { href: "#", class: "a-class another-class", title: "..." });
      #+end_src
 ** 工具方法
-   除了对选中的元素进行操作以外，jQuery还提供一些工具方法(utility)，不必选中元素，就可以直接使用。
+   除了对选中的元素进行操作以外，jQuery 还提供一些工具方法(utility)，不必选中元素，就可以直接使用。
 
-   如果你懂得Javascript语言的继承原理，那么就能理解工具方法的实质。它是定义在jQuery构造函数上的方法，即jQuery.method()，所以可以直接使用。而那些操作元素的方法，是定义在构造函数的prototype对象上的方法，即jQuery.prototype.method()，所以必须生成实例(即选中元素)后使用。如果不理解这种区别，问题也不大，只要把工具方法理解成，是像javascript原生函数那样，可以直接使用的方法就行了。
+   如果你懂得 Javascript 语言的继承原理，那么就能理解工具方法的实质。它是定义在 jQuery 构造函数上的方法，即 jQuery.method()，所以可以直接使用。而那些操作元素的方法，是定义在构造函数的 prototype 对象上的方法，即 jQuery.prototype.method()，所以必须生成实例(即选中元素)后使用。如果不理解这种区别，问题也不大，只要把工具方法理解成，是像 javascript 原生函数那样，可以直接使用的方法就行了。
 
    常用的工具方法有以下几种：
 
@@ -224,7 +226,7 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
    - $.support() 判断浏览器是否支持某个特性。  
 
 ** 事件操作
-   jQuery可以对网页元素绑定事件。根据不同的事件，运行相应的函数。
+   jQuery 可以对网页元素绑定事件。根据不同的事件，运行相应的函数。
 
    #+begin_src js
      $('p').click(function(){  
@@ -232,7 +234,7 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
      }); 
    #+end_src
 
-   目前，jQuery主要支持以下事件：
+   目前，jQuery 主要支持以下事件：
 
    - .blur() 表单元素失去焦点。  
    - .change() 表单元素的值发生变化  
@@ -241,7 +243,7 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
    - .focus() 表单元素获得焦点  
    - .focusin() 子元素获得焦点  
    - .focusout() 子元素失去焦点  
-   - .hover() 同时为mouseenter和mouseleave事件指定处理函数  
+   - .hover() 同时为 mouseenter 和 mouseleave 事件指定处理函数  
    - .keydown() 按下键盘（长时间按键，只返回一个事件）  
    - .keypress() 按下键盘（长时间按键，将返回多个事件）  
    - .keyup() 松开键盘  
@@ -253,7 +255,7 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
    - .mouseout() 鼠标离开（离开子元素也触发）  
    - .mouseover() 鼠标进入（进入子元素也触发）  
    - .mouseup() 松开鼠标  
-   - .ready() DOM加载完成  
+   - .ready() DOM 加载完成  
    - .resize() 浏览器窗口的大小发生改变  
    - .scroll() 滚动条的位置发生变化  
    - .select() 用户选中文本框中的内容  
@@ -261,7 +263,7 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
    - .toggle() 根据鼠标点击的次数，依次运行多个函数  
    - .unload()  用户离开页面  
 
-     以上这些事件在jQuery内部，都是.bind()的便捷方式。使用.bind()可以更灵活地控制事件，比如为多个事件绑定同一个函数：
+     以上这些事件在 jQuery 内部，都是.bind()的便捷方式。使用.bind()可以更灵活地控制事件，比如为多个事件绑定同一个函数：
 
      #+begin_src js
        $('input').bind(  
@@ -287,7 +289,7 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
      $('p').unbind('click'); 
    #+end_src
 
-   所有的事件处理函数，都可以接受一个事件对象(event object)作为参数，比如下面例子中的e：
+   所有的事件处理函数，都可以接受一个事件对象(event object)作为参数，比如下面例子中的 e：
 
    #+begin_src js
      $("p").click(function(e){  
@@ -299,14 +301,14 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
 
    - event.pageX 事件发生时，鼠标距离网页左上角的水平距离
    - event.pageY 事件发生时，鼠标距离网页左上角的垂直距离
-   - event.type 事件的类型(比如click)
+   - event.type 事件的类型(比如 click)
    - event.which 按下了哪一个键
    - event.data 在事件对象上绑定数据，然后传入事件处理函数
    - event.target 事件针对的网页元素
    - event.preventDefault() 阻止事件的默认行为(比如点击链接，会自动打开新页面)
    - event.stopPropagation() 停止事件向上层元素冒泡
 
-     在事件处理函数中，可以用this关键字，返回事件针对的DOM元素：
+     在事件处理函数中，可以用 this 关键字，返回事件针对的 DOM 元素：
 
      #+begin_src js
        $('a').click(function(){  
@@ -324,7 +326,7 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
      #+end_src
 
 ** 特殊效果
-   jQuery允许对象呈现某些特殊效果。
+   jQuery 允许对象呈现某些特殊效果。
 
    #+begin_src js
      $('h1').show(); //展现一个h1标题 
@@ -343,7 +345,7 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
    - .toggle() 依次展示或隐藏某个元素
 
 
-   除了.show()和.hide()，所有其他特效的默认执行时间都是400ms(毫秒)，但是你可以改变这个设置。
+   除了.show()和.hide()，所有其他特效的默认执行时间都是 400ms(毫秒)，但是你可以改变这个设置。
 
    #+begin_src js
      $('h1').fadeIn(300); // 300毫秒内淡入  
@@ -370,7 +372,7 @@ jQuery是一个JavaScript库，主要对 *DOM* 进行了封装， 例如对节�
    #+end_src
 
    - .stop()和.delay()用来停止或延缓特效的执行。
-   - $.fx.off如果设置为true，则关闭所有网页特效。
+   - $.fx.off 如果设置为 true，则关闭所有网页特效。
 ** ajax
    ajax 是后台处理数据的技术，比前台处理数据（网页刷新） 感官上好点。
    

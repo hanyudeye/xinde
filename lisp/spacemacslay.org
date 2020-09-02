@@ -223,7 +223,24 @@
    - [[https://github.com/sshaw/git-link][git-link]]: quickly generate URLs for commits or files.
    - [[https://github.com/dgtized/github-clone.el][github-clone]] allows for easy cloning and forking of repositories.
 
-
+** cmake
+   此层主要 使用 *cmake-ide* 的集成功能 ，支持 cmake  项目和 非 cmake 项目，在 CMake 脚本文件是项目的依赖配置。 
+  
+   保存文件自动重新运行 *cmake* ，要设置 ~cmake-ide-build-dir~ 
+   ~cmake-ide-delete-file~ 后需要手动运行 *cmake*
+  
+   默认生成的是临时目录，可以设置永久的 cmake-ide-build-pool-dir 和
+   cmake-ide-build-pool-use-persistent-naming .
+  
+   非 cmake 项目 ，可以设置本地变量 !!!!  
+   #+begin_quote
+   .dir-locals.el: ((nil . ((cmake-ide-build-dir . "/path/to/build/dir") (cmake-ide-project-dir . "/path/to/project/dir"))))
+   #+end_quote
+   假如在 ~cmake-ide-build-dir~ 目录存在 ~compile_commands.json~ 文件 ，那么也可以
+   编译。此文件可以用 ~Bear~ 工具生成。
+ 
+   总结： 编译的化运行 ~,  c c~  
+ 
 ** google translate
    | 翻译     | google-translate-at-point-reverse  @@html:<kbd>@@ SPC x g t @@html:</kbd>@@ |
    | 反向翻译 | google-translate-query-translate-reverse                                    |
@@ -1368,7 +1385,15 @@ virtualenvwrapper，相较于使用 virtualenv， 好处就是把所有环境都
 ** 英汉转换 [[file:~/.emacs.d/private/companyenglish/][layers]]
    打开英语提示 (toggle-company-english-helper)
 ** 调试服务 [ dap,Debug Adapter Protocol ] 
-   默认功能
+   这是一个可视化调试 IDE ,可以用来调用 微软的 ldp
+   
+   必须要对语言配置 
+   #+BEGIN_SRC emacs-lisp
+     (defun java/pre-init-dap-mode ()
+       (add-to-list 'spacemacs--dap-supported-modes 'java-mode))
+   #+END_SRC
+   也可以直接调用 ~dap-debug~
+
    编辑调试模板 ~SPC m d d e~
    开始调试 ~SPC m d d d~
    调试最后的配置 ~SPC m d d l~
@@ -1415,7 +1440,6 @@ virtualenvwrapper，相较于使用 virtualenv， 好处就是把所有环境都
    | ~SPC m d w s~ | list sessions                      |
    | ~SPC m d w b~ | 列出断点                           |
 ** go
-
 ** Ruby layers
        1.打开交互模式 inf-ruby
        2.使用 ruby-send-region
@@ -1440,6 +1464,9 @@ virtualenvwrapper，相较于使用 virtualenv， 好处就是把所有环境都
    - 使用 imenu 进行 导航
    - lsp-navigation 方便导航 (lsp-ui-peek 另一种)  快捷键 *SPC m g/G*
 ** dash
+   :PROPERTIES:
+   :ID:       cc81be7a-7761-42f8-a886-54858d8f234a
+   :END:
   特点 
   - 在离线文档中搜索
   - 把搜索结果集成到 Helm 和 Ivy
@@ -1450,6 +1477,17 @@ virtualenvwrapper，相较于使用 virtualenv， 好处就是把所有环境都
     | ~SPC d H~ | 在 helm-dash 查找但指定 文档集    |
     |           |                                   |
    
+** spell checking    
+ | ~SPC S a b~     | Add word to dict (buffer)              |
+ | ~SPC S a g~     | Add word to dict (global)              |
+ | ~SPC S a s~     | Add word to dict (session)             |
+ | ~SPC S b~       | Flyspell whole buffer                  |
+ | ~SPC S c~       | Flyspell correct word before point     |
+ | ~SPC S s~       | Flyspell correct word at point         |
+ | ~SPC u SPC S c~ | Flyspell correct all errors one by one |
+ | ~SPC S d~       | Change dictionary                      |
+ | ~SPC S n~       | Flyspell goto next error               |
+ | ~SPC t S~       | Toggle flyspell                        |
 
 * package
 ** 绘图模式 artist-mode
@@ -1653,3 +1691,13 @@ plugins 用于包含插件(可在里面配置插件的具体属性)
    - C-c ! s         flycheck-select-checker
    - C-c ! v         flycheck-verify-setup
    - C-c ! x         flycheck-disable-checker
+** org-web-tools
+- org-web-tools-insert-link-for-url 插入链接，会自动附上标题
+- org-web-tools-insert-web-page-as-entry 把链接处的文章转为 org 格式文件插入
+- org-web-tools-read-url-as-org 同上，只是读到不同缓冲区
+- org-web-tools-convert-links-to-page-entries 只包含链接链表可以用此命令，用来转链接到标题
+- 以下是实用函数
+- org-web-tools--dom-to-html: Return parsed HTML DOM as an HTML string. Note: This is an approximation and is not necessarily correct HTML (e.g. IMG tags may be rendered with a closing “</img>” tag). : 以 HTML 字符串的形式返回已解析的 HTML DOM。 注意: 这是一个近似值，不一定是正确的 HTML (例如，IMG 标记可能使用结束的“ / IMG”标记呈现)
+- org-web-tools--eww-readable: Return “readable” part of HTML with title. : 返回 HTML 的“可读”部分和标题
+- org-web-tools--get-url: Return content for URL as string. : 以字符串形式返回 URL 的内容
+- org-web-tools--html-title: Return title of HTML page. : HTML 页面的返回标题

@@ -1,12 +1,34 @@
 #+TITLE: Linux 内核简介
 #+DESCRIPTION: Linux 内核简介
-#+TAGS[]: Linux Core,kernel 
-#+CATEGORIES[]: 软件使用
-#+DATE: 2019-12-18T18:46:47+08:00
+#+TAGS[]: kernel 
+#+CATEGORIES[]: 技术
 
-* 启动过程
-** 引导程序载入内核
-   引导扇区的 Grub 读入 /boot 目录下的内核文件
+讲一点 *linux* 内核的小知识。 将 *linux* 的行为作一个分类。
+
+#+begin_quote
+此文短期有效
+#+end_quote
+# more
+
+* 引导
+  引导是将 *linux* 内核装入 *内存* 的过程。  
+  #+begin_quote
+  在引导之前的工作由 *BIOS* 完成，现在的新电脑使用 *UEFI* 规范的 BIOS。
+  #+end_quote
+  
+** 引导程序载入内核(grub)
+   引导扇区(boot.img)做一些必要初始化，然后跳转到引导程序(diskboot.img)执行，它会把整个 grub 的内核代码和文件系统驱动引导
+   到内存中，引导完成后， *grub_main* 将被调用。
+   
+  *grub_main* 初始化控制台，计算模块基地址，设置 root 设备，读取 grub 配置文件，
+  加载模块。最后，将 GRUB 置于 normal 模式，在这个模式中，*grub_normal_execute*
+  将被调用以完成最后的准备工作，然后显示一个菜单列出所用可用的操作系统。当某个操
+  作系统被选择之后， *grub_menu_execute_entry* 开始执行，它将调用 GRUB 的 *boot*
+  命令，来引导被选中的操作系统，然后把执行权交给内核。
+
+  
+** 内核设置
+
 ** init process  (初始化)
    调用配置： /etc/inittab, /etc/init/*.conf
 ** 系统初始化
@@ -19,3 +41,91 @@
  - （2）ssh 登录
  - （3）图形界面登录
 ** 关机
+
+* [引导](Booting/README.md)
+  * [从引导加载程序内核](Booting/linux-bootstrap-1.md)
+  * [在内核安装代码的第一步](Booting/linux-bootstrap-2.md)
+  * [视频模式初始化和转换到保护模式](Booting/linux-bootstrap-3.md)
+  * [过渡到 64 位模式](Booting/linux-bootstrap-4.md)
+  * [内核解压缩](Booting/linux-bootstrap-5.md)
+* [初始化](Initialization/README.md)
+  * [内核解压之后的首要步骤](Initialization/linux-initialization-1.md)
+  * [早期的中断和异常控制](Initialization/linux-initialization-2.md)
+  * [在到达内核入口之前最后的准备](Initialization/linux-initialization-3.md)
+  * [内核入口 - start_kernel](Initialization/linux-initialization-4.md)
+  * [体系架构初始化](Initialization/linux-initialization-5.md)
+  * [进一步初始化指定体系架构](Initialization/linux-initialization-6.md)
+  * [最后对指定体系架构初始化](Initialization/linux-initialization-7.md)
+  * [调度器初始化](Initialization/linux-initialization-8.md)
+  * [RCU 初始化](Initialization/linux-initialization-9.md)
+  * [初始化结束](Initialization/linux-initialization-10.md)
+* [中断](Interrupts/README.md)
+  * [中断和中断处理第一部分](Interrupts/linux-interrupts-1.md)
+  * [深入 Linux 内核中的中断](Interrupts/linux-interrupts-2.md)
+  * [初步中断处理](Interrupts/linux-interrupts-3.md)
+  * [中断处理](Interrupts/linux-interrupts-4.md)
+  * [异常处理的实现](Interrupts/linux-interrupts-5.md)
+  * [处理不可屏蔽中断](Interrupts/linux-interrupts-6.md)
+  * [深入外部硬件中断](Interrupts/linux-interrupts-7.md)
+  * [IRQs 的非早期初始化](Interrupts/linux-interrupts-8.md)
+  * [Softirq, Tasklets and Workqueues](Interrupts/linux-interrupts-9.md)
+  * [最后一部分](Interrupts/linux-interrupts-10.md)
+* [系统调用](SysCall/README.md)
+  * [系统调用概念简介](SysCall/linux-syscall-1.md)
+  * [Linux 内核如何处理系统调用](SysCall/linux-syscall-2.md)
+  * [vsyscall and vDSO](SysCall/linux-syscall-3.md)
+  * [Linux 内核如何运行程序](SysCall/linux-syscall-4.md)
+  * [open 系统调用的实现](SysCall/linux-syscall-5.md)
+  * [Linux 资源限制](SysCall/linux-syscall-6.html)
+* [定时器和时钟管理](Timers/README.md)
+  * [简介](Timers/linux-timers-1.md)
+  * [时钟源框架简介](Timers/linux-timers-2.md)
+  * [The tick broadcast framework and dyntick](Timers/linux-timers-3.md)
+  * [定时器介绍](Timers/linux-timers-4.md)
+  * [Clockevents 框架简介](Timers/linux-timers-5.md)
+  * [x86 相关的时钟源](Timers/linux-timers-6.md)
+  * [Linux 内核中与时钟相关的系统调用](Timers/linux-timers-7.md)
+* [同步原语](SyncPrim/README.md)
+  * [自旋锁简介](SyncPrim/linux-sync-1.md)
+  * [队列自旋锁](SyncPrim/linux-sync-2.md)
+  * [信号量](SyncPrim/linux-sync-3.md)
+  * [互斥锁](SyncPrim/linux-sync-4.md)
+  * [读者/写者信号量](SyncPrim/linux-sync-5.md)
+  * [顺序锁](SyncPrim/linux-sync-6.md)
+  * [RCU]()
+  * [Lockdep]()
+* [内存管理](MM/README.md)
+  * [内存块](MM/linux-mm-1.md)
+  * [固定映射地址和 ioremap](MM/linux-mm-2.md)
+  * [kmemcheck](MM/linux-mm-3.md)
+* [控制组](Cgroups/README.md)
+	* [控制组简介](Cgroups/linux-cgroups-1.md)
+* [SMP]()
+* [概念](Concepts/README.md)
+  * [每个 CPU 的变量](Concepts/linux-cpu-1.md)
+  * [CPU 掩码](Concepts/linux-cpu-2.md)
+  * [initcall 机制](Concepts/linux-cpu-3.md)
+  * [Linux 内核的通知链](Concepts/linux-cpu-4.md)
+* [Linux 内核中的数据结构](DataStructures/README.md)
+  * [双向链表](DataStructures/linux-datastructures-1.md)
+  * [基数树](DataStructures/linux-datastructures-2.md)
+  * [位数组](DataStructures/linux-datastructures-3.md)
+* [理论](Theory/README.md)
+  * [分页](Theory/linux-theory-1.md)
+  * [ELF 文件格式](Theory/linux-theory-2.md)
+  * [內联汇编](Theory/linux-theory-3.md)
+  * [CPUID]()
+  * [MSR]()
+* [Initial ram disk]()
+  * [initrd]()
+* [杂项](Misc/README.md)
+  * [Linux 内核开发](Misc/linux-misc-1.md)
+  * [内核编译方法](Misc/linux-misc-2.md)
+  * [链接器](Misc/linux-misc-3.md)
+  * [用户空间的程序启动过程](Misc/linux-misc-4.md)
+  * [书写并提交你第一个内核补丁]()
+* [内核数据结构](KernelStructures/README.md)
+    * [中断描述符表](KernelStructures/linux-kernelstructure-1.md)
+* [有帮助的链接](LINKS.md)
+* [贡献者](CONTRIBUTORS.md)
+

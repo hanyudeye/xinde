@@ -5,177 +5,114 @@
 
 * python 
 ** 系统工具接口,操作系统 os 
-*** 系统编程，涉及流，命令行参数，环境变量 
-    系统编程需要导入自带的 sys,os 模块
-    看看模块里都有哪些属性，方法 dir(MODULE),返回一个数组，统计有多少东西 len(dir(MODULE)) 
-    os.path  是 os 中的嵌套模块，子模块嘛,具体的应该是类集。
-    可以用 dir 看下系统模块的具体内容，有些还能执行下。
-    
-    显示模块搜索路径  sys.path
-    # 显示加载的模块 print(sys.modules)
-
-  | 环境变量 Shell variables         | os.environ                                                                 |
-  | 运行程序 Running programs        | os.system, os.popen, os.execv, os.spawnv                                   |
-  | 进程处理 Spawning processes      | os.fork, os.pipe, os.waitpid, os.kill                                      |
-  | 文件描述 Descriptor files, locks | os.open, os.read, os.write                                                 |
-  | 文件处理 File processing         | os.remove, os.rename, os.mkfifo, os.mkdir, os.rmdir                        |
-  | 管理员工具 Administrative tools  | os.getcwd, os.chdir, os.chmod, os.getpid, os.listdir, os.access            |
-  | 移植工具 Portability tools       | os.sep(文件路径分割符), os.pathsep(路径分隔符，看看 PATH 环境变量怎么设置的), os.curdir, os.path.split, os.path.join  |
-  | 路径名称工具 Pathname tools      | os.path.exists('path'), os.path.isdir('path'), os.path.getsize('path')     |
-
-  路径合理化 os.path.normpath
-  绝对路径 abspath
-  
-  运行程序 
-  os.system('python helloshell.py') # run a Python program
-
-  把进程赋予变量
-  output = os.popen('python helloshell.py').read()
-  output
-
-子进程模块 
-import subprocess
-  # 行分隔符
-  print("%d"  % ord( os.linesep ))
-
-*** 输入输出
-**** print 
-     错误的用法  print  "hello,world"
-     正确用法 print("hello","world") 用逗号的参数，拼接时会自动加一个空格
-    
-    模板 print("I'm %s. I'm %d year old" % ('Vamei', 99))
-    字典输出 print("I'm %(name)s. I'm %(age)d year old" % {'name':'Vamei', 'age':99})
-    
-   - 格式符
-     - %s    字符串 (采用 str()的显示)
-     - %r    字符串 (采用 repr()的显示)
-     - %c    单个字符
-     - %b    二进制整数
-     - %d    十进制整数
-     - %i    十进制整数
-     - %o    八进制整数
-     - %x    十六进制整数
-     - %e    指数 (基底写为 e)
-     - %E    指数 (基底写为 E)
-     - %f    浮点数
-     - %F    浮点数，与上相同
-     - %g    指数(e) 或浮点数 (根据显示长度)
-     - %G    指数(E)或浮点数 (根据显示长度)
-     - %%    字符"%"
-
- 
-   - 对格式进行进一步的控制： %[(name)][flags][width].[precision]typecode
-     - (name)为命名
-     - flags 可以有+,-,' '或 0。+表示右对齐。-表示左对齐。' '为一个空格，表示在正数的左侧填充一个空格，从而与负数对齐。0表示使用 0 填充。
-     - width 表示显示宽度
-     - precision 表示小数点后精度
-
-   - 比如：
-     -print("%+10x" % 10)
-     -print("%04d" % 5)
-     -print("%6.3f" % 2.3)
+   
+                  - 显示模块搜索路径  sys.path
+                  - 显示加载的模块 print(sys.modules)
+                  - 路径合理化 os.path.normpath
+                  - 绝对路径 abspath
+                  - 运行程序 os.system('python helloshell.py')
+                  - 把进程赋予变量 output = os.popen('python helloshell.py').read()
+                  - 环境变量 Shell variables          os.environ                                                                 
+                  - 运行程序 Running programs         os.system, os.popen, os.execv, os.spawnv                                  
+                  - 进程处理 Spawning processes       os.fork, os.pipe, os.waitpid, os.kill                                    
+                  - 文件描述 Descriptor files, locks  os.open, os.read, os.write                                              
+                  - 文件处理 File processing          os.remove, os.rename, os.mkfifo, os.mkdir, os.rmdir                    
+                  - 管理员工具 Administrative tools   os.getcwd, os.chdir, os.chmod, os.getpid, os.listdir, os.access       
+                  - 移植工具 Portability tools        os.sep(文件路径分割符), os.pathsep(路径分隔符，看看 PATH 环境变量怎么设置的), os.curdir, os.path.split, os.path.join  
+                  - 路径名称工具 Pathname tools       os.path.exists('path'), os.path.isdir('path'), os.path.getsize('path')     
 
 ** 进程  
-*** 线程与进程 
-*** 进程
-    Python 中的多线程其实并不是真正的多线程，如果想要充分地使用多核 CPU 的资源，在
-    Python 中大部分情况需要使用多进程。Python 提供了非常好用的多进程包
-    multiprocessing，只需要定义一个函数，Python 会完成其他所有事情。借助这个包，可以
-    轻松完成从单进程到并发执行的转换。multiprocessing 支持子进程、通信和共享数据、执
-    行不同形式的同步，提供了 Process、Queue、Pipe、Lock 等组件。
-**** 类 Process
-*****  创建进程的类：`Process([group [, target [, name [, args [, kwargs]]]]])`
-      target 表示调用对象
-      args 表示调用对象的位置参数元组
-      kwargs 表示调用对象的字典
-      name 为别名
-      group 实质上不使用
+*** 创建进程的类：`Process([group [, target [, name [, args [, kwargs]]]]])`
+    target 表示调用对象
+    args 表示调用对象的位置参数元组
+    kwargs 表示调用对象的字典
+    name 为别名
+    group 实质上不使用
 
     下面看一个创建函数并将其作为多个进程的例子：
-  #+begin_src python
+    #+begin_src python
+      #!/usr/bin/env python3
+      # -*- coding: UTF-8 -*-
 
-    #!/usr/bin/env python3
-    # -*- coding: UTF-8 -*-
-
-    import multiprocessing
-    import time
-
-
-    def worker(interval, name):
-        print(name + '【start】')
-        time.sleep(interval)
-        print(name + '【end】')
+      import multiprocessing
+      import time
 
 
-    if __name__ == "__main__":
-        p1 = multiprocessing.Process(target=worker, args=(2, '两点水 1'))
-        p2 = multiprocessing.Process(target=worker, args=(3, '两点水 2'))
-        p3 = multiprocessing.Process(target=worker, args=(4, '两点水 3'))
+      def worker(interval, name):
+          print(name + '【start】')
+          time.sleep(interval)
+          print(name + '【end】')
 
-        p1.start()
-        p2.start()
-        p3.start()
 
-        print("The number of CPU is:" + str(multiprocessing.cpu_count()))
-        for p in multiprocessing.active_children():
-            print("child   p.name:" + p.name + "\tp.id" + str(p.pid))
-        print("END!!!!!!!!!!!!!!!!!")
+      if __name__ == "__main__":
+          p1 = multiprocessing.Process(target=worker, args=(2, '两点水 1'))
+          p2 = multiprocessing.Process(target=worker, args=(3, '两点水 2'))
+          p3 = multiprocessing.Process(target=worker, args=(4, '两点水 3'))
 
-  #+end_src
-***** 把进程创建成类
+          p1.start()
+          p2.start()
+          p3.start()
+
+          print("The number of CPU is:" + str(multiprocessing.cpu_count()))
+          for p in multiprocessing.active_children():
+              print("child   p.name:" + p.name + "\tp.id" + str(p.pid))
+              print("END!!!!!!!!!!!!!!!!!")
+
+    #+end_src
+*** 把进程创建成类
     当然我们也可以把进程创建成一个类，如下面的例子，当进程 p 调用 start() 时，自
     动调用 run() 方法。
 
-  #+begin_src python
+    #+begin_src python
 
-    # -*- coding: UTF-8 -*-
+      # -*- coding: UTF-8 -*-
 
-    import multiprocessing
-    import time
-
-
-    class ClockProcess(multiprocessing.Process):
-        def __init__(self, interval):
-            multiprocessing.Process.__init__(self)
-            self.interval = interval
-
-        def run(self):
-            n = 5
-            while n > 0:
-                print("当前时间: {0}".format(time.ctime()))
-                time.sleep(self.interval)
-                n -= 1
+      import multiprocessing
+      import time
 
 
-    if __name__ == '__main__':
-        p = ClockProcess(3)
-        p.start()
+      class ClockProcess(multiprocessing.Process):
+          def __init__(self, interval):
+              multiprocessing.Process.__init__(self)
+              self.interval = interval
 
-  #+end_src
-***** daemon 属性
+          def run(self):
+              n = 5
+              while n > 0:
+                  print("当前时间: {0}".format(time.ctime()))
+                  time.sleep(self.interval)
+                  n -= 1
+
+
+      if __name__ == '__main__':
+          p = ClockProcess(3)
+          p.start()
+
+    #+end_src
+*** daemon 属性
 
     想知道 daemon 属性有什么用，看下下面两个例子吧，一个加了 daemon 属性，一个没有加，对比输出的结果：
 
     没有加 deamon 属性的例子：
 
-  #+begin_src python
-    # -*- coding: UTF-8 -*-
-    import multiprocessing
-    import time
+    #+begin_src python
+      # -*- coding: UTF-8 -*-
+      import multiprocessing
+      import time
 
 
-    def worker(interval):
-        print('工作开始时间：{0}'.format(time.ctime()))
-        time.sleep(interval)
-        print('工作结果时间：{0}'.format(time.ctime()))
+      def worker(interval):
+          print('工作开始时间：{0}'.format(time.ctime()))
+          time.sleep(interval)
+          print('工作结果时间：{0}'.format(time.ctime()))
 
 
-    if __name__ == '__main__':
-        p = multiprocessing.Process(target=worker, args=(3,))
-        p.start()
-        print('【EMD】')
+      if __name__ == '__main__':
+          p = multiprocessing.Process(target=worker, args=(3,))
+          p.start()
+          print('【EMD】')
 
-  #+end_src
+    #+end_src
     输出结果：
 
     ```txt
@@ -194,16 +131,16 @@ import subprocess
 
 
     def worker(interval):
-        print('工作开始时间：{0}'.format(time.ctime()))
-        time.sleep(interval)
-        print('工作结果时间：{0}'.format(time.ctime()))
+    print('工作开始时间：{0}'.format(time.ctime()))
+    time.sleep(interval)
+    print('工作结果时间：{0}'.format(time.ctime()))
 
 
     if __name__ == '__main__':
-        p = multiprocessing.Process(target=worker, args=(3,))
-        p.daemon = True
-        p.start()
-        print('【EMD】')
+    p = multiprocessing.Process(target=worker, args=(3,))
+    p.daemon = True
+    p.start()
+    print('【EMD】')
     ```
 
     输出结果：
@@ -215,29 +152,29 @@ import subprocess
 
     根据输出结果可见，如果在子进程中添加了 daemon 属性，那么当主进程结束的时候，子
     进程也会跟着结束。所以没有打印子进程的信息。
-***** join 方法
+*** join 方法
     结合上面的例子继续，如果我们想要让子线程执行完该怎么做呢？
     那么我们可以用到 join 方法，join 方法的主要作用是：阻塞当前进程，直到调用 join 方法的那个进程执行完，再继续执行当前进程。
     因此看下加了 join 方法的例子：
 
-  #+begin_src python
-    import multiprocessing
-    import time
+    #+begin_src python
+      import multiprocessing
+      import time
 
 
-    def worker(interval):
-        print('工作开始时间：{0}'.format(time.ctime()))
-        time.sleep(interval)
-        print('工作结果时间：{0}'.format(time.ctime()))
+      def worker(interval):
+          print('工作开始时间：{0}'.format(time.ctime()))
+          time.sleep(interval)
+          print('工作结果时间：{0}'.format(time.ctime()))
 
 
-    if __name__ == '__main__':
-        p = multiprocessing.Process(target=worker, args=(3,))
-        p.daemon = True
-        p.start()
-        p.join()
-        print('【EMD】')
-  #+end_src
+      if __name__ == '__main__':
+          p = multiprocessing.Process(target=worker, args=(3,))
+          p.daemon = True
+          p.start()
+          p.join()
+          print('【EMD】')
+    #+end_src
     输出的结果：
 
     ```txt
@@ -245,7 +182,7 @@ import subprocess
     工作结果时间：Tue Oct 10 11:30:11 2017
     【EMD】
     ```
-***** Pool
+*** Pool
 
     如果需要很多的子进程，难道我们需要一个一个的去创建吗？
 
@@ -261,22 +198,22 @@ import subprocess
 
 
     def long_time_task(name):
-        print('进程的名称：{0} ；进程的 PID: {1} '.format(name, os.getpid()))
-        start = time.time()
-        time.sleep(random.random() * 3)
-        end = time.time()
-        print('进程 {0} 运行了 {1} 秒'.format(name, (end - start)))
+    print('进程的名称：{0} ；进程的 PID: {1} '.format(name, os.getpid()))
+    start = time.time()
+    time.sleep(random.random() * 3)
+    end = time.time()
+    print('进程 {0} 运行了 {1} 秒'.format(name, (end - start)))
 
 
     if __name__ == '__main__':
-        print('主进程的 PID：{0}'.format(os.getpid()))
-        p = Pool(4)
-        for i in range(6):
-            p.apply_async(long_time_task, args=(i,))
-        p.close()
-        # 等待所有子进程结束后在关闭主进程
-        p.join()
-        print('【End】')
+    print('主进程的 PID：{0}'.format(os.getpid()))
+    p = Pool(4)
+    for i in range(6):
+    p.apply_async(long_time_task, args=(i,))
+    p.close()
+    # 等待所有子进程结束后在关闭主进程
+    p.join()
+    print('【End】')
     ```
 
     输出的结果如下：
@@ -311,7 +248,7 @@ import subprocess
     ```
 
     就可以同时跑 5 个进程。
-***** 进程间通信
+*** 进程间通信
 
     Process 之间肯定是需要通信的，操作系统提供了很多机制来实现进程间的通信。Python
     的 multiprocessing 模块包装了底层的机制，提供了 Queue、Pipes 等多种方式来交换
@@ -328,35 +265,35 @@ import subprocess
 
 
     def write(q):
-        # 写数据进程
-        print('写进程的 PID:{0}'.format(os.getpid()))
-        for value in ['两点水', '三点水', '四点水']:
-            print('写进 Queue 的值为：{0}'.format(value))
-            q.put(value)
-            time.sleep(random.random())
+    # 写数据进程
+    print('写进程的 PID:{0}'.format(os.getpid()))
+    for value in ['两点水', '三点水', '四点水']:
+    print('写进 Queue 的值为：{0}'.format(value))
+    q.put(value)
+    time.sleep(random.random())
 
 
     def read(q):
-        # 读取数据进程
-        print('读进程的 PID:{0}'.format(os.getpid()))
-        while True:
-            value = q.get(True)
-            print('从 Queue 读取的值为：{0}'.format(value))
+    # 读取数据进程
+    print('读进程的 PID:{0}'.format(os.getpid()))
+    while True:
+    value = q.get(True)
+    print('从 Queue 读取的值为：{0}'.format(value))
 
 
     if __name__ == '__main__':
-        # 父进程创建 Queue，并传给各个子进程
-        q = Queue()
-        pw = Process(target=write, args=(q,))
-        pr = Process(target=read, args=(q,))
-        # 启动子进程 pw
-        pw.start()
-        # 启动子进程 pr
-        pr.start()
-        # 等待 pw 结束:
-        pw.join()
-        # pr 进程里是死循环，无法等待其结束，只能强行终止
-        pr.terminate()
+    # 父进程创建 Queue，并传给各个子进程
+    q = Queue()
+    pw = Process(target=write, args=(q,))
+    pr = Process(target=read, args=(q,))
+    # 启动子进程 pw
+    pw.start()
+    # 启动子进程 pr
+    pr.start()
+    # 等待 pw 结束:
+    pw.join()
+    # pr 进程里是死循环，无法等待其结束，只能强行终止
+    pr.terminate()
 
     ```
 
@@ -372,249 +309,168 @@ import subprocess
     写进 Queue 的值为：四点水
     从 Queue 读取的值为：四点水
     ```
-** CGI 对象
-*** Web 服务器支持及配置
-    指定其他运行 CGI 脚本的目录，可以修改 httpd.conf 配置文件，如下所示：
-    #+begin_src conf
-      <Directory "/var/www/cgi-bin">
-      AllowOverride None
-      Options +ExecCGI
-      Order allow,deny
-      Allow from all
-      </Directory>
-      #+end_src
-
-    在 AddHandler 中添加 .py 后缀，这样我们就可以访问 .py 结尾的 python 脚本文件：
-    添加响应
-    AddHandler cgi-script .cgi .pl .py
-    
-    激活模块 sudo a2enmod cgi
-    
-
-或者放一起
-
-    #+begin_src conf
-    <Directory /srv/www/yoursite/public_html>
-        Options +ExecCGI
-        AddHandler cgi-script .py
-    </Directory>
-    #+end_src
-    
-*** 创建 CGI 程序
-#+begin_src python
-  #!/usr/bin/python
-  # -*- coding: UTF-8 -*-
-
-  print "Content-type:text/html"
-  print                               # 空行，告诉服务器结束头部
-  print '<html>'
-  print '<head>'
-  print '<meta charset="utf-8">'
-  print '<title>Hello Word - 我的第一个 CGI 程序！</title>'
-  print '</head>'
-  print '<body>'
-  print '<h2>Hello Word! 我是来自菜鸟教程的第一 CGI 程序</h2>'
-  print '</body>'
-  print '</html>'
-#+end_src
-
-文件保存后修改 hello.py，修改文件权限为 755：
-chmod 755 hello.py 
-*** CGI 环境变量
-: 所有的 CGI 程序都接收以下的环境变量，这些变量在 CGI 程序中发挥了重要的作用：
-CONTENT_TYPE	这个环境变量的值指示所传递来的信息的 MIME 类型。目前，环境变量 CONTENT_TYPE 一般都是：application/x-www-form-urlencoded,他表示数据来自于 HTML 表单。
-CONTENT_LENGTH	如果服务器与 CGI 程序信息的传递方式是 POST，这个环境变量即使从标准输入 STDIN 中可以读到的有效数据的字节数。这个环境变量在读取所输入的数据时必须使用。
-HTTP_COOKIE	客户机内的 COOKIE 内容。
-HTTP_USER_AGENT	提供包含了版本数或其他专有数据的客户浏览器信息。
-PATH_INFO	这个环境变量的值表示紧接在 CGI 程序名之后的其他路径信息。它常常作为 CGI 程序的参数出现。
-QUERY_STRING	如果服务器与 CGI 程序信息的传递方式是 GET，这个环境变量的值即使所传递的信息。这个信息经跟在 CGI 程序名的后面，两者中间用一个问号'?'分隔。
-REMOTE_ADDR	这个环境变量的值是发送请求的客户机的 IP 地址，例如上面的 192.168.1.67。这个值总是存在的。而且它是 Web 客户机需要提供给 Web 服务器的唯一标识，可以在 CGI 程序中用它来区分不同的 Web 客户机。
-REMOTE_HOST	这个环境变量的值包含发送 CGI 请求的客户机的主机名。如果不支持你想查询，则无需定义此环境变量。
-REQUEST_METHOD	提供脚本被调用的方法。对于使用 HTTP/1.0 协议的脚本，仅 GET 和 POST 有意义。
-SCRIPT_FILENAME	CGI 脚本的完整路径
-SCRIPT_NAME	CGI 脚本的的名称
-SERVER_NAME	这是你的 WEB 服务器的主机名、别名或 IP 地址。
-SERVER_SOFTWARE	这个环境变量的值包含了调用 CGI 程序的 HTTP 服务器的名称和版本号。例如，上面的值为 Apache/2.2.14(Unix)
-** 网络对象
-***  低级别的网络服务支持基本的 Socket
-    它提供了标准的 BSD Sockets API，可以访问底层操作系统 Socket 接口的全部方法。
-***  高级别的网络服务模块 SocketServer
-    它提供了服务器中心类，可以简化网络服务器的开发。
 ** 正则表达式
    比如在一段字符串中寻找是否含有某个字符或某些字符，通常我们使用内置函数来实现，
    如下：
 
- ```python
- re.findall(pattern, string[, flags])
- ```
+   ```python
+   re.findall(pattern, string[, flags])
+   ```
 
- 该函数实现了在字符串中找到正则表达式所匹配的所有子串，并组成一个列表返回,具体操作如下：
+   该函数实现了在字符串中找到正则表达式所匹配的所有子串，并组成一个列表返回,具体操作如下：
 
- ```python
+   ```python
 
- import re
+   import re
 
- # 设定一个常量
- a = '两点水|twowater|liangdianshui|草根程序员|ReadingWithU'
+   # 设定一个常量
+   a = '两点水|twowater|liangdianshui|草根程序员|ReadingWithU'
 
- # 正则表达式
+   # 正则表达式
 
- findall = re.findall('两点水', a)
- print(findall)
+   findall = re.findall('两点水', a)
+   print(findall)
 
- if len(findall) > 0:
-     print('a 含有“两点水”这个字符串')
- else:
-     print('a 不含有“两点水”这个字符串')
+   if len(findall) > 0:
+   print('a 含有“两点水”这个字符串')
+   else:
+   print('a 不含有“两点水”这个字符串')
 
- ```
+   ```
 
- 输出的结果：
+   输出的结果：
 
- ```txt
- ['两点水']
- a 含有“两点水”这个字符串
- ```
+   ```txt
+   ['两点水']
+   a 含有“两点水”这个字符串
+   ```
 
- 从输出结果可以看到，可以实现和内置函数一样的功能，可是在这里也要强调一点，上面这
- 个例子只是方便我们理解正则表达式，这个正则表达式的写法是毫无意义的。为什么这样说
- 呢？
+   从输出结果可以看到，可以实现和内置函数一样的功能，可是在这里也要强调一点，上面这
+   个例子只是方便我们理解正则表达式，这个正则表达式的写法是毫无意义的。为什么这样说
+   呢？
 
- 因为用 Python 自带函数就能解决的问题，我们就没必要使用正则表达式了，这样做多此一
- 举。而且上面例子中的正则表达式设置成为了一个常量，并不是一个正则表达式的规则，正
- 则表达式的灵魂在于规则，所以这样做意义不大。
+   因为用 Python 自带函数就能解决的问题，我们就没必要使用正则表达式了，这样做多此一
+   举。而且上面例子中的正则表达式设置成为了一个常量，并不是一个正则表达式的规则，正
+   则表达式的灵魂在于规则，所以这样做意义不大。
 
- 那么正则表达式的规则怎么写呢？先不急，我们一步一步来，先来一个简单的，找出字符串
- 中的所有小写字母。首先我们在 `findall` 函数中第一个参数写正则表达式的规则，其中
- `[a-z]` 就是匹配任何小写字母，第二个参数只要填写要匹配的字符串就行了。具体如下：
+   那么正则表达式的规则怎么写呢？先不急，我们一步一步来，先来一个简单的，找出字符串
+   中的所有小写字母。首先我们在 `findall` 函数中第一个参数写正则表达式的规则，其中
+   `[a-z]` 就是匹配任何小写字母，第二个参数只要填写要匹配的字符串就行了。具体如下：
 
- ```python
+   ```python
 
- import re
+   import re
 
- # 设定一个常量
- a = '两点水|twowater|liangdianshui|草根程序员|ReadingWithU'
+   # 设定一个常量
+   a = '两点水|twowater|liangdianshui|草根程序员|ReadingWithU'
 
- # 选择 a 里面的所有小写英文字母
+   # 选择 a 里面的所有小写英文字母
 
- re_findall = re.findall('[a-z]', a)
+   re_findall = re.findall('[a-z]', a)
 
- print(re_findall)
+   print(re_findall)
 
- ```
+   ```
 
- 输出的结果：
+   输出的结果：
 
- ```txt
- ['t', 'w', 'o', 'w', 'a', 't', 'e', 'r', 'l', 'i', 'a', 'n', 'g', 'd', 'i', 'a', 'n', 's', 'h', 'u', 'i', 'e', 'a', 'd', 'i', 'n', 'g', 'i', 't', 'h']
- ```
+   ```txt
+   ['t', 'w', 'o', 'w', 'a', 't', 'e', 'r', 'l', 'i', 'a', 'n', 'g', 'd', 'i', 'a', 'n', 's', 'h', 'u', 'i', 'e', 'a', 'd', 'i', 'n', 'g', 'i', 't', 'h']
+   ```
 
- 这样我们就拿到了字符串中的所有小写字母了。
- # 字符集
+   这样我们就拿到了字符串中的所有小写字母了。
+   # 字符集
 
 
- 好了，通过上面的几个实例我们初步认识了 Python 的正则表达式，可能你就会问，正则表
- 达式还有什么规则，什么字母代表什么意思呢？
+   好了，通过上面的几个实例我们初步认识了 Python 的正则表达式，可能你就会问，正则表
+   达式还有什么规则，什么字母代表什么意思呢？
 
- 其实，这些都不急，在本章后面会给出对应的正则表达式规则列表，而且这些东西在网上随
- 便都能 Google 到。所以现在，我们还是进一步加深对正则表达式的理解，讲一下正则表达
- 式的字符集。
+   其实，这些都不急，在本章后面会给出对应的正则表达式规则列表，而且这些东西在网上随
+   便都能 Google 到。所以现在，我们还是进一步加深对正则表达式的理解，讲一下正则表达
+   式的字符集。
 
- 字符集是由一对方括号 “[]” 括起来的字符集合。使用字符集，可以匹配多个字符中的一个。
+   字符集是由一对方括号 “[]” 括起来的字符集合。使用字符集，可以匹配多个字符中的一个。
 
- 举个例子，比如你使用 `C[ET]O` 匹配到的是 CEO 或 CTO，也就是说 `[ET]` 代表的是一
- 个 E 或者一个 T。像上面提到的 `[a-z]` ,就是所有小写字母中的其中一个，这里使用了
- 连字符 “-” 定义一个连续字符的字符范围。当然，像这种写法，里面可以包含多个字符
- 范围的，比如：`[0-9a-fA-F]` ,匹配单个的十六进制数字，且不分大小写。注意了，字符
- 和范围定义的先后顺序对匹配的结果是没有任何影响的。
+   举个例子，比如你使用 `C[ET]O` 匹配到的是 CEO 或 CTO，也就是说 `[ET]` 代表的是一
+   个 E 或者一个 T。像上面提到的 `[a-z]` ,就是所有小写字母中的其中一个，这里使用了
+   连字符 “-” 定义一个连续字符的字符范围。当然，像这种写法，里面可以包含多个字符
+   范围的，比如：`[0-9a-fA-F]` ,匹配单个的十六进制数字，且不分大小写。注意了，字符
+   和范围定义的先后顺序对匹配的结果是没有任何影响的。
 
- 其实说了那么多，只是想证明，字符集一对方括号 “[]” 里面的字符关系是或关系，下面看一个例子：
+   其实说了那么多，只是想证明，字符集一对方括号 “[]” 里面的字符关系是或关系，下面看一个例子：
 
- ```Python
+   ```Python
 
- import re
- a = 'uav,ubv,ucv,uwv,uzv,ucv,uov'
+   import re
+   a = 'uav,ubv,ucv,uwv,uzv,ucv,uov'
 
- # 字符集
+   # 字符集
 
- # 取 u 和 v 中间是 a 或 b 或 c 的字符
- findall = re.findall('u[abc]v', a)
- print(findall)
- # 如果是连续的字母，数字可以使用 - 来代替
- l = re.findall('u[a-c]v', a)
- print(l)
+   # 取 u 和 v 中间是 a 或 b 或 c 的字符
+   findall = re.findall('u[abc]v', a)
+   print(findall)
+   # 如果是连续的字母，数字可以使用 - 来代替
+   l = re.findall('u[a-c]v', a)
+   print(l)
 
- # 取 u 和 v 中间不是 a 或 b 或 c 的字符
- re_findall = re.findall('u[^abc]v', a)
- print(re_findall)
+   # 取 u 和 v 中间不是 a 或 b 或 c 的字符
+   re_findall = re.findall('u[^abc]v', a)
+   print(re_findall)
 
- ```
+   ```
 
- 输出的结果：
+   输出的结果：
 
- ```txt
- ['uav', 'ubv', 'ucv', 'ucv']
- ['uav', 'ubv', 'ucv', 'ucv']
- ['uwv', 'uzv', 'uov']
- ```
+   ```txt
+   ['uav', 'ubv', 'ucv', 'ucv']
+   ['uav', 'ubv', 'ucv', 'ucv']
+   ['uwv', 'uzv', 'uov']
+   ```
 
- 在例子中，使用了取反字符集，也就是在左方括号 “[” 后面紧跟一个尖括号 “^”，就
- 会对字符集取反。需要记住的一点是，取反字符集必须要匹配一个字符。比如：`q[^u]` 并
- 不意味着：匹配一个 q，后面没有 u 跟着。它意味着：匹配一个 q，后面跟着一个不是 u
- 的字符。具体可以对比上面例子中输出的结果来理解。
+   在例子中，使用了取反字符集，也就是在左方括号 “[” 后面紧跟一个尖括号 “^”，就
+   会对字符集取反。需要记住的一点是，取反字符集必须要匹配一个字符。比如：`q[^u]` 并
+   不意味着：匹配一个 q，后面没有 u 跟着。它意味着：匹配一个 q，后面跟着一个不是 u
+   的字符。具体可以对比上面例子中输出的结果来理解。
 
- 我们都知道，正则表达式本身就定义了一些规则，比如 `\d`,匹配所有数字字符,其实它是
- 等价于 [0-9]，下面也写了个例子，通过字符集的形式解释了这些特殊字符。
+   我们都知道，正则表达式本身就定义了一些规则，比如 `\d`,匹配所有数字字符,其实它是
+   等价于 [0-9]，下面也写了个例子，通过字符集的形式解释了这些特殊字符。
 
- ```Python
- import re
+   ```Python
+   import re
 
- a = 'uav_ubv_ucv_uwv_uzv_ucv_uov&123-456-789'
+   a = 'uav_ubv_ucv_uwv_uzv_ucv_uov&123-456-789'
 
- # 概括字符集
+   # 概括字符集
 
- # \d 相当于 [0-9] ,匹配所有数字字符
- # \D 相当于 [^0-9] ， 匹配所有非数字字符
- findall1 = re.findall('\d', a)
- findall2 = re.findall('[0-9]', a)
- findall3 = re.findall('\D', a)
- findall4 = re.findall('[^0-9]', a)
- print(findall1)
- print(findall2)
- print(findall3)
- print(findall4)
+   # \d 相当于 [0-9] ,匹配所有数字字符
+   # \D 相当于 [^0-9] ， 匹配所有非数字字符
+   findall1 = re.findall('\d', a)
+   findall2 = re.findall('[0-9]', a)
+   findall3 = re.findall('\D', a)
+   findall4 = re.findall('[^0-9]', a)
+   print(findall1)
+   print(findall2)
+   print(findall3)
+   print(findall4)
 
- # \w 匹配包括下划线的任何单词字符，等价于 [A-Za-z0-9_]
- findall5 = re.findall('\w', a)
- findall6 = re.findall('[A-Za-z0-9_]', a)
- print(findall5)
- print(findall6)
+   # \w 匹配包括下划线的任何单词字符，等价于 [A-Za-z0-9_]
+   findall5 = re.findall('\w', a)
+   findall6 = re.findall('[A-Za-z0-9_]', a)
+   print(findall5)
+   print(findall6)
 
- ```
+   ```
 
- 输出结果：
+   输出结果：
 
- ```txt
- ['1', '2', '3', '4', '5', '6', '7', '8', '9']
- ['1', '2', '3', '4', '5', '6', '7', '8', '9']
- ['u', 'a', 'v', '_', 'u', 'b', 'v', '_', 'u', 'c', 'v', '_', 'u', 'w', 'v', '_', 'u', 'z', 'v', '_', 'u', 'c', 'v', '_', 'u', 'o', 'v', '&', '-', '-']
- ['u', 'a', 'v', '_', 'u', 'b', 'v', '_', 'u', 'c', 'v', '_', 'u', 'w', 'v', '_', 'u', 'z', 'v', '_', 'u', 'c', 'v', '_', 'u', 'o', 'v', '&', '-', '-']
- ['u', 'a', 'v', '_', 'u', 'b', 'v', '_', 'u', 'c', 'v', '_', 'u', 'w', 'v', '_', 'u', 'z', 'v', '_', 'u', 'c', 'v', '_', 'u', 'o', 'v', '1', '2', '3', '4', '5', '6', '7', '8', '9']
- ['u', 'a', 'v', '_', 'u', 'b', 'v', '_', 'u', 'c', 'v', '_', 'u', 'w', 'v', '_', 'u', 'z', 'v', '_', 'u', 'c', 'v', '_', 'u', 'o', 'v', '1', '2', '3', '4', '5', '6', '7', '8', '9']
- ```
-** 调用 shell 程序
-          import os
-          os.system("ls")
-          
-          连接 shell 输出 
-
-text= os.popen("type hello.py").read()
-** 子进程
-   #+begin_src python
-     import subprocess 
-     subprocess.call('python helloshello.py')
-   #+end_src
-
+   ```txt
+   ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+   ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+   ['u', 'a', 'v', '_', 'u', 'b', 'v', '_', 'u', 'c', 'v', '_', 'u', 'w', 'v', '_', 'u', 'z', 'v', '_', 'u', 'c', 'v', '_', 'u', 'o', 'v', '&', '-', '-']
+   ['u', 'a', 'v', '_', 'u', 'b', 'v', '_', 'u', 'c', 'v', '_', 'u', 'w', 'v', '_', 'u', 'z', 'v', '_', 'u', 'c', 'v', '_', 'u', 'o', 'v', '&', '-', '-']
+   ['u', 'a', 'v', '_', 'u', 'b', 'v', '_', 'u', 'c', 'v', '_', 'u', 'w', 'v', '_', 'u', 'z', 'v', '_', 'u', 'c', 'v', '_', 'u', 'o', 'v', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+   ['u', 'a', 'v', '_', 'u', 'b', 'v', '_', 'u', 'c', 'v', '_', 'u', 'w', 'v', '_', 'u', 'z', 'v', '_', 'u', 'c', 'v', '_', 'u', 'o', 'v', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+   ```
 * 语言配套工具
 ** 包管理工具 
 *** pip 
@@ -713,3 +569,56 @@ text= os.popen("type hello.py").read()
    # 然后再不需要去手动激活了
    使用 pyenv 来管理多版本的 python 命令，使用 pyenv-virtualenv 插件来管理多版本
    python 包环境。爽歪歪~
+   
+   
+* xpath
+  *	Selects all child elements. For example, */egg selects all grandchildren named egg.
+
+.	Selects the current node. This is mostly useful at the beginning of the path, to indicate that it’s a relative path.
+
+// Selects all subelements, on all levels beneath the current element. For
+example, .//egg selects all egg elements in the entire tree.
+
+..	Selects the parent element. Returns None if the path attempts to reach the ancestors of the start element (the element find was called on).
+
+[@attrib]	Selects all elements that have the given attribute.
+
+[@attrib='value']	Selects all elements for which the given attribute has the given value. The value cannot contain quotes.
+
+[tag]	Selects all elements that have a child named tag. Only immediate children are supported.
+
+[.='text']	
+
+Selects all elements whose complete text content, including descendants, equals the given text.
+
+New in version 3.7.
+
+[tag='text']	Selects all elements that have a child named tag whose complete text content, including descendants, equals the given text.
+
+[position]	Selects all elements that are located at the given position. The position can be either an integer (1 is the first position), the expression last() (for the last position), or a position relative to the last position (e.g. last()-1).
+
+Predicates (expressions within square brackets) must be preceded by a tag name, an asterisk, or another predicate. position predicates must be preceded by a tag name.
+
+
+
+Sample of libxml2 XPath Use
+
+import libxml2
+
+doc = libxml2.parseFile("tst.xml")
+ctxt = doc.xpathNewContext()
+res = ctxt.xpathEval("//*")
+if len(res) != 2:
+    print "xpath query: wrong node set size"
+    sys.exit(1)
+if res[0].name != "doc" or res[1].name != "foo":
+    print "xpath query: wrong node set value"
+    sys.exit(1)
+doc.freeDoc()
+ctxt.xpathFreeContext()
+Sample of ElementTree XPath Use
+
+from elementtree.ElementTree import ElementTree
+mydoc = ElementTree(file='tst.xml')
+for e in mydoc.findall('/foo/bar'):
+    print e.get('title').text

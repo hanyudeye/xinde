@@ -1,0 +1,193 @@
+* info (树)
+  
+  跳转   
+  l	Go back to the last node you were at. (chronological)
+  r	Go forward to where you were before using l.
+  L	Go to menu of visited nodes.
+  T	Go to table of contents of the current Info file.
+  i	Look up a topic in this file’s Index and move to its node.
+  ,	(comma) Go to the next match from a previous ‘i’ command.
+
+  Structural navigation commands
+  ------------------------------
+  m	Go to a menu item’s node.  Completion available for its name.
+  1	Go to first menu item’s node.
+  2, 3, 4, 5, 6, 7, 8, 9	Go to second...ninth menu item’s node.
+  n	Go to this node’s "Next" node.
+  p	Go to this node’s "Previous" node.  (*not* chronological)
+  ^	Go "Up" from this node to its parent node.
+  d	Go to the Info directory (root) node.
+  f	Follow a cross reference. Prompts for name.
+
+  Moving within a node
+  --------------------
+  SPC	Normally, scroll forward a full screen.
+	If node’s menu appears below cursor, go to first menu item.
+	If node’s menu appears above cursor, go to parent node.
+  DEL	Normally, scroll backward.  If beginning of buffer is already
+	visible, go to previous menu entry, or up if there is none.
+  b	Go to beginning of node.
+  TAB	Move cursor to next cross-reference or menu item in this node.
+  C-M-i	Move cursor to previous cross-reference or menu item.
+
+  Other navigation commands
+  -------------------------
+  q	Quit Info.
+  g	Go to a node with a given name.
+	You may include a filename as well, as "(FILENAME)NODENAME".
+  C-u C-h i	Go to a new Info file.  (Completion available.)
+  C-u N C-h i	Open Info with number in buffer name: *info*<N>.
+  <	Go to first node ("Top") of current Info file.
+  >	Go to final node of current Info file.
+  ]	Go forward a node, considering all nodes as one sequence.
+  [	Go backward a node, considering all nodes as one sequence.
+
+  Other commands
+  --------------
+  .	Save current node name for use by ‘v’.
+  v	Open a virtual Info book of nodes saved using ‘.’.
+  C-s	Isearch this Info manual for a literal string.
+  C-M-s	Isearch this Info manual for a regexp.
+  s	Search this Info manual for a regexp
+  S	Like ‘s’, but case-sensitive.
+  a	Look for a string in the indexes of all manuals.
+  c	Put name of current info node in the kill ring.
+  M-n	Select a new cloned Info buffer in another window.
+  +	Integrate current node with nodes referred to in its Menu.
+    Display the result outside of Info.  ‘C-u’: Recursively.
+
+* eww
+You can open a URL or search the web with the command ‘M-x eww’.  If the
+input doesn’t look like a URL or domain name the web will be searched
+via ‘eww-search-prefix’.  The default search engine is DuckDuckGo
+(https://duckduckgo.com).  If you want to open a file either prefix the
+file name with ‘file://’ or use the command ‘M-x eww-open-file’.
+
+   If loading the URL was successful the buffer ‘*eww*’ is opened and
+the web page is rendered in it.  You can leave EWW by pressing ‘q’ or
+exit the browser by calling ‘eww-quit’.  To reload the web page hit ‘g’
+(‘eww-reload’).  Pressing ‘w’ (‘eww-copy-page-url’) will copy the
+current URL to the kill ring.
+
+   The ‘M-<RET>’ command (‘eww-open-in-new-buffer’) opens the URL at
+point in a new EWW buffer, akin to opening a link in a new “tab” in
+other browsers.
+
+   The ‘R’ command (‘eww-readable’) will attempt to determine which part
+of the document contains the “readable” text, and will only display this
+part.  This usually gets rid of menus and the like.
+
+   The ‘F’ command (‘eww-toggle-fonts’) toggles whether to use
+variable-pitch fonts or not.  This sets the ‘shr-use-fonts’ variable.
+
+   The ‘M-C’ command (‘eww-toggle-colors’) toggles whether to use
+HTML-specified colors or not.  This sets the ‘shr-use-colors’ variable.
+
+   A URL under the point can be downloaded with ‘d’ (‘eww-download’).
+The file will be written to the directory specified in
+‘eww-download-directory’ (Default: ‘~/Downloads/’).
+
+   EWW remembers the URLs you have visited to allow you to go back and
+forth between them.  By pressing ‘l’ (‘eww-back-url’) you go to the
+previous URL.  You can go forward again with ‘r’ (‘eww-forward-url’).
+If you want an overview of your browsing history press ‘H’
+(‘eww-list-histories’) to open the history buffer ‘*eww history*’.  The
+history is lost when EWW is quit.  If you want to remember websites you
+can use bookmarks.
+
+   Along with the URLs visited, EWW also remembers both the rendered
+page (as it appears in the buffer) and its source.  This can take a
+considerable amount of memory, so EWW discards the history entries to
+keep their number within a set limit, as specified by
+‘eww-history-limit’; the default being 50.  This variable could also be
+set to ‘nil’ to allow for the history list to grow indefinitely.
+
+   PDFs are viewed inline, by default, with ‘doc-view-mode’, but this
+can be customized by using the mailcap (*note (emacs-mime)mailcap::)
+mechanism, in particular ‘mailcap-mime-data’.
+
+   EWW allows you to “bookmark” URLs.  Simply hit ‘b’
+(‘eww-add-bookmark’) to store a bookmark for the current website.  You
+can view stored bookmarks with ‘B’ (‘eww-list-bookmarks’).  This will
+open the bookmark buffer ‘*eww bookmarks*’.
+
+   To get summary of currently opened EWW buffers, press ‘S’
+(‘eww-list-buffers’).  The ‘*eww buffers*’ buffer allows you to quickly
+kill, flip through and switch to specific EWW buffer.  To switch EWW
+buffers through a minibuffer prompt, press ‘s’ (‘eww-switch-to-buffer’).
+
+   Although EWW and shr.el do their best to render webpages in GNU Emacs
+some websites use features which can not be properly represented or are
+not implemented (E.g., JavaScript).  If you have trouble viewing a
+website with EWW then hit ‘&’ (‘eww-browse-with-external-browser’)
+inside the EWW buffer to open the website in the external browser
+specified by ‘shr-external-browser’.  Some content types, such as video
+or audio content, do not make sense to display in GNU Emacs at all.  You
+can tell EWW to open specific content automatically in an external
+browser by customizing ‘eww-use-external-browser-for-content-type’.
+
+File: eww.info,  Node: Advanced,  Next: History and Acknowledgments,  Prev: Basics,  Up: Top
+
+3 Advanced
+**********
+
+You can view the source of a website with ‘v’ (‘eww-view-source’).  This
+will open a new buffer ‘*eww-source*’ and insert the source.  The buffer
+will be set to ‘html-mode’ if available.
+
+   EWW handles cookies through the *note url package: (url)Top.  You can
+list existing cookies with ‘C’ (‘url-cookie-list’).  For details about
+the Cookie handling *Note (url)Cookies::.
+
+   The header line of the EWW buffer can be changed by customizing
+‘eww-header-line-format’.  The format replaces ‘%t’ with the title of
+the website and ‘%u’ with the URL.
+
+   The ‘D’ command (‘eww-toggle-paragraph-direction’) toggles the
+paragraphs direction between left-to-right and right-to-left text.  This
+can be useful on web pages that display right-to-left test (like Arabic
+and Hebrew), but where the web pages don’t explicitly state the
+directionality.
+
+   Loading random images from the web can be problematic due to their
+size or content.  By customizing ‘shr-max-image-proportion’ you can set
+the maximal image proportion in relation to the window they are
+displayed in.  E.g., 0.7 means an image is allowed to take up 70% of the
+width and height.  If Emacs supports image scaling (ImageMagick support
+required) then larger images are scaled down.  You can block specific
+images completely by customizing ‘shr-blocked-images’.
+
+   EWW (or rather its HTML renderer ‘shr’) uses the colors declared in
+the HTML page, but adjusts them if needed to keep a certain minimum
+contrast.  If that is still too low for you, you can customize the
+variables ‘shr-color-visible-distance-min’ and
+‘shr-color-visible-luminance-min’ to get a better contrast.
+
+   In addition to maintaining the history at run-time, EWW will also
+save the partial state of its buffers (the URIs and the titles of the
+pages visited) in the desktop file if one is used.  *Note (emacs)Saving
+Emacs Sessions::.
+
+   EWW history may sensibly contain multiple entries for the same page
+URI.  At run-time, these entries may still have different associated
+point positions or the actual Web page contents.  The latter, however,
+tend to be overly large to preserve in the desktop file, so they get
+omitted, thus rendering the respective entries entirely equivalent.  By
+default, such duplicate entries are not saved.  Setting
+‘eww-desktop-remove-duplicates’ to nil will force EWW to save them
+anyway.
+
+   Restoring EWW buffers’ contents may prove to take too long to finish.
+When the ‘eww-restore-desktop’ variable is set to ‘nil’ (the default),
+EWW will not try to reload the last visited Web page when the buffer is
+restored from the desktop file, thus allowing for faster Emacs start-up
+times.  When set to ‘t’, restoring the buffers will also initiate the
+reloading of such pages.
+
+   The EWW buffer restored from the desktop file but not yet reloaded
+will contain a prompt, as specified by the ‘eww-restore-reload-prompt’
+variable.  The value of this variable will be passed through
+‘substitute-command-keys’ upon each use, thus allowing for the use of
+the usual substitutions, such as ‘\[eww-reload]’ for the current key
+binding of the ‘eww-reload’ command.
+
