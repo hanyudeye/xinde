@@ -5,8 +5,7 @@
 #+DATE: 2020-02-13T19:01:28+08:00
 #+draft: true
 
-
-一种简单的语言，一般用在 *web* 开发里，给网页生成动态内容用的。当然，如果你喜欢的话，用来编写其它程序也可以的。
+WEB 服务器脚本语言
 
 # more
 #+begin_quote
@@ -15,16 +14,32 @@
 
 ** 安装
    需要安装服务器，和 php 解析器，当然，光解析器也是可以的。数据库也可以选择装上
-** web 流程
-   浏览器 ====== 服务器 [ ==== PHP 解析器 ==== 数据库 ]
-    
-   #+begin_quote
-   就这么一个沟通顺序( 服务器内部可能发生与 PHP 或数据库的交流)， 直线型的。
-   #+end_quote
-** 语法
-   - 特点是定义或引用变量时，要加个 *$* 号，但不要定义类型。
-   - 支持面向对象了
-   - 其他略过。。。
+
+** 表单变量
+   表单变量的传递方式不同
+*** $_GET 
+*** $_POST
+*** $_COOKIE
+    setcookie("user", "runoob", $expire);
+*** $_SESSION
+    session_start(); 需要在 html 之前设置
+** Mysql    
+   #+begin_src php
+   <?php
+$servername = "localhost";
+$username = "username";
+$password = "password";
+ 
+// 创建连接
+$conn = new mysqli($servername, $username, $password);
+ 
+// 检测连接
+if ($conn->connect_error) {
+    die("连接失败: " . $conn->connect_error);
+} 
+echo "连接成功";
+?>
+   #+end_src
 ** 错误处理
 *** 打开错误提示
     #+begin_src php
@@ -54,5 +69,17 @@
      # 例子
      apachectl -t -D DUMP_MODULES
    #+end_src
-** Composer 
+** composer 
    php 的包管理器
+   
+   常用命令
+    1. composer list：获取帮助信息；
+    2. composer init：以交互方式填写 composer.json 文件信息；
+    3. composer install：从当前目录读取 composer.json 文件，处理依赖关系，并安装到 vendor 目录下；
+    4. composer update：获取依赖的最新版本，升级 composer.lock 文件；
+    5. composer require：添加新的依赖包到 composer.json 文件中并执行更新；
+    6. composer search：在当前项目中搜索依赖包；
+    7. composer show：列举所有可用的资源包；
+    8. composer validate：检测 composer.json 文件是否有效；
+    9. composer self-update：将 composer 工具更新到最新版本；
+    10. composer create-project：基于 composer 创建一个新的项目；

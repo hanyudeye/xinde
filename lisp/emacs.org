@@ -5,7 +5,7 @@
 #+DATE: 2019-06-04T22:41:32+08:00
 #+lastmod: 2020-02-05T18:24:57+08:00
 
-文本编辑器，扩展多。
+文本编辑器，因为其功能是通过 lisp 脚本渲染的，所以功能全部可配置。
 # more
 
 ** 抽象概念 
@@ -158,12 +158,21 @@
    | 变量信息   | describe-variable  |
 
 ** 选项
-   - q      不 装载 初始化 文件
+   - q   不装载初始化文件
    - l file 装载 文件 file 里面 的 lisp 代码
    - f function 执行 lisp 函数 function
 
-     从头测试，你可以用下面的方法测试你的配置
-     #+begin_src shell
-     emacs -l file  -q
-     #+end_src
-
+** 自定义配置
+*** 创建配置文件 .emacs-light
+    #+begin_src lisp
+    (load "~/.emacs.d/main" nil t)
+    (load "~/.emacs.d/functions" nil t)
+    (load "~/.emacs.d/modes" nil t)
+    (load "~/.emacs.d/theme" nil t)
+    #+end_src
+    
+    emacs 会加载 main.elc 或 main.el 文件
+*** 加载配置文件
+    #+begin_src lisp
+    emacs -q -l ~/.emacs-light
+    #+end_src

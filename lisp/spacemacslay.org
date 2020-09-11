@@ -6,35 +6,42 @@
 
 * layer
 ** auto-completion
-   #+begin_quote
-   所有层都用 
-   #+end_quote
    
-   特点 
-   - 用 company 或 auto-complete 来对各种语言层的代码补全建议
-   - 为 company 提供基于频率的建议
-   - auto-yasnippet 集成片段建议
-   - 文档提示
-   - 缩写展开
-   - auto-completion-return-key-behavior <RET> 键配置是否完成
-     #+begin_verse
+1. 要添加 auto-completion
+2. 还必须至少安装一个支持的语言层才能起作用
+
+
+默认配置
+#+begin_src lisp
+  (setq-default dotspacemacs-configuration-layers '(
+                                                    (auto-completion :variables
+                                                                     auto-completion-return-key-behavior 'complete
+                                                                     auto-completion-tab-key-behavior 'cycle
+                                                                     auto-completion-complete-with-key-sequence nil
+                                                                     auto-completion-complete-with-key-sequence-delay 0.1
+                                                                     auto-completion-minimum-prefix-length 2
+                                                                     auto-completion-idle-delay 0.2
+                                                                     auto-completion-private-snippets-directory nil
+                                                                     auto-completion-enable-snippets-in-popup nil
+                                                                     auto-completion-enable-help-tooltip nil
+                                                                     auto-completion-use-company-box nil
+                                                                     auto-completion-enable-sort-by-usage nil)))
+
+#+end_src
+
+#+begin_verse
     语法片段 *默认* 不在 *完成项* 里面。
     启用 auto-completion-enable-snippets-in-popup t
-     #+end_verse
 
-     #+begin_verse
     Tooltips 更多提示 
     auto-completion-enable-help-tooltip t
 
     手动出来（需要手动按 *M-h* )
     auto-completion-enable-help-tooltip 'manual
-     #+end_verse
-     #+begin_verse
+    
     按使用频次排序 
     auto-completion-enable-sort-by-usage t
-     #+end_verse
 
-     #+begin_verse
     *jk* 很适用完成确认如果没有的话
     auto-completion-complete-with-key-sequence "jk"
      #+end_verse
@@ -199,30 +206,20 @@
 
      写提交消息的 buff 中，按 ~M-n~ ,~M-p~  可以上下遍历历史提交信息
 
-    
-   git time machine(时间机器能够显示文件每次提交的内容 ),打开按键 ~SPC g t~
-   | ~SPC g t~ | start git timemachine and initiate transient-state |
-   | ~c~       | show current commit                                |
-   | ~n~       | show next commit                                   |
-   | ~N~       | show previous commit                               |
-   | ~p~       | show previous commit                               |
-   | ~q~       | leave transient-state and git timemachine          |
-   | ~Y~       | copy current commit hash                           |
+    时间机器 ~SPC g t~ (能够显示文件每次提交的内容 )
+     | ~c~       | show current commit                                |
+     | ~n~       | show next commit                                   |
+     | ~Y~       | copy current commit hash                           |
 
-   远程日志
-   | ~SPC g l c~ | on a commit hash, browse to the current file at this commit                                   |
-   | ~SPC g l C~ | on a commit hash, create link to the file at this commit and copy it                          |
-   | ~SPC g l l~ | on a region, browse to file at current lines position                                         |
-   | ~SPC g l L~ | on a region, create a link to the file highlighting the selected lines                        |
-   | ~SPC g l p~ | on a region, browse to file at current lines position (using permalink link)                  |
-   | ~SPC g l P~ | on a region, create a link to the file highlighting the selected lines (using permalink link) |
+     远程日志
+     | ~SPC g l c~ | on a commit hash, browse to the current file at this commit                                   |
+     | ~SPC g l C~ | on a commit hash, create link to the file at this commit and copy it                          |
+     | ~SPC g l l~ | on a region, browse to file at current lines position                                         |
+     | ~SPC g l L~ | on a region, create a link to the file highlighting the selected lines                        |
+     | ~SPC g l p~ | on a region, browse to file at current lines position (using permalink link)                  |
+     | ~SPC g l P~ | on a region, create a link to the file highlighting the selected lines (using permalink link) |
 
 ** github
-   - [[https://github.com/magit/forge][forge]]: integration with various forges, such as GitHub and GitLab.
-   - [[https://github.com/defunkt/gist.el][gist.el]]: full-featured mode to browse and post GitHub gists.
-   - [[https://github.com/sshaw/git-link][git-link]]: quickly generate URLs for commits or files.
-   - [[https://github.com/dgtized/github-clone.el][github-clone]] allows for easy cloning and forking of repositories.
-
 ** cmake
    此层主要 使用 *cmake-ide* 的集成功能 ，支持 cmake  项目和 非 cmake 项目，在 CMake 脚本文件是项目的依赖配置。 
   
@@ -465,9 +462,9 @@
    特性  
    - 多个后端支持：Tern 和 LSP
    - 智能代码折叠
-   - 重构：使用[[https://github.com/magnars/js2-refactor.el][js2-refactor]]完成。
+   - 重构：使用 js2-refactor 完成。
    - 自动完成和文档
-   - 通过[[https://github.com/skeeto/skewer-mode][skewer-mode]]和[[https://github.com/pandeiro/livid-mode][livid-mode]]提供 REPL
+   - 通过 skewer 和 livid-mode 提供 REPL
    - 使用 web-beautify 格式化
 
    启用 导入帮助程序(~ImportJS~) 
@@ -897,6 +894,62 @@
                      (push file org-agenda-files)))
                 (org-projectile-todo-files)))
     #+END_SRC
+*** capture 模板
+    #+begin_src lisp
+      ("f"         ; hotkey
+       "测试" ; name
+       entry       ; type
+       (file+headline (lambda () (concat org-directory "/work.org")) "Tasks") ;target
+       "* TODO [#A] %^{Task}\n%a%i%t%U\n" ; template
+       )
+
+    #+end_src
+
+    类型 - type
+
+    #+begin_verse
+entry 指定标题节点
+item 一个简单列表中的项目。同样，这个类型的模板最终需要存储在 org 文件中。
+checkitem 一个带有 checkbox 的项目。与 item 类型的模板相比，多了一个 checkbox。
+table-line 在指定位置表格添加一行新的记录。
+plain 一段文字。如何输入的，就如何记录下来。
+    #+end_verse
+
+    目标 - target
+
+    用于定义收集得到的文字片段在文件的存储方式。一般来说，目标文件为一个 org 文件。
+    收集得到的相关内容也会记录到相应的标题之下。
+
+
+    最常用的 target 是：
+
+    指定文件名和文件中唯一的标题
+    (file+headline "path/to/file" "node headline")
+
+    指定文件名和完整的标题路径（如果需要存放片段的标题不唯一）
+    (file+olp "path/to/file" "Level 1 heading" "Level 2" ...)
+
+    指定日期方式的标题路径，在今天的日期下添加片段
+    (file+datetree "path/to/file")
+
+    %a          annotation, normally the link created with org-store-link (文件存储路径)
+    %i          initial content, the region when capture is called with C-u. (选择的内容)
+    %t          timestamp, date only (当前日期)
+    %T          timestamp with date and time (当前时间)
+    %u, %U      like the above, but inactive timestamps (当前日期时间)
+    %[FILE] Insert the contents of the file given by FILE.
+    %(EXP) 
+    %<FORMAT>  The result of format-time-string on the FORMAT specification.
+    %c Current kill ring head.
+    %x Content of the X clipboard.
+    %k Title of the currently clocked task.
+    %? After completing the template, position point here
+    %^g Prompt for tags, with completion on tags in target file.
+    %^G Prompt for tags, with completion all tags in all agenda files.
+    %^t Like ‘%t’, but prompt for date. Similarly ‘%^T’, ‘%^u’, ‘%^U’. You may define a prompt like ‘%^{Birthday}t’.
+    %^C Interactive selection of which kill or clip to use.
+    %^L Like ‘%^C’, but insert as link.
+    %^{PROP}p Prompt the user for a value for property PROP.
 *** Org-brain support
 *** Mode line 
     临时显示  org clock , 请按 ~SPC t m c~   
@@ -918,26 +971,6 @@
                            org-enable-epub-support t)))
     #+END_SRC
 *** 快捷键
-**** start org
-     | ~SPC a o #~   | 显示 agenda 中没有开启 TODO 的列表                                 |
-     | ~SPC a o /~   | 在 agenda files 中搜索                                             |
-     | ~SPC a o a~   | agenda list                                                        |
-     | ~SPC a o c~   | 打开 capture ,供你写文字(可以配置模板)                             |
-     | ~SPC a o e~   | org store agenda views                                             |
-     | ~SPC a o f i~ | org feed 转到 inbox                                                |
-     | ~SPC a o f u~ | org feed 更新全部                                                  |
-     | ~SPC a o C c~ | 取消时钟                                                           |
-     | ~SPC a o C g~ | 最后的 clocked-in clock (go to specific recent clock with ~SPC u~) |
-     | ~SPC a o C i~ | clock in                                                           |
-     | ~SPC a o C I~ | clock in last                                                      |
-     | ~SPC a o C j~ | 到 current clock                                                   |
-     | ~SPC a o C o~ | clock out                                                          |
-     | ~SPC a o C r~ | resolve clocks                                                     |
-     | ~SPC a o l~   | 保存 link                                                          |
-     | ~SPC a o m~   | 列出 tags                                                          |
-     | ~SPC a o o~   | agenda 命令列表                                                    |
-     | ~SPC a o s~   | 也是搜索，就是上面的显示文件名                                     |
-     | ~SPC a o t~   | 显示 todo list                                                     |
 **** 开关
      | ~SPC m T c~ | org-toggle-checkbox                           |
      | ~SPC m T e~ | org-toggle-pretty-entities                    |
@@ -947,42 +980,29 @@
      | ~SPC m T T~ | org-todo                                      |
      | ~SPC m T V~ | toggle =space-doc-mode= a read-only view mode |
      | ~SPC m T x~ | org-preview-latex-fragment                    |
-**** org-mode
-     | ~SPC m *~     | org-ctrl-c-star                               |
-     | ~SPC m RET~   | org-ctrl-c-ret                                |
-     | ~SPC m -~     | org-ctrl-c-minus                              |
-     | ~SPC m '​~     | org-edit-special                              |
-     | ~SPC m a~     | org-agenda                                    |
-     | ~SPC m A~     | org-attach                                    |
-     | ~SPC m c~     | org-capture                                   |
-     | ~SPC m C c~   | org-clock-cancel                              |
-     | ~SPC m C d~   | Temporarily show clock times for current file |
-     | ~SPC m C e~   | org-evaluate-time-range                       |
-     | ~SPC m C g~   | org-clock-goto                                |
-     | ~SPC m C i~   | org-clock-in                                  |
-     | ~SPC m C I~   | org-clock-in-last                             |
-     | ~SPC m C j~   | Jump to the current clock                     |
-     | ~SPC m C o~   | org-clock-out                                 |
-     | ~SPC m C R~   | Insert clock report                           |
-     | ~SPC m C r~   | org-resolve-clocks                            |
-     | ~SPC m d d~   | org-deadline                                  |
-     | ~SPC m d s~   | org-schedule                                  |
-     | ~SPC m d t~   | org-time-stamp                                |
-     | ~SPC m d T~   | org-time-stamp-inactive                       |
-     | ~SPC m e e~   | org-export-dispatch                           |
-     | ~SPC m e m~   | send current buffer as HTML email message     |
-     | ~SPC m f i~   | org-feed-goto-inbox                           |
-     | ~SPC m f u~   | org-feed-update-all                           |
-     | ~SPC m l~     | org-open-at-point                             |
-     | ~SPC m L~     | org-shiftright                                |
-     | ~SPC m H~     | org-shiftleft                                 |
-     | ~SPC m K~     | org-shiftup                                   |
-     | ~SPC m J~     | org-shiftdown                                 |
-     | ~SPC m C-S-l~ | org-shiftcontrolright                         |
-     | ~SPC m C-S-h~ | org-shiftcontrolleft                          |
-     | ~SPC m C-S-j~ | org-shiftcontroldown                          |
-     | ~SPC m C-S-k~ | org-shiftcontrolup                            |
-     | ~SPC s j~     | spacemacs/jump-in-buffer (jump to a heading)  |
+**** agenda list (清单列表)
+     SPC m a	org-agenda  执行清单命令
+     SPC m C c	org-agenda-clock-cancel 取消
+     SPC m C i	org-agenda-clock-in  开始计时
+     SPC m C o	org-agenda-clock-out
+     SPC m C p	org-pomodoro 
+     SPC m d d	org-agenda-deadline 清单结束时间
+     SPC m d s	org-agenda-schedule 清单开始时间
+     SPC m i e	org-agenda-set-effort
+     SPC m i p	org-agenda-set-property 设置清单的属性
+     SPC m i P	org-agenda-priority 设置优先级
+     SPC m i t	org-agenda-set-tags
+     SPC m s r	org-agenda-refile
+     M-j	next item 下一项  (前后清单详情)
+     M-k	previous item 前项
+     M-h	earlier view 早期视图
+     M-l	later view 后视图
+     gr	refresh 刷新
+     gd	toggle grid 切换网格
+     C-v	change view 变换视图
+     RET	org-agenda-goto
+     L    隐藏完已经成的东西  
+
 **** evil-org-mode
      | ~gj~ / ~gk~   | 元素间导航        |
      | ~gh~ / ~gl~   | 父 /子 间导航     |
@@ -1060,8 +1080,8 @@
      | ~SPC m x s~ | 删除线   |
      | ~SPC m x u~ | 下划线   |
      | ~SPC m x v~ | 等宽     |
-     |             |          |
-**** 在日历中导航
+
+**** 日历导航
      | ~M-l~ | 明天 |
      | ~M-h~ | 昨天 |
      | ~M-j~ | 下周 |
@@ -1070,13 +1090,18 @@
      | ~M-H~ | 上月 |
      | ~M-J~ | 下年 |
      | ~M-K~ | 上年 |
-     |       |      |
+**** 插入日期，时间
+     ‘2/5/3’	⇒ 2003-02-05 插入日期
+     ‘11am-1:15pm’	⇒ 11:00-13:15 插入时间
+
 **** Presentation [简报,放大镜]
      激活  ~SPC SPC org-present~
-**** Org-projectile
-     | ~SPC a o p~       | Capture a TODO for the current project                  |
-     | ~SPC u SPC a o p~ | Capture a TODO for any given project (choose from list) |
-     | ~SPC p o~         | Go to the TODOs for the current project                 |
+**** org-export
+     对于报错      
+     ` user-error: Unable to resolve link: "thank-you" `
+     使用 
+     #+OPTIONS: broken-links:t
+
 ** php 
    需要初始化工程 
    cd /root/of/project
@@ -1258,37 +1283,48 @@ virtualenvwrapper，相较于使用 virtualenv， 好处就是把所有环境都
 
    跳转
    跳回,  ~C-o~ 
-** ranger
-   | ~SPC a r~       | launch ranger                                        |
-   | ~SPC a d~       | deer (minimal ranger window in current directory)    |
-   | ~C-p~           | (ranger) toggle ranger in dired buffer               |
-   | ~j~             | (ranger) navigate down                               |
-   | ~k~             | (ranger) navigate up                                 |
-   | ~yy~            | (ranger) copy                                        |
-   | ~pp~            | (ranger) paste                                       |
-   | ~R~             | (ranger) rename                                      |
-   | ~D~             | (ranger) delete                                      |
-   | ~C-j~           | (ranger) scroll preview window down                  |
-   | ~C-k~           | (ranger) scroll preview window up                    |
-   | ~f~             | (ranger) search for file names                       |
-   | ~i~             | (ranger) show preview of current file                |
-   | ~zi~            | (ranger) toggle showing literal / full-text previews |
-   | ~zh~            | (ranger) toggle showing dotfiles                     |
-   | ~o~             | (ranger) sort options                                |
-   | ~H~             | (ranger) search through history                      |
-   | ~h~             | (ranger) go up directory                             |
-   | ~l~             | (ranger) find file / enter directory                 |
-   | ~RET~           | (ranger) find file / enter directory                 |
-   | ~q~             | (ranger) quit                                        |
-   | ~;g~            | (ranger) revert buffer                               |
-   | ~z-~            | (ranger) reduce number of parents                    |
-   | ~z+~            | (ranger) increment number of parents                 |
-   | ~C-SPC~ / ~TAB~ | (ranger) mark current file                           |
-   | ~v~             | (ranger) toggle all marks                            |
-   | ~t~             | (ranger) toggle mark current file                    |
-   | ~S~             | (ranger) enter shell                                 |
-   | ~;C~            | (ranger) copy directory / copy and move directory    |
-   | ~;+~            | (ranger) create directory                            |
+** ranger (漫游者)
+ - 启用预览 ranger-show-preview t
+ - 切换开关 (setq ranger-enter-with-minus t)        ~-~ 
+ - 预览隐藏文件开关 (setq ranger-show-hidden t)    zh
+ - 设置目录层数 (setq ranger-parent-depth 2)  根据 z-和 z + 进行调整
+ - 将父窗口的大小设置为帧大小的一部分 (setq ranger-width-parents 0.12)
+ - 当目录层数太多，可以设置父目录最大宽度，避免显示太小 (setq ranger-max-parent-width 0.12)
+ - 预览文本显示的开关 (setq ranger-show-literal t)  zi
+ - 预览窗口的大小 (setq ranger-width-preview 0.55)
+ - 不预览文件类型 (setq ranger-ignored-extensions '("mkv" "iso" "mp4"))
+ - 不预览文件大小 (setq ranger-max-preview-size 10)  单位为兆( MB )
+   | ~SPC a t r r~   | 启动 ranger                                                |
+   | ~SPC a t r d~   | 启动 deer                                                  |
+   | ~C-p~           | 在 ranger 与 deer 之间切换                                 |
+   | ~yy~            | copy                                            (文件操作) |
+   | ~pp~            | paste                                                      |
+   | ~R~             | rename                                                     |
+   | ~D~             | delete                                                     |
+   | ~;C~            | copy directory / copy and move directory (目录操作)        |
+   | ~;+~            | create directory                                           |
+   | ~f~             | 切换目录                                                   |
+   | ~l~             | 进入目录                                                   |
+   | ~h~             | go up directory                                            |
+   | ~H~             | 在上一个导航历史中切换                                     |
+   | ~i~             | 预览开关                       (预览操作)                  |
+   | ~zi~            | 预览文本形式开关                                           |
+   | ~C-j~           | scroll preview window down                                 |
+   | ~C-k~           | scroll preview window up                                   |
+   | ~zh~            | dotfiles 开关                                              |
+   | ~o~             | 排序                                                       |
+   | ~q~             | quit                          (ranger 操作)                |
+   | ~;g~            | revert buffer                                              |
+   | ~z-~            | reduce number of parents                                   |
+   | ~z+~            | increment number of parents                                |
+   | ~C-SPC~ / ~TAB~ | 文件标记    (mark 操作)                                    |
+   | ~v~             | 标记所有                                                   |
+   | ~t~             | 标记切换                                                   |
+   | ~S~             | enter shell                                                |
+   | ~C-n~           | 创建 Tab  (Tab 操作)                                       |
+   | ~C-w~           | 关闭 Tab                                                   |
+   | ~g t~     / ~C-Tab~ | 下一个 Tab  (不好使)                                            |
+   | ~C-S-Tab~        |      上一个 Tab                                               |
 ** react
    ES6 和 JSX 就绪配置层
    它会自动识别 .jsx 文件 和 带有 =react= imported 的文件

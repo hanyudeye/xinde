@@ -12,19 +12,12 @@
 #+end_quote
 # more
 
-** 安装和运行
-   安装就是把 laravel 下载下来
-
-   运行
-   #+begin_src shell
-     php artisan serve
-   #+end_src
-
 ** 基础功能
 *** 配置 
     - 配置文件都在 */config* 目录里面
     - 目录权限 */storage* 和 */bootstrap/cache* 目录都要可写
     - APP_KEY 设置随机秘钥 php artisan key: generate
+    - 运行 php artisan serve 或者 apache (推荐)
 
     - app.php 配置   
       - app.php aliases 段可定义别名
@@ -34,7 +27,8 @@
 *** 手工路由
     别的框架都不用你管路由，这个 *laravel* 却要你手动配置路由。
     
-    - /routes/web.php 路由配置文件
+    /routes/web.php 路由配置文件
+
 **** 基本结构
      #+begin_src php
        Route::get($url, $callback);
@@ -376,3 +370,216 @@ app/Http/Middleware/VerifyCsrfToken.php  白名单
     ];
   #+end_src
 
+** 教程
+*** 新建路由和控制器
+ laravel 的路由配置文件是：LaravelStudy/routes/web.php
+
+ 我们重新定义路由：
+
+ #+begin_src php
+ Route::get('/', 'SiteController@index');
+ Route::get('login', 'SiteController@login');
+ Route::get('register', 'SiteController@register');
+ #+end_src
+ 路由指向的控制器是 SiteController，需要生成控制器
+
+ 终端执行：
+
+ ☁  laravelStudy [master] ⚡ php artisan make:controller SiteController
+ Controller created successfully.
+ laravel 自动为我们生成了控制器：LaravelStudy/app/Http/Controllers/SiteController.php
+
+*** 渲染页面
+ 在 LaravelStudy/app/Http/Controllers/SiteController.php 添加以下代码：
+
+     #+begin_src php
+     public function index()
+     {
+         return view('site/index');
+     }
+
+     public function login()
+     {
+         return view('site/login');
+     }
+
+     public function register()
+     {
+         return view('site/register');
+     }
+     #+end_src
+ 
+*** 创建相应的视图文件
+
+ LaravelStudy/resources/views/site/index.blade.php
+
+ #+begin_src html
+ <!doctype html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <title>Document</title>
+ </head>
+ <body>
+     我是主页
+ </body>
+ </html>
+ #+end_src
+ LaravelStudy/resources/views/site/login.blade.php
+
+ #+begin_src html
+ <!doctype html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <title>Document</title>
+ </head>
+ <body>
+     登录页
+ </body>
+ </html>
+ #+end_src
+ LaravelStudy/resources/views/site/register.blade.php
+
+
+ #+begin_src html
+ <!doctype html>
+ <html lang="en">
+ <head>
+     <meta charset="UTF-8">
+     <title>Document</title>
+ </head>
+ <body>
+     注册页
+ </body>
+ </html>
+ #+end_src
+
+这三个视图的代码有大量的重复，我们可以定义一个公共的模板文件，再让视图文件共享模板
+
+*** 定义公共模板文件
+新建文件：LaravelStudy/resources/views/layouts/default.blade.php
+
+#+begin_src html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@yield('title', 'Laravel 实战')--跟章鱼喵学 laravel</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        @yield('content')
+    </div>
+</body>
+</html>
+#+end_src
+使用 bootstrap4 作为前端框架
+
+修改原来的视图文件：
+
+#+begin_src php
+  LaravelStudy/resources/views/site/index.blade.php
+  @extends('layouts.default')
+  @section('content')
+  @stop
+#+end_src
+  LaravelStudy/resources/views/site/login.blade.php
+
+  #+begin_src php
+    @extends('layouts.default')
+        @section('title', '登录')
+        @section('content')
+        <h3>登录页<h3>
+    @stop
+
+  #+end_src
+  LaravelStudy/resources/views/site/index.blade.php
+  
+  #+begin_src php
+    @extends('layouts.default')
+        @section('content')
+        @stop
+  #+end_src
+  LaravelStudy/resources/views/site/login.blade.php
+
+  #+begin_src php
+    @extends('layouts.default')
+        @section('title', '登录')
+        @section('content')
+
+  #+end_src
+  LaravelStudy/resources/views/site/register.blade.php
+
+  #+begin_src php
+    @extends('layouts.default')
+    @section('title', '注册')
+    @section('content')
+        <h3>注册页<h3>
+    @stop
+#+end_src
+
+*** 公共头部和底部
+网站需要有公共的头部和底部，同样，作为公共的模板文件，依然是放在 layouts 目录下
+
+新建头部导航：LaravelStudy/resources/views/layouts/_header.blade.php
+
+#+begin_src html
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <h3 class="text-light text-center col-md-10">laravel 教程实战</h3>
+    <ul class="navbar-nav col-md-2">
+        <li class="nav-item">
+            <!--使用命名路由-->
+            <a class="nav-link text-info" href="{{ route('login') }}">登录</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-light" href="{{ route('register') }}">注册</a>
+        </li>
+    </ul>
+</nav>
+#+end_src
+头部导航中的 a 标签链接使用了命名路由，可以理解为给路由起了个别名，这个便于扩展，
+比如，现在登录业务对应的是 SiteController@login，以后可能随着业务的改变，要改为
+UserControoler@login，如果是以硬编码的形式写路由，要修改就很麻烦。
+
+使用命名路由只需要改路由配置文件即可。
+
+LaravelStudy/routes/web.php
+
+#+begin_src php
+Route::get('login', 'SiteController@login')->name('login'); // 命名路由
+Route::get('register', 'SiteController@register')->name('register');
+#+end_src
+
+新建底部导航：LaravelStudy/resources/views/layouts/_footer.blade.php
+
+#+begin_src html
+<nav class="navbar navbar-expand-sm bg-light navbar-light fixed-bottom">
+    <a class="navbar-brand" href="https://www.jianshu.com/u/f9338eda7dda" target="_blank">
+        <img src="https://upload.jianshu.io/users/upload_avatars/1864602/07f1bc01-66e5-4ff4-b683-79681856dad3.jpg?imageMogr2/auto-orient/strip|imageView2/1/w/40/h/40" alt="">
+    </a>
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            来简书跟着章鱼喵一起学 laravel...
+        </li>
+    </ul>
+</nav>
+#+end_src
+由于头部和底部是局部视图，以下划线作为开头命名，便于区分
+
+在公共模板中引入头部和底部：
+
+LaravelStudy/resources/views/layouts/default.blade.php
+
+    #+begin_src html
+    @include('layouts._header')
+    <div class="container-fluid">
+        @yield('content')
+        @include('layouts._footer')
+    </div>
+    #+end_src
