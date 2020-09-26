@@ -4,25 +4,24 @@
 #+CATEGORIES: 软件使用
 
 * python 
-** 系统工具接口,操作系统 os 
-   
-                  - 显示模块搜索路径  sys.path
-                  - 显示加载的模块 print(sys.modules)
-                  - 路径合理化 os.path.normpath
-                  - 绝对路径 abspath
-                  - 运行程序 os.system('python helloshell.py')
-                  - 把进程赋予变量 output = os.popen('python helloshell.py').read()
-                  - 环境变量 Shell variables          os.environ                                                                 
-                  - 运行程序 Running programs         os.system, os.popen, os.execv, os.spawnv                                  
-                  - 进程处理 Spawning processes       os.fork, os.pipe, os.waitpid, os.kill                                    
-                  - 文件描述 Descriptor files, locks  os.open, os.read, os.write                                              
-                  - 文件处理 File processing          os.remove, os.rename, os.mkfifo, os.mkdir, os.rmdir                    
-                  - 管理员工具 Administrative tools   os.getcwd, os.chdir, os.chmod, os.getpid, os.listdir, os.access       
-                  - 移植工具 Portability tools        os.sep(文件路径分割符), os.pathsep(路径分隔符，看看 PATH 环境变量怎么设置的), os.curdir, os.path.split, os.path.join  
-                  - 路径名称工具 Pathname tools       os.path.exists('path'), os.path.isdir('path'), os.path.getsize('path')     
-
+** 系统接口
+   - 显示模块搜索路径  sys.path
+   - 显示加载的模块 print(sys.modules)
+   - 路径合理化 os.path.normpath
+   - 绝对路径 abspath
+   - 运行程序 os.system('python helloshell.py')
+   - 把进程赋予变量 output = os.popen('python helloshell.py').read()
+   - 环境变量 os.environ                                                                 
+   - 运行程序 os.system, os.popen, os.execv, os.spawnv                                  
+   - 进程处理  os.fork, os.pipe, os.waitpid, os.kill                                    
+   - 文件描述  os.open, os.read, os.write                                              
+   - 文件处理 os.remove, os.rename, os.mkfifo, os.mkdir, os.rmdir                    
+   - 管理员工具 os.getcwd, os.chdir, os.chmod, os.getpid, os.listdir, os.access       
+   - 移植工具 os.sep, os.pathsep, os.curdir, os.path.split, os.path.join  
+   - 路径名称工具 os.path.exists('path'), os.path.isdir('path'), os.path.getsize('path')     
 ** 进程  
-*** 创建进程的类：`Process([group [, target [, name [, args [, kwargs]]]]])`
+*** 创建进程
+    Process([group [, target [, name [, args [, kwargs]]]]])
     target 表示调用对象
     args 表示调用对象的位置参数元组
     kwargs 表示调用对象的字典
@@ -570,55 +569,54 @@
    使用 pyenv 来管理多版本的 python 命令，使用 pyenv-virtualenv 插件来管理多版本
    python 包环境。爽歪歪~
    
-   
 * xpath
   *	Selects all child elements. For example, */egg selects all grandchildren named egg.
 
-.	Selects the current node. This is mostly useful at the beginning of the path, to indicate that it’s a relative path.
+  .	Selects the current node. This is mostly useful at the beginning of the path, to indicate that it’s a relative path.
 
-// Selects all subelements, on all levels beneath the current element. For
-example, .//egg selects all egg elements in the entire tree.
+  // Selects all subelements, on all levels beneath the current element. For
+  example, .//egg selects all egg elements in the entire tree.
 
-..	Selects the parent element. Returns None if the path attempts to reach the ancestors of the start element (the element find was called on).
+  ..	Selects the parent element. Returns None if the path attempts to reach the ancestors of the start element (the element find was called on).
 
-[@attrib]	Selects all elements that have the given attribute.
+  [@attrib]	Selects all elements that have the given attribute.
 
-[@attrib='value']	Selects all elements for which the given attribute has the given value. The value cannot contain quotes.
+  [@attrib='value']	Selects all elements for which the given attribute has the given value. The value cannot contain quotes.
 
-[tag]	Selects all elements that have a child named tag. Only immediate children are supported.
+  [tag]	Selects all elements that have a child named tag. Only immediate children are supported.
 
-[.='text']	
+  [.='text']	
 
-Selects all elements whose complete text content, including descendants, equals the given text.
+  Selects all elements whose complete text content, including descendants, equals the given text.
 
-New in version 3.7.
+  New in version 3.7.
 
-[tag='text']	Selects all elements that have a child named tag whose complete text content, including descendants, equals the given text.
+  [tag='text']	Selects all elements that have a child named tag whose complete text content, including descendants, equals the given text.
 
-[position]	Selects all elements that are located at the given position. The position can be either an integer (1 is the first position), the expression last() (for the last position), or a position relative to the last position (e.g. last()-1).
+  [position]	Selects all elements that are located at the given position. The position can be either an integer (1 is the first position), the expression last() (for the last position), or a position relative to the last position (e.g. last()-1).
 
-Predicates (expressions within square brackets) must be preceded by a tag name, an asterisk, or another predicate. position predicates must be preceded by a tag name.
+  Predicates (expressions within square brackets) must be preceded by a tag name, an asterisk, or another predicate. position predicates must be preceded by a tag name.
 
 
 
-Sample of libxml2 XPath Use
+  Sample of libxml2 XPath Use
 
-import libxml2
+  import libxml2
 
-doc = libxml2.parseFile("tst.xml")
-ctxt = doc.xpathNewContext()
-res = ctxt.xpathEval("//*")
-if len(res) != 2:
-    print "xpath query: wrong node set size"
-    sys.exit(1)
-if res[0].name != "doc" or res[1].name != "foo":
-    print "xpath query: wrong node set value"
-    sys.exit(1)
-doc.freeDoc()
-ctxt.xpathFreeContext()
-Sample of ElementTree XPath Use
+  doc = libxml2.parseFile("tst.xml")
+  ctxt = doc.xpathNewContext()
+  res = ctxt.xpathEval("//*")
+  if len(res) != 2:
+  print "xpath query: wrong node set size"
+  sys.exit(1)
+  if res[0].name != "doc" or res[1].name != "foo":
+  print "xpath query: wrong node set value"
+  sys.exit(1)
+  doc.freeDoc()
+  ctxt.xpathFreeContext()
+  Sample of ElementTree XPath Use
 
-from elementtree.ElementTree import ElementTree
-mydoc = ElementTree(file='tst.xml')
-for e in mydoc.findall('/foo/bar'):
-    print e.get('title').text
+  from elementtree.ElementTree import ElementTree
+  mydoc = ElementTree(file='tst.xml')
+  for e in mydoc.findall('/foo/bar'):
+  print e.get('title').text

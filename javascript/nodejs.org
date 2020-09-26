@@ -8,7 +8,9 @@
 Node.js 既是一个 JavaScript 运行时环境，又是一个库
 
 #+begin_quote
-*Node.js* 使用了谷歌的 *V8* JavaScript 解析器，而且没有浏览器对安全的限制，所以扩展了很多的库 (文件操作，网络操作，进程操作等)
+Nodejs 是基于 Chrome 的 V8 引擎开发的一个 C++ 程序，目的是提供一个 JS 的运行环境。
+最早 Node.js 主要是安装在服务器上，辅助大家用 JS 开发高性能服务器代码，但是后来
+Node.js 在前端也大放异彩，带来了 Web 前端开发的革命。
 #+end_quote
 
 # more
@@ -17,8 +19,6 @@ Node.js 的特点是异步操作，因为其他许多 *web* 解析器耗时于 *
 #+end_quote
 * 简介
 ** 模块
-   本来 *javascript* 刚开发的时候是做为脚本使用的，代码量少，所以没有提供模块。
-   现在脚本复杂了，就引入了模块的概念
 *** 原生语法 (import/export)
     定义模块并导出模块的功能
     #+begin_src js
@@ -132,24 +132,17 @@ Node.js 的特点是异步操作，因为其他许多 *web* 解析器耗时于 *
     Node.js Domain(域) 简化异步代码的异常处理，可以捕捉处理 try catch 无法捕捉的异常。
 *** Web 模块
 * npm 包管理
-  npm 是 一家 管理 *Javascript* 项目为主的公司，同名的 npm 软件可以用来管理 *js 项目* 。
- 
-  #+begin_quote
-  目录中包含以 * package.json*  作为文件名的项目一般视为 npm 项目，npm 中称呼为包。
-  包中对其他项目的引用放在 *node_modules* 中，叫做依赖
-  #+begin_export type
-  #+end_export 
-  这里包和项目是一个意思，有些地方说包，有些地方说模块，我喜欢用项目
-  #+end_quote
- 
-  npm 功能
+  npm 包是目录中含有 *package.json*   文件的目录，目录名也是 npm 包的名称.
+  如果你的包有对其它包的引用，那么其它包放在子目录 *node_modules* 中
+
+说明：下面的说法中，包和项目是同一个意思
+** 使用
   - npm -v 显示版本号
-  - npm init 新建项目
+  - npm init 项目初始化
   - npm install 安装所有项目依赖
   - npm help 查看帮助信息
   - npm search 搜索项目信息
-  - npm install 包名 (局部安装，安装在当前项目的 node_modules 目录下)
-  - -g 全局安装
+  - -g 全局
   - -D 安装并将依赖信息写在 package.json 中的 devDependencies 中
   - npm uninstall 卸载包
   - npm list 列出已安装依赖
@@ -159,15 +152,13 @@ Node.js 的特点是异步操作，因为其他许多 *web* 解析器耗时于 *
   - npm view 查看模块的注册信息
     - xxx versions 列出 xxx 的所有版本
     - xxx dependencies 列出 xxx 的所有依赖， 如：npm view gulp dependencies
-
+** 配置国内仓库 
       #+begin_src shell
-        npm install npm@latest -g
         npm config set registry https://registry.npm.taobao.org
       #+end_src
 
-      #+begin_quote
-      如果因为网络问题无法安装，可以使用 *cnpm* 安装
-      #+end_quote
+      注意：如果本地网络使用了代理，一定要配置代理一项
+
 * nvm 版本管理   
    对于多个版本，可以安装 *nvm* 版本管理工具，用来管理 node 的版本 
    - 安装最新 node  nvm install node

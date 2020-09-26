@@ -4,70 +4,40 @@
 #+DATE: <2019-06-03 16:49:36>
 #+CATEGORIES: 软件使用
 #+TAGS: org 
-* org 排版工具
-** 简介  
-   一种纯文本标记语言 ，用来 ~写笔记~ ，管理 ~TODO~ 列表 ，也是一个创作系统，能够进行 =文字编程= 和 =重复研究= 。 
-  
-   能导出不同的格式，新的导出后端可以从现有的后端派生，也可以从头开始定义。
-  
-   Org 在 Emacs 中运行。
-  
-   #+begin_verse
-  反馈： 给官方发错误报告 =org-submit-bug-report=
-  自己调试 :重载 ~org-reload~  调试 ~toggle-debug-or-error~  打开 ~org-mode~
-   #+end_verse
-  
-   #+HTML: <!-- more -->
- 
-    -----
-** 文件结构 [ 大纲结构，展开大纲，就可以看里面的细节 ]
-*** 标题 
-    大纲结构的具体实现是用 =标题= ,写法是 以 =*= 加空格开头
-           
-    #+begin_src org                                                      
-      ,* 顶级标题           
-      ,** 第二级                         
-      ,*** 第三级               
-          一些文字
-      ,*** 第三级
-          一些文字
-    #+end_src
-   
-    在 =emacs= 中， 在标题上按住@@html:<kbd>@@ <tab> @@html:</kbd>@@ ，就能展开或者闭合 =标题下面= 的内容了 
 
-    导航什么的可用 ~vim~ 类的快捷键，我装的是 ~spacemacs~
-*** 普通列表
-    列表跟标题差不多的，只是它们作为标题下面的内容存在
-    
-    : 缩进对列表会有影响
-    : 属于同一列表的项目必须在第一行上具有相同的缩进
-**** 无序列表, 以  ~-~,'+' ,或 '*' 开头
-    写法 
-    #+begin_src org
-      ,* 青菜
-       一些文字
-      ,* 萝卜
-       一些文字
-      ,* 大白菜
-       一些文字
-      #+end_src
-      
-    展现形式
-      * 青菜
+* org 
+** 简介  
+org 是一种文本，但 org 跟 HTML 一样，是一种结构化的文本，通过宿主(emacs)的渲染，可以方便的导航，阅读文本(里面还能插入图片和超链接)。
+
+org 是用大纲的形式来组织文档的。大纲相当于  *ＨTML* 中的标题，一级标题，两级标题，标题下面可以放子标题，或者插入其他内容，这样方便我们导航全文啦，不像 TXT 文本，找个东西要上下翻页。
+  
+#+begin_quote
+org 功能能满足 HTML 的大部分功能，然而在写法上却要简单的多，使用 *emacs* 环境可以很方便的编写 org 文本 。
+#+end_quote
+
+#+HTML: <!-- more -->
+ 
+** 文件结构 
+*** 标题 
+标题是 org 里面最重要的东西，因为它能组织文档。
+           
+#+begin_src org                                                      
+  ,* 顶级标题           
+  ,** 第二级                         
+  ,*** 第三级               
       一些文字
-      * 萝卜
+  ,*** 第三级
       一些文字
-      * 大白菜
-      一些文字
-    
+#+end_src
+   
+在 =emacs= 中， 在标题上按住@@html:<kbd>@@ <tab> @@html:</kbd>@@ ，就能展开或者闭合 =标题下面= 的内容了 
+*** 列表
+**** 无序列表
+以  ~-~,'+' ,或 '*' 开头
 **** 有序列表
      以 ~1.~, ~1)~ 开头,或 自定义起始序号 ~[@20]~
-     1. a
-     2. b
-     3. c
-
 *** 抽屉   
-    一块折叠内容，通常放置不需要关注的补充说明 
+    一块折叠内容，可以放置不需要关注的补充说明 
  
     #+begin_src org
       :DRAWERNAME:
@@ -75,282 +45,235 @@
       :END:
     #+end_src
 
-    时钟时间, TODO 跟踪状态，这些不重要的内容通常放置在 ~LOGBOOK~  抽屉中
-*** 块
-    org 文件中通常包含各种以 ~#+ BEGIN~  开头 ~#+ END~ 结尾的块 
-    
-    #+begin_src org
-      ,#+STARTUP: hideblocks
-      ,#+STARTUP: nohideblocks
-    #+end_src
+*** 结构块
+以 ~#+ BEGIN~  开头 ~#+ END~ 结尾的块 是结构块，可以满足不同语义，比如注释，代码显示，引用 等功能。
+#+begin_quote
+#+end_quote
+，
 *** 脚注
-    文章内容中的 ~参考信息~ 会放在文章底部[fn:1]
-    #+begin_src org
-      行内定义
-      [fn:: This is the inline definition of this footnote]
-
-      行外定义
-      [fn:NAME] 这里是脚注
-      行外引用
-      [fn:NAME]
-    #+end_src
-
-    : 我都不会写，用的快捷键，边学边用。
+一个跳转链接，一般跳转到文章底部的参考来源说明处  [fn:1] 
 *** 字体格式化
-    #+begin_src org
-      ,*粗体*
-      /斜体/
-      +删除线+
-      _下划线_
-      下标：H_2 O
-      上标：E=mc^2
-      等宽字：  =git=  或者 ～git～
-    #+end_src
+#+begin_src org
+  ,*粗体*
+  /斜体/
+  +删除线+
+  _下划线_
+  下标：H_2 O
+  上标：E=mc^2
+  等宽字：  =git=  或者 ～git～
+#+end_src
 *** 水平分隔线
-    五条减号线 ~-----~
-    -----
+五条减号线 ~-----~
+-----
 ** 表
-    以 两条 ~|~ 组成一个单元格，再多再加就可以了，多行的话复制一下。
-    水平分隔线用 ~|---~  开始，中间 ~-~ 多于两个就可以了。
-
-    #+begin_src org
-      | Name  | Phone | Age |
-      |-------+-------+-----|
-      | Peter |  1234 |  17 |
-      | Anna  |  4321 |  25 |
-    #+end_src
-
-创建表格 ，对于规格化的文本, 可以用  ~org-table-create-or-convert-from-region~  快速创建  
-如 
+*** 创建表格非常简单
+#+begin_src org
+  | Name  | Phone | Age |
+  |-------+-------+-----|
+  | Peter |  1234 |  17 |
+  | Anna  |  4321 |  25 |
+#+end_src
+*** 从规格文本生成表格
+~org-table-create-or-convert-from-region~ 
 #+begin_src org
   a ,  b, c
   a ,  b, c
 #+end_src
+*** 电子表格  
+相当于 *微软 Excel* 电子表格的功能，能够插入公式来计算表格。
+**** 字段定义 
+字段的引用方式有两种:  
+1. 字母和数字的组合，如 "B3" (第三行的第二个字段)
+2. org 的形式，@ROW$COLUMN，如‘@-1$-3’ (上一行的左面第三个字段)
 
-计算,对于含有数字的列 ，可以 用 ~org-table-sum~ 求和运算
+**** 范围定义
+表示一段范围用两个点表示，如
+- ‘$1..$3’	当前行的 1 到 3 个字段
+- ‘$<<<..$>>’	从第三列开始，一直到倒数第二列
+- ‘@2$1..@4$3’	 数组的[2,1] 到[4,3] ( 这两个字段之间有 9 个字段 ) (same as ‘A2..C4’)
 
+**** 常量定义
+#+begin_src org
+,#+CONSTANTS: c=299792458. pi=3.14 eps=2.4e-6
+#+end_src
 
-公式计算: 在 ~表头部标签~ 可以输入表达式 
+**** Calc 形式的公式语法
+#+begin_src org
+‘$1+$2’	Sum of first and second field
+‘$1+$2;%.2f’	Same, format result to two decimals
+‘exp($2)+exp($1)’	Math functions can be used
+‘$0;%.1f’	Reformat current cell to 1 decimal
+‘($3-32)*5/9’	Degrees F → C conversion
+‘$c/$1/$cm’	Hz → cm conversion, using ‘constants.el’
+‘tan($1);Dp3s1’	Compute in degrees, precision 3, display SCI 1
+#+end_src
+
+**** 对时间的计算
+使用 *t*，*T* ,或 *U* 标记,'T' 精确到秒,'U' 精确到分，精确到小时
+
+#+begin_src org
+|  Task 1 |   Task 2 |    Total |
+|---------+----------+----------|
+|    2:12 |     1:47 | 03:59:00 |
+|    2:12 |     1:47 |    03:59 |
+| 3:02:20 | -2:07:00 |     0.92 |
+#+TBLFM: @2$3=$1+$2;T::@3$3=$1+$2;U::@4$3=$1+$2;t
+#+end_src
+
+**** 开始计算
+- 计算整列的和 ~org-table-sum~
+- 使用计算公式 ~org-table-eval-formula~
+
+计算公式写法:
 #+begin_src org
   ,#+TBLFM: $2=$1^2::$3=$1^3::$4=$1^4::$5=sqrt($1)::$6=sqrt(sqrt(($1)))
 #+end_src
-单元格坐标获取， ~org-table-field-info~
-
-#+TBLFM: $2=$1^2::$3=$1^3::$4=$1^4::$5=sqrt($1)::$6=sqrt(sqrt(($1)))
-| N | N^2 | N^3 | N^4 |   sqrt(n) | sqrt[4](N) |
-|---+-----+-----+-----+-----------+------------|
-| 1 |   1 |   1 |   1 |         1 |          1 |
-| 2 |   4 |   8 |  16 |    1.4142 |     1.1892 |
-| 3 |   9 |  27 |  81 |    1.7321 |     1.3161 |
-| 4 |  16 |  64 | 256 |         2 |  1.4142136 |
-| 5 |  25 | 125 | 625 | 2.2360680 |  1.4953488 |
-
-一些公式的例子 
-#+begin_verse
-在奇数行上插入列号，在偶数行上将字段设置为空。 ~if(@# % 2, $#, string(""))~
-将名为 FOO 的表的第 1 列的每一行的文本或值复制 到当前表的第 2 列 ~$2 = '(identity remote(FOO, @@#$1))~
-#+end_verse
-
-定义常量
-#+begin_src org
-   ,#+CONSTANTS: c=299792458. pi=3.14 eps=2.4e-6
-#+end_src
-
-对于行或列的移动，删除的快速命令，文档上都有，不概述了。
-    -----
 ** 超链接
-   #+begin_src org
-     描述性链接
-     [[LINK][DESCRIPTION]]
-     纯链接 
-     [[LINK]]
-   #+end_src
-    
-   文件内部链接,名字不像超链接,跟某级标题同名的链接 
-   #+begin_src org 
-     [[ TitleA ]]
-     [[TitleB][DESCRIPTION]]
-   #+end_src
-   也可以链接到表
-   #+begin_src org
-     ,#+NAME: My Target
-     | a  | table      |
-     |----+------------|
-     | of | four cells |
-   #+end_src
-    
-   Radio Targets: 相当于 ~HTML~ 中的锚点，内部跳转用的。
-   #+begin_src org
-     <<<目标>>>
-   #+end_src
-    
-
-  链接格式 
-  #+begin_src org
-    [[file:~/code/main.c::255]]
-    [[file:~/xx.org::My Target]]
-    [[file:~/xx.org::*My Target]]
-    [[file:~/xx.org::#my-custom-id]]
-    [[file:~/xx.org::/regexp/]]
-  #+end_src
-    -----
-** TODO  
-   标题前面有 ~TODO~  字样的列就是 ~TODO~ 项目，TODO 文件主要用于写 项目将要实现的功能 
-
-   项目默认只有两种状态，可以创建更多状态
-   #+begin_src emacs-lisp
-     (setq org-todo-keywords
-           '((sequence "TODO" "FEEDBACK" "VERIFY" "|" "DONE" "DELEGATED")))
-   #+end_src
-   
-用于类型也不错 
-#+begin_src elisp
-  (setq org-todo-keywords '((type "Fred" "Sara" "Lucy" "|" "DONE")))
-#+end_src
-
-文件属性中设置 
 #+begin_src org
-   #+TODO: TODO FEEDBACK VERIFY | DONE CANCELED
+  描述性链接
+  [[LINK][DESCRIPTION]]
+  纯链接 
+  [[LINK]]
 #+end_src
-    -----
-** TAGS [标签，文章的属性,关键词 ]
-   写法,这篇文章写 ~org~ 的， tags 就写 ~org~ ，多个关键词用 @@html:<kbd>@@ , @@html:</kbd>@@  隔开。
-  #+begin_src org 
-    ,#+TAGS: org 
-  #+end_src
+    
+文件内部链接,名字不像超链接,跟某级标题同名的链接 
+#+begin_src org 
+  [[ TitleA ]]
+  [[TitleB][DESCRIPTION]]
+#+end_src
+也可以链接到表
+#+begin_src org
+  ,#+NAME: My Target
+  | a  | table      |
+  |----+------------|
+  | of | four cells |
+#+end_src
+    
+Radio Targets: 相当于 ~HTML~ 中的锚点，内部跳转用的。
+#+begin_src org
+  <<<目标>>>
+#+end_src
+    
+
+链接格式 
+#+begin_src org
+  [[file:~/code/main.c::255]]
+  [[file:~/xx.org::My Target]]
+  [[file:~/xx.org::*My Target]]
+  [[file:~/xx.org::#my-custom-id]]
+  [[file:~/xx.org::/regexp/]]
+#+end_src
+** TODO Items (代办事项)
+在 org 中，凡是标题条目含有 ~TODO~ , ~DONE~ 等字样，那么就可以按照代办条目进行处理，我们处理大任务时，通常分解成几个小任务
+
+如下:
+#+begin_src org
+   ,** TODO 大任务 
+   ,*** TODO 任务 1
+   ,*** DONE 任务 2
+   CLOSED: [2020-09-14 一 09:40]
+#+end_src
+
+#+begin_quote
+这就是 org 文件强大的地方，比如你用 org 做好几个笔记，维护的时候不知到维护的节点在哪里，就可以设置 *Todo* 条目来标记下一步的维护点
+#+end_quote
+*** 增强 TODO 的功能
+默认 Todo 条目只有两个属性，TODO 和 DONE，可以添加更多的属性。
+#+begin_src lisp
+(setq org-todo-keywords
+      '((sequence "TODO" "FEEDBACK" "VERIFY" "|" "DONE" "DELEGATED")))
+#+end_src
+** TAGS [标签 ]
+有些标题，或章节，讲的内容是差不多的，那么我们可以把它们归为同一个标签，方便管理
+
+在标题节点上，用两个":" 号包含的东西就是标签
+#+begin_quote
+ ** TODO 擦玻璃                                                       :工作:
+#+end_quote
+
+创建标签 org-set-tags-command
+
+*** 文章统一标签
+#+begin_src org 
+  ,#+TAGS: org 
+#+end_src
   
-  标签归类,有层次了 
-  #+begin_src org
-    ,#+TAGS: [ Control : Context Task ]
-    ,#+TAGS: [ Persp : Vision Goal AOF Project ]
-  #+end_src
-    -----
-** 日期和时间 [ 规划 TODO ]
-  为了给 ~TODO~ 项目进行时间规划, org 创建了 带有日期与时间信息的特殊格式串
-*** 时间戳的写法 
-  #+begin_src org
-    ,* TODO 和小李看电影
-      <2019-06-01 六 19:15>
-    ,* 去公园里玩
-      <2019-06-04 二 08:30-09:30>
-      #+end_src
+标签归类,有层次了 
+#+begin_src org
+  ,#+TAGS: [ Control : Context Task ]
+  ,#+TAGS: [ Persp : Vision Goal AOF Project ]
+#+end_src
 
-  对于间断性的任务      
- #+begin_src org
-   ,* 每周三去学校接 sam
-     <2007-05-16 Wed 12:30 +1w>
- #+end_src
-
- 延时显示任务　
-  #+begin_src org
-   ,* 学校接 sam
-     <2007-05-16 Wed 12:30 -1d>
- #+end_src
-: 第二天显示，可以验证昨天是否完成了任务
-
+** 日期和时间 
  
- : 间隔参数 可以为 天 (d) ，周 (w) , 月 (m) 或 年 (y)
- : 循环任务用　=+=  ,延时显示用 =-=　
-*** Deadlines and Scheduling [ 给时间附属性 ]
-    
-    Deadlines : 任务截止时间 ( 通常是 TODO 项目 )
-    #+begin_src org
-      ,*** TODO write article about the Earth for the Guide
-          DEADLINE: <2004-02-29 Sun>
-    #+end_src
-    
-    #+begin_src org
-      ,*** 设置一个５天的警告
-          DEADLINE: <2004-02-29 Sun -5d>
-    #+end_src
+org 的时间，既可以表示某个时间，也可以表示某个时间段，还能表示某间隔时间
 
-    SCHEDULED: 任务开始时间
-    
-    #+begin_src org
-      ,*** TODO 叫小李吃饭
-          SCHEDULED: <2004-12-25 六 11:00>
-    #+end_src
-*** 给任务计时
-    统计在任务上花了多少时间,就要给任务计时　
-#+begin_verse
-    计时开始, ~org-clock-in~ 
-    停止计时, ~org-clock-out~ 
-    在上一个停止处继续计时 , ~org-clock-in-last~
-#+end_verse
-    
-    历史记录就这样的格式
-    #+begin_src org
-      :LOGBOOK:
-      CLOCK: [2019-06-04 二 08:59]--[2019-06-04 二 09:09] =>  0:10
-      CLOCK: [2019-06-04 二 08:56]--[2019-06-04 二 08:59] =>  0:03
-      :END:
-    #+end_src
+- 某个时间点 <2020-09-14 一 09:00>
+- 某个时间段 <2019-06-04 二 08:30-09:30>
+- 间断时间 <2007-05-16 Wed 12:30 +1w> 每周三
+- 时间计算 <2007-05-16 Wed 12:30 -1d> 前一天
 
-*** 计时报表
-    org 能统计这些任务花费的时间，输出一些表 
-    
-    #+begin_verse
-    输出报表, ~org-clock-report~
-    更新光标处的报表, ~org-dblock-update~
-    #+end_verse
+- 创建时间戳 org-time-stamp
+- 非活动的时间戳，该时间戳不会导致议程条目 org-time-stamp-inactive
+- 插入当前日期 org-date-from-calendar
+*** 时间计划
+含有 SCHEDULED 或 DEADLINE 属性的时间戳 一般给 Todo 用的，表示议程的计划开始时间和结束时间。
 
-    报表输出格式
-    #+begin_src org
-      ,#+BEGIN: clocktable :scope subtree :maxlevel 2
-      ,#+CAPTION: Clock summary at [2019-06-04 二 09:06]
-      | Headline                         | Time   |      |
-      |----------------------------------+--------+------|
-      | *Total time*                     | *0:09* |      |
-      |----------------------------------+--------+------|
-      | \_  把 org  agenda 的 clock 学会 |        | 0:09 |
-      ,#+END:
-    #+end_src
-    这个任务总共做了９分钟 
-*** 解决空闲时间(Resolving idle time)
-    如果你正在计时一个任务，但突然有事(比如接电话)，那么就要从当前计时中减去你花去干其他事花的时间(浪费时间)。 
-    
-    设置默认要预留的时间: ~org-clock-idle-time~
+#+begin_src org
+      DEADLINE: <2004-02-29 Sun>
+      SCHEDULED: <2004-12-25 六 11:00>
+#+end_src
+*** 计时器
+计时器用来给 Todo  条目计时
 
-    #+begin_verse
-    设置浪费时间:　org-resolve-clocks  
-    k 保留任务的的有效计时数，并从当前时间开始计时 
-    K(大写)  全部有效，并退出任务计时
-    s/S 从当前时间重新计时 
-    C 取消任务计时
-    #+end_verse
-    
-    -----
-** Agenda Views [ 日程浏览 ]
-   能把不同文件中的 ~TODO~ 项目收集起来 ，用来 ~GTD~ (把事情做完) 管理
-   
-   #+begin_verse
-   ~GTD~ 是一套任务收集，分配的方法，用来节约时间的。
-   ~org~ 中 任务都被收集到 org 文件中 ，就像 ~TODO~ 项目一样。
-   #+end_verse
-   
-   #+begin_verse
-   进入 Agenda Views 视图 , ~org-agenda-list~ 
-   把当前文件添加到 Agenda Files , ~org-agenda-file-to-front~
-   移除当前文件, ~org-remove-file~ 
-   遍历 Agenda Files , ~org-cycle-agenda-files~
-   可供选择的遍历 , ~org-cycle-agenda-files~
-   #+end_verse
-   
-  图片展示 , 切换 日视图@@html:<kbd>@@ d @@html:</kbd>@@ ,周视图@@html:<kbd>@@ w @@html:</kbd>@@ ,
-  月视图 ~org-agenda-month-view~
-  
-#+DOWNLOADED: /tmp/screenshot.png @ 2019-06-04 10:28:24
-[[file:org_%E6%8E%92%E7%89%88%E5%B7%A5%E5%85%B7/screenshot_2019-06-04_10-28-24.png]]
-  
+- 开始计时, ~org-clock-in~ 
+- 停止计时, ~org-clock-out~ 
+- 在上一个停止处继续计时 , ~org-clock-in-last~
 
-   设置默认显示 agenda 的方式: ‘day’, ‘week’, ‘month’ or ‘year’.   
-  #+begin_src emacs-lisp
-  (setq org-agenda-span 'day) 
+  计时统计放在下面格式的抽屉中
+  #+begin_src org
+  :LOGBOOK:
+    CLOCK: [2020-09-14 一 05:44]--[2020-09-14 一 05:49] =>  0:05
+    CLOCK: [2020-09-13 日 14:16]--[2020-09-13 日 14:26] =>  0:10
+    :END:
   #+end_src
-  
-    -----
+
+*** 空闲时间(Resolving idle time)
+如果你正给一个 Todo 计时，但你在这段时间做了其他的事情，那么这段计时就不精确了，空闲时间命令可以解决这个问题
+    
+  - 空闲时间命令:　org-resolve-clocks  
+  - k 手动设置当前 Todo 时长，并重新开始当前 Todo
+  - K(大写)  手动设置当前 Todo 时长，并退出计时器
+  - s/S 这是从花费的时长中减去输入的时长
+    
+*** 计时报表
+org 能统计 Todo 任务花费的时间，输出一些表 
+    
+  - 输出报表, ~org-clock-report~
+  - 更新光标处的报表, ~org-dblock-update~
+*** Timer (定时器)
+纯粹用来定一下时间
+
+- 正计时器 org-timer-start
+- 倒计时器 org-timer-set-timer
+
+** Refiling and Archiving
+移动/归档 Todo 条目
+** Agenda Views  日程视图
+我们可以用 *Agenda Views*  来处理 Todo 条目，切换 Todo 的状态，设置计时器等。
+
+org-agenda-files 可以用来设置进入 *Agenda Views* 界面的文件列表 
+
+一些操作:
+ - 进入 Agenda Views 视图 , ~org-agenda-list~ 
+ - 把当前文件添加到 Agenda Files , ~org-agenda-file-to-front~
+ - 移除当前文件, ~org-remove-file~ 
+ - 遍历 Agenda Files , ~org-cycle-agenda-files~
+** Exporting 导出
+org 文件可以方便的导出为其他格式的文件，如 HTML，Latex,Markdown 等
+** Publishing
+进行一些设置可以发布到 web 服务器
 * 参考资料
-  
-  
-[fn:1] 这里是脚注那段的参考信息，网址是 :  https://orgmode.org
+[fn:1] [[https://orgmode.org/manual/Creating-Footnotes.html#Creating-Footnotes][Creating Footnotes]]
+
  

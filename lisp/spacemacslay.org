@@ -6,30 +6,10 @@
 
 * layer
 ** auto-completion
-   
-1. 要添加 auto-completion
-2. 还必须至少安装一个支持的语言层才能起作用
+   1. 要添加 auto-completion
+   2. 还必须至少安装一个支持的语言层才能起作用
 
-
-默认配置
-#+begin_src lisp
-  (setq-default dotspacemacs-configuration-layers '(
-                                                    (auto-completion :variables
-                                                                     auto-completion-return-key-behavior 'complete
-                                                                     auto-completion-tab-key-behavior 'cycle
-                                                                     auto-completion-complete-with-key-sequence nil
-                                                                     auto-completion-complete-with-key-sequence-delay 0.1
-                                                                     auto-completion-minimum-prefix-length 2
-                                                                     auto-completion-idle-delay 0.2
-                                                                     auto-completion-private-snippets-directory nil
-                                                                     auto-completion-enable-snippets-in-popup nil
-                                                                     auto-completion-enable-help-tooltip nil
-                                                                     auto-completion-use-company-box nil
-                                                                     auto-completion-enable-sort-by-usage nil)))
-
-#+end_src
-
-#+begin_verse
+   #+begin_verse
     语法片段 *默认* 不在 *完成项* 里面。
     启用 auto-completion-enable-snippets-in-popup t
 
@@ -44,7 +24,7 @@
 
     *jk* 很适用完成确认如果没有的话
     auto-completion-complete-with-key-sequence "jk"
-     #+end_verse
+   #+end_verse
 
    company                     
    | ~C-d~   | 补全时按此键可以显示文档         |
@@ -62,28 +42,6 @@
    | ~SPC i S e~ | Expand the snippet just created with ~SPC i y~                            |
    | ~SPC i S w~ | Write the snippet inside =private/snippets= directory for future sessions |
 
-** bibtex
-   | ~SPC m T x~ | org-preview-latex-fragment                    |
-   | ~SPC m j~ / ~g j~ / ~C-j~ | Next entry                                 |
-   | ~SPC m k~ / ~g k~ / ~C-k~ | Previous entry                             |
-   | ~SPC m p~                 | Open PDF                                   |
-   | ~SPC m n~                 | Open notes                                 |
-   | ~SPC m b~                 | Open browser                               |
-   | ~SPC m i~                 | Insert new entry                           |
-   | ~SPC m s~                 | Sort entry                                 |
-   | ~SPC m h~                 | Various actions on entry                   |
-   | ~SPC m l a~               | Lookup and add arXiv paper (don’t get PDF) |
-   | ~SPC m l A~               | Lookup and add arXiv paper (download PDF)  |
-   | ~SPC m l d~               | Lookup and add paper by DOI                |
-   | ~SPC m l i~               | Lookup and add book by ISBN                |
-   | ~SPC m l p~               | Lookup and add paper by PMID               |
-
-   In addition, =org-mode=, =latex-mode= and =markdown-mode= all have the following
-   key binding added:
-
-   | Key binding   | Description                                |
-   |---------------+--------------------------------------------|
-   | ~SPC m i c~   | Insert citation                            |
 ** c-c++
    反汇编 disaster
    代码格式化 clang-format
@@ -97,14 +55,10 @@
    | ~SPC m D~   | 反汇编                               |
    | ~SPC m r .~ | srefactor: refactor thing at point.  |
 
+*** ccls 
+  - M-x ccls-member-hierarchy (显示类，对象，成员列表)
+  - M-x ccls-code-lens-mode
 *** 通用编译 compile
-** chinese
-   当外部输入法不能使用时，比如在 console 或者 cygwin 环境下，尽最大可能让 Emacs
-   用户不必为输入中文而烦恼。
-  
-   导入词库就可以了, 词库地址 
-   http://tumashu.github.io/pyim-bigdict/pyim-bigdict.pyim.gz
-   可以安装搜狗输入法中的词库，用转化工具转化
 ** cscope  
    用法: 先要创建 *Cscope 索引文件 * ,  通过  ~SPC m g i~.
    
@@ -147,77 +101,55 @@
    | ~S~         | goto cmd buffer      |
    | ~v~         | eval variable        |
 ** emoji 
-** epub
-   | ~g V~     | 查看源码          |
-   | ~SPC w c~ | center the buffer |
-
 ** git
-   - magit auto-complete
-   - Magit SVN plugin [ 在 ~Magit~ buffer 中按住 ~!~ 键就能提交了 ]
-   - global git commit
-   - git
-   - git-flow
-   - org integration
+*** git 层快捷键    
+    | ~SPC g /~   | open =helm-git-grep=                             |
+    | ~SPC g *~   | open =helm-git-grep-at-point=                    |
+    | ~SPC g b~   | 打开 blame   (版本变迁明细)                      |
+    | ~SPC g f f~ | 看一些修改过的文件列表(  版本处理)               |
+    | ~SPC g M~   | 显示当前行的提交信息                             |
+    | ~SPC g i~   | 版本初始化                                       |
+    | ~SPC g S~   | stage current file                               |
+    | ~SPC g U~   | unstage current file                             |
+    | ~SPC g f l~ | 当前文件的提交记录                               |
+    | ~SPC g f d~ | 当前文件的版本差异                               |
+    | ~SPC g H c~ | clear highlights        (高亮处理)               |
+    | ~SPC g H h~ | 修改的地方高亮                                   |
+    | ~SPC g H t~ | 反向高亮                                         |
+    | ~SPC g I~   | open =helm-gitignore= (打开忽略文件，不起作用么) |
+    | ~SPC g L~   | open magit-repolist  打开版本控制的仓库          |
+    | ~SPC g t~   | 打开 git time machine                            |
 
-     用法:  
-     打开状态缓冲区 ,显示状态改变的文件 ~SPC g s~
-     打开命令缓冲区，直接执行命令 ~SPC g m~
-    
-     | ~SPC g /~   | open =helm-git-grep=                                |
-   | ~SPC g *~   | open =helm-git-grep-at-point=                       |
-   | ~SPC g b~   | open a =magit= blame                                |
-   | ~SPC g f f~ | view a file at a specific branch or commit          |
-   | ~SPC g f l~ | commits log for current file                        |
-   | ~SPC g f d~ | diff for current file                               |
-   | ~SPC g H c~ | clear highlights                                    |
-   | ~SPC g H h~ | highlight regions by age of commits                 |
-   | ~SPC g H t~ | highlight regions by last updated time              |
-   | ~SPC g i~   | initialize a new git repository                     |
-   | ~SPC g I~   | open =helm-gitignore=                               |
-   | ~SPC g L~   | open magit-repolist                                 |
-   | ~SPC g s~   | open a =magit= status window                        |
-   | ~SPC g S~   | stage current file                                  |
-   | ~SPC g m~   | magit dispatch popup                                |
-   | ~SPC g M~   | display the last commit message of the current line |
-   | ~SPC g t~   | launch the git time machine                         |
-   | ~SPC g U~   | unstage current file                                |
+*** magit 管理窗口  ~SPC g s~ 或者 ~SPC g m~
+    | ~/~       | 快捷查找                                        |
+    | ~$~       | 打开命令执行历史 buffer                         |
+    | ~c c~     | 发布提交消息缓冲 open a =commit message buffer= |
+    | ~b b~     | checkout a branch                               |
+    | ~b c~     | create a branch                                 |
+    | ~f f~     | fetch changes                                   |
+    | ~F (r) u~ | 拉取 /变基 pull tracked branch and rebase       |
+    | ~gr~      | 刷新 refresh                                    |
+    | ~l l~     | 打开日志缓存 open =log buffer=                  |
+    | ~o~       | 数据恢复到某个节点                              |
+    | ~P u~     | 发布 push to tracked branch                     |
+    | ~s~       | 暂存,在 diff 中，还能暂存特定行                 |
+    | ~x~       | 丢弃更改                                        |
+    | ~S~       | 暂存全部                                        |
+    | ~TAB~     | 查看文件改动 (diff)                             |
+    | ~u~       | 取消暂存                                        |
+    | ~U~       | 取消所有的暂存                                  |
+    | ~v or V~  | select multiple lines                           |
+    | ~z z~     | 隐藏改动                                        |
 
+    写提交消息的 buff 中，按 ~M-n~ ,~M-p~  可以上下遍历历史提交信息
 
-     在状态缓冲区可以执行的命令
-     | ~/~       | 快捷查找                                        |
-     | ~$~       | 打开命令执行历史 buffer                         |
-     | ~c c~     | 发布提交消息缓冲 open a =commit message buffer= |
-     | ~b b~     | checkout a branch                               |
-     | ~b c~     | create a branch                                 |
-     | ~f f~     | fetch changes                                   |
-     | ~F (r) u~ | 拉取 /变基 pull tracked branch and rebase       |
-     | ~gr~      | 刷新 refresh                                    |
-     | ~l l~     | 打开日志缓存 open =log buffer=                  |
-     | ~o~       | 数据恢复到某个节点                              |
-     | ~P u~     | 发布 push to tracked branch                     |
-     | ~s~       | 暂存,在 diff 中，还能暂存特定行                 |
-     | ~x~       | 丢弃更改                                        |
-     | ~S~       | 暂存全部                                        |
-     | ~TAB~     | 查看文件改动 (diff)                             |
-     | ~u~       | 取消暂存                                        |
-     | ~U~       | 取消所有的暂存                                  |
-     | ~v or V~  | select multiple lines                           |
-     | ~z z~     | 隐藏改动                                        |
-
-     写提交消息的 buff 中，按 ~M-n~ ,~M-p~  可以上下遍历历史提交信息
-
-    时间机器 ~SPC g t~ (能够显示文件每次提交的内容 )
-     | ~c~       | show current commit                                |
-     | ~n~       | show next commit                                   |
-     | ~Y~       | copy current commit hash                           |
-
-     远程日志
-     | ~SPC g l c~ | on a commit hash, browse to the current file at this commit                                   |
-     | ~SPC g l C~ | on a commit hash, create link to the file at this commit and copy it                          |
-     | ~SPC g l l~ | on a region, browse to file at current lines position                                         |
-     | ~SPC g l L~ | on a region, create a link to the file highlighting the selected lines                        |
-     | ~SPC g l p~ | on a region, browse to file at current lines position (using permalink link)                  |
-     | ~SPC g l P~ | on a region, create a link to the file highlighting the selected lines (using permalink link) |
+*** 远程日志
+    | ~SPC g l c~ | on a commit hash, browse to the current file at this commit                                   |
+    | ~SPC g l C~ | on a commit hash, create link to the file at this commit and copy it                          |
+    | ~SPC g l l~ | 在 远程（如 github) 中 打开记录行                                                             |
+    | ~SPC g l L~ | 拷贝上面的远程行 链接                                                                         |
+    | ~SPC g l p~ | on a region, browse to file at current lines position (using permalink link)                  |
+    | ~SPC g l P~ | on a region, create a link to the file highlighting the selected lines (using permalink link) |
 
 ** github
 ** cmake
@@ -239,10 +171,8 @@
    总结： 编译的化运行 ~,  c c~  
  
 ** google translate
-   | 翻译     | google-translate-at-point-reverse  @@html:<kbd>@@ SPC x g t @@html:</kbd>@@ |
    | 反向翻译 | google-translate-query-translate-reverse                                    |
    | 支持列表 | google-translate-supported-languages                                        |
-   
 
    定义输出方向 
    google-translate-output-destination
@@ -250,23 +180,6 @@
    - echo-area
    - popup  弹出窗口
    - kill-ring 
-** pdf
-   - 用途    
-     - 用 occur 查找和切片
-     - 用 outline buffer 显示目录
-     - 注解(annotations)
-     - 屏幕适应
-
-   - 快捷键
-     - gt 跳转到某页(页码)
-     - gl 跳转到某页(自己选)
-     - o 转到链接
-     - O 大纲
-     - r 刷新
-     - +/-/zr 放大缩小
-     - SPC m s m 用鼠标切片
-     - SPC m s s 查找文字
- 
 ** helm 
    调整 helm 缓冲区尺寸
    #+BEGIN_SRC emacs-lisp
@@ -298,26 +211,15 @@
    
    helm 中排除某 STRING  !STRING
 ** html 
-   web-mode  编辑  css 和 html
-   编辑 Sass/Scss 和 Less
+   emmet-mode ，本来叫 Zen Coding(禅码)，后改叫 Emmet  (一种实用工具厂商吧)， 功能是输入缩略词自动生成补全的 html css 片段
+   #+begin_quote
+   感觉用 auto-complete 好些，这个要记忆
+   #+end_quote
 *** 编译 Less
     C-c C-c         less-css-compile
     C-M-q           prog-indent-sexp
 
-    emmet-mode 自动生成 html css
-    evil-matchit 在 Tags 中导航 用 %
-    slim 和 pug 模板 用 slim-mode 和 pug-mode 编辑
-    急着看，用 impatient-mode
-*** 键盘绑定  
-**** Web 文件
-     | 实时预览     | ~SPC m i~   |
-     | 到对应标签   | ~SPC m g b~ |
-     | 到子标签     | ~SPC m g c~ |
-     | 导航到父标签 | ~SPC m g p~ |
-**** CSS/SCSS
-     | quickly navigate CSS rules | ~SPC m g h~ |
-**** [[file:~/book/program/cheatsheet-a5.pdf][emmet-mode]] 
-*** 缩略元素 C-j 扩展
+*** 缩略补全 C-j 扩展
     - HTML abbreviations
       - Basic tags
         a                       <a href=""></a>
@@ -423,6 +325,7 @@
       - Filter: HTML with comments
         a.b|c                    <!-- .b --> <a class="b" href=""></a> <!-- /.b -->
         #a>.b|c                  <!-- #a --> <div id="a"> <!-- .b --> <div class="b"> </div> <!-- /.b --> </div> <!-- /#a -->
+      - Lorem ipsum (生成一段虚拟文本)
     - CSS abbreviations
       - Basic Usage
         - p1-2!+m10e+bd1#2s        padding: 1px 2px !important; margin: 10em; border: 1px #222 solid;
@@ -431,12 +334,6 @@
         bg+                      background: #fff url() 0 0 no-repeat;
         c                        color: #000;
 ** imenu-list 
-   | ~SPC b i~ | toggle imenu-list window                               |
-   | ~q~       | quit imenu-list window                                 |
-   | ~RET~     | go to current entry                                    |
-   | ~d~       | display current entry, keep focus on imenu-list window |
-   | ~f~       | fold/unfold current section                            |
-   | ~r~       | refresh imenu-list window                              |
 ** import-js  [导入模块，并导航代码]
    安装  
    #+BEGIN_SRC sh
@@ -458,15 +355,6 @@
    | ~SPC m i g~ | 转到光标下的变量模块                     |
 
 ** javascript
-   使用 js2-mode 对 js 语言支持
-   特性  
-   - 多个后端支持：Tern 和 LSP
-   - 智能代码折叠
-   - 重构：使用 js2-refactor 完成。
-   - 自动完成和文档
-   - 通过 skewer 和 livid-mode 提供 REPL
-   - 使用 web-beautify 格式化
-
    启用 导入帮助程序(~ImportJS~) 
    #+begin_src sh
      $ npm install -g import-js
@@ -597,81 +485,8 @@
    | ~SPC m s r~ | 将当前选区发送到 REPL            |
    | ~SPC m s s~ | 切换到 REPL                      |
 
-** latex
-   | ~SPC m -~     | recenter output buffer                     |
-   | ~SPC m ​,​~     | TeX command on master file                 |
-   | ~SPC m .~     | mark LaTeX environment                     |
-   | ~SPC m *~     | mark LaTeX section                         |
-   | ~SPC m %~     | comment or uncomment a paragraph           |
-   | ~SPC m ;~     | comment or uncomment a region              |
-   | ~SPC m a~     | run all commands (compile and open viewer) |
-   | ~SPC m b~     | build                                      |
-   | ~SPC m c~     | close LaTeX environment                    |
-   | ~SPC m e~     | insert LaTeX environment                   |
-   | ~SPC m i i~   | insert =\item=                             |
-   | ~SPC m k~     | kill TeX job                               |
-   | ~SPC m l~     | recenter output buffer                     |
-   | ~SPC m m~     | insert LaTeX macro                         |
-   | ~SPC m s~     | insert LaTeX section                       |
-   | ~SPC m v~     | view output                                |
-   | ~SPC m h d~   | TeX documentation, can be very slow        |
-   | ~SPC m f e~   | fill LaTeX environment                     |
-   | ~SPC m f p~   | fill LaTeX paragraph                       |
-   | ~SPC m f r~   | fill LaTeX region                          |
-   | ~SPC m f s~   | fill LaTeX section                         |
-   | ~SPC m p r~   | preview region                             |
-   | ~SPC m p b~   | preview buffer                             |
-   | ~SPC m p d~   | preview document                           |
-   | ~SPC m p e~   | preview environment                        |
-   | ~SPC m p s~   | preview section                            |
-   | ~SPC m p p~   | preview at point                           |
-   | ~SPC m p f~   | cache preamble for preview                 |
-   | ~SPC m p c~   | clear previews                             |
-   | ~SPC m v~     | view                                       |
-   | ~SPC m x b~   | make font bold                             |
-   | ~SPC m x B~   | make font medium weight                    |
-   | ~SPC m x c~   | make font monospaced (for code)            |
-   | ~SPC m x e~   | make font emphasised                       |
-   | ~SPC m x i~   | make font italic                           |
-   | ~SPC m x o~   | make font oblique                          |
-   | ~SPC m x r~   | remove font properties                     |
-   | ~SPC m x f a~ | use calligraphic font                      |
-   | ~SPC m x f c~ | use small-caps font                        |
-   | ~SPC m x f f~ | use sans serif font                        |
-   | ~SPC m x f n~ | use normal font                            |
-   | ~SPC m x f r~ | use serif font                             |
-   | ~SPC m x f u~ | use upright font                           |
-
-   Folding
-   Available only when =latex-enable-folding= is non nil.
-
-   | Key binding | Description          |
-   |-------------+----------------------|
-   | ~SPC m z =~ | fold TeX math        |
-   | ~SPC m z b~ | fold TeX buffer      |
-   | ~SPC m z e~ | fold TeX environment |
-   | ~SPC m z m~ | fold TeX macro       |
-   | ~SPC m z r~ | fold TeX region      |
-
-   RefTeX
-
-   | Key binding   | Description                           |
-   |---------------+---------------------------------------|
-   | ~SPC m r c~   | reftex-citation                       |
-   | ~SPC m r g~   | reftex-grep-document                  |
-   | ~SPC m r i~   | reftex-index-selection-or-word        |
-   | ~SPC m r I~   | reftex-display-index                  |
-   | ~SPC m r TAB~ | reftex-index                          |
-   | ~SPC m r l~   | reftex-label                          |
-   | ~SPC m r p~   | reftex-index-phrase-selection-or-word |
-   | ~SPC m r P~   | reftex-index-visit-phrases-buffer     |
-   | ~SPC m r r~   | reftex-reference                      |
-   | ~SPC m r s~   | reftex-search-document                |
-   | ~SPC m r t~   | reftex-toc                            |
-   | ~SPC m r T~   | reftex-toc-recenter                   |
-   | ~SPC m r v~   | reftex-view-crossref                  |
 ** lisp
-*** 调试 (有问题)
+*** 调试
     #+BEGIN_SRC elisp
       (defun helloworld (name)
         (let ((n (subroutine name)))
@@ -706,32 +521,27 @@
 
     模式行会显示此标记  =🆂=
 *** 键绑定
-    | ~SPC m g g~                | 转到定义                                             |
-    | ~SPC m g G~                | 两一个窗口打开定义                                   |
-    | ~SPC m h h~                | 函数简短描述                                         |
-    | ~SPC m c c~                | 字节编译当前文件                                     |
-    | ~SPC m c l~                | 弹出 compile-log buffer                              |
-    | ~SPC m e $~ or ~SPC m e l~ | 跳到行尾并求值,( 这个好 )                            |
-    | ~SPC m e b~                | evaluate current buffer                              |
-    | ~SPC m e C~                | evaluate current =defun= or =setq=                   |
-    | ~SPC m e e~                | 求值光标前的表达式                                   |
-    | ~SPC m e f~                | 求值当前函数 (好)                                    |
-    | ~SPC m e r~                | evaluate current region  (这个很好)                  |
-    | ~SPC m ​,​~                  | toggle =lisp state=  (不会用)                        |
-    | ~SPC m t b~                | run tests of current buffer  (不会用)                |
-    | ~SPC m t q~                | run =ert=                (不会用)                    |
-    | ~SPC m d m~                | open [[https://github.com/joddie/macrostep][macrostep]] transient-state(对宏有用，可以折叠宏) |
-    | ~SPC m :~                  | toggle nameless minor mode(关闭命名空间)             |
-    | ~SPC k :~                  | 执行 lisp 命令                                       |
-    | ~SPC k (~                  | 插入同级表达式(上一行)                               |
-    | ~SPC k )~                  | 插入同级表达式(下一行)                               |
-    | ~SPC k $~                  | 到此表达式尾部括号                                   |
-    | ~SPC k 0~                  | 到此表达式开头 ( % 更好)                             |
-    | ~SPC k ds~                 | 删除光标下的符号 (还行)                              |
-    | ~SPC k dw~                 | 删除 word                                            |
-    | ~SPC k w~                  | wrap expression with parenthesis                     |
-    | ~SPC k W~                  | unwrap expression                                    |
-    | ~SPC k y~                  | copy expression (还行)                               |
+    | ~SPC m g G~                | 两一个窗口打开定义                       |
+    | ~SPC m h h~                | 函数简短描述                             |
+    | ~SPC m c c~                | 字节编译当前文件                         |
+    | ~SPC m c l~                | 弹出 compile-log buffer                  |
+    | ~SPC m e $~ or ~SPC m e l~ | 跳到行尾并求值,( 这个好 )                |
+    | ~SPC m e b~                | evaluate current buffer                  |
+    | ~SPC m e C~                | evaluate current =defun= or =setq=       |
+    | ~SPC m e e~                | 求值光标前的表达式                       |
+    | ~SPC m e f~                | 求值当前函数 (好)                        |
+    | ~SPC m e r~                | evaluate current region  (这个很好)      |
+    | ~SPC m :~                  | toggle nameless minor mode(关闭命名空间) |
+    | ~SPC k :~                  | 执行 lisp 命令                           |
+    | ~SPC k (~                  | 插入同级表达式(上一行)                   |
+    | ~SPC k )~                  | 插入同级表达式(下一行)                   |
+    | ~SPC k $~                  | 到此表达式尾部括号                       |
+    | ~SPC k 0~                  | 到此表达式开头 ( % 更好)                 |
+    | ~SPC k ds~                 | 删除光标下的符号 (还行)                  |
+    | ~SPC k dw~                 | 删除 word                                |
+    | ~SPC k w~                  | wrap expression with parenthesis         |
+    | ~SPC k W~                  | unwrap expression                        |
+    | ~SPC k y~                  | copy expression (还行)                   |
 *** 用 overseer 测试
     | ~SPC m t a~ | overseer test |
     | ~SPC m t A~ | test debug    |
@@ -745,137 +555,12 @@
 *** 开启 smartparens 可以求值配对函数
     | ~SPC m e c~ | evaluate sexp around point   |
     | ~SPC m e s~ | evaluate symbol around point |
-*** 代码格式化
-    | ~SPC m = b~ | format current buffer   |
-    | ~SPC m = f~ | format current function |
-    | ~SPC m = o~ | format all on one line  |
-    | ~SPC m = s~ | format current sexp     |
 *** 调试
     | ~SPC m d f~ | on a =defun= symbol toggle on the instrumentalisation of the function  |
     | ~SPC m d F~ | on a =defun= symbol toggle off the instrumentalisation of the function |
     | ~SPC m d t~ | insert =(debug)= to print the stack trace and re-evaluate the function |
 
 ** org
-*** 特点 
-    整合子弹头 org-bullets 
-    演示模式 org-present
-    插入图像 org-download
-    管理工程下的代办 org-projectile
-    插入 org 格式的剪贴板中的 URL (org-cliplink) 
-   
-    
-    - org-pomodaro
-      - org-clock-in (计时，计时后会自动停止)
-      - org-pomodaro(手动计时)
-      - 配置 org-pomodoro-length，org-pomodoro-short-break-length，org-pomodoro-long-break-length,sounds,modeline display
-
-*** github 
-    导出到 github
-    #+BEGIN_SRC emacs-lisp
-      (setq-default dotspacemacs-configuration-layers '(
-                                                        (org :variables org-enable-github-support t)))
-    #+END_SRC
-
-*** Twitter Bootstrap support
-    启用导出到 Twitter Bootstrap 格式的 HTML   
-    #+BEGIN_SRC emacs-lisp
-      (setq-default dotspacemacs-configuration-layers '(
-                                                        (org :variables
-                                                             org-enable-bootstrap-support t)))
-    #+END_SRC
-
-*** Gnuplot 
-    通过[[http://www.gnuplot.info/][Gnuplot]]绘制表格内的数据, windows 有问题，要排除  =dotspacemacs-excluded-packages=
-*** Reveal.js
-    导出 Reveal.js
-
-    #+BEGIN_SRC emacs-lisp
-      (setq-default dotspacemacs-configuration-layers
-                    '((org :variables org-enable-reveal-js-support t)))
-    #+END_SRC
-
-    [[https://github.com/hakimel/reveal.js/releases][download]] =reveal.js= 并且 把 =org-reveal-root= 指向 =reveal.js=  路径
-    文档 the [[https://github.com/yjwen/org-reveal#set-the-location-of-revealjs][manual]].
-
-    或者，将以下行添加到要处理的每个 =.org= 文件中：
-    #+BEGIN_EXAMPLE
-      #+REVEAL_ROOT: http://cdn.jsdelivr.net/reveal.js/3.0.0/
-    #+END_EXAMPLE
-*** Org-journal [ 简单的日记管理系统 ]
-    - 在目录中每天创建一个单独的日志文件
-    - 新的日志文件将始终迁移具有所选 TODO 状态的条目
-    - 具有日志加密功能
-    - 轻松集成 org-agenda 和 Emacs 日历，iCalendar
-
-    #+BEGIN_SRC emacs-lisp
-      (setq-default dotspacemacs-configuration-layers '(
-                                                        (org :variables
-                                                             org-enable-org-journal-support t)))
-    #+END_SRC
-    
-    默认存储在 =~/Documents/journal/= 文件夹, 在 user-config 中覆盖
-    #+BEGIN_SRC emacs-lisp
-      (setq org-journal-dir "~/org/journal/")
-    #+END_SRC
-
-    要更改日志文件名格式 
-    #+BEGIN_SRC emacs-lisp
-      (setq org-journal-file-format "%Y-%m-%d")
-    #+END_SRC
-    *警告* : 不能包含扩展名，会破坏日历搜索功能
-
-    配置日志的格式 
-    #+BEGIN_EXAMPLE
-    #+TITLE: Tuesday, September 06 2016
-    #+END_EXAMPLE
-    配置日期 
-    #+BEGIN_SRC emacs-lisp
-      (setq org-journal-date-prefix "#+TITLE: ")
-      (setq org-journal-date-format "%A, %B %d %Y")
-    #+END_SRC
-  
-    配置时间格式
-    #+BEGIN_SRC emacs-lisp
-      (setq org-journal-time-prefix "* ")
-      (setq org-journal-time-format "")
-    #+END_SRC
-
-    或在 layer 中配置也可以
-  
-    #+BEGIN_SRC emacs-lisp
-      (setq-default dotspacemacs-configuration-layers '(
-                                                        (org :variables
-                                                             org-enable-org-journal-support t
-                                                             org-journal-dir "~/org/journal/"
-                                                             org-journal-file-format "%Y-%m-%d"
-                                                             org-journal-date-prefix "#+TITLE: "
-                                                             org-journal-date-format "%A, %B %d %Y"
-                                                             org-journal-time-prefix "* "
-                                                             org-journal-time-format "")
-                                                        )
-    #+END_SRC
-*** Hugo (巨大，无限) 
-    是一种兼容 ~Markdown~ , ~TOML/YAML~ 的前端格式
-    #+BEGIN_SRC emacs-lisp
-      (setq-default dotspacemacs-configuration-layers '(
-                                                        (org :variables
-                                                             org-enable-hugo-support t)))
-    #+END_SRC
-*** Trello [ 也是一种文档展现形式吧 ]
-    #+BEGIN_SRC emacs-lisp
-      (setq-default dotspacemacs-configuration-layers '(
-                                                        (org :variables
-                                                             org-enable-trello-support t)))
-    #+END_SRC
-*** bullets
-    配置子弹
-    #+BEGIN_SRC emacs-lisp
-      (setq org-bullets-bullet-list '("■" "◆" "▲" "▶"))
-    #+END_SRC
-    禁用子弹
-    #+BEGIN_SRC emacs-lisp
-      (dotspacemacs-excluded-packages '(org-bullets))
-    #+END_SRC
 *** Project [ 项目支持 ]
     指定项目特定 TODOs,如果是绝对路径，那么所有项目的 TODOs 都在那个文件里，只有
     文件名的话,就存储在项目的根目录
@@ -902,7 +587,6 @@
        (file+headline (lambda () (concat org-directory "/work.org")) "Tasks") ;target
        "* TODO [#A] %^{Task}\n%a%i%t%U\n" ; template
        )
-
     #+end_src
 
     类型 - type
@@ -915,13 +599,8 @@ table-line 在指定位置表格添加一行新的记录。
 plain 一段文字。如何输入的，就如何记录下来。
     #+end_verse
 
-    目标 - target
 
-    用于定义收集得到的文字片段在文件的存储方式。一般来说，目标文件为一个 org 文件。
-    收集得到的相关内容也会记录到相应的标题之下。
-
-
-    最常用的 target 是：
+    target ：
 
     指定文件名和文件中唯一的标题
     (file+headline "path/to/file" "node headline")
@@ -950,25 +629,11 @@ plain 一段文字。如何输入的，就如何记录下来。
     %^C Interactive selection of which kill or clip to use.
     %^L Like ‘%^C’, but insert as link.
     %^{PROP}p Prompt the user for a value for property PROP.
-*** Org-brain support
-*** Mode line 
-    临时显示  org clock , 请按 ~SPC t m c~   
-    永久显示 
-    #+BEGIN_SRC elisp
-      (setq spaceline-org-clock-p t)
-    #+END_SRC
 *** Sticky header[ 粘性标题支持 ]
     #+BEGIN_SRC emacs-lisp
       (setq-default dotspacemacs-configuration-layers '(
                                                         (org :variables
                                                              org-enable-sticky-header t)))
-    #+END_SRC
-*** Epub 
-    输出 epub 格式 
-    #+BEGIN_SRC emacs-lisp
-      (setq-default dotspacemacs--configuration-layers
-                    '((org :variables
-                           org-enable-epub-support t)))
     #+END_SRC
 *** 快捷键
 **** 开关
@@ -1113,45 +778,17 @@ plain 一段文字。如何输入的，就如何记录下来。
    1. =.projectile=
    2. =vendor/autoload.php=
 
-
    | 查关键词           | php-search-documentation |
    | 浏览手册           | php-browse-manual        |
    | 标记函数           | mark-defun               |
    | 跳到定义           | ~SPC m g g~              |
    | jump back 调回返回 | ~C-t~                    |
-   |                    |                          |
 
-
-   在补全过程中，可以使用下面功能 (company-mode)
-   - C-d             company-show-doc-buffer
-   - C-g             company-abort
-   - C-h             company-show-doc-buffer
-   - TAB             company-complete-common-or-cycle
-   - C-j             company-select-next
-   - C-k             company-select-previous
-   - C-l .. RET      company-complete-selection
-   - C-s             company-search-candidates
-   - C-w             company-show-location
-   - ESC             Prefix Command
-   - C-/             helm-company
-   - M-0 .. M-9      company-complete-number
-   - M-h             company-quickhelp-manual-begin
-   - M-n             company-select-next
-   - M-p             company-select-previous
-   - C-M-/           company-filter-candidates
-
-     lsp 服务的解决方案是 调用 intelephense
+    lsp 调用 intelephense
 ** project  
    配置文件 .projectile 
-   排除相对目录/文件  /path/to/somefile 
-  
    排除文件 .dot
    
-   例子    
-   # .agignore
-   folder
-   file.txt
-   *.js
 ** python
    后端 anaconda ,lsp-python 
    自动完成
@@ -1246,14 +883,9 @@ virtualenvwrapper，相较于使用 virtualenv， 好处就是把所有环境都
    | ~SPC m v d~ | 停用激活的虚拟环境                |
    | ~SPC m v w~ | 在 ~WORKON_HOME~   中处理虚拟环境 |
 
-
-
    用 pyenv 管理多个版本的 Python,使用的是 pyenv ，！！！注意只有一字之差
    设置 pyenv 环境, ~SPC m v s~ 
    取消设置 pyenv 环境, ~SPC m v u~ 
-
-
-   自动激活本地 pyenv 版本, [[https://github.com/yyuu/pyenv/blob/master/COMMANDS.md#user-content-pyenv-local][pyenv local]]命令会把版本写入本地文件 =.python-version=
 
    交互模式
    启动交互模式, ~SPC m s i~ 
@@ -1326,61 +958,13 @@ virtualenvwrapper，相较于使用 virtualenv， 好处就是把所有环境都
    | ~g t~     / ~C-Tab~ | 下一个 Tab  (不好使)                                            |
    | ~C-S-Tab~        |      上一个 Tab                                               |
 ** react
-   ES6 和 JSX 就绪配置层
-   它会自动识别 .jsx 文件 和 带有 =react= imported 的文件
-
-   动态语法检查 
-   #+BEGIN_SRC sh
-     $ npm install -g eslint babel-eslint eslint-plugin-react
-   #+END_SRC
-
-   使用 项目配置文件 ~.eslintrc~ ,进行代码优化
-   https://github.com/airbnb/javascript
-   #+begin_src js
-     // Use this file as a starting point for your project's .eslintrc.
-     // Copy this file, and add rule overrides as needed.
-     {
-         "extends": "airbnb"
-     }
-   #+end_src
-
-*** 键绑定
-**** rjsx-mode
-     | ~<~           | inserts </> whenever it would start a new JSX node                               |
-     | ~>~           | right before the slash in a self-closing tag automatically inserts a closing tag |
-     | ~SPC m r r t~ | rename tag at point                                                              |
-*** tern
-    | ~SPC m C-g~   | brings you back to last place you were when you pressed M-..                             |
-    | ~SPC m g g~   | jump to the definition of the thing under the cursor                                     |
-    | ~SPC m g G~   | jump to definition for the given name                                                    |
-    | ~SPC m h d~   | find docs of the thing under the cursor. Press again to open the associated URL (if any) |
-    | ~SPC m h t~   | find the type of the thing under the cursor                                              |
-    | ~SPC m r r V~ | rename variable under the cursor using tern                                              |
-
 ** semantic 
-   #+begin_verse
    底部显示定义
    顶部显示函数
    支持 refactor
-   #+end_verse
 
    | ~SPC m r~ | srefactor: refactor thing at point. |
-** Speed Reading 幻灯片 单行浏览
-   | ~SPC a R~ | Start Spray   |
-   | ~SPC~     | Pause Spray   |
-   | ~h~       | Backward word |
-   | ~l~       | Forward word  |
-   | ~f~       | Faster speed  |
-   | ~s~       | Slower speed  |
-   | ~q~       | Quit Spray    |
 ** sql 
-   #+BEGIN_SRC emacs-lisp
-     (setq-default dotspacemacs-configuration-layers '(
-                                                       (sql :variables
-                                                            sql-capitalize-keywords t
-                                                            sql-capitalize-keywords-blacklist '("name" "varchar"))))
-   #+END_SRC
-*** 键盘绑定
     | 显示*SQL*buffer| ~SPC m b b~ |
     | 显示数据库中的表 | ~SPC m l a~ |
     | 显示表信息       | ~SPC m l t~ |
@@ -1410,81 +994,17 @@ virtualenvwrapper，相较于使用 virtualenv， 好处就是把所有环境都
    | ~SPC m h t~   | 找到光标下的东西的类型                                   |
    | ~SPC m r r V~ | 使用 tern 重命名光标下的变量                             |
 ** Yasnippet 
-   | 创建片段    | yas-new-snippet                                                                    |
-   | ~M-/~       | 展开片段                                                                           |
-   | ~SPC i s~   | 列出片段                                                                           |
-  
-   #+begin_verse
-  执行命令,用 `` 包含的代码能够执行 #+DATE: `(format-time-string "%Y-%m-%d %H:%M:%S" (current-time))`
-   #+end_verse
+   执行命令,用 `` 包含的代码能够执行 #+DATE: `(format-time-string "%Y-%m-%d %H:%M:%S" (current-time))`
 
-** 英汉转换 [[file:~/.emacs.d/private/companyenglish/][layers]]
-   打开英语提示 (toggle-company-english-helper)
-** 调试服务 [ dap,Debug Adapter Protocol ] 
-   这是一个可视化调试 IDE ,可以用来调用 微软的 ldp
-   
-   必须要对语言配置 
-   #+BEGIN_SRC emacs-lisp
-     (defun java/pre-init-dap-mode ()
-       (add-to-list 'spacemacs--dap-supported-modes 'java-mode))
-   #+END_SRC
-   也可以直接调用 ~dap-debug~
-
-   编辑调试模板 ~SPC m d d e~
-   开始调试 ~SPC m d d d~
-   调试最后的配置 ~SPC m d d l~
-
-   用法
-   定义调试模板 dap-debug-edit-template
-   进行调试  dap-debug 
-   | ~SPC m d c~   | continue                           |
-   | ~SPC m d i~   | step in                            |
-   | ~SPC m d o~   | step out                           |
-   | ~SPC m d s~   | next step                          |
-   | ~SPC m d v~   | 求值 point 下 的值                 |
-   | ~SPC m d r~   | restart frame                      |
-   |---------------+------------------------------------|
-   | ~SPC m d .~   | 调试瞬态                           |
-   |---------------+------------------------------------|
-   | ~SPC m d a~   | 放弃当前会话                       |
-   | ~SPC m d A~   | 放弃所有过程                       |
-   |---------------+------------------------------------|
-   | ~SPC m d e e~ | eval                               |
-   | ~SPC m d e r~ | eval region                        |
-   | ~SPC m d e t~ | eval value at point                |
-   |---------------+------------------------------------|
-   | ~SPC m d S s~ | switch session                     |
-   | ~SPC m d S t~ | switch thread                      |
-   | ~SPC m d S f~ | switch frame                       |
-   |---------------+------------------------------------|
-   | ~SPC m d I i~ | inspect                            |
-   | ~SPC m d I r~ | inspect region                     |
-   | ~SPC m d I t~ | inspect value at point             |
-   |---------------+------------------------------------|
-   | ~SPC m d b b~ | toggle a breakpoint                |
-   | ~SPC m d b c~ | change breakpoint condition        |
-   | ~SPC m d b l~ | change breakpoint log condition    |
-   | ~SPC m d b h~ | change breakpoint hit count        |
-   | ~SPC m d b a~ | add a breakpoint                   |
-   | ~SPC m d b d~ | delete a breakpoint                |
-   | ~SPC m d b D~ | clear all breakpoints              |
-   |---------------+------------------------------------|
-   | ~SPC m d '_~  | 运行 REPL 交互式  调试             |
-   |---------------+------------------------------------|
-   | ~SPC m d w l~ | 列出局部变量                       |
-   | ~SPC m d w o~ | goto output buffer 如果有此 buffer |
-   | ~SPC m d w s~ | list sessions                      |
-   | ~SPC m d w b~ | 列出断点                           |
 ** go
 ** Ruby layers
-       1.打开交互模式 inf-ruby
-       2.使用 ruby-send-region
+   1.打开交互模式 inf-ruby
+   2.使用 ruby-send-region
 
-** spacemacs-navigation layer
 ** vue
    处理 vue 文件
 ** lsp
-   相当与每个语言有每个语言的编译器一样，这种语言服务统一各个语言的差别，使用同样的功能接口，当然也有差异。 
+   相当于每个语言有每个语言的编译器一样，这种语言服务统一各个语言的差别，使用同样的功能接口，当然也有差异。 
    用此层，基本默认语言都用这个插件，除非另外说明
   
    LSP 生态系统基于两个软件包:
@@ -1500,19 +1020,6 @@ virtualenvwrapper，相较于使用 virtualenv， 好处就是把所有环境都
    - 使用 imenu 进行 导航
    - lsp-navigation 方便导航 (lsp-ui-peek 另一种)  快捷键 *SPC m g/G*
 ** dash
-   :PROPERTIES:
-   :ID:       cc81be7a-7761-42f8-a886-54858d8f234a
-   :END:
-  特点 
-  - 在离线文档中搜索
-  - 把搜索结果集成到 Helm 和 Ivy
-
-    | ~SPC d d~ | 在 Dash or Zeal 中查找            |
-    | ~SPC d D~ | 在 Dash or Zeal 查找但指定 文档集 |
-    | ~SPC d h~ | 在 helm-dash 查找                 |
-    | ~SPC d H~ | 在 helm-dash 查找但指定 文档集    |
-    |           |                                   |
-   
 ** spell checking    
  | ~SPC S a b~     | Add word to dict (buffer)              |
  | ~SPC S a g~     | Add word to dict (global)              |
@@ -1526,106 +1033,6 @@ virtualenvwrapper，相较于使用 virtualenv， 好处就是把所有环境都
  | ~SPC t S~       | Toggle flyspell                        |
 
 * package
-** 绘图模式 artist-mode
-   Shift+中键 选择画什么图形
-   Shift+ 右键 删除一个区域
-   
-  | 操作       | 无 shift                                                                                    | shift                                                                             |
-  | pen        | 单击，在鼠标点填充一个“填充符号”，默认为”.”；按下左键，拖动，抬起，绘制填充符号组成的线 | 单击，在鼠标点填充一个“o”；按下左键，拖动，抬起，绘制一条从初始点到最终点的直线 |
-  | Line       | 任意方向的线                                                                                | 直线                                                                              |
-  | Rectangle  | 矩形                                                                                        | 正方形 1                                                                          |
-  | Poly-line  | 任意方向的多边形                                                                            | 每条线都是直线的多边形                                                            |
-  | Ellipses   | 椭圆                                                                                        | 圆 2                                                                              |
-  | Text       | 文本                                                                                        | 覆盖式文本                                                                        |
-  | Spray-can  | 喷雾器 3                                                                                    | 设置喷雾器的大小                                                                  |
-  | Erase      | 橡皮，擦掉一个字符                                                                          | 擦掉矩形内字符                                                                    |
-  | Vaporize   | 擦除一行                                                                                    | 擦除所有相连的行                                                                  |
-  | Cut        | 剪切矩形                                                                                    | 剪切正方形                                                                        |
-  | copy       | 复制矩形                                                                                    | 复制正方形                                                                        |
-  | paste      | 粘贴                                                                                        | 粘贴                                                                              |
-  | Flood-fill | 填充工具，填充                                                                              | 填充                                                                              |
-** hackernews
-** skewer [实时 Web 开发]
-   在 Web 浏览器中提供与 JavaScript，CSS 和 HTML 的实时交互。表达式是从 emacs 的
-   ~编辑缓冲区~ ~实时~ 发送给浏览器进行求值
-   
-   查看所有当前连接的客户端的列表 list-skewer-clients
-   如果 ~浏览器~ 与 ~skewer~ 的连接丢失，可以在 浏览器控制台  用 ~skewer()~ 重新连接
-*** CSS 
-    Load the declaration at the point.
-    Load the entire rule around the point.
-    Load the current buffer as a stylesheet.
-*** HTML
-    Load the HTML tag immediately around the point   
-*** 提供 REPL 交互 
-    repl 的控制台输出 是 ~skewer.log()~
-*** bower (亭子) [ 动态加载没有包含的库 ]
-    使用 skewer-bower-load，但是这个 bower infrastructure 不好，不推介使用
-*** 名字由来 skewer
-    Emacs is skewering the browser from server-side
-
-** org-brain 脑图 [ 不太好操作 ，废弃了 ]
-*** 概述 
-    维基和思维导图的组合，其中每个维基页/思维导图节点都是 org-mode 驻留在您的文件中
-  ~org-brain-path~, 可以自己设置。
-  
-    脑图浏览模式  org-brain-visualize =SPC a o b= , 能把这些节点链接起来
-    刷新   org-brain-update-id-locations
-
-    节点之间有四种不同类型的关系
-    - Parents
-    - Children
-    - Siblings (兄弟)
-    - Friends( 朋友 )
- 
-    固定节点 ， index , 节点资源(链接和附件)
- 
-*** 概览
-  PINNED：索引
-
-               + -Python 游戏开发 -  +  - 游戏设计
-               + - 编程书籍|
-   编程 -  +  -  Emacs |
-         |   |
-         + ----------------- + ----------------- +
-                           |
-                           ▽
-                    游戏编程←→电脑游戏
-
-*** 快捷键
-**** 使用
- | ~SPC a o B v~ | 可视化进入脑图 |
- | ~SPC a o B a~ | Go to the org-brain agenda   |
-**** 在 org  文件中编写
- | ~SPC m B a c~ | Add child    |
- | ~SPC m B a f~ | Add friend   |
- | ~SPC m B a p~ | Add parent   |
- | ~SPC m B g c~ | Go to child  |
- | ~SPC m B g f~ | Go to friend |
- | ~SPC m B g p~ | Go to parent |
- | ~SPC m B R~   | Refile entry |
- | ~SPC m B x~   | Delete entry |
- | ~SPC m B v~   | 创建一个节点 |
-
-
-**** 在可是化环境中编写 (Visualization) 
- | ~j / TAB~   | Goto next link                     |
- | ~k / S-TAB~ | Goto previous link                 |
- | ~C-y~       | 粘贴资源链接                       |
- | ~a~         | Add resource [[http://orgmode.org/manual/Attachments.html][attachment]]            |
- | ~c~         | Add child                          |
- | ~f~         | 查找/访问另一个条目以显示          |
- | ~l~         | 添加资源链接                       |
- | ~p~         | Add parent                         |
- | ~o~         | Open and edit the visualized entry |
- | ~r~         | 重命名                             |
-** evil-mc(多光标) ~g r~
-   给选定的区域创建匹配的光标 ~evil-mc-make-all-cursors~ , ~g r m~
-   移除所有光标 ~evil-mc-undo-all-cursors~ , ~g r q~
-   对于当前选定的区域，移到下一个匹配处 ~evil-mc-skip-and-goto-next-match~, ~g r n~
-   对于当前选定的区域，创建下一个光标  ~evil-mc-make-and-goto-next-match~  , ~g r j~
-   暂停光标, ~evil-mc-pause-cursors~, ~g r s~
-   恢复光标 ~evil-mc-resume-cursors~ , ~g r r~
 ** tern
    智能的 Javascript 工具
 *** 配置文件    
@@ -1638,7 +1045,7 @@ virtualenvwrapper，相较于使用 virtualenv， 好处就是把所有环境都
 *** JSON 协议
     请求方式是 ~POST~ 的 ~JSON~ 。
     
-json 文档结构包含可选的  query, files, and timeout
+    json 文档结构包含可选的  query, files, and timeout
 *** 功能
     type 查询某事物的类型。
     file，end（必填），start（可选）
@@ -1686,54 +1093,22 @@ json 文档结构包含可选的  query, files, and timeout
     
 loadEagerly: 指定的文件永远加载
 plugins 用于包含插件(可在里面配置插件的具体属性)
-** gnuplot-mode
- | C-M-i   | completion-at-point                                                       |
- | M-RET   | completion-at-point                                                       |
- | C-M-x   | gnuplot-send-line-to-gnuplot                                              |
- | C-c C-b | gnuplot-send-buffer-to-gnuplot                                            |
- | C-c C-c | comment-region                                                            |
- | C-c C-d | gnuplot-info-lookup-symbol                                                |
- | C-c C-e | gnuplot-show-gnuplot-buffer                                               |
- | C-c C-f | gnuplot-send-file-to-gnuplot                                              |
- | C-c TAB | gnuplot-insert-filename                                                   |
- | C-c C-j | gnuplot-forward-script-line                                               |
- | C-c C-k | gnuplot-kill-gnuplot-buffer                                               |
- | C-c C-l | gnuplot-send-line-to-gnuplot                                              |
- | C-c C-n | gnuplot-negate-option                                                     |
- | C-c C-o | gnuplot-gui-set-options-and-insert                                        |
- | C-c C-p | gnuplot-show-gnuplot-version                                              |
- | C-c C-r | gnuplot-send-region-to-gnuplot                                            |
- | C-c C-u | gnuplot-bug-report                                                        |
- | C-c C-v | gnuplot-send-line-and-forward                                             |
- | C-c C-w | gnuplot-show-version (that binding is currently shadowed by another mode) |
- | C-c C-z | gnuplot-customize                                                         |
- | C-c ESC | Prefix Command                                                            |
- | C-c M-i | gnuplot-inline-image-mode                                                 |
-** writeroom mode [写作模式]
-** flycheck
-   - C-c ! C-c       flycheck-compile
-   - C-c ! C-w       flycheck-copy-errors-as-kill
-   - C-c ! ?         flycheck-describe-checker
-   - C-c ! C         flycheck-clear
-   - C-c ! H         display-local-help
-   - C-c ! V         flycheck-version
-   - C-c ! c         flycheck-buffer
-   - C-c ! e         flycheck-explain-error-at-point
-   - C-c ! h         flycheck-display-error-at-point
-   - C-c ! i         flycheck-manual
-   - C-c ! l         flycheck-list-errors
-   - C-c ! n         flycheck-next-error
-   - C-c ! p         flycheck-previous-error
-   - C-c ! s         flycheck-select-checker
-   - C-c ! v         flycheck-verify-setup
-   - C-c ! x         flycheck-disable-checker
 ** org-web-tools
-- org-web-tools-insert-link-for-url 插入链接，会自动附上标题
-- org-web-tools-insert-web-page-as-entry 把链接处的文章转为 org 格式文件插入
-- org-web-tools-read-url-as-org 同上，只是读到不同缓冲区
-- org-web-tools-convert-links-to-page-entries 只包含链接链表可以用此命令，用来转链接到标题
-- 以下是实用函数
-- org-web-tools--dom-to-html: Return parsed HTML DOM as an HTML string. Note: This is an approximation and is not necessarily correct HTML (e.g. IMG tags may be rendered with a closing “</img>” tag). : 以 HTML 字符串的形式返回已解析的 HTML DOM。 注意: 这是一个近似值，不一定是正确的 HTML (例如，IMG 标记可能使用结束的“ / IMG”标记呈现)
-- org-web-tools--eww-readable: Return “readable” part of HTML with title. : 返回 HTML 的“可读”部分和标题
-- org-web-tools--get-url: Return content for URL as string. : 以字符串形式返回 URL 的内容
-- org-web-tools--html-title: Return title of HTML page. : HTML 页面的返回标题
+   - org-web-tools-insert-link-for-url 插入链接，会自动附上标题
+   - org-web-tools-insert-web-page-as-entry 把链接处的文章转为 org 格式文件插入
+   - org-web-tools-read-url-as-org 同上，只是读到不同缓冲区
+   - org-web-tools-convert-links-to-page-entries 只包含链接链表可以用此命令，用来转链接到标题
+   - 以下是实用函数
+   - org-web-tools--dom-to-html:  (IMG 标记可能使用结束的“ / IMG”标记呈现)
+   - org-web-tools--eww-readable:  返回 HTML 的“可读”部分和标题
+   - org-web-tools--get-url:  以字符串形式返回 URL 的内容
+   - org-web-tools--html-title:HTML 页面的返回标题
+* 窗口管理 
+  假设 Emacs 需要打开三个类型的窗口，1 代码，2 终端 3，文档，怎么确保代码在对应的窗口打开，可以使用 window-purpose
+  
+ 命令 
+- switch-to-buffer and display-buffer
+- helm-source-buffers-list
+- purpose-mode 与 pupo-mode 切换
+- SPC r b 打开 buffer (同一类的)
+- SPC r p 选择某类的 buffer 打开

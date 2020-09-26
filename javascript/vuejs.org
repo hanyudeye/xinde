@@ -5,87 +5,128 @@
 #+DATE: 2020-02-12T05:44:50+08:00
 #+draft: t
 
-我们看一张 *报纸* ，然后版面栏目不是很多嘛，比如这块是实事新闻，那块是娱乐新闻，东西很多放在一起管理就麻烦，分块各人管一小块就清晰点。   
-vuejs 就是干这事的，它提供了版面接口(版面成了一个容易扩展的独立对象)，使得报纸的内容更容易修改(动态化)。
+Vue (读音 /vjuː/，类似于 view) 是一套用于构建用户界面的渐进式框架。与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。
 
-#+begin_quote
-就是把报纸的 *版面结构* 和 *版面内容* 分离开来，使 *版面结构*  不动的情况下  *版面内容*  可以随意变化。
-#+end_quote
 # more  
-** 前端历史
-   - *html* ， *javascript* , *css* 技术相继出来以后，一张 *报纸* 基本满足用户的需求了，且还有少量互动，但程序员处理浏览器兼容性还是非常麻烦。
-   - *ajax* 技术的出现，使 *报纸* 可以局部更新,体验更好，也节省了带宽。
-   - *jQuery* 大大简化语法，提高了生产力。
-   - *angularjs* *vuejs*  等前端框架出现，改变着传统网页单页无法重用的设计模式，改变了编码范式
-   - *nodejs* 的出现，使得前端工程师都要把后端工程师消灭了。
- 
-** 安装
-   #+begin_src html
-     <script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
-   #+end_src
-  
-** 基本结构 
-   版面结构
-   #+begin_src html
-     <div>
-       <h1>Hello,world {{message}}</h1>
-     </div>
-   #+end_src
 
-   版面内容
-   #+begin_src js
-     new Vue(
-         {
-             el:'h1', 
-             data:{
-                 message:'Hello Vue', 
-             }
-         })
-   #+end_src
+** 介绍 
+*** 安装
+    #+begin_src html
+      <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+      <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+      <!-- 生产环境版本，优化了尺寸和速度 -->
+      <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+ #+end_src
+*** 声明式渲染
+    Vue.js 的核心是一个允许采用简洁的模板语法来声明式地将数据渲染进 DOM 的系统：
 
-   #+begin_quote
-   看下结构，模板式的关联方式，这样版面结构和版面内容就相互对应了，以后只要修改版面内容就可以了。
-   #+end_quote
-   
-** 特性    
-*** 版面结构(模板)
-    动态数据和事件的绑定方式跟原来不一样了，用了 vue 定义的模板样式。编程范式也跟
-    原来很不相同，以前是一步一步命令式的方式(命令范式)，现在是配置式的（声明范
-    式），简化了好多代码。
+    #+begin_src html
+      <div id="app">
+        {{ message }}
+      </div>
+    #+end_src
     
-    因为版面结构与数据发生了绑定，所以 *vue* 会追踪数据是否发生变化来决定是否重新
-    渲染页面结构。这种方式叫响应式系统， 实例被创建时 *data* 中的数据是 *响应式*
-    的。
-**** 数据绑定
-***** 文本 
-      #+begin_src html
-        <div id="app">
-          {{ message }}
-        </div>
-      #+end_src
-
-      #+begin_src javascript
-        var app = new Vue（{ 
-            el:'＃app'，
-            data:{ 
-                message:'Hello Vue！'
-            } 
-        }）
-      #+end_src
-      #+begin_quote
-      这里 *message* 是响应式的，它一变，页面就要重新渲染。
-      #+end_quote
-      
-      不会改变的文本
-      #+begin_src html
-        <span v-once>这个将不会改变: {{ msg }}</span>
-      #+end_src
+    #+begin_src js
+      var app = new Vue({
+        el: '#app',
+        data: {
+          message: 'Hello Vue!'
+        }
+      })
+    #+end_src
+    
+    说明：给前端定义一个 Vue 对象，然后前端可以有选择的渲染，因为是响应式的，所以数据的修改会直接反应到前端。
+*** 条件与循环
+    #+begin_src html 
+      <div id="app-3">
+        <p v-if="seen">现在你看到我了</p>
+      </div>
+    #+end_src
+    #+begin_src js
+      var app3 = new Vue({
+        el: '#app-3',
+        data: {
+          seen: true
+        }
+      })
+    #+end_src
+    
+    说明：添加了条件语法
+*** 处理用户输入
+    #+begin_src html
+   <div id="app-5">
+  <p>{{ message }}</p>
+  <button v-on:click="reverseMessage">反转消息</button>
+</div>
+    #+end_src
+    #+begin_src js
+       var app5 = new Vue({
+        el: '#app-5',
+        data: {
+          message: 'Hello Vue.js!'
+        },
+        methods: {
+          reverseMessage: function () {
+            this.message = this.message.split('').reverse().join('')
+          }
+        }
+      })
+ #+end_src
+ 
+    说明：修改了事件绑定语法
+*** 组件化应用构建
+** 详细说明
+*** 前端模板 view
+**** 数据定义与绑定 
+     #+begin_src html
+       <div id="app">{{val}}<div>
+           <script>
+             new Vue({
+             el: '#app',
+             data: {
+             val: 'Hello World !'
+             }
+             })
+           </script>
+     #+end_src
+    
+     数据定义在 data 中，将  el 与 data 进行绑定。前端可以用模板选择要显示的数据，模板还能进行简单的计算。
+***** 非成对 DOM 的数据绑定 v-model
 ***** HTML
-      对文本进行 *HTML* 解析
       #+begin_src html
         <span v-html="rawHtml"></span>
       #+end_src
 
+**** 使用表达式
+     #+begin_src html
+       {{ number + 1 }}
+       {{ ok ? 'YES' : 'NO' }}
+       {{ message.split('').reverse().join('') }}
+       <div v-bind:id="'list-' + id"></div>
+     #+end_src
+**** 方法的定义及事件绑定
+     #+begin_src html
+       <div id="app">
+         <input type="button" value="点击我" v-on:click="fun()">
+       </div>
+       <script>
+         new Vue({
+         el: '#app',
+         data:{
+         val: 'hello'
+         },
+         methods: {
+         fun(){
+         alert(this.val);
+         }
+         }
+         })
+       </script> 
+     #+end_src
+    
+     绑定方法：
+      1. v-on:click="fun()"
+      2. @:click="fun()"
 **** 属性绑定
      - v-bind:title="message"
 
@@ -97,20 +138,12 @@ vuejs 就是干这事的，它提供了版面接口(版面成了一个容易扩�
      特殊例子， 如果 `isButtonDisabled` 的值是 `null`、`undefined` 或 `false`，则 `disabled` 特性甚至不会被包含在渲染出来的 `<button>` 元素中。
      #+end_quote
 
-**** 使用 JavaScript 表达式
-     直接使用，注意与语句区分
-     #+begin_src html
-       {{ number + 1 }}
-       {{ ok ? 'YES' : 'NO' }}
-       {{ message.split('').reverse().join('') }}
-       <div v-bind:id="'list-' + id"></div>
-     #+end_src
 **** 条件与循环
      - v-if 条件判断
      - v-else 分支
-     - v-for 循环
+     - v-for 循环 (val,key) in arr
      - v-else-if
-     - v-show 仅仅隐藏
+     - v-show 显示隐藏
 
        #+begin_src html
          <div v-if="type === 'A'">
@@ -129,8 +162,11 @@ vuejs 就是干这事的，它提供了版面接口(版面成了一个容易扩�
        #+end_src
 
 **** 事件绑定
-     - v-on
-    
+   
+***** 点击事件 @click 
+***** 鼠标事件  @mouseover @mouseleave
+***** 表单事件 @focus @blurs
+***** 键盘事件 @keyup @keydown
 ***** 事件修饰符
       #+begin_src html
         <!-- 阻止单击事件继续传播 -->
@@ -205,52 +241,6 @@ vuejs 就是干这事的，它提供了版面接口(版面成了一个容易扩�
         <div @click.ctrl="doSomething">Do something</div>
         `
       #+end_src
-**** 表单绑定 
-     - v-model
-
-       #+begin_src html
-         <input v-model="message" placeholder="edit me">
-
-         <!-- 多行文本 -->
-         <textarea v-model="message" placeholder="add multiple lines"></textarea>
-
-         <!-- 复选框 -->
-         <input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
-         <input type="checkbox" id="john" value="John" v-model="checkedNames">
-
-         <!-- 单选按钮 -->
-         <input type="radio" id="one" value="One" v-model="picked">
-         <input type="radio" id="two" value="Two" v-model="picked">
-
-         <!-- 选择框 -->
-         <select v-model="selected">
-           <option disabled value="">请选择</option>
-           <option>A</option>
-           <option>B</option>
-           <option>C</option>
-         </select>
-
-         <!-- 渲染的动态选项 -->
-         <select v-model="selected">
-           <option v-for="option in options" v-bind:value="option.value">
-             {{ option.text }}
-           </option>
-         </select>
-
-         #+end_src
-***** 值绑定 
-
-      #+begin_src html
-        <input
-          type="checkbox"
-          v-model="toggle"
-          true-value="yes"
-          false-value="no"
-          >
-
-      #+end_src
-**** 冻结绑定
-     - Object.freeze(obj)
 **** 缩写
      - v-bind 缩写  :
      - v-on 缩写 @
@@ -323,10 +313,9 @@ vuejs 就是干这事的，它提供了版面接口(版面成了一个容易扩�
       #+end_src
 
 *** 组件
-    相当于自定义的标签，自己辛苦定义一个，当然要重复使用了啊
+    每个页面有些东西是重复的(比如头部，底部，侧边栏)，那么，我们可以把这些重复的地方第一为组件，就可以重复使用了。
 **** 定义组件 
      - Vue.component(tagName, options)
-
        #+begin_src js
          // 定义名为 todo-item 的新组件
          Vue.component('todo-item', {
@@ -422,3 +411,7 @@ vuejs 就是干这事的，它提供了版面接口(版面成了一个容易扩�
     - mounted
     - updated
     - destroyed
+** vue-cli 使用
+*** 初始化项目
+  vue init webpack vue_mall(项目名称) 
+*** 运行项目 npm run dev

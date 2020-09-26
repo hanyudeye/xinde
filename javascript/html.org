@@ -5,162 +5,90 @@
 #+DATE: 2020-02-11T14:27:45+08:00
 #+draft: true
 
-HTML 技术主要用来制作网络浏览器页面用的，就像我们看过的书或者报纸页一样，它不仅可以展示文字，还能格式化文字，还能播放多媒体，
-联合 javascript 技术还能制作网游，使得界面感觉都不像一页报纸了。
+超文本标记语言（英語：HyperText Markup Language，简称：HTML） 是一种用于创建网页的标准标记语言。HTML 是一种基础技术，常与 CSS、JavaScript 一起被众多网站用于设计网页、网页应用程序以及移动应用程序的用户界面。网页浏览器可以读取 HTML 文件，并将其渲染成可视化网页。
+
 # more
-它的基本语法是使用特定的标签表示特定的东西，而且那个标签还是成对的，这是它的特点。
 
-#+begin_quote
-因为计算机技术用在不同大小的屏幕上，所以，网页技术也进行了屏幕兼容性适配。
-#+end_quote
-* html
-** 安装与编辑
-  有浏览器就可以展示 *HTML*  文件了，如果想要编写 *HTML* 文件，可以下个 *HTML* 编辑器。
-** 基本格式
-   #+BEGIN_SRC html -n
-     <!DOCTYPE html>
-     <html lang="en">
-       <head>
-         <meta charset="utf-8">
-         <!-- 手机看报兼容 -->
-         <meta name="viewport" content="width=device-width,
-                                        initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,
-                                        user-scalable=no">
-         <title>报纸的标题</title>
-         <link href="favicon.ico" rel="icon" type="image/x-icon">
-         <!-- 模样代码文件 -->
-         <link rel="stylesheet" href="css/app.css">
-         <!-- 脚本代码文件  -->
-         <script src="js/app.js"></script>
-         <style type="text/css">
-         </style>
-       </head>
-       <body>
-         <section> 
-           <h1>版面1内容的标题</h1>
-           <p>今天下雨了</p>
-         </section>
-         <section> 
-           <h1>版面2内容的标题</h1>
-           <p>春天来了</p>
-         </section>
-       </body>
-     </html>
-   #+END_SRC
+** 基本结构
+#+begin_src htm
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>This is a title</title>
+  </head>
+  <body>
+    <p>Hello world!</p>
+  </body>
+</html>
+#+end_src
 
-** 浏览器排版后的显示
-   [[file:2020-02-11_15-16-00_screenshot.png]]
-* 详细说明   
-** 根标签
-   - html  此标签表明是 *HTML* 文件，技术规定
-** 头部标签
-   - head 头部标记
-   - title 相当于报纸总标题
-   - meta 元数据标签，用来补充说明页面属性
-   - style 报纸的样式定义区域
-   - script 报纸包含的执行代码(脚本)
-** 文档的体
-   - body  体的标记 
-   - section 文章章节 
-   - nav 导航章节    
-   - header 章节的头部,包含 logo、页面标题和导航性的目录                  
+一个 HTML 文件分两块，一块是 head 部，一块是 body 部，head 部用来描述网页，body 部 用来渲染。
+** 块级元素和内联元素 
+   我们日常看网页内容的时候，会按照从左往右，从上往下的方向看网页，那么怎么编排这些内容呢？
+   
+   *html* 中把从左往右的标签叫内联元素 ，把从上往下排列的标签叫块级元素。所以，我们平时设计网页的时候，先要思考我们的网站是上下划分块呢，还是左右划分块，这样比较清晰。
+
+   块级元素有 : 标题(h1-h6)，段落(p)， div ，标题是因为我们不大希望标题右边还有东西，段落也一样，段落是一段一段的，这些是从上往下排列的
+   
+   内联元素：其他小东西基本都是 ，什么链接，图片，格式化的文字，这些可以行内排列
+** 布局块
+   - section 章节 
+   - nav 导航
+   - header 章节的头部
    - h1 标题                                                        
-   - article 内容块                                                
-   - aside  扩展内容块                                            
-   - footer 章节的尾部,包含版权信息、法律信息链接和反馈建议用的地址 
+   - article 内容
+   - aside  无关内容
+   - footer 章节的尾部
    - address  联系信息                                             
-   - main  文档中主要或重要的内容                                 
-** 内容节点
-   - p 定义一个段落                                      
-   - hr 分隔符      
-   - pre 代表其内容已经预先排版过，格式应当保留            
-   - blockquote 代表引用自其他来源的内容                          
-   - ol   定义一个有序列表                                  
-   - ul   定义一个无序列表                                  
-   - li   定义列表中的一个列表项                            
-   - dl   定义一个定义列表（一系列术语和其定义）            
-   - dt   代表一个由下一个 dd  定义的术语                  
-   - dd   代表出现在它之前术语的定义                        
-   - figure 	图例
-   - figcaption	图例说明
+   - main  重要的内容                                 
    - div 通用容器
-** 嵌入内容节点
-  - img     代表一张图片                                                                                 
-  - iframe   代表一个内联的框架                                                                           
-  - object   代表一个外部资源 ，如图片、HTML 子文档、插件等                                               
-  - param    代表 object  元素所指定的插件的参数                                                         
-  - video   	代表一段视频 及其视频文件和字幕，并提供了播放视频的用户界面         
-  - audio   	代表一段声音 ，或音频流                                             
-  - source  	为 video  或 audio  这类媒体元素指定媒体源                        
-  - track   	为 video  或 audio  这类媒体元素指定文本轨道（字幕）              
-  - canvas  	代表位图区域 ，可以通过脚本在它上面实时呈现图形，如图表、游戏绘图等 
-  - map      与 area  元素共同定义图像映射 区域                                                          
-  - area     与 map  元素共同定义图像映射 区域                                                           
-  - svg      	定义一个嵌入式矢量图                                                
-  - math     	定义一段数学公式                                                    
-** 文字形式节点
-   - a 	代表一个链接到其他资源的超链接 
-   - em 	代表强调 文字
-   - strong 	代表特别重要 文字
-   - small 	代表注释 ，如免责声明、版权声明等，对理解文档不重要
-   - s 	代表不准确或不相关 的内容
-   - cite 	代表作品标题 
-   - q 	代表内联的引用 
-   - dfn 	代表一个术语包含在其最近祖先内容中的定义 
-   - abbr 	代表省略 或缩写 ，其完整内容在 title 属性中
-   - data  	关联一个内容的机器可读的等价形式 
-   - time  	代表日期和时间值；机器可读的等价形式通过 datetime 属性指定
-   - code 	代表计算机代码 
-   - var 	代表代码中的变量 
-   - samp 	代表程序或电脑的输出 
-   - kbd 	代表用户输入 ，一般从键盘输出，但也可以代表其他输入，如语音输入
-   - sub ,sup 	分别代表下标 和上标 
-   - i 	代表一段不同性质 的文字，如技术术语、外文短语等
-   - b 	代表一段需要被关注 的文字
-   - u 	代表一段需要下划线呈现的文本注释，如标记出拼写错误的文字等
-   - mark  	代表一段需要被高亮的引用 文字
-   - ruby  	代表被 ruby 注释 标记的文本，如中文汉字和它的拼音
-   - rt  代表 ruby 注释 ，如中文拼音
-   - rp  代表 ruby 注释两边的额外插入文本 ，用于在不支持 ruby 注释显示的浏览器中提供友好的注释显示
-   - bdi  代表需要脱离 父元素文本方向的一段文本它允许嵌入一段不同或未知文本方向格式的文本
-   - bdo 	指定子元素的文本方向 ，显式地覆盖默认的文本方向
-   - span 	代表一段没有特殊含义的文本，当其他语义元素都不适合文本时候可以使用该元素
-   - br 	代表换行 
-   - wbr  代表建议换行 (Word Break Opportunity) ，当文本太长需要换行时将会在此处添加换行符
-** 表格节点
-   - table      定义多维数据                        
-   - caption    代表表格的标题                      
-   - colgroup   代表表格中一组单列或多列            
-   - col        代表表格中的列                      
-   - tbody      代表表格中一块具体数据 （表格主体） 
-   - thead      代表表格中一块列标签 （表头）       
-   - tfoot      代表表格中一块列摘要 （表尾）       
-   - tr         代表表格中的行                      
-   - td         代表表格中的单元格                  
-   - th         代表表格中的头部单元格              
-** 表单节点
-   - form       代表一个表单 ，由控件组成                                   
-   - fieldset   代表控件组                                                  
-   - legend     代表 fieldset  控件组的标题                                
-   - label      代表表单控件的标题                                          
-   - input      代表允许用户编辑数据的数据区 （文本框、单选框、复选框等）   
-   - button     代表按钮                                                    
-   - select     代表下拉框                                                  
-   - datalist  	代表提供给其他控件的一组预定义选项 
-   - optgroup   代表一个选项分组                                            
-   - option     代表一个 select  元素或 datalist  元素中的一个选项        
-   - textarea   代表多行文本框                                              
-   - keygen     	代表一个密钥对生成器 控件          
-   - output     	代表计算值                         
-   - progress   	代表进度条                         
-   - meter      	代表滑动条                         
-** 交互元素节点
-  - details    	代表一个用户可以(点击)获取额外信息或控件的小部件 
-  - summary    	代表 details  元素的综述 或标题                 
-  - menuitem   	代表一个用户可以点击的菜单项                     
-  - menu       	代表菜单                                         
-** 编辑节点
-   - ins   定义增加到文档的内容 
-   - del   定义从文档移除 的内容 
+** 列表
+ - 有序列表（ordered list）- ol / li
+ - 无序列表（unordered list）- ul / li
+ - 定义列表（definition list）- dl / dt / dd
+** 图像
+    - img     图片                                                                                 
+    - figure 	图例
+    - figcaption	图例说明
+** 文本
+- 标题（heading）和段落（paragraph）
+  - h1 ~ h6
+  - p
+- 上标（superscript）和下标（subscript）
+  - sup
+  - sub
+- 空白（白色空间折叠）
+- 折行（break）和水平标尺（horizontal ruler）
+  - br
+  - hr
+- 语义化标签
+  - 加粗和强调 - strong
+  - 引用 - blockquote
+  - 缩写词和首字母缩写词 - abbr / acronym
+  - 引文 - cite
+  - 所有者联系信息 - address
+  - 内容的修改 - ins / del
+** 表格
+- 基本的表格结构 - table / tr / td / th
+- 表格的标题 - caption
+- 跨行和跨列 - rowspan 属性 / colspan 属性
+- 长表格 - thead / tbody / tfoot
+** 表单
+- 重要属性 - action / method / enctype
+- 表单控件（input）- type 属性
+  - 文本框 - text / 密码框 - password / 数字框 - number
+  - 邮箱 - email / 电话 - tel / 日期 - date / 滑条 - range / URL - url / 搜索 - search
+  - 单选按钮 - radio / 复选按钮 - checkbox
+  - 文件上传 - file / 隐藏域 - hidden
+  - 提交按钮 - submit / 图像按钮 - image  / 重置按钮 - reset
+- 下拉列表 - select / option
+- 文本域（多行文本）- textarea
+- 组合表单元素 - fieldset / legend
+** 音视频（audio / video）
+- video 标签和属性 - autoplay / controls / loop / muted / preload / src
+- audio 标签和属性 - autoplay / controls / loop / muted / preload / src / width / height / poster
+** 窗口（frame）
+- 内嵌窗口 - iframe
 
-     
+** 辅助工具
+*** 设计软件 figma

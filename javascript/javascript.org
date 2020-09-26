@@ -5,56 +5,17 @@
 #+DATE: 2020-02-11T18:47:24+08:00
 #+draft: true
 
-Javascript 技术原来也是用在网页里面的，弄一些花里胡哨的动态效果，但现在它满足了
-一个现实，人有时懒的连报纸都不想翻，就想在报纸上用手指划划就想翻页，Javascript
-的技术能够实现，所以现在又发达起来了。
-# more
-* JavaScript 
-** 安装
-   安装好浏览器和代码编辑器，打开浏览器控制台进行执行和测试。
-** 函数
-*** function 命令
-    #+begin_src js -n
-      function print(s) {
-          console.log(s);
-      }
-    #+end_src
-*** 表达式
-    #+begin_src js -n
-      var print = function(s) {
-          console.log(s);
-      };
-    #+end_src
-*** 函数参数的解构赋值
-    #+begin_src js
-      const person = { name: '小明', age: 11}
-      function printPerson({name, age}) { // 函数参数可以解构一个对象
-          console.log(`姓名：${name} 年龄：${age}`);
-      }
-      #+end_src
-*** 箭头函数
-    #+begin_src js
-      let getSum2=(x, y)=> {
-          return x + y;
-      }
-      // 简写，只能用于一行代码
-      let getSum2=(x, y)=> x + y;
-    #+end_src
-** 避免使用全局变量和函数
-   #+begin_src js
-     var myApp = {
-         lang: "en",
-         debug: true,
-     };
+*Javascript* 是一个脚本语言，是一个小伙子用了半个月开发出来的，作为给网页做效果用的，源码会存到本地，然后浏览器来执行，是客户端的脚本。
+因为现在的网页已经作为 App 来用了，要写大量的 javascript 代码，所以 javascript 也在更新，加入了模块等功能，这样能够作为服务器脚本了。
 
-     myApp.setLang = function (arg) {
-         this.lang = arg;
-     }
-   #+end_src
+# more
+javascript 要与网页或浏览器互动，那么浏览器就要提供互动的接口给 Javacript 解释器，这个接口是那些大厂商协商的标准,叫 DOM(文档对象模型)，通过这些接口来扩展网页的行为。
+
+javascript 添加到 HTML 的方法与 CSS 差不多，一种是用 标签引入外部文件，一种是在标签内直接输入 javascript 的代码。
+
+最简单运行 javascript 代码方式是在浏览器控制台直接输入
+
 * DOM (文档对象模型)
-  这个技术的产生是因为我们看报纸，不光是看，还想直接跟报纸互动。怎么跟报纸互动呢，
-  就是浏览器把报纸上的内容提供接口，然后用 JavaScript 语言具体编码
-  
 ** document  接口
 *** 属性
     - cookie        设置或返回与当前文档有关的所有 cookie 
@@ -86,9 +47,7 @@ Javascript 技术原来也是用在网页里面的，弄一些花里胡哨的动
     - insertBefore 插到节点前面
     - removeChild 删除子节点
     - replaceChild 替换节点
-
 ** 事件接口
-   报纸的行为不仅可以内部控制，外部还能触发。
 *** window 
     - onload    页面结束加载之后触发(最慢，要所有图片都下载完)    
     - onresize  当浏览器窗口被调整大小时触发                     

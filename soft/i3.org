@@ -382,3 +382,70 @@ echo 35 | sudo tee /sys/class/backlight/intel_backlight/brightness&>/dev/null
 打开窗口 3
 切换到水平切割 Mod1+Mod2+H
 打开窗口 4
+* 配置 
+  
+# brightness control
+bindsym XF86MonBrightnessUp exec xrandr --output eDP-1 --brightness 1
+bindsym XF86MonBrightnessDown exec xrandr --output eDP-1 --brightness 0.5
+* bar
+  general {
+        output_format = "i3bar"
+        colors = false
+        markup = pango
+        interval = 5
+        color_good = '#2f343f'
+  color_degraded = '#ebcb8b'
+  color_bad = '#ba5e57'
+}
+order += "disk /"
+order += "disk /home"
+order += "load"
+order += "ethernet _first_"
+order += "wireless _first_"
+order += "battery all"
+order += "cpu_temperature 0"
+order += "volume master"
+order += "tztime local"
+load {
+        format = "<span background='#50fa7b'>  </span><span background='#e5e9f0'> %5min Load </span>"
+}
+cpu_temperature 0 {
+        format = "<span background='#bf616a'>  </span><span background='#e5e9f0'> %degrees °C </span>"
+        path = "/sys/class/thermal/thermal_zone0/temp"
+}
+disk "/" {
+        format = "<span background='#fec7cd'>   </span><span background='#e5e9f0'> %free Left </span>"
+}
+disk "/home" {
+        format = "<span background='#a1d569'>  %free Free </span>"
+}
+ethernet _first_ {
+        format_up = "<span background='#88c0d0'>  </span><span background='#e5e9f0'> %ip </span>"
+        format_down = "<span background='#88c0d0'>  </span><span background='#e5e9f0'> Disconnected </span>"
+}
+wireless _first_ {
+        format_up = "<span background='#bd93f9'>  </span><span background='#e5e9f0'> %essid </span>"
+        format_down = "<span background='#bd93f9'>  </span><span background='#e5e9f0'> Disconnected </span>"
+}
+volume master {
+        format = "<span background='#ebcb8b'>  </span><span background='#e5e9f0'> %volume </span>"
+        format_muted = "<span background='#bf616a'>  </span><span background='#e5e9f0'> Muted </span>"
+        device = "default"
+        mixer = "Master"
+        mixer_idx = 0
+}
+battery all {
+     last_full_capacity = true
+        format = "<span background='#a3be8c'>  </span><span background='#e5e9f0'>%percentage [%status] </span>"
+        format_down = "No Battery"
+        status_chr = " Charging "
+        status_bat = ""
+        status_unk = " Unknown "
+        status_full = " Charged "
+        path = "/sys/class/power_supply/BAT%d/uevent"
+        low_threshold = 10
+}
+tztime local {
+  format = "<span background='#81a1c1'> %time </span>"
+  format_time = " %a %-d %b %I:%M %p"
+}

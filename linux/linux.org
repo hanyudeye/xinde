@@ -1,169 +1,364 @@
-#+TITLE: 【三楼】UNIX命令简介
-#+DESCRIPTION: linux 系统简介
-#+TAGS[]:  linux unix
+#+TITLE: Linux命令简介
+#+DESCRIPTION: linux命令简介
+#+TAGS[]:  linux 
 #+CATEGORIES[]: 技术
 #+DATE: 2019-11-29T21:49:26+08:00
 #+lastmod: 2020-03-24T06:15:52+08:00
-#+weight: 3
+# #+weight: 3
 
-记录一下用命令操控计算机的用法
+记录 Linux 操作系统常用命令的备忘
 
- # more
-* 历史
-在 UNIX (或 Linux)  系统下，程序基本是没啥外观的，东西要做某件事情，需要输入东西的名称和输入的数据，然后东西会把功能操作的结果以某种形式展示出来。 
-
-为什么东西如此的不直观，不想我们人类一样，要求做某件事客客气气的，回馈也很热情，或者像图形界面那样，有友好的菜单与直观的输入输出环境。我觉得是跟以前图形显示器的文字显示形式和程序员的稀少有关。
-好吧，我们就学习这些简陋的东西吧，这些东西难的是写法的怪异和个别参数很多，但搞清楚功能后记忆还是不太难的。
-
-* Linux 系统
- 我们日常用的手机，一般买回家之后就有一个 *系统* 了，然后如果我们想使用手机的其它功能，可以安装 *应用软件* 。 
+# more
  
- 所以，我们一般把计算机软件分为 操作系统和应用软件两部分，应用软件需要操作系统提供的功能。
-  
- 简单来说，系统这个东西就是做一些管理方面的事情，统筹规划，提供服务什么的，方便 *人类* 友好的用好电脑这个机器。
-* 命令
-  人们用机器来干什么，就要知道机器里有什么东西，能用这个东西来做什么。
-  
-- 文件的概念，简单说，机器里的东西，也叫做文件 ，是按照目录树的结构放置起来的。有些东西像书本一样作为资料，有些东西像电饭锅一样作为工具。
-- 文件这东西占用一定的空间，我们叫它文件大小，文件还有创建时间，文件名字等几个属性。
-- 当作为工具的东西运行起来后，就变成了进程，有时我们想让工具停止运行，就要关掉东西，我们一般用发送消息的方式来关掉东西。
-- 用户登录的概念是为了多个用户使用同一个机器，或者远程操作机器而创造出来的。
-- 计算机里的东西很多都是已有东西的一个电子化抽象（比如文本编辑器对应现实中的练习本，图像编辑器对应现实中的画画本），所以没有趁手的工具时，可以上网搜
-- 很多基础的命令都是 *GNU* 组织提供。
- 
+通用命令格式：
+#+begin_quote
+命令名称 [命名参数] [命令对象]
+#+end_quote
+** 基础命令
+*** 获取登录信息 
+**** w
+显示已登录用户以及他们正在干什么
+**** who
+显示已登录用户，信息没有 ~w~ 来得全面
+**** last
+显示最近登录的用户列表
+**** lastb
+显示用户错误的登录列表，此指令可以发现系统的登录异常
+*** 查看命令的说明和位置 
+**** whatis
+显示命令的简短说明
+**** which
+查找并显示给定命令的绝对路径，环境变量 PATH 中保存了查找命令时需要遍历的目录
+**** whereis
+显示指令的二进制程序、源代码文件和 man 手册页等相关文件的路径
+*** 清除屏幕上显示的内容 
+**** clear
+*** 查看帮助文档    
+****  man [manual]
+命令手册页
+**** manpages-zh  
+中文命令手册
+**** info 
+更加详细的命令文档
+*** 查看系统和主机名 
+**** uname 
+显示系统信息
+**** hostname
+显示或设置系统的主机名
+*** 时间和日期 
+**** date 
+**** cal
+*** 重启和关机 
+**** reboot
+**** shutdown
+shutdown [OPTIONS...] [TIME][WALL...]
+     
+可选参数[TIME] 表示时间的字符串(通常是 now，+m )
+[WALL...]用于发送给所有登录用户的警告信息
+     
+如果使用了[TIME]参数， 那么在关机流程开始前 5 分钟将会创建
+/run/nologin 文件， 以禁止用户登录。
+*** 退出登录 
+**** exit
+**** logout
+*** 查看历史命令 history
+** 实用程序
+*** 文件和文件夹操作
+**** 创建/删除目录
+***** mkdir
+***** rmdir
+**** 创建/删除文件
+***** touch
+***** rm
+**** 切换和查看当前工作目录 
+***** ls
+- R 递归展开
+- a 显示隐藏文件
+- d 仅显示目录
+- t/r 排序 (正向，反向)
+
+***** cd
+**** 查看文件内容
+***** cat (正看)
+***** tac (倒看)
+***** head
+***** tail
+***** more
+***** less
+***** rev (反向)
+***** od
+**** 拷贝/移动文件
+***** cp
+***** mv
+**** 文件重命名 
+***** rename
+**** 查找文件和查找内容 
+***** find
+#+begin_src sh
+  find . -type f -exec ls -l {} \;
+#+end_src
+***** grep
+**** 创建链接和查看链接 
+***** ln
+***** readlink
+**** 压缩/解压缩和归档/解归档
+***** gzip
+***** gunzip
+***** unar
+中文不会乱码
+    
+***** xz
+***** tar
+**** 将标准输入转成命令行参数 
+***** xargs
+**** 其他相关工具
+***** 对内容排序 sort
+***** 拆分文件 split
+***** 判断文件类型 file
+***** 统计文件行数、单词数、字节数 wc
+***** 去掉相邻重复内容 uniq
+***** 替换指定内容为新内容 tr
+*****  剪切/黏贴内容 cut paste
+***** 编码转换 iconv
+*** 管道和重定向
+**** 管道 |
+**** 输出重定向和错误重定向 
+***** 输出>
+***** 追加>>
+***** 错误输出 2>
+**** 输入重定向 <
+**** 多重定向 tee
+*** 别名
+**** alias
+**** unalias
+*** 文本处理
+**** 字符流编辑器  sed
+用法：
+sed 脚本 文件
+
+sed 's,A,B,' FILE   把 FILE 中的 A 用 B 替换
+
+- a 追加
+- i 插入
+- d 删除
+- s 替换
+
+  例子
+  #+begin_src shell
+    [root ~]# sed '2,4d' fruit.txt
+
+  #+end_src
+**** 模式匹配和处理语言 awk
+处理表格
+
+例子
+#+begin_src shell
+  [root ~]# awk '{print $2}' fruit2.txt 
+  [root ~]# awk '{if($3 >= 300) {print $0}}' fruit2.txt 
+#+end_src
 ** 用户管理
-   
-   - 登录 login (我们用某个机器，一般用自己的账号来使用机器，这样就避免干涉到别人的隐私)
-   - 登出 logout
-   - 新建用户 useradd (新建一个能够使用机器的人)
-   - 设置密码 passwd
-   - 设置用户属性  usermod
+*** 创建和删除用户 
+**** useradd
+**** userdel
+*** 创建和删除用户组 
+**** groupadd 
+**** groupdel
+*** 修改密码 passwd
+*** 批量修改用户密码 chpasswd
+*** 查看和修改密码有效期 chage
+*** 切换用户 su
+*** 以管理员身份执行命令 sudo 
+*** 显示用户与用户组的信息 id
+*** 显示当前终端 tty
+*** write
+向指定登录用户终端上发送信息
+#+begin_src shell
+write Rollaend pts/2
+#+end_src
 
-** 东西管理
-   - 列出文件  ls (list)
-   - 删除文件 rm(remove)
-   - 编辑文件 一般用 vim 或者 emacs
-   - 改变文件所有者 chown (设置东西的归属人)
-   - 改变文件读写属性 chmod (设置东西的权限)
-** 系统信息
-   #+begin_src shell -n
-     cat /etc/lsb-release # 查看软件( 系统 )信息
-     uname -a                # 查看内核/操作系统/CPU 信息
-     cat /proc/cpuinfo       # 查看 CPU 信息
-     hostname                # 查看计算机名
-     lspci -tv               # 列出所有 PCI 设备
-     lsusb -tv               # 列出所有 USB 设备
-     lsmod                   # 列出加载的内核模块
-     free -m                # 查看内存使用量和交换区使用量
-     uptime                 # 查看系统运行时间、用户数、负载
-     cat /proc/loadavg      # 查看系统负载
-   #+end_src
 ** 进程管理
-   - ps(process)   显示进程信息
-   - kill   给进程发信号 
-   - pgrep  通过 *进程名* 查找进程 
-   - pkill   通过 *进程名* 给进程发信号
-
-*** 进程状态
-    - R (TASK_RUNNING)，可执行状态。
-    - S (TASK_INTERRUPTIBLE)，可中断的睡眠状态
-    - D (TASK_UNINTERRUPTIBLE)，不可中断的睡眠状态
+*** 查看进程 ps
+*** 显示进程状态树 pstree
+*** 查找与指定条件匹配的进程  pgrep
+*** 通过进程号终止进程 kill
+*** 通过进程名终止进程  killall / pkill
+*** 将进程置于后台运行 &
+*** 查询后台进程 jobs
+*** 让进程在后台继续运行  bg
+*** 将后台进程置于前台  fg
+*** 用户登出后进程继续工作 nohup
+*** 跟踪进程系统调用情况 strace
+*** 查看当前运行级别  runlevel
+*** 实时监控进程占用资源状况  top
+ - `-c` - 显示进程的整个路径。
+ - `-d` - 指定两次刷屏之间的间隔时间（秒为单位）。
+ - `-i` - 不显示闲置进程或僵尸进程。
+ - `-p` - 显示指定进程的信息。
 
 ** 磁盘管理
-   磁盘这个东西，分区以后，可以一个东西当两个或三个东西用（按照分区数量）。这样能更好的使用磁盘。分区后的磁盘要挂载下才能使用磁盘的存储功能。 
-   
-        - 显示分区信息   df 
-        - 查看挂接的分区状态  mount | column -t       
-        - 查看所有分区  fdisk -l               
-        - 查看所有交换分区  swapon -s 
-        - 创建文件系统      mkfs -V -t msdos -c /dev/hda5                                                                         
-        - 更新分区表信息    partprobe                                                                                             
-        - 加载分区          mount                                                                                                 
-        - 加载 smb          sudo mount -t smbfs -o username=user,password='' //10.0.1.1/windowsshare /mnt 浏览 windows 共享文件夹 
-        - 自动加载配置文件  fstab                                                                                                 
-        - 卸载分区          umount                                                                                                
-
-*** 交换分区
-    内存缓存用的，早期内存小的产物，现在不需要了吧 
-  
-    - 创建 Linux 交换分区 mkswap
-    - 启用交换分区  swapon -s
-    - 禁用交换分区  swapoff /dev/sda7
-    - 用新 UUID 重新创建交换分区：  mkswap -U random /dev/sda7
-    - 激活交换分区  swapon /dev/sda7
-
+*** 访问权限
+**** 改变文件模式 chmod
+**** 改变文件所有者 chown 
+****  改变用户组 chgrp  
+*** 磁盘管理
+**** 列出文件系统的磁盘使用状况 df
+**** 磁盘分区表操作  fdisk
+**** 磁盘分区工具  parted
+**** 格式化文件系统  mkfs
+#+begin_src sh
+   [root ~]# mkfs -t ext4 -v /dev/sdb
+#+end_src
+**** 文件系统检查 fsck
+**** 转换或拷贝文件 dd
+**** 挂载/卸载 mount / umonut
+**** 创建/激活/关闭交换分区 mkswap / swapon / swapoff
 ** 模块管理
-   - rmmod 从运行的内核中移除指定的内核模块
-   - insmod 将给定的模块加载到内核中
-   - lsmod 显示已载入系统的模块
-     
-** 网络管理
-   网，就像我们的家门一样，有些东西，家里没有，就可以找到别的机器，问别人家借。所以入网的机器，有一个网名（IP 地址）
-   入网的机器，还能看到我们跟谁家在联系。
-   
-   - netstat 显示网络连接，路由表，接口状态，伪装连接，网络链路信息和组播成员组。
-     - netstat -lntp 查看所有监听端口
-     - netstat -antp 查看所有已建立的连接
-   - route - 显示 / 操作 IP 选路表
-     - rounte -n 查看本机路由表
-   - ifconfig - 配置网络接口
-   - iptables - IP 包过滤器管理
-   - ip 
-     - address (机器在网中的网名)
-     - addrlabel
-     - link   (入网的设备)
-     - route (路由表，不同的机器，分配不同的出口) 
-       
-   - 查公网 IP
-     - curl cip.cc
-     - curl icanhazip.com
-     - curl ident.me
-
+** 配置服务
+*** 启动服务 systemctl start [SERVER]
+*** 终止/重启服务 stop/restart
+*** 查看状态 status
+*** 设置/禁用服务开机自启 enable / disable
+** 网络访问和管理
+***  安全远程连接 ssh  
+*** 通过网络获取资源 wget
+*** 发送和接收邮件 mail
+*** 网络配置工具（旧） ifconfig
+*** 网络配置工具（新） ip
+*** 网络可达性检查 ping
+*** 显示或管理路由表 route
+*** 查看网络服务和端口 netstat / ss
+  - netstat -lntp 查看所有监听端口
+  - netstat -antp 查看所有已建立的连接
+*** 网络监听抓包  tcpdump (需要管理员权限)
+**** 监视指定网络接口的数据包
+      tcpdump -i eth1
+**** 监视指定主机和端口的数据包
+     如果想要获取主机 210.27.48.1 接收或发出的 telnet 包，使用如下命令
+     tcpdump tcp port 23 host 210.27.48.1
+ 
+     对本机的 udp 123 端口进行监视 123 为 ntp 的服务端口
+     tcpdump udp port 123
+ 
+*** 安全文件拷贝  scp
+*** 文件同步工具  rsync
+*** 安全文件传输  sftp
+*** 查看公网 IP
+      - curl cip.cc
+      - curl icanhazip.com
+      - curl ident.me
 ** 计划任务
-   给东西的行为设置一个计时器，或一个后台状态
-   
-   - 任务放在前、后台 fg bg jobs 
-   - 周期任务 crontab
 
-     #+begin_src 
-       * * * * *                  # 每隔一分钟执行一次任务  
-       0 * * * *                  # 每小时的 0 点执行一次任务，比如 6:00，10:00  
-       6,10 * 2 * *               # 每个月 2 号，每小时的 6 分和 10 分执行一次任务  
-       0 * * * *                  # 每小时的 0 点执行一次任务，比如 6:00，10:00  
-       6,10 * 2 * *               # 每个月 2 号，每小时的 6 分和 10 分执行一次任务  
-     #+end_src
+*** 在指定的时间执行命令
+**** 将任务排队，在指定的时间执行 at 
+指定 3 天以后下午 5 点要执行的任务。
 
-** 帮助文档    
-   - man [manual] 命令手册
-   - manpages-zh  中文命令手册
-   - info 详细文档
+#+begin_quote
+   [root ~]# at 5pm+3days
+   at> rm -f /root/*.html
+   at> <EOT>
+   job 9 at Wed Jun  5 17:00:00 2019
+#+end_quote
+**** 查看待执行的任务队列 atq
+**** 从队列中删除待执行的任务 atrm
+*** 计划任务表 crontab
+输入`crontab -e`命令会打开 /etc/crontab
+
+  #+begin_src 
+    * * * * *                  # 每隔一分钟执行一次任务  
+    0 * * * *                  # 每小时的 0 点执行一次任务，比如 6:00，10:00  
+    6,10 * 2 * *               # 每个月 2 号，每小时的 6 分和 10 分执行一次任务  
+    0 * * * *                  # 每小时的 0 点执行一次任务，比如 6:00，10:00  
+    6,10 * 2 * *               # 每个月 2 号，每小时的 6 分和 10 分执行一次任务  
+  #+end_src
+
+** 系统诊断
+*** 系统启动异常诊断 dmesg
+*** 查看系统活动信息 sar 
+   - `-A` - 显示所有设备（CPU、内存、磁盘）的运行状况。
+   - `-u` - 显示所有 CPU 的负载情况。
+   - `-d` - 显示所有磁盘的使用情况。
+   - `-r` - 显示内存的使用情况。
+   - `-n` - 显示网络运行状态。
+*** 查看内存使用情况  free
+*** 虚拟内存统计 vmstat
+*** CPU 信息统计  mpstat
+*** 查看进程使用内存状况 pmap
+*** 报告设备 CPU 和 I/O 统计信息 iostat
+*** 显示所有 PCI 设备 lspci
+*** 显示进程间通信设施的状态  ipcs
 
 ** 工具软件    
-*** 压缩解压
-**** unar
-     解压缩，中文不会乱码
-    
 *** pdf
 **** 合并 pdf  
-     #+begin_src sh
-     pdfunite *.pdf all.pdf
-     #+end_src
-*** 查找
-**** 查找文件 
-      #+begin_src sh
-        find . -type f -exec ls -l {} \;
-      #+end_src
+#+begin_src sh
+  pdfunite *.pdf all.pdf
+#+end_src
 *** 图片处理
 **** 压缩转换 convert
-     
 *** 录制视频短片 peek
-    #+begin_src sh
-      sudo add-apt-repository ppa:peek-developers/stable
-      sudo apt update
-      sudo apt install peek
-    #+end_src
+#+begin_src sh
+  sudo add-apt-repository ppa:peek-developers/stable
+  sudo apt update
+  sudo apt install peek
+#+end_src
 *** 像素识别
-    #+begin_src sh
-      sudo snap install pick-colour-picker 
-    #+end_src
+#+begin_src sh
+  sudo snap install pick-colour-picker 
+#+end_src
+*** wireshark
+**** 数据链路层：
+   筛选 mac 地址为 04:f9:38:ad:13:26 的数据包----eth.src == 04:f9:38:ad:13:26
+   筛选源mac地址为04:f9:38:ad:13:26的数据包----eth.src == 04:f9:38:ad:13:26
+**** 网络层：
+     筛选 ip 地址为 192.168.1.1 的数据包----ip.addr == 192.168.1.1
+     筛选 192.168.1.0 网段的数据---- ip contains "192.168.1"
+     筛选 192.168.1.1 和 192.168.1.2 之间的数据包----ip.addr == 192.168.1.1 && ip.addr == 192.168.1.2
+     筛选从 192.168.1.1 到 192.168.1.2 的数据包----ip.src == 192.168.1.1 && ip.dst == 192.168.1.2
+**** 传输层：
+     筛选 tcp 协议的数据包----tcp
+     筛选除 tcp 协议以外的数据包----!tcp
+     筛选端口为 80 的数据包----tcp.port == 80
+     筛选12345端口和80端口之间的数据包----tcp.port == 12345 && tcp.port == 80
+     筛选从12345端口到80端口的数据包----tcp.srcport == 12345 && tcp.dstport == 80
+**** 应用层：
+     特别说明----http 中 http.request 表示请求头中的第一行（如 GET index.jsp HTTP/1.1），http.response 表示响应头中的第一行（如 HTTP/1.1 200 OK），其他头部都用 http.header_name 形式。
+     筛选 url 中包含.php 的 http 数据包----http.request.uri contains ".php"
+     筛选内容包含 username 的 http 数据包----http contains "username"
+*** feh 
+   : 图片显示，设置背景，截图
+    
+   设置背景 feh --bg-scale
+*** Pandoc
+    : 文档转换
+    #+begin_example
+    pandoc x.html -o x.md
+    pandoc -f html -t markdown http://www.fsf.org
+    -f 参数用于指定源文件格式
+    -t 参数用于指定输出文件格式
+    -o 参数用于指定输出文件
+    #+end_example
+*** apt 软件包管理
+    - update - 重新获取软件包列表
+    - upgrade - 进行更新 
+    - install - 安装新的软件包 
+    - remove - 移除软件包 
+    - autoremove - 自动移除全部不使用的软件包 
+    - purge - 移除软件包和配置文件 
+    - source - 下载源码档案 
+    - build-dep - 为源码包配置编译依赖 
+    - dist-upgrade - 发行版升级
+    - dselect-upgrade - 依照 dselect 的选择更新 
+    - clean - 清除下载的归档文件 
+    - autoclean - 清除旧的的已下载的归档文件 
+    - check - 检验是否有损坏的依赖 
+    - sudo add-apt-repository --remove ppa:whatever/ppa (移除源)
+** 进程占用端口
+（1）查看程序对应的进程号： ps -ef | grep 进程名字
+（2）查看进程号所占用的端口号： netstat -nltp | grep  进程号
+        ubuntu :查看进程占用端口号：netstat -anp | grep pid
+
+
+
+linux 下查看端口号所使用的进程号：
+（1）使用 lsof 命令：lsof -i:端口号
 

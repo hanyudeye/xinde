@@ -5,50 +5,31 @@
 #+DATE: 2019-11-29T21:57:09+08:00
 #+draft: true
 
-语法比较友好的编程语言，使用起来灵活 
+比较高级的编程语言
 # more 
 
-** 先决条件
-   安装 python 解析器
-** 简介
-   我们学习编程语言时，我们会打开一个文本编辑器输进去一些文字。我们知道现在的计算机软件很强大，有好多游戏可以玩，还能上网看电影，打开一个软件听音乐。
-   但有时我们也会用输入法打一些字给我们的朋友聊天交流。
-
-   那么，我们也开始明白了编程语言的一些特点。就是编程语言也是一种文字 ，就是跟我们聊天输入的中文不同，我们一般用英文聊天，
-   这就是编程语言最大的特点 ----- *文字* 
-   
-   既然我们知道了编程语言的特点，我们就可以在文本编辑框中狠命的输入 *文字* 进行测试，测试多了，编程语言就学会了。 
-** 东西结构 
-   我们会在编辑器中输入各种各样的文字或数字，当我们输入数字时，比如 1, 23, 14.3 ，它们就代表我们日常经常用到的东西，数学中的数字。 
-   当我们要输入文字时，需要把文字用引号引起来，这种形式就是一段文字了。还有其他一些结构代表另一些东西，一般表示多个东西时，会用一些圆括号或方括号表示。 
-   要测试直接打文字进去测试。
-  
+** 数据的类型
    - 列表(list)  [ 1,2 ,"鸡蛋","大豆"]
-   - 元组 (tuple)  ( 1,2 ,"鸡蛋","大豆" ) 这东西不能改，只读的
-   - 字典 (dictionary) {'a': 1, 'b': 2, 'c': '鸡蛋', 'd': '大豆'} 给列表加一个索引的东西
+   - 元组 (tuple)  ( 1,2 ,"鸡蛋","大豆" )
+   - 字典 (dictionary) {'a': 1, 'b': 2, 'c': '鸡蛋', 'd': '大豆'} 
    - 集合 {3,4,6,'a','3',3} 跟列表一样，但会自动消除重复的东西
    - 空值 None
-*** 类型转换
-    类型转换可以把不同结构的东西相互转化，比如，可以把用引号括起来的数字转化成数字，但不能差异太明显，会转换不过来。
-    
-    | 将 字符串 x 转换为一个整数                            | int(x [,base])         |
-    | 将 字符串 x 转换到一个浮点数                          | float(x)               |
-    | 创建一个复数                                          | complex(real [,imag])  |
-    | 将对象 x 转换为字符串                                 | str(x)                 |
-    | 将对象 x 转换为表达式字符串                           | repr(x)                |
-    | 用来计算在字符串中的有效 Python 表达式,并返回一个对象 | eval(str)              |
-    | 将序列 s 转换为一个元组                               | tuple(s)               |
-    | 将序列 s 转换为一个列表                               | list(s)                |
-    | 将一个整数转换为一个字符                              | chr(x)                 |
-    | 将一个整数转换为 Unicode 字符                         | unichr(x)              |
-    | 将一个字符转换为它的整数值                            | ord(x)                 |
-    | 将一个整数转换为一个十六进制字符串                    | hex(x)                 |
-    | 将一个整数转换为一个八进制字符串                      | oct(x)                 |
+*** 数据转换
+    - int(x [,base])        
+    - float(x)              
+    - complex(real [,imag]) 
+    - str(x)                
+    - repr(x)               
+    - eval(str)             
+    - tuple(s)              
+    - list(s)               
+    - chr(x)                
+    - unichr(x)             
+    - ord(x)                
+    - hex(x)                
+    - oct(x)                
 *** 自定义类型  
-    因为 python 这种语言是面向对象的，所以我们可以创建自己的对象，然后就可以重复使用了。面向对象的技术主要是为了东西复用。 
-    面向对象的技术重点就是创建类，使用类创建对象实例这么个过程。
-    
-**** 定义类 
+**** 定义类型   
      #+begin_src python -n
        class ClassName:
            # 构造函数
@@ -59,60 +40,38 @@
                return 
      #+end_src
      
-     实例 
-     #+BEGIN_SRC python
-       class wa:
-        def __init__(self, items={}):
-         '''items'''
-            if type(item)!=type({}):
-                raise TypeError("类型错误")
-               self.items=items
-            return
-           def	deposit(self,	amount):
-            self.balance	=	self.balance	+	amount
-            return	self.balance
-           def	withdraw(self,	amount):
-            if	amount	>	self.balance:
-             return	'Insufficient	funds'
-     #+END_SRC
-**** 专有方法
-     | __init__                      | 构造函数，在生成对象时调用                                                                                       |
-     | __del__                       | 析构函数，释放对象时使用                                                                                         |
-     | __repr__                      | 打印，转换                                                                                                       |
-     | __setitem__                   | 按照索引赋值                                                                                                     |
-     | __getitem__                   | 按照索引获取值                                                                                                   |
-     | __len__                       | 获得长度                                                                                                         |
-     | __call__                      | 函数调用                                                                                                         |
-     | __add__                       | 加运算                                                                                                           |
-     | __sub__                       | 减运算                                                                                                           |
-     | __mul__                       | 乘运算                                                                                                           |
-     | __div__                       | 除运算                                                                                                           |
-     | __mod__                       | 求余运算                                                                                                         |
-     | __pow__                       | 乘方                                                                                                             |
-     | type(obj)                     | 来获取对象的相应类型；                                                                                           |
-     | isinstance(obj, type)         | 判断对象是否为指定的 type 类型的实例；                                                                           |
-     | hasattr(obj, attr)            | 判断对象是否具有指定属性/方法；                                                                                  |
-     | getattr(obj, attr[, default]) | 获取属性/方法的值, 要是没有对应的属性则返回 default 值（前提是设置了 default），否则会抛出 AttributeError 异常； |
-     | setattr(obj, attr, value)     | 设定该属性/方法的值，类似于 obj.attr=value；                                                                     |
-     | dir(obj)                      | 可以获取相应对象的所有属性和方法名的列表：不带参数，显示环境下的变量，引入的模块数组                             |
+**** 默认方法
+     
+     | 方法名称                      | 说明                                         |
+     |-------------------------------+----------------------------------------------|
+     | __init__                      | 构造函数，在生成对象时调用                   |
+     | __del__                       | 析构函数，释放对象时使用                     |
+     | __repr__                      | 打印，转换                                   |
+     | __setitem__                   | 按照索引赋值                                 |
+     | __getitem__                   | 按照索引获取值                               |
+     | __len__                       | 获得长度                                     |
+     | __call__                      | 函数调用                                     |
+     | __add__                       | 加运算                                       |
+     | __sub__                       | 减运算                                       |
+     | __mul__                       | 乘运算                                       |
+     | __div__                       | 除运算                                       |
+     | __mod__                       | 求余运算                                     |
+     | __pow__                       | 乘方                                         |
+     | type(obj)                     | 获取对象的相应类型                         |
+     | isinstance(obj, type)         | 判断对象是否为指定的 type 类型的实例        |
+     | hasattr(obj, attr)            | 判断对象是否具有指定属性/方法               |
+     | getattr(obj, attr[, default]) | 获取属性/方法的值                            |
+     | setattr(obj, attr, value)     | 设定该属性/方法的值，类似于 obj.attr=value  |
+     | dir(obj)                      | 获取相应对象的所有属性和方法名的列表       |
     
 **** 类的继承
-     类是面向对象中的技术，为了东西和方法方便扩展
-
      #+begin_src python
        # 单继承
        class ClassName(BaseClassName):
         # 多继承
         class ClassName(Base1,Base2,Base3):
      #+end_src
-**** 类的私有属性与私有方法
-     - 私有属性 __private_attrs：两个下划线开头，声明该属性为私有，不能在类地外部被使用或直接访问。在类内部的方法中使用时 self.__private_attrs 类的方法
-     - 私有方法 __private_method：两个下划线开头，声明该方法为私有方法，不能在类地外部调用。在类的内部调用 self.__private_methods 
-** 东西功能
-   我们用编程语言写的文字，一般不是小说啦，一般都是用来完成某件事情的。编程语言的好处就是你写了某段文字，
-   然后就可以重复使用了，你自己用的好，还可以复制给别人用，通过互联网可以传播给别的地方的人用。这就是你辛苦编程的好的方面。
-   而如果功能很复杂，我们一般会把功能拆散成一个个小的功能，每天做一点。函数也就是这个作用。
-   
+** 函数
 *** 定义函数
     #+BEGIN_SRC python
       def functionname( parameters ):
@@ -121,7 +80,6 @@
           return [expression]
     #+END_SRC
 *** 不定长参数函数
-    就是函数的参数长度不定
     #+begin_src python
       def print_user_info( name ,  age  , sex = '男' , * hobby):
           # 打印用户信息
@@ -131,7 +89,7 @@
       # 调用 print_user_info 函数
       print_user_info( '两点水' ,18 , '女', '打篮球','打羽毛球','跑步')
     #+end_src
-*** 关键字参数 ( 给参数命名)
+*** 关键字参数 
     #+begin_src python
       def print_user_info( name ,  age  , sex = '男' ):
           # 打印用户信息
@@ -142,7 +100,7 @@
       print_user_info( name = '两点水' ,age = 18 , sex = '女')
     #+end_src
 
-*** 匿名函数 lambda (不要重复使用的函数，就不给名字了)
+*** 匿名函数 lambda 
     #+begin_src python
       lambda [arg1 [,arg2,.....argn]]:expression
     #+end_src
@@ -157,33 +115,13 @@
     #+begin_src python
       if __name__ == '__main__':
     #+end_src
-** 变量
-   变量的句法跟函数和类定义都是差不多的，就是一个地方定义，其他地方都能用。但变量的作用域有一个范围的，看用什么句法定义，在函数中定义的变量只能在当前函数中使用，这就是变量的作用区域
-** 控制流程
-   分支 ( if 或 if not )
+** 模块 (文件)
    #+begin_src python
-     if cond:
-        语句... 
+     from person_start import Person
+     from pymodule import name
    #+end_src
-   
-   重复多做几次，如果有个功能要重复执行好多次，就可以用循环的句式，可以少写几次重复的过程。
-   #+begin_src python
-     for var in collection:
-             语句... 
-   #+end_src
-** 模块
-   一个文件中可以有好多个功能函数，如果有好多函数，功能差不多，我们就把他们放一
-   起，我们把整个问题叫做具有某类功能的模块，文件的名字表示模块的名字
-   
-*** 使用模块 
-    #+begin_src python
-      from person_start import Person
-      from pymodule import name
-    #+end_src
 
-** 包
-   包是一个文件夹，其中是不同的模块，假如你要编程的东西非常大，就可以用到包的功能了
-   
+** 包(文件夹)
      #+begin_src python
      import 目录名.模块名
      #+end_src
@@ -202,7 +140,7 @@
     #+end_src
 
 ** 帮助
-   - help()  help 函数可以输出字符串的一些含义，就像搜索引擎一样，虽然没那么强大
+   - help() 
    - dir() 输出函数或类的简单说明
 ** 环境管理
    因为 *Python* 最大的问题是各版本不兼容，所以还要要管理版本问题。  
@@ -232,8 +170,6 @@
     #+end_src
 ** faq    
 *** 中文编码
-    *python2* 默认是认不得中文等世界语的，只认得英文， *python3* 改掉了，这点注意看下版本。
-   
     #+begin_src py
       # 在python2 中识别中文需要加上下面一句说明。
       #-*-coding:utf-8-*-
