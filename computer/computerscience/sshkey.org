@@ -1,0 +1,109 @@
+* [[https://help.coding.net/docs/project/features/ssh.html?_ga=2.26178301.1396074533.1601081711-1081526996.1601081711][配置 SSH 公钥 - CODING 帮助中心]] :website:
+** Article
+*** 配置 SSH 公钥
+  文章内容
+
+  1. [[#%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D][功能介绍]]
+  2. [[#%E7%94%9F%E6%88%90%E5%85%AC%E9%92%A5][生成公钥]]
+  3. [[#%E6%B7%BB%E5%8A%A0%E5%85%AC%E9%92%A5][添加公钥]]
+
+***** [[#功能介绍][]]功能介绍 [[#功能介绍][]]
+
+  CODING 支持使用 SSH 协议来访问 Git 仓库，提供账户 SSH 公钥和项目 SSH 公钥设置。
+
+  一个 SSH 公钥文件，如果和 CODING 账户关联，便称为 *账户 SSH 公钥，配置后拥有账户下所有项目的读写权限*；如果和某一个项目关联，则称为 *部署公钥，配置后默认拥有该项目的只读权限。*
+
+  SSH 协议的 Git 仓库地址示例如下图所示：
+
+  #+BEGIN_EXAMPLE
+       git@e.coding.net:team-name/project-name.git
+  #+END_EXAMPLE
+
+***** [[#生成公钥][]]生成公钥 [[#生成公钥][]]
+
+
+  打开命令行终端输入 =ssh-keygen -m PEM -t rsa -b 4096 -C "your.email@example.com"=( 您的邮箱)，连续点击 Enter 键即可。
+
+  #+BEGIN_EXAMPLE
+       ssh-keygen -t rsa -b 4096 -C "your.email@example.com"
+      # Creates a new ssh key, using the provided email as a label
+      # Generating public/private rsa key pair.
+      Enter file in which to save the key (/Users/you/.ssh/id_rsa): [Press enter]  // 推荐使用默认地址
+      Enter passphrase (empty for no passphrase):   //此处点击 Enter 键即可，也可以填写密码，填写密码后每次使用 SSH 方式推送代码时都会要求输入密码，由于这个 Key 也不是用于军事目的，所以也无需设置密码。
+  #+END_EXAMPLE
+
+  #+BEGIN_QUOTE
+    若您需要使用多个 SSH 密钥对（您可能同时在多个代码托管平台工作），在提示“Enter file in which to save the key” 时，输入一个新的文件名称就不会覆盖默认的密钥对。
+  #+END_QUOTE
+
+  成功之后显示如下信息：
+
+  #+BEGIN_EXAMPLE
+       Your identification has been saved in /Users/you/.ssh/id_rsa.
+      # Your public key has been saved in /Users/you/.ssh/id_rsa.pub.
+      # The key fingerprint is:
+      # 01:0f:f4:3b:ca:85:d6:17:a1:7d:f0:68:9d:f0:a2:db your.email@example.com
+  #+END_EXAMPLE
+
+  #+BEGIN_QUOTE
+    有关 SSH 更多信息可参考 [[http://zh.wikipedia.org/zh/Secure_Shell][维基百科]]。
+  #+END_QUOTE
+
+***** [[#添加公钥][]]添加公钥 [[#添加公钥][]]
+
+
+  CODING 提供账户 SSH 公钥和项目 SSH 公钥设置。本质上账户公钥和部署公钥是一样的，只是关联的方式不同。
+
+  一个 SSH 公钥文件，如果和 CODING 账户关联，便称为 *账户 SSH 公钥，配置后拥有账户下所有项目的读写权限*；如果和某一个项目关联，则称为 *部署公钥，配置后默认拥有该项目的只读权限。*
+
+****** [[#添加账户公钥][]]添加账户公钥 [[#添加账户公钥][]]
+
+
+  1. 在终端输入 =open ~/.ssh=，用文本编辑器打开 =id_rsa.pub= 文件（此处是生成公钥的默认名称，如果生成公钥时采用了其他名称，打开相对应的文件即可），复制全部内容。
+
+  2. 登录 CODING ，点击右上角【个人设置】，选择菜单【SSH 公钥】，点击【新增公钥】按钮。
+
+  [[https://help-assets.codehub.cn/enterprise/20191230144203.png]]
+
+  3. 将第一步中复制的内容填写到【公钥内容】一栏，公钥名称按需填写即可。
+
+  4. 设定公钥有效期，可选择具体日期或设置永久有效。
+
+  [[https://dn-coding-net-production-pp.codehub.cn/5b924310-2871-43a2-9471-4a93e6fca05b.png]]
+
+  5. 点击【添加】，然后输入账户密码即可成功添加公钥。
+
+  6. 完成后在命令行测试，首次建立链接会要求信任主机。命令 =ssh -T git@e.coding.net=
+
+  [[https://help-assets.codehub.cn/enterprise/20191016181114.png]]
+
+****** [[#添加部署公钥][]]添加部署公钥 [[#添加部署公钥][]]
+
+
+  1. 在终端输入 =open ~/.ssh=，用文本编辑器打开 =id_deploy.pub= 文件（此处部署公钥名称为 =id_deploy.pub=，您在生成部署公钥的时候完全可以自定义名称），复制全部内容。
+
+  2. 登录 CODING，进入目标项目，点击【代码仓库】-> 【仓库设置】-> 【部署公钥】->【新建部署公钥】。
+
+  [[https://help-assets.codehub.cn/enterprise/20191230144800.png]]
+
+  3. 将第一步中复制的内容填写到【公钥内容】一栏，公钥名称自定义。
+
+  4. 点击【新建】，然后输入账户密码即可成功添加部署公钥
+
+  [[https://help-assets.codehub.cn/enterprise/20191230144855.png]]
+
+  #+BEGIN_QUOTE
+    部署公钥默认拥有该项目的只读权限，如果需要获取推送权限，请勾选部署公钥设置里的【授予推送权限】。
+  #+END_QUOTE
+
+  20200813
+
+  [[/docs/project/members.html][ 上一篇 项目成员设置]] [[/docs/project/features/deploy-tokens.html][ 下一篇 项目令牌 ]]
+
+  [[https://assets.codehub.cn/resources/logo3-png.png]] 最近更新
+
+  感谢反馈 有用
+
+  感谢反馈 没用
+
+  ==

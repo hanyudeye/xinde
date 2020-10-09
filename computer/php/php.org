@@ -1,0 +1,192 @@
+#+TITLE: php 简介
+#+DESCRIPTION: php 简介
+#+TAGS[]: php
+#+CATEGORIES[]: 技术
+#+DATE: 2020-02-13T19:01:28+08:00
+#+draft: true
+
+WEB 服务器脚本语言
+
+# more
+
+** 安装
+   需要安装服务器，和 php 解析器，当然，光解析器也是可以的。数据库也可以选择装上
+
+** 表单变量
+   表单变量的传递方式不同
+*** $_GET 
+*** $_POST
+*** $_COOKIE
+    setcookie("user", "runoob", $expire);
+*** $_SESSION
+    session_start(); 需要在 html 之前设置
+** Mysql    
+   #+begin_src php
+   <?php
+$servername = "localhost";
+$username = "username";
+$password = "password";
+ 
+// 创建连接
+$conn = new mysqli($servername, $username, $password);
+ 
+// 检测连接
+if ($conn->connect_error) {
+    die("连接失败: " . $conn->connect_error);
+} 
+echo "连接成功";
+?>
+   #+end_src
+* 错误处理
+*** 打开错误提示
+    #+begin_src php
+      ini_set("display_errors","On");
+      error_reporting(E_ALL); 
+    #+end_src
+
+*** 捕捉错误
+    #+begin_src php
+      try {}
+      catch (Throwable $t) {}
+      catch(Error $e){}
+    #+end_src
+** 单元测试 phpunit
+** 功能选项
+   - 显示 PHP information and configuration (  -i )
+   - 显示配置文件 (--ini)
+   - 显示编译好的模块 (-m)
+   - 打开自带服务器监听端口 (-S addr:port)
+   - 显示一些信息 ( --rf 函数，--rc 类名 ,--re 扩展名)
+** Apache2 选项
+   - 对配置文件进行语法测试 (-t)
+   - 测试后另外输出虚拟主机信息 (-t   -D DUMP_VHOSTS )
+   - 测试后另外输出加载的模块 (-t   -D DUMP_MODULES)
+
+   #+begin_src shell
+     # 例子
+     apachectl -t -D DUMP_MODULES
+   #+end_src
+** composer 
+   php 的包管理器
+   
+   常用命令
+    1. composer list：获取帮助信息；
+    2. composer init：以交互方式填写 composer.json 文件信息；
+    3. composer install：从当前目录读取 composer.json 文件，处理依赖关系，并安装到 vendor 目录下；
+    4. composer update：获取依赖的最新版本，升级 composer.lock 文件；
+    5. composer require：添加新的依赖包到 composer.json 文件中并执行更新；
+    6. composer search：在当前项目中搜索依赖包；
+    7. composer show：列举所有可用的资源包；
+    8. composer validate：检测 composer.json 文件是否有效；
+    9. composer self-update：将 composer 工具更新到最新版本；
+    10. composer create-project：基于 composer 创建一个新的项目；
+** 函数
+*** PHP date() 函数
+  PHP date() 函数用于格式化时间/日期。
+**** PHP date() 函数
+  PHP date() 函数可把时间戳格式化为可读性更好的日期和时间。
+  时间戳是一个字符序列，表示一定的事件发生的日期/时间。
+
+***** 语法
+
+  #+BEGIN_EXAMPLE
+      string date ( string $format [, int $timestamp ] )
+  #+END_EXAMPLE
+
+  | 参数        | 描述                                         |
+  |-------------+----------------------------------------------|
+  | format      | 必需。规定时间戳的格式。                     |
+  | timestamp   | 可选。规定时间戳。默认是当前的日期和时间。   |
+**** PHP Date() - 格式化日期
+  date() 函数的第一个必需参数 /format/ 规定了如何格式化日期/时间。
+
+  这里列出了一些可用的字符：
+
+  -  d - 代表月中的天 (01 - 31)
+  -  m - 代表月 (01 - 12)
+  -  Y - 代表年 (四位数)
+
+  如需了解 /format/ 参数中可用的所有字符列表，请查阅我们的 PHP Date
+  参考手册，[[file:func-date-date.html][date() 函数]]。
+
+  可以在字母之间插入其他字符，比如 "/"、"." 或者
+  "-"，这样就可以增加附加格式了：
+
+  #+BEGIN_EXAMPLE
+      <?php
+      echo date("Y/m/d") . "<br>";
+      echo date("Y.m.d") . "<br>";
+      echo date("Y-m-d");
+      ?>
+  #+END_EXAMPLE
+
+  上面代码的输出如下所示：
+
+  #+BEGIN_EXAMPLE
+      2016/10/21
+      2016.10.21
+      2016-10-21
+  #+END_EXAMPLE
+
+  | =format= 字符          | 说明                                                                                                                                  | 返回值例子                                                                                                               |
+  |------------------------+---------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------|
+  | /日/                   | ---                                                                                                                                   | ---                                                                                                                      |
+  | /d/                    | 月份中的第几天，有前导零的 2 位数字                                                                                                   | /01/ 到 /31/                                                                                                             |
+  | /D/                    | 星期中的第几天，文本表示，3 个字母                                                                                                    | /Mon/ 到 /Sun/                                                                                                           |
+  | /j/                    | 月份中的第几天，没有前导零                                                                                                            | /1/ 到 /31/                                                                                                              |
+  | /l/（"L"的小写字母）   | 星期几，完整的文本格式                                                                                                                | /Sunday/ 到 /Saturday/                                                                                                   |
+  | /N/                    | ISO-8601 格式数字表示的星期中的第几天（PHP 5.1.0 新加）                                                                               | /1/（表示星期一）到 /7/（表示星期天）                                                                                    |
+  | /S/                    | 每月天数后面的英文后缀，2 个字符                                                                                                      | /st/，/nd/，/rd/ 或者 /th/。可以和 /j/ 一起用                                                                            |
+  | /w/                    | 星期中的第几天，数字表示                                                                                                              | /0/（表示星期天）到 /6/（表示星期六）                                                                                    |
+  | /z/                    | 年份中的第几天                                                                                                                        | /0/ 到 /365/                                                                                                             |
+  | /星期/                 | ---                                                                                                                                   | ---                                                                                                                      |
+  | /W/                    | ISO-8601 格式年份中的第几周，每周从星期一开始（PHP 4.1.0 新加的）                                                                     | 例如：/42/（当年的第 42 周）                                                                                             |
+  | /月/                   | ---                                                                                                                                   | ---                                                                                                                      |
+  | /F/                    | 月份，完整的文本格式，例如 January 或者 March                                                                                         | /January/ 到 /December/                                                                                                  |
+  | /m/                    | 数字表示的月份，有前导零                                                                                                              | /01/ 到 /12/                                                                                                             |
+  | /M/                    | 三个字母缩写表示的月份                                                                                                                | /Jan/ 到 /Dec/                                                                                                           |
+  | /n/                    | 数字表示的月份，没有前导零                                                                                                            | /1/ 到 /12/                                                                                                              |
+  | /t/                    | 给定月份所应有的天数                                                                                                                  | /28/ 到 /31/                                                                                                             |
+  | /年/                   | ---                                                                                                                                   | ---                                                                                                                      |
+  | /L/                    | 是否为闰年                                                                                                                            | 如果是闰年为 /1/，否则为 /0/                                                                                             |
+  | /o/                    | ISO-8601 格式年份数字。这和 /Y/ 的值相同，只除了如果 ISO 的星期数（/W/）属于前一年或下一年，则用那一年。（PHP 5.1.0 新加）            | Examples: /1999/ or /2003/                                                                                               |
+  | /Y/                    | 4 位数字完整表示的年份                                                                                                                | 例如：/1999/ 或 /2003/                                                                                                   |
+  | /y/                    | 2 位数字表示的年份                                                                                                                    | 例如：/99/ 或 /03/                                                                                                       |
+  | /时间/                 | ---                                                                                                                                   | ---                                                                                                                      |
+  | /a/                    | 小写的上午和下午值                                                                                                                    | /am/ 或 /pm/                                                                                                             |
+  | /A/                    | 大写的上午和下午值                                                                                                                    | /AM/ 或 /PM/                                                                                                             |
+  | /B/                    | Swatch Internet 标准时                                                                                                                | /000/ 到 /999/                                                                                                           |
+  | /g/                    | 小时，12 小时格式，没有前导零                                                                                                         | /1/ 到 /12/                                                                                                              |
+  | /G/                    | 小时，24 小时格式，没有前导零                                                                                                         | /0/ 到 /23/                                                                                                              |
+  | /h/                    | 小时，12 小时格式，有前导零                                                                                                           | /01/ 到 /12/                                                                                                             |
+  | /H/                    | 小时，24 小时格式，有前导零                                                                                                           | /00/ 到 /23/                                                                                                             |
+  | /i/                    | 有前导零的分钟数                                                                                                                      | /00/ 到 /59/>                                                                                                            |
+  | /s/                    | 秒数，有前导零                                                                                                                        | /00/ 到 /59/>                                                                                                            |
+  | /u/                    | 毫秒 （PHP 5.2.2 新加）。需要注意的是 *date()* 函数总是返回 /000000/ 因为它只接受 integer 参数， 而 DateTime::format() 才支持毫秒。   | 示例: /654321/                                                                                                           |
+  | /时区/                 | ---                                                                                                                                   | ---                                                                                                                      |
+  | /e/                    | 时区标识（PHP 5.1.0 新加）                                                                                                            | 例如：/UTC/，/GMT/，/Atlantic/Azores/                                                                                    |
+  | /I/                    | 是否为夏令时                                                                                                                          | 如果是夏令时为 /1/，否则为 /0/                                                                                           |
+  | /O/                    | 与格林威治时间相差的小时数                                                                                                            | 例如：/+0200/                                                                                                            |
+  | /P/                    | 与格林威治时间（GMT）的差别，小时和分钟之间有冒号分隔（PHP 5.1.3 新加）                                                               | 例如：/+02:00/                                                                                                           |
+  | /T/                    | 本机所在的时区                                                                                                                        | 例如：/EST/，/MDT/（【译者注】在 Windows 下为完整文本格式，例如"Eastern Standard Time"，中文版会显示"中国标准时间"）。   |
+  | /Z/                    | 时差偏移量的秒数。UTC 西边的时区偏移量总是负的，UTC 东边的时区偏移量总是正的。                                                        | /-43200/ 到 /43200/                                                                                                      |
+  | /完整的日期／时间/     | ---                                                                                                                                   | ---                                                                                                                      |
+  | /c/                    | ISO 8601 格式的日期（PHP 5 新加）                                                                                                     | 2004-02-12T15:19:21+00:00                                                                                                |
+  | /r/                    | RFC 822 格式的日期                                                                                                                    | 例如：/Thu, 21 Dec 2000 16:01:07 +0200/                                                                                  |
+  | /U/                    | 从 Unix 纪元（January 1 1970 00:00:00 GMT）开始至今的秒数                                                                             | 参见 time()                                                                                                              |
+  #+CAPTION: *格式字串可以识别以下 =format= 参数的字符串*
+
+**** 完整的 PHP Date 参考手册
+     :PROPERTIES:
+     :CUSTOM_ID: 完整的-php-date-参考手册
+     :END:
+
+  如需查看所有日期函数的完整参考手册，请访问我们的
+  [[file:php-ref-date.html][完整的 PHP Date 参考手册]]。
+
+  该参考手册提供了每个函数的简要描述和应用实例！
+
+  #+BEGIN_HTML
+    </div>
+  #+END_HTML
+

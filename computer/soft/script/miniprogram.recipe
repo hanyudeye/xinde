@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
+from calibre.web.feeds.recipes import BasicNewsRecipe # 引入 Recipe 基础类
+
+class Thinkphp3(BasicNewsRecipe): # 继承 BasicNewsRecipe 类的新类名
+
+    # title = 'thinkphp3' # 电子书名
+    # description = 'thinkphp3' # 电子书简介
+    #cover_url = '' # 电子书封面
+    #masthead_url = '' # 页头图片
+    url_prefix = 'https://developers.weixin.qq.com'
+    # __author__ = '王垠' # 作者
+    # language = 'zh' # 语言
+    # encoding = 'utf-8' # 编码
+    keep_only_tags = [{ 'id': 'docContent' }]
+
+    #///////////////////
+    # 抓取页面内容设置
+    #///////////////////
+    #keep_only_tags = [{ 'class': 'example' }] # 仅保留指定选择器包含的内容
+    no_stylesheets = True # 去除 CSS 样式
+    remove_javascript = True # 去除 JavaScript 脚本
+    # auto_cleanup = True # 自动清理 HTML 代码
+    # delay = 5 # 抓取页面间隔秒数
+    # oldest_article = 90
+    # max_articles_per_feed = 190
+    # max_articles_per_feed = 999 # 抓取文章数量
+    # max_articles_per_feed = 9 # 抓取文章数量
+
+    #///////////////////
+    # 页面内容解析方法
+    #///////////////////
+    def parse_index(self):
+        # site = 'http://www.yinwang.org' # 页面列表页
+        site = 'https://developers.weixin.qq.com/miniprogram/dev/framework/config.html' # 页面列表页
+        soup = self.index_to_soup(site) # 解析列表页返回 BeautifulSoup 对象
+        # links = soup.findAll("li",{"class":"list-group-item title"}) # 获取所有文章链接
+        # links = soup.findAll("li",{"class":"list-group-item title"}) # 获取所有文章链接
+        links = soup.find("div",{"class":"TreeNavigation"}) # 获取所有文章链接
+        articles = [] # 定义空文章资源数组
+        for link in links.findAll('a'): # 循环处理所有文章链接
+            if link['href'].startswith("/miniprogram") and '#' not in link['href']:
+                til = link.contents[0].strip()
+                url = self.url_prefix + link['href']
+                a = { 'title': til, 'url': url }
+ 
+                articles.append(a)
+        ans = [('thinkphp3', articles)]
+
+        return ans # 返回可供 Calibre 转换的数据结构
+

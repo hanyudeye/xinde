@@ -1,0 +1,245 @@
+* calibre 抓取“爱上中文”网小说的 recipe
+        抓取每一个网站的内容，生成 epub 往往都有要编写一个 recipe。其实大部分的结构是比较类似的，不用太大的变化，尤其一个网站的书箱，可以使用同一个 recipe，只要针对每本书，修改一下 url，图书的标题，书名，描述就行，以“爱上中文”网为例，其每一本书都有一个目录页，页面中包含了书籍的封面，内容简介，每章的名字，url 等。章节目录都在一个<table cellspacing='1'>的标签之中，使用 find('table',attrs = {'cellspacing': "1"})就初步包含了目录，再使用 findAll('a')把所有的标题和 url 取出，就可生成 feeds。
+
+每个章节的页面中我们只要两个 div 中的内容就行，一个 div class="bdb"是章节名称，
+一个 div id="contents"是章节内容，直接写入 keep_only_tags 就行。
+
+具体程序如下：
+
+# coding=gbk
+from calibre.web.feeds.recipes import BasicNewsRecipe
+
+
+class jpyx(BasicNewsRecipe):
+title = u"绝品医仙"                                  #自己写入书名
+description = u"修真天才遭女师祖欺骗让榨干而亡，竟然重生成都市内无恶不作的豪门大少。不是猛龙不过江，不是大少不嚣..."      #自己写入描述
+recursions = 0
+max_articles_per_feed = 1000
+oldest_article = 5000
+remove_javascript = True
+
+cover_url = "http://www.aszw.com/files/article/image/35/35901/35901s.jpg"                                           #自己写入封面的 URL
+url_prefix = "http://www.aszw.com/book/35/35901/"                                                                                       #自己写入每章 url 的前缀，基本上就是目录页的 url
+no_stylesheets = True
+keep_only_tags =[dict(name='div', attrs={'class':'bdb'}),
+dict(name='div', attrs={'id':'contents'}),
+]   #要保留的标签
+
+
+
+def get_title(self,link):
+return link.contents[0].strip()
+
+def parse_index(self):
+
+soup = self.index_to_soup('http://www.aszw.com/book/35/35901/')                                                   #自己写入目录页的 url
+aa = soup.find('table',attrs = {'cellspacing': "1"}).findAll('a')
+articles = []
+for link in aa:
+title = self.get_title(link)
+title = title.encode("utf-8") #处理中文，转换代码
+url = self.url_prefix + link['href']
+a = {'title':title,'url':url}
+articles.append(a)
+#print articles
+ans = [(u'绝品医仙',articles)]                                                                                                                         #自己写入书名
+return ans
+
+这样抓取“爱上中文“网的小说，生成 epub、pdf 等电子书已经不是问题。不需要麻烦的编辑了。下载时请注意察看目录中有没有章节是图片，那个比较麻烦的。从已经抓取的书箱看效果还是比较好的。不过页面中经常有广告，只能用 SIGIL 来删除了，那也是个超级好的东东。
+
+
+* [[https://bookfere.com/post/562.html][Calibre 使用教程之抓取网站页面制成电子书 – 书伴]]                   :website:
+** Calibre 使用教程之抓取网站页面制成电子书
+   之前书伴曾写过一篇文章《 [[https://bookfere.com/post/256.html][Calibre 使用教程之抓取 RSS 制成电子书]]》，介绍了利用 Calibre 的“抓取新闻”功能把网站的新闻源制期刊样式电子书的方法。不过软件界面上也只提供了直接添加 RSS 地址的方法，也就是说网站必须有 RSS 供稿才行，否则就无法抓取。那对于不提供 RSS 的网站是否能够抓取它上面的内容制成电子书呢？本文就来介绍一种进阶技巧来解决这个问题。
+
+   在开始具体步骤之前，先简单的描述一下工作流程：首先编写一个 Calibre Recipe 脚本文件，根据 Calibre 指定的规范定义具体的抓取行为，然后使用 Calibre 把此脚本转化成 mobi 格式电子书文件。
+
+   注意，本文的相关操作是在命令行中进行的，并且会牵涉到简单的代码编写，为了让更多没有编程基础的小伙伴能直接上手使用，本文会尽可能详细的解释每一条代码的作用，以便套用。
+
+*** 一、认识 Calibre Recipe 脚本
+    Recipe 这个单词的含义为“食谱”、“处方”，顾名思义，它为 Calibre 定义了抓取
+    新闻源这一动作的执行细节。Calibre 也为 Recipe 脚本提供了一份详尽的文档“ [[https://manual.calibre-ebook.com/news_recipe.html][API
+    documentation for recipes]]”，对所能使用的参数或函数做了详细的说明。如果你有
+    编程基础，可能感觉直接查看它的 [[https://github.com/kovidgoyal/calibre/blob/master/src/calibre/web/feeds/news.py][源代码]]会更清晰一些。
+
+    在抓取 RSS 制成电子书那篇文章中，我们只需要在 Calibre 软件界面上，通过“添加
+    自定义新闻源（Add or edit a custom news source）”菜单项调出操作面板，在里面
+    添加 RSS 地址就完事儿了，剩下的抓取、转换工作就全部交给 Calibre 自动处理了。
+    其实在这个过程的背后，Calibre 也是根据你添加的 RSS 地址自动生成了一个 Recipe
+    脚本，并根据此脚本抓取内容的。可以点击“添加自定义新闻来源”操作面板左下角的
+    【切换到高级模式】（Switch to advanced mode）按钮，便可以看到如下所示代码：
+
+#+BEGIN_EXAMPLE
+    #!/usr/bin/env python2
+    # vim:fileencoding=utf-8
+    from __future__ import unicode_literals, division, absolute_import, print_function
+    from calibre.web.feeds.news import BasicNewsRecipe
+
+   class AdvancedUserRecipe1504764482(BasicNewsRecipe):
+       title          = 'My news source'
+       oldest_article = 7
+       max_articles_per_feed = 100
+
+       feeds          = [
+           ('科学松鼠会', 'http://songshuhui.net/feed'),
+           ('泛科学', 'http://pansci.tw/feed'),
+       ]
+#+END_EXAMPLE
+
+从以上这个简单的 Recipe 脚本中，我们可以看到此脚本继承了 Calibre 提供的
+BasicNewsRecipe 这个类，并简单的重写了一下这个类的某些参数。由于 Calibre 可以自
+动处理标准的 RSS 结构，所以不需要我们额外修改就可以轻松抓取内容。但是对于不提供
+RSS 的网站内容又该如何处理呢？
+
+对于不提供 RSS 的网站，我们可以通过解析页面内容，获取一个数据结构再进行转换。
+Calibre Recipe 脚本提供的 =parse_index()= 方法就可以用来做这件事。下面我们就来编
+写一个简单的 Recipe 脚本。
+
+提示：Calibre Recipe 脚本的 =parse_index()= 方法需要解析网站页面的代码结构来提取
+数据，但由于不同网站的代码结构也不相同，从而处理逻辑也会有所差异，所以抓取不同的
+网站内容，可能就需要写一个与之相对应的 Recipe 脚本。
+
+*** 二、编写 Calibre Recipe 脚本
+    下面以王垠的博客“ [[http://www.yinwang.org][当然我在扯淡]]”为例，编写一个 Recipe 脚本，将整个博客内容
+    转制成 mobi 格式的电子书。这个博客页面结构比较简单，个人感觉比较适合上手，初
+    步了解一些基本的 Recipe 脚本写法。
+
+    在开始编写代码之前我们先来分析一下这个博客的页面结构：博客的首页即是全部文章
+    列表，列表中每一篇文章的标题被被类选择器 li.list-group-item 包裹着。这样我们
+    就可以提取出所有文章的标题和文章链接，并据此循环处理每一篇文章内容，组合成可
+    供 Calibre 转换的数据结构。
+
+    下面是可用的 Recipe 脚本代码，代码中每一行都做了注释。看不懂可以看下面的详细解释。
+
+    #+BEGIN_EXAMPLE
+         #!/usr/bin/env python
+        # -*- coding:utf-8 -*-
+
+        from calibre.web.feeds.recipes import BasicNewsRecipe # 引入 Recipe 基础类
+
+        class Wang_Yin_Blog(BasicNewsRecipe): # 继承 BasicNewsRecipe 类的新类名
+
+            #///////////////////
+            # 设置电子书元数据
+            #///////////////////
+            title = '当然我在扯淡' # 电子书名
+            description = u'王垠的博客' # 电子书简介
+            #cover_url = '' # 电子书封面
+            #masthead_url = '' # 页头图片
+            __author__ = '王垠' # 作者
+            language = 'zh' # 语言
+            encoding = 'utf-8' # 编码
+
+            #///////////////////
+            # 抓取页面内容设置
+            #///////////////////
+            #keep_only_tags = [{ 'class': 'example' }] # 仅保留指定选择器包含的内容
+            no_stylesheets = True # 去除 CSS 样式
+            remove_javascript = True # 去除 JavaScript 脚本
+            auto_cleanup = True # 自动清理 HTML 代码
+            delay = 5 # 抓取页面间隔秒数
+            max_articles_per_feed = 999 # 抓取文章数量
+
+            #///////////////////
+            # 页面内容解析方法
+            #///////////////////
+            def parse_index(self):
+                site = 'http://www.yinwang.org' # 页面列表页
+                soup = self.index_to_soup(site) # 解析列表页返回 BeautifulSoup 对象
+                links = soup.findAll("li",{"class":"list-group-item title"}) # 获取所有文章链接
+                articles = [] # 定义空文章资源数组
+                for link in links: # 循环处理所有文章链接
+                    title = link.a.contents[0].strip() # 提取文章标题
+                    url = site + link.a.get("href") # 提取文章链接
+                    a = {'title': title , 'url':url} # 组合标题和链接
+                    articles.append(a) # 累加到数组中
+                ans = [(self.title, articles)] # 组成最终的数据结构
+                return ans # 返回可供 Calibre 转换的数据结构
+    #+END_EXAMPLE
+
+    首先引入 Calibre 提供的基础类 =BasicNewsRecipe= 并创建一个继承基础类的新类
+    =Wang_Yin_Blog=。
+
+    接下来重写一些可作为电子书的元数据的参数。如标题、简介、作者、语言、编码之类。
+    注意上面代码中 =cover_url= 和 =masthead_url= 这两个参数被注释掉了，这样
+    Calibre 会自动生成封面和期刊头。如果你想要自定义电子书封面和期刊头，可以使用
+    这两个参数指定图片的路径。
+
+    然后还需要设置控制抓取页面所需要的一些参数。如去除电子书不需要的 CSS 样式和
+    Javascript 脚本，设定抓取页面的时间间隔（避免对目标服务器造成负担），设定抓
+    取文章的数量（如果想要抓取所有文章设置一个足够大的数值即可）等。注意以上代码
+    中有一个 =auto_cleanup= 参数，它会用可读性算法自动清理 HTML 标签提取页面中的
+    有用内容。如果页面内容比较复杂，还可以使用 =keep_only_tags= 这个参数，指定仅
+    提取页面中某个标签中的内容，因为本例页面内容较简单就注释掉了。
+
+    相关参数设置完毕后，就可以编写处理页面内容的 =parse_index()= 方法了。在此方
+    法中 Calibre 使用了内置的 Python 模块 BeautifulSoup。首先把首页的文章列表解
+    析成 BeautifulSoup 对象，然后提取出所有标题列表，循环处理这些列表后，最终合
+    并成一个完整的数据结构交给 Calibre 转换处理。
+
+    这样一个简单的 Recipe 脚本就写完了，将其保存为 .recipe 文件备用，本例保存为
+    wangyin.recipe。接下来就可以把这个“小处方”转换成 mobi 格式的电子书文件了。
+
+    提示：当然有些网站的情况要复杂得多，比如处理带分页的页面、复杂内容类型，还有
+    多内容来源的合并等，这些进阶技巧限于篇幅暂不展开。如果感兴趣，也可以翻一翻
+    Calibre 提供的 API 文档“ [[https://manual.calibre-ebook.com/news_recipe.html][API documentation for recipes]]”自行研究一下。
+
+*** 三、认识命令行工具 ebook-convert
+    有了写好的 Recipe 脚本，接下来的工作就是将其转化成 mobi 格式的电子书文件了。
+
+    在《 [[https://bookfere.com/post/550.html][Calibre 使用教程之批量获取电子书元数据]]》这篇文章中，我们认识了 Calibre
+    的一个命令行工具 =ebook-meta=，它可以获取电子书的元数据。现在要接触到另外一
+    个命令行工具 =ebook-convert=，此工具可以把某种格式转换成另一种格式。比如想要
+    把某个 epub 转换成 mobi，只需要输入以下命令即可：
+
+    #+BEGIN_EXAMPLE
+         ebook-convert BookName.epub BookName.mobi
+    #+END_EXAMPLE
+
+    当然想要使用 =ebook-convert= 命令需要预先在电脑里安装 Calibre。在 Windows 系
+    统中，一般安装完成后即可直接在“命令提示符”中使用。对于 macOS 系统则需要设
+    置一下环境变量，设置方法和 =ebook-meta= 一样，参考《 [[https://bookfere.com/post/550.html][Calibre 使用教程之批量
+    获取电子书元数据]]》这篇文章中的“准备 ebook-meta 工具”。
+
+*** 四、把 Recipe 脚本转化为 mobi 文件
+    和转换普通的电子书的格式一样，只需要输入以下命令即可开始进行转化。转换所需要
+    的时间和文章条目和网速相关，如果你抓取的站点不幸被墙了，还需要使用网络代理。
+
+    #+BEGIN_EXAMPLE
+         ebook-convert wangyin.recipe wangyin.mobi --output-profile kindle
+    #+END_EXAMPLE
+
+    注意上面的代码中增加了一个参数 =--output-profile kindle=，这个参数的用途是将
+    生成的电子书文件为入门版 Kindle 设备做适配。如果不添加这个参数，转换出来的电
+    子书会有一个对 Kindle 来说多余的翻页导航和额外信息。除了可适配入门版 Kindle
+    设备外，你还可以为不同型号的 Kindle 设备选用与之相应的参数值进行适配，如
+    =kindle_dx=、 =kindle_oasis=、 =kindle_pw=、 =kindle_pw3= 和 =kindle_voyage=。
+
+    另外在转换的过程中也会有意外情况，比如由于资源链接被墙，或由于网络不稳定导致
+    页面抓取失败。本例中抓取的博客由于引用了两张 Google 服务器上的图片，不使用代
+    理就会抓取失败。
+
+    以上命令执行完毕后便可以得到最终的电子书文件 [[https://pan.baidu.com/s/1jIyzRTG][wangyin.mobi]]，拷贝或推送到 Kindle 即可阅读。
+
+    提示 1：如果你不想使用命令行工具，当然也可以使用 Calibre 界面上的“抓取新闻”功
+    能来完成同样的工作。你只需要把编写好的 Recipe 代码粘贴到新建的 Recipe 脚本中，
+    或者直接导入已有的 Recipe 脚本文件，然后和抓取 RSS 的操作一样，在“定期新闻
+    下载”面板上选中“自定义脚本”，点击【立即下载】按钮即可完成转换。不过这种方
+    法会始终带有翻页导航。
+
+    提示 2：当然还有一个比较方便的转换方法，就是直接把 Recipe 脚本拖进 Calibre，
+    然后像转换普通电子书那样进行转换，Calibre 会自动执行抓取工作，最终将抓取的数
+    据转成目标格式。
+
+*** 五、现成的 Calibre Recipe 脚本
+    除了自己手动针对某个网站的内容编写 Recipe 脚本外，对于一些知名度较高的站点，已
+    经有很多现成的 Recipe 脚本可用，比如 Calibre 项目自身就提供了一个 [[https://github.com/kovidgoyal/calibre/tree/master/recipes][Recipe 脚本库]]
+    （Calibre 的“抓取新闻”内置的那些就是使用的这些 Recipe 脚本）。另外也有很多网
+    友也分享了自己编写的的 Recipe 脚本，你可以访问 GitHub 搜索关键字“ [[https://github.com/search?utf8=%E2%9C%93&q=calibre+recipe][calibre
+    recipe]]”来查找感兴趣的脚本。当然也欢迎你的分享。
+
+    以上就是利用 Recipe 脚本抓取不提供 RSS 的网站内容并制成电子书的方法。以上内容尽
+    量兼顾没有任何编程经验的小伙伴，如果按照你的理解方式对那些地方不太明白，请留言，
+    确认有误区后会按照你的意见进行更改。如果你发现本文存在错误，也欢迎留言指正。有
+    更好的玩儿法，也欢迎分享。
+

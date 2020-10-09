@@ -1,0 +1,245 @@
+#+TITLE: 版本管理
+#+DESCRIPTION: 版本控制
+#+TAGS[]: git
+#+CATEGORIES[]: 技术
+#+DATE: 2019-12-25T06:23:31+08:00
+
+# more   
+* git 
+** 安装配置
+   #+begin_src shell 
+     git config [--system,--global, --list]
+     git config user.name = "用户名"
+     git config user.email = "邮箱"
+   #+end_src
+   
+*** 配置远程登录 
+    1. 创建 SSH Key
+    #+begin_src shell
+      $ ssh-keygen -t rsa -C "youremail@example.com"
+    #+end_src
+    2. 把公钥 id_rsa.pub 的内容复制到 Github "Account settings" 的 SSH Keys 中
+    3. 测试  ssh -v git@github.com 
+** 用法
+*** 初始化
+    #+begin_src sh
+      git init <DIR>
+    #+end_src
+    
+    #+begin_quote
+    你要进行版本控制的目录用这命令初始化一下
+    #+end_quote
+*** 暂存区管理
+    #+begin_quote
+    你的文件修改后，就可以进行追踪了。进行追踪的文件先要存放在暂存区，然后存放到本地仓库。这是 *git* 软件的一个特点。
+    #+end_quote
+**** 把文件加入暂存区 
+     #+begin_src sh
+       git add <modified files>
+       git add . 
+     #+end_src
+**** 把文件从暂存区删除 (不追踪) 
+     #+begin_src sh
+       git rm --cached <file> 
+     #+end_src
+**** 用暂存文件恢复文件
+      #+begin_src sh
+        git checkout <file> 
+      #+end_src
+
+**** 重置暂存,就是恢复成未暂存的状态
+     #+begin_src sh
+       git reset HEAD <file> 
+     #+end_src
+**** 改名文件
+     #+begin_src sh
+       git mv [file-original] [file-renamed]
+     #+end_src
+
+*** 本地库管理
+**** 把暂存文件保存到本地库   
+     #+begin_src sh
+       git commit -m "msg"
+     #+end_src
+
+**** 撤销 [ 恢复到修改前] 
+     #+begin_src sh
+       git checkout <file>
+       # 从另一个分支恢复修改 
+       git checkout <branch>  <file>
+     #+end_src
+     
+**** 反转(用本地版本库的东西替换掉本地的文件,再执行一次反过来)
+     #+begin_src sh
+       git revert HEAD                  撤销前一次 commit
+       git revert HEAD^               撤销前前一次 commit
+       git revert commit-id（比如：fa042ce57ebbe5bb9c8db709f719cec2c58ee7ff）撤销指定的版本，撤销也会作为一次提交进行保存。
+       git revert 是提交一个新的版本，将需要 revert 的版本的内容再反向修改回去，版本会递增，不影响之前提交的内容。
+     #+end_src
+     
+**** 分支管理
+***** 创建分支 
+      #+begin_src sh
+        git branch <BRANCHNAME> 
+        # 从某分支创建分支 
+        git checkout -b <ALTERNATE> <BRANCHNAME> 
+      #+end_src
+
+***** 切换分支 
+      #+begin_src sh
+        git checkout <BRANCHNAME> 
+      #+end_src
+***** 合并分支
+****** 直接合并 把两条分支上的历史轨迹合并 
+       #+begin_src sh
+         git merge
+       #+end_src
+       
+****** 压合合并 如果想把某个分支的提交作为一个整体记录时，可以使用压合合并。
+       #+begin_src sh
+         git merge --squash <BRANCH>
+       #+end_src
+****** 拣选合并 只需合并某个提交，而不是全部改动.
+       #+begin_src sh
+         git cherry-pick <ID>
+       #+end_src
+***** 修改分支名称
+      #+begin_src sh
+        git branch -m <BRANCHNAME> <NEWBRANCHNAME> 
+      #+end_src
+***** 删除分支 
+      #+begin_src sh
+        git branch -d <BRANCHNAME> 
+      #+end_src
+***** stash(储藏) 
+      可以先用 git stash save xxx 来保存工作区的内容，然后新建 一个分支并调用 git stash pop
+      
+**** 变基 rebase
+     #+begin_src shell
+       git checkout experiment
+       git rebase master
+     #+end_src
+
+*** 远程仓库管理
+**** 克隆远程到本地仓库
+     #+begin_src sh
+     git clone RESP
+     git clone --depth 1 RESP 只克隆最新的
+     #+end_src
+**** 添加远程源 
+     #+begin_src sh
+       git remote add origin https://github.com/hanyudeye/test.git 
+       # ssh
+       git remote add origin git@github.com:hanyudeye/demo.git
+     #+end_src
+     
+**** 远程同步
+     #+begin_src sh
+       git push -u origin master
+       # 推送到远程某分支 
+       git push origin <BRANCH>:<REMOTEBRANCH>
+     #+end_src
+**** 更新本地
+     #+begin_src sh
+     git pull
+     git pull git://github.com/tom/test.git
+     #+end_src
+**** 查看远程分支情况
+     #+begin_src sh 
+     git branch -r # 查看远程 branch
+     git checkout -b bug_fix_local bug_fix_remote #把本地端切换为远程的 bug_fix_remote branch 并命名为 bug_fix_local
+     #+end_src
+**** 修改远程仓库 
+***** 修改
+     #+begin_src sh
+     git remote  set-url origin [url]
+     #+end_src
+***** 先删后加
+     #+begin_src sh
+     git remote rm origin
+     git remote add origin [url]
+     #+end_src
+**** 强制覆盖本地
+     #+begin_src sh
+     git fetch --all
+     git reset --hard origin/master
+     git pull
+     #+end_src
+**** 拒绝合并无关的历史
+     #+begin_src sh
+       # 首先将远程仓库和本地仓库关联起来：
+       git branch --set-upstream-to=origin/master master
+       # 然后使用 git pull 整合远程仓库和本地仓库，
+       git pull --allow-unrelated-histories    (忽略版本不同造成的影响)
+       #+end_src
+     
+*** 日志查看
+**** 仓库状态 
+     #+begin_src sh
+       git status
+       git status -s 简短信息
+       git remote -v 列出服务器地址
+     #+end_src
+**** 查看提交历史
+     #+begin_src sh
+       git log
+       git log --oneline 简洁--graph 拓扑图 '--reverse'逆向显示
+     #+end_src
+     --author 指定用户日志
+     如果你要指定日期，可以执行几个选项：--since 和 --before，但是你也可以用 --until 和 --after。
+**** 查看某次提交的内容   
+     #+begin_src sh
+       git show <id>
+     #+end_src
+**** 更详细的信息 
+     #+begin_src sh 
+       git blame <FILE>
+       # 具体行的细节
+       git blame -L 12,13 <FILE>
+     #+end_src
+*** 比较区别
+    #+begin_src sh
+      比较修改文件与暂存区的区别  git diff <FILE>
+      比较暂存区和版本库的区别 git diff --cached <FILE>   
+      比较不同版本区别 git diff <HEAD>
+
+      git diff branch1 branch2 --stat   //显示出所有有差异的文件列表
+      git diff branch1 branch2 文件名(带路径)   //显示指定文件的详细差异
+      git diff branch1 branch2                   //显示出所有有差异的文件的详细差异
+         #+end_src
+
+*** TAG  
+    #+begin_quote
+    这是版本信息
+    #+end_quote
+**** 某个分支创建标签
+     #+begin_src sh
+       git tag  [ TAG ] [BRANCH] 
+       git tag 1.0  [branch] 
+     #+end_src
+     
+**** 查看可发布版本 
+     #+begin_src sh
+       git tag 
+     #+end_src
+**** 签出标签
+     #+begin_src sh
+       git checkout 1.0
+     #+end_src
+
+*** 使用 Git 子模块跟踪外部版本库
+    #+begin_src 
+    添加子模块 git submodule add <RESP> <MODULENAME>
+    显示子模块 git submodule
+    
+    克隆含子模块的版本库
+    还要初始化子模块  git submodule init <MODULENAME>
+    然后更细 git submodule update <MODULENAME>
+    #+end_src
+** gitignore 忽略文件
+   - “/”目录 
+   - “*”多个字符
+   - “?”单个字符
+   - “[]”单个字符匹配列表
+   - “!”不忽略
+   - /fd1/* 忽略根目录下的 /fd1/ 目录的全部内容
