@@ -179,9 +179,6 @@ person = ["Nick"] // raises an error, because reassignment is not allowed with c
 - [Temporal Dead Zone (TDZ) Demystified](http://jsrocks.org/2015/01/temporal-dead-zone-tdz-demystified)
 
 ### <a name="arrow_func_concept"></a> Arrow function
-
-The ES6 JavaScript update has introduced *arrow functions*, which is another way to declare and use functions. Here are the benefits they bring:
-
 - More concise
 - *this* is picked up from surroundings
 - implicit return
@@ -213,7 +210,6 @@ function myFunc() {
   }, 0);
 }
 ```
-
 #### Detailed explanation
 
 ##### Concision
