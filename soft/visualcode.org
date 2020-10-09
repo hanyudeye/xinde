@@ -164,3 +164,958 @@ F1 或 Ctrl+Shift+P: 打开命令面板。在打开的输入框内，可以输�
     #+end_src
  
 *
+
+** 微信环境
+   
+*** [[https://www.jianshu.com/p/6c99b84ec435][微信小程序 - VSCode 插件支持 - 简书]] :website:
+
+**** Article
+  - wxapp-helper\\
+    微信小程序开发助手\\
+    生成页面/组件，页面/组件模板可配置(.js, .wxml, .wxss, .json)，文件名及命名风格可配置，支持生成 TypeScript，插入乱数据辅助测试
+
+  - wxml\\
+    微信小程序 wxml 格式化以及高亮组件(高度自定义)
+
+  - 小程序开发助手\\
+    支持 js，json，wxml 文件的代码提示\\
+    wxml 文件语法高亮
+
+  - Easy WXLESS\\
+    保存时将 LESS 自动编译为 WXSS
+
+  - vscode wxml\\
+    为 VSCode 提供 wxml 语法支持及代码片段
+
+  - vscode weapp api\\
+    为 VSCode 提供微信小程序 API 提示及代码片段.键入关键词 wx，就会出现提示，然后回车自动生成。
+
+    
+*** [[https://juejin.im/post/6844903998017765383][使用 VS Code 编写小程序的姿势]] :website:
+  最近开始接触到 =微信小程序= 开发, 但是官方的小程序开发工具使用起来非常难受, 尤
+  其是长期使用 =vim= 插件的我, 使用任何 =编辑器= 或者 =ide= 必须先装 =vim= 插件,
+  所以就在网上查了查, 总结了一些使用 =vscode= 编写小程序可以提高效率的方法以及插
+  件推荐.
+
+***** 插件推荐
+****** minapp
+       [[https://marketplace.visualstudio.com/items?itemName=qiu8310.minapp-vscode][minapp]] 这个插件能够实现微信小程序标签、属性的智能补全, 和语法高亮, 不过要使用 =<= 去激活.
+
+****** wechat-snippet
+   [[https://marketplace.visualstudio.com/items?itemName=ChandZhang.wechat-snippet][wechat-snippet]] 能够提供了很多代码片段, 比如使用 =wx-page= 会初始化 Page 对象和对应生命周期函数. 它提供了在 =wxml= 中直接使用标签名生成标签, 在 =json= 配置文件中提示代码片段, 在 =js= 生成相关对象或函数的功能. 不过在 =js= 中要使用 =wx-= 前缀激活.
+
+****** Auto Rename Tag
+       [[https://marketplace.visualstudio.com/items?itemName=formulahendry.auto-rename-tag][Auto Rename Tag]] 能够实现在修改标签时直接成对修改.
+
+****** Path Autocomplete
+       [[https://marketplace.visualstudio.com/items?itemName=ionutvmi.path-autocomplete][Path Autocomplete]] 提供了自动完成路径的功能, 这对小程序中导入资源路径时十分方便.
+
+****** Prettier - Code formatter
+       [[https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode][Prettier - Code formatter]] 用来格式化代码, 它默认的缩进是 =2=, 如果想调整为 =4=, 可以在 =用户设置= 中搜索 =Prettier: Tab Width= 进行设置.
+
+***** 保存自动编译
+   如果要实现保存自动编译, 首先要在小程序设置中找到 =编辑= 选项卡, 取消选中 =修
+   改文件时自动保存=, 然后选中 =保存时自动编译小程序=. 小程序设置好后, 打开
+   =vscode= 设置, 搜索 =Files: Auto Save= 设置 =onFocusChange= 失去焦点自动保存.
+   之后在编写代码时, =手动保存= 或者 =自动保存= 就会触发小程序开发工具的自动编译.
+
+** visual studio code  vim 插件快捷键
+  在 keyboard.json 中，有用
+ #+begin_src json
+{
+    "key": "ctrl+b",
+    "command": "cursorLeft",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "right",
+    "command": "-cursorRight",
+    "when": "editorTextFocus"
+  }
+
+ #+end_src
+ 
+  要学 
+ #+begin_src json
+ 
+   {
+   "vim.easymotion": true,
+  "vim.incsearch": true,
+  "vim.useSystemClipboard": true,
+  "vim.useCtrlKeys": true,
+  "vim.hlsearch": true,
+  // 按 jj 推出 插入模式
+  "vim.insertModeKeyBindings": [
+    {
+      "before": ["j", "j"],
+      "after": ["<Esc>"]
+    }
+  ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<leader>", "d"],
+      "after": ["d", "d"]
+    },
+    {
+      "before": ["<C-n>"],
+      "commands": [":nohl"]
+    }
+  ],
+  "vim.leader": "<space>",
+  "vim.handleKeys": {
+    "<C-a>": false,
+    "<C-f>": false
+  }
+ #+end_src
+*** vscode 中的 vim 可以设置 leader 键，以实现方便的快捷键功能
+
+ >可以在 vscode 快捷键设置中，把 alt+l 设置成 cursorRight，这样在有引号和括号时就比较方便，插入模式也能移动，也可以把 alt+h 设置成 cursorLeft。
+
+ 下面的设置可以粘贴在 setting.json 中，其中的 command 可以使用 vscode 内置的命令（在左下角齿轮图标的 keyboard
+ shotcuts 中可以看到 command 大全）
+
+ #+BEGIN_EXAMPLE
+         // 设置leader键为空格键
+         "vim.leader": "<space>",
+         "vim.normalModeKeyBindingsNonRecursive": [
+             // 按下leader键加r键，如果还未开始调试，则不进行调试，直接运行文件
+             {
+                 "before": [
+                     "<leader>",
+                     "r",
+                 ],
+                 "commands": [
+                     "workbench.action.debug.run"
+                 ],
+                 "when": [
+                     "!inDebugMode"
+                 ],
+             },
+             // 按下leader键加r键，如果正在调试时，则重新运行文件（restart）
+             {
+                 "before": [
+                     "<leader>",
+                     "r",
+                 ],
+                 "commands": [
+                     "workbench.action.debug.restart"
+                 ],
+                 "when": [
+                     "inDebugMode"
+                 ],
+             },
+             // 按下leader键加d键，开始调试
+             {
+                 "before": [
+                     "<leader>",
+                     "d",
+                 ],
+                 "commands": [
+                     "workbench.action.debug.start"
+                 ]
+             },
+             // 按下leader键+w，保存当前文件
+             {
+                 "before": [
+                     "<leader>",
+                     "w",
+                 ],
+                 "commands": [
+                     "workbench.action.files.save",
+                 ],
+             },
+             // 按下leader键+b，新建文件（buffer缓冲区，暂时写点东西，将来不一定保存）
+             {
+                 "before": [
+                     "<leader>",
+                     "b",
+                 ],
+                 "commands": [
+                     "workbench.action.files.newUntitledFile",
+                 ]
+             },
+             // 按下leader键+t+n，新建标签/文件并命名（命名后保存，这个是自己要用的文件，与上面的仅缓冲区不同）（tab new）
+             // 因为文件以类似网页标签的形式排布，故使用tab的含义
+             {
+                 "before": [
+                     "<leader>",
+                     "t",
+                     "n",
+                 ],
+                 "commands": [
+                     "workbench.action.files.newUntitledFile",
+                     "workbench.action.files.save",
+                 ]
+             },
+             // 按下leader键+t+o，关闭其他标签/文件（tab only）
+             {
+                 "before": [
+                     "<leader>",
+                     "t",
+                     "o",
+                 ],
+                 "commands": [
+                     "workbench.action.closeOtherEditors",
+                 ]
+             },
+             // 按下leader键+q，退出，不保存当前文件
+             {
+                 "before": [
+                     "<leader>",
+                     "q",
+                 ],
+                 "commands": [
+                     ":q!",
+                 ],
+             },
+             // 连着按下两个Z键，保存并关闭当前标签/文件
+             {
+                 "before": [
+                     "Z",
+                     "Z",
+                 ],
+                 "commands": [
+                     "workbench.action.files.save",
+                     "workbench.action.closeActiveEditor"
+                 ],
+             },
+
+
+             // 按下leader键+k，向上搜索行（easymotion）
+             {
+                 "before": [
+                     "<leader>",
+                     "k"
+                 ],
+                 "after": [
+                     "<leader>",
+                     "<leader>",
+                     "k",
+                 ]
+             },
+             // 按下leader键+j，向下搜索行（easymotion）
+             {
+                 "before": [
+                     "<leader>",
+                     "j"
+                 ],
+                 "after": [
+                     "<leader>",
+                     "<leader>",
+                     "j",
+                 ]
+             },
+             // 按下leader键+s，搜索以两个字符开始的匹配（easymotion）
+             {
+                 "before": [
+                     "<leader>",
+                     "s"
+                 ],
+                 "after": [
+                     "<leader>",
+                     "<leader>",
+                     "2",
+                     "s",
+                 ]
+             },
+             // 按下leader键+f，向后搜索以单个字符开始的匹配（easymotion）
+             {
+                 "before": [
+                     "<leader>",
+                     "f"
+                 ],
+                 "after": [
+                     "<leader>",
+                     "<leader>",
+                     "f",
+                 ]
+             },
+             // 按下leader键+F，向前搜索以单个字符开始的匹配（easymotion）
+             {
+                 "before": [
+                     "<leader>",
+                     "F"
+                 ],
+                 "after": [
+                     "<leader>",
+                     "<leader>",
+                     "F",
+                 ]
+             },
+             ],
+ #+END_EXAMPLE
+
+*** [[https://maintao.com/2018/my-vscode-keybindings/][我的 VS Code 快捷键配置]]                                         :website:
+ 上一篇介绍了 [[https://maintao.com/2018/vscode-shortcut/][VS Code 快捷键]]，这次就整理一下我自己的快捷键配置。
+
+ 刚工作的时候学习了 Vim，这些年更换过多个编辑器，几乎每个编辑器都有 Vim 插件，所以依旧使用 Vim 的那一套快捷键。这样的一个好处是，无论怎么切换 IDE，基础的文本编辑习惯都可沿用下来。
+
+ 用 Vim 的另一个好处，就是学新的 IDE 可以少记一些快捷键，比如删除当前行、比如跳转到定义。剩下的快捷键需要改的就不多了，能用默认尽量用默认，选择自定义要有充足的理由。
+
+**** Toggle Mini Map
+  小地图还是有点小用，但有时候也嫌烦，需要一个快捷键来隐藏/显示小地图。
+
+  #+BEGIN_EXAMPLE
+           {
+               "key" :  "cmd+m cmd+m",
+               "command" :  "editor.action.toggleMinimap"
+          },
+  #+END_EXAMPLE
+
+**** Toggle Vim Mode
+  当不会 Vim 的人用你电脑的时候......
+
+  #+BEGIN_EXAMPLE
+           {
+               "key" :  "cmd+m cmd+v",
+               "command" :  "toggleVim",
+               "when" :  "editorTextFocus && !inDebugRepl"
+          },
+  #+END_EXAMPLE
+  
+**** Disable Vim cmd+V
+  往编辑器里粘代码，不用 cmd+V 用什么？
+
+  #+BEGIN_EXAMPLE
+           {
+               "key" :  "cmd+v",
+               "command" :  "-extension.vim_cmd+v",
+               "when" :  "editorTextFocus && vim.active && vim.overrideCmdV && vim.use && !inDebugRepl"
+          },
+  #+END_EXAMPLE
+
+**** Disable Vim Backspace
+
+
+  如果不禁掉这个，在 code snippet 里用退格键会发生错乱，算是人为避开一个 bug 吧。
+
+  #+BEGIN_EXAMPLE
+           {
+               "key" :  "backspace",
+               "command" :  "-extension.vim_backspace",
+               "when" :  "editorTextFocus && vim.active && !inDebugRepl"
+          },
+  #+END_EXAMPLE
+
+**** Reference Search
+
+
+  默认的 shift + F12 太不好按了，简单八一八，不需要那么复杂。
+
+  #+BEGIN_EXAMPLE
+           {
+               "key" :  "cmd+8",
+               "command" :  "editor.action.referenceSearch.trigger",
+               "when" :  "editorHasReferenceProvider && editorTextFocus && !inReferenceSearchEditor && !isInEmbeddedEditor"
+          },
+  #+END_EXAMPLE
+
+**** Trigger Suggest
+
+
+  提示很重要，但默认的 ctrl+space 要么触发 Mac 的 spotlight，要么触发输入法切换。 改成 shift+space 就妥了。
+
+  #+BEGIN_EXAMPLE
+           {
+               "key" :  "shift+space",
+               "command" :  "editor.action.triggerSuggest",
+               "when" :  "editorHasCompletionItemProvider && textInputFocus && !editorReadonly"
+          },
+          {
+               "key" :  "ctrl+space",
+               "command" :  "-editor.action.triggerSuggest",
+               "when" :  "editorHasCompletionItemProvider && textInputFocus && !editorReadonly"
+          },
+  #+END_EXAMPLE
+
+**** Reset Zoom
+  外接投影或者有人在旁边看代码的时候，经常需要放大字体。按 ⌘+ 逐级放大，演示完后再按 ⌘- 逐级缩小还原回去。这里就有个痛点，就是在逐级缩小还原的时候，每按一下都要用眼睛确认是不是到了默认大小，有的时候还不太确定。浏览器可以用快捷键 cmd+0 来重置缩放，我们就用和浏览器一样的快捷键。
+
+  #+BEGIN_EXAMPLE
+       {
+           "key" :  "cmd+0",
+           "command" :  "workbench.action.zoomReset"
+      },
+  #+END_EXAMPLE
+
+**** Zen Mode
+
+
+  这么赞的功能，默认快捷键 cmd+K, Z 太繁琐，会影响进入写代码状态的流畅感，用 cmd+E 容易按得多。cmd+E 的默认行为貌似和 cmd+F 没有区别，果断移除。
+
+  #+BEGIN_EXAMPLE
+           {
+               "key" :  "cmd+e",
+               "command" :  "-actions.findWithSelection"
+          },
+          {
+               "key" :  "cmd+e",
+               "command" :  "workbench.action.toggleZenMode"
+          }
+  #+END_EXAMPLE
+
+***  anoter
+// Remapped keys in insert mode. Allows mapping to vim commands or vscode actions. See README for more.
+	"vim.insertModeKeyBindings": [
+		{
+			"before": ["j", "k"],
+			"after": ["<Esc>"]
+		}
+	],
+	// Non-recursive remapped keys in normal mode. Allows mapping to vim commands or vscode actions. See README for more.
+	"vim.normalModeKeyBindingsNonRecursive": [
+		{
+			"before": ["leader", "p"],
+			"after": ["\"", "+", "p"]
+		},
+		{
+			"before": ["Z", "Z"],
+			"commands": [
+				{
+					"command": "workbench.action.files.save",
+					"args": []
+				},
+				{
+					"command": "workbench.action.closeActiveEditor",
+					"args": []
+				}
+			]
+		},
+		{
+			"before": ["<C-n>"],
+			"after": ["g", "b"]
+		},
+		{
+			"before": ["leader", "v", "p"],
+			"commands": [
+				{
+					"command": "workbench.action.splitEditorDown"
+				}
+			]
+		},
+		{
+			"before": ["leader", "s", "p"],
+			"commands": [
+				{
+					"command": "workbench.action.splitEditorRight"
+				}
+			]
+		}
+	],
+	"vim.visualModeKeyBindingsNonRecursive": [
+		{
+			"before": ["leader", "y"],
+			"after": ["\"", "+", "y"]
+		},
+		{
+			"before": ["leader", "p"],
+			"after": ["\"", "+", "p"]
+		},
+		{
+			"before": ["<C-n>"],
+			"after": ["g", "b"]
+		}
+	]
+	```
+	,y 赋值选中
+	,p 粘贴
+	ctrl+n 多光标
+	,sp 水平分屏
+	,vp 垂直分屏
+	jk Esc
+	ZZ 保存退出
+	还有一些写在 vscode 的 keybind 里面, 挑几个
+	```
+		{
+		"key": "ctrl+p",
+		"command": "selectPrevSuggestion",
+		"when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
+	},
+	{
+		"key": "ctrl+n",
+		"command": "selectNextSuggestion",
+		"when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
+	},
+	{
+		"key": "alt+l",
+		"command": "workbench.action.focusNextGroup"
+	},
+	{
+		"key": "alt+h",
+		"command": "workbench.action.focusPreviousGroup"
+	},
+	```
+	ctrl+n/ctrl+p 和 vim 一样在补全列表中上下移动
+	alt+l/alt+h 在分屏之间切换
+
+*** fff
+    #+begin_example
+     // ===== VScode常用快捷键 （自定义）======
+    // 代码格式化 cmd + shift + x 
+    // 快速查找 command + p
+    // =============== vim按键映射 ================
+    // "vim.hlsearch": true, // 搜到的结果一直高亮显示j
+    "vim.easymotion": true,
+    "vim.sneak": true, // s<char><char> 跳转到下面第一次出现指定两个字符的地方
+    "vim.useSystemClipboard": true, // 使用系统剪贴板
+    "vim.leader": ",", // leader键
+    // vim插入模式
+    "vim.insertModeKeyBindings": [
+        {
+            "before": [
+                "j",
+                "j"
+            ],
+            "after": [
+                "<esc>"
+            ]
+        }
+    ],
+    // vim命令模式
+    "vim.normalModeKeyBindings": [
+        // 保存并退出当前文件Q
+        {
+            "before": [
+                "Q"
+            ],
+            "commands": [
+                ":wq"
+            ]
+        },
+        // 复制全文 ,v
+        {
+            "before": [
+                "<leader>",
+                "v"
+            ],
+            "after": [
+                "g",
+                "g",
+                "V",
+                "G",
+                "y"
+            ]
+        }
+    ],
+    "vim.normalModeKeyBindingsNonRecursive": [
+        // easymotion 快速跳转 ,s + <char>
+        {
+            "before": [
+                "<leader>",
+                "s"
+            ],
+            "after": [
+                "<leader>",
+                "<leader>",
+                "s"
+            ]
+        },
+        // 打开命令面板 :
+        {
+            "before": [
+                ":"
+            ],
+            "commands": [
+                "workbenjh.jaction.showCommands",
+            ]
+        },
+        // 保存当前文件
+        {
+            "before": [
+                "leader",
+                "w"
+            ],
+            "commands": [
+                "workbench.action.files.save",
+            ]
+        },
+        // 移到行首H,j 移到行尾L
+        {
+            "before": [
+                "H"
+            ],
+            "after": [
+                "^"
+            ]
+        },
+        {
+            "before": [
+                "L"
+            ],
+            "after": [
+                "$"
+            ]
+        },
+        // 删到行首，删到行尾  暂时只能用leader + H/L
+        {
+            "before": [
+                "leader",
+                "H"
+            ],
+            "after": [
+                "d",
+                "^"
+            ]
+        },
+        {
+            "before": [
+                "leader",
+                "L"
+            ],
+            "after": [
+                "d",
+                "$"
+            ]
+        },
+    ],
+    "vim.visualModeKeyBindingsNonRecursive": [
+        // 调整缩进
+        {
+            "before": [
+                ">"
+            ],
+            "commands": [
+                "editor.action.indentLines"
+            ]
+        },
+        {
+            "before": [
+                "<"
+            ],
+            "commands": [
+                "editor.action.outdentLines"
+            ]
+        },
+    ],
+    // ========== vim按键映射 结束 ============
+    #+end_example
+
+*** ffg
+    #+begin_example
+    首先打开快捷键设置
+
+    录制按键，按下“右键”，来查找相关快捷键，箭头所指为要找的（编辑时的光标移动）
+
+    右键更改键绑定，改为 alt+l ，若冲突，可以视情况把冲突的快捷键改成别的（比如已经存在alt+l，则把它改为ctrl+alt+l）
+
+    更改完之后，点击右上角的以JSON格式打开，会打开keybinding.json文件
+    #+end_example
+    #+begin_src json
+    // 将键绑定放在此文件中以覆盖默认值 auto[]
+[
+    {
+        "key": "alt+i",
+        "command": "cursorUp",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "up",
+        "command": "cursorUp",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "alt+k",
+        "command": "cursorDown",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "down",
+        "command": "cursorDown",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "alt+j",
+        "command": "cursorLeft",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "left",
+        "command": "cursorLeft",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "alt+l",
+        "command": "cursorRight",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "right",
+        "command": "cursorRight",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "down",
+        "command": "list.focusDown",
+        "when": "listFocus && !inputFocus"
+    },
+    {
+        "key": "down",
+        "command": "selectNextSuggestion",
+        "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
+    },
+    {
+        "key": "alt+k",
+        "command": "selectNextSuggestion",
+        "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
+    },
+    {
+        "key": "up",
+        "command": "selectPrevSuggestion",
+        "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
+    },
+    {
+        "key": "alt+i",
+        "command": "selectPrevSuggestion",
+        "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
+    },
+]
+    #+end_src
+
+
+** makrkdown  
+   
+*** VS Code 很好用的 markdown 插件
+1.markdown-all-in-one
+在所有拓展插件中，这个插件基础功能最全，快捷键多，方便使用。
+
+2.markdown toc
+这个插件是用来生成目录，这个插件我用得很爽的，在 CSDN 接触后欲罢不能。
+
+3.markdown+math
+喜欢使用 latex 编辑公式的人都会喜欢这个插件，这个插件可以让作者按照 latex 中编辑公式那样编辑公式。
+
+4.markdownlint
+规范命名规则的。
+
+5.Markdown PDF
+markdown 是不支持 pdf 输出，虽然不是经常使用到，但是有时又会需要，所以需要借助其他办法输出，使用该插件就可以，插件带入的 chromium 如果有 everything 的话可以借助搜索，将这个 chromium 包删除，同时需要设置 markdown-pdf.executablePath 的路劲设置为 chrome 的路径
+
+6.Markdown Preview Enhanced
+说实话，code 自带的暗色主题我廷喜欢的，很适合写代码，但是看文档和写文档有点不好看。所以这款是增强显示的。
+
+7.Markdown Theme Kit
+默认的配置懒得改，这个插件提供了几种主题，有 Markdown Editor、Markdown Editor Dark、Markdown Editor Focus、Markdown Editor Yellow
+
+*** [[https://www.jianshu.com/p/18876655b452][用VS Code打造最佳Markdown编辑器 - 简书]] :website:
+
+**** 为什么选择 VS Code？
+
+
+   在选择 Visual Studio Code（以下简称 Code）作为 markdown 主力编辑器之前，我在 Mac 电脑上尝试了简友们推荐的各种编辑器，有 Ulysses、Sublime Text、Atom、Vim、Mou......，不得不承认这些编辑器都很优秀，漂亮，强大，但是最后我还是选择了 Code，因为我发现它不仅有完备的功能还有其他编辑器所不具有的优点：
+
+   - 不会像 Ulysses 那样自作主张，把我文档里面的```更改为\`\`\`，害得我代码块不能正常显示；
+   - Sublime 和 Atom 的 Preview 和 Edit 需要安装不同的插件，Code 下载之后就支持语法显示和预览，不需要任何配置就可以开工；
+   - Mou 很好，所见即所得，但是运行慢，打开大文件很卡，正式版也不知道要等到啥时候；
+   - Marxico 功能强大，可是需要连接 Evernote 来用，我都没办法打开一个本地文件夹......；
+   - Vim 是我使用多年的编辑器，本打算装一个 vim-markdown 插件之后就用它了，但是预览功能还要靠外部浏览器，再加上 Vim 只支持等宽字体，写代码还行，写文章就有点力不从心；
+
+**** 简单设置
+   虽然 Code 不用怎么配置就可以很好地工作，但你要是肯花一点时间，可以达到更好的
+   效果。一般来说，安装一个主题，选择一个 Markdown 预览的 CSS 就可以了，先来一
+   个我现在的界面图：\\
+
+   编辑和预览界面
+
+   默认的深色背景适合写代码，不适合写大片文本，所以安装了一个 Markdown Yellow
+   的主题，默认的字体也是等宽字体，我改成了 Apple 上最潮的 =苹方=字体，还有就是
+   预览的默认字体是英文字体，我自定义了一个用中文字体的 css 文档，下面将几个步
+   骤详细说一下。
+
+***** Markdown Yellow 主题
+
+
+   Code 安装插件的快捷键和 Sublime、Atom 的都一样，是 =⌘+⌂+P=，也可以用 =F1=，调出快速安装命令栏之后，输入 =Install Extension=回车，然后输入过滤字符 =Markdown Theme=快速定位到这个插件，选择最右边的那个下载按钮安装重启即可。\\
+
+   我已经安装了，所以显示的是一个 X，表示卸载
+
+***** 配置中文字体
+   编辑器大部分都是方便写代码的，Mac 上最经典的配置大概是 12px 的 Menlo 字体，
+   这个写代码很适合阅读，但是不适合大块文章，所以更改默认字体是必须的，在 Code
+   中按 =⌘+,=快捷键，调出配置文件，修改如下：
+
+   #+BEGIN_EXAMPLE
+        { 
+       //-------- Editor configuration -------- 
+       // Controls the font family.  
+       "editor.fontFamily": "PingFang SC",
+       "editor.fontSize": 16,
+       }
+   #+END_EXAMPLE
+
+   我比较喜欢 =苹方=字体，所以将编辑器默认字体改成了 =PingFang SC=，如果你的
+   Mac 系统没有更新到最新版本，可以在网上下载这个字体文件，对于 Windows 用户来
+   说，可以设置成 =YaHei-Consolas-Hybrid=，这是雅黑和 Consolas 的合并字体，中西
+   文都有很好的显示效果。\\
+
+   使用苹方字体的编辑窗口
+
+***** 配置预览风格
+
+
+   Code 自带的 Markdown 预览基本够用，就是在显示汉字的时候，感觉有点别扭，还有默认风格过于简陋，对于我这个有点强迫症的人来说，还需要再次改进:-)，先打开配置文件，在里面增加一行：
+
+   #+BEGIN_EXAMPLE
+        "markdown.styles": [ 
+       "file:///Users/you-name/Documents/vscode-markdown.css"
+        ],
+   #+END_EXAMPLE
+
+   这表示 markdown 预览的风格将用我自定义的 =vscode-markdown.css=文件，记得这里需要填写 =file://=协议，因为预览功能是基于浏览器实现的，接下来让我们创建这个css文件。
+
+   #+BEGIN_QUOTE
+     小窍门：要检查文件是否能正常工作，只要将这一行粘贴到浏览器的地址栏里面，看能否打开这个 css 文件即可。
+   #+END_QUOTE
+
+   #+BEGIN_EXAMPLE
+        @charset "utf-8";
+       /** * vscode-markdown.css */
+       h1, h2, h3, h4, h5, h6, p, blockquote { margin: 0; padding: 0;}
+       body { font-family: "PingFang SC", "Hiragino Sans GB", Helvetica, Arial, sans-serif; padding: 1em; margin: auto; max-width: 42em; color: #737373; background-color: white; margin: 10px 13px 10px 13px;}
+       table { margin: 10px 0 15px 0; border-collapse: collapse;}
+       td, th { border: 1px solid #ddd; padding: 3px 10px;}
+       th { padding: 5px 10px; }
+       a { color: #0069d6; }
+       a:hover { color: #0050a3; text-decoration: none;}
+       a img { border: none; }
+       p { margin-bottom: 9px; }
+       h1, h2, h3, h4, h5, h6 { color: #404040; line-height: 36px;}
+       h1 { margin-bottom: 18px; font-size: 30px; }
+       h2 { font-size: 24px; }
+       h3 { font-size: 18px; }
+       h4 { font-size: 16px; }
+       h5 { font-size: 14px; }
+       h6 { font-size: 13px; }
+       hr { margin: 0 0 19px; border: 0; border-bottom: 1px solid #ccc;}
+       blockquote{ color:#666666; margin:0; padding-left: 3em; border-left: 0.5em #EEE solid; font-family: "STKaiti", georgia, serif;}
+       code, pre { font-family: Monaco, Andale Mono, Courier New, monospace; font-size: 12px;}
+       code { background-color: #ffffe0; border: 1px solid orange; color: rgba(0, 0, 0, 0.75); padding: 1px 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px;}
+       pre { display: block; background-color: #f8f8f8;  border: 1px solid #2f6fab; border-radius: 3px; overflow: auto; padding: 14px; white-space: pre-wrap; word-wrap: break-word;}
+       pre code { background-color: inherit; border: none;  padding: 0;}
+       sup { font-size: 0.83em; vertical-align: super; line-height: 0;}
+       * { -webkit-print-color-adjust: exact;}
+       @media screen and (min-width: 914px) { 
+         body { width: 854px; margin: 10px auto; }
+       }
+       @media print { 
+         body, code, pre code, h1, h2, h3, h4, h5, h6 { color: black; } 
+         table, pre { page-break-inside: avoid; }
+       }
+   #+END_EXAMPLE
+
+   大部分情况下，你只需要粘贴这个内容到 CSS 文件中即可，我这里用的是苹方和冬青黑体，考虑到你可能更喜欢其他的字体（例如雅黑），只要将
+
+   #+BEGIN_EXAMPLE
+        font-family: "PingFang SC", "Hiragino Sans GB", Helvetica, Arial, sans-serif;
+   #+END_EXAMPLE
+
+   中的 =PingFang SC=和 =Hiragino Sans GB=替换成你自己系统中安装的合适字体名称即可。\\
+   好了，大功告成，再回顾一下最终效果:-D\\
+
+   编辑和预览界面
+
+**** 下载资源
+
+
+   以上所有提到的资源都可以在官方网站免费下载，也提供了百度盘链接，酌情下载：\\
+   [[https://link.jianshu.com?t=http://pan.baidu.com/s/1eRacbh4][Visual Studio Code 0.10.11]]\\
+   [[https://link.jianshu.com?t=http://pan.baidu.com/s/1gdO4JIV][苹方字体]]\\
+   [[https://link.jianshu.com?t=http://pan.baidu.com/s/1botKLbT][Markdown的CSS配置文件]]
+
+   要是使用中有什么问题，欢迎和我交流，谢谢~
+
+*** vscode 配置
+
+  "vim.useCtrlKeys": true,
+  "vim.hlsearch": true,
+  "vim.insertModeKeyBindings": [
+    {
+      "before": [
+        "j",
+        "j"
+      ],
+      "after": [
+        "<Esc>"
+      ]
+    }
+  ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": [
+        "<leader>",
+        "c",
+        "c"
+      ],
+      "after": [
+        "g",
+        "c"
+      ]
+    },
+    {
+      "before": [
+        "<C-n>"
+      ],
+      "after": [],
+      "commands": [
+        {
+          "command": ":nohl"
+        }
+      ]
+    },
+    {
+      "before": [
+        "Z",
+        "Z"
+      ],
+      "after": [],
+      "commands": [
+        {
+          "command": "workbench.action.files.save",
+          "args": []
+        },
+        {
+          "command": "workbench.action.closeActiveEditor",
+          "args": []
+        }
+      ]
+    },
+    {
+      "before": [
+        "Z",
+        "Q"
+      ],
+      "after": [],
+      "commands": [
+        {
+          "command": "workbench.action.files.revert",
+          "args": []
+        },
+        {
+          "command": "workbench.action.closeActiveEditor",
+          "args": []
+        }
+      ]
+    },
+    {
+      "before": [
+        "leader",
+        "w"
+      ],
+      "after": [],
+      "commands": [
+        {
+          "command": "workbench.action.files.save",
+          "args": []
+        }
+      ]
+    }
+  ],
+  "vim.leader": ",",
+  "vim.handleKeys": {
+    "<C-a>": false,
+    "<C-f>": true,
+    "<C-b>": true
+  },
+ZZ 保存退出， ZW 不保存退出 , <,>W 保存 ,  jj 退出编辑模式
+
+你是直接修改 worksapce 文件么？
+ 嗯，全局修改。也可以根据项目添加到 .vscode/settings.json 文件

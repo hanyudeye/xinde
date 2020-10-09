@@ -1,0 +1,76 @@
+* [[https://linchen2chris.github.io/blog/2019-02-07-%E4%B8%80%E4%BA%9B%E5%A5%87%E6%8A%80%E6%B7%AB%E5%B7%A7.html][emacs一些技巧 | Lin Chen's blog]] :website:
+** Article
+*** 1 FINISH Grep
+
+
+ spacemacs 下 helm-files-do-grep 硬是没法递归搜索, 修改 helm Grep Default Command 为 =grep --color -Rn -e %p %f= 简洁明了搞定, 搜索速度也杠杠的, 想在工程里找东西就非常好用,
+
+*** 2 BLOCK multiple cursors
+
+
+ 到目前 <2016-07-25 Mon>为止, spacemacs 里的 multiple cursors 好像都有 bug, 无法正常使用 spacemacs 下的 multiple cursors 配合不是很好, 目前 git 上还在讨论 备选方案选了, evil-multiedit.
+
+*** 3 FINISH import-js =[3/4]=
+
+
+ 1. =[X]= npm install -g importjs
+ 2. =[X]= 然后安装 importjs 的 emacs 包,
+ 3. =[X]= 配置 project-root 的位置
+ 4. =[ ]= 最主要的难点是配置.importjs.js
+
+*** 4 emacsclients 的一些好用的参数
+
+ | 参数       | 用途                                                           | 备注   |
+ |------------+----------------------------------------------------------------+--------|
+ | -a=emacs   | 如果系统中没有开启 emacs, 在开启 emacsclient 的时候后自动开一个   |        |
+ | -c         | 在新的 frame 中开,这样关闭之后,焦点会自动回到 shell               |        |
+
+ 这样之后, 每次开机之后自动启动一个 emacs, 之后的 emacs 全是 emacsclient, 实现 vim 般的快速启动. 在.zshrc 下添加
+
+ #+BEGIN_EXAMPLE
+      alias  emc= 'emacsclient -a=emacs -c'
+ #+END_EXAMPLE
+
+*** 5 term 下使用 magit
+    emacs 下的 magit 非常好用, 终端下操作 git 命令, 虽然强大, 却不是很便捷, 在.zshrc 下添加
+    
+ #+BEGIN_EXAMPLE
+ alias  magit= 'emc -e "(magit-status \"$(pwd)\")"'
+ #+END_EXAMPLE
+
+*** 6 优化 spacemacs 输入法
+    目标是：normal 模式下用英文输入法，insert 模式下用五笔输入法
+**** 6.1 五笔输入法改用 squirrel（神级输入法）
+ 安装和配置：
+
+ #+BEGIN_EXAMPLE
+      1: brew cask install squirrel
+ #+END_EXAMPLE
+
+ 修改 =~/Library/Rime= 下的 default.yaml
+
+ #+BEGIN_EXAMPLE
+      1:  schema_list:
+      2: -  schema: wubi86 //替换掉所有输入法，只留下五笔。
+ #+END_EXAMPLE
+
+**** 6.2 安装 codefalling 大神的 fcitx-remote-for-osx
+ 如果是 linux 可以直接略去这个步骤,linux 下可以安装 fcitx. [[http://www.jianshu.com/p/4d81b7e32bff][原文]]
+
+ #+BEGIN_EXAMPLE
+      1: brew tap codefalling/fcitx-remote-for-osx
+      2: brew install codefalling/fcitx-remote-for-osx/fcitx-remote-for-osx --with-squirrel-rime
+ #+END_EXAMPLE
+
+**** 6.3 安装 cute-jumper/fcitx.el
+ 直接在 spacemacs 下用 =M-x package install fcitx= 即可. 配置 =spacemacs/user-config= :
+
+ #+BEGIN_EXAMPLE
+      1:  ;; ----------fcitx----
+      2:  ;;  Make sure the following comes before `(fcitx-aggressive-setup)'
+      3:  (setq fcitx-active-evil-states ' (insert emacs hybrid ) )  ; if you use hybrid mode
+      4:  (fcitx-aggressive-setup )
+      5:  (fcitx-prefix-keys-add  "M-m" )  ; M-m is common in Spacemacs
+      6:  ;; ------end
+
+ #+END_EXAMPLE
