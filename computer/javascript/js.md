@@ -1,26 +1,6 @@
 # Modern JavaScript Cheatsheet
-
-![Modern JavaScript cheatsheet](https://i.imgur.com/aexPxMb.png)
-<sub>Image Credits: [Ahmad Awais ⚡️](https://github.com/ahmadawais)</sub>
-
-> If you like this content, you can ping me or follow me on Twitter :+1:
-
-[![Tweet for help](https://img.shields.io/twitter/follow/mbeaudru?label=Tweet%20%40mbeaudru&style=social)](https://twitter.com/mbeaudru/)
-
 ## Introduction
-
-### Motivation
-
-This document is a cheatsheet for JavaScript you will frequently encounter in modern projects and most contemporary sample code.
-
-This guide is not intended to teach you JavaScript from the ground up, but to help developers with basic knowledge who may struggle to get familiar with modern codebases (or let's say to learn React for instance) because of the JavaScript concepts used.
-
-Besides, I will sometimes provide personal tips that may be debatable but will take care to mention that it's a personal recommendation when I do so.
-
-> **Note:** Most of the concepts introduced here are coming from a JavaScript language update (ES2015, often called ES6). You can find new features added by this update [here](http://es6-features.org); it's very well done.
-
 ### Complementary Resources
-
 When you struggle to understand a notion, I suggest you look for answers on the following resources:
 
 - [MDN (Mozilla Developer Network)](https://developer.mozilla.org/en-US/search?q=)
@@ -34,98 +14,7 @@ When you struggle to understand a notion, I suggest you look for answers on the 
 - [Google](https://www.google.com/) to find specific blog and resources
 - [StackOverflow](https://stackoverflow.com/questions/tagged/javascript)
 
-## Table of Contents
-
-- [Modern JavaScript cheatsheet](#modern-javascript-cheatsheet)
-  * [Introduction](#introduction)
-    + [Motivation](#motivation)
-    + [Complementary resources](#complementary-resources)
-  * [Table of contents](#table-of-contents)
-  * [Notions](#notions)
-    + [Variable declaration: var, const, let](#variable-declaration-var-const-let)
-      - [Short explanation](#short-explanation)
-      - [Sample code](#sample-code)
-      - [Detailed explanation](#detailed-explanation)
-      - [External resource](#external-resource)
-    + [Arrow function](#-arrow-function)
-      - [Sample code](#sample-code-1)
-      - [Detailed explanation](#detailed-explanation-1)
-        * [Concision](#concision)
-        * [*this* reference](#this-reference)
-      - [Useful resources](#useful-resources)
-    + [Function default parameter value](#function-default-parameter-value)
-      - [External resource](#external-resource-1)
-    + [Destructuring objects and arrays](#destructuring-objects-and-arrays)
-      - [Explanation with sample code](#explanation-with-sample-code)
-      - [Useful resources](#useful-resources-1)
-    + [Array methods - map / filter / reduce](#array-methods---map--filter--reduce)
-      - [Sample code](#sample-code-2)
-      - [Explanation](#explanation)
-        * [Array.prototype.map()](#arrayprototypemap)
-        * [Array.prototype.filter()](#arrayprototypefilter)
-        * [Array.prototype.reduce()](#arrayprototypereduce)
-        * [Array.prototype.find()](#arrayprototypefind)
-      - [External Resource](#external-resource-2)
-    + [Spread operator "..."](#spread-operator-)
-      - [Sample code](#sample-code-3)
-      - [Explanation](#explanation-1)
-        * [In iterables (like arrays)](#in-iterables-like-arrays)
-        * [Function rest parameter](#function-rest-parameter)
-        * [Object properties spreading](#object-properties-spreading)
-      - [External resources](#external-resources)
-    + [Object property shorthand](#object-property-shorthand)
-      - [Explanation](#explanation-2)
-      - [External resources](#external-resources-1)
-    + [Promises](#promises)
-      - [Sample code](#sample-code-4)
-      - [Explanation](#explanation-3)
-        * [Create the promise](#create-the-promise)
-        * [Promise handlers usage](#promise-handlers-usage)
-      - [External Resources](#external-resources-2)
-    + [Template literals](#template-literals)
-      - [Sample code](#sample-code-5)
-      - [External resources](#external-resources-3)
-    + [Tagged Template Literals](#tagged-template-literals)
-      - [External resources](#external-resources-4)
-    + [Imports / Exports](#imports--exports)
-      - [Explanation with sample code](#explanation-with-sample-code-1)
-        * [Named exports](#named-exports)
-        * [Default import / export](#default-import--export)
-      - [External resources](#external-resources-5)
-    + [JavaScript *this*](#-javascript-this)
-      - [External resources](#external-resources-6)
-    + [Class](#class)
-      - [Samples](#samples)
-      - [External resources](#external-resources-7)
-    + [Extends and super keywords](#extends-and-super-keywords)
-      - [Sample Code](#sample-code-6)
-      - [External Resources](#external-resources-8)
-    + [Async Await](#async-await)
-      - [Sample code](#sample-code-7)
-      - [Explanation with sample code](#explanation-with-sample-code-2)
-      - [Error handling](#error-handling)
-      - [External resources](#external-resources-9)
-    + [Truthy / Falsy](#truthy--falsy)
-      - [External resources](#external-resources-10)
-    + [Anamorphisms / Catamporphisms](#anamorphisms-and-catamorphisms)
-      - [Anamorphisms](#anamorphisms)
-      - [Catamorphisms](#catamorphisms)
-      - [External resources](#external-resources-11)
-    + [Generators](#generators)
-      - [External resources](#external-resources-12)
-    + [Static Methods](#static-methods)
-      - [Short Explanation](#short-explanation-1)
-      - [Sample Code](#sample-code-8)
-      - [Detailed Explanation](#detailed-explanation-2)
-        * [Calling other static methods from a static method](#calling-other-static-methods-from-a-static-method)
-        * [Calling static methods from non-static methods](#calling-static-methods-from-non-static-methods)
-      - [External resources](#external-resources-13)
-  * [Glossary](#glossary)
-    + [Scope](#-scope)
-    + [Variable mutation](#-variable-mutation)
-
 ## Notions
-
 ### Variable declaration: var, const, let
 
 In JavaScript, there are three keywords available to declare a variable, and each has its differences. Those are ```var```, ```let``` and ```const```.
@@ -136,36 +25,6 @@ Variables declared with ```const``` keyword can't be reassigned, while ```let```
 
 I recommend always declaring your variables with ```const``` by default, but with ```let``` if it is a variable that you need to *mutate* or reassign later.
 
-<table>
-  <tr>
-    <th></th>
-    <th>Scope</th>
-    <th>Reassignable</th>
-    <th>Mutable</th>
-   <th><a href="#tdz_sample">Temporal Dead Zone</a></th>
-  </tr>
-  <tr>
-    <th>const</th>
-    <td>Block</td>
-    <td>No</td>
-    <td><a href="#const_mutable_sample">Yes</a></td>
-    <td>Yes</td>
-  </tr>
-  <tr>
-    <th>let</th>
-    <td>Block</td>
-    <td>Yes</td>
-    <td>Yes</td>
-    <td>Yes</td>
-  </tr>
-   <tr>
-    <th>var</th>
-    <td>Function</td>
-    <td>Yes</td>
-    <td>Yes</td>
-    <td>No</td>
-  </tr>
-</table>
 
 #### Sample code
 
@@ -320,9 +179,6 @@ person = ["Nick"] // raises an error, because reassignment is not allowed with c
 - [Temporal Dead Zone (TDZ) Demystified](http://jsrocks.org/2015/01/temporal-dead-zone-tdz-demystified)
 
 ### <a name="arrow_func_concept"></a> Arrow function
-
-The ES6 JavaScript update has introduced *arrow functions*, which is another way to declare and use functions. Here are the benefits they bring:
-
 - More concise
 - *this* is picked up from surroundings
 - implicit return
@@ -354,7 +210,6 @@ function myFunc() {
   }, 0);
 }
 ```
-
 #### Detailed explanation
 
 ##### Concision
@@ -1823,21 +1678,7 @@ console.log(r.useName()) // Repo name is modern-js-cheatsheet and it contains so
 
 ## Glossary
 
-### <a name="scope_def"></a> Scope
-
-The context in which values and expressions are "visible," or can be referenced. If a variable or other expression is not "in the current scope," then it is unavailable for use.
-
-Source: [MDN](https://developer.mozilla.org/en-US/docs/Glossary/Scope)
-
-### <a name="mutation_def"></a> Variable mutation
-
-A variable is said to have been mutated when its initial value has changed afterward.
-
 ```js
 var myArray = [];
 myArray.push("firstEl") // myArray is being mutated
 ```
-
-A variable is said to be *immutable* if it can't be mutated.
-
-[Check MDN Mutable article](https://developer.mozilla.org/en-US/docs/Glossary/Mutable) for more details.
