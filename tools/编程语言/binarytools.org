@@ -1,0 +1,121 @@
+#+TITLE: 编程工具
+#+DESCRIPTION: 编程工具
+#+TAGS: 编程工具
+#+CATEGORIES: 软件使用
+
+* gcc
+  - 调试 --gstabs
+  - 检错 -Wall -Werror (警告当成错误)
+  - 优化 O
+  - 指定另外的包含路径 –I
+  - 指定链接路径 gcc –L /usr/dev/mysql/lib –lmysqlclient test.o –o test
+  - 强制使用静态库 gcc –L /usr/dev/mysql/lib –static –lmysqlclient test.o –o test
+* 其他工具       
+** dd
+   #+begin_src sh
+	 dd if=boot of=boot.img bs=512 count=1
+   #+end_src
+   
+   | bs=<字节数>    | 将输入与输出设成指定的字节数   |
+   | cbs=<字节数>   | 转换时，每次只转换指定的字节数 |
+   | conv=<关键字>  | 指定文件转换的方式             |
+   | count=<区块数> | 仅读取指定的区块数             |
+   | ibs=<字节数>   | 每次读取的字节数               |
+   | obs=<字节数>   | 每次输出的字节数               |
+   | of=<文件>      | 输出到文件                     |
+   | seek=<区块数>  | 一开始输出时，跳过指定的区块数 |
+   | skip=<区块数>  | 一开始读取时，跳过指定的区块数 |
+
+** 模拟器[ qemu ]
+   #+begin_src sh
+     qemu-system-x86_64 -hda archlinux.vmdk -boot d -cdrom /home/wuming/soft/tar/archlinux-2017.03.01-dual.iso -m 512
+   #+end_src
+   
+** 查看程序依赖库[ ldd ] 
+** strace
+   strace 常用来跟踪进程执行时的系统调用和所接收的信号。 在 Linux 世界，进程不能
+   直接访问硬件设备，当进程需要访问硬件设备(比如读取磁盘文件，接收网络数据等等)
+   时，必须由用户态模式切换至内核态模式，通过系统调用访问硬件设备。strace 可以跟
+   踪到一个进程产生的系统调用,包括参数，返回值，执行消耗的时间。
+
+   6.1. 输出参数含义每一行都是一条系统调用，等号左边是系统调用的函数名及其参数，
+   右边是该调用的返回值。strace 显示这些调用的参数并返回符号形式的值。strace 从
+   内核接收信息，而且不需要以任何特殊的方式来构建内核。
+
+ - strace cat /dev/null
+ - strace -o output.txt -T -tt -e trace=all -p 28979
+   跟踪 28979 进程的所有系统调用（-e trace=all），并统计系统调用的花费时间，以及开始时间（并以可视化的时分秒格式显示），最后将记录结果存在 output.txt 文件里面。
+** 显示 obj 信息[ objdump ]
+* 调试器
+** gdb 
+*** 调试选项    
+    调试 $gdb <program>
+    转储调试
+    $gdb <program> <core dump file>
+    $gdb program core.11127
+
+    调试服务
+    $gdb <program> <PID>
+    $gdb hello 11127
+*** 设置断点
+    break n（简写 b n）:在第 n 行处设置断点
+    b fn1 if a＞b：条件断点设置
+    break func（break 缩写为 b）：在函数 func()的入口处设置断点，如：break cb_button
+    delete 断点号 n：删除第 n 个断点
+    disable 断点号 n：暂停第 n 个断点
+    enable 断点号 n：开启第 n 个断点
+    clear 行号 n：清除第 n 行的断点
+    info b（info breakpoints） ：显示当前程序的断点设置情况
+    delete breakpoints：清除所有断点：
+*** 常用命令
+    break 加断点
+    run 运行
+    next 单步运行
+    info registers 显示所有寄存器的值
+    print 显示特定寄存器的值
+    print /d 显示十进制的值
+    print /t 显示二进制的值
+    print /x 显示十六进制的值
+    
+    x 显示特定内存地址的内容 x /nyz  &address
+    - n 是要显示的字段数
+    - y 是输出格式
+      - c 用于字符
+      - d 十进制
+      - x 十六进制
+    - z 是要显示的字段长度
+      - b 字节 8 位
+      - h 16 位
+      - w 32 位字
+*** 查看源代码
+    list：简记为 l，其作用就是列出程序的源代码，默认每次显示 10 行。
+    list 行号：将显示当前文件以“行号”为中心的前后 10 行代码，如：list 12
+    list 函数名：将显示“函数名”所在函数的源代码，如：list main
+    list：不带参数，将接着上一次 list 命令的，输出下边的内容。
+*** 打印表达式
+    print 表达式：简记为 p，其中“表达式”可以是任何当前正在被测试程序的有效表达式，比如当前正在调试 C 语言的程序，那么“表达式”可以是任何 C 语言的有效表达式，包括数字，变量甚至是函数调用。
+    print a：将显示整数 a 的值
+    print ++a：将把 a 中的值加 1,并显示出来
+    print name：将显示字符串 name 的值
+    print gdb_test(22)：将以整数 22 作为参数调用 gdb_test() 函数
+    print gdb_test(a)：将以变量 a 作为参数调用 gdb_test() 函数
+    display 表达式：在单步运行时将非常有用，使用 display 命令设置一个表达式后，它将在每次单步进行指令后，紧接着输出被设置的表达式及值。如：display a
+    watch 表达式：设置一个监视点，一旦被监视的“表达式”的值改变，gdb 将强行终止正在被调试的程序。如：watch a
+    whatis：查询变量或函数
+    info function： 查询函数
+    info locals： 显示当前堆栈页的所有变量
+*** 查询运行信息
+    where/bt：当前运行的堆栈列表；
+    bt backtrace 显示当前调用堆栈
+    up/down 改变堆栈显示的深度
+    set args 参数:指定运行时的参数
+    show args：查看设置好的参数
+    info program： 来查看程序的是否在运行，进程号，被暂停的原因。
+*** 分割窗口
+    layout：用于分割窗口，可以一边查看代码，一边测试：
+    layout src：显示源代码窗口
+    layout asm：显示反汇编窗口
+    layout regs：显示源代码/反汇编和 CPU 寄存器窗口
+    layout split：显示源代码和反汇编窗口
+    
+
