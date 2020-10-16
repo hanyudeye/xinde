@@ -1,0 +1,246 @@
+* [[https://juejin.im/post/6844903991814406158][Gitbook的实用技巧专栏]] :website:
+
+** Article
+*** 专栏目录
+ - [[Gitbook介绍][Gitbook介绍]]
+ - [[Gitbook安装]]
+ - [[Gitbook简单使用]]
+ - [[Gitbook插件介绍]]
+ - [[Gitbook错误处理]]
+
+*** 专栏详情
+**** Gitbook
+***** Gitbook介绍
+ #+BEGIN_EXAMPLE
+ GitBook 是一个基于 Node.js 的命令行工具
+ 可用 Github/Git 和 Markdown 组合制作成精美的电子文档
+ GitBook支持输出多种文档格式：
+ * 静态站点: GitBook默认输出格式, 生成的静态站点
+ * PDF: 需要安装 gitbook-pdf
+ * eBook: 需要安装ebook-convert
+ * 单HTML网页: 支持将内容输出为单页HTML, 不过一般用在将电子书格式转换为PDF或eBook的中间过程
+ * JSON: 一般用于电子书的调试或元数据提取
+ 使用GitBook制作电子书, 必备两个文件: README.md[主页面] SUMMARY.md[侧边栏页面]
+ #+END_EXAMPLE
+
+***** Gitbook安装
+ #+BEGIN_EXAMPLE
+      # 安装Gitbook需要node.js作为前提依赖, 安装时确保主机已经存在node.js
+      node -v
+
+     # 安装Gitbook多版本托管工具, 可同时托管多个Gitbook版本, 且下载最新版的Gitbook驱动
+     npm install gitbook-cli -g
+
+     # 验证下载是否成功
+     gitbook -V
+
+     # 下载历史版本[下载3.0.0版本]
+     # 3.2.3版本确保为不可用版本, 推荐使用3.0.0
+     gitbook fetch 3.0.0
+
+     # 进入到你的项目文件夹, 初始化一个Gitbook项目
+     gitbook init
+
+     # 生成README.md 和 SUMMARY.md 两个基本文件
+
+     # 启动服务
+     gitbook serve
+
+     # 指定gitbook版本启动
+     gitbook serve --gitbook=3.0.0
+
+     # 获取帮助
+     gitbook --help
+
+     # 卸载指定版本Gitbook[卸载3.2.3版本]
+     gitbook uninstall 3.2.3
+
+     # 生成静态网页
+     gitbook build
+
+     # 指定gitbook版本生成静态文件，如果本地没有将先下载
+     gitbook build --gitbook=3.0.0
+
+     # 列出本地所有的gitbook版本
+     gitbook ls
+
+     # 列出远程可用的gitbook版本
+     gitbook ls-remote
+
+     # 更新到gitbook的最新版本
+     gitbook update
+
+     # 安装配置依赖插件
+     gitbook install
+
+     # 指定log的级别
+     gitbook build --log=debug
+
+     # 输出错误信息
+     gitbook builid --debug
+
+     # 将 Gitbook 输出为 PDF 文件
+     gitbook pdf . [PDF_Name]
+ #+END_EXAMPLE
+
+***** Gitbook简单使用
+ 在 *README.md* 中撰写Gitbook项目的主界面, 而 *SUMMARY.md* 是Gitbook界面中侧边栏的属性\\
+ README.md示例
+
+ #+BEGIN_EXAMPLE
+       # 主界面简介
+     ------
+     此文档的简单描述
+
+      ### 目录介绍
+      * [ 目录1]( 1.md)
+      * [ 目录2]( 2.md)
+      * [ 目录3]( 2.md)
+      * [ 目录4]( 4.md)
+      复制代码
+ #+END_EXAMPLE
+
+ SUMMARY.md示例
+
+ #+BEGIN_EXAMPLE
+       * [ 目录1]( 1.md)
+      * [ 目录2]( 2.md)
+      * [ 目录3]( 2.md)
+      * [ 目录4]( 4.md)
+      复制代码
+ #+END_EXAMPLE
+
+ 项目根目录下可以创建 *book.json* 实现全局配置文件信息
+
+ #+BEGIN_EXAMPLE
+      {
+          "title":  "MedusaSorcerer的博客文档",
+          "author":  "MedusaSorcerer",
+          "description":  "MedusaSorcerer的博客文档",
+          "language":  "zh-hans",
+          "gitbook":  "3.0.0",
+          "structure": {
+              "readme":  "README.md"
+         },
+          "plugins": [
+              "-highlight",
+              "-github",
+              "-search",
+              "-lunr",
+              "livereload",
+              "back-to-top-button",
+              "code",
+              "prism",
+              "copy-code-button",
+              "search-pro",
+              "splitter",
+              "-sharing-plus",
+              "tbfed-pagefooter",
+              "click-reveal"
+         ],
+          "pluginsConfig": {
+              "tbfed-pagefooter": {
+                  "modify_label":  "该文件修订时间：",
+                  "modify_format":  "YYYY-MM-DD HH:mm:ss"
+             }
+         },
+          "links": {
+              "sidebar": {
+                  "博客主页":  "https://juejin.im/user/2805609406139950/posts"
+             },
+              "sharing": {
+                  "google":  false,
+                  "facebook":  false,
+                  "twitter":  false,
+                  "weibo":  false,
+                  "all":  false
+             }
+         }
+     }
+ #+END_EXAMPLE
+
+ | 关键字          | 描述                             | 示例                                                                                                           |
+ |-----------------+----------------------------------+----------------------------------------------------------------------------------------------------------------|
+ | title           | 项目标题                         | MedusaSorcerer的博客文档                                                                                       |
+ | author          | 项目作者                         | MedusaSorcerer                                                                                                 |
+ | description     | 项目描述信息                     | -                                                                                                              |
+ | language        | 项目语言                         | 查看下表                                                                                                       |
+ | gitbook         | Gitbook版本信息                  | 3.0.0                                                                                                          |
+ | structure       | 结构信息                         | {"readme": "README.md"} 指定readme的文件                                                                       |
+ | plugins         | 需要安装或者禁用的插件名称       | -                                                                                                              |
+ | pluginsConfig   | 安装的插件需要自定义的配置       | -                                                                                                              |
+ | links.sidebar   | 文档添加其他链接地址             | {"博客主页": " [[https://juejin.im/user/2805609406139950/posts%22%7D][juejin.im/user/280560...]] {名称:地址}   |
+ | links.sharing   | 对文档的图标链接是否启用的配置   | -                                                                                                              |
+
+ 支持的语言列表, 版本之间存在差异, 仅供参考 语言简写 | 描述 | 语言简写 | 描述 --- | --- | --- | --- en | 英语 | ar | 阿拉伯语 bn | 马来语 | cs | 捷克语 de | 德语 | es | 西班牙语 fa | 波斯语 | fi | 芬兰语 fr | 法语 | he | 希伯来语 it | 意大利语 | ja | 日语 ko | 韩语 | no | 挪威语 pl | 波兰语 | pt | 葡萄牙语 ro | 罗马尼亚语 | ru | 俄语 sv | 瑞典语 | uk | 乌克兰语 vi | 越南语 | - | - zh-hans | 简体汉语 | zh-tw | 繁体汉语
+
+***** Gitbook插件介绍
+****** 默认启用的插件
+
+  - highlight | 代码高亮 
+  - search | 导航栏英文检索功能  
+  - font-settings | 字体设置 
+  - livereload | 为GitBook实时重新加载 
+  - disqus | 添加disqus评论
+****** 自定义插件
+
+  - search-pro | 支持中文搜索, 需要将默认的search插件去掉
+  - advanced-emoji | 支持emoji表情
+  - github | 添加github图标
+  - ace | 使gitbook支持ace
+  - emphasize | 为文字加上底色 
+  - katex | 支持数学公式 
+  - include-codeblock | 使用代码块的格式显示所包含文件的内容 
+  - mermaid | 支持渲染Mermaid图表
+  - splitter | 使侧边栏宽度可自由调节 
+  - sharing | 分享当前页面, 默认插件
+  - tbfed-pagefooter | 为页面添加页脚
+  - toggle-chapters | 使左侧的章节目录可以折叠
+  - sectionx | 将页面分块显示
+  - codeblock-filename | 为代码块添加文件名称
+  - ga | google 统计
+  - baidu | 百度统计
+
+***** Gitbook错误处理
+ 2. 修改项目文件保存后, =gitbook serve= 不支持热加载\\
+    当你修改 Gitbook 项目保存后, serve 重启的时提示无法使用 mkdir 操作, 以至于不能达到重启的目的\\
+    那么你需要进行以下操作:
+
+    - 找到你下载的 =gitbook=版本文件夹: 一般位于 =Users\当前用户\.gitbook\versions\=下会有对应版本号的文件夹名称
+    - 在对应版本文件夹内找到 =lib\cli\serve.js=文件
+    - 复制以下代码放置 =serve.js=文件中
+
+      #+BEGIN_EXAMPLE
+            /* 代码首行 */
+           const fs= require( "fs");
+
+           /* 任意空白位置 */
+            function  deleteFolder( path) {
+           let files = [];
+           if( fs.existsSync(path) ) {
+              files = fs.readdirSync(path);
+              files.forEach(  function( file,index){
+                   let curPath = path +  "/" + file;
+                   if(fs.statSync(curPath).isDirectory()) {
+                      deleteFolder(curPath);
+                  }  else {
+                      fs.unlinkSync(curPath);
+                  }
+              });
+              fs.rmdirSync(path);
+              }
+          }
+      #+END_EXAMPLE
+
+    - 在 =serve.js=找到函数体 =generateBook=
+    - 在函数内 =var outputFolder = getOutputFolder(args);=后另起一行写入以下代码
+
+      #+BEGIN_EXAMPLE
+            if (server.isRunning()) deleteFolder(outputFolder)
+           复制代码
+      #+END_EXAMPLE
+
+    - 保存退出, 重启gitbook, 发现热加载生效了
+
+    注意: /当你停止服务的时候, 若服务没有自动删除 _book 文件夹时, 你需要手动删除 _book 文件夹/ ``
+
