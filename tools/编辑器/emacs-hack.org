@@ -1,0 +1,299 @@
+* [[https://www.emacswiki.org/emacs/HackerGuide][EmacsWiki: Hacker Guide]] :website:
+** Article
+  Let's see how things are organized in the Git repository. We will focus on the master branch.
+
+**** Build configuration
+  This is not very interesting. It's a lot of stuff that makes Emacs compile and run on many platforms and architectures.
+
+  Emacs --like a lot of GNU projects-- use the GNU autotools.
+
+  - *autogen.sh* --- Little script that checks you have the right version of autotools to build the configure script.
+  - *autogen/* --- Some pre-built generated files for autoconf. See README inside.
+  - *config.bat* --- Configuration script for MSDOS. All I can say is scripting on MSDOS doesn't seem very fun.
+  - *configure.ac, m4/* --- Source file used by autoconf to generate the configure script. Pretty hairy.
+  - *GNUmakefile* --- From the file headers: This GNUmakefile is for GNU Make. It is for convenience, so that one can run ‘make' in an unconfigured source tree. In such a tree, this file causes GNU Make to first create a standard configuration with the default options, and then reinvokes itself on the newly-built Makefile. If the source tree is already configured, this file defers to the existing Makefile.
+  - *make-dist* --- Script to make a release tarball.
+  - *Makefile.in* --- The makefile not yet processed by autotools.
+
+  I recommand reading the INSTALL.REPO if you want to build the git =‘master’= branch. Basically, if you have all dependancies to build the default Emacs, run:
+
+  #+BEGIN_EXAMPLE
+      $ make # does the needed autogen, configure, make with default settings
+      $ ./src/emacs -Q # run it!
+  #+END_EXAMPLE
+
+  I recommend using =-jPROC= flag for make where =PROC= is the number of CPU
+  core you have in order to speed up the compilation.
+
+**** Emacs core
+  The core of Emacs is written in C.
+
+  - *lib* --- Source of some libraries used by Emacs
+  - *lib-src* --- Source of external utilities (etags, hexl, ...)
+  - *src* --- Source of the Emacs executable
+
+***** Lisp objects
+  Let's look at =src/lisp.h= for fundamental definitions.
+  A Lisp object ( =Lisp_Object=) is basically a number (an integer). For 32bits Lisp_Object, in hexadecimal:
+
+  0xAAAAAAAB
+
+  This number is split in 2 parts in terms of bits:
+
+  - a value (A), length is the number of bits in type minus number of tag bits
+  - a tag (B), length is 2 or 3 bits
+
+  The value is either a memory address or an integer i.e. the =fixnum= Lisp type. The tag indicates the type of the value.
+
+  On my 64bit build of Emacs, a Lisp object is stored on a 64bits signed integer which is called (typedef'ed to) =EMACS_INT=.
+
+  Everytime an object is allocated its address is aligned to 8 bytes. That way the 3 least significant bits are always 0 and thus can be used for the tag. The allocation code is in =src/alloc.c=.
+
+  The tag is 3 bit long and thus can have 8 different values. The value uses the remaining bits. Integers use another 1 bit of the 3 tag bits.
+
+  This technique makes integer handling fast but has the downside of limiting the available range of integers. This is problematic on 32bit systems where the point in a buffer can't go past a 2^28 (256MB).
+
+***** Lisp types
+
+
+  See =enum Lisp_Type= in =lisp.h:243=. It's the value of each tag.
+
+  - Integer
+  - Symbol
+  - String
+  - Vector-like
+  - Cons
+  - Float
+
+  Two objects are equal (with =EQ(a, b)=) if both their =Lisp_Object= values are equal.
+
+  There are several macros defined to extract the relevant data from a =Lisp_Object=.
+
+  - =XTYPE(x)= returns the tag ( =enum Lisp_Type=)
+  - =XINT(x)= returns the =EMACS_INT= value
+  - =XUINT(x)= returns the =EMACS_UINT= value
+  - =XCONS(x)= returns a =struct Lisp_Cons*=
+  - =XVECTOR(x)= returns a =struct Lisp_Vector*=
+  - =XSTRING(x)= returns a =struct Lisp_String*=
+  - =XSYMBOL(x)= returns a =struct Lisp_Symbol*=
+  - =XFLOAT(x)= returns a =struct Lisp_Float*=
+  - =XMARKER(x)= returns a =struct Lisp_Marker*=
+  - =XOVERLAY(x)= returns a =struct Lisp_Overlay*=
+  - =XSAVE_VALUE(x)= returns a =struct Lisp_Save_Value*=
+  - =XPROCESS(x)= returns a =struct Lisp_Process*=
+  - =XWINDOW(x)= returns a =struct window*=
+  - =XTERMINAL(x)= returns a =struct terminal*=
+  - =XSUBR(x)= returns a =struct Lisp_Subr*=
+  - =XBUFFER(x)= returns a =struct buffer*=
+  - =XCHAR_TABLE(x)= returns a =struct Lisp_Char_Table*=
+  - =XSUB_CHAR_TABLE(x)= returns a =struct Lisp_Sub_Char_Table*=
+  - =XBOOL_VECTOR(x)= returns a =struct Lisp_Bool_Vector*=
+
+  There's a bunch of type predicates macros:
+
+  - =INTEGERP(x)= checks for float or int
+  - =NILP(x)=
+  - =SYMBOLP(x)=
+  - =STRINGP(x)=
+  - =CONSP(x)=
+  - =FLOATP(x)=
+  - =VECTORP(x)=
+  - =PROCESSP(x)=
+  - =WINDOWP(x)=
+  - =TERMINALP(x)=
+  - =SUBRP(x)=
+  - =BUFFERP(x)=
+  - =FRAMEP(x)=
+  - =VECTORLIKEP(x)=
+  - =OVERLAYP(x)=
+  - =MARKERP(x)=
+  - =SAVE_VALUEP(x)=
+  - =IMAGEP(x)=
+
+***** Pseudovector types
+
+
+  Due to having limited available tag space, most Lisp_Objects are internally represented as vector-like objects. These objects are tagged structs each containing a =union vectorlike_header= at the beginning (which stores tag and type information), a section composed of Lisp_Objects, and a section optionally containing miscellaneous information. Here is a typical Lisp_Vectorlike struct:
+
+  #+BEGIN_EXAMPLE
+      struct xyzzy
+      {
+        /* This is our vectorlike header */
+        union vectorlike_header header ; 
+        /* A few Lisp_Object fields follow */
+        Lisp_Object foo ;
+        Lisp_Object bar ;
+        /* Miscellaneous fields follow */
+        int baz ;
+        void *quux ;
+      }
+  #+END_EXAMPLE
+
+  Lisp_Vectorlike types are stored in the enum pvec_types, in = lisp.h =. A new type should be created with each new vectorlike.
+
+  Lisp_Vectorlikes should be allocated with ALLOCATE_PSEUDOVECTOR, a macro in lisp.h which accepts the C type of the pseudovector, the name of the last Lisp field in the pseudovector, and the pvec_type of the pseudovector. Assuming that PVEC_XYZZY is the pvec_type of the pseudovector, a typical make_xyzzy function would read:
+
+  #+BEGIN_EXAMPLE
+      struct xyzzy *
+      make_xyzzy (Lisp_Object foo, int baz, void *quux)
+      {
+        struct xyzzy *retv = ALLOCATE_PSEUDOVECTOR (struct xyzzy, foo, PVEC_XYZZY) ;
+        retv->foo = foo ;
+        retv->bar = Ffoobar (foo) ;
+        retv->baz = baz ;
+        retv->quux = quux ;
+        return retv ;
+      }
+  #+END_EXAMPLE
+
+  To convert between the returned struct, and the corresponding Lisp_Object, a common idiom is to define a macro in lisp.h, that invokes the macro XSETPSEUDOVECTOR, which sets the field =a= to the Lisp_Object representation of the pseudovector =b=. For example:
+
+  #+BEGIN_EXAMPLE
+      #define XSETXYZZY(a, b) XSETPSEUDOVECTOR (a, b, PVEC_XYZZY)
+  #+END_EXAMPLE
+
+  When creating pseudovectors, a new switch clause should be placed in =print_vectorlike= (a C function in print.c), which prints a textual representation of the Lisp_Vectorlike. For our hypothetical xyzzy object, a typical entry would read:
+
+  #+BEGIN_EXAMPLE
+      static bool
+      print_vectorlike (Lisp_Object obj ... Lisp_Object printcharfun ...)
+      {
+        switch (PSEUDOVECTOR_TYPE (XVECTOR (obj))
+          {
+             ...
+          case PVEC_XYZZY:
+            print_c_string ( "#", printcharfun) ;
+            break ;
+          }
+      }
+  #+END_EXAMPLE
+
+***** Defining functions
+
+
+  There is a =DEFUN= macro in =lisp.h:1987=. Have a look at the manual, it's pretty well written. [[https://www.emacswiki.org/info-ref?find=Writing%20Emacs%20Primitives;context=elisp][Writing Emacs Primitives]]
+
+***** Idioms
+
+
+****** Iterating on a list
+
+
+  #+BEGIN_EXAMPLE
+      Lisp_Object tail ;
+
+      for (tail = list ; CONSP (tail); tail = XCDR (tail))
+        {
+          List_Object e = XCAR (tail) ; /* current element */
+          /* ... */
+        }
+  #+END_EXAMPLE
+
+***** Configure script and build flags
+
+
+  If you know how to write basic shell scripts you're good to go. This is a crash course in autoconf for Emacs. Have a look at autoconf doc for more.
+
+****** Adding a enable/disable configure flag
+
+
+  Open =configure.ac=, it's a big shell script template that is processed by autoconf to generate the actual configure.sh script.
+
+  Look for =OPTION_DEFAULT_ON= or =OPTION_DEFAULT_OFF= depending on if you want your option to be turn on or off by default.
+
+  The syntax is =OPTION_DEFAULT_ON([thing],[description])= where:
+
+  - =thing= is the thing you want to turn on or off ( =--with-thing=, =--without-thing=)
+  - =description= is a description of the thing.
+
+  This macro will define a =with_thing= shell variable available in the rest of the script. Its value will be either “yes” or “no”.
+
+  The convention is later in the script:
+
+  - To first to check if =$with_thing= is =yes=
+  - In which case you check if you can actually enable it for emacs on the current system
+  - If that's the case, set a =HAVE_THING= variable to yes. If you can't enable it, set it to no.
+  - Add the corresponding =echo= close the the end of the script. Look for “Does Emacs use” in =configure.ac=.
+
+****** Exporting a C macro
+
+
+  If you need to export something to make it available in the C sources (as a define macro written in =src/config.h=), use:
+
+  #+BEGIN_EXAMPLE
+      AC_DEFINE(YOUR_MACRO, value, [Purpose of the macro])
+  #+END_EXAMPLE
+
+  This will define =YOUR_MACRO= to the verbatim =value=. In case you want to export the content of a shell variable (expand it), simply putting =$value= *will not work*, you have to use:
+
+  #+BEGIN_EXAMPLE
+      AC_DEFINE_UNQUOTED(YOUR_MACRO,  "$your_variable", [ description ])
+  #+END_EXAMPLE
+
+****** Exporting a shell variable to rest of autoconf machinery
+
+
+  If you need to export a shell variable to =src/Makefile.in= (the file that is processed by autoconf to generate the actual Makefile) you need to use
+
+  #+BEGIN_EXAMPLE
+      AC_SUBST(YOUR_SHELL_VAR)
+  #+END_EXAMPLE
+
+  This will replace any occurence of =@YOUR_SHELL_VAR@= in files processed by autoconf with the content of the shell var. If you look at src/Makefile.in for example, you can see:
+
+  #+BEGIN_EXAMPLE
+      LIBZ = @LIBZ@
+  #+END_EXAMPLE
+
+  This define a Makefile variable to the value of the shell variable defined earlier in =configure.ac=.
+
+****** Summary
+
+
+  #+BEGIN_EXAMPLE
+      # first define the configure option
+      OPTION_DEFAULT_ON([thing],[description])
+
+      # ...
+
+      # Thing support
+      HAVE_THING=no
+      ## declare here other variable you need
+      ## like additional build flags, etc.
+      ##
+      ## the convention is to use
+      ##  - THING_OBJ for additional object files (use AC_SUBST to export!)
+      ##  - LIBTHING for additional librares to add to the linker flags (use AC_SUBST to export!)
+
+      if test  "${with_thing}" !=  "no" ; then
+       # do your check to see if you can actually enable it
+       HAVE_THING=yes # (lets assume you can)
+       # define
+      fi
+
+      if test  "${HAVE_THING}" = yes ; then
+        # now you *have* to enable Thing!
+        # AC_SUBST, AC_DEFINE, etc usually go here
+        AC_DEFINE(HAVE_THING, 1, [Define to 1 if Thing enabled])
+      fi
+
+      # ...
+
+      # add a  "summary line" printed at the end of configuration
+      echo  "  Does Emacs has Thing?                 ${HAVE_THING}"
+  #+END_EXAMPLE
+
+  --------------
+
+  \\
+  [[https://www.emacswiki.org/emacs?action=translate;id=HackerGuide;missing=de_es_fr_it_ja_ko_pt_ru_se_uk_zh][Add Translation]]
+
+  [[https://www.emacswiki.org/emacs/Comments_on_HackerGuide][Talk]] [[https://www.emacswiki.org/emacs?action=edit;id=HackerGuide][Edit this page]] [[https://www.emacswiki.org/emacs?action=history;id=HackerGuide][View other revisions]] [[https://www.emacswiki.org/emacs?action=admin;id=HackerGuide][Administration]]
+
+  Last edited 2020-06-11 16:54 UTC by [[https://www.emacswiki.org/emacs/aaptel][aaptel]] [[https://www.emacswiki.org/emacs?action=browse;diff=2;id=HackerGuide][(diff)]]
+
+  [[https://creativecommons.org/licenses/GPL/2.0/][[[/pics/cc-GPL-a.png]]]]
+
+  This work is licensed to you under version 2 of the [[https://www.gnu.org/][GNU]] [[/GPL][General Public License]]. Alternatively, you may choose to receive this work under any other license that grants the right to use, copy, modify, and/or distribute the work, as long as that license imposes the restriction that derivative works have to grant the same rights and impose the same restriction. For example, you may choose to receive this work under the [[https://www.gnu.org/][GNU]] [[/FDL][Free Documentation License]], the [[https://creativecommons.org/][CreativeCommons]] [[https://creativecommons.org/licenses/sa/1.0/][ShareAlike]] License, the XEmacs manual license, or [[/OLD][similar licenses]].
+
+  Please note our [[/emacs/Privacy][Privacy Statement]].
