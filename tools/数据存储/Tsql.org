@@ -1,0 +1,1108 @@
+* Tsql
+** 安装
+*** Import the public repository GPG keys:
+    #+begin_src sh
+    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+    #+end_src
+    
+*** 添加到仓库列表
+    #+begin_src sh
+    sudo add-apt-repository "$(wget -qo- https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"
+    #+end_src
+    
+*** 安装
+    sudo apt-get update
+    sudo apt-get install -y mssql-server
+*** 设置 sa 的密码
+    sudo /opt/mssql/bin/mssql-conf setup
+*** 运行
+    systemctl status mssql-server
+*** 远程连接, 防火墙打开 1433 端口
+** 连接
+   sqlcmd -S localhost -U SA -P '<YourPassword>'
+   tsql -S 127.0.0.1 -U sa -P Wuming123  
+   If you later decide to connect remotely, specify the machine name or IP address for the -S parameter, and make sure port 1433 is open on your firewall.
+   远程连接 确保端口 1433 打开
+** 数据类型
+*** 精确数值类型
+    bigint	-9,223,372,036,854,775,808	9,223,372,036,854,775,807
+    int	2,147,483,648	2,147,483,647
+    smallint	-32,768	32,767
+    tinyint	0	255
+    bit	0	1
+    decimal	-10 ^ 38 加 1	10 ^ 38 -1
+    numeric	-10 ^ 38 加 1	10 ^ 38 -1
+    money	-922,337,203,685,477.5808	+922,337,203,685,477.5807
+    smallmoney	-214,748.3648	+214,748.3647
+    数字和小数是固定精度和标度数据类型，在功能上等效。
+
+*** 近似数值类型
+    Float	-1.79E + 308	1.79E + 308
+    Real	-3.40E + 38	3.40E + 38
+*** 日期和时间类型
+    datetime (3.33 毫秒精度)
+    1753 年 1 月 1 日	9999 年 12 月 31 日
+    
+    smalldatetime(1 分钟精度)
+    1900 年 1 月 1 日	2079 年 6 月 6 日
+    
+    date(1 天的精度。在 SQL Server 2008 中引入)
+    0001 年 1 月 1 日	9999 年 12 月 31 日
+    
+    datetimeoffset(100 纳秒的精度。在 SQL Server 2008 中引入)
+    0001 年 1 月 1 日
+    9999 年 12 月 31 日
+    
+    datetime2(100 纳秒的精度。在 SQL Server 2008 中引入)
+    0001 年 1 月 1 日	9999 年 12 月 31 日
+    
+    time(100 纳秒的精度。在 SQL Server 2008 中引入)
+    00：00：00.0000000	23：59：59.9999999
+*** 字符型
+     char 固定长度的非 Unicode 字符数据，最大长度为 8,000 个字符。
+     varchar 最大长度为 8,000 个字符的可变长度非 Unicode 数据。
+     Varchar (max) 可变长度的非 Unicode 数据，最大长度为 231 个字符（在 SQL Server 2005 中引入）。
+     text 可变长度非 Unicode 数据，最大长度为 2,147,483,647 个字符。
+
+*** Unicode
+    nchar 固定长度的 Unicode 数据，最大长度为 4,000 个字符。
+    nvarchar 最大长度为 4,000 个字符的可变长度 Unicode 数据。
+    Nvarchar (max) 最大长度为 230 个字符的可变长度 Unicode 数据（在 SQL Server 2005 中引入）。
+    ntext 最大长度为 1,073,741,823 个字符的可变长度 Unicode 数据。
+
+*** 二进制字符串
+ binary 固定长度二进制数据，最大长度为 8,000 字节。
+ varbinary 最大长度为 8,000 字节的可变长度二进制数据。
+ varbinary(max) 最大长度为 231 字节的可变长度二进制数据（在 SQL Server 2005 中引入）。
+ image 最大长度为 2,147,483,647 字节的可变长度二进制数据。
+
+*** 其他数据类型
+    SQL_VARIANT -存储各种 SQL Server 支持的数据类型的值，text，ntext 和 timestamp 除外。
+    TIMESTAMP -时间戳是指格林威治时间 1970 年 01 月 01 日 00 时 00 分 00 秒(北京时间 1970 年 01 月 01 日 08 时 00 分 00 秒)起至现在的总秒数。
+    UNIQUEIDENTIFIER  -存储全局唯一标识符（GUID）。
+    XML -存储 XML 数据。 您可以将 XML 实例存储在列或变量中（在 SQL Server 2005 中引入）。
+    CURSOR -对游标的引用。
+    TABLE -存储结果集以供稍后处理。
+    HIERARCHYID -用于表示层次结构中位置的可变长度的系统数据类型（在 SQL Server 2008 中引入）。
+
+** 使用
+*** 显示库属性
+**** 显示库 
+     select [name] from [sysdatabases] order by [name]
+     select name from sysdatabases
+**** 显示库表
+     select [id], [name] from [sysobjects] where [type] = 'u' order by [name]
+     SELECT name FROM sysobjects WHERE xtype = 'U'
+*** 操作库
+**** 创建
+     CREATE DATABASE $DATABASENAME
+**** 删除
+     DROP DATBASE $DATABASENAME
+**** 使用某个库
+     use $NAME
+*** 操作表
+**** 创建表
+     字段自增 IDENTITY(1, 1)
+  #+BEGIN_SRC sql
+      CREATE TABLE $tablename( 
+       ID   INT              NOT NULL, 
+       NAME VARCHAR (20)     NOT NULL, 
+       AGE  INT              NOT NULL, 
+       ADDRESS  CHAR (25) , 
+       SALARY   DECIMAL (18, 2),        
+       PRIMARY KEY (ID));
+  #+END_SRC
+**** 删除表
+     DROP TABLE $table_name;
+**** 插入记录
+     INSERT INTO $table_name [(column1, column2, column3,...columnN)]   
+     VALUES (value1, value2, value3,...valueN); 
+
+     所有列添加值，请确保值的顺序与表中的列的顺序相同。 
+     INSERT INTO TABLE_NAME VALUES (value1,value2,value3,...valueN);
+**** 使用另一个表填充一个表
+     #+BEGIN_SRC sql
+       INSERT INTO first_table_name  
+               SELECT column1, column2, ...columnN  
+                 FROM second_table_name 
+                     [WHERE condition];
+     #+END_SRC
+**** 查询
+     SELECT 语句用于从以结果表的形式返回从数据库中提取的数据。 这些结果表称为结果集。
+     SELECT column1, column2, columnN FROM table_name;
+**** 查几条
+     SELECT TOP $N * FROM $tablename
+**** 更新（UPDATE)
+     #+BEGIN_SRC sql
+         UPDATE table_name 
+         SET column1 = value1, column2 = value2...., columnN = valueN 
+         WHERE [condition];
+     #+END_SRC
+
+  您可以使用 AND 或 OR 运算符组合 N 个条件。
+
+**** 删除（DELETE)
+     #+BEGIN_SRC sql
+     DELETE FROM table_name 
+     WHERE [condition]; 
+     #+END_SRC
+**** 排序 ORDER BY
+     #+BEGIN_SRC sql
+          SELECT column-list  
+       FROM table_name  
+       [WHERE condition]  
+       [ORDER BY column1, column2, .. columnN] [ASC | DESC];
+       您可以在 ORDER BY 子句中使用多个列。 确保您使用的任何列进行排序，该列应该在列表中。
+     #+END_SRC
+**** 分组 GROUP BY
+  #+BEGIN_SRC sql
+  SELECT column1, column2 
+  FROM table_name 
+  WHERE [ conditions ] 
+  GROUP BY column1, column2 
+  ORDER BY column1, column2 
+
+  SELECT NAME, SUM(SALARY) as [sum of salary] FROM CUSTOMERS 
+     GROUP BY NAME;
+
+  SELECT NAME, SUM(SALARY) as [sum of salary] FROM CUSTOMERS 
+     GROUP BY NAME 
+  #+END_SRC
+**** 唯一 DISTINCT
+     消除所有重复记录并仅提取唯一记录。
+ #+BEGIN_SRC 
+  SELECT DISTINCT column1, column2,.....columnN  
+  FROM table_name 
+  WHERE [condition] 
+ #+END_SRC
+**** 连接表
+ #+BEGIN_SRC sql
+
+  SELECT ID, NAME, AGE, AMOUNT 
+     FROM CUSTOMERS, ORDERS 
+     WHERE  CUSTOMERS.ID = ORDERS.CUSTOMER_ID 
+  OR 
+
+  SELECT A.ID, A.NAME, A.AGE, B.AMOUNT 
+  FROM CUSTOMERS A inner join  ORDERS B on A.ID = B.Customer_ID 
+ #+END_SRC
+***** 连接类型:
+   INNER JOIN -当两个表中都有匹配项时返回行。
+   LEFT JOIN -返回左侧表中的所有行，即使右表中没有匹配项。
+   RIGHT JOIN -返回右表中的所有行，即使左表中没有匹配项。
+   FULL JOIN -在其中一个表中存在匹配项时返回行。
+   SELF JOIN -这用于将表连接到自身，就像该表是两个表，临时重命名 MS SQL Server 语句中的至少一个表。
+   CARTESIAN JOIN -返回两个或多个联接表中的记录集的笛卡尔乘积。
+
+**** 子查询
+  #+BEGIN_SRC sql
+    SELECT column_name [, column_name ] 
+    FROM   table1 [, table2 ] 
+    WHERE  column_name OPERATOR 
+       (SELECT column_name [, column_name ] 
+       FROM table1 [, table2 ] 
+       [WHERE]) 
+   
+    SELECT *  
+       FROM CUSTOMERS
+       WHERE ID IN (SELECT ID FROM CUSTOMERS WHERE SALARY > 4500)
+
+
+    INSERT INTO table_name [ (column1 [, column2 ]) ] 
+       SELECT [ *|column1 [, column2 ] 
+       FROM table1 [, table2 ] 
+       [ WHERE VALUE OPERATOR ]
+
+    UPDATE table 
+    SET column_name = new_value 
+    [ WHERE OPERATOR [ VALUE ] 
+       (SELECT COLUMN_NAME 
+       FROM TABLE_NAME) 
+       [ WHERE) ] 
+   
+    DELETE FROM TABLE_NAME 
+    [ WHERE OPERATOR [ VALUE ] 
+       (SELECT COLUMN_NAME 
+       FROM TABLE_NAME) 
+       [ WHERE) ] 
+  #+END_SRC
+**** 联合表 union
+     字段必须相同, 字段值必须不同 
+    字段值相同 ，用 union all 
+    
+** 存储过程
+用于通过将相同的数据存储在数据库中来节省写入代码的时间，并通过传递参数获得所需的输出。
+
+!可以用 ALERT 代替 Create
+#+BEGIN_SRC sql
+Create procedure <procedure_Name> 
+As 
+Begin 
+<SQL Statement> 
+End 
+Go
+#+END_SRC
+#+BEGIN_SRC sql
+
+    CREATE PROCEDURE SelectCustomerstabledata 
+    AS 
+    SELECT * FROM Testdb.Customers 
+    GO
+#+END_SRC
+** 事务
+   事务是针对数据库执行的工作单元。 事务是以逻辑顺序完成的单元或工作序列，无论是以用户的手动方式还是以某种数据库程序自动进行。
+   实际上，你常常会将许多 SQL 操作分成一组事务一起执行。
+*** 事务属性
+事务具有以下四个标准属性，通常由首字母缩写 ACID 简称 -
+原子性 -确保工作单元内的所有操作成功完成; 否则，事务在故障点处中止，并且先前的操作被回滚到它们的原先状态。
+一致性 -确保数据库在成功提交的事务后正确更改状态。
+隔离性 -事务之间是独立运行互不相关的。
+持久性 -事务一旦被执行,即使系统故障,其结果依然有效。
+*** 事务控制
+    COMMIT-提交事务。
+    ROLLBACK -回滚事务。
+    SAVEPOINT -创建事务的回滚节点。
+    SET TRANSACTION -设置事务名称。
+    
+    事务控制命令仅与 DML 命令 INSERT，UPDATE 和 DELETE 一起使用。 在创建表或删除它们时，不能使用它们，因为这些操作会在数据库中自动提交。
+    为了在 MS SQL Server 中使用事务控制命令，我们必须以“begin tran”或 begin transaction 命令开始事务，否则这些命令将不起作用。
+
+**** commit 命令
+     COMMIT 命令是用于将事务调用的更改保存到数据库的事务命令。 此命令将自上次 COMMIT 或 ROLLBACK 命令以来将所有事务保存到数据库。
+     
+Begin Tran 
+DELETE FROM CUSTOMERS 
+   WHERE AGE = 25 
+COMMIT 
+
+**** ROLLBACK 命令
+     ROLLBACK 命令是用于撤销尚未保存到数据库的事务的事务性命令。 此命令只能用于在发出最后一个 COMMIT 或 ROLLBACK 命令后撤消事务。
+
+语法
+以下是 ROLLBACK 命令的语法。
+
+ROLLBACK
+例
+请参考具有以下记录的 CUSTOMERS 表:
+
+ID  NAME       AGE       ADDRESS            SALARY 
+1   Ramesh     32        Ahmedabad          2000.00 
+2   Khilan     25        Delhi              1500.00 
+3   kaushik    23        Kota               2000.00 
+4   Chaitali   25        Mumbai             6500.00 
+5   Hardik     27        Bhopal             8500.00 
+6   Komal      22        MP                 4500.00 
+7   Muffy      24        Indore             10000.00 
+下面的命令将从 CUSTOMERS 表中删除年龄等于 25 的用户记录，然后使用 ROLLBACK 命令,回滚数据。
+
+Begin Tran 
+DELETE FROM CUSTOMERS 
+   WHERE AGE = 25; 
+ROLLBACK
+使用 ROLLBACK 命令,删除操作不会影响表中的数据,执行后 CUSTOMERS 表结果集如下:
+**** SAVEPOINT 命令
+SAVEPOINT 命令可以使事务回滚到某个点节点，而不回滚整个事务。
+
+语法
+以下是 SAVEPOINT 命令的语法。
+
+SAVE TRANSACTION SAVEPOINT_NAME
+此命令仅用于在事务语句之间创建 SAVEPOINT。ROLLBACK 命令用于撤消一组事务。
+
+以下是回滚到一个事务节点的语法。
+
+ROLLBACK TO SAVEPOINT_NAME
+在下面的示例中，我们将从 CUSTOMERS 表中删除三个不同的记录。 我们将在每次删除之前创建一个 SAVEPOINT，以便我们可以随时将 ROLLBACK 任何 SAVEPOINT 返回到其原始状态的相应数据。
+
+例
+请参考具有以下记录的 CUSTOMERS 表:
+
+ID  NAME       AGE       ADDRESS          SALARY 
+1   Ramesh     32        Ahmedabad        2000.00 
+2   Khilan     25        Delhi            1500.00 
+3   kaushik    23        Kota             2000.00 
+4   Chaitali   25        Mumbai           6500.00 
+5   Hardik     27        Bhopal           8500.00 
+6   Komal      22        MP               4500.00 
+7   Muffy      24        Indore           10000.00 
+以下是一系列操作
+
+Begin Tran 
+SAVE Transaction SP1 
+Savepoint created. 
+DELETE FROM CUSTOMERS WHERE ID = 1  
+1 row deleted. 
+SAVE Transaction SP2 
+Savepoint created. 
+DELETE FROM CUSTOMERS WHERE ID = 2 
+1 row deleted.
+SAVE Transaction SP3 
+Savepoint created. 
+DELETE FROM CUSTOMERS WHERE ID = 3 
+1 row deleted.
+三个删除已经发生，但是，我们改变了主意，决定 ROLLBACK 到 SAVEPOINT，我们确定为 SP2。 因为 SP2 是在第一次删除后创建的，所以最后两个删除被撤消
+
+ROLLBACK Transaction SP2 
+Rollback complete. 
+请注意，我们回滚到 SP2 后，相当于只发生了第一次删除。
+
+SELECT * FROM CUSTOMERS 
+查询后的结果为 6 条记录:
+
+ID  NAME       AGE       ADDRESS          SALARY 
+2   Khilan     25        Ahmedabad        1500.00 
+3   kaushik    23        Kota             2000.00 
+4   Chaitali   25        Mumbai           6500.00 
+5   Hardik     27        Bhopal           8500.00 
+6   Komal      22        MP               4500.00 
+7   Muffy      24        Indore           10000.00 
+SET TRANSACTION 命令
+SET TRANSACTION 命令可用于启动数据库事务。 此命令用于指定随后事务的特性。
+
+语法
+以下是 SET TRANSACTION 语法。
+
+SET TRANSACTION ISOLATION LEVEL <Isolationlevel_name>
+** 索引
+ 数据库中的索引与书本目录的索引方式非常相似
+ 索引加快了 SELECT 查询和 WHERE 子句，但它降低了 UPDATE 和 INSERT 语句的数据输入速度
+
+ 创建索引涉及 CREATE INDEX 语句，它允许你对索引进行命名，指定表和要索引的列，并指示索引是按升序还是按降序排列。
+ 索引也可以是唯一的，类似于 UNIQUE 约束，索引防止在具有索引的列的组合中出现重复条目。
+
+CREATE INDEX 命令
+以下是 CREATE INDEX 的基本语法。
+
+语法
+CREATE INDEX index_name ON table_name
+单列索引
+单列索引是基于仅一个表的单列创建的索引。以下是基本语法。
+
+语法
+CREATE INDEX index_name 
+ON table_name (column_name)
+例
+CREATE INDEX singlecolumnindex 
+ON customers (ID)
+唯一索引
+唯一索引不仅用于查找性能的提升，还可用于约束数据的完整性。唯一索引不允许将任何重复值插入到表中。以下是基本语法。
+
+语法
+CREATE UNIQUE INDEX index_name 
+on table_name (column_name)
+例
+CREATE UNIQUE INDEX uniqueindex 
+on customers (NAME)
+复合索引
+复合索引是对表的两个或多个列设置索引。以下是基本语法。
+
+语法
+CREATE INDEX index_name on table_name (column1, column2) 
+例
+CREATE INDEX compositeindex 
+on customers (NAME, ID)
+无论是创建单列索引还是复合索引，请考虑您可能在查询的 WHERE 子句中频繁使用的列作为过滤条件。
+
+如果只使用一列，则应该选择单列索引。 如果在 WHERE 子句中经常使用两个或多个列作为过滤器，则复合索引将是最佳选择。
+
+隐式索引
+隐式索引是在创建对象时由数据库服务器自动创建的索引。 一般情况下数据库会将自动为主键约束和唯一约束创建索引。
+
+DROP INDEX 命令
+可以使用 MS SQL SERVER DROP 命令删除索引。 丢弃索引时应小心，因为性能可能会减慢，也可能得到改善。
+
+语法
+下面是基本的语法。
+
+DROP INDEX tablename.index_name
+什么时候避免索引？
+虽然索引旨在提高数据库的性能，但有时应避免使用它们。以下几种情况应重新考虑是否使用索引
+
+不应在小表上使用索引。
+
+经常进行大批量更新或插入操作的表不应设置索引。
+
+不应在可能含大量 NULL 值的列上使用索引。
+
+频繁操作的列不应设置索引。
+
+** 函数
+*** 内置函数列表
+    计数- COUNT 聚合函数用于计算在数据库表中的行数。
+    max- MAX 聚合功能可以选择某列的最高（最大）值。
+    MIN- MIN 聚合函数允许选择了某列的最低（最小）值。
+    AVG- AVG 聚合函数选择对某些表列的平均值。
+    SUM- SUM 聚合函数允许选择总让数字列。
+    SQRT-这用于产生一个给定数目的平方根。
+    RAND-这是用于产生使用 SQL 命令的随机数。
+    concat-这是用来连接多个参数的参数。
+*** 字符串函数
+    ASCII('word') 字符转 ascii 码 
+    CHAR() 输出 Ascii 码对应的字符
+    Select CHAR(97)
+    
+    NCHAR（） 输出 Unicode 值对应的字符
+    Select NCHAR(300)
+
+    CHARINDEX（） 索引值, 忽略大小写
+    Select CHARINDEX('G', 'KING') 
+    以下查询将给出给定字符串表达式“KING”的“G”字符的起始位置。
+
+    LEFT（） 制定长度的串
+    给定字符串的左边部分，直到指定的字符数作为给定字符串的输出。
+    Select LEFT('WORLD', 4)
+
+RIGHT（）
+给定字符串的右边部分，直到指定的字符数作为给定字符串的输出。
+下面的查询将给出'DIA'字符串 3 个给定字符串'INDIA'的字符数。
+Select RIGHT('INDIA', 3)
+
+SUBSTRING（）
+基于开始位置值和长度值的字符串的一部分将作为给定字符串的输出。
+Select SUBSTRING ('WORLD', 1,3) 
+
+LEN（）
+字符数将作为给定字符串表达式的输出。
+Select LEN('HELLO') 
+
+LOWER（）
+小写字符串将作为给定字符串数据的输出。
+
+UPPER（）
+大写字符串将作为给定字符串数据的输出。
+Select UPPER('SqlServer')
+
+LTRIM（）
+字符串表达式将在删除前导空白后作为给定字符串数据的输出。
+Select LTRIM('   WORLD')
+
+RTRIM（）
+字符串表达式将在删除尾部空格后作为给定字符串数据的输出。
+Select RTRIM('INDIA   ') 
+
+REPLACE（）
+在用指定字符替换指定字符的所有出现后，字符串表达式将作为给定字符串数据的输出。
+Select REPLACE('INDIA', 'I', 'K')
+
+REPLICATE（）
+重复字符串表达式将作为指定次数的给定字符串数据的输出。
+以下查询将为“WORLD”字符串数据提供“WORLDWORLD”字符串。
+Select REPLICATE('WORLD', 2)
+
+REVERSE（）
+反向字符串表达式将作为给定字符串数据的输出。
+下面的查询将给出'WORLD'字符串数据的'DLROW'字符串。
+Select REVERSE('WORLD')
+
+SOUNDEX（）
+返回四字符（SOUNDEX）代码，以评估两个给定字符串的相似性。
+下面的查询将为'Smith'，'Smyth'字符串给出'S530'。
+Select SOUNDEX('Smith'), SOUNDEX('Smyth')
+
+DIFFERENCE（）
+整数值将作为给定的两个表达式的输出。
+以下查询将给出 4 个“Smith”，“Smyth”表达式。
+
+Select Difference('Smith','Smyth') 
+注 -如果输出值为 0，表示给定 2 个表达式之间的相似度较弱或没有相似性。
+
+SPACE（）
+字符串来作为的空格指定数量的输出。
+下面的查询将给出'I LOVE INDIA'。
+
+Select 'I'+space(1)+'LOVE'+space(1)+'INDIA'
+STUFF（）
+字符串表达式将作为给定字符串数据的输出，在从起始字符替换为指定字符的指定长度之后。
+
+例
+下面的查询将给出'ABCDEFGH'字符串数据的'AIJKFGH'字符串作为给定的起始字符和长度分别为 2 和 4，'IJK'作为指定的目标字符串。
+
+Select STUFF('ABCDEFGH', 2,4,'IJK') 
+STR（）
+字符数据将作为给定数字数据的输出。
+
+例
+以下查询将给定 187.37 的 187.37，基于指定的长度为 6 和十进制为 2。
+
+Select STR(187.369,6,2) 
+UNICODE（）
+整数值将作为给定表达式的第一个字符的输出。
+
+例
+以下查询将为 82 提供“RAMA”表达式。
+
+Select UNICODE('RAMA') 
+QUOTENAME（）
+给定字符串将作为输出与指定的分隔符。
+
+例
+以下查询将为给定的“RAMA”字符串指定“RAMA”，因为我们指定双引号作为分隔符。
+
+Select QUOTENAME('RAMA','"') 
+PATINDEX（）
+需要从指定的“I”位置的给定表达式开始第一个出现的位置。
+
+下面的查询将给出'INDIA'的 1。
+Select PATINDEX('I%','INDIA') 
+
+FORMAT（）
+给定表达式将作为具有指定格式的输出。
+下面的查询将给出'星期一，2015 年 11 月 16 日'的 getdate 函数按照指定的格式，'D'表示星期名称。
+SELECT FORMAT ( getdate(), 'D') 
+
+CONCAT（）
+单个字符串将作为输出，连接给定的参数值后。
+以下查询将给出给定参数的'A，B，C'。
+
+Select CONCAT('A',',','B',',','C') 
+*** 日期函数
+    GETDATE（）
+    它将返回当前日期和时间。
+
+    DATEPART（）
+    它将返回日期或时间的一部分。
+
+DATEPART(datepart, datecolumnname)
+例
+示例 1 -以下查询将返回 MS SQL Server 中当前日期的一部分。
+
+Select datepart(day, getdate()) as currentdate
+示例 2 -以下查询将返回当前月份在 MS SQL Server 中的部分。
+
+Select datepart(month, getdate()) as currentmonth
+DATEADD（）
+它将通过加或减日期和时间间隔显示日期和时间。
+
+语法
+上述函数的语法:
+
+DATEADD(datepart, number, datecolumnname)
+例
+以下查询将返回 MS SQL Server 中当前日期和时间之后 10 天的日期和时间。
+
+Select dateadd(day, 10, getdate()) as after10daysdatetimefromcurrentdatetime 
+DATEDIFF（）
+它将显示两个日期之间的日期和时间。
+
+语法
+上述函数的语法:
+
+DATEDIFF(datepart, startdate, enddate)
+例
+以下查询将返回 MS SQL Server 中 2015-11-16 和 2015-11-11 之间的时间差异。
+
+Select datediff(hour, 2015-11-16, 2015-11-11) as 
+differencehoursbetween20151116and20151111 
+CONVERT（）
+它将以不同的格式显示日期和时间。
+
+语法
+上述函数的语法:
+
+CONVERT(datatype, expression, style)
+例
+以下查询将以不同格式在 MS SQL Server 中返回日期和时间。
+
+SELECT CONVERT(VARCHAR(19),GETDATE()) 
+SELECT CONVERT(VARCHAR(10),GETDATE(),10) 
+SELECT CONVERT(VARCHAR(10),GETDATE(),110)
+*** 数值函数
+MS SQL Server 数字函数可以应用于数值数据，并返回数值数据。
+
+下面是带有示例的数值函数列表。
+
+ABS（）
+输出给定值的绝对值。
+
+例
+以下查询将输出-22 的绝对值:22。
+
+Select ABS(-22)
+ACOS（）
+输出给定值的反余弦值。
+
+例
+以下查询将输出 0 的反余弦值:1.5707963267948966。
+
+Select ACOS(0)
+ASIN（）
+输出给定值的正弦值。
+
+例
+以下查询将输出 0 的正弦值:0。
+
+Select ASIN(0)
+ATAN（）
+输出给定值的反正切值。
+
+例
+以下查询将输出 0 的反正切值:0。
+
+Select ATAN(0)
+ATN2（）
+输出给定值的方位角，也可以理解为计算复数 x+yi 的幅角。
+
+例
+以下查询将输出(0,-1)的方位角:0。
+
+Select ATN2(0, -1)
+请参考具有以下记录的 CUSTOMERS 表:
+
+ID  NAME       AGE       ADDRESS             SALARY 
+1   Ramesh     32        Ahmedabad           2000.00 
+2   Khilan     25        Delhi               1500.00 
+3   kaushik    23        Kota                2000.00 
+4   Chaitali   25        Mumbai              6500.00 
+5   Hardik     27        Bhopal              8500.00 
+6   Komal      22        MP                  4500.00 
+7   Muffy      24        Indore              10000.00 
+BETWEEN（）
+输出给定的两个表达式之间的值。
+
+例
+以下实例将输出薪水区间在 2000 到 8500 之间的所有薪水值:
+
+SELECT salary from customers where salary between 2000 and 8500
+上述命令将产生以下结果集:
+
+salary 
+2000.00 
+2000.00 
+6500.00 
+8500.00 
+4500.00
+MIN（）
+输出给定参数的最小值。
+
+例
+以下查询将给出 customers 表中'salary'最低值'1500.00'。
+
+Select MIN(salary)from CUSTOMERS
+MAX（）
+输出给定参数的最大值。
+
+例
+以下查询将给出 customers 表中'salary'最大值'10000.00'。
+
+Select MAX(salary)from CUSTOMERS
+SQRT（）
+输出给定值的平方根。
+
+例
+以下查询将输出 4 的平方根:2。
+
+Select SQRT(4)
+PI（）
+该函数会输出 PI(Π)的值。
+
+例
+下面的查询将输出 3.14159265358979
+
+Select PI()
+CEILING（）
+给定值向上舍入(正向无穷大的方向)后输出。
+
+例
+下面的查询将输出 124。
+
+Select CEILING(123.25)
+FLOOR（）
+给定值向下舍入(正向无穷小的方向)后输出。
+
+Select FLOOR(123.25) 
+下面的查询将输出 0。Select LOG(1) 
+** 语句
+*** return
+命令用于结束当前程序的执行,返回到上一个调用它的程序或其他程序,其语法格式如下:
+
+return   整数值或变量
+
+return 语句要指定返回值,如果没有指定返回值,SQL Server 系统会根据程序执行的结果返回一个内定值,返回值含义如下所示:
+
+返回值                        含义
+
+0                                 程序执行成功
+
+-1                               找不到对象
+
+-2                               数据类型错误
+
+-3                               死锁
+
+-4                               违反权限原则
+
+-5                               语法错误
+
+-6                               用户造成的一般错误
+
+-7                               资源错误
+
+-8                               非致使的内部错误
+
+-9                               已经达到系统的权限
+
+-10,-11                      致使的内部不一致错误
+
+-12                             表或指针破坏
+
+-13                             数据库破坏
+
+-14                             硬件错误
+*** 流程控制
+    BEGIN...END
+    BREAK
+    GOTO
+    CONTINUE
+    IF...ELSE
+    WHILE
+    RETURN
+    WAITFOR
+** 例子
+   #+BEGIN_SRC sql
+       DECLARE @var INT
+          SET @var=5
+          IF (@var>3)
+          PRINT 'var 大于 3'
+          ELSE
+          PRINT 'here'
+          go
+   #+END_SRC
+** 子查询
+   #+BEGIN_SRC sql
+       SELECT * from  (
+       SELECT   1  AS ID , 'zs' AS  CustomerName
+       union
+       SELECT   2  AS ID , 'lis' AS  CustomerName
+       )a where ID=1
+   #+END_SRC
+** if  
+   
+if exists (select 1 where 1<>1)
+	begin
+		select 'hell'
+	end
+  
+select a from atable
+where exists (select * from xx)
+
+any 
+where x< ANY (select Y ...) 读成 “ where , for some Y,  X is less than Y"
+** 权限管理 ( 保护数据 )
+*** 赋予权限 
+    GRANT INSERT
+      ON customers
+      TO mary
+给 mary 对表 customers 插入的权限
+** 检索数据
+** 修改
+*** 修改表结构 
+    alter table
+*** 视图
+    create view
+    drop view
+*** 索引
+    create index
+    drop index
+*** 模式
+    create schema
+*** Domain
+*** 访问控制
+    grant 
+    revoke
+*** 事务控制
+    commit
+    rollback
+    set transaction
+*** 编程 sql
+    declare 定义查询游标
+    explain
+    open 
+    fetch
+    close 关闭游标
+    prepare
+    execute
+** 常量 
+   DAYS 天
+** 字符串函数
+   --截取字符串左边 3 个字符--
+   select LEFT('Welcome to China!',7) as 结果 1
+   --截取字符串右边 4 个字符--
+   select RIGHT('Welcome to China!',6) as 结果 2
+--截取字符串中间 6 个字符（第二个从哪个字符下标开始）
+select SUBSTRING('Welcome to China!',9,2) as 结果 3
+FIBillAmount
+FIBillLackAmount
+=======
+*** 时间常量 
+** 日期时间格式
+   yyyy-mm-dd hh:mm:ss
+** 浮点函数
+ fabs(f1-f2)
+ if( fabs(f1-f2) < 预先指定的精度）
+** sp_executesql
+   execute 相信大家都用的用熟了，简写为 exec,除了用来执行存储过程，一般都用来执行动态 Sql 
+   sp_executesql，sql2005 中引入的新的系统存储过程，也是用来处理动态 sql 的, 如： 
+  
+   exec sp_executesql @sql, N'@count int out,@id varchar(20)', @cou out ,@id 
+ @sql 为拼成的动态 sql 
+ N'@count int out,@id varchar(20)'为拼成的动态 sql 内的参数列表 
+ @cou out,@id 为为动态 sql 内参数列表提供值的外部参数列表 
+
+ 那么它们之间有什么区别呢？ 
+
+ １，它们之间最大的区别是嵌入式的参数，如下面一个语句 
+ #+BEGIN_SRC sql
+   declare @sql   nvarchar(2000) 
+   declare @id varchar(20) 
+   set @id='1' 
+   set @sql='select count(*) from emp where id=' + @id 
+   exec @sql 
+ #+END_SRC
+ 我想把得到的 count(*)传出来，用传统的 exec 是不好办到的，但是用 sp_executesql 则很容易就办到了： 
+ #+BEGIN_SRC sql
+   declare @sql nvarchar(2000) 
+   declare @cou int 
+   declare @id varchar(20) 
+   set @id='1' 
+   set @sql='select @count=count(*) from emp where id=@id' 
+   exec sp_executesql @sql, N'@count int out,@id varchar(20)', @cou out ,@id 
+   print @cou 
+ #+END_SRC
+
+ 2.性能 
+ 可以看到，如果用 exec，由于每次传入的@id 不一样，所以每次生成的@sql 就不一样，这样每执行一次 Sql2005 就必须重新将要执行的动态 Sql 重新编译一次 
+ 但是 sp_executesql 则不一样，由于将数值参数化，要执行的动态 Sql 永远不会变化，只是传入的参数的值在变化，那每次执行的时候就秒用重新编译，速度自然快多了哈！ 
+
+ 注意： 
+ １.sp_executesql 要求动态 Sql 和动态 Sql 参数列表必须是 Nvarchar，比如上个例子的@sql,N'@count int out,@id varchar(20)'我记得在 sql2005 中 Varchar 也可以的，但是我打了 Sp3 补丁后就不行了，必须为 Nvarchar 
+ ２.动态 Sql 的参数列表与外部提供值的参数列表顺序必需一致，如： 
+ N'@count int out,@id varchar(20)', @cou out,@id 
+ @count 对应 @cou,@id 对应@id 
+ 如果不一致，必须显式标明，如： 
+ N'@count int out,@id varchar(20)', @id＝@id, @count=@cou out 
+ ３.动态 SQl 的参数列表与外部提供参数的参数列表参数名可以同名
+ ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ 语法
+
+ 
+ sp_executesql [ @statement = ] statement
+ [ 
+     { , [ @params = ] N'@parameter_name data_type [ OUT | OUTPUT ][ ,...n ]' } 
+      { , [ @param1 = ] 'value1' [ ,...n ] }
+ ]
+ 参数
+
+ [ @statement = ] statement
+ 包含 Transact-SQL 语句或批处理的 Unicode 字符串。statement 必须是 Unicode 常量或 Unicode 变量。不允许使用更复杂的 Unicode 表达式（例如使用 + 运算符连接两个字符串）。不允许使用字符常量。如果指定了 Unicode 常量，则必须使用 N 作为前缀。例如，Unicode 常量 N'sp_who' 是有效的，但是字符常量 'sp_who' 则无效。字符串的大小仅受可用数据库服务器内存限制。在 64 位服务器中，字符串大小限制为 2 GB，即 nvarchar(max) 的最大大小。
+
+ 注意：
+ stmt 可以包含与变量名形式相同的参数，例如：N'SELECT * FROM HumanResources.Employee WHERE EmployeeID = @IDParameter'
+ stmt 中包含的每个参数在 @params 参数定义列表和参数值列表中均必须有对应项。
+
+ [ @params = ] N'@parameter_name data_type [ ,... n ] '
+ 包含 stmt 中嵌入的所有参数定义的字符串。字符串必须是 Unicode 常量或 Unicode 变量。每个参数定义由参数名称和数据类型组成。n 是表示附加参数定义的占位符。在 statement 中指定的每个参数都必须在 @params 中定义。如果 stmt 中的 Transact-SQL 语句或批处理不包含参数，则不需要 @params。该参数的默认值为 NULL。
+
+ [ @param1 = ] 'value1'
+ 参数字符串中定义的第一个参数的值。该值可以是 Unicode 常量，也可以是 Unicode 变量。必须为 stmt 中包含的每个参数提供参数值。如果 stmt 中的 Transact-SQL 语句或批处理没有参数，则不需要这些值。
+
+ [ OUT | OUTPUT ]
+ 指示参数是输出参数。除非是公共语言运行 (CLR) 过程，否则 text、ntext 和 image 参数均可用作 OUTPUT 参数。使用 OUTPUT 关键字的输出参数可以为游标占位符，CLR 过程除外。
+
+ n
+ 附加参数值的占位符。这些值只能为常量或变量，不能是很复杂的表达式（例如函数）或使用运算符生成的表达式。
+
+ 返回代码值
+
+ 0（成功）或非零（失败）
+
+ 结果集
+
+ 从生成 SQL 字符串的所有 SQL 语句返回结果集。
+
+ 注释
+
+ 在批处理、名称作用域和数据库上下文方面，sp_executesql 与 EXECUTE 的行为相同。sp_executesql stmt 参数中的 Transact-SQL 语句或批处理在执行 sp_executesql 语句时才编译。随后，将编译 stmt 中的内容，并将其作为执行计划运行。该执行计划独立于名为 sp_executesql 的批处理的执行计划。sp_executesql 批处理不能引用调用 sp_executesql 的批处理中声明的变量。sp_executesql 批处理中的本地游标或变量对调用 sp_executesql 的批处理是不可见的。对数据库上下文所做的更改只在 sp_executesql 语句结束前有效。
+
+ 如果只更改了语句中的参数值，则 sp_executesql 可用来代替存储过程多次执行 Transact-SQL 语句。因为 Transact-SQL 语句本身保持不变，仅参数值发生变化，所以 SQL Server 查询优化器可能重复使用首次执行时所生成的执行计划。
+
+ 注意：
+ 若要改善性能，请在语句字符串中使用完全限定对象名。
+ sp_executesql 支持独立于 Transact-SQL 字符串设置参数值，如以下示例所示。
+
+ 	 
+ DECLARE @IntVariable int;
+ DECLARE @SQLString nvarchar(500);
+ DECLARE @ParmDefinition nvarchar(500);
+
+ /* Build the SQL string one time.*/
+ SET @SQLString =
+      N'SELECT BusinessEntityID, NationalIDNumber, JobTitle, LoginID
+        FROM AdventureWorks2008R2.HumanResources.Employee 
+        WHERE BusinessEntityID = @BusinessEntityID';
+ SET @ParmDefinition = N'@BusinessEntityID tinyint';
+ /* Execute the string with the first parameter value. */
+ SET @IntVariable = 197;
+ EXECUTE sp_executesql @SQLString, @ParmDefinition,
+                       @BusinessEntityID = @IntVariable;
+ /* Execute the same string with the second parameter value. */
+ SET @IntVariable = 109;
+ EXECUTE sp_executesql @SQLString, @ParmDefinition,
+                       @BusinessEntityID = @IntVariable;
+ 输出参数也可用于 sp_executesql。以下示例从 AdventureWorks2008R2.HumanResources.Employee 表中检索职务，并在输出参数@max_title 中返回它。
+
+ 	 
+ DECLARE @IntVariable int;
+ DECLARE @SQLString nvarchar(500);
+ DECLARE @ParmDefinition nvarchar(500);
+ DECLARE @max_title varchar(30);
+
+ SET @IntVariable = 197;
+ SET @SQLString = N'SELECT @max_titleOUT = max(JobTitle) 
+    FROM AdventureWorks2008R2.HumanResources.Employee
+    WHERE BusinessEntityID = @level';
+ SET @ParmDefinition = N'@level tinyint, @max_titleOUT varchar(30) OUTPUT';
+
+ EXECUTE sp_executesql @SQLString, @ParmDefinition, @level = @IntVariable, @max_titleOUT=@max_title OUTPUT;
+ SELECT @max_title;
+ 替换 sp_executesql 中的参数的能力，与使用 EXECUTE 语句执行字符串相比，有下列优点：
+
+ 因为在 sp_executesql 字符串中，Transact-SQL 语句的实际文本在两次执行之间并未改变，所以查询优化器应该能将第二次执行中的 Transact-SQL 语句与第一次执行时生成的执行计划匹配。因此，SQL Server 不必编译第二条语句。
+
+ Transact-SQL 字符串只生成一次。
+
+ 整数参数按其本身格式指定。不需要转换为 Unicode。
+
+ 权限
+
+ 要求具有 public 角色的成员身份。
+
+ 示例
+
+ A. 执行简单的 SELECT 语句
+
+ 以下示例将创建并执行一个简单的 SELECT 语句，其中包含名为 @level 的嵌入参数。
+
+ 	 
+ EXECUTE sp_executesql 
+           N'SELECT * FROM AdventureWorks2008R2.HumanResources.Employee 
+           WHERE BusinessEntityID = @level',
+           N'@level tinyint',
+           @level = 109;
+ B. 执行动态生成的字符串
+
+ 以下示例显示使用 sp_executesql 执行动态生成的字符串。该示例中的存储过程用于向一组表中插入数据，这些表用于划分一年的销售数据。一年中的每个月均有一个表，格式如下：
+
+ 	 
+ CREATE TABLE May1998Sales
+     (OrderID int PRIMARY KEY,
+     CustomerID int NOT NULL,
+     OrderDate  datetime NULL
+         CHECK (DATEPART(yy, OrderDate) = 1998),
+     OrderMonth int
+         CHECK (OrderMonth = 5),
+     DeliveryDate datetime  NULL,
+         CHECK (DATEPART(mm, OrderDate) = OrderMonth)
+     )
+ 此示例存储过程将动态生成并执行 INSERT 语句，以便向正确的表中插入新订单。此示例使用订货日期生成应包含数据的表的名称，然后将此名称并入 INSERT 语句中。
+
+ 注意：
+ 这是一个简单的 sp_executesql 示例。此示例不包含错误检查以及业务规则检查，例如确保订单号在各个表之间不重复。
+ 	 
+ CREATE PROCEDURE InsertSales @PrmOrderID INT, @PrmCustomerID INT,
+                  @PrmOrderDate DATETIME, @PrmDeliveryDate DATETIME
+ AS
+ DECLARE @InsertString NVARCHAR(500)
+ DECLARE @OrderMonth INT
+
+ -- Build the INSERT statement.
+ SET @InsertString = 'INSERT INTO ' +
+        /* Build the name of the table. */
+        SUBSTRING( DATENAME(mm, @PrmOrderDate), 1, 3) +
+        CAST(DATEPART(yy, @PrmOrderDate) AS CHAR(4) ) +
+        'Sales' +
+        /* Build a VALUES clause. */
+        ' VALUES (@InsOrderID, @InsCustID, @InsOrdDate,' +
+        ' @InsOrdMonth, @InsDelDate)'
+
+ /* Set the value to use for the order month because
+    functions are not allowed in the sp_executesql parameter
+    list. */
+ SET @OrderMonth = DATEPART(mm, @PrmOrderDate)
+
+ EXEC sp_executesql @InsertString,
+      N'@InsOrderID INT, @InsCustID INT, @InsOrdDate DATETIME,
+        @InsOrdMonth INT, @InsDelDate DATETIME',
+      @PrmOrderID, @PrmCustomerID, @PrmOrderDate,
+      @OrderMonth, @PrmDeliveryDate
+
+ GO
+ 在该过程中使用 sp_executesql 比使用 EXECUTE 执行字符串更有效。使用 sp_executesql 时，只生成 12 个版本的 INSERT 字符串，每个月的表对应 1 个字符串。使用 EXECUTE 时，因为参数值不同，每个 INSERT 字符串均是唯一的。尽管两种方法生成的批处理数相同，但因为 sp_executesql 生成的 INSERT 字符串都相似，所以查询优化器更有可能重复使用执行计划。
+
+ C. 使用 OUTPUT 参数
+
+ 以下示例使用 OUTPUT 参数将由 SELECT 语句生成的结果集存储于 @SQLString 参数中。然后将执行两个使用 OUTPUT 参数值的 SELECT 语句。
+
+ 	 
+ USE AdventureWorks2008R2;
+ GO
+ DECLARE @SQLString nvarchar(500);
+ DECLARE @ParmDefinition nvarchar(500);
+ DECLARE @SalesOrderNumber nvarchar(25);
+ DECLARE @IntVariable int;
+ SET @SQLString = N'SELECT @SalesOrderOUT = MAX(SalesOrderNumber)
+     FROM Sales.SalesOrderHeader
+     WHERE CustomerID = @CustomerID';
+ SET @ParmDefinition = N'@CustomerID int,
+     @SalesOrderOUT nvarchar(25) OUTPUT';
+ SET @IntVariable = 22276;
+ EXECUTE sp_executesql
+     @SQLString
+     ,@ParmDefinition
+     ,@CustomerID = @IntVariable
+     ,@SalesOrderOUT = @SalesOrderNumber OUTPUT;
+ -- This SELECT statement returns the value of the OUTPUT parameter.
+ SELECT @SalesOrderNumber;
+ -- This SELECT statement uses the value of the OUTPUT parameter in
+ -- the WHERE clause.
+ SELECT OrderDate, TotalDue
+ FROM Sales.SalesOrderHeader
+ WHERE SalesOrderNumber = @SalesOrderNumber;
+** 游标
+   #+BEGIN_SRC sql
+          use database1
+          declare my_cursor cursor scroll dynamic
+      /**//*scroll 表示可随意移动游标指针（否则只能向前），dynamic 表示可以读写游标（否则游标只读）*/
+     for
+     select productname from  product
+     open my_cursor
+     declare @pname sysname
+     fetch next from my_cursor into @pname
+     while(@@fetch_status=0)
+       begin
+         print 'Product Name: ' + @pname
+         fetch next from my_cursor into @pname
+       end
+ --    fetch first from my_cursor into @pname -- 获取第一个
+  --   print @pname
+     /**//*update product set productname='zzg' where current of my_cursor */
+     /**//*delete from product where current of my_cursor */
+     close my_cursor
+     deallocate my_cursor
+   #+END_SRC
+
+  
+
+
+					 ----更新已开发票数量和未开发票数量
+					 UPDATE CP_ProductOutSub
+					 SET FIBillLackAmount =Outqty -ISNULL(FIBillAmount,0) - @BillAmount,
+					 FIBillAmount =ISNULL(FIBillAmount,0) + @BillAmount				
+					 WHERE (ID = @CP_ProductOutSub_ID)
+
+					 IF @@ROWCOUNT<>1 OR @@error<>0
+						 BEGIN
+							 ROLLBACK TRAN
+							 RAISERROR('更新成品已开发票数量和未开发票数量出错，请核实!',16,1) WITH SETERROR
+							 RETURN
+						 END
