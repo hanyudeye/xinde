@@ -5,41 +5,25 @@
 #+DATE: 2019-11-29T21:49:26+08:00
 #+lastmod: 2020-03-24T06:15:52+08:00
 
-命令行软件的使用方法是: 命令名称 + [ 可选的选项 ] + [可选的参数]  \\
+命令行软件的使用方法是: 命令名称 + [ 可选项 ] + [可选参数]  \\
 图形化的软件即可以在命令行打开，也可以用鼠标点击来打开
 # more
  
 ** 基础命令
-*** 清除屏幕上显示的内容 
-**** clear
-*** 与命令有关的帮助文档    
-**** which
-     显示给定命令的绝对路径
-**** whereis
-     显示指令的二进制程序、源代码文件和 man 手册页等相关文件的路径
-**** man [manual]
-     命令手册页
-**** manpages-zh  
-     中文命令手册
-**** info 
-更加详细的命令文档
-*** 时间和日期 
-**** date 
-**** cal
+*** 命令手册 man
+*** 时间和日期 cal date 
 *** 重启和关机 
 **** reboot
 **** shutdown
-shutdown [OPTIONS...] [TIME][WALL...]
+     shutdown [OPTIONS...] [TIME][WALL...]
      
-可选参数[TIME] 表示时间的字符串(通常是 now，+m )
-[WALL...]用于发送给所有登录用户的警告信息
+     可选参数[TIME] 表示时间的字符串(通常是 now，+m )
+     [WALL...]用于发送给所有登录用户的警告信息
      
-如果使用了[TIME]参数， 那么在关机流程开始前 5 分钟将会创建
-/run/nologin 文件， 以禁止用户登录。
-*** 退出登录 
-**** exit
-**** logout
-*** 查看命令执行的历史 history
+     如果使用了[TIME]参数， 那么在关机流程开始前 5 分钟将会创建
+     /run/nologin 文件， 以禁止用户登录。
+*** 退出登录 logout
+*** 查看命令历史 history
 ** 实用程序
 *** 文件和文件夹操作
 **** 创建/删除目录
@@ -81,11 +65,9 @@ shutdown [OPTIONS...] [TIME][WALL...]
 ***** readlink
 **** 压缩/解压缩和归档/解归档
 ***** gzip
-***** gunzip
 ***** unar
-中文不会乱码
+      中文不会乱码
     
-***** xz
 ***** tar
 **** 将标准输入转成命令行参数 
 ***** xargs
@@ -111,29 +93,26 @@ shutdown [OPTIONS...] [TIME][WALL...]
 **** unalias
 *** 文本处理
 **** 字符流编辑器  sed
-用法：
-sed 脚本 文件
+     用法：
+     sed 's,A,B,' FILE   把 FILE 中的 A 用 B 替换
+     
+     - a 追加
+     - i 插入
+     - d 删除
+     - s 替换
 
-sed 's,A,B,' FILE   把 FILE 中的 A 用 B 替换
-
-- a 追加
-- i 插入
-- d 删除
-- s 替换
-
-  例子
-  #+begin_src shell
-    [root ~]# sed '2,4d' fruit.txt
-
-  #+end_src
+     例子
+     #+begin_src shell
+       [root ~]# sed '2,4d' fruit.txt
+     #+end_src
 **** 模式匹配和处理语言 awk
-处理表格
+     处理表格
 
-例子
-#+begin_src shell
-  [root ~]# awk '{print $2}' fruit2.txt 
-  [root ~]# awk '{if($3 >= 300) {print $0}}' fruit2.txt 
-#+end_src
+     例子
+     #+begin_src shell
+       [root ~]# awk '{print $2}' fruit2.txt 
+       [root ~]# awk '{if($3 >= 300) {print $0}}' fruit2.txt 
+     #+end_src
 ** 用户管理程序
 *** 用户登录信息程序
 **** w
@@ -166,10 +145,10 @@ sed 's,A,B,' FILE   把 FILE 中的 A 用 B 替换
 *** 显示用户与用户组的信息 id
 *** 显示当前终端 tty
 *** write
-向指定登录用户终端上发送信息
-#+begin_src shell
-write Rollaend pts/2
-#+end_src
+    向指定登录用户终端上发送信息
+    #+begin_src shell
+      write Rollaend pts/2
+    #+end_src
 
 ** 进程管理程序
 *** 查看进程 ps
@@ -226,7 +205,7 @@ write Rollaend pts/2
   - netstat -antp 查看所有已建立的连接
 *** 网络监听抓包  tcpdump (需要管理员权限)
 **** 监视指定网络接口的数据包
-      tcpdump -i eth1
+     tcpdump -i eth1
 **** 监视指定主机和端口的数据包
      如果想要获取主机 210.27.48.1 接收或发出的 telnet 包，使用如下命令
      tcpdump tcp port 23 host 210.27.48.1
@@ -238,32 +217,32 @@ write Rollaend pts/2
 *** 文件同步工具  rsync
 *** 安全文件传输  sftp
 *** 查看公网 IP
-      - curl cip.cc
-      - curl icanhazip.com
-      - curl ident.me
+    - curl cip.cc
+    - curl icanhazip.com
+    - curl ident.me
 ** 计划任务程序
 *** 在指定的时间执行命令
 **** 将任务排队，在指定的时间执行 at 
-指定 3 天以后下午 5 点要执行的任务。
+     指定 3 天以后下午 5 点要执行的任务。
 
-#+begin_quote
-   [root ~]# at 5pm+3days
-   at> rm -f /root/*.html
-   at> <EOT>
-   job 9 at Wed Jun  5 17:00:00 2019
-#+end_quote
+     #+begin_quote
+     [root ~]# at 5pm+3days
+     at> rm -f /root/*.html
+     at> <EOT>
+     job 9 at Wed Jun  5 17:00:00 2019
+     #+end_quote
 **** 查看待执行的任务队列 atq
 **** 从队列中删除待执行的任务 atrm
 *** 计划任务表 crontab
-输入`crontab -e`命令会打开 /etc/crontab
+    输入`crontab -e`命令会打开 /etc/crontab
 
-  #+begin_src 
+    #+begin_src 
     * * * * *                  # 每隔一分钟执行一次任务  
     0 * * * *                  # 每小时的 0 点执行一次任务，比如 6:00，10:00  
     6,10 * 2 * *               # 每个月 2 号，每小时的 6 分和 10 分执行一次任务  
     0 * * * *                  # 每小时的 0 点执行一次任务，比如 6:00，10:00  
     6,10 * 2 * *               # 每个月 2 号，每小时的 6 分和 10 分执行一次任务  
-  #+end_src
+    #+end_src
 
 ** 系统信息程序
 *** 查看系统和主机名 
@@ -273,11 +252,11 @@ write Rollaend pts/2
      显示或设置系统的主机名
 *** 系统启动异常诊断 dmesg
 *** 查看系统活动信息 sar 
-   - `-A` - 显示所有设备（CPU、内存、磁盘）的运行状况。
-   - `-u` - 显示所有 CPU 的负载情况。
-   - `-d` - 显示所有磁盘的使用情况。
-   - `-r` - 显示内存的使用情况。
-   - `-n` - 显示网络运行状态。
+    - `-A` - 显示所有设备（CPU、内存、磁盘）的运行状况。
+    - `-u` - 显示所有 CPU 的负载情况。
+    - `-d` - 显示所有磁盘的使用情况。
+    - `-r` - 显示内存的使用情况。
+    - `-n` - 显示网络运行状态。
 *** 查看内存使用情况  free
 *** 虚拟内存统计 vmstat
 *** CPU 信息统计  mpstat
@@ -289,25 +268,25 @@ write Rollaend pts/2
 ** 工具软件    
 *** pdf
 **** 合并 pdf  
-#+begin_src sh
-  pdfunite *.pdf all.pdf
-#+end_src
+     #+begin_src sh
+       pdfunite *.pdf all.pdf
+     #+end_src
 *** 图片处理
 **** 压缩转换 convert
 *** 录制视频短片 peek
-#+begin_src sh
-  sudo add-apt-repository ppa:peek-developers/stable
-  sudo apt update
-  sudo apt install peek
-#+end_src
+    #+begin_src sh
+      sudo add-apt-repository ppa:peek-developers/stable
+      sudo apt update
+      sudo apt install peek
+    #+end_src
 *** 像素识别
-#+begin_src sh
-  sudo snap install pick-colour-picker 
-#+end_src
+    #+begin_src sh
+      sudo snap install pick-colour-picker 
+    #+end_src
 *** wireshark
 **** 数据链路层：
-   筛选 mac 地址为 04:f9:38:ad:13:26 的数据包----eth.src == 04:f9:38:ad:13:26
-   筛选源mac地址为04:f9:38:ad:13:26的数据包----eth.src == 04:f9:38:ad:13:26
+     筛选 mac 地址为 04:f9:38:ad:13:26 的数据包----eth.src == 04:f9:38:ad:13:26
+     筛选源mac地址为04:f9:38:ad:13:26的数据包----eth.src == 04:f9:38:ad:13:26
 **** 网络层：
      筛选 ip 地址为 192.168.1.1 的数据包----ip.addr == 192.168.1.1
      筛选 192.168.1.0 网段的数据---- ip contains "192.168.1"
@@ -324,9 +303,9 @@ write Rollaend pts/2
      筛选 url 中包含.php 的 http 数据包----http.request.uri contains ".php"
      筛选内容包含 username 的 http 数据包----http contains "username"
 *** feh 
-   : 图片显示，设置背景，截图
+    : 图片显示，设置背景，截图
     
-   设置背景 feh --bg-scale
+    设置背景 feh --bg-scale
 *** Pandoc
     : 文档转换
     #+begin_example
@@ -351,10 +330,3 @@ write Rollaend pts/2
     - autoclean - 清除旧的的已下载的归档文件 
     - check - 检验是否有损坏的依赖 
     - sudo add-apt-repository --remove ppa:whatever/ppa (移除源)
-** 进程占用端口
-（1）查看程序对应的进程号： ps -ef | grep 进程名字
-（2）查看进程号所占用的端口号： netstat -nltp | grep  进程号
-        ubuntu :查看进程占用端口号：netstat -anp | grep pid
-
-linux 下查看端口号所使用的进程号：
-（1）使用 lsof 命令：lsof -i:端口号
