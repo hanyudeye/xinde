@@ -2773,40 +2773,17 @@
   开启后，一旦我们对某个数据表进行了写操作，那么当前请求的后续所有对该表的查询都会使用主库读取。
 
 *** 查询构造器
-
-
-  [[calibre_link-197][查询数据]]\\
-  [[calibre_link-65][添加数据]]\\
-  [[calibre_link-154][更新数据]]\\
-  [[calibre_link-47][删除数据]]\\
-  [[calibre_link-198][查询表达式]]\\
-  [[calibre_link-81][链式操作]]\\
-  [[calibre_link-165][聚合查询]]\\
-  [[calibre_link-204][分页查询]]\\
-  [[calibre_link-176][时间查询]]\\
-  [[calibre_link-144][高级查询]]\\
-  [[calibre_link-180][视图查询]]\\
-  [[calibre_link-167][JSON字段]]\\
-  [[calibre_link-149][子查询]]\\
-  [[calibre_link-205][原生查询]]
-
 **** 查询数据
-
-
 ***** 查询单个数据
-
-
    查询单个数据使用 =find=方法：
 
           // table方法必须指定完整的数据表名
-       Db : : table ( 'think_user' ) - > where ( 'id' ,  1 ) - > find ( ) ;
+          Db : : table ( 'think_user' ) - > where ( 'id' ,  1 ) - > find ( ) ;
  
-   最终生成的 SQL 语句可能是：
+          最终生成的 SQL 语句可能是：
 
-         SELECT  * FROM `think_user` WHERE  `id`  =  1 LIMIT  1
- 
-
-     =find=方法查询结果不存在，返回 =null=，否则返回结果数组
+          SELECT  * FROM `think_user` WHERE  `id`  =  1 LIMIT  1
+          =find=方法查询结果不存在，返回 =null=，否则返回结果数组
   
 
    如果希望查询数据不存在的时候返回空数组，可以使用
@@ -2821,8 +2798,6 @@
    如果没有查找到数据，则会抛出一个 =think\db\exception\DataNotFoundException=异常。
 
 ***** 查询数据集
-
-
    查询多个数据（数据集）使用 =select=方法：
 
          Db : : table ( 'think_user' ) - > where ( 'status' ,  1 ) - > select ( ) ;
@@ -2947,8 +2922,6 @@
    =cursor=方法返回的是一个生成器对象， =user=变量是数据表的一条数据（数组）。
 
 **** 添加数据
-
-
 ***** 添加一条数据
 
 
@@ -5163,8 +5136,6 @@
           SELECT  `id ` , `name `  FROM  `think_user `  WHERE  `id `  >  10 
  
 ***** 使用 =buildSql=构造子查询
-
-
          $subQuery  = Db : : table ( 'think_user' )
             - > field ( 'id,name' )
             - > where ( 'id' ,  '>' ,  10 )
@@ -5174,8 +5145,8 @@
 
           (  SELECT  `id ` , `name `  FROM  `think_user `  WHERE  `id `  >  10  )
  
-   调用 =buildSql=方法后不会进行实际的查询操作，而只是生成该次查询的 SQL 语句（为了避免混淆，会在 SQL 两边加上括号），然后我们直接在后续的查询中直接调用。
-
+          调用 =buildSql=方法后不会进行实际的查询操作，而只是生成该次查询的 SQL 语句（为了避免混淆，会在 SQL 两边加上括号），然后我们直接在后续的查询中直接调用。
+          
    然后使用子查询构造新的查询：
 
          Db : : table ($subQuery  .  ' a' )
