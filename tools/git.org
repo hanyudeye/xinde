@@ -123,3 +123,183 @@
 
 
     
+
+
+    
+** [[https://www.jianshu.com/p/afeeaea8c0c8][git基本操作、stash暂存、stash找回、创建分支、删除分支、git忽略文件失效、合并分支、重定向项目地址 - 简书]] :website:
+
+ [2020-10-31 六 06:49]
+
+*** Article
+
+**** git 基本操作流程
+
+
+   =git status= 查看本次的修改、新建、删除等信息(new file:新建文件，modified:修改文件，deleted: 删除的文件)\\
+   =git pull= 拉取代码；\\
+   =git add .= 添加所有即将提交的文件，\\
+   =git add fileNamePath=添加某个文件\\
+   =git commit -'提交的日志'= 提交到本地，\\
+   =git push= 提交到git服务器；\\
+   git 另一种提交方式，\\
+   =git commit -a -m '提交的日志'= 添加所有即将提交的文件并提交到本地 ，\\
+   =git commit -a -m= 相当于 =git add .= 和 =git commi -' '=命令的集合，当你使用 =git commit -a -m ' '=命令时，就会执行上述两个操作；
+
+   --------------
+
+**** git 暂存
+
+
+   使用暂存的好处是，提交时不会产生类似
+
+   #+BEGIN_QUOTE
+     (Merge branch 'prd_v1.5' of http:// //././ *.**/bb_ios/bbch**** into prd_v1.5)
+   #+END_QUOTE
+
+   的日志，且安全可靠，会尽量避免将错误提交到服务器上面。
+
+   =git stash=暂存（存储在本地，并将项目本次操作还原）\\
+   =git stash pop= 使用上一次暂存，并将这个暂存删除，使用该命令后，如果有冲突，终端会显示，如果有冲突需要先解决冲突（这就避免了冲突提交服务器，将冲突留在本地，然后解决）\\
+   =git stash list= 查看所有的暂存\\
+   =git stash clear= 清空所有的暂存\\
+   =git stash drop [-q|--quiet] []= 删除某一个暂存，在中括号里面放置需要删除的暂存ID\\
+   =git stash apply= 使用某个暂存，但是不会删除这个暂存
+
+   --------------
+
+******* 暂存不小心清空，结果里面有需要的代码，也是有找回方法的
+
+
+   =git fsck --lost-found= 命令找出刚才删除的分支里面的提交对象。\\
+   然后使用 =git show= 命令查看是否正确，如果正确使用 =git merge=命令找回
+
+   举个栗子🌰：\\
+   =git fsck --lost-found=\\
+   终端显示
+
+   #+BEGIN_QUOTE
+     Checking object directories: 100% (256/256), done.
+
+     Checking objects: 100% (109977/109977), done.
+
+     dangling commit bb01f8dfaa14ea7960d294304c61c4b401eaf2c6
+
+     dangling commit 0203281d5dee10835022ff6cfdcda5050a372762
+   #+END_QUOTE
+
+   然后查看那个版本\\
+   =git show bb01f8dfaa14ea7960d294304c61c4b401eaf2c6=\\
+   结果查看图1
+
+   记录中会描述日期和摘要，日期是你git stash的日期，摘要会记录你是在哪一条commit 上进行git stash操作的，找到后将执行 =git merge bb01f8dfaa14ea7960d294304c61c4b401eaf2c6=
+
+   图1
+
+**** git 创建本地分支并推送到服务器
+
+
+   创建并切换到分支branchName\\
+   =git checkout -b branchName=
+
+   推送本地的 /branchName/(冒号前面的)分支到远程origin的 /branchName/(冒号后面的)分支(没有会自动创建)
+
+   =git push origin branchName:branchName=
+
+   在这样的命令下，如果你本地有代码，会自动切换到新的分支上，所以不必担心，你修改很多之后，从新创建分支会出现正常切换分支因为有未提交的代码而创建不成功的情况.
+
+   */发现问题/*\\
+   如果命令行提示 /git branch --set-upstream dev origin/branchName则/需在终端输入 =git push -u origin branchName=
+
+**** 删除分支
+
+
+   删除本地分支： =git branch -d [branchname]=\\
+   删除远程分支： =git push origin --delete [branchname]=
+
+**** git忽略文件
+
+
+   生成git忽略文件.gitignore文件，使用终端进入到你要生成.gitignore的目录，使用命令 =touch .gitignore=,就会生成。
+
+   下面是.gitignore的常用规则：
+
+   - /mtk/ 过滤整个文件夹
+
+   - *.zip过滤所有.zip文件
+
+   - /mtk/do.c 过滤某个具体文件
+
+   这样文件或者文件夹就被过滤了，当然本地库中还有，只是push的时候不会上传。
+
+   .gitignore还可以指定要将哪些文件添加到版本管理中：
+
+   - !*.zip
+
+   - !/mtk/one.txt
+
+   如果你将文件加入到了 /.gitignore/文件里面，但是没有说生效，为什么呢？因为之前你已经把这个文件push到过远程仓库了，请使用以下命令
+
+   #+BEGIN_EXAMPLE
+        git rm --cached `git ls-files -i --exclude-from=.gitignore`
+   #+END_EXAMPLE
+
+   经过我几次实验之后发现，上述命令在之前没有创建.gitignore文件但是已经向服务器push过代码的时候好使，但是在已经使用过这个命令后，由于其他分支并没有添加忽略文件，合并分支后，忽略文件失效，那么上述命令可能失效，那么先把本地缓存删除（改变成未track状态），然后再提交，方案如下
+
+   #+BEGIN_EXAMPLE
+        git rm -r --cached .
+       git add .
+       git commit -m '日志'
+   #+END_EXAMPLE
+
+   要记得，因为改变了一些东西，所以要从新pod install 然后提交代码，但是要使用 =git status=查看状态，比如已经忽略了 /Podfile.lock/，那么查看时没有 /Podfile.lock/那就是好了。
+
+**** 合并分支
+
+
+   场景如下：\\
+   例如现在有分支 =master=和分支 =A=,要将分支 =A=的代码合并到 =master=\\
+   第一步：切换到分支 =master=，在终端输入命令
+
+   #+BEGIN_EXAMPLE
+        git checkout master 
+   #+END_EXAMPLE
+
+   第二步：合并分支
+
+   #+BEGIN_EXAMPLE
+        git merge --no-ff -m 'version:3.0.5_buildL19011720' A
+   #+END_EXAMPLE
+
+   第三步：如果有冲突解决冲突，解决冲突后 =add .= -> =git commit -m '提交原因'=\\
+   第四步：
+
+   #+BEGIN_EXAMPLE
+        git push
+   #+END_EXAMPLE
+
+   部分摘自自己的博客 [[https://www.jianshu.com/p/1d5c5ed615d3]]，新文章使用Mac down书写
+
+**** 重定向项目地址
+
+
+****** 第一种方法
+
+
+   第一步： =cd=到项目目录下\\
+   第二步 ：
+
+   #+BEGIN_EXAMPLE
+        git remote set-url origin 新项目地址
+       //例如新项目地址是 www.jianshu.com，示例如下
+       git remote set-url origin www.jianshu.com
+   #+END_EXAMPLE
+
+****** 第二种方法
+
+
+   第一步： =cd=到项目目录下\\
+   第二步：执行命令 =cd .git=\\
+   第三步：执行命令 =open config=\\
+   第四步：将新项目地址替换到图2 红条覆盖位置\\
+
+   图2
