@@ -303,3 +303,126 @@
    第四步：将新项目地址替换到图2 红条覆盖位置\\
 
    图2
+
+
+   
+** [[https://juejin.im/post/6844903812524670984][Git submodule使用指南（一）]] :website:
+
+ [2020-11-02 一 09:55]
+
+*** Article
+
+**** 问题场景
+
+
+  相信任何开发，都会遇到一种情况。在做不同的项目，但是又都会使用到一些常用的方法_组件_代码块等等。 作为一个追求优雅的开发人员，肯定不能接受一段代码到处复制粘贴的操作。而且一旦这段代码日后需要更新，到处粘贴的话就需要全局搜索然后含泪修改了。 那么有没有一种办法，能够作为一些公共代码的“栖息地”，可以做到一处编写，到处使用呢？
+
+  *答案是有的。*
+
+  --------------
+
+**** 寻找工具
+
+
+  经过在知名404网站上一番搜寻，找到了Git内置的一个功能：submodule。
+
+***** 什么是submodule
+
+
+  #+BEGIN_QUOTE
+    有种情况我们经常会遇到：某个工作中的项目需要包含并使用另一个项目。 也许是第三方库，或者你独立开发的，用于多个父项目的库。 现在问题来了：你想要把它们当做两个独立的项目，同时又想在一个项目中使用另一个。
+
+    Git 通过子模块来解决这个问题。 子模块允许你将一个 Git 仓库作为另一个 Git 仓库的子目录。 它能让你将另一个仓库克隆到自己的项目中，同时还保持提交的独立。
+  #+END_QUOTE
+
+  --------------
+
+**** 如何使用
+***** 添加子模块
+
+
+  #+BEGIN_EXAMPLE
+       # 直接clone，会在当前目录生成一个someSubmodule目录存放仓库内容
+      git submodule add https://github.com/chaconinc/someSubmodule
+
+      # 指定文件目录
+      git submodule add https://github.com/chaconinc/someSubmodule  src/submodulePath
+       复制代码
+  #+END_EXAMPLE
+
+  新增成功之后，运行 =git status=会在父仓库发现增加了2个变化
+
+  1. new file: .gitmodules
+  2. new file: someSubmodule（实际上并不是一个file）
+
+  展开说说：
+
+  1. 什么是.submodules .submodules是记录当前项目的子模块配置的文件，里面保存了项目 URL 与已经拉取的本地目录之间的映射。
+
+  2. 子模块目录 在新增完子模块之后，执行 =git status=之后，会看到类似下面的信息
+
+  #+BEGIN_EXAMPLE
+       $ git diff --cached someSubmodule
+      diff --git a/someSubmodule b/someSubmodule
+       # 重点是下面这行的 160000
+      new file mode 160000
+      index 0000000..c3f01dc
+      --- /dev/null
+      +++ b/DbConnector
+      @@ -0,0 +1 @@
+      +Subproject commit c3f01dc8862123d317dd46284b05b6892c7b29bc
+       复制代码
+  #+END_EXAMPLE
+
+  虽然someSubmodule是父仓库里面的一个目录，但是Git并不会列出里面所有的变化，而是会当做一个特殊的提交。 PS：160000模式。 这是 Git 中的一种特殊模式，它本质上意味着你是将一次提交记作一项目录记录的，而非将它记录成一个子目录或者一个文件。
+
+***** clone已经包含子模块的项目
+
+
+  正常clone包含子模块的函数之后，由于.submodule文件的存在someSubmodule已经自动生成。但是里面是空的。还需要执行2个命令。
+
+  #+BEGIN_EXAMPLE
+        # 用来初始化本地配置文件
+      git submodule init
+       # 从该项目中抓取所有数据并检出父项目中列出的合适的提交(指定的提交)。
+      git submodule update
+      ------------------更好的方式---------------------
+       # clone 父仓库的时候加上 --recursive，会自动初始化并更新仓库中的每一个子模块
+      git  clone --recursive https://github.com/chaconinc/MainProject
+       复制代码
+  #+END_EXAMPLE
+
+***** git submodule 工作流
+
+
+  当一个项目里面包含子模块的时候，不仅仅需要对父仓库进行版本管理，子模块目录下也是存在版本的。那在不同的父仓库下面如何进行子模块的版本管理也成为新的问题。
+
+  最简单的办法，就是主项目只专注使用子模块的master分支上的版本，而不使用子模块内部的任何分支版本。
+
+  操作如下：
+
+  #+BEGIN_EXAMPLE
+       cd submodulePath
+      git fetch
+      git merge origin/master
+       复制代码
+  #+END_EXAMPLE
+
+  此时在主项目就能看到submodule目录已经更新了。 当然这也操作有点不方便，下面是更简便的方法：
+
+  #+BEGIN_EXAMPLE
+       # Git 将会进入子模块然后抓取并更新，默认更新master分支
+      git submodule update --remote
+       复制代码
+  #+END_EXAMPLE
+
+  如果需要更新其他分支的话，需要另外配置。
+
+  #+BEGIN_EXAMPLE
+        # 将git submodule update --remote 的分支设置为stable分支
+      git config  -f .gitmodules submodule.DbConnector.branch stable
+       复制代码
+  #+END_EXAMPLE
+
+  --------------
+
