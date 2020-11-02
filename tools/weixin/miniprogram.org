@@ -1,4 +1,4 @@
-* 详解微信小程序开发（项目从零开始） - Mr.聂 - 博客园
+* 详解微信小程序开发
 ** *一、序*
     
 　　微信小程序，估计大家都不陌生，现在应用场景特别多。今天就系统的介绍一下小程
@@ -31,13 +31,13 @@ pages: 小程序的页面目录。所有的小程序页面，都写在这里面�
    上边大致解释了一下小程序的基础文件，现在按照常见的规范完善一下项目目录，这里
    面包含一些个人见解，有需要的参考即可。先看一下结果：
 
-　　现在解释一下这些目录：
-　　　　components： 我们封装的小程序可复用组件。
-　　　　constants： 一些项目中的常亮。
-　　　　image： 用到的图片。
-　　　　services： 用到的所有接口目录
+现在解释一下这些目录：
+components： 我们封装的小程序可复用组件。
+constants： 一些项目中的常亮。
+image： 用到的图片。
+services： 用到的所有接口目录
 
-　　大致就新建了这几个，如果有别的需求，根据自己的情况增加。
+大致就新建了这几个，如果有别的需求，根据自己的情况增加。
 
 ** *八、实现页面跳转*
    和通常的 web 开发一样，小程序页面跳转页分 2 中，wxml 中的 vavigator 标签，以
@@ -152,172 +152,287 @@ onLoad: function (options) {
 
 　
 
-**  *十一、封装微信小程序可复用组件*
 
-　　现在篇幅有点太长了，这个另写一篇，有需要的可以去看。
+* 组建和 api
+*** 组件
 
-** *十二、总结*
-　　以上就是我开发小程序的一些经验和总结，希望能帮到你。另外，整套程序的骨架
-（业务代码删掉了）我会上传到 github， [[https://github.com/Aaron-China][下载]] 有需要的可以去下载，记得点个赞，哈哈。
+    - [view](https://mp.weixin.qq.com/debug/wxadoc/dev/component/view.html)
+    - [scroll-view](https://mp.weixin.qq.com/debug/wxadoc/dev/component/scroll-view.html)
+    - [swiper](https://mp.weixin.qq.com/debug/wxadoc/dev/component/swiper.html)
 
-　　最后，我会另写一篇博客，写一下 如何封装小程序 组件，并附上 我开发小程序遇到的坑，以及对应的解决方法。
+    - [icon](https://mp.weixin.qq.com/debug/wxadoc/dev/component/icon.html)
+    - [text](https://mp.weixin.qq.com/debug/wxadoc/dev/component/text.html)
+    - [progress](https://mp.weixin.qq.com/debug/wxadoc/dev/component/progress.html)
 
-* 微信小程序代码结构和框架调用流程详解
-** 微信小程序是如何工作的？
-   小程序包含一个描述整体程序的 app 和多个描述各自页面的 page。
-** 注册 App()
-   App() 必须在 app.js 中调用，必须调用且只能调用一次。不然会出现无法预期的后果。
+    ### 表单组件
 
-#+BEGIN_EXAMPLE
-      App({
-      onLaunch(options) {
-    //小程序初始化完成时触发，全局只触发一次。参数也可以使用 wx.getLaunchOptionsSync 获取。
-      },
-      onShow(options) {
-    //小程序启动，或从后台进入前台显示时触发。也可以使用 wx.onAppShow 绑定监听。
-      },
-      onHide() {
-    //小程序从前台进入后台时触发。也可以使用 wx.onAppHide 绑定监听。
-      },
-      onError(msg) {
-      console.log(msg)
-     // 小程序发生脚本错误或 API 调用报错时触发。也可以使用 wx.onError 绑定监听。
-      },
-      globalData: 'I am global data'
-     })
-#+END_EXAMPLE
+    - [button](https://mp.weixin.qq.com/debug/wxadoc/dev/component/button.html)
+    - [checkbox](https://mp.weixin.qq.com/debug/wxadoc/dev/component/checkbox.html)
+    - [form](https://mp.weixin.qq.com/debug/wxadoc/dev/component/form.html)
+    - [input](https://mp.weixin.qq.com/debug/wxadoc/dev/component/input.html)
+    - [label](https://mp.weixin.qq.com/debug/wxadoc/dev/component/label.html)
+    - [picker](https://mp.weixin.qq.com/debug/wxadoc/dev/component/picker.html)
+    - [radio](https://mp.weixin.qq.com/debug/wxadoc/dev/component/radio.html)
+    - [slider](https://mp.weixin.qq.com/debug/wxadoc/dev/component/slider.html)
+    - [switch](https://mp.weixin.qq.com/debug/wxadoc/dev/component/switch.html)
+    - [textarea](https://mp.weixin.qq.com/debug/wxadoc/dev/component/textarea.html)
 
-Page(Object) 构造器
+    ### 导航
 
-Page(Object) 函数用来注册一个页面。接受一个 Object 类型参数，其指定页面的初始数据、生命周期回调、事件处理函数等。
+    - [navigator](https://mp.weixin.qq.com/debug/wxadoc/dev/component/navigator.html)
 
-#+BEGIN_EXAMPLE
-     // index.js
-    Page({
-      data: {
-        text: 'This is page data.'
-      },
-      onLoad(options) {
-        // Do some initialize when page load.
-      },
-      onReady() {
-        // Do something when page ready.
-      },
-      onShow() {
-        // Do something when page show.
-      },
-      onHide() {
-        // Do something when page hide.
-      },
-      onUnload() {
-        // Do something when page close.
-      },
-      onPullDownRefresh() {
-        // Do something when pull down.
-      },
-      onReachBottom() {
-        // Do something when page reach bottom.
-      },
-      onShareAppMessage() {
-        // return custom share data when user share.
-      },
-      onPageScroll() {
-        // Do something when page scroll
-      },
-      onResize() {
-        // Do something when page resize
-      },
-      onTabItemTap(item) {
-        console.log(item.index)
-        console.log(item.pagePath)
-        console.log(item.text)
-      },
-      // Event handler.
-      viewTap() {
-        this.setData({
-          text: 'Set some data for updating view.'
-        }, function () {
-          // this is setData callback
-        })
-      },
-      customData: {
-        hi: 'MINA'
-      }
-    })
-#+END_EXAMPLE
+    ### 媒体组件
 
-Object 参数说明：
+    - [audio](https://mp.weixin.qq.com/debug/wxadoc/dev/component/audio.html)
+    - [image](https://mp.weixin.qq.com/debug/wxadoc/dev/component/image.html)
+    - [video](https://mp.weixin.qq.com/debug/wxadoc/dev/component/video.html)
 
-1.  data 页面的初始数据
-2.  onLoad 生命周期回调---监听页面加载
-3.  onShow 生命周期回调---监听页面显示
-4.  onReady 生命周期回调---监听页面初次渲染完成
-5.  onHide 生命周期回调---监听页面隐藏
-6.  onUnload 生命周期回调---监听页面卸载
-7.  onPullDownRefresh 监听用户下拉动作
-8.  onReachBottom 页面上拉触底事件的处理函数
-9.  onShareAppMessage 用户点击右上角转发
-10. onPageScroll 页面滚动触发事件的处理函数
-11. onResize 页面尺寸改变时触发，详见 响应显示区域变化
-12. onTabItemTap 当前是 tab 页时，点击 tab 时触发
+    ### 地图
 
-** 全局配置 app.json
-#+BEGIN_EXAMPLE
-     {
-      "pages": ["pages/index/index", "pages/logs/index"],
-      "window": {
-        "navigationBarTitleText": "Demo"
-      },
-      "tabBar": {
-        "list": [
-          {
-            "pagePath": "pages/index/index",
-            "text": "首页"
-          },
-          {
-            "pagePath": "pages/logs/logs",
-            "text": "日志"
-          }
-        ]
-      },
-      "networkTimeout": {
-        "request": 10000,
-        "downloadFile": 10000
-      },
-      "debug": true,
-      "navigateToMiniProgramAppIdList": ["wxe5f52902cf4de896"]
-    }
-#+END_EXAMPLE
+    - [map](hhttps://mp.weixin.qq.com/debug/wxadoc/dev/component/map.html%20#map)
 
-配置说明：
+    ### 画布
 
-- pages 页面路径列表
-- window 全局的默认窗口表现
-- tabBar 底部 tab 栏的表现
-- networkTimeout 网络超时时间
-- debug 是否开启 debug 模式，默认关闭
-- functionalPages 是否启用插件功能页，默认关闭
-- subpackages 分包结构配置
-- workers 代码放置的目录
-- requiredBackgroundModes 需要在后台使用的能力，如「音乐播放」
+    - [canvas](https://mp.weixin.qq.com/debug/wxadoc/dev/component/canvas.html)
 
-** 逻辑层
-   小程序开发框架的逻辑层使用 JavaScript 引擎为小程序提供开发者 JavaScript 代码
-   的运行环境以及微信小程序的特有功能。
+    ### 客服会话
 
-   逻辑层将数据进行处理后发送给视图层，同时接受视图层的事件反馈。
+    - [contact-button](https://mp.weixin.qq.com/debug/wxadoc/dev/component/contact-button.html)
 
-   开发者写的所有代码最终将会打包成一份 JavaScript 文件，并在小程序启动的时候运
-   行，直到小程序销毁。这一行为类似 ServiceWorker，所以逻辑层也称之为 App
-   Service。
+*** api
+    ## [API](https://mp.weixin.qq.com/debug/wxadoc/dev/api/)
 
-** 视图层
-   框架的视图层由 WXML 与 WXSS 编写，由组件来进行展示。
+    ### [网络](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-network.html)
 
-   将逻辑层的数据反应成视图，同时将视图层的事件发送给逻辑层。
+    #### [发起请求](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-request.html)
 
-- WXML(WeiXin Markup language) 用于描述页面的结构。
-- WXS(WeiXin Script) 是小程序的一套脚本语言，结合 WXML，可以构建出页面的结构。
-- WXSS(WeiXin Style Sheet) 用于描述页面的样式。
-- 组件(Component)是视图的基本组成单元。
+    - `wx.request`   `wx.request` 发起的是 HTTPS 请求
 
+    #### [上传、下载](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-file.html)
+
+    - `wx.uploadFile`   将本地资源上传到开发者服务器
+    - `wx.downloadFile` 下载文件资源到本地
+
+    #### [WebSocket](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
+
+    - `wx.connectSocket`  创建一个 WebSocket 连接
+    - `wx.onSocketOpen`   监听 WebSocket 连接打开事件
+    - `wx.onSocketError`  监听 WebSocket 错误
+    - `wx.sendSocketMessage`  通过 WebSocket 连接发送数据
+    - `wx.onSocketMessage`  监听 WebSocket 接受到服务器的消息事件
+    - `wx.closeSocket`    关闭 WebSocket 连接
+    - `wx.onSocketClose`  监听 WebSocket 关闭
+
+    ### [媒体](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-picture.html)
+
+    #### [图片](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-picture.html)
+
+    - `wx.chooseImage`  从本地相册选择图片或使用相机拍照
+    - `wx.previewImage` 预览图片
+    - `wx.getImageInfo` 获取图片信息
+
+    #### [录音](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-record.html)
+
+    - `wx.startRecord`  开始录音
+    - `wx.stopRecord`   主动调用停止录音
+
+    #### [音频播放控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-voice.html)
+
+    - `wx.playVoice`    开始播放语音
+    - `wx.pauseVoice`   暂停正在播放的语音
+    - `wx.stopVoice`    结束播放语音
+
+    #### [音乐播放控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-background-audio.html)
+
+    - `wx.getBackgroundAudioPlayerState`  获取音乐播放状态
+    - `wx.playBackgroundAudio`  播放音乐，同时只能有一首音乐正在播放
+    - `wx.pauseBackgroundAudio` 暂停播放音乐
+    - `wx.seekBackgroundAudio`  控制音乐播放进度
+    - `wx.stopBackgroundAudio`  停止播放音乐
+    - `wx.onBackgroundAudioPlay`  监听音乐播放
+    - `wx.onBackgroundAudioPause` 监听音乐暂停
+    - `wx.onBackgroundAudioStop`  监听音乐停止
+
+    #### [音频组件控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
+
+    - `wx.createAudioContext` 创建并返回 audio 上下文 `audioContext` 对象
+
+    #### [视频](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
+
+    - `wx.chooseVideo`  拍摄视频或从手机相册中选视频，返回视频的临时文件路径
+
+    #### [视频组件控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
+
+    - `wx.createVideoContext`  创建并返回 video 上下文 `videoContext` 对象
+
+    ### [文件](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
+
+    - `wx.saveFile` 保存文件到本地
+    - `wx.getSavedFileList` 获取本地已保存的文件列表
+    - `wx.getSavedFileInfo` 获取本地文件的文件信息
+    - `wx.removeSavedFile` 删除本地存储的文件
+    - `wx.openDocument` 新开页面打开文档，支持格式：doc, xls, ppt, pdf, docx, xlsx, pptx
+
+    ### [数据缓存](https://mp.weixin.qq.com/debug/wxadoc/dev/api/data.html)
+
+    - `wx.setStorage`   将数据存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个异步接口
+    - `wx.setStorageSync` 将 data 存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个同步接口
+    - `wx.getStorage`  从本地缓存中异步获取指定 key 对应的内容
+    - `wx.getStorageSync` 从本地缓存中同步获取指定 key 对应的内容
+    - `wx.getStorageInfo` 异步获取当前 storage 的相关信息
+    - `wx.getStorageInfoSync` 同步获取当前 storage 的相关信息
+    - `wx.removeStorage`  从本地缓存中异步移除指定 key
+    - `wx.removeStorageSync`  从本地缓存中同步移除指定 key
+    - `wx.clearStorage` 清理本地数据缓存
+    - `wx.clearStorageSync` 同步清理本地数据缓存
+
+    ### [位置](https://mp.weixin.qq.com/debug/wxadoc/dev/api/location.html)
+
+    #### 获取位置
+
+    - `wx.getLocation` 获取当前的地理位置、速度
+    - `wx.chooseLocation` 打开地图选择位置
+
+    #### 查看位置
+
+    - `wx.openLocation` 使用微信内置地图查看位置
+
+    #### [地图组件控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-map.html)
+
+    - `wx.createMapContext` 创建并返回 map 上下文 mapContext 对象
+
+    ### [设备](https://mp.weixin.qq.com/debug/wxadoc/dev/api/device.html)
+
+    #### [系统信息](https://mp.weixin.qq.com/debug/wxadoc/dev/api/systeminfo.html)
+
+    - `wx.getSystemInfo` 获取系统信息
+    - `wx.getSystemInfoSync` 获取系统信息同步接口
+
+    #### [网络状态](https://mp.weixin.qq.com/debug/wxadoc/dev/api/device.html)
+
+    - `wx.getNetworkType` 获取网络类型
+
+    #### [重力感应](https://mp.weixin.qq.com/debug/wxadoc/dev/api/accelerometer.html)
+
+    - `wx.onAccelerometerChange`  监听重力感应数据，频率：5次/秒
+
+    #### [罗盘](https://mp.weixin.qq.com/debug/wxadoc/dev/api/campass.html)
+
+    - `wx.onCompassChange`  监听罗盘数据，频率：5次/秒
+
+    #### [拨打电话](https://mp.weixin.qq.com/debug/wxadoc/dev/api/phonecall.html)
+
+    - `wx.makePhoneCall`  拨打电话
+
+    #### [扫码](https://mp.weixin.qq.com/debug/wxadoc/dev/api/scancode.html)
+
+    - `wx.scanCode` 调起客户端扫码界面，扫码成功后返回对应的结果
+
+    ### [界面](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-react.html)
+
+    #### [交互反馈](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-react.html)
+
+    - `wx.showToast` 显示消息提示框
+    - `wx.hideToast` 隐藏消息提示框
+    - `wx.showModal` ​显示模态弹窗
+    - `wx.showActionSheet` 显示操作菜单
+
+    #### [设置导航条](https://mp.weixin.qq.com/debug/wxadoc/dev/api/ui.html)
+
+    - `wx.setNavigationBarTitle` 动态设置当前页面的标题
+    - `wx.showNavigationBarLoading` 在当前页面显示导航条加载动画
+    - `wx.hideNavigationBarLoading` 隐藏导航条加载动画
+
+    #### [导航](https://mp.weixin.qq.com/debug/wxadoc/dev/api/ui-navigate.html)
+
+    - `wx.navigateTo`  保留当前页面，跳转到应用内的某个页面，使用 `wx.navigateBack` 可以返回到原页面
+    - `wx.redirectTo` 关闭当前页面，跳转到应用内的某个页面
+    - `wx.switchTab`  跳转到 `tabBar` 页面，并关闭其他所有非 `tabBar` 页面
+    - `wx.navigateBack`  关闭当前页面，返回上一页面或多级页面。可通过 `getCurrentPages()` 获取当前的页面栈，决定需要返回几层
+
+    #### [动画](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-animation.html)
+
+    - `wx.createAnimation`  创建一个动画实例 `animation`。调用实例的方法来描述动画。最后通过动画实例的`export` 方法导出动画数据传递给组件的 `animation` 属性。
+    - animation
+    - 动画队列
+
+    #### [绘图](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/intro.html)
+
+    - [简介 intro](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/intro.html)
+    - [Canvas 坐标系](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/coordinates.html)
+    - [渐变](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/gradient.html)
+    - [API 接口索引](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/reference.html)
+    - [wx.createCanvasContext](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/create-canvas-context.html) 创建 canvas 绘图上下文（指定 canvasId）
+    - [wx.canvasToTempFilePath](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/reference.html) 把当前画布的内容导出生成图片，并返回文件路径
+
+    #### [下拉刷新](https://mp.weixin.qq.com/debug/wxadoc/dev/api/pulldown.html)
+
+    - `Page.onPullDownRefresh` 在 `Page` 中定义 `onPullDownRefresh` 处理函数，监听该页面用户下拉刷新事件
+    - `wx.stopPullDownRefresh` 停止当前页面下拉刷新
+
+    ### [开放接口](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-login.html)
+
+    #### [登录](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-login.html)
+
+    - `wx.login` 调用接口获取登录凭证（code）进而换取用户登录态信息
+    - `code` 换取 `session_key`
+    - 登录态维护
+      - 登录时序图
+      - `wx.checkSession` 检查登陆态是否过期
+    - [用户数据的签名验证和加解密](https://mp.weixin.qq.com/debug/wxadoc/dev/api/signature.html)
+      - 数据签名校验
+      - 加密数据解密算法
+
+    #### [用户信息](https://mp.weixin.qq.com/debug/wxadoc/dev/api/open.html)
+
+    - `wx.getUserInfo` 获取用户信息，需要先调用 `wx.login` 接口说明
+    - `UnionID` 机制说明
+
+    #### [微信支付](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-login.html)
+
+    - `wx.requestPayment` 发起微信支付
+
+    #### [模板消息](https://mp.weixin.qq.com/debug/wxadoc/dev/api/notice.html)
+
+    - 使用说明
+    - 接口说明
+      - 获取 access_token
+      - 发送模板消息
+      - 下发条件说明
+      - 审核说明
+      - 违规说明
+      - 处罚说明
+
+    #### 客服消息
+
+    - [接收消息和事件](https://mp.weixin.qq.com/debug/wxadoc/dev/api/custommsg/receive.html)
+      - 文本消息
+      - 图片消息
+      - 进入会话事件
+    - [发送客服消息](https://mp.weixin.qq.com/debug/wxadoc/dev/api/custommsg/conversation.html)
+    - [临时素材接口](https://mp.weixin.qq.com/debug/wxadoc/dev/api/custommsg/material.html)
+      - 获取临时素材
+      - 新增临时素材
+    - [接入指引](https://mp.weixin.qq.com/debug/wxadoc/dev/api/custommsg/callback_help.html)
+
+    #### [分享](https://mp.weixin.qq.com/debug/wxadoc/dev/api/share.html)
+
+    - Page.onShareAppMessage
+
+    ----
+
+    ## [工具](https://mp.weixin.qq.com/debug/wxadoc/dev/devtools/devtools.html)
+
+    ### [概览](https://mp.weixin.qq.com/debug/wxadoc/dev/devtools/devtools.html)
+
+    ### [程序调试](https://mp.weixin.qq.com/debug/wxadoc/dev/devtools/debug.html)
+
+    - 模拟器
+    - 调试工具
+      - Wxml panel
+      - Sources panel
+      - Network panel
+      - Appdata panel
+      - Storage panel
+      - Console panel
+    - 小程序操作区
