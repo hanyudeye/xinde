@@ -1,0 +1,36 @@
+/home/wuming/company/qixing/newssyg/ssyg_back/resource/js/
+
+phpyQKisJ
+
+
+  <form enctype="multipart/form-data">
+        <p>上传csv文件<input type="file" id="csv_file" name="csv_file"/></p>
+        <button id="import">导入</button>
+    </form>
+    <script type="application/javascript">
+        $("#import").click(function () {
+            var files = $('#csv_file').prop('files');
+            var data = new FormData();
+            data.append('csv_file', files[0]);
+
+            $.ajax({
+                type: 'POST',
+                url: "http://xxxx/import_csv",
+                data: data,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (ret) {
+                    alert(ret);
+                }
+            });
+        });
+    </script>
+
+    $uploadFile = $_FILES['csv_file'];
+            $fileName = $uploadFile['tmp_name'];
+            $fHandle = fopen($fileName, 'r');
+            while ($data = fgetcsv($fHandle)) {
+                //入库处理
+            }
+            fclose($fHandle);
