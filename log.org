@@ -1,36 +1,78 @@
-/home/wuming/company/qixing/newssyg/ssyg_back/resource/js/
+#!/bin/sh
+xrandr --output DVI-D-0 --off --output HDMI-0 --primary --mode 3840x2160 --pos 0x0 --rotate normal --output DP-0 --mode 1920x1080 --pos 3840x0 --rotate right --output DP-1 --off
 
-phpyQKisJ
+
+xrandr  --output HDMI-0 --primary --mode 3840x2160 --pos 0x0 --rotate normal --output DP-0 --mode 1920x1080 --pos 3840x0 --rotate right
 
 
-  <form enctype="multipart/form-data">
-        <p>上传csv文件<input type="file" id="csv_file" name="csv_file"/></p>
-        <button id="import">导入</button>
-    </form>
-    <script type="application/javascript">
-        $("#import").click(function () {
-            var files = $('#csv_file').prop('files');
-            var data = new FormData();
-            data.append('csv_file', files[0]);
 
-            $.ajax({
-                type: 'POST',
-                url: "http://xxxx/import_csv",
-                data: data,
-                cache: false,
-                processData: false,
-                contentType: false,
-                success: function (ret) {
-                    alert(ret);
-                }
-            });
-        });
-    </script>
+xrandr --output eDP-1 --primary --mode 1600x900 --pos 0x809 --rotate normal --output VGA-1 --mode 1920x1080 --pos 2800x420 --rotate normal --output DP-1 --off --output HDMI-1 --mode 1920x1200 --pos 1600x0 --rotate left --output DP-2 --off --output HDMI-2 --off
 
-    $uploadFile = $_FILES['csv_file'];
-            $fileName = $uploadFile['tmp_name'];
-            $fHandle = fopen($fileName, 'r');
-            while ($data = fgetcsv($fHandle)) {
-                //入库处理
-            }
-            fclose($fHandle);
+
+# eg: bash /orb/Dev/BashScripts/setres.sh 125 200
+# Set multimonitor with multi-dpi with xrandr (eg NVidia cards)
+# First set the scaling to something at least large enough (s.a. 200% in GNOME)
+# In this case DVI-D-0 and HDMI-0 are 1080p monitors around DP-0 which is a 4K monitor
+
+SCALE1=$(expr $1/100 | bc -l)
+SCALE2=$(expr $2/100 | bc -l)
+
+xrandr --output DVI-D-0 --mode 1920x1080 --panning
+$((1920*$2/100))x$((1080*$2/100))+$((1920*$2/100+3840*$1/100))+0 --pos 5760x0
+--rotate normal --scale ${SCALE2}x${SCALE2} --output HDMI-0 --mode 1920x1080
+--pos 0x0 --panning $((1920*$2/100))x$((1080*$2/100)) --rotate normal --scale
+${SCALE2}x${SCALE2} --output DP-5 --off --output DP-4 --off --output DP-3 --off
+--output DP-2 --off --output DP-1 --off --output DP-0 --primary --mode 3840x2160
+--panning $((3840*$1/100))x$((2160*$1/100))+$((1920*$2/100))+0 --pos 1920x0
+--rotate normal --scale ${SCALE1}x${SCALE1}
+
+Scaling at:                      120%
+Used/max screen resolution:      1366 x 768 对 分辨率 为此，进行缩放。
+Resolution at 120% (res x 1.2):  1640 x 922 (round)  缩小 
+Scaling factor (new res / res):  1.20058565 x 1.20208604 
+The idea here is to increase the screen resolution virtually (because we are limited to 1366x768 physically) the command would be (replace screen-name):
+
+这里的想法是增加屏幕分辨率虚拟(因为我们被限制在1366x768物理)的命令将(替换屏幕名称) :
+
+xrandr --output screen-name --mode 1366x768 --panning 1640x922 --scale 1.20058565x1.20208604
+
+
+
+
+todo
+
+xrandr --output HDMI-0 --primary --mode 3840x2160 --pos 0x0 --panning 1920x1080 --scale 0.5x0.5 --rotate normal --output DP-0 --mode 1920x1080 --pos 1920x0 --rotate right
+
+
+xrandr --output HDMI-0 --primary --mode 3840x2160 --pos 0x0 --panning 1920x1080 --dpi 160 --rotate normal --output DP-0 --mode 1920x1080 --pos 1920x0 -
+
+
+xrandr --output HDMI-0 --primary --mode 3840x2160  --rotate normal --output DP-0 --mode 1920x1080 --pos 1920x0 --rotate right --auto
+
+xrandr --output HDMI-0 --primary  --mode 3840x2160  --panning 1920x1080  --output DP-0 --off
+
+
+xrandr --output HDMI-0 --primary  --mode 3840x2160  --panning 1920x1080  --output DP-0 --mode 1920x1080 --pos 1920x0 --rotate right
+
+xrandr --output HDMI-0 --primary  --mode 3840x2160  --panning 1920x1080 --fb 3840x2160 --output DP-0 --mode 1920x1080 --pos 1920x0 --right-of HDMI-0
+
+xrandr --output HDMI-0 --primary  --mode 3840x2160  --panning 1920x1080  --output DP-0 --mode 1920x1080 --pos 1920x0 --right-of HDMI-0
+--fb  1920x1080 
+
+xrandr --output HDMI-0 --primary  --mode 3840x2160  --scale 0.5x0.5 --output DP-0 --mode 1920x1080 --pos 1920x0 --right-of HDMI-0
+
+xrandr --output HDMI-0 --primary  --mode 3840x2160  --panning 1920x1080  --output DP-0 --auto
+
+#http://askubuntu.com/questions/379123/can-i-zoom-out-windows-or-scale-the-whole-desktop
+xrandr --output LVDS1 --mode 1920x1080 --scale 2x2     --fb 3840x2160 --panning 3840x2160
+# 3k
+# xrandr --output LVDS1 --mode 1920x1080 --scale 1.5x1.5 --fb 2880x1620 --panning 2880x1620
+
+1 . todo
+touch $HOME/.xprofile
+chmod +x $HOME/.xprofile
+
+#!/bin/sh
+xrandr --output DVI-D-0 --off --output HDMI-0 --primary --mode 3840x2160 --pos
+0x0 --rotate normal --output DP-0 --mode 1920x1080 --pos 1920x0 --rotate normal
+--output DP-1 --off
