@@ -1,0 +1,57 @@
+** 1
+Fb 设置总分辨率。例如，如果您有两台1920x1080显示器，并希望它们并排显示，那么您应
+该将其设置为至少3840x1080——即1920 * 2 x1080。
+
+
+panning 平移可以让您使用比显示器支持的分辨率更高的分辨率，但只显示它支持的分辨率。例如，
+如果我将我的1920x1080显示器设置为2560x1600，并启用平移，我将看到整个显示器的
+1920x1080区域，并且在移动鼠标时可以平移整个2560x1600区域。
+
+** 2
+只有缩放和平移不会有帮助。您必须指定外部显示器的侧面。请检查我的命令，我正在使用
+外部监视器的权利，我的本地笔记本电脑显示器。我有瑜伽2专业与分辨率3200x1800和外部
+FHD 显示器。在我的例子中，我使用 xrandr 平移选项:
+
+xrandr --output eDP1 --auto --output HDMI1 --auto --panning 3840x2160+3200+0 --scale 2x2 --right-of eDP1
+
+Basically if your hidpi monitor is AxB pixels and your regular monitor is CxD and you are scaling by [ExF], the commandline for right-of is:
+
+基本上，如果您的 hidpi 显示器是 AxB 像素，而您的常规显示器是 CxD，并且您使用[ ExF ]进行缩放，则右边的命令行是:
+xrandr --output eDP1 --auto --output HDMI1 --auto --panning [C*E]x[D*F]+[A]+0 --scale [E]x[F] --right-of eDP1
+
+
+xrandr --output eDP1 --auto --output HDMI1 --auto --panning [C*E]x[D*F]+[A]+0 --scale [E]x[F] --right-of eDP1
+xrandr --output eDP1 --auto --output HDMI1 --auto --panning [C*E]x[D*F]+[A]+0 --scale [E]x[F] --right-of eDP1
+
+todo
+xrandr --output HDMI-1 --auto --panning 1920x1080+1920+0 --scale 0.5x0.5 --output DP-1 --right-of HDMI-1
+
+3840x2160  
+0.5x0.5
+--fb 3840x1080
+
+** 3
+My displays are main laptop LCD 3820x2160 + external ASUS MB16AC 1920x1080. I called xrandr like:
+
+我的显示器主要是笔记本电脑 LCD 3820x2160 + 外置华硕 MB16AC 1920x1080:
+
+xrandr --output DP-4 --auto --fb 7680x2160 --output DP-5 --auto --fb 7680x2160 --panning 3840x2160+3840+0 --scale 2x2 --right-of DP-4
+but mouse cursor couldn't go out of top-left quarter of external display.
+
+todo
+xrandr --output HDMI-1 --auto --panning 1920x1080+1920+0 --scale 0.5x0.5 --output DP-1 --right-of HDMI-1
+
+感觉没必要用 fb
+xrandr --output HDMI-1 --auto --fb 7680x2160 --scale 2x2 --output DP-1 --auto --fb 7680x2160 --panning 3840x2160+3840+0  --right-of HDMI-1
+
+
+但鼠标光标不能离开外部显示的左上方四分之一。
+** xrandr调整分辨率、旋转屏幕很好用
+3 xrandr --fb 2048x768 --output VGA1 --panning 1024x768+0+0 --output LVDS1 --panning 1024x768+1024+0
+
+fb是framebuffer，指定总的分辨率，这里总分辨率为2048x768，VGA1显示1024x768，LVDS1
+显示1024x768，LVDS1和VGA1拼接成2048x768。
+
+xrandr -newmode "1024x768" 63.5 1024 1072 1176 1328 768 771 775 798 -hsync +vsync
+xrandr --addmode VGA1 1024x768
+进行添加，mode后面的那一串参数可以通过gtf来获取，如gtf  1024 768 60就是获得1024x768 60Hz刷新率的mode参数
