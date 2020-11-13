@@ -1,0 +1,389 @@
+#+TITLE: gnuplot 简介
+#+DESCRIPTION: gnuplot 简介
+#+TAGS: gnuplot
+#+CATEGORIES: 软件使用
+
+* 基础篇
+  1、plot 命令
+  2、同时画多条曲线
+  3、关于图例的位置
+  4、关于坐标轴
+  5、在图中插入文字
+  6、在图中添加直线和箭头
+  7、图的大小和位置
+  8、画三维图
+  9．将图形输出到文件
+  二、提高篇
+  1、如何在同一张图里同时画多个图
+  2、作二维图时，如何使两边坐标轴的单位长度等长
+  3、如何在同一张图里利用左右两边的 y 轴分别画图
+  4、如何插入希腊字母和特殊符号
+  5、gnuplot 中如何插入 Angstrom（埃）这个符号(A 上面一个小圆圈)
+  6、gnuplot 画等高线图
+  7、如何画漂亮的 pm3d 图
+  8、利用脚本文件避免重复输入
+  9、在 gnuplot 模式下运行 linux 命令
+  一、基础篇
+  在 linux 命令提示符下运行 gnuplot 命令启动，输入 quit 或 q 或 exit 退出。
+
+  1、plot 命令
+  gnuplot> plot sin(x) with line linetype 3 linewidth 2 或
+  gnuplot> plot sin(x) w l lt 3 lw 2    %用线画，线的类型（包括颜色与虚线的类型）是 3，线的宽度是 2，对函数 sin(x)作图
+  gnuplot> plot sin(x) with point pointtype 3 pointsize 2  或
+  gnuplot> plot sin(x) w p pt 3 ps 2    %用点画，点的类型（包括颜色与点的类型）是 3，点的大小是 2
+  gnuplot> plot sin(x) title ‘f(x)’ w lp lt 3 lw 2 pt 3 ps 2    %同时用点和线画，这里 title ‘f(x)’表示图例上标’f(x)’，如果不用则用默认选项
+  gnuplot> plot sin(x)    %此时所有选项均用默认值。如果缺某一项则将用默认值
+  gnuplot> plot ‘a.dat’ u 2:3  w l lt 3 lw 2 %利用数据文件 a.dat 中的第二和第三列作图
+
+  顺便提一下，如这里最前面的两个例子所示，在 gnuplot 中，如果某两个词，按字母先后顺序，前面某几个字母相同，后面的不同，那么只要写到第一个不同的字母就可以了。如 with，由于没有其它以 w 开头的词，因此可以用 w 代替，line 也可以用 l 代替。
+
+  2、同时画多条曲线
+  gnuplot> plot sin(x) title ‘sin(x)’ w l lt 1 lw 2, cos(x) title ‘cos(x)’  w l lt 2 lw 2  ％两条曲线是用逗号隔开的。画多条曲线时，各曲线间均用逗号隔开就可以了。
+
+  以上例子中是对函数作图，如果对数据文件作图，将函数名称换为数据文件名即可，但要用单引号引起来。
+
+  3、关于图例的位置
+  默认位置在右上方。
+  gnuplot> set key left  %放在左边，有 left 和 right 两个选项
+  gnuplot> set key bottom  %放在下边，只有这一个选项；默认在上边
+  gnuplot> set key outside  %放在外边，但只能在右面的外边
+  以上三个选项可以进行组合。如：
+  gnuplot> set key left bottom  %表示左下边
+
+  还可以直接用坐标精确表示图例的位置，如
+  gnuplot> set key 0.5,0.6  %将图例放在 0.5,0.6 的位置处
+
+  4、关于坐标轴
+  gnuplot> set xlabel ‘x’   %x 轴标为‘x’
+  gnuplot> set ylabel ‘y’   %y 轴标为’y’
+  gnuplot> set ylabel ‘DOS’ tc lt 3  %其中的 tc lt 3 表示’DOS’的颜色用第三种颜色。
+  gnuplot> set xtics 1.0    %x 轴的主刻度的宽度为 1.0，同样可以为 y 轴定义 ytics
+  gnuplot> set mxtics 3    %x 轴上每个主刻度中画 3 个分刻度，同样可以为 y 轴定义 mytics
+  gnuplot> set border 3 lt 3 lw 2 %设为第三种边界，颜色类型为 3，线宽为 2
+  同样可以为上边的 x 轴（称为 x2）和右边 y（称为 y2）轴进行设置，即 x2tics，mx2tics，y2tics，my2tics。
+  gnuplot> set xtics nomirror
+  gnuplot> unset x2tics     %以上两条命令去掉上边 x2 轴的刻度
+
+  gnuplot> set ytics nomirror
+  gnuplot> unset y2tics     %以上两条命令去掉右边 y 轴的刻度
+
+  5、在图中插入文字
+  gnuplot> set label ‘sin(x)’ at 0.5,0.5  %在坐标（0.5,0.5）处加入字符串’sin(x)’。
+  在输出为.ps 或.eps 文件时，如果在 set term 的语句中加入了 enhanced 选现，则可以插入上下标、希腊字母和特殊符号。上下标的插入和 latex 中的方法是一样的。
+
+  6、在图中添加直线和箭头
+  gnuplot> set arrow from 0.0,0.0 to 0.6,0.8    %从（0.0,0.0）到（0.6,0.8）画一个箭头
+  gnuplot> set arrow from 0.0,0.0 to 0.6,0.8 lt 3 lw 2   %这个箭头颜色类型为 3，线宽类型为 2
+  gnuplot> set arrow from 0.0,0.0 to 0.6,0.8 nohead lt 3 lw 2  %利用 nohead 可以去掉箭头的头部，这就是添加直线的方法。
+
+  注意，在 gnuplot 中，对于插入多个的 label 和 arrow 等等，系统会默认按先后顺序分别对各个 label 或 arrow 进行编号，从 1 开始。如果以后要去掉某个 label 或 arrow，那么只要用 unset 命令将相应的去掉即可。如：
+  gnuplot> unset arrow 2
+  将去掉第二个箭头。
+
+  7、图的大小和位置
+  gnuplot>set size 0.5,0.5  %长宽均为默认宽度的一半，建议用这个取值，尤其是画成 ps 或 eps 图形的时候
+  gnuplot>set origin 0.0,0.5   %设定图的最左下角的那一点在图形面板中的位置。这里图将出现在左上角。
+
+  8、画三维图
+  gnuplot>splot ‘文件名’ u 2:4:5  %以第二和第四列作为 x 和 y 坐标，第五列为 z 坐标。
+
+  9．将图形输出到文件
+  在 gnuplot 中，输出文件的格式是由 terminal 来控制的。默认的情况下，都是输出到屏幕，即终端模式为 X11。如果想输出到文件，则必须对 terminal 进行设置。要了解有那些终端类型，可以输入 set terminal 后回车，所有支持的终端模式（或文件格式）都列出来了。就我来说，输出文件的格式用得最多的是 ps 和 eps 文件。这在运行画图命令 plot 或 splot 前必须先运行如下两条命令：
+
+  gnuplot>set term post eps color solid enh
+  gnuplot>set output ‘a.eps’
+
+  其中第一条命令为设置终端模式，post 即为 postscript 模式，这是输出到 ps 或 eps 文件必须有的。后面的 eps，color，solid 以及 enh 选项均可以有或没有，根据你的需要。eps 表示输出为 eps 文件，没有就输出为 ps 文件；color 表示输出图形为彩色，不用就会保存为黑白 的；solid 表示输出图中的所有线都用实线，不用则除了第一条线为实线外，其它的均用不同的虚线；使用 enh(enhanced)选项可以在图中插入上 下标、希腊字母和特殊符号，不用则不能实现这些功能。后面的选项可以根据自己的需要选择一个或几个。
+
+  第二条命令对 output 的设置表示要输出的文件的名字。但是请注意，运行完这条命令后，还仅仅是定义了输出文件的名字，实际上，图还没画到这个文件里去。因此运行这两条命令还只是进行了必须的设置。然后运行如下命令
+  gnuplot>plot sin(x) w l
+  或
+  gnuplot>replot（假如前面已经运行过 plot 或 replot 命令的话）
+  这时，图形就在上面指定的文件中了。
+
+  要输出为其它格式，同样要进行这样的设置，比如要输出为 jpg 格式，则在运行画图命令前先运行如下命令：
+  gnuplot>set term jpeg
+  gnuplot>set output ‘a.jpg’
+
+  如果要由其它模式再返回到输出到屏幕，则运行如下命令：
+  gnuplot>set term X11
+
+  二、提高篇
+  1、如何在同一张图里同时画多个图
+  gnuplot>set multiplot   %设置为多图模式
+  gnuplot>set origin 0.0,0.5   %设置第一个图的原点的位置
+  gnuplot>set size 0.5,0.5  %设置第一个图的大小
+  gnuplot>plot “a1.dat”
+  gnuplot>set origin 0.5,0.5   %设置第二个图的原点的位置
+  gnuplot>set size 0.5,0.5   %设置第二个图的大小
+  gnuplot>plot “a2.dat”
+  gnuplot>set origin 0.0,0.0   %设置第三个图的原点的位置
+  gnuplot>set size 0.5,0.5  %设置第三个图的大小
+  gnuplot>plot “a3.dat”
+  gnuplot>set origin 0.5,0.0   %设置第四个图的原点的位置
+  gnuplot>set size 0.5,0.5  %设置第四个图的大小
+  gnuplot>plot “a4.dat”
+  当然，如果后一个图中的某个量的设置和前一个的相同，那么后一个中的这个量的设置可以省略。例如上面对第二、第三和第四个图的大小的设置。前一个图中对某个量的设置也会在后一个图中起作用。如果要取消在后面图中的作用，必须用如下命令，如取消 label，用
+  gnuplot>unset label
+
+  2、作二维图时，如何使两边坐标轴的单位长度等长
+  gnuplot> set size square    %使图形是方的
+  gnuplot> set size 0.5,0.5    %使图形是你要的大小
+  gnuplot> set xrange[-a:a]
+  gnuplot> set yrange[-a:a]    %两坐标轴刻度范围一样
+  gnuplot> plot ‘a.dat’
+
+  3、如何在同一张图里利用左右两边的 y 轴分别画图
+  gnuplot> set xtics nomirror   %去掉上面坐标轴 x2 的刻度
+  gnuplot> set ytics nomirror   %去掉右边坐标轴 y2 的刻度
+  gnuplot> set x2tics       %让上面坐标轴 x2 刻度自动产生
+  gnuplot> set y2tics     %让右边坐标轴 y2 的刻度自动产生
+  gnuplot> plot sin(x),cos(x) axes x1y2    %cos(x)用 x1y2 坐标，axes x1y2 表示用 x1y2 坐标轴
+  gnuplot> plot sin(x),cos(x) axes x2y2     %cos(x)用 x2y2 坐标，axes x2y2 表示用 x2y2 坐标轴
+  gnuplot> set x2range[-20:20]   %设定 x2 坐标的范围
+  gnuplot> replot
+  gnuplot> set xrange[-5:5]  %设定 x 坐标的范围
+  gnuplot> replot
+  gnuplot> set xlabel ‘x’
+  gnuplot> set x2label ‘t’
+  gnuplot> set ylabel ‘y’
+  gnuplot> set y2label ‘s’
+  gnuplot> replot
+  gnuplot> set title ‘The figure’
+  gnuplot> replot
+  gnuplot> set x2label ‘t’ textcolor lt 3    %textcolor lt 3 或 tc lt 3 设置坐标轴名称的颜色
+
+  4、如何插入希腊字母和特殊符号
+  一般只能在 ps 和 eps 图中，且必须指定 enhanced 选项。在 X11 终端（即显示器）中无法显示。
+  gnuplot> set terminal postscript enhanced
+
+  然后希腊字母就可以通过{/Symbol a}输入。例如
+  gnuplot> set label ‘{/Symbol a}’
+  各种希腊字母与特殊符号的输入方法请见安装包中 gnuplot-4.0.0/docs/psdoc 目录下的 ps_guide.ps 文件。
+
+  另外还可参见：
+  http://t16web.lanl.gov/Kawano/gnuplot/label-e.html#4.3
+
+  5、gnuplot 中如何插入 Angstrom（埃）这个符号(A 上面一个小圆圈)
+  脚本中在插入前先加入
+  gnuplot>set encoding iso_8859_1
+  这个命令，然后就可以通过“{\305}”加入了。如横坐标要标上“k(1/?)”：
+  gnuplot>set xlabel ‘k(1/{\305})
+
+  如果是 multiplot 模式，则这个命令必须放在
+  gnuplot>set multiplot
+  的前面。
+
+  如果后面还要插入别的转义字符，那么还要在插入字符后加入如下命令：
+  set encoding default
+
+  安装包中 gnuplot-4.0.0/docs/psdoc/ps_guide.ps 文件中的表中的‘E’代表那一列的所有符号都用这个方法输入。
+
+  6、gnuplot 画等高线图
+  gnuplot>splot  ‘文件名.dat’  u 1:2:3  w  l   %做三维图
+  gnuplot>set dgrid3d 100,100 %设置三维图表面的网格的数目
+  gnuplot>replot
+  gnuplot>set contour    %设置画等高线
+  gnuplot>set cntrparam  levels  incremental -0.2,0.01,0.2   %设置等高线的疏密和范围，数据从   -0.2 到 0.2 中间每隔 0.01 画一条线
+  gnuplot>unset surface   去掉上面的三维图形
+  最后用鼠标拽动图形，选择合理的角度即可。或者直接设置(0,0)的视角也可以：
+  gnuplot>set view 0,0
+  gnuplot>replot
+
+  这里注意，画三维图的数据文件必须是分块的，也就是 x 每变换一个值，y在其变化范围内变化一周，这样作为一块，然后再取一个 x 值，y再变化一周，作为下一数据块，等等。块与块之间用一空行格开。
+
+  7、如何画漂亮的 pm3d 图
+  gnuplot> set pm3d                %设置 pm3d 模式
+  gnuplot> set isosamples 50,50       %设置网格点
+  gnuplot> splot x**2+y**2          ％画三维图
+  gnuplot> splot x**2+y**2 w pm3d   ％画成 pm3d 模式，注意比较变化
+  gnuplot> set view 0,0              ％设置视角，（0，0）将投影到底面上去
+  gnuplot> splot x**2+y**2 w pm3d   ％重画，注意看变化
+  gnuplot> unset ztics               %把 z 轴上的数字给去掉
+  gnuplot> set isosamples 200,200     ％使网格变细
+  gnuplot> replot                   ％重画，注意看变化，主要是过渡更光滑
+
+  8、利用脚本文件避免重复输入
+  有时候对某个数据文件做好一张图后，下次可能还要利用这个数据文件作图，但某个或某些设置要作些细微变化。这时候，可以把第一次作图时的命令全部写到一个文件里，如 a.plt，下次只要将相应的设置做修改后，用下面的命令就会自动运行文件所有的命令而最后得到你要的图：
+  gnuplot>load ‘a.plt’
+  作为一个例子，假设文件名为 a.plt，里面的内容为：
+  set pm3d
+  set view 0,0
+  unset ztics
+  set isosamples 200,200
+  splot x**2+y**2 w pm3d
+  set term post color
+  set output ‘a.ps’
+  replot
+
+  那么启动 gnuplot 后，只要运行如下命令就可以了：
+  gnuplot>load ‘a.plt’
+
+  如果我们要得到的仅仅是.ps 或.eps 图，那也可以在 linux 命令提示符下直接运行如下命令：
+  [zxh@theory zxh]$gnuplot a.plt
+
+  9、在 gnuplot 模式下运行 linux 命令
+  在 gnuplot 提示符下也可以运行 linux 命令，但必须在相应的命令前面加上 ! 号。例如，假设很多参量都已经设置好了，但需要对某个数据文件 a.dat 进行修改后再画图，则可以用如下方式
+  gnuplot>!vi a.dat
+  通过这种方式，所有的 linux 命令都可以在 gnuplot 环境里运行。
+
+  另外，也可以在 gnuplot 的提示符后输入 shell，暂时性退出 gnuplot，进入 linux 环境，做完要做的事情后，运行 exit 命令，又回到 gnuplot 环境下。
+  gnuplot>shell
+  [zxh@theory zxh]$vi a.f
+  [zxh@theory zxh]$f77 a.f
+  [zxh@theory zxh]$a.out    (假设生成 a.dat 数据文件)
+  [zxh@theory zxh]$exit
+  gnuplot>plot ‘a.dat’ w l
+* gnuplot
+** 简介
+   画图软件,还能画 3D 图
+   能输出好几种格式
+
+   命令格式, 用分号隔开
+   #+begin_src gnuplot
+     set title "My First Plot"; plot 'data'; print "all done!"
+   #+end_src
+   功能应该没有 ~PS~  那些专业的画图软件强的吧
+
+   官方示例 ~http://gnuplot.info/demo/~ 
+** 绘图方法   
+*** 交互模式 gnuplot
+*** 指定文件
+    gnuplot input1 input2
+*** 用命令直接绘图 (-persist 选项 )
+    gnuplot -persist -e "set title 'Sine curve'; plot sin(x)"
+
+** 绘图
+*** 配置画布
+    设置绘图区是画布大小的一半一半
+    set size 0.5, 0.5
+    
+   这个会输出 png 图片到终端( 没用 ) 
+    set term png size 600, 400
+    
+    set output "figure.png"
+    plot "data" with lines
+*** 坐标
+    {<system>} <x>, {<system>} <y> {,{<system>} <z>}
+    Each <system> can either be first, second, polar, graph, screen, or character.
+
+    set logscale x
+    set arrow 100,5 rto 10,2
+
+*** Datastrings
+    可以在文件中选择使用的数据段
+    文件 ~datafile~ 包含的数据为 
+    #+begin_quote
+    1.000 2.000 "Third column is all of this text" 4.00
+#+end_quote
+
+   使用了其中三个数据, 画 2D 图 
+    #+begin_quote
+    plot 'datafile' using 1:2:4 with labels
+    #+end_quote
+    
+    使用四个,画 3D 图
+    #+begin_quote
+    splot 'datafile' using 1:2:4:3 with labels
+    #+end_quote
+
+*** 迭代 Iteration
+    画 4 副图
+    
+    #+begin_src gnuplot
+      set multiplot layout 2,2
+      100 term Fourier series
+      fourier(k, x) = sin(3./2*k)/k * 2./3*cos(k*x)
+      do for [power = 0:3] {
+          TERMS = 10**power
+          set title sprintf("%g term Fourier series",TERMS)
+          plot 0.5 + sum [k=1:TERMS] fourier(k,x) notitle
+      }
+      unset multiplot
+    #+end_src
+
+
+** 样式
+
+   plot 'data' with boxes, sin(x) with lines
+* heo
+  主要用来绘制 2D/3D 的数据图像的,复杂的图像它做不了,还能做数学运算。
+  它的名字 开头的 ~gnu~ 跟 大名鼎鼎的 ~GNU~ 没有关系，读作  ~new plot~ 。
+** 命令
+*** 画图 (plot ,) 
+*** 重新绘制 (replot)
+*** 设置 (set) 
+**** 设置取样个数 (使图像更平滑) 默认 100,100
+     set samples 500
+*** 清除 (unset)
+**** 去掉图例 
+     unset key
+*** 重置 (reset)
+*** 显示设置 (show)
+    显示所有    show all
+*** 打印表达式的值 (print) 
+** 数学运算
+   #+begin_quote
+   加、减、乘、除、乘方 分别用 +,-,*,/,** 表示
+  复数表示 {3,5}表示 3 + 5i
+  自定义函数很容易,例如 f(x)=x+1 定义一个一元函数,f(x,y)=x+y 定义一个二元函数。
+  π 在 gnuplot 里用 pi 表示
+   #+end_quote
+ 
+  进行数学运算后用 ~print~ 输出
+ #+begin_src gnuplot
+   print 3**2 
+ #+end_src
+#+begin_quote
+这里跟语言的解释器差不多
+#+end_quote
+** 简单函数绘图
+   画 2D 图 用 画图命令 ~plot~
+   #+begin_src gnuplot
+     plot sin(3*x)
+   #+end_src
+
+* fhe
+ 
+  #+PLOT
+ | Sede      | Max cites | H-index |
+ | Chile     |    257.72 |   21.39 |
+ | Leeds     |    165.77 |   19.68 |
+ | São Paolo |     71.00 |   11.50 |
+ | Stockholm |    134.19 |   14.33 |
+ | Morelia   |    257.56 |   17.67 |
+
+ 
+#+TBLNAME: tblname
+#+PLOT: title:"tblname" ind:1
+|   X |   Y |
+|-----+-----|
+|     |     |
+
+
+#+begin_src gnuplot :var data="tblname" :file "tblname.png"
+  reset
+  set title "tblname"
+  set xlabel "X"
+  set ylabel "Y"
+  unset key
+  plot data u 1:2 w lines
+  #+end_src
+
+  #+PLOT: title:"Citas" ind:1 deps:(3) type:2d with:histograms set:"yrange [0:]"
+     | Sede      | Max cites | H-index |
+     |-----------+-----------+---------|
+     | Chile     |    257.72 |   21.39 |
+     | Leeds     |    165.77 |   19.68 |
+     | Sao Paolo |     71.00 |   11.50 |
+     | Stockholm |    134.19 |   14.33 |
+     | Morelia   |    257.56 |   17.67 |
+
+#+PLOT: title:"Citas" ind:1 deps:(3) type:2d with:histograms set:"yrange [0:]"
+| Sede      | Max cites | H-index |
+|-----------+-----------+---------|
+| Chile     |    257.72 |   21.39 |
+| Leeds     |    165.77 |   19.68 |
+| São Paolo |     71.00 |   11.50 |
+| Stockholm |    134.19 |   14.33 |
+| Morelia   |    257.56 |   17.67 |

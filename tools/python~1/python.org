@@ -1,0 +1,176 @@
+#+TITLE: Python 简介
+#+DESCRIPTION: Python 语言学习笔记
+#+CATEGORIES[]: 技术
+#+TAGS[]: Python
+#+DATE: 2019-11-29T21:57:09+08:00
+#+draft: true
+
+比较高级的编程语言
+# more 
+
+** 数据的类型
+   - 列表(list)  [ 1,2 ,"鸡蛋","大豆"]
+   - 元组 (tuple)  ( 1,2 ,"鸡蛋","大豆" )
+   - 字典 (dictionary) {'a': 1, 'b': 2, 'c': '鸡蛋', 'd': '大豆'} 
+   - 集合 {3,4,6,'a','3',3} 跟列表一样，但会自动消除重复的东西
+   - 空值 None
+*** 数据转换
+    - int(x [,base])        
+    - float(x)              
+    - complex(real [,imag]) 
+    - str(x)                
+    - repr(x)               
+    - eval(str)             
+    - tuple(s)              
+    - list(s)               
+    - chr(x)                
+    - unichr(x)             
+    - ord(x)                
+    - hex(x)                
+    - oct(x)                
+*** 自定义类型  
+**** 定义类型   
+     #+begin_src python -n
+       class ClassName:
+           # 构造函数
+           def __init__(self,...):
+               return
+           # 析构函数
+           def __del__(self,...):
+               return 
+     #+end_src
+     
+**** 默认方法
+     
+     | 方法名称                      | 说明                                         |
+     |-------------------------------+----------------------------------------------|
+     | __init__                      | 构造函数，在生成对象时调用                   |
+     | __del__                       | 析构函数，释放对象时使用                     |
+     | __repr__                      | 打印，转换                                   |
+     | __setitem__                   | 按照索引赋值                                 |
+     | __getitem__                   | 按照索引获取值                               |
+     | __len__                       | 获得长度                                     |
+     | __call__                      | 函数调用                                     |
+     | __add__                       | 加运算                                       |
+     | __sub__                       | 减运算                                       |
+     | __mul__                       | 乘运算                                       |
+     | __div__                       | 除运算                                       |
+     | __mod__                       | 求余运算                                     |
+     | __pow__                       | 乘方                                         |
+     | type(obj)                     | 获取对象的相应类型                         |
+     | isinstance(obj, type)         | 判断对象是否为指定的 type 类型的实例        |
+     | hasattr(obj, attr)            | 判断对象是否具有指定属性/方法               |
+     | getattr(obj, attr[, default]) | 获取属性/方法的值                            |
+     | setattr(obj, attr, value)     | 设定该属性/方法的值，类似于 obj.attr=value  |
+     | dir(obj)                      | 获取相应对象的所有属性和方法名的列表       |
+    
+**** 类的继承
+     #+begin_src python
+       # 单继承
+       class ClassName(BaseClassName):
+        # 多继承
+        class ClassName(Base1,Base2,Base3):
+     #+end_src
+** 函数
+*** 定义函数
+    #+BEGIN_SRC python
+      def functionname( parameters ):
+          "函数_文档字符串"
+          function_suite
+          return [expression]
+    #+END_SRC
+*** 不定长参数函数
+    #+begin_src python
+      def print_user_info( name ,  age  , sex = '男' , * hobby):
+          # 打印用户信息
+          print('爱好：{}'.format(hobby))
+          return;
+
+      # 调用 print_user_info 函数
+      print_user_info( '两点水' ,18 , '女', '打篮球','打羽毛球','跑步')
+    #+end_src
+*** 关键字参数 
+    #+begin_src python
+      def print_user_info( name ,  age  , sex = '男' ):
+          # 打印用户信息
+          print('性别：{}'.format(sex))
+          return;
+
+      # 调用 print_user_info 函数
+      print_user_info( name = '两点水' ,age = 18 , sex = '女')
+    #+end_src
+
+*** 匿名函数 lambda 
+    #+begin_src python
+      lambda [arg1 [,arg2,.....argn]]:expression
+    #+end_src
+     
+    #+begin_src python
+      # -*- coding: UTF-8 -*-
+
+      sum = lambda num1 , num2 : num1 + num2;
+      print( sum( 1 , 2 ) )
+    #+end_src
+*** 入口函数
+    #+begin_src python
+      if __name__ == '__main__':
+    #+end_src
+** 模块 (文件)
+   #+begin_src python
+     from person_start import Person
+     from pymodule import name
+   #+end_src
+
+** 包(文件夹)
+     #+begin_src python
+     import 目录名.模块名
+     #+end_src
+  
+** 测试
+*** 预防性编程
+   #+begin_src python
+     try:
+      "nao".index('bao')
+     except Exception:
+      print "some error"
+   #+end_src
+*** 自定义报错
+    #+begin_src python
+    raise TypeError("类型错了啊")
+    #+end_src
+
+** 帮助
+   - help() 
+   - dir() 输出函数或类的简单说明
+** 环境管理
+   因为 *Python* 最大的问题是各版本不兼容，所以还要要管理版本问题。  
+*** pipenv 
+    #+begin_src sh
+      # 创建 Python 2/3 版本的项目
+      $ pipenv --two/--three
+
+      # 安装项目依赖，会在当前目录下生成 .venv 目录，包含 python 解释器
+      $ pipenv install
+      $ pipenv install --dev
+
+      # 弹出 Virtual Env 对应的脚本环境
+      $ pipenv shell
+
+      # 执行文件
+      $ pipenv run python
+
+      # 定位项目路径
+      $ pipenv --where
+
+      # 定位虚拟环境路径
+      $ pipenv --venv
+
+      # 定位 Python 解释器路径
+      $ pipenv --py
+    #+end_src
+** faq    
+*** 中文编码
+    #+begin_src py
+      # 在python2 中识别中文需要加上下面一句说明。
+      #-*-coding:utf-8-*-
+    #+end_src

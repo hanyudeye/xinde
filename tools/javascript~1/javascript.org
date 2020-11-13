@@ -1,0 +1,78 @@
+ #+TITLE: JavaScript 与 DOM简介
+#+TAGS[]: JavaScript 
+#+CATEGORIES[]: 技术
+#+DESCRIPTION: JavaScript 简介
+#+DATE: 2020-02-11T18:47:24+08:00
+#+draft: true
+
+*Javascript* 是一个脚本语言，是一个小伙子用了半个月开发出来的，作为给网页做效果用的，源码会存到本地，然后浏览器来执行，是客户端的脚本。
+因为现在的网页已经作为 App 来用了，要写大量的 javascript 代码，所以 javascript 也在更新，加入了模块等功能，这样能够作为服务器脚本了。
+
+# more
+javascript 要与网页或浏览器互动，那么浏览器就要提供互动的接口给 Javacript 解释器，这个接口是那些大厂商协商的标准,叫 DOM(文档对象模型)，通过这些接口来扩展网页的行为。
+
+javascript 添加到 HTML 的方法与 CSS 差不多，一种是用 标签引入外部文件，一种是在标签内直接输入 javascript 的代码。
+
+最简单运行 javascript 代码方式是在浏览器控制台直接输入
+
+* DOM (文档对象模型)
+** document  接口
+*** 属性
+    - cookie        设置或返回与当前文档有关的所有 cookie 
+    - domain        返回当前文档的域名                    
+    - lastModified  返回文档被最后修改的日期和时间        
+    - referrer      返回载入当前文档的文档的 URL          
+    - title         返回当前文档的标题                    
+    - URL           返回当前文档的 URL                    
+*** 方法
+    - getElementById()          返回对拥有指定 id 的第一个对象的引用                                        
+    - getElementsByName()       返回带有指定名称的对象集合 	                                               
+    - getElementsByTagName()    返回带有指定标签名的对象集合                                                
+    - getElementsByClassName()  返回带有指定 class 的对象集合                                               
+    - write()                   向文档写 HTML 表达式 或 JavaScript 代码                                     
+** 节点接口
+   因为 HTML 是按照 树的模型构造的，所以里面都是枝枝叉叉，操作的也是枝枝叉叉(节点)。
+*** 节点属性
+    - innerHTML  获取元素内容   
+    - nodeName   规定节点的名称 
+    - nodeValue  规定节点的值   
+
+*** 修改
+    #+begin_src js
+      var para=document.createElement("p");
+      var node=document.createTextNode("This is new.");
+      para.appendChild(node);
+    #+end_src
+    
+    - insertBefore 插到节点前面
+    - removeChild 删除子节点
+    - replaceChild 替换节点
+** 事件接口
+*** window 
+    - onload    页面结束加载之后触发(最慢，要所有图片都下载完)    
+    - onresize  当浏览器窗口被调整大小时触发                     
+*** 页面或图像
+    - onload 
+    - onUnload
+*** 表单
+    - onFocus
+    - onBlur 
+    - onChange
+    - onselect      在元素中文本被选中后触发            
+    - onsubmit     在提交表单时触发                   
+*** 键盘
+    - onkeydown   在用户按下按键时触发 
+    - onkeypress  在用户敲击按钮时触发 
+    - onkeyup     当用户释放按键时触发 
+*** 鼠标
+    - onclick
+    - ondblclick
+    - onmousedown
+    - onmouseup 
+    - onscroll
+    - onMouseOver 
+    - onMouseOut
+*** Media 
+    - onabort
+    - onplay
+
