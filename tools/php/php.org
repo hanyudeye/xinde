@@ -8,8 +8,19 @@
 WEB 服务器脚本语言
 
 # more
+* 语言参考
+** 预定义变量 (大写)   
+*** Superglobals
+**** $GLOBALS
+**** $_SERVER
+**** $_GET
+**** $_POST
+**** $_FILES
+**** $_COOKIE
+**** $_SESSION
+**** $_REQUEST
+**** $_ENV
 
-** 安装
 ** 表单变量
    表单变量的传递方式不同
 *** $_GET 
@@ -20,20 +31,20 @@ WEB 服务器脚本语言
     session_start(); 需要在 html 之前设置
 ** Mysql    
    #+begin_src php
-   <?php
-$servername = "localhost";
-$username = "username";
-$password = "password";
+     <?php
+     $servername = "localhost";
+     $username = "username";
+     $password = "password";
  
-// 创建连接
-$conn = new mysqli($servername, $username, $password);
+     // 创建连接
+     $conn = new mysqli($servername, $username, $password);
  
-// 检测连接
-if ($conn->connect_error) {
-    die("连接失败: " . $conn->connect_error);
-} 
-echo "连接成功";
-?>
+     // 检测连接
+     if ($conn->connect_error) {
+         die("连接失败: " . $conn->connect_error);
+     } 
+     echo "连接成功";
+     ?>
    #+end_src
 * 错误处理
 *** 打开错误提示
@@ -77,6 +88,21 @@ echo "连接成功";
     8. composer validate：检测 composer.json 文件是否有效；
     9. composer self-update：将 composer 工具更新到最新版本；
     10. composer create-project：基于 composer 创建一个新的项目；
+** 推荐的包
+*** roave/security-advisories 安全顾问
+    composer require roave/security-advisories:dev-master    
+*** vimeo/psalm 静态分析工具
+    #+begin_src sh
+      # Version 1 doesn't exist yet, but it will one day:
+      composer require --dev vimeo/psalm:^0
+
+      # Only do this once:
+      vendor/bin/psalm --init
+
+      # Do this as often as you need:
+      vendor/bin/psalm
+    #+end_src
+    
 ** 函数
 *** PHP date() 函数
   PHP date() 函数用于格式化时间/日期。
