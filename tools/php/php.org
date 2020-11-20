@@ -5,7 +5,7 @@
 #+DATE: 2020-02-13T19:01:28+08:00
 #+draft: true
 
-WEB 服务器脚本语言
+可以制作网页,如果使用数据库技术,可以制作动态网页.
 
 # more
 ** 语言参考
@@ -15,6 +15,29 @@ WEB 服务器脚本语言
 ***** $_SERVER
 ***** $_GET
 ***** $_POST
+      由于PHP默认只识别application/x-www.form-urlencoded标准的数据类型，
+      填入到$_POST数组中的数据是进行urldecode()解析的结果  !!!!!!!注意相反
+      对型如text/xml的内容无法解析为$_POST数组，故保留原型，
+      交给$GLOBALS['HTTP_RAW_POST_DATA']来接收。
+      注意，$HTTP_RAW_POST_DATA 对于 enctype="multipart/form-data"表单数据不可用
+
+
+      如果 $GLOBALS ["HTTP_RAW_POST_DATA"]取不到数据,
+      则 用file_get_contents('php://input')获取数据,php://input 不能用于 enctype="multipart/form-data"
+      或者打开 always_populate_raw_post_data = On
+
+
+     对于 text/xml 类型的提交
+     $xmlData = "
+     <xml><ToUserName><![CDATA[ad775b217]]></ToUserName >
+     <FromUserName><![CDATA[tWy3zC3xUgQMR5coXif5SA]]></FromUserName >
+     <CreateTime >1366181013< /CreateTime>
+     <MsgType><![CDATA[text]]></MsgType >
+     <Content><![CDATA[我的测试]]></Content >
+     <MsgId >5867702771251151243< /MsgId>
+     </xml >";
+      curl_setopt($ch, CURLOPT_HTTPHEADER,$header);
+      curl_setopt($ch,CURLOPT_POSTFIELDS, $xmlData);
 ***** $_FILES
 ***** $_COOKIE
      setcookie("user", "runoob", $expire);
@@ -59,6 +82,10 @@ WEB 服务器脚本语言
    - 显示编译好的模块 (-m)
    - 打开自带服务器监听端口 (-S addr:port)
    - 显示一些信息 ( --rf 函数，--rc 类名 ,--re 扩展名)
+*** 配置 php.info
+    打开调试
+    display_errors = On
+    display_startup_errors = On
 ** Apache2 选项
    - 对配置文件进行语法测试 (-t)
    - 测试后另外输出虚拟主机信息 (-t   -D DUMP_VHOSTS )
@@ -69,33 +96,42 @@ WEB 服务器脚本语言
      apachectl -t -D DUMP_MODULES
    #+end_src
 ** composer 
-   php 的包管理器
-   
-   常用命令
-    1. composer list：获取帮助信息；
-    2. composer init：以交互方式填写 composer.json 文件信息；
-    3. composer install：从当前目录读取 composer.json 文件，处理依赖关系，并安装到 vendor 目录下；
-    4. composer update：获取依赖的最新版本，升级 composer.lock 文件；
-    5. composer require：添加新的依赖包到 composer.json 文件中并执行更新；
-    6. composer search：在当前项目中搜索依赖包；
-    7. composer show：列举所有可用的资源包；
-    8. composer validate：检测 composer.json 文件是否有效；
-    9. composer self-update：将 composer 工具更新到最新版本；
-    10. composer create-project：基于 composer 创建一个新的项目；
-** 推荐的包
-*** roave/security-advisories 安全顾问
-    composer require roave/security-advisories:dev-master    
-*** vimeo/psalm 静态分析工具
-    #+begin_src sh
-      # Version 1 doesn't exist yet, but it will one day:
-      composer require --dev vimeo/psalm:^0
+*** 国内配置 
+    全局
+    composer config -g repo.packagist composer https://packagist.phpcomposer.com
+    
+    当前
+    composer config repo.packagist composer https://packagist.phpcomposer.com
+*** 常用命令 
+     1. composer list：获取帮助信息；
+     2. composer init：以交互方式填写 composer.json 文件信息；
+     3. composer install：从当前目录读取 composer.json 文件，处理依赖关系，并安装到 vendor 目录下；
+     4. composer update：获取依赖的最新版本，升级 composer.lock 文件；
+     5. composer require：添加新的依赖包到 composer.json 文件中并执行更新；
+     6. composer search：在当前项目中搜索依赖包；
+     7. composer show：列举所有可用的资源包；
+     8. composer validate：检测 composer.json 文件是否有效；
+     9. composer self-update：将 composer 工具更新到最新版本；
+     10. composer create-project：基于 composer 创建一个新的项目；
+     11. 
+*** 常用组建
+**** 请求相应
+     symfony/http-foundation
+**** 路由
+     nikic/fast-route
+**** roave/security-advisories 安全顾问
+     composer require roave/security-advisories:dev-master    
+**** vimeo/psalm 静态分析工具
+     #+begin_src sh
+       # Version 1 doesn't exist yet, but it will one day:
+       composer require --dev vimeo/psalm:^0
 
-      # Only do this once:
-      vendor/bin/psalm --init
+       # Only do this once:
+       vendor/bin/psalm --init
 
-      # Do this as often as you need:
-      vendor/bin/psalm
-    #+end_src
+       # Do this as often as you need:
+       vendor/bin/psalm
+     #+end_src
     
 ** 系统函数
 *** date

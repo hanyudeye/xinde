@@ -1,0 +1,627 @@
+#+TITLE: Emacs for developers - Building your own editor
+#+AUTHOR: Pierre Lecocq
+#+DESCRIPTION: Learn using Emacs as a developer
+#+KEYWORDS: emacs, developer
+#+STARTUP: showall
+
+* Emacs for developers - Building your own editor
+
+From this moment on, we will edit the configuration file.
+For now, we will put everything in a single *~/.emacs.d/init.el* file. Create it if it does not exist.
+
+#+BEGIN_SRC sh
+# Backup old configuration
+cp .emacs dot-emacs.old
+cp -R .emacs.d dot-emacs.d.old
+
+# Create new and empty configuration
+mkdir ~/.emacs.d
+touch ~/.emacs.d/init.el
+#+END_SRC
+
+** First basic configuration
+
+When you will have to change or add configuration, simply edit your *~/.emacs.d/init.el* file and add what you need.
+
+For example, here is a tweak that does nothing visually but is useful for other packages and the Emacs engine itself.
+It allows you to define your name and email. Emacs can use it to add author information to a file when asked.
+
+#+BEGIN_SRC lisp
+(setq user-full-name "Your full name")
+(setq user-mail-address "your@email.com")
+#+END_SRC
+
+After each configuration modification, two solutions:
+
+- the soft & clever way: execute *M-x eval-buffer*
+- the hard way: restart Emacs.
+
+** General basic configuration
+
+Now, let's move on to a basic set of more visual basic configurations.
+As you did earlier, simply add this to your configuration file:
+
+#+BEGIN_SRC lisp
+  ;; Ask "y" or "n" instead of "yes" or "no". Yes, laziness is great.
+  (fset 'yes-or-no-p 'y-or-n-p)
+
+  ;; Highlight corresponding parentheses when cursor is on one
+  (show-paren-mode t) 
+
+  ;; Highlight tabulations
+  (setq-default highlight-tabs t) 
+  
+  ;; Show trailing white spaces
+  (setq-default show-trailing-whitespace t)    
+
+  ;; Remove useless whitespace before saving a file
+  (add-hook 'before-save-hook 'whitespace-cleanup)
+  (add-hook 'before-save-hook (lambda() (delete-trailing-whitespace)))
+#+END_SRC
+
+** Backup files
+
+You may have notice that the files you edit are duplicated and renamed with a /~/ at the end.
+They are the backup files that Emacs creates for you with the auto-save feature.
+Sometimes it is great because you can recover a file in case of error, sometimes it is annoying because you can have so many of these files.
+
+It is up to you to keep it or disable it.
+Here is the configuration to disable it:
+
+#+BEGIN_SRC lisp
+;; Remove all backup files
+(setq make-backup-files nil)
+(setq backup-inhibited t)
+(setq auto-save-default nil)
+#+END_SRC
+
+An alternative method is to save these backups in a centralized directory:
+
+#+BEGIN_SRC lisp
+;; Save backup files in a dedicated directory
+(setq backup-directory-alist '(("." . "~/.saves")))
+#+END_SRC
+
+** Setting up the locales
+
+You may want to set up a specific locale for your files.
+This will do the trick:
+
+#+BEGIN_SRC lisp
+;; Set locale to UTF8
+(set-language-environment 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(setq locale-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+#+END_SRC
+
+** More configuration
+
+The best way to improve your configuration is to read the [[http://www.gnu.org/software/emacs/manual/][manual]] ...
+But you can also (this is the unofficial method) read others Emacs users' config files.
+There are so many people who share their configuration, comment their code, and distribute their modes!
+
+Here is mine: (https://github.com/pierre-lecocq/emacs.d)
+
+If you are a heavy VIM user, you can bring you VIM experience to Emacs by using [[https://github.com/syl20bnr/spacemacs][Spacemacs]]. You can also
+find [[https://github.com/emacs-tw/awesome-emacs#starter-kit][Starter Kit]] to start with Emacs.
+
+** Modes
+
+/Modes/ are Emacs /extensions/ that can be installed to extend the capabilities of Emacs. They will allow you to build a powerful tailored editor.
+
+There are 2 kinds of modes: major and minor.
+
+*** Major modes
+
+Major modes are modes that transform Emacs to a specialized software for editing a certain type of files (i.e c-mode) or managing special tasks (i.e reading emails, managing git repository, ...)
+
+Only one major mode can be used at a time.
+
+*** Minor modes
+
+Minor modes are additional modes that are added transparently to the major mode. They add features and behavior (i.e parentheses matching, syntax or spelling checkers, ...)
+
+Several minor modes can be used at any given time.
+
+** Package managers
+
+Emacs has brilliant package managers such as /package.el/ or /el-get/ that allows you to add and update modes really easily.
+
+*** Package.el
+
+/package.el/ is the built in package manager shipped by default with Emacs 24 or later.
+
+To list available packages, simply type this command:
+
+#+BEGIN_SRC lisp
+M-x package-list-packages
+#+END_SRC
+
+You will see a list of packages. Simply press ENTER on the name of one of them to install it.
+
+Additionally, you can manage the packages list by adding other sources to your configuration file:
+
+#+BEGIN_SRC lisp
+;; Add package sources
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.org/packages/")))
+#+END_SRC
+
+*** El-Get
+
+/[[https://github.com/dimitri/el-get][el-get]]/ is one of the most popular and easy-to-use package managers. It's the "/apt-get/" of Emacs.
+It is written by the great [[https://github.com/dimitri][Dimitri Fontaine]] and is based on recipe files that simply describe where the package is located and how to get/compile/install it for you.
+
+To use it, simply add this to your configuration file. It will download and set up /el-get/ for you:
+
+#+BEGIN_SRC lisp
+;; Set up el-get
+(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+(unless (require 'el-get nil 'noerror)
+  (with-current-buffer
+      (url-retrieve-synchronously
+       "https://raw.github.com/dimitri/el-get/master/el-get-install.el")
+    (let (el-get-master-branch)
+      (goto-char (point-max))
+      (eval-print-last-sexp))))
+#+END_SRC
+
+*** The generic method
+
+In order to leave you the choice of the package manager you want to use, here is a function that handles several package managers. For now, it covers /package.el/ and /el-get/.
+
+It also allows you to automatically install packages you want.
+
+In the following snippet, two sample packages are installed
+
+- /color-theme/ in order to allow us to  change colors themes
+- /autopair/ in order to close automatically parentheses, brackets and braces when you open it
+
+Simply add this code to your configuration file:
+
+#+BEGIN_SRC lisp
+;; Set up the package manager of choice. Supports "el-get" and "package.el"
+(setq pmoc "el-get")
+
+;; List of all wanted packages
+(setq
+ wanted-packages
+ '(
+   color-theme
+   autopair
+))
+
+;; Package manager and packages handler
+(defun install-wanted-packages ()
+  "Install wanted packages according to a specific package manager"
+  (interactive)
+  (cond
+   ;; package.el
+   ((string= pmoc "package.el")
+    (require 'package)
+    (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
+    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+    (add-to-list 'package-archives '("marmelade" . "http://marmalade-repo.org/packages/"))
+    (package-initialize)
+    (let ((need-refresh nil))
+      (mapc (lambda (package-name)
+          (unless (package-installed-p package-name)
+        (set 'need-refresh t))) wanted-packages)
+      (if need-refresh
+        (package-refresh-contents)))
+    (mapc (lambda (package-name)
+        (unless (package-installed-p package-name)
+          (package-install package-name))) wanted-packages)
+    )
+   ;; el-get
+   ((string= pmoc "el-get")
+    (add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+    (unless (require 'el-get nil 'noerror)
+      (with-current-buffer
+      (url-retrieve-synchronously
+       "https://raw.github.com/dimitri/el-get/master/el-get-install.el")
+    (let (el-get-master-branch)
+      (goto-char (point-max))
+      (eval-print-last-sexp))))
+    (el-get 'sync wanted-packages))
+   ;; fallback
+   (t (error "Unsupported package manager")))
+  )
+
+;; Install wanted packages
+(install-wanted-packages)
+#+END_SRC
+
+Note that some of the following package names could vary if you use /package.el/ or /el-get/.
+
+*** The modern and efficient way
+
+Some upper-level packages make package management easier and cleaner.
+
+For example, John Wiegley's =use-package= software is an elegant and efficient way to install and tidy your external packages configurations.
+
+Here is the way to use it:
+
+First, setup packages sources and install =use-package=
+
+#+BEGIN_SRC lisp
+(require 'package)
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.org/packages/")))
+(package-initialize)
+
+(unless (package-installed-p 'use-package)
+  (progn
+    (package-refresh-contents)
+    (package-install 'use-package)))
+
+(require 'use-package)
+#+END_SRC
+
+Then, for each package you want to install, simply add this to your configuration (replace /the-package-name/ by any package name):
+
+#+BEGIN_SRC LISP
+(use-package the-package-name
+         :ensure the-package-name
+         :init (progn
+                  ;; Do something after the package is initialized
+                ))
+#+END_SRC
+
+
+** Some useful packages
+
+As a developer, you will need some packages that will help you to work, increase your productivity and enhance your comfort while coding.
+Please note that even if I am a Ruby/shell/Lisp/web/PHP developer, some packages are compatible and useful for every kind of development. Therefore, the base packages are listed here but some specific packages that might be useful for your work may not be listed here. It is up to you to adapt the list according to your needs!
+
+Tip: After adding packages, restart Emacs in order to let your package manager download and install it properly.
+
+*** Auto complete
+
+Auto completion is a must-have feature in the development world.
+This package simply displays a popup at the cursor position with the available completions.
+
+To install it, add =auto-complete= to your packages list.
+
+[[http://www.emacswiki.org/emacs/AutoComplete][Read more]]
+
+[[../images/mode-autocomplete.gif]]
+
+BUT there is a more "modern" mode for auto-completion: /company-mode/. I switched to it in order to try and play with it. It seems very efficient and useful.
+
+To install it, add =company-mode= to your packages list.
+
+[[http://company-mode.github.io/][Read more about company-mode]]
+
+*** Autopair
+
+When you open a quote/parenthese/bracket/curly bracket, this mode automatically adds the closed one and bring your cursor between the two.
+Very useful to avoid syntax errors, for example.
+
+To install it, add =autopair= to your packages list.
+
+[[https://github.com/capitaomorte/autopair][Read more]]
+
+[[../images/mode-autopair.gif]]
+
+*** Buffer move
+
+This mode allows you to re-organize and move the buffers from a window to another.
+Useful if you want to switch buffer places in order to have your debugging buffer on the right side, for example.
+
+To install it, add =buffer-move= to your packages list.
+
+[[http://www.emacswiki.org/cgi-bin/wiki/buffer-move.el][Read more]]
+
+[[../images/mode-buffermove.gif]]
+
+*** Flycheck
+
+This mode check the syntax of a buffer. It could be used for checking code syntax or typos when writing any kind of text.
+
+To install it, add =flycheck= to your packages list.
+
+[[http://flycheck.readthedocs.org/en/latest/][Read more]]
+
+*** Highlight symbol
+
+This mode highlights all symbols that matches a pattern in your buffer
+
+To install it, add =highlight-symbol= to your packages list.
+
+[[http://www.emacswiki.org/emacs/HighlightSymbol][Read more]]
+
+*** Ido
+
+Ido is a must have mode to navigate, find stuffs, and do things interactively.
+It is for comfort, but is indispensable to go fast.
+
+Many extensions of this mode are available, therefore read and chose what you want.
+
+I personally use two of them: /vertical/ and /hack/.
+
+To install it, add =ido-hacks= and =ido-vertical-mode= to your packages list.
+
+[[http://www.emacswiki.org/emacs/InteractivelyDoThings][Read more]]
+
+[[../images/mode-ido.gif]]
+
+*** JS3
+
+This mode is an enhanced mode for editing Javascript files. I do not use it a lot, but it is useful for some javascript-like or NPM files.
+
+To install it, add =js3-mode= to your packages list.
+
+[[http://www.emacswiki.org/emacs/Js2Mode][Read more]]
+
+*** Magit
+
+Magit is a very powerful and elegant mode for interacting with your git repository.
+In order to understand how powerful it is, simply watch this amazing [[http://vimeo.com/2871241][video]].
+
+Once installed, always keep the [[http://daemianmack.com/magit-cheatsheet.html][magit cheatsheet]] around.
+
+To install it, add =magit= to your packages list.
+
+*** Git time machine
+
+In addition to Magit, there is an interesting package that allows you to travel in time accross the different versions of a file stored in Git.
+
+Here is a demo and its repository: [[https://github.com/pidu/git-timemachine][git-timemachine on github]].
+
+To install it, add =git-timemachine= to your packages list.
+
+[[https://github.com/magit/magit][Read more]]
+
+*** Multiple cursors
+
+This mode is great and super powerful. Instead of explaining what it is, I'll point you to this amazing [[http://emacsrocks.com/e13.html][video]] by Magnars.
+
+To install it, add =multiple-cursors= to your packages list.
+
+[[https://github.com/magnars/multiple-cursors.el][Read more]]
+
+*** PHP mode
+
+A basic but stable mode for editing PHP files, whatever you think about PHP ...
+
+To install it, add =php-mode= to your packages list.
+
+[[http://php-mode.sourceforge.net/][Read more]]
+
+*** Rainbow mode
+
+A toyish but indispensable mode to add colors to your CSS files when using properties like "color", "background-color".
+It is great because it understands every way to write a color (hex, name, ...) and gives you a preview of the color itself.
+
+To install it, add =rainbow-mode= to your packages list.
+
+[[http://julien.danjou.info/projects/emacs-packages][Read more]]
+
+*** RHTML mode
+
+This mode is useful for editing .rhtml files. You can also use it to edit any kind of ruby templates (i.e .erb).
+
+To install it, add =rhtml-mode= to your packages list.
+
+[[https://github.com/eschulte/rhtml][Read more]]
+
+*** Ruby mode
+
+Do I really need to explain ?
+
+Ruby mode is already installed in Emacs and is very stable.
+
+[[http://www.emacswiki.org/emacs/RubyMode][Read more]]
+
+*** Switch window
+
+This mode is cool when you work with a lot of windows opened.
+If you want to switch to another one, you have to press *C-x o* until you reach the wanted window.
+With this mode, when you press *C-x o*, big numbers replace your opened windows. Simply type the corresponding number to reach the wanted window.
+
+To install it, add =switch-window= to your packages list.
+
+Then do not forget to override the default configuration by adding this to your configuration:
+
+#+BEGIN_SRC lisp
+(global-set-key (kbd "C-x o") 'switch-window)
+#+END_SRC
+
+[[https://github.com/dimitri/switch-window][Read more]]
+
+[[../images/mode-switchwindow.gif]]
+
+*** Visual regexp
+
+This mode highlights the text that matches the regexp that you are writing in the mini buffer.
+
+To install it, add =visual-regexp= to your packages list.
+
+[[https://github.com/benma/visual-regexp.el][Read more]]
+
+*** YAML mode
+
+Allows you to edit YAML files
+
+To install it, add =yaml-mode= to your packages list.
+
+[[http://www.emacswiki.org/emacs/YamlMode][Read more]]
+
+*** Yasnippet
+
+A mode that allows you to write code faster if you are lazy.
+It is very easy to create your own snippets and use it whatever the file you are editing (code, non-code, emails, ...)
+
+I personally do not use it, but people coming from Textmate/Sublime would love it.
+
+To install it, add =yasnippet= to your packages list.
+
+[[http://www.emacswiki.org/emacs/Yasnippet][Read more]]
+
+*** Paredit
+
+Paredit is a really cool mode to "keep parentheses balanced" and navigating in the S-expressions. Useful and indispensable if you write Lisp code, for example.
+
+To install it, add =paredit= to your packages list.
+
+[[http://www.emacswiki.org/emacs/ParEdit][Read more]]
+
+** Code navigation
+
+Navigate through source code is an indispensable feature in code editors. Some other editors are focused on this (like Sublime) but the problem is that they do not leave you the choice of weapons (like every other features).
+
+Emacs, as you noticed (yes, you did) can integrate any external tool or include a large variety of internal tools to make it more efficient. Code navigation is not an exception.
+
+There are a lot of packages that exist to navigate through code, with different methodologies and advantages:
+
+- [[http://www.emacswiki.org/emacs/EmacsTags][TAGS]] (built in. No installation required)
+- [[https://github.com/bbatsov/projectile][Projectile]] (install it by adding =projectile= to your packages list)
+- [[https://github.com/emacs-helm/helm][Helm]] (install it by adding =helm= to your packages list)
+- [[http://cedet.sourceforge.net/][Emacs CEDET]] (install it by adding =cedet= to your packages list)
+- ...
+
+(Note: use once at a time! You do not need to install them all.)
+
+After using /Projectile/ for a certain period of time, I gave /Helm/ a shot but finally got back to the simplicity and the efficiency of the /TAGS/ system.
+Nevertheless, /Projectile/ and /Helm/ are really powerful and useful. You really should look at them.
+
+For now, I will cover the basics of /TAGS/ since it is a standard (used by other software) and it is built-in (so if you use another Emacs without your config, you still know how to surf in the code). And other useful tricks will be shown here.
+
+*** Tags basics
+
+Basically, the TAGS rely on an index file of the content of your code source.
+In the root folder of a project, you must generate your index.
+Several methods for this, but here is one command that generates the file:
+
+#+begin_src sh
+cd /path/to/your/project
+find . -regex ".*\.\(c\|h\|rb\|py\|php\|js\|sh\|bash\)" -print | xargs etags -a
+#+end_src
+
+You now should see a "TAGS" file. If needed, exclude this file from your git/svn/whatever repository/.
+
+You are now ready to surf!
+
+Now, here are the main commands to use them:
+
+- *M-.* is the equivalent of *M-x find-tag*: find a tag
+- *M-x find-tag-other-window*: find a tag, but in another window
+- *M-x tags-search*: find a tag thanks to a regexp
+- *M-x tags-query-replace*: replace a tag in all the indexed files
+- *M-x tags-apropos*: list all tags that match a regexp
+- *M-x list-tags*: list all tags in a file
+
+*** List functions or methods
+
+In order to list and jump easily between the functions or methods of the current file, here is a little trick:
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "C-S-f") 'imenu) ;; use iMenu
+#+end_src
+
+After pressing Ctrl-Shift-f (replace it by whatever you want!), a menu with all the available resources appears in the minibuffer.
+Select the resource you want (let's say /All.methods/ if you are editing some code) and you will be able to search and jump to a method definition directly.
+
+*** Files navigation (a.k.a fuzzy matching) with TAGS and ido
+
+In order to find and jump easily to a file in your project thanks to TAGS, you have to add a little function to your configuration.
+For this you should have installed the =ido-mode= described above.
+
+#+begin_src emacs-lisp
+(defun ido-find-file-in-tag-files ()
+  (interactive)
+  (save-excursion
+    (let ((enable-recursive-minibuffers t))
+      (visit-tags-table-buffer))
+    (find-file
+     (expand-file-name
+      (ido-completing-read
+       "Project file: " (tags-table-files) nil t)))))
+
+(global-set-key (kbd "C-S-x C-S-f") 'ido-find-file-in-tag-files)
+#+end_src
+
+Now, in your project folder and once you generated your TAGS file, you can press *C-S-x C-S-f* to find files through the whole tree of directories just by typing a pattern.
+
+[[../images/fuzzy.gif]]
+
+*** RGrep
+
+/rgrep/ is a great tool to use in addition of the TAGS. It is a Unix tool that make /grep/ queries recursively. In Emacs, it will show you a new buffer with all the results of the command. To use it, simply type:
+
+*M-x rgrep RET yoursearchterm RET*
+
+Once fired, you can switch to the newly created buffer, parse the results and jump to the wanted files very quickly.
+
+What is cool is that it is integrated in the editor, just beside your code --  it does not require you to switch to a shell and then copy-paste the file you want.
+
+[[../images/rgrep.gif]]
+
+** Setting a color theme
+
+Now, we are talking about something very touchy and that can be a long quest ...
+
+A color theme generally includes colors for:
+
+- background
+- syntax color (for code)
+- specific modes colors (gnus, dired, git, ...)
+
+There are several ways to install a color theme, but first, we will use the Emacs' internal color-theme library.
+
+Let's try to switch between different themes:
+
+- Type *M-x load-theme RET tango-dark*
+- Then type *M-x load-theme RET wombat*
+- Finally type *M-x load-theme RET whiteboard*
+
+There is no secret or perfect color theme. There are so many of theme and each user has its preferences in term of colors.
+
+#+CAPTION: color themes
+[[../images/colors.gif]]
+
+In order to choose yours, try the default ones, Google a lot or why not considering making your own?
+
+Tip: for an effective choice, here are two showcases:
+
+- [[http://pawelbx.github.io/emacs-theme-gallery/]]
+- http://gnuemacscolorthemetest.googlecode.com/svn/html/index-el.html
+
+
+*** Font settings
+
+After setting up your theme, there are some other tweaks that are "color theme related".
+Fonts are something very important depending on your system, your screen size, your current task in Emacs, ... etc
+
+If you want to change the font directly from your current Emacs instance, simply type *M-x set-frame-font RET*.
+And if you want to see all supported fonts, type *TAB* twice. It will show you a list.
+
+The global and easy way to do it is to add a line to your configuration:
+
+#+BEGIN_SRC lisp
+(set-default-font "DejaVu Sans Mono-10")
+#+END_SRC
+
+But to be safe, you'd better add this into your X resource settings file (~/.Xresources):
+
+#+BEGIN_SRC lisp
+emacs.font: DejaVu Sans Mono-10
+#+END_SRC
+
+Of course, it is possible to set a different font for any system or mode you want. It is cool since you can use different font (size) if you are on Linux or mac OR if you write a book, write code, read your emails, ... etc.
+As an exercise, I'll let you search how to do this kind of stuff in Emacs Lisp if you need it.
+
+If you want more about font settings and especially about font names, please see the [[http://www.emacswiki.org/emacs/SetFonts][Emacs wiki page]] or the [[http://www.gnu.org/software/emacs/manual/html_node/emacs/Fonts.html][manual]].
+
+One last point: sometimes you want to change the font size of your current buffer. To do this, simply type:
+
+- *M-x text-scale-increase* or *C-x C-+*
+- *M-x text-scale-decrease* or *C-x C--* (Ctrl x, Ctrl dash)
+
+Really handy if you show your screen through an external display or you want to focus on a specific part of a file.

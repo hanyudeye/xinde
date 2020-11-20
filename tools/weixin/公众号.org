@@ -5,19 +5,6 @@ AppSecret:公众应⽤密码，需妥善保存
 access_token:调⽤微信接⼝所需的凭证，每个接⼝调用都需要，可通过AppID和AppSecret获 取
 URL白名单:增加获取accesstoken的安全性，当密码泄露时，通过白名单过滤⾮法请求（官方说明：https://mp.weixin.qq.com/cgi-bin/announce?action=getannouncement&key=1495617578&version=1&lang=zhCN&platform=2）
 
-* 配置
-/sudo:root@localhost:/var/www/html/wxtest.php
-
-<?php
-echo $_GET["echostr"];
-
-https://ngrok.com/ 
-
-php.info 设置
-
-display_errors = On
-display_startup_errors = On
-
 * 微信网页授权
 如果用户在微信客户端中访问第三方网页，公众号可以通过微信网页授权机制，来获取用户基本信息，进而实现业务逻辑。
 
@@ -1298,11 +1285,43 @@ http://demo.open.weixin.qq.com/jssdk/sample.zip
 **** 获取access_token
      https请求方式: GET https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
 
+     返回类型是 json 格式, 所以要进行转化 json_decode
      
+    正确 {"access_token":"ACCESS_TOKEN","expires_in":7200}
+    错误 {"errcode":40013,"errmsg":"invalid appid"}
+    
 **** 获取微信服务器IP地址	
+     http请求方式: GET https://api.weixin.qq.com/cgi-bin/get_api_domain_ip?access_token=ACCESS_TOKEN
+     
+     {    "ip_list": [        "127.0.0.1",         "127.0.0.2",         "101.226.103.0/25"    ]}
 *** 接收消息
+    需要在消息管理中设置消息接收 URL,微信会 POST 消息内容 
 **** 验证消息真实性		 
 **** 接收普通消息		 
+***** 文本消息
+      
+ #+begin_src xml
+ <xml>
+   <ToUserName><![CDATA[toUser]]></ToUserName>
+   <FromUserName><![CDATA[fromUser]]></FromUserName>
+   <CreateTime>1348831860</CreateTime>
+   <MsgType><![CDATA[text]]></MsgType>
+   <Content><![CDATA[this is a test]]></Content>
+   <MsgId>1234567890123456</MsgId>
+ </xml>
+ #+end_src
+***** 图片消息
+      #+begin_src xml
+<xml>
+  <ToUserName><![CDATA[toUser]]></ToUserName>
+  <FromUserName><![CDATA[fromUser]]></FromUserName>
+  <CreateTime>1348831860</CreateTime>
+  <MsgType><![CDATA[image]]></MsgType>
+  <PicUrl><![CDATA[this is a url]]></PicUrl>
+  <MediaId><![CDATA[media_id]]></MediaId>
+  <MsgId>1234567890123456</MsgId>
+</xml>
+#+end_src
 **** 接收事件推送		 
 **** 接收语音识别结果		
 *** 发送消息
