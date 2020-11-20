@@ -8,45 +8,21 @@
 WEB 服务器脚本语言
 
 # more
-* 语言参考
-** 预定义变量 (大写)   
-*** Superglobals
-**** $GLOBALS
-**** $_SERVER
-**** $_GET
-**** $_POST
-**** $_FILES
-**** $_COOKIE
-**** $_SESSION
-**** $_REQUEST
-**** $_ENV
-
-** 表单变量
-   表单变量的传递方式不同
-*** $_GET 
-*** $_POST
-*** $_COOKIE
-    setcookie("user", "runoob", $expire);
-*** $_SESSION
-    session_start(); 需要在 html 之前设置
-** Mysql    
-   #+begin_src php
-     <?php
-     $servername = "localhost";
-     $username = "username";
-     $password = "password";
- 
-     // 创建连接
-     $conn = new mysqli($servername, $username, $password);
- 
-     // 检测连接
-     if ($conn->connect_error) {
-         die("连接失败: " . $conn->connect_error);
-     } 
-     echo "连接成功";
-     ?>
-   #+end_src
-* 错误处理
+** 语言参考
+*** 预定义变量 (大写)   
+**** Superglobals
+***** $GLOBALS
+***** $_SERVER
+***** $_GET
+***** $_POST
+***** $_FILES
+***** $_COOKIE
+     setcookie("user", "runoob", $expire);
+***** $_SESSION
+      session_start(); 需要在 html 之前设置
+***** $_REQUEST
+***** $_ENV
+** 错误处理
 *** 打开错误提示
     #+begin_src php
       ini_set("display_errors","On");
@@ -58,6 +34,24 @@ WEB 服务器脚本语言
       try {}
       catch (Throwable $t) {}
       catch(Error $e){}
+    #+end_src
+** 数据库
+*** mysql    
+    #+begin_src php
+      <?php
+      $servername = "localhost";
+      $username = "username";
+      $password = "password";
+ 
+      // 创建连接
+      $conn = new mysqli($servername, $username, $password);
+ 
+      // 检测连接
+      if ($conn->connect_error) {
+          die("连接失败: " . $conn->connect_error);
+      } 
+      echo "连接成功";
+      ?>
     #+end_src
 ** 功能选项
    - 显示 PHP information and configuration (  -i )
@@ -103,98 +97,307 @@ WEB 服务器脚本语言
       vendor/bin/psalm
     #+end_src
     
-** 函数
-*** PHP date() 函数
-  PHP date() 函数用于格式化时间/日期。
+** 系统函数
+*** date
+    PHP date() 函数用于格式化时间/日期。
 **** PHP date() 函数
-  PHP date() 函数可把时间戳格式化为可读性更好的日期和时间。
-  时间戳是一个字符序列，表示一定的事件发生的日期/时间。
+     PHP date() 函数可把时间戳格式化为可读性更好的日期和时间。
+     时间戳是一个字符序列，表示一定的事件发生的日期/时间。
 
 ***** 语法
 
-  #+BEGIN_EXAMPLE
-      string date ( string $format [, int $timestamp ] )
-  #+END_EXAMPLE
+      #+BEGIN_EXAMPLE
+          string date ( string $format [, int $timestamp ] )
+      #+END_EXAMPLE
 
-  | 参数        | 描述                                         |
-  |-------------+----------------------------------------------|
-  | format      | 必需。规定时间戳的格式。                     |
-  | timestamp   | 可选。规定时间戳。默认是当前的日期和时间。   |
+      | 参数        | 描述                                         |
+      |-------------+----------------------------------------------|
+      | format      | 必需。规定时间戳的格式。                     |
+      | timestamp   | 可选。规定时间戳。默认是当前的日期和时间。   |
 **** PHP Date() - 格式化日期
-  date() 函数的第一个必需参数 /format/ 规定了如何格式化日期/时间。
+     date() 函数的第一个必需参数 /format/ 规定了如何格式化日期/时间。
 
-  这里列出了一些可用的字符：
+     这里列出了一些可用的字符：
 
-  -  d - 代表月中的天 (01 - 31)
-  -  m - 代表月 (01 - 12)
-  -  Y - 代表年 (四位数)
+     -  d - 代表月中的天 (01 - 31)
+     -  m - 代表月 (01 - 12)
+     -  Y - 代表年 (四位数)
 
-  如需了解 /format/ 参数中可用的所有字符列表，请查阅我们的 PHP Date
-  参考手册，[[file:func-date-date.html][date() 函数]]。
+     如需了解 /format/ 参数中可用的所有字符列表，请查阅我们的 PHP Date
+     参考手册，[[file:func-date-date.html][date() 函数]]。
 
-  可以在字母之间插入其他字符，比如 "/"、"." 或者
-  "-"，这样就可以增加附加格式了：
+     可以在字母之间插入其他字符，比如 "/"、"." 或者
+     "-"，这样就可以增加附加格式了：
 
-  #+BEGIN_EXAMPLE
-      <?php
-      echo date("Y/m/d") . "<br>";
-      echo date("Y.m.d") . "<br>";
-      echo date("Y-m-d");
-      ?>
-  #+END_EXAMPLE
+     #+BEGIN_EXAMPLE
+         <?php
+         echo date("Y/m/d") . "<br>";
+         echo date("Y.m.d") . "<br>";
+         echo date("Y-m-d");
+         ?>
+     #+END_EXAMPLE
 
-  上面代码的输出如下所示：
+     上面代码的输出如下所示：
 
-  #+BEGIN_EXAMPLE
-      2016/10/21
-      2016.10.21
-      2016-10-21
-  #+END_EXAMPLE
+     #+BEGIN_EXAMPLE
+         2016/10/21
+         2016.10.21
+         2016-10-21
+     #+END_EXAMPLE
 
-  | =format= 字符          | 说明                                                                                                                                  | 返回值例子                                                                                                               |
-  |------------------------+---------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------|
-  | /日/                   | ---                                                                                                                                   | ---                                                                                                                      |
-  | /d/                    | 月份中的第几天，有前导零的 2 位数字                                                                                                   | /01/ 到 /31/                                                                                                             |
-  | /D/                    | 星期中的第几天，文本表示，3 个字母                                                                                                    | /Mon/ 到 /Sun/                                                                                                           |
-  | /j/                    | 月份中的第几天，没有前导零                                                                                                            | /1/ 到 /31/                                                                                                              |
-  | /l/（"L"的小写字母）   | 星期几，完整的文本格式                                                                                                                | /Sunday/ 到 /Saturday/                                                                                                   |
-  | /N/                    | ISO-8601 格式数字表示的星期中的第几天（PHP 5.1.0 新加）                                                                               | /1/（表示星期一）到 /7/（表示星期天）                                                                                    |
-  | /S/                    | 每月天数后面的英文后缀，2 个字符                                                                                                      | /st/，/nd/，/rd/ 或者 /th/。可以和 /j/ 一起用                                                                            |
-  | /w/                    | 星期中的第几天，数字表示                                                                                                              | /0/（表示星期天）到 /6/（表示星期六）                                                                                    |
-  | /z/                    | 年份中的第几天                                                                                                                        | /0/ 到 /365/                                                                                                             |
-  | /星期/                 | ---                                                                                                                                   | ---                                                                                                                      |
-  | /W/                    | ISO-8601 格式年份中的第几周，每周从星期一开始（PHP 4.1.0 新加的）                                                                     | 例如：/42/（当年的第 42 周）                                                                                             |
-  | /月/                   | ---                                                                                                                                   | ---                                                                                                                      |
-  | /F/                    | 月份，完整的文本格式，例如 January 或者 March                                                                                         | /January/ 到 /December/                                                                                                  |
-  | /m/                    | 数字表示的月份，有前导零                                                                                                              | /01/ 到 /12/                                                                                                             |
-  | /M/                    | 三个字母缩写表示的月份                                                                                                                | /Jan/ 到 /Dec/                                                                                                           |
-  | /n/                    | 数字表示的月份，没有前导零                                                                                                            | /1/ 到 /12/                                                                                                              |
-  | /t/                    | 给定月份所应有的天数                                                                                                                  | /28/ 到 /31/                                                                                                             |
-  | /年/                   | ---                                                                                                                                   | ---                                                                                                                      |
-  | /L/                    | 是否为闰年                                                                                                                            | 如果是闰年为 /1/，否则为 /0/                                                                                             |
-  | /o/                    | ISO-8601 格式年份数字。这和 /Y/ 的值相同，只除了如果 ISO 的星期数（/W/）属于前一年或下一年，则用那一年。（PHP 5.1.0 新加）            | Examples: /1999/ or /2003/                                                                                               |
-  | /Y/                    | 4 位数字完整表示的年份                                                                                                                | 例如：/1999/ 或 /2003/                                                                                                   |
-  | /y/                    | 2 位数字表示的年份                                                                                                                    | 例如：/99/ 或 /03/                                                                                                       |
-  | /时间/                 | ---                                                                                                                                   | ---                                                                                                                      |
-  | /a/                    | 小写的上午和下午值                                                                                                                    | /am/ 或 /pm/                                                                                                             |
-  | /A/                    | 大写的上午和下午值                                                                                                                    | /AM/ 或 /PM/                                                                                                             |
-  | /B/                    | Swatch Internet 标准时                                                                                                                | /000/ 到 /999/                                                                                                           |
-  | /g/                    | 小时，12 小时格式，没有前导零                                                                                                         | /1/ 到 /12/                                                                                                              |
-  | /G/                    | 小时，24 小时格式，没有前导零                                                                                                         | /0/ 到 /23/                                                                                                              |
-  | /h/                    | 小时，12 小时格式，有前导零                                                                                                           | /01/ 到 /12/                                                                                                             |
-  | /H/                    | 小时，24 小时格式，有前导零                                                                                                           | /00/ 到 /23/                                                                                                             |
-  | /i/                    | 有前导零的分钟数                                                                                                                      | /00/ 到 /59/>                                                                                                            |
-  | /s/                    | 秒数，有前导零                                                                                                                        | /00/ 到 /59/>                                                                                                            |
-  | /u/                    | 毫秒 （PHP 5.2.2 新加）。需要注意的是 *date()* 函数总是返回 /000000/ 因为它只接受 integer 参数， 而 DateTime::format() 才支持毫秒。   | 示例: /654321/                                                                                                           |
-  | /时区/                 | ---                                                                                                                                   | ---                                                                                                                      |
-  | /e/                    | 时区标识（PHP 5.1.0 新加）                                                                                                            | 例如：/UTC/，/GMT/，/Atlantic/Azores/                                                                                    |
-  | /I/                    | 是否为夏令时                                                                                                                          | 如果是夏令时为 /1/，否则为 /0/                                                                                           |
-  | /O/                    | 与格林威治时间相差的小时数                                                                                                            | 例如：/+0200/                                                                                                            |
-  | /P/                    | 与格林威治时间（GMT）的差别，小时和分钟之间有冒号分隔（PHP 5.1.3 新加）                                                               | 例如：/+02:00/                                                                                                           |
-  | /T/                    | 本机所在的时区                                                                                                                        | 例如：/EST/，/MDT/（【译者注】在 Windows 下为完整文本格式，例如"Eastern Standard Time"，中文版会显示"中国标准时间"）。   |
-  | /Z/                    | 时差偏移量的秒数。UTC 西边的时区偏移量总是负的，UTC 东边的时区偏移量总是正的。                                                        | /-43200/ 到 /43200/                                                                                                      |
-  | /完整的日期／时间/     | ---                                                                                                                                   | ---                                                                                                                      |
-  | /c/                    | ISO 8601 格式的日期（PHP 5 新加）                                                                                                     | 2004-02-12T15:19:21+00:00                                                                                                |
-  | /r/                    | RFC 822 格式的日期                                                                                                                    | 例如：/Thu, 21 Dec 2000 16:01:07 +0200/                                                                                  |
-  | /U/                    | 从 Unix 纪元（January 1 1970 00:00:00 GMT）开始至今的秒数                                                                             | 参见 time()                                                                                                              |
-  #+CAPTION: *格式字串可以识别以下 =format= 参数的字符串*
+     | =format= 字符          | 说明                                                                                                                                  | 返回值例子                                                                                                               |
+     |------------------------+---------------------------------------------------------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------|
+     | /日/                   | ---                                                                                                                                   | ---                                                                                                                      |
+     | /d/                    | 月份中的第几天，有前导零的 2 位数字                                                                                                   | /01/ 到 /31/                                                                                                             |
+     | /D/                    | 星期中的第几天，文本表示，3 个字母                                                                                                    | /Mon/ 到 /Sun/                                                                                                           |
+     | /j/                    | 月份中的第几天，没有前导零                                                                                                            | /1/ 到 /31/                                                                                                              |
+     | /l/（"L"的小写字母）   | 星期几，完整的文本格式                                                                                                                | /Sunday/ 到 /Saturday/                                                                                                   |
+     | /N/                    | ISO-8601 格式数字表示的星期中的第几天（PHP 5.1.0 新加）                                                                               | /1/（表示星期一）到 /7/（表示星期天）                                                                                    |
+     | /S/                    | 每月天数后面的英文后缀，2 个字符                                                                                                      | /st/，/nd/，/rd/ 或者 /th/。可以和 /j/ 一起用                                                                            |
+     | /w/                    | 星期中的第几天，数字表示                                                                                                              | /0/（表示星期天）到 /6/（表示星期六）                                                                                    |
+     | /z/                    | 年份中的第几天                                                                                                                        | /0/ 到 /365/                                                                                                             |
+     | /星期/                 | ---                                                                                                                                   | ---                                                                                                                      |
+     | /W/                    | ISO-8601 格式年份中的第几周，每周从星期一开始（PHP 4.1.0 新加的）                                                                     | 例如：/42/（当年的第 42 周）                                                                                             |
+     | /月/                   | ---                                                                                                                                   | ---                                                                                                                      |
+     | /F/                    | 月份，完整的文本格式，例如 January 或者 March                                                                                         | /January/ 到 /December/                                                                                                  |
+     | /m/                    | 数字表示的月份，有前导零                                                                                                              | /01/ 到 /12/                                                                                                             |
+     | /M/                    | 三个字母缩写表示的月份                                                                                                                | /Jan/ 到 /Dec/                                                                                                           |
+     | /n/                    | 数字表示的月份，没有前导零                                                                                                            | /1/ 到 /12/                                                                                                              |
+     | /t/                    | 给定月份所应有的天数                                                                                                                  | /28/ 到 /31/                                                                                                             |
+     | /年/                   | ---                                                                                                                                   | ---                                                                                                                      |
+     | /L/                    | 是否为闰年                                                                                                                            | 如果是闰年为 /1/，否则为 /0/                                                                                             |
+     | /o/                    | ISO-8601 格式年份数字。这和 /Y/ 的值相同，只除了如果 ISO 的星期数（/W/）属于前一年或下一年，则用那一年。（PHP 5.1.0 新加）            | Examples: /1999/ or /2003/                                                                                               |
+     | /Y/                    | 4 位数字完整表示的年份                                                                                                                | 例如：/1999/ 或 /2003/                                                                                                   |
+     | /y/                    | 2 位数字表示的年份                                                                                                                    | 例如：/99/ 或 /03/                                                                                                       |
+     | /时间/                 | ---                                                                                                                                   | ---                                                                                                                      |
+     | /a/                    | 小写的上午和下午值                                                                                                                    | /am/ 或 /pm/                                                                                                             |
+     | /A/                    | 大写的上午和下午值                                                                                                                    | /AM/ 或 /PM/                                                                                                             |
+     | /B/                    | Swatch Internet 标准时                                                                                                                | /000/ 到 /999/                                                                                                           |
+     | /g/                    | 小时，12 小时格式，没有前导零                                                                                                         | /1/ 到 /12/                                                                                                              |
+     | /G/                    | 小时，24 小时格式，没有前导零                                                                                                         | /0/ 到 /23/                                                                                                              |
+     | /h/                    | 小时，12 小时格式，有前导零                                                                                                           | /01/ 到 /12/                                                                                                             |
+     | /H/                    | 小时，24 小时格式，有前导零                                                                                                           | /00/ 到 /23/                                                                                                             |
+     | /i/                    | 有前导零的分钟数                                                                                                                      | /00/ 到 /59/>                                                                                                            |
+     | /s/                    | 秒数，有前导零                                                                                                                        | /00/ 到 /59/>                                                                                                            |
+     | /u/                    | 毫秒 （PHP 5.2.2 新加）。需要注意的是 *date()* 函数总是返回 /000000/ 因为它只接受 integer 参数， 而 DateTime::format() 才支持毫秒。   | 示例: /654321/                                                                                                           |
+     | /时区/                 | ---                                                                                                                                   | ---                                                                                                                      |
+     | /e/                    | 时区标识（PHP 5.1.0 新加）                                                                                                            | 例如：/UTC/，/GMT/，/Atlantic/Azores/                                                                                    |
+     | /I/                    | 是否为夏令时                                                                                                                          | 如果是夏令时为 /1/，否则为 /0/                                                                                           |
+     | /O/                    | 与格林威治时间相差的小时数                                                                                                            | 例如：/+0200/                                                                                                            |
+     | /P/                    | 与格林威治时间（GMT）的差别，小时和分钟之间有冒号分隔（PHP 5.1.3 新加）                                                               | 例如：/+02:00/                                                                                                           |
+     | /T/                    | 本机所在的时区                                                                                                                        | 例如：/EST/，/MDT/（【译者注】在 Windows 下为完整文本格式，例如"Eastern Standard Time"，中文版会显示"中国标准时间"）。   |
+     | /Z/                    | 时差偏移量的秒数。UTC 西边的时区偏移量总是负的，UTC 东边的时区偏移量总是正的。                                                        | /-43200/ 到 /43200/                                                                                                      |
+     | /完整的日期／时间/     | ---                                                                                                                                   | ---                                                                                                                      |
+     | /c/                    | ISO 8601 格式的日期（PHP 5 新加）                                                                                                     | 2004-02-12T15:19:21+00:00                                                                                                |
+     | /r/                    | RFC 822 格式的日期                                                                                                                    | 例如：/Thu, 21 Dec 2000 16:01:07 +0200/                                                                                  |
+     | /U/                    | 从 Unix 纪元（January 1 1970 00:00:00 GMT）开始至今的秒数                                                                             | 参见 time()                                                                                                              |
+     #+CAPTION: *格式字串可以识别以下 =format= 参数的字符串*
+*** Filesystem Functions
+    basename — Returns trailing name component of path
+    chgrp — Changes file group
+    chmod — Changes file mode
+    chown — Changes file owner
+    clearstatcache — Clears file status cache
+    copy — Copies file
+    delete — See unlink or unset
+    dirname — Returns a parent directory's path
+    disk_free_space — Returns available space on filesystem or disk partition
+    disk_total_space — Returns the total size of a filesystem or disk partition
+    diskfreespace — Alias of disk_free_space
+    fclose — Closes an open file pointer
+    feof — Tests for end-of-file on a file pointer
+    fflush — Flushes the output to a file
+    fgetc — Gets character from file pointer
+    fgetcsv — Gets line from file pointer and parse for CSV fields
+    fgets — Gets line from file pointer
+    fgetss — Gets line from file pointer and strip HTML tags
+    file_exists — Checks whether a file or directory exists
+    file_get_contents — Reads entire file into a string
+    file_put_contents — Write data to a file
+    file — Reads entire file into an array
+    fileatime — Gets last access time of file
+    filectime — Gets inode change time of file
+    filegroup — Gets file group
+    fileinode — Gets file inode
+    filemtime — Gets file modification time
+    fileowner — Gets file owner
+    fileperms — Gets file permissions
+    filesize — Gets file size
+    filetype — Gets file type
+    flock — Portable advisory file locking
+    fnmatch — Match filename against a pattern
+    fopen — Opens file or URL
+    fpassthru — Output all remaining data on a file pointer
+    fputcsv — Format line as CSV and write to file pointer
+    fputs — Alias of fwrite
+    fread — Binary-safe file read
+    fscanf — Parses input from a file according to a format
+    fseek — Seeks on a file pointer
+    fstat — Gets information about a file using an open file pointer
+    ftell — Returns the current position of the file read/write pointer
+    ftruncate — Truncates a file to a given length
+    fwrite — Binary-safe file write
+    glob — Find pathnames matching a pattern
+    is_dir — Tells whether the filename is a directory
+    is_executable — Tells whether the filename is executable
+    is_file — Tells whether the filename is a regular file
+    is_link — Tells whether the filename is a symbolic link
+    is_readable — Tells whether a file exists and is readable
+    is_uploaded_file — Tells whether the file was uploaded via HTTP POST
+    is_writable — Tells whether the filename is writable
+    is_writeable — Alias of is_writable
+    lchgrp — Changes group ownership of symlink
+    lchown — Changes user ownership of symlink
+    link — Create a hard link
+    linkinfo — Gets information about a link
+    lstat — Gives information about a file or symbolic link
+    mkdir — Makes directory
+    move_uploaded_file — Moves an uploaded file to a new location
+    parse_ini_file — Parse a configuration file
+    parse_ini_string — Parse a configuration string
+    pathinfo — Returns information about a file path
+    pclose — Closes process file pointer
+    popen — Opens process file pointer
+    readfile — Outputs a file
+    readlink — Returns the target of a symbolic link
+    realpath_cache_get — Get realpath cache entries
+    realpath_cache_size — Get realpath cache size
+    realpath — Returns canonicalized absolute pathname
+    rename — Renames a file or directory
+    rewind — Rewind the position of a file pointer
+    rmdir — Removes directory
+    set_file_buffer — Alias of stream_set_write_buffer
+    stat — Gives information about a file
+    symlink — Creates a symbolic link
+    tempnam — Create file with unique file name
+    tmpfile — Creates a temporary file
+    touch — Sets access and modification time of file
+    umask — Changes the current umask
+    unlink — Deletes a file
+*** cURL Functions (需要带入编译选项)
+**** 常量
+     CURLOPT_HTTPGET 
+     CURLOPT_HTTP_VERSION 
+     CURLOPT_SSLKEY 
+     CURLOPT_SSLKEYTYPE   
+**** 函数 
+     curl_close — Close a cURL session
+     curl_copy_handle — Copy a cURL handle along with all of its preferences
+     curl_errno — Return the last error number
+     curl_error — Return a string containing the last error for the current session
+     curl_escape — URL encodes the given string
+     curl_exec — Perform a cURL session
+     curl_file_create — Create a CURLFile object
+     curl_getinfo — Get information regarding a specific transfer
+     curl_init — Initialize a cURL session
+     curl_multi_add_handle — Add a normal cURL handle to a cURL multi handle
+     curl_multi_close — Close a set of cURL handles
+     curl_multi_errno — Return the last multi curl error number
+     curl_multi_exec — Run the sub-connections of the current cURL handle
+     curl_multi_getcontent — Return the content of a cURL handle if CURLOPT_RETURNTRANSFER is set
+     curl_multi_info_read — Get information about the current transfers
+     curl_multi_init — Returns a new cURL multi handle
+     curl_multi_remove_handle — Remove a multi handle from a set of cURL handles
+     curl_multi_select — Wait for activity on any curl_multi connection
+     curl_multi_setopt — Set an option for the cURL multi handle
+     curl_multi_strerror — Return string describing error code
+     curl_pause — Pause and unpause a connection
+     curl_reset — Reset all options of a libcurl session handle
+     curl_setopt_array — Set multiple options for a cURL transfer
+     curl_setopt — Set an option for a cURL transfer
+     curl_share_close — Close a cURL share handle
+     curl_share_errno — Return the last share curl error number
+     curl_share_init — Initialize a cURL share handle
+     curl_share_setopt — Set an option for a cURL share handle
+     curl_share_strerror — Return string describing the given error code
+     curl_strerror — Return string describing the given error code
+     curl_unescape — Decodes the given URL encoded string
+     curl_version — Gets cURL version information
+**** 例子
+     to get the full webpages from head as well as body (获取网页的全部)
+
+     一般获取 CURLOPT_RETURNTRANSFER 就可以了
+     #+begin_src php
+       <?php 
+       $curl = curl_init('http://example.com'); 
+       curl_setopt($curl, CURLOPT_FAILONERROR, true); 
+       curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true); 
+       curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); 
+       curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false); 
+       curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);   
+       $result = curl_exec($curl); 
+       echo $result; 
+       ?>
+     #+end_src
+*** Memcached — The Memcached class (缓存)
+**** 函数 
+     Memcached::add — Add an item under a new key
+     Memcached::addByKey — Add an item under a new key on a specific server
+     Memcached::addServer — Add a server to the server pool
+     Memcached::addServers — Add multiple servers to the server pool
+     Memcached::append — Append data to an existing item
+     Memcached::appendByKey — Append data to an existing item on a specific server
+     Memcached::cas — Compare and swap an item
+     Memcached::casByKey — Compare and swap an item on a specific server
+     Memcached::__construct — Create a Memcached instance
+     Memcached::decrement — Decrement numeric item's value
+     Memcached::decrementByKey — Decrement numeric item's value, stored on a specific server
+     Memcached::delete — Delete an item
+     Memcached::deleteByKey — Delete an item from a specific server
+     Memcached::deleteMulti — Delete multiple items
+     Memcached::deleteMultiByKey — Delete multiple items from a specific server
+     Memcached::fetch — Fetch the next result
+     Memcached::fetchAll — Fetch all the remaining results
+     Memcached::flush — Invalidate all items in the cache
+     Memcached::get — Retrieve an item
+     Memcached::getAllKeys — Gets the keys stored on all the servers
+     Memcached::getByKey — Retrieve an item from a specific server
+     Memcached::getDelayed — Request multiple items
+     Memcached::getDelayedByKey — Request multiple items from a specific server
+     Memcached::getMulti — Retrieve multiple items
+     Memcached::getMultiByKey — Retrieve multiple items from a specific server
+     Memcached::getOption — Retrieve a Memcached option value
+     Memcached::getResultCode — Return the result code of the last operation
+     Memcached::getResultMessage — Return the message describing the result of the last operation
+     Memcached::getServerByKey — Map a key to a server
+     Memcached::getServerList — Get the list of the servers in the pool
+     Memcached::getStats — Get server pool statistics
+     Memcached::getVersion — Get server pool version info
+     Memcached::increment — Increment numeric item's value
+     Memcached::incrementByKey — Increment numeric item's value, stored on a specific server
+     Memcached::isPersistent — Check if a persitent connection to memcache is being used
+     Memcached::isPristine — Check if the instance was recently created
+     Memcached::prepend — Prepend data to an existing item
+     Memcached::prependByKey — Prepend data to an existing item on a specific server
+     Memcached::quit — Close any open connections
+     Memcached::replace — Replace the item under an existing key
+     Memcached::replaceByKey — Replace the item under an existing key on a specific server
+     Memcached::resetServerList — Clears all servers from the server list
+     Memcached::set — Store an item
+     Memcached::setByKey — Store an item on a specific server
+     Memcached::setMulti — Store multiple items
+     Memcached::setMultiByKey — Store multiple items on a specific server
+     Memcached::setOption — Set a Memcached option
+     Memcached::setOptions — Set Memcached options
+     Memcached::setSaslAuthData — Set the credentials to use for authentication
+     Memcached::touch — Set a new expiration on an item
+     Memcached::touchByKey — Set a new expiration on an item on a specific server
+     MemcachedException — The MemcachedException class
+**** 例子
+     #+begin_src php
+       <?php 
+       error_reporting(E_ALL & ~E_NOTICE); 
+
+       $mc = new Memcached(); 
+       $mc->addServer("localhost", 11211); 
+
+       $mc->set("foo", "Hello!"); 
+       $mc->set("bar", "Memcached..."); 
+
+       $arr = array( 
+           $mc->get("foo"), 
+           $mc->get("bar") 
+       ); 
+       var_dump($arr); 
+       ?> 
+     #+end_src

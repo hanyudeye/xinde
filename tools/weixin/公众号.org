@@ -1,3 +1,5 @@
+http://zqr4fm.natappfree.cc
+
 AppID:公众应用唯⼀一身份认证
 AppSecret:公众应⽤密码，需妥善保存
 access_token:调⽤微信接⼝所需的凭证，每个接⼝调用都需要，可通过AppID和AppSecret获 取
@@ -15,43 +17,6 @@ php.info 设置
 
 display_errors = On
 display_startup_errors = On
-
-* 测试账号
-  地址：https://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login
-  调试接口： https://mp.weixin.qq.com/debug
-** 服务器验
- 开发者提交信息后，微信服务器将发送GET请求到填写的服务器地址URL上，GET请求携带参数如下表所示：
-
- 参数	描述
- signature	微信加密签名，signature结合了开发者填写的token参数和请求中的timestamp参数、nonce参数。
- timestamp	时间戳
- nonce	随机数
- echostr	随机字符串
- 开发者通过检验signature对请求进行校验（下面有校验方式）。若确认此次GET请求来自微信服务器，请原样返回echostr参数内容，则接入生效，成为开发者成功，否则接入失败。加密/校验流程如下：
-
- 1）将token、timestamp、nonce三个参数进行字典序排序 2）将三个参数字符串拼接成一个字符串进行sha1加密 3）开发者获得加密后的字符串可与signature对比，标识该请求来源于微信
-
- 检验signature的PHP示例代码：
-
- private function checkSignature()
- {
-     $signature = $_GET["signature"];
-     $timestamp = $_GET["timestamp"];
-     $nonce = $_GET["nonce"];
-	
-     $token = TOKEN;
-     $tmpArr = array($token, $timestamp, $nonce);
-     sort($tmpArr, SORT_STRING);
-     $tmpStr = implode( $tmpArr );
-     $tmpStr = sha1( $tmpStr );
-    
-     if( $tmpStr == $signature ){
-         return true;
-     }else{
-         return false;
-     }
- }
- PHP示例代码下载：下载
 
 * 微信网页授权
 如果用户在微信客户端中访问第三方网页，公众号可以通过微信网页授权机制，来获取用户基本信息，进而实现业务逻辑。
@@ -298,11 +263,8 @@ display_startup_errors = On
 
  { "errcode":40003,"errmsg":"invalid openid"}
 * 目录
-
 1 概述
-
 1.1 JSSDK使用步骤
-
 1.1.1 步骤一：绑定域名
 
 1.1.2 步骤二：引入JS文件
@@ -1281,3 +1243,127 @@ http://demo.open.weixin.qq.com/jssdk/sample.zip
 
 
 
+
+* 测试号管理
+  测试号配置地址：https://mp.weixin.qq.com/debug/cgi-bin/sandbox?t=sandbox/login
+  调试接口： https://mp.weixin.qq.com/debug
+** 测试号信息
+   | appID     | wx3b238e70544d300c               |
+   | appsecret | 08ad5c7a920832bcecae8f1e4f6c67d6 |
+** 接口配置信息 
+   配置了接口信息就可以调用可用接口
+   
+   URL  
+   Token
+*** 服务器验证
+  开发者提交信息后，微信服务器将发送GET请求到填写的服务器地址URL上，GET请求携带参数如下表所示：
+
+ | 参数      | 描述                                                                                   |
+ | signature | 微信加密签名，signature结合了开发者填写的token参数和请求中的timestamp参数、nonce参数。 |
+ | timestamp | 时间戳                                                                                 |
+ | nonce     | 随机数                                                                                 |
+ | echostr   | 随机字符串                                                                             |
+
+  开发者通过检验signature对请求进行校验。若确认此次GET请求来自微信服务器，请原样返回echostr参数内容，则接入生效，成为开发者成功，否则接入失败。加密/校验流程如下：
+
+- 1）将token、timestamp、nonce三个参数进行字典序排序
+- 2）将三个参数字符串拼接成一个字符串进行sha1加密
+- 3）开发者获得加密后的字符串可与signature对比，标识该请求来源于微信
+
+  private function checkSignature()
+  {
+      $signature = $_GET["signature"];
+      $timestamp = $_GET["timestamp"];
+      $nonce = $_GET["nonce"];
+	
+      $token = TOKEN;
+      $tmpArr = array($token, $timestamp, $nonce);
+      sort($tmpArr, SORT_STRING);
+      $tmpStr = implode( $tmpArr );
+      $tmpStr = sha1( $tmpStr );
+    
+      if( $tmpStr == $signature ){
+          return true;
+      }else{
+          return false;
+      }
+  }
+  
+** JS接口安全域名
+   设置JS接口安全域后，通过关注该测试号，开发者即可在该域名下调用微信开放的JS接口
+   
+* 接口权限表   
+** 对话服务
+*** 基础支持
+**** 获取access_token
+     https请求方式: GET https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
+
+     
+**** 获取微信服务器IP地址	
+*** 接收消息
+**** 验证消息真实性		 
+**** 接收普通消息		 
+**** 接收事件推送		 
+**** 接收语音识别结果		
+*** 发送消息
+**** 自动回复		 
+**** 客服接口	
+**** 群发接口
+**** 模板消息（业务通知）
+*** 用户管理
+**** 用户分组管理
+**** 设置用户备注名	
+**** 获取用户基本信息	
+**** 获取用户列表	
+**** 获取用户地理位置 (开启)		
+*** 推广支持
+**** 生成带参数二维码
+**** 长链接转短链接接口	
+*** 界面丰富
+**** 自定义菜单
+*** 素材管理
+**** 素材管理接口
+** 功能服务
+*** 智能接口
+**** 语义理解接口
+*** 设备功能
+**** 设备功能接口
+*** 多客服
+**** 获取客服聊天记录	
+**** 客服管理
+**** 会话控制
+** 网页服务
+*** 网页帐号	网页授权获取用户基本信息
+*** 基础接口	判断当前客户端版本是否支持指定JS接口
+*** 分享接口
+**** 获取“分享到朋友圈”按钮点击状态及自定义分享内容接口
+**** 获取“分享给朋友”按钮点击状态及自定义分享内容接口		
+**** 获取“分享到QQ”按钮点击状态及自定义分享内容接口		
+**** 获取“分享到腾讯微博”按钮点击状态及自定义分享内容接口		
+*** 图像接口
+**** 拍照或从手机相册中选图接口
+**** 预览图片接口		
+**** 上传图片接口		
+**** 下载图片接口		
+*** 音频接口
+**** 开始录音接口
+**** 停止录音接口		
+**** 播放语音接口		
+**** 暂停播放接口		
+**** 停止播放接口		
+**** 上传语音接口		
+**** 下载语音接口		
+*** 智能接口	识别音频并返回识别结果接口		
+*** 设备信息	获取网络状态接口		
+*** 地理位置
+**** 使用微信内置地图查看位置接口
+**** 获取地理位置接口		
+*** 界面操作
+**** 隐藏右上角菜单接口
+**** 显示右上角菜单接口		
+**** 关闭当前网页窗口接口		
+**** 批量隐藏功能按钮接口		
+**** 批量显示功能按钮接口		
+**** 隐藏所有非基础按钮接口		
+**** 显示所有功能按钮接口
+* JS接口
