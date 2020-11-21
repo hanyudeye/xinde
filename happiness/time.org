@@ -1,60 +1,76 @@
 ** 时间规划
 想要做些事情,而不至于漫无目的,需要时间规划.可以使用一张时间计划表,然后严格按照上面的事项处理.
 
-事项分类
-计时
-当日计时统计
+*** 抓取事情 ( SPC a o c) 
+  - 任务 等级为 B ，抓取时间
+  - 工作 等级为 A，抓取时间
+  - 笔记，没等级
+  - 写博客，等级为B (挺高权限)
+  - 网络片段 (notes.org)
+  - 代码片段 (snippet.org)
+  - protocol (剪切板草稿)
+  - link (节点链接 link)
+  - 写日记(journal.org)
 
- 以上就是展开Projects及Reading两个分支后的结果。其中Projects项目中有四个二级标题()，我将Technical English这个子项目展开，得到其中的三级标题()。这基本是一个已经完成的项目，所以里面的状态都是DONE了。Reading分支下的5个二级标题(*)都是Todo状态，表示我正在读的书。
+*** 浏览任务 (SPC a o o) 
+*** 事情分类
+    把要做的事情列出来
+*** 计时
+    当前做的事情进行计时(, C i)或者 (, C p)，完成后中断计时(O)
+*** 当日计时统计
+    统计(R) ，周(w) 月(m)
+    
 
- 下面是对各个一级标题的介绍：
+  以上就是展开Projects及Reading两个分支后的结果。其中Projects项目中有四个二级标题()，我将Technical English这个子项目展开，得到其中的三级标题()。这基本是一个已经完成的项目，所以里面的状态都是DONE了。Reading分支下的5个二级标题(*)都是Todo状态，表示我正在读的书。
 
- org-mode configuration 主要是对todo.org整个文件的一些配置。 Inbox GTD中Inbox的概念，快速输入临时事件或突然的想法，释放头脑内存。 Tasks 相当于GTD中的Todo-list，即那些一步就能完成的零散事件，如写这篇文章。 Projects 各种需要多个步骤完成的项目，每个项目在里面是二级标题()，由各种三级TODO标题(*)组成。当然也可能对项目进行再细分。 Routines 一些每天都要进行的习惯。使用Org-mode可以很好地进行重复。 Remind 需要提醒的事情，比如某个时间点上课。 Reading 正在看的书。 Weekly Review 每周要结束时进行Review，其中有一些代码段，用于进行当周的时间统计。 日程表
+  下面是对各个一级标题的介绍：
 
- 为了使用Org-mode的日程表功能，首先需要把todo.org加入到日程表文件中，在配置文件(~/.emacs)中写入:
+  org-mode configuration 主要是对todo.org整个文件的一些配置。 Inbox GTD中Inbox的概念，快速输入临时事件或突然的想法，释放头脑内存。 Tasks 相当于GTD中的Todo-list，即那些一步就能完成的零散事件，如写这篇文章。 Projects 各种需要多个步骤完成的项目，每个项目在里面是二级标题()，由各种三级TODO标题(*)组成。当然也可能对项目进行再细分。 Routines 一些每天都要进行的习惯。使用Org-mode可以很好地进行重复。 Remind 需要提醒的事情，比如某个时间点上课。 Reading 正在看的书。 Weekly Review 每周要结束时进行Review，其中有一些代码段，用于进行当周的时间统计。 日程表
 
- ; 将~/org/todo.org替换为todo.org实际路径 (setq org-agenda-files (list "~/org/todo.org")) 再绑定Org-mode日程表的快捷键。
+  为了使用Org-mode的日程表功能，首先需要把todo.org加入到日程表文件中，在配置文件(~/.emacs)中写入:
 
- (global-set-key "\C-ca" 'org-agenda) 这样按Ctrl-c a a就可以查看Org-mode的周日程表了。不过我一般看当天的，所以自己定制了一个Day Agenda。
+  ; 将~/org/todo.org替换为todo.org实际路径 (setq org-agenda-files (list "~/org/todo.org")) 再绑定Org-mode日程表的快捷键。
 
- 有关Org-mode Agenda的具体用法可参考其他文章或官网的手册。简而言之，你可以设置TODO项的Schedule，该项在当日就会显示。我一般在每天开始浏览一下所有的TODO项目，将今天需要完成的任务Schedule一下。这样一天中剩下的时间只要看Day Agenda就行了。
+  (global-set-key "\C-ca" 'org-agenda) 这样按Ctrl-c a a就可以查看Org-mode的周日程表了。不过我一般看当天的，所以自己定制了一个Day Agenda。
 
- 计时
+  有关Org-mode Agenda的具体用法可参考其他文章或官网的手册。简而言之，你可以设置TODO项的Schedule，该项在当日就会显示。我一般在每天开始浏览一下所有的TODO项目，将今天需要完成的任务Schedule一下。这样一天中剩下的时间只要看Day Agenda就行了。
 
- 本文的重点是时间统计，我推崇Org-mode，最重要的一点即是它能够很方便地进行时间统计。在todo.org中，移到一个条目上，按Ctrl-c Ctrl-x Ctrl-i即可对该条目开始计时，Ctrl-c Ctrl-x Ctrl-o停止当前计时。如果在Agenda中，移到条目按I(大写)即可对该条目开始计时，O(大写)即可停止计时。对于已经对这些基本功能熟练的用户，还可使用以下技巧：
+  计时
 
- 用global-set-key把org-clock-in, org-clock-out, org-clock-cancel这三个功能绑定到全局功能下，这样就不用专门跑到一个Org-mode的buffer里计时了。 加前缀(Ctrl-u)再按Ctrl-c Ctrl-x Ctrl-i，可快速查看最近计时项目，进行快速计时。 计时的重点是只计 纯工作时间 ，只要没在工作就停止计时。对于不在电脑时候的工作，可以先在纸上记录，电脑在手时再补录到todo.org的相应时间记录中。
+  本文的重点是时间统计，我推崇Org-mode，最重要的一点即是它能够很方便地进行时间统计。在todo.org中，移到一个条目上，按Ctrl-c Ctrl-x Ctrl-i即可对该条目开始计时，Ctrl-c Ctrl-x Ctrl-o停止当前计时。如果在Agenda中，移到条目按I(大写)即可对该条目开始计时，O(大写)即可停止计时。对于已经对这些基本功能熟练的用户，还可使用以下技巧：
 
- 我在todo.org的头部加入了#+PROPERTY: CLOCK_INTO_DRAWER t，这样，时间记录会放到一个名为LOGBOOK的抽屉(drawer)中，平时看项目时并不展开，所以记录再多也不影响日常操作。
+  用global-set-key把org-clock-in, org-clock-out, org-clock-cancel这三个功能绑定到全局功能下，这样就不用专门跑到一个Org-mode的buffer里计时了。 加前缀(Ctrl-u)再按Ctrl-c Ctrl-x Ctrl-i，可快速查看最近计时项目，进行快速计时。 计时的重点是只计 纯工作时间 ，只要没在工作就停止计时。对于不在电脑时候的工作，可以先在纸上记录，电脑在手时再补录到todo.org的相应时间记录中。
 
- Tag分类
+  我在todo.org的头部加入了#+PROPERTY: CLOCK_INTO_DRAWER t，这样，时间记录会放到一个名为LOGBOOK的抽屉(drawer)中，平时看项目时并不展开，所以记录再多也不影响日常操作。
 
- 为了便于统计，使统计信息有意义，有必要对任务进行分类。我用Tag实现分类，可在todo.org的文件头部写下该文件支持的Tag，如:
+  Tag分类
 
- #+TAGS: { ACADEMIC(a) ENGLISH(e) SCHOOL(s) LEARNING(l) OUTPUT(p) OTHER(o) } 其中括号内代表简写(快捷键)，对每个TODO任务，按Ctrl-c Ctrl-q即可赋符Tag，这样就完成了任务的分类。默认设置中，Tag是可以继承的，即子标题自动包含父标题中含有的Tag。
+  为了便于统计，使统计信息有意义，有必要对任务进行分类。我用Tag实现分类，可在todo.org的文件头部写下该文件支持的Tag，如:
 
- 统计
+  #+TAGS: { ACADEMIC(a) ENGLISH(e) SCHOOL(s) LEARNING(l) OUTPUT(p) OTHER(o) } 其中括号内代表简写(快捷键)，对每个TODO任务，按Ctrl-c Ctrl-q即可赋符Tag，这样就完成了任务的分类。默认设置中，Tag是可以继承的，即子标题自动包含父标题中含有的Tag。
 
- 在Day Agenda中，按R(大写)可打开Clockreport，查看当日计时统计，效果如下图所示。
+  统计
 
- 不过这样有时略显繁琐，而且体现不出各类任务上所花的时间，为了实现类似柳比歇夫“第一类工作”时间类似的统计，我写了下面这个函数(org-clock-sum-today-by-tags)。
+  在Day Agenda中，按R(大写)可打开Clockreport，查看当日计时统计，效果如下图所示。
 
- ;; used by org-clock-sum-today-by-tags (defun filter-by-tags () (let ((head-tags (org-get-tags-at))) (member current-tag head-tags)))
+  不过这样有时略显繁琐，而且体现不出各类任务上所花的时间，为了实现类似柳比歇夫“第一类工作”时间类似的统计，我写了下面这个函数(org-clock-sum-today-by-tags)。
 
- (defun org-clock-sum-today-by-tags (timerange &optional tstart tend noinsert) (interactive "P") (let* ((timerange-numeric-value (prefix-numeric-value timerange)) (files (org-add-archive-files (org-agenda-files))) (include-tags '("ACADEMIC" "ENGLISH" "SCHOOL" "LEARNING" "OUTPUT" "OTHER")) (tags-time-alist (mapcar (lambda (tag) `(,tag . 0)) include-tags)) (output-string "") (tstart (or tstart (and timerange (equal timerange-numeric-value 4) (- (org-time-today) 86400)) (and timerange (equal timerange-numeric-value 16) (org-read-date nil nil nil "Start Date/Time:")) (org-time-today))) (tend (or tend (and timerange (equal timerange-numeric-value 16) (org-read-date nil nil nil "End Date/Time:")) (+ tstart 86400))) h m file item prompt donesomething) (while (setq file (pop files)) (setq org-agenda-buffer (if (file-exists-p file) (org-get-agenda-file-buffer file) (error "No such file %s" file))) (with-current-buffer org-agenda-buffer (dolist (current-tag include-tags) (org-clock-sum tstart tend 'filter-by-tags) (setcdr (assoc current-tag tags-time-alist) (+ org-clock-file-total-minutes (cdr (assoc current-tag tags-time-alist))))))) (while (setq item (pop tags-time-alist)) (unless (equal (cdr item) 0) (setq donesomething t) (setq h (/ (cdr item) 60) m (- (cdr item) (* 60 h))) (setq output-string (concat output-string (format "[-%s-] %.2d:%.2d\n" (car item) h m))))) (unless donesomething (setq output-string (concat output-string "[-Nothing-] Done nothing!!!\n"))) (unless noinsert (insert output-string)) output-string)) 并把它绑定到Ctrl-c Ctrl-x t按键上。可在当前光标处插入对当天各个分类进行时间统计(代码中的include-tags变量包含了参与统计的tags，可自行更改)。默认的效果是将当天非零的各分类时间统计显示出来。如：
+  ;; used by org-clock-sum-today-by-tags (defun filter-by-tags () (let ((head-tags (org-get-tags-at))) (member current-tag head-tags)))
 
- [-ACADEMIC-] 01:24 [-OTHER-] 02:24
+  (defun org-clock-sum-today-by-tags (timerange &optional tstart tend noinsert) (interactive "P") (let* ((timerange-numeric-value (prefix-numeric-value timerange)) (files (org-add-archive-files (org-agenda-files))) (include-tags '("ACADEMIC" "ENGLISH" "SCHOOL" "LEARNING" "OUTPUT" "OTHER")) (tags-time-alist (mapcar (lambda (tag) `(,tag . 0)) include-tags)) (output-string "") (tstart (or tstart (and timerange (equal timerange-numeric-value 4) (- (org-time-today) 86400)) (and timerange (equal timerange-numeric-value 16) (org-read-date nil nil nil "Start Date/Time:")) (org-time-today))) (tend (or tend (and timerange (equal timerange-numeric-value 16) (org-read-date nil nil nil "End Date/Time:")) (+ tstart 86400))) h m file item prompt donesomething) (while (setq file (pop files)) (setq org-agenda-buffer (if (file-exists-p file) (org-get-agenda-file-buffer file) (error "No such file %s" file))) (with-current-buffer org-agenda-buffer (dolist (current-tag include-tags) (org-clock-sum tstart tend 'filter-by-tags) (setcdr (assoc current-tag tags-time-alist) (+ org-clock-file-total-minutes (cdr (assoc current-tag tags-time-alist))))))) (while (setq item (pop tags-time-alist)) (unless (equal (cdr item) 0) (setq donesomething t) (setq h (/ (cdr item) 60) m (- (cdr item) (* 60 h))) (setq output-string (concat output-string (format "[-%s-] %.2d:%.2d\n" (car item) h m))))) (unless donesomething (setq output-string (concat output-string "[-Nothing-] Done nothing!!!\n"))) (unless noinsert (insert output-string)) output-string)) 并把它绑定到Ctrl-c Ctrl-x t按键上。可在当前光标处插入对当天各个分类进行时间统计(代码中的include-tags变量包含了参与统计的tags，可自行更改)。默认的效果是将当天非零的各分类时间统计显示出来。如：
 
- 如果需要统计的是前一天的，可加前缀(Ctrl-u)；如果要指定时间范围，可加两次前缀(Ctrl-u Ctrl-u)。这个函数在周统计中还会用到。我在一个日记文件中会插入每天的Clockreport以及上述分类统计。
+  [-ACADEMIC-] 01:24 [-OTHER-] 02:24
 
- 周统计
+  如果需要统计的是前一天的，可加前缀(Ctrl-u)；如果要指定时间范围，可加两次前缀(Ctrl-u Ctrl-u)。这个函数在周统计中还会用到。我在一个日记文件中会插入每天的Clockreport以及上述分类统计。
 
- 周统计中我查看的内容之一还是Clockreport，在todo.org中任意位置(我是在Weekly Review下)按Ctrl-c Ctrl-x Ctrl-r即可插入一个Clockreport，不过参数需要做一些修改，我使用的是：
+  周统计
 
- #+BEGIN: clocktable :maxlevel 5 :scope agenda-with-archives :block thisweek :fileskip0 t :indent t #+END: 改动之后，在BEGIN的位置再按一下Ctrl-c Ctrl-c就可以刷新报表了。同时我还查看每个tag的时间报表。参数和上面是一样的，最后加一个类似:tags “ACADEMIC”的参数即可。这些Clockreport，只需插入一次，以后每周用Ctrl-c Ctrl-c刷新即可。
+  周统计中我查看的内容之一还是Clockreport，在todo.org中任意位置(我是在Weekly Review下)按Ctrl-c Ctrl-x Ctrl-r即可插入一个Clockreport，不过参数需要做一些修改，我使用的是：
 
- 同样的，这样的信息有时候太繁琐了，对于简报，我的做法是在todo.org中嵌入一段如下的Lisp代码:
+  #+BEGIN: clocktable :maxlevel 5 :scope agenda-with-archives :block thisweek :fileskip0 t :indent t #+END: 改动之后，在BEGIN的位置再按一下Ctrl-c Ctrl-c就可以刷新报表了。同时我还查看每个tag的时间报表。参数和上面是一样的，最后加一个类似:tags “ACADEMIC”的参数即可。这些Clockreport，只需插入一次，以后每周用Ctrl-c Ctrl-c刷新即可。
 
- #+BEGIN_SRC emacs-lisp :results value (setq week-range (org-clock-special-range 'thisweek nil t)) (org-clock-sum-today-by-tags nil (nth 0 week-range) (nth 1 week-range) t) #+END_SRC 同时，在配置文件中加入如下语句，使得在Org-mode可直接Evaluate上面的代码。
+  同样的，这样的信息有时候太繁琐了，对于简报，我的做法是在todo.org中嵌入一段如下的Lisp代码:
 
- (org-babel-do-load-languages 'org-babel-load-languages '((emacs-lisp . t))) 这样，在刚才代码段的位置按Ctrl-c Ctrl-c即可获得各Tag的周时间统计。效果如下所示：
+  #+BEGIN_SRC emacs-lisp :results value (setq week-range (org-clock-special-range 'thisweek nil t)) (org-clock-sum-today-by-tags nil (nth 0 week-range) (nth 1 week-range) t) #+END_SRC 同时，在配置文件中加入如下语句，使得在Org-mode可直接Evaluate上面的代码。
+
+  (org-babel-do-load-languages 'org-babel-load-languages '((emacs-lisp . t))) 这样，在刚才代码段的位置按Ctrl-c Ctrl-c即可获得各Tag的周时间统计。效果如下所示：
