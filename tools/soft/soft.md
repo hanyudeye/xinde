@@ -28,3 +28,8 @@ AppimageLauncher： 用来更好的使用以 appimage 为拓展名的应用程�
 
 由于微信屏蔽了natapp的三级域名，所以如果需要进行微信支付或者微信小程序的联调时需要注册一个二级域名
 如果用于联调微信小程序的话，则需要注册带有SSL证书的，因为微信小程序仅支持https协议。
+
+## 字幕
+## 添加字母软件
+### 迅捷视频剪辑软件
+https://link.zhihu.com/?target=https%3A//www.xunjieshipin.com/download-video-crop%3Fzhczk
