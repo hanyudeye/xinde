@@ -1,4 +1,3 @@
-
 * tp6
 ** 基础
 *** 配置
@@ -4736,34 +4735,34 @@
   
 
 ***** 闭包查询
-
-
-         $name  =  'thinkphp' ;
-       $id  =  10 ;
-       Db : : table ( 'think_user' ) - > where ( function  ($query )  use ($name , $id )  {
-           $query - > where ( 'name' , $name )
+      #+begin_src php
+        $name  =  'thinkphp' ;
+        $id  =  10 ;
+        Db::table ( 'think_user' ) - > where ( function  ($query )  use ($name , $id )  {
+            $query - > where ( 'name' , $name )
                 - > whereOr ( 'id' ,  '>' , $id ) ;
         } ) - > select ( ) ;
+         #+end_src
  
    生成的 SQL 语句为：
 
           SELECT  *  FROM  `think_user `  WHERE  (  `name `  =  'thinkphp'  OR  `id `  >  10  )
  
-
      可见每个闭包条件两边也会自动加上括号。
   
-
 ***** 混合查询
 
 
    可以结合前面提到的所有方式进行混合查询，例如：
 
+         #+begin_src php
          Db : : table ( 'think_user' )
             - > where ( 'name' ,  'like' ,  'thinkphp%' )
             - > where ( function  ($query )  {
                $query - > where ( 'id' ,  '<' ,  10 ) ;
             } )
             - > select ( ) ;
+         #+end_src
  
    生成的 SQL 语句是：
 
@@ -7714,11 +7713,13 @@
 
    和新增一样使用 =save=方法进行更新关联数据。
 
-         $user  = User : : find ( 1 ) ;
-       $user - >profile - >email  =  'thinkphp' ;
-       $user - >profile - > save ( ) ;
-        // 或者
-       $user - >profile - > save ( [ 'email'  = >  'thinkphp' ] ) ;
+         #+begin_src php
+           $user  = User : : find ( 1 ) ;
+           $user - >profile - >email  =  'thinkphp' ;
+           $user - >profile - > save ( ) ;
+           // 或者
+           $user - >profile - > save ( [ 'email'  = >  'thinkphp' ] ) ;
+         #+end_src
  
 ****** 定义相对关联
 
