@@ -4,6 +4,11 @@
 #+CATEGORIES[]: 技术
 #+DATE: 2020-02-12T05:44:50+08:00
 #+draft: t
+
+用来把网页组件化
+
+# more 
+* vue
 ** 介绍 
 *** 安装
     #+begin_src html
@@ -12,7 +17,22 @@
       <!-- 生产环境版本，优化了尺寸和速度 -->
       <script src="https://cdn.jsdelivr.net/npm/vue"></script>
  #+end_src
-*** 组件化应用构建
+*** 使用
+        #+begin_src html
+      <div id="app">
+        {{ message }}
+      </div>
+    #+end_src
+    
+    #+begin_src js
+      var app = new Vue({
+        el: '#app',
+        data: {
+          message: 'Hello Vue!'
+        }
+      })
+    #+end_src
+ 
 ** 详细说明
 *** view
 **** 属性绑定
@@ -27,7 +47,6 @@
      - v-else 分支
      - v-for 循环 (val,key) in arr
      - v-else-if
-     - v-show 显示隐藏
 
        #+begin_src html
          <div v-if="type === 'A'">
@@ -293,6 +312,9 @@
     - mounted
     - updated
     - destroyed
+*** 指令
+  - v-html=""
+  - v-show 显示隐藏
 ** vue-cli 使用
 *** 初始化项目
   vue init webpack vue_mall(项目名称) 
