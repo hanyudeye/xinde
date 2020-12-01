@@ -128,37 +128,25 @@
 
 **** 页面路由
 ***** 页面栈
-  框架以栈的形式维护了当前的所有页面。当发生路由切换的时候，页面栈的表现如下：
-
-  | 路由方式     | 页面栈表现                          |
-  |--------------+-------------------------------------|
-  | 初始化       | 新页面入栈                          |
-  | 打开新页面   | 新页面入栈                          |
-  | 页面重定向   | 当前页面出栈，新页面入栈            |
-  | 页面返回     | 页面不断出栈，直到目标返回页        |
-  | Tab 切换     | 页面全部出栈，只留下新的 Tab 页面   |
-  | 重加载       | 页面全部出栈，只留下新的页面        |
+ | 路由方式   | 页面栈表现                        |
+ |------------+-----------------------------------|
+ | 初始化     | 新页面入栈                        |
+ | 打开新页面 | 新页面入栈                        |
+ | 页面重定向 | 当前页面出栈，新页面入栈          |
+ | 页面返回   | 页面不断出栈，直到目标返回页      |
+ | Tab 切换   | 页面全部出栈，只留下新的 Tab 页面 |
+ | 重加载     | 页面全部出栈，只留下新的页面      |
 
   开发者可以使用 =getCurrentPages()= 函数获取当前页面栈。
 
 ***** 路由方式
-  对于路由的触发方式以及页面生命周期函数如下：
-
-  | 路由方式   | 触发时机                                         | 路由前页面 | 路由后页面         |
-  |------------+--------------------------------------------------+------------+--------------------|
-  | 初始化     | 小程序打开的第一个页面                           |            | onLoad, onShow     |
-  | 打开新页面 | 调用 API [[../../api/route/wx.navigateTo.html][wx.navigateTo]]                           | onHide     | onLoad, onShow     |
-  |            | 使用组件 [[../../component/navigator.html][<navigator open-type="navigateTo"/>=]]    |            |                    |
-  | 页面重定向 | 调用 API [[../../api/route/wx.redirectTo.html][wx.redirectTo]]                         | onUnload   | onLoad, onShow     |
-  |            | 使用组件 [[../../component/navigator.html][<navigator open-type="redirectTo"/>=]]    |            |                    |
-  | 页面返回   | 调用 API [[../../api/route/wx.navigateBack.html][wx.navigateBack]]                       | onUnload   | onShow             |
-  |            | 使用组件[[../../component/navigator.html][<navigator open-type="navigateBack">=]]  |            |                    |
-  |            | 用户按左上角返回按钮                             |            |                    |
-  | Tab 切换   | 调用 API [[../../api/route/wx.switchTab.html][wx.switchTab]]                          |            | 各种情况请参考下表 |
-  |            | 使用组件 <navigator open-type="switchTab"/>      |            |                    |
-  |            | 用户切换 Tab                                     |            |                    |
-  | 重启动     | 调用 API [[../../api/route/wx.reLaunch.html][wx.reLaunch]]                           | onUnload   | onLoad, onShow     |
-  |            | 使用组件 [[../../component/navigator.html][<navigator open-type="reLaunch"/>]]       |            |                    |
+          <navigator url="/pages/home/home">home</navigator>
+          
+  | 打开新页面 | wx.navigateTo        | 组件 <navigator open-type="navigateTo"/>     |
+  | 页面重定向 | wx.redirectTo        | 组件 <navigator open-type="redirectTo"/>     |
+  | 页面返回   | wx.navigateBack      | 使用组件<navigator open-type="navigateBack"> |
+  | Tab 切换   | wx.switchTab         | 使用组件 <navigator open-type="switchTab"/>  |
+  | 重启动     | 调用 API wx.reLaunch | 使用组件 <navigator open-type="reLaunch"/>   |
 
   Tab 切换对应的生命周期（以 A、B 页面为 Tabbar 页面，C 是从 A 页面打开的页面，D 页面是从 C 页面打开的页面为例）：
   
@@ -173,95 +161,19 @@
   | D（从转发进入）   | A               | D.onUnload(), A.onLoad(), A.onShow()                 |
   | D（从转发进入）   | B               | D.onUnload(), B.onLoad(), B.onShow()                 |
 
+  - =navigateTo=, =redirectTo= 只能打开非 tabBar 页面。
+  - =switchTab= 只能打开 tabBar 页面。
+  - =reLaunch= 可以打开任意页面。
+  - 页面底部的 tabBar 由页面决定，即只要是定义为 tabBar 的页面，底部都有tabBar。
+  - 调用页面路由带的参数可以在目标页面的=onLoad=中获取。
 
- 
-
-
-  *Tips*:
-
-  -  =navigateTo=, =redirectTo= 只能打开非 tabBar 页面。
-  -  =switchTab= 只能打开 tabBar 页面。
-  -  =reLaunch= 可以打开任意页面。
-  -  页面底部的 tabBar 由页面决定，即只要是定义为 tabBar 的页面，底部都有
-     tabBar。
-  -  调用页面路由带的参数可以在目标页面的=onLoad=中获取。
-
-
- 
-
-
-
- 
-
-
-
-
-
-
-  --------------
-
-
-  [[https://developers.weixin.qq.com/miniprogram/dev/framework/app-service/route.html]]
-
-  \\
-  \\
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-  --------------
-
-
- 
-
-
-
-
-
-
-
-
-
-
-****** [[index_u44.html#模块化][#]] 模块化
-
-
-  
-  
-
-    可以将一些公共的代码抽离成为一个单独的 js
-    文件，作为一个模块。模块只有通过
-    [[../../reference/api/module.html][=module.exports=]] 或者 =exports=
-    才能对外暴露接口。
+**** 模块化
+    可以将一些公共的代码抽离成为一个单独的 js 文件，作为一个模块。模块只有通过 module.exports 或者 exports 才能对外暴露接口。
 
     注意：
 
-    -  =exports= 是 [[../../reference/api/module.html][=module.exports=]]
-       的一个引用，因此在模块里边随意更改 =exports=
-       的指向会造成未知的错误。所以更推荐开发者采用 =module.exports=
-       来暴露模块接口，除非你已经清晰知道这两者的关系。
-    -  小程序目前不支持直接引入 =node_modules= , 开发者需要使用到
-       =node_modules=
-       时候建议拷贝出相关的代码到小程序的目录中，或者使用小程序支持的
-       [[../../devtools/npm.html][npm]] 功能。
-
-
-
-
+    -  =exports= 是 module.exports 的一个引用，因此在模块里边随意更改 =exports= 的指向会造成未知的错误。所以更推荐开发者采用 =module.exports= 来暴露模块接口，除非你已经清晰知道这两者的关系。
+    -  小程序目前不支持直接引入 =node_modules= , 开发者需要使用到 =node_modules= 时候建议拷贝出相关的代码到小程序的目录中，或者使用小程序支持的npm 功能。
 
     #+BEGIN_EXAMPLE
         // common.js
@@ -275,16 +187,8 @@
         module.exports.sayHello = sayHello
         exports.sayGoodbye = sayGoodbye
     #+END_EXAMPLE
-
-
- 
-
-
+    
     在需要使用这些模块的文件中，使用 =require= 将公共代码引入
-
-
-
-
 
     #+BEGIN_EXAMPLE
         var common = require('common.js')
@@ -298,45 +202,39 @@
         })
     #+END_EXAMPLE
 
+**** 文件作用域
+     在 JavaScript文件中声明的变量和函数只在该文件中有效；不同的文件中可以声明相同名字的变量和函数，不会互相影响。
 
- 
+     通过全局函数 =getApp= 可以获取全局的应用实例，如果需要全局的数据可以在=App()= 中设置，如：
 
+     #+BEGIN_EXAMPLE
+         // app.js
+         App({
+           globalData: 1
+         })
+     #+END_EXAMPLE
 
-******* [[index_u44.html#文件作用域][#]] 文件作用域
-    在 JavaScript文件中声明的变量和函数只在该文件中有效；不同的文件中可以声明相同
-    名字的变量和函数，不会互相影响。
+     #+BEGIN_EXAMPLE
+         // a.js
+         // The localValue can only be used in file a.js.
+         var localValue = 'a'
+         // Get the app instance.
+         var app = getApp()
+         // Get the global data and change it.
+         app.globalData++
+     #+END_EXAMPLE
 
-    通过全局函数 =getApp= 可以获取全局的应用实例，如果需要全局的数据可以在=App()=
-    中设置，如：
-
-    #+BEGIN_EXAMPLE
-        // app.js
-        App({
-          globalData: 1
-        })
-    #+END_EXAMPLE
-
-    #+BEGIN_EXAMPLE
-        // a.js
-        // The localValue can only be used in file a.js.
-        var localValue = 'a'
-        // Get the app instance.
-        var app = getApp()
-        // Get the global data and change it.
-        app.globalData++
-    #+END_EXAMPLE
-
-    #+BEGIN_EXAMPLE
-        // b.js
-        // You can redefine localValue in file b.js, without interference with the localValue in a.js.
-        var localValue = 'b'
-        // If a.js it run before b.js, now the globalData shoule be 2.
-        console.log(getApp().globalData)
-    #+END_EXAMPLE
+     #+BEGIN_EXAMPLE
+         // b.js
+         // You can redefine localValue in file b.js, without interference with the localValue in a.js.
+         var localValue = 'b'
+         // If a.js it run before b.js, now the globalData shoule be 2.
+         console.log(getApp().globalData)
+     #+END_EXAMPLE
 
 **** API
 ***** 事件监听 API
-   我们约定，以 =on= 开头的 API用来监听某个事件是否触发，如：[[../../api/network/websocket/wx.onSocketOpen.html][wx.onSocketOpen]]， [[../../api/device/compass/wx.onCompassChange.html][wx.onCompassChange]]等。
+   我们约定，以 =on= 开头的 API用来监听某个事件是否触发，如：wx.onSocketOpen， wx.onCompassChange等。
 
    这类 API 接受一个回调函数作为参数，当事件触发时会调用这个回调函数，并将相关数据以参数形式传入。
 
@@ -347,9 +245,8 @@
    #+END_EXAMPLE
 
 ***** 同步 API
-      我们约定，以 =Sync= 结尾的 API 都是同步 API， 如[[../../api/storage/wx.setStorageSync.html][wx.setStorageSync]]，
-      [[../../api/base/system/system-info/wx.getSystemInfoSync.html][wx.getSystemInfoSync]]等。此外，也有一些其他的同步 API，如[[../../api/worker/wx.createWorker.html][wx.createWorker]]，
-      [[../../api/media/background-audio/wx.getBackgroundAudioManager.html][wx.getBackgroundAudioManager]]等，详情参见 API 文档中的说明。
+      我们约定，以 =Sync= 结尾的 API 都是同步 API， 如wx.setStorageSync， wx.getSystemInfoSync等。此外，也有一些其他的同步 API，如wx.createWorker，
+      wx.getBackgroundAudioManager等，详情参见 API 文档中的说明。
 
       同步 API 的执行结果可以通过函数返回值直接获取，如果执行出错会抛出异常。
 
@@ -363,11 +260,8 @@
           }
       #+END_EXAMPLE
 
-
 ***** 异步 API
-
-      大多数 API 都是异步 API，如[[../../api/network/request/wx.request.html][wx.request]]，[[../../api/open-api/login/wx.login.html][wx.login]]等。这类 API 接口通常都接受一
-      个 =Object=类型的参数，这个参数都支持按需指定以下字段来接收接口调用结果：
+      大多数 API 都是异步 API，如wx.request，wx.login等。这类 API 接口通常都接受一个 Object类型的参数，这个参数都支持按需指定以下字段来接收接口调用结果：
 
       *Object 参数说明*
       | 参数名     | 类型       | 必填   | 说明                                               |
@@ -388,11 +282,7 @@
       | errCode | number | 错误码，仅部分 API 支持，具体含义请参考对应 API 文档，成功时为 =0=。 |
       | 其他    | Any    | 接口返回的其他数据                                                   |
 
-      异步 API 的执行结果需要通过 =Object=
-      类型的参数中传入的对应回调函数获取。部分异步 API
-      也会有返回值，可以用来实现更丰富的功能，如
-      [[../../api/network/request/wx.request.html][wx.request]]，[[../../api/network/websocket/wx.connectSocket.html][wx.connectSocket]]
-      等。
+      异步 API 的执行结果需要通过 =Object= 类型的参数中传入的对应回调函数获取。部分异步 API 也会有返回值，可以用来实现更丰富的功能，如 wx.requestwx.connectSocket 等。
 
       *代码示例*
 
@@ -405,14 +295,9 @@
       #+END_EXAMPLE
 
 ***** 异步 API 返回 Promise
-      1. 部分接口如 =downloadFile=, =request=, =uploadFile=, =connectSocket=,
-         =createCamera=（小游戏）本身就有返回值， 它们的 promisify需要开发者自行封
-         装。
-      2. 当没有回调参数时，异步接口返回 promise。此时若函数调用失败进入 fail
-         逻辑， 会报错提示 =Uncaught (in promise)=，开发者可通过 catch
-         来进行捕获。
-      3. [[../../api/base/app/app-event/wx.onUnhandledRejection.html][wx.onUnhandledRejection]]
-         可以监听未处理的 Promise 拒绝事件。
+      1. 部分接口如 =downloadFile=, =request=, =uploadFile=, =connectSocket=, =createCamera=（小游戏）本身就有返回值， 它们的 promisify需要开发者自行封 装。
+      2. 当没有回调参数时，异步接口返回 promise。此时若函数调用失败进入 fail 逻辑， 会报错提示 =Uncaught (in promise)=，开发者可通过 catch 来进行捕获。
+      3. wx.onUnhandledRejection 可以监听未处理的 Promise 拒绝事件。
 
       *代码示例*
       #+BEGIN_EXAMPLE
@@ -429,201 +314,172 @@
 
 *** 视图层 View
 **** WXML
-****** 数据绑定
+***** 数据绑定
+      #+BEGIN_EXAMPLE
+          <!--wxml-->
+          <view> {{message}} </view>
+      #+END_EXAMPLE
 
-       #+BEGIN_EXAMPLE
-           <!--wxml-->
-           <view> {{message}} </view>
-       #+END_EXAMPLE
+      #+BEGIN_EXAMPLE
+          // page.js
+          Page({
+            data: {
+              message: 'Hello MINA!'
+            }
+          })
+      #+END_EXAMPLE
 
-       #+BEGIN_EXAMPLE
-           // page.js
-           Page({
-             data: {
-               message: 'Hello MINA!'
-             }
-           })
-       #+END_EXAMPLE
+***** 列表渲染
 
+      #+BEGIN_EXAMPLE
+          <!--wxml-->
+          <view wx:for="{{array}}"> {{item}} </view>
+      #+END_EXAMPLE
 
+      #+BEGIN_EXAMPLE
+          // page.js
+          Page({
+            data: {
+              array: [1, 2, 3, 4, 5]
+            }
+          })
+      #+END_EXAMPLE
+***** 条件渲染
 
+      #+BEGIN_EXAMPLE
+          <!--wxml-->
+          <view wx:if="{{view == 'WEBVIEW'}}"> WEBVIEW </view>
+          <view wx:elif="{{view == 'APP'}}"> APP </view>
+          <view wx:else="{{view == 'MINA'}}"> MINA </view>
+      #+END_EXAMPLE
 
-****** 列表渲染
+      #+BEGIN_EXAMPLE
+          // page.js
+          Page({
+            data: {
+              view: 'MINA'
+            }
+          })
+      #+END_EXAMPLE
 
-       #+BEGIN_EXAMPLE
-           <!--wxml-->
-           <view wx:for="{{array}}"> {{item}} </view>
-       #+END_EXAMPLE
+***** 模板
+      #+BEGIN_EXAMPLE
+          <!--wxml-->
+          <template name="staffName">
+            <view>
+              FirstName: {{firstName}}, LastName: {{lastName}}
+            </view>
+          </template>
 
-       #+BEGIN_EXAMPLE
-           // page.js
-           Page({
-             data: {
-               array: [1, 2, 3, 4, 5]
-             }
-           })
-       #+END_EXAMPLE
+          <template is="staffName" data="{{...staffA}}"></template>
+          <template is="staffName" data="{{...staffB}}"></template>
+          <template is="staffName" data="{{...staffC}}"></template>
+      #+END_EXAMPLE
 
-
-
-
-****** 条件渲染
-
-       #+BEGIN_EXAMPLE
-           <!--wxml-->
-           <view wx:if="{{view == 'WEBVIEW'}}"> WEBVIEW </view>
-           <view wx:elif="{{view == 'APP'}}"> APP </view>
-           <view wx:else="{{view == 'MINA'}}"> MINA </view>
-       #+END_EXAMPLE
-
-       #+BEGIN_EXAMPLE
-           // page.js
-           Page({
-             data: {
-               view: 'MINA'
-             }
-           })
-       #+END_EXAMPLE
-
-****** 模板
-
-       #+BEGIN_EXAMPLE
-           <!--wxml-->
-           <template name="staffName">
-             <view>
-               FirstName: {{firstName}}, LastName: {{lastName}}
-             </view>
-           </template>
-
-           <template is="staffName" data="{{...staffA}}"></template>
-           <template is="staffName" data="{{...staffB}}"></template>
-           <template is="staffName" data="{{...staffC}}"></template>
-       #+END_EXAMPLE
-
-       #+BEGIN_EXAMPLE
-           // page.js
-           Page({
-             data: {
-               staffA: {firstName: 'Hulk', lastName: 'Hu'},
-               staffB: {firstName: 'Shang', lastName: 'You'},
-               staffC: {firstName: 'Gideon', lastName: 'Lin'}
-             }
-           })
-       #+END_EXAMPLE
+      #+BEGIN_EXAMPLE
+          // page.js
+          Page({
+            data: {
+              staffA: {firstName: 'Hulk', lastName: 'Hu'},
+              staffB: {firstName: 'Shang', lastName: 'You'},
+              staffC: {firstName: 'Gideon', lastName: 'Lin'}
+            }
+          })
+      #+END_EXAMPLE
 
 **** WXSS
-****** 尺寸单位
+***** 尺寸单位
 
-       -  rpx（responsive pixel）:
-         可以根据屏幕宽度进行自适应。规定屏幕宽为 750rpx。如在 iPhone6
-         上，屏幕宽度为 375px，共有 750 个物理像素，则 750rpx = 375px =
-         750 物理像素，1rpx = 0.5px = 1 物理像素。
-****** 样式导入
+      -  rpx（responsive pixel）: 可以根据屏幕宽度进行自适应。规定屏幕宽为 750rpx。如在 iPhone6 上，屏幕宽度为 375px，共有 750 个物理像素，则 750rpx = 375px = 750 物理像素，1rpx = 0.5px = 1 物理像素。
+***** 样式导入
+      使用 =@import= 语句可以导入外联样式表， =@import= 后跟需要导入的外联样式表的相对路径，用 =;= 表示语句结束。
 
-       使用 =@import= 语句可以导入外联样式表， =@import= 后跟需要导入的外联样式表的相对路径，用 =;= 表示语句结束。
+      #+BEGIN_EXAMPLE
+          /** common.wxss **/
+          .small-p {
+            padding:5px;
+          }
+      #+END_EXAMPLE
 
-       #+BEGIN_EXAMPLE
-           /** common.wxss **/
-           .small-p {
-             padding:5px;
-           }
-       #+END_EXAMPLE
+      #+BEGIN_EXAMPLE
+          /** app.wxss **/
+          @import "common.wxss";
+          .middle-p {
+            padding:15px;
+          }
+      #+END_EXAMPLE
 
-       #+BEGIN_EXAMPLE
-           /** app.wxss **/
-           @import "common.wxss";
-           .middle-p {
-             padding:15px;
-           }
-       #+END_EXAMPLE
+***** 内联样式
+      #+BEGIN_EXAMPLE
+          <view style="color:{{color}};" />
+      #+END_EXAMPLE
 
-****** 内联样式
-       #+BEGIN_EXAMPLE
-           <view style="color:{{color}};" />
-       #+END_EXAMPLE
-
-       #+BEGIN_EXAMPLE
-           <view class="normal_view" />
-       #+END_EXAMPLE
-
-
-
-
-****** 选择器
-       | 选择器             | 样例               | 样例描述                                         |
-       |--------------------+--------------------+--------------------------------------------------|
-       | .class             | =.intro=           | 选择所有拥有 class="intro" 的组件                |
-       | #id                | =#firstname=       | 选择拥有 id="firstname" 的组件                   |
-       | element            | =view=             | 选择所有 view 组件                               |
-       | element, element   | =view, checkbox=   | 选择所有文档的 view 组件和所有的 checkbox 组件   |
-       | ::after            | =view::after=      | 在 view 组件后边插入内容                         |
-       | ::before           | =view::before=     | 在 view 组件前边插入内容                         |
-
-
- 
-
+      #+BEGIN_EXAMPLE
+          <view class="normal_view" />
+      #+END_EXAMPLE
+***** 选择器
+      | 选择器           | 样例             | 样例描述                                       |
+      |------------------+------------------+------------------------------------------------|
+      | .class           | =.intro=         | 选择所有拥有 class="intro" 的组件              |
+      | #id              | =#firstname=     | 选择拥有 id="firstname" 的组件                 |
+      | element          | =view=           | 选择所有 view 组件                             |
+      | element, element | =view, checkbox= | 选择所有文档的 view 组件和所有的 checkbox 组件 |
+      | ::after          | =view::after=    | 在 view 组件后边插入内容                       |
+      | ::before         | =view::before=   | 在 view 组件前边插入内容                       |
 **** WXS
      WXS（WeiXin Script）是小程序的一套脚本语言，结合=WXML=，可以构建出页面的结构。
+***** 页面渲染
+      #+BEGIN_EXAMPLE
+          <!--wxml-->
+          <wxs module="m1">
+          var msg = "hello world";
 
-****** 页面渲染
+          module.exports.message = msg;
+          </wxs>
 
-       #+BEGIN_EXAMPLE
-           <!--wxml-->
-           <wxs module="m1">
-           var msg = "hello world";
+          <view> {{m1.message}} </view>
+      #+END_EXAMPLE
 
-           module.exports.message = msg;
-           </wxs>
+      页面输出：
 
-           <view> {{m1.message}} </view>
-       #+END_EXAMPLE
+      #+BEGIN_EXAMPLE
+          hello world
+      #+END_EXAMPLE
 
-       页面输出：
+***** 数据处理
 
-       #+BEGIN_EXAMPLE
-           hello world
-       #+END_EXAMPLE
+      #+BEGIN_EXAMPLE
+          // page.js
+          Page({
+            data: {
+              array: [1, 2, 3, 4, 5, 1, 2, 3, 4]
+            }
+          })
+      #+END_EXAMPLE
 
+      #+BEGIN_EXAMPLE
+          <!--wxml-->
+          <!-- 下面的 getMax 函数，接受一个数组，且返回数组中最大的元素的值 -->
+          <wxs module="m1">
+          var getMax = function(array) {
+            var max = undefined;
+            for (var i = 0; i < array.length; ++i) {
+              max = max === undefined ?
+                array[i] :
+                (max >= array[i] ? max : array[i]);
+            }
+            return max;
+          }
 
+          module.exports.getMax = getMax;
+          </wxs>
 
+          <!-- 调用 wxs 里面的 getMax 函数，参数为 page.js 里面的 array -->
+          <view> {{m1.getMax(array)}} </view>
+      #+END_EXAMPLE
 
-****** 数据处理
-
-       #+BEGIN_EXAMPLE
-           // page.js
-           Page({
-             data: {
-               array: [1, 2, 3, 4, 5, 1, 2, 3, 4]
-             }
-           })
-       #+END_EXAMPLE
-
-       #+BEGIN_EXAMPLE
-           <!--wxml-->
-           <!-- 下面的 getMax 函数，接受一个数组，且返回数组中最大的元素的值 -->
-           <wxs module="m1">
-           var getMax = function(array) {
-             var max = undefined;
-             for (var i = 0; i < array.length; ++i) {
-               max = max === undefined ?
-                 array[i] :
-                 (max >= array[i] ? max : array[i]);
-             }
-             return max;
-           }
-
-           module.exports.getMax = getMax;
-           </wxs>
-
-           <!-- 调用 wxs 里面的 getMax 函数，参数为 page.js 里面的 array -->
-           <view> {{m1.getMax(array)}} </view>
-       #+END_EXAMPLE
-
-       页面输出：
-
-       #+BEGIN_EXAMPLE
-           5
-       #+END_EXAMPLE
+      页面输出：
+          5
 
 *** 事件详解
 **** 事件分类
@@ -1163,11 +1019,9 @@
 
 **** 关键帧动画
 
-     从小程序基础库 [[../compatibility.html][2.9.0]]开始支持一种更友好的动画创建方式，用于代替旧的
-     [[../../api/ui/animation/wx.createAnimation.html][wx.createAnimation]]。它具有更好的性能和更可控的接口。
+     从小程序基础库 [2.9.0]]开始支持一种更友好的动画创建方式，用于代替旧的 wx.createAnimation。它具有更好的性能和更可控的接口。
 
-     在页面或自定义组件中，当需要进行关键帧动画时，可以使用 =this.animate=
-     接口：
+     在页面或自定义组件中，当需要进行关键帧动画时，可以使用 =this.animate= 接口：
 
      #+BEGIN_EXAMPLE
          this.animate(selector, keyframes, duration, callback)
@@ -1215,17 +1069,9 @@
      | translateX      | Number        |        | 否                                | X 方向位移，即 CSS transform translateX |
      | translateY      | Number        |        | 否                                | Y 方向位移，即 CSS transform translateY |
      | translateZ      | Number        |        | 否                                | Z 方向位移，即 CSS transform translateZ |
+**** 滚动驱动的动画
 
-
- 
-
-**** [[index_u59.html#滚动驱动的动画][#]] 滚动驱动的动画
-
-
-  
- 
-
-     我们发现，根据滚动位置而不断改变动画的进度是一种比较常见的场景，这类动画可以让人感觉到界面交互很连贯自然，体验更好。因此，从小程序基础库
+    我们发现，根据滚动位置而不断改变动画的进度是一种比较常见的场景，这类动画可以让人感觉到界面交互很连贯自然，体验更好。因此，从小程序基础库
      [[../compatibility.html][2.9.0]] 开始支持一种由滚动驱动的动画机制。
 
      基于上述的关键帧动画接口，新增一个 =ScrollTimeline=
@@ -1260,18 +1106,7 @@
 
  
 
-
-**** [[index_u59.html#示例代码-2][#]] 示例代码
-
-
-  
- 
-
-     [[https://developers.weixin.qq.com/s/994o8jmY7FcQ][在开发者工具中预览效果<<>>]]
-
-
-
-
+**** 示例代码
 
      #+BEGIN_EXAMPLE
            this.animate('.avatar', [{
@@ -1313,73 +1148,12 @@
 
 
 
+**** 高级的动画方式
+    在一些复杂场景下，上述的动画方法可能并不适用。
 
-**** [[index_u59.html#高级的动画方式][#]] 高级的动画方式
-
-
-  
- 
-
-     在一些复杂场景下，上述的动画方法可能并不适用。
-
-     [[file:interactive-animation.html][WXS 响应事件]] 的方式可以通过使用 WXS
-     来响应事件的方法来动态调整节点的 style 属性。通过不断改变 style
-     属性的值可以做到动画效果。同时，这种方式也可以根据用户的触摸事件来动态地生成动画。
-
-     连续使用 setData
-     来改变界面的方法也可以达到动画的效果。这样可以任意地改变界面，但通常会产生较大的延迟或卡顿，甚至导致小程序僵死。此时可以通过将页面的
-     setData 改为 [[../custom-component][自定义组件]] 中的 setData
-     来提升性能。下面的例子是使用 setData 来实现秒表动画的示例。
-
-     [[https://developers.weixin.qq.com/s/cRTvdPmO7d5T][在开发者工具中预览效果<<>>]]
-
-
- 
-
-
-
- 
-
-
-
-
-
-
-     --------------
-
-
-     [[https://developers.weixin.qq.com/miniprogram/dev/framework/view/animation.html]]
-
-     \\
-     \\
-
-
-
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-     --------------
-
-
- 
-
-
-
-
-
-
+     [[file:interactive-animation.html][WXS 响应事件]] 的方式可以通过使用 WXS 来响应事件的方法来动态调整节点的 style 属性。通过不断改变 style 属性的值可以做到动画效果。同时，这种方式也可以根据用户的触摸事件来动态地生成动画。
+     
+     连续使用 setData 来改变界面的方法也可以达到动画的效果。这样可以任意地改变界面，但通常会产生较大的延迟或卡顿，甚至导致小程序僵死。此时可以通过将页面的 setData 改为 [[../custom-component][自定义组件]] 中的 setData 来提升性能。下面的例子是使用 setData 来实现秒表动画的示例。
 
 *** 初始渲染缓存
 **** 初始渲染缓存工作原理
@@ -1408,8 +1182,7 @@
      -  展示自定义的加载提示；
      -  提前展示广告，等等。
 
-**** [[index_u95.html#支持的组件][#]] 支持的组件
-
+**** 支持的组件
      在初始渲染缓存阶段中，复杂组件不能被展示或不能响应交互。
 
      目前支持的内置组件：
@@ -1423,36 +1196,16 @@
 
      自定义组件本身可以被展示（但它们里面用到的内置组件也遵循上述限制）。
 
-**** [[index_u95.html#静态初始渲染缓存][#]] 静态初始渲染缓存
-
-
-  
- 
-
-     若想启用初始渲染缓存，最简单的方法是在页面的 =json= 文件中添加配置项
-     ="initialRenderingCache": "static"= ：
-
-
-
-
-
+**** 静态初始渲染缓存
+     若想启用初始渲染缓存，最简单的方法是在页面的 =json= 文件中添加配置项 ="initialRenderingCache": "static"= ：
      #+BEGIN_EXAMPLE
          {
            "initialRenderingCache": "static"
          }
      #+END_EXAMPLE
-
-
-
-
-
-     如果想要对所有页面启用，可以在 =app.json= 的 =window=
-     配置段中添加这个配置：
-
-
-
-
-
+     
+     如果想要对所有页面启用，可以在 =app.json= 的 =window= 配置段中添加这个配置：
+     
      #+BEGIN_EXAMPLE
          {
            "window": {
@@ -1460,10 +1213,6 @@
            }
          }
      #+END_EXAMPLE
-
-
-
-
 
      添加这个配置项之后，在手机中预览小程序首页，然后杀死小程序再次进入，就会通过初始渲染缓存来渲染首页。
 
@@ -1636,34 +1385,22 @@
 
      --------------
 
-
- 
 ** 自定义组件
    开发者可以将页面内的功能模块抽象成自定义组件，以便在不同的页面中重复使用；也可
    以将复杂的页面拆分成多个低耦合的模块，有助于代码维护。自定义组件在使用时与基础
    组件非常相似。
 
-**** [[index_u7.html#创建自定义组件][#]] 创建自定义组件
+**** 创建自定义组件
 
-     类似于页面，一个自定义组件由 =json= =wxml= =wxss= =js=
-     4 个文件组成。要编写一个自定义组件，首先需要在 =json=
-     文件中进行自定义组件声明（将 =component= 字段设为 =true=
-     可将这一组文件设为自定义组件）：
-
+     类似于页面，一个自定义组件由 =json= =wxml= =wxss= =js= 4 个文件组成。要编写一个自定义组件，首先需要在 =json= 文件中进行自定义组件声明（将 =component= 字段设为 =true= 可将这一组文件设为自定义组件）：
      #+BEGIN_EXAMPLE
          {
            "component": true
          }
      #+END_EXAMPLE
 
-
-
-
-
-     同时，还要在 =wxml= 文件中编写组件模板，在 =wxss=
-     文件中加入组件样式，它们的写法与页面的写法类似。具体细节和注意事项参见
-     [[file:wxml-wxss.html][组件模板和样式]] 。
-
+     同时，还要在 =wxml= 文件中编写组件模板，在 =wxss= 文件中加入组件样式，它们的写法与页面的写法类似。具体细节和注意事项参见 [[file:wxml-wxss.html][组件模板和样式]] 。
+     
      *代码示例：*
 
      #+BEGIN_EXAMPLE
@@ -1720,13 +1457,8 @@
          })
      #+END_EXAMPLE
 
-**** [[index_u7.html#使用自定义组件][#]] 使用自定义组件
-     使用已注册的自定义组件前，首先要在页面的 =json=
-     文件中进行引用声明。此时需要提供每个自定义组件的标签名和对应的自定义组件文件路径：
-
-
-
-
+**** 使用自定义组件
+     使用已注册的自定义组件前，首先要在页面的 =json= 文件中进行引用声明。此时需要提供每个自定义组件的标签名和对应的自定义组件文件路径：
 
      #+BEGIN_EXAMPLE
          {
@@ -1736,12 +1468,7 @@
          }
      #+END_EXAMPLE
 
-
-
-
-
-     这样，在页面的 =wxml=
-     中就可以像使用基础组件一样使用自定义组件。节点名即自定义组件的标签名，节点属性即传递给组件的属性值。
+     这样，在页面的 =wxml= 中就可以像使用基础组件一样使用自定义组件。节点名即自定义组件的标签名，节点属性即传递给组件的属性值。
 
      #+BEGIN_QUOTE
      开发者工具 1.02.1810190 及以上版本支持在 app.json 中声明
@@ -1750,12 +1477,6 @@
      #+END_QUOTE
 
      *代码示例：*
-
-     [[https://developers.weixin.qq.com/s/OMfVAKmZ6KZT][在开发者工具中预览效果<<>>]]
-
-
-
-
 
      #+BEGIN_EXAMPLE
          <view>
@@ -1766,17 +1487,14 @@
 
      自定义组件的 =wxml= 节点结构在与数据结合之后，将被插入到引用位置内。
 
-**** [[index_u7.html#细节注意事项][#]] 细节注意事项
+**** 细节注意事项
      一些需要注意的细节：
 
-     -  因为 WXML
-       节点标签名只能是小写字母、中划线和下划线的组合，所以自定义组件的标签名也只能包含这些字符。
-     -  自定义组件也是可以引用自定义组件的，引用方法类似于页面引用自定义组件的方式（使用
-       =usingComponents= 字段）。
+     -  因为 WXML 节点标签名只能是小写字母、中划线和下划线的组合，所以自定义组件的标签名也只能包含这些字符。
+     -  自定义组件也是可以引用自定义组件的，引用方法类似于页面引用自定义组件的方式（使用 =usingComponents= 字段）。
      -  自定义组件和页面所在项目根目录名不能以“wx-”为前缀，否则会报错。
 
-     注意，是否在页面文件中使用 =usingComponents= 会使得页面的 =this=
-     对象的原型稍有差异，包括：
+     注意，是否在页面文件中使用 =usingComponents= 会使得页面的 =this= 对象的原型稍有差异，包括：
 
      -  使用 =usingComponents= 页面的原型与不使用时不一致，即
        =Object.getPrototypeOf(this)= 结果不同。
@@ -4728,7 +4446,6 @@
 
     --------------
 
-
 * 详解微信小程序开发
 **  *五、基础文件目录详解*
    project.config.json: 小程序的配置文件，包含项目打包配置、上传代码自动压缩等等，是一些开发、打包之类的配置。
@@ -4872,283 +4589,241 @@ onLoad: function (options) {
 
 * 组件和 api
 ** 组件
-   - [view](https://mp.weixin.qq.com/debug/wxadoc/dev/component/view.html)
-   - [scroll-view](https://mp.weixin.qq.com/debug/wxadoc/dev/component/scroll-view.html)
-   - [swiper](https://mp.weixin.qq.com/debug/wxadoc/dev/component/swiper.html)
-
-   - [icon](https://mp.weixin.qq.com/debug/wxadoc/dev/component/icon.html)
-   - [text](https://mp.weixin.qq.com/debug/wxadoc/dev/component/text.html)
-   - [progress](https://mp.weixin.qq.com/debug/wxadoc/dev/component/progress.html)
-
-   ### 表单组件
-
-   - [button](https://mp.weixin.qq.com/debug/wxadoc/dev/component/button.html)
-   - [checkbox](https://mp.weixin.qq.com/debug/wxadoc/dev/component/checkbox.html)
-   - [form](https://mp.weixin.qq.com/debug/wxadoc/dev/component/form.html)
-   - [input](https://mp.weixin.qq.com/debug/wxadoc/dev/component/input.html)
-   - [label](https://mp.weixin.qq.com/debug/wxadoc/dev/component/label.html)
-   - [picker](https://mp.weixin.qq.com/debug/wxadoc/dev/component/picker.html)
-   - [radio](https://mp.weixin.qq.com/debug/wxadoc/dev/component/radio.html)
-   - [slider](https://mp.weixin.qq.com/debug/wxadoc/dev/component/slider.html)
-   - [switch](https://mp.weixin.qq.com/debug/wxadoc/dev/component/switch.html)
-   - [textarea](https://mp.weixin.qq.com/debug/wxadoc/dev/component/textarea.html)
-
-   ### 导航
-
-   - [navigator](https://mp.weixin.qq.com/debug/wxadoc/dev/component/navigator.html)
-
-   ### 媒体组件
-
-   - [audio](https://mp.weixin.qq.com/debug/wxadoc/dev/component/audio.html)
-   - [image](https://mp.weixin.qq.com/debug/wxadoc/dev/component/image.html)
-   - [video](https://mp.weixin.qq.com/debug/wxadoc/dev/component/video.html)
-
-   ### 地图
-
-   - [map](hhttps://mp.weixin.qq.com/debug/wxadoc/dev/component/map.html%20#map)
-
-   ### 画布
-
-   - [canvas](https://mp.weixin.qq.com/debug/wxadoc/dev/component/canvas.html)
-
-   ### 客服会话
-
-   - [contact-button](https://mp.weixin.qq.com/debug/wxadoc/dev/component/contact-button.html)
-
-** api
-   ## [API](https://mp.weixin.qq.com/debug/wxadoc/dev/api/)
-
-   ### [网络](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-network.html)
-
-   #### [发起请求](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-request.html)
-
-   - `wx.request`   `wx.request` 发起的是 HTTPS 请求
-
-   #### [上传、下载](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-file.html)
-
-   - `wx.uploadFile`   将本地资源上传到开发者服务器
-   - `wx.downloadFile` 下载文件资源到本地
-
-   #### [WebSocket](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
-
-   - `wx.connectSocket`  创建一个 WebSocket 连接
-   - `wx.onSocketOpen`   监听 WebSocket 连接打开事件
-   - `wx.onSocketError`  监听 WebSocket 错误
-   - `wx.sendSocketMessage`  通过 WebSocket 连接发送数据
-   - `wx.onSocketMessage`  监听 WebSocket 接受到服务器的消息事件
-   - `wx.closeSocket`    关闭 WebSocket 连接
-   - `wx.onSocketClose`  监听 WebSocket 关闭
-
-   ### [媒体](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-picture.html)
-
-   #### [图片](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-picture.html)
-
-   - `wx.chooseImage`  从本地相册选择图片或使用相机拍照
-   - `wx.previewImage` 预览图片
-   - `wx.getImageInfo` 获取图片信息
-
-   #### [录音](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-record.html)
-
-   - `wx.startRecord`  开始录音
-   - `wx.stopRecord`   主动调用停止录音
-
-   #### [音频播放控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-voice.html)
-
-   - `wx.playVoice`    开始播放语音
-   - `wx.pauseVoice`   暂停正在播放的语音
-   - `wx.stopVoice`    结束播放语音
-
-   #### [音乐播放控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-background-audio.html)
-
-   - `wx.getBackgroundAudioPlayerState`  获取音乐播放状态
-   - `wx.playBackgroundAudio`  播放音乐，同时只能有一首音乐正在播放
-   - `wx.pauseBackgroundAudio` 暂停播放音乐
-   - `wx.seekBackgroundAudio`  控制音乐播放进度
-   - `wx.stopBackgroundAudio`  停止播放音乐
-   - `wx.onBackgroundAudioPlay`  监听音乐播放
-   - `wx.onBackgroundAudioPause` 监听音乐暂停
-   - `wx.onBackgroundAudioStop`  监听音乐停止
-
-   #### [音频组件控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
-
-   - `wx.createAudioContext` 创建并返回 audio 上下文 `audioContext` 对象
-
-   #### [视频](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
-
-   - `wx.chooseVideo`  拍摄视频或从手机相册中选视频，返回视频的临时文件路径
-
-   #### [视频组件控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
-
-   - `wx.createVideoContext`  创建并返回 video 上下文 `videoContext` 对象
-
-   ### [文件](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
-
-   - `wx.saveFile` 保存文件到本地
-   - `wx.getSavedFileList` 获取本地已保存的文件列表
-   - `wx.getSavedFileInfo` 获取本地文件的文件信息
-   - `wx.removeSavedFile` 删除本地存储的文件
-   - `wx.openDocument` 新开页面打开文档，支持格式：doc, xls, ppt, pdf, docx, xlsx, pptx
-
-   ### [数据缓存](https://mp.weixin.qq.com/debug/wxadoc/dev/api/data.html)
-
-   - `wx.setStorage`   将数据存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个异步接口
-   - `wx.setStorageSync` 将 data 存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个同步接口
-   - `wx.getStorage`  从本地缓存中异步获取指定 key 对应的内容
-   - `wx.getStorageSync` 从本地缓存中同步获取指定 key 对应的内容
-   - `wx.getStorageInfo` 异步获取当前 storage 的相关信息
-   - `wx.getStorageInfoSync` 同步获取当前 storage 的相关信息
-   - `wx.removeStorage`  从本地缓存中异步移除指定 key
-   - `wx.removeStorageSync`  从本地缓存中同步移除指定 key
-   - `wx.clearStorage` 清理本地数据缓存
-   - `wx.clearStorageSync` 同步清理本地数据缓存
-
-   ### [位置](https://mp.weixin.qq.com/debug/wxadoc/dev/api/location.html)
-
-   #### 获取位置
-
-   - `wx.getLocation` 获取当前的地理位置、速度
-   - `wx.chooseLocation` 打开地图选择位置
-
-   #### 查看位置
-
-   - `wx.openLocation` 使用微信内置地图查看位置
-
-   #### [地图组件控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-map.html)
-
-   - `wx.createMapContext` 创建并返回 map 上下文 mapContext 对象
-
-   ### [设备](https://mp.weixin.qq.com/debug/wxadoc/dev/api/device.html)
-
-   #### [系统信息](https://mp.weixin.qq.com/debug/wxadoc/dev/api/systeminfo.html)
-
-   - `wx.getSystemInfo` 获取系统信息
-   - `wx.getSystemInfoSync` 获取系统信息同步接口
-
-   #### [网络状态](https://mp.weixin.qq.com/debug/wxadoc/dev/api/device.html)
-
-   - `wx.getNetworkType` 获取网络类型
-
-   #### [重力感应](https://mp.weixin.qq.com/debug/wxadoc/dev/api/accelerometer.html)
-
-   - `wx.onAccelerometerChange`  监听重力感应数据，频率：5次/秒
-
-   #### [罗盘](https://mp.weixin.qq.com/debug/wxadoc/dev/api/campass.html)
-
-   - `wx.onCompassChange`  监听罗盘数据，频率：5次/秒
-
-   #### [拨打电话](https://mp.weixin.qq.com/debug/wxadoc/dev/api/phonecall.html)
-
-   - `wx.makePhoneCall`  拨打电话
-
-   #### [扫码](https://mp.weixin.qq.com/debug/wxadoc/dev/api/scancode.html)
-
-   - `wx.scanCode` 调起客户端扫码界面，扫码成功后返回对应的结果
-
-   ### [界面](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-react.html)
-
-   #### [交互反馈](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-react.html)
-
-   - `wx.showToast` 显示消息提示框
-   - `wx.hideToast` 隐藏消息提示框
-   - `wx.showModal` ​显示模态弹窗
-   - `wx.showActionSheet` 显示操作菜单
-
-   #### [设置导航条](https://mp.weixin.qq.com/debug/wxadoc/dev/api/ui.html)
-
-   - `wx.setNavigationBarTitle` 动态设置当前页面的标题
-   - `wx.showNavigationBarLoading` 在当前页面显示导航条加载动画
-   - `wx.hideNavigationBarLoading` 隐藏导航条加载动画
-
-   #### [导航](https://mp.weixin.qq.com/debug/wxadoc/dev/api/ui-navigate.html)
-
-   - `wx.navigateTo`  保留当前页面，跳转到应用内的某个页面，使用 `wx.navigateBack` 可以返回到原页面
-   - `wx.redirectTo` 关闭当前页面，跳转到应用内的某个页面
-   - `wx.switchTab`  跳转到 `tabBar` 页面，并关闭其他所有非 `tabBar` 页面
-   - `wx.navigateBack`  关闭当前页面，返回上一页面或多级页面。可通过 `getCurrentPages()` 获取当前的页面栈，决定需要返回几层
-
-   #### [动画](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-animation.html)
-
-   - `wx.createAnimation`  创建一个动画实例 `animation`。调用实例的方法来描述动画。最后通过动画实例的`export` 方法导出动画数据传递给组件的 `animation` 属性。
-   - animation
-   - 动画队列
-
-   #### [绘图](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/intro.html)
-
-   - [简介 intro](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/intro.html)
-   - [Canvas 坐标系](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/coordinates.html)
-   - [渐变](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/gradient.html)
-   - [API 接口索引](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/reference.html)
-   - [wx.createCanvasContext](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/create-canvas-context.html) 创建 canvas 绘图上下文（指定 canvasId）
-   - [wx.canvasToTempFilePath](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/reference.html) 把当前画布的内容导出生成图片，并返回文件路径
-
-   #### [下拉刷新](https://mp.weixin.qq.com/debug/wxadoc/dev/api/pulldown.html)
-
-   - `Page.onPullDownRefresh` 在 `Page` 中定义 `onPullDownRefresh` 处理函数，监听该页面用户下拉刷新事件
-   - `wx.stopPullDownRefresh` 停止当前页面下拉刷新
-
-   ### [开放接口](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-login.html)
-
-   #### [登录](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-login.html)
-
-   - `wx.login` 调用接口获取登录凭证（code）进而换取用户登录态信息
-   - `code` 换取 `session_key`
-   - 登录态维护
-     - 登录时序图
-     - `wx.checkSession` 检查登陆态是否过期
-   - [用户数据的签名验证和加解密](https://mp.weixin.qq.com/debug/wxadoc/dev/api/signature.html)
-     - 数据签名校验
-     - 加密数据解密算法
-
-   #### [用户信息](https://mp.weixin.qq.com/debug/wxadoc/dev/api/open.html)
-
-   - `wx.getUserInfo` 获取用户信息，需要先调用 `wx.login` 接口说明
-   - `UnionID` 机制说明
-
-   #### [微信支付](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-login.html)
-
-   - `wx.requestPayment` 发起微信支付
-
-   #### [模板消息](https://mp.weixin.qq.com/debug/wxadoc/dev/api/notice.html)
-
-   - 使用说明
-   - 接口说明
-     - 获取 access_token
-     - 发送模板消息
-     - 下发条件说明
-     - 审核说明
-     - 违规说明
-     - 处罚说明
-
-   #### 客服消息
-
-   - [接收消息和事件](https://mp.weixin.qq.com/debug/wxadoc/dev/api/custommsg/receive.html)
-     - 文本消息
-     - 图片消息
-     - 进入会话事件
-   - [发送客服消息](https://mp.weixin.qq.com/debug/wxadoc/dev/api/custommsg/conversation.html)
-   - [临时素材接口](https://mp.weixin.qq.com/debug/wxadoc/dev/api/custommsg/material.html)
-     - 获取临时素材
-     - 新增临时素材
-   - [接入指引](https://mp.weixin.qq.com/debug/wxadoc/dev/api/custommsg/callback_help.html)
-
-   #### [分享](https://mp.weixin.qq.com/debug/wxadoc/dev/api/share.html)
-
-   - Page.onShareAppMessage
-
-   ----
-
-   ## [工具](https://mp.weixin.qq.com/debug/wxadoc/dev/devtools/devtools.html)
-
-   ### [概览](https://mp.weixin.qq.com/debug/wxadoc/dev/devtools/devtools.html)
-
-   ### [程序调试](https://mp.weixin.qq.com/debug/wxadoc/dev/devtools/debug.html)
-
-   - 模拟器
-   - 调试工具
-     - Wxml panel
-     - Sources panel
-     - Network panel
-     - Appdata panel
-     - Storage panel
-     - Console panel
-   - 小程序操作区
+*** view 
+    - [view](https://mp.weixin.qq.com/debug/wxadoc/dev/component/view.html)
+    - [scroll-view](https://mp.weixin.qq.com/debug/wxadoc/dev/component/scroll-view.html)
+    - [swiper](https://mp.weixin.qq.com/debug/wxadoc/dev/component/swiper.html)
+
+    - [icon](https://mp.weixin.qq.com/debug/wxadoc/dev/component/icon.html)
+    - [text](https://mp.weixin.qq.com/debug/wxadoc/dev/component/text.html)
+    - [progress](https://mp.weixin.qq.com/debug/wxadoc/dev/component/progress.html)
+
+***  表单组件
+
+    - [button](https://mp.weixin.qq.com/debug/wxadoc/dev/component/button.html)
+    - [checkbox](https://mp.weixin.qq.com/debug/wxadoc/dev/component/checkbox.html)
+    - [form](https://mp.weixin.qq.com/debug/wxadoc/dev/component/form.html)
+    - [input](https://mp.weixin.qq.com/debug/wxadoc/dev/component/input.html)
+    - [label](https://mp.weixin.qq.com/debug/wxadoc/dev/component/label.html)
+    - [picker](https://mp.weixin.qq.com/debug/wxadoc/dev/component/picker.html)
+    - [radio](https://mp.weixin.qq.com/debug/wxadoc/dev/component/radio.html)
+    - [slider](https://mp.weixin.qq.com/debug/wxadoc/dev/component/slider.html)
+    - [switch](https://mp.weixin.qq.com/debug/wxadoc/dev/component/switch.html)
+    - [textarea](https://mp.weixin.qq.com/debug/wxadoc/dev/component/textarea.html)
+
+*** 导航
+
+    - [navigator](https://mp.weixin.qq.com/debug/wxadoc/dev/component/navigator.html)
+
+*** 媒体组件
+
+    - [audio](https://mp.weixin.qq.com/debug/wxadoc/dev/component/audio.html)
+    - [image](https://mp.weixin.qq.com/debug/wxadoc/dev/component/image.html)
+    - [video](https://mp.weixin.qq.com/debug/wxadoc/dev/component/video.html)
+
+   
+*** 地图
+
+    - [map](hhttps://mp.weixin.qq.com/debug/wxadoc/dev/component/map.html%20#map)
+
+    
+***  画布
+
+    - [canvas](https://mp.weixin.qq.com/debug/wxadoc/dev/component/canvas.html)
+
+    
+***  客服会话
+
+    - [contact-button](https://mp.weixin.qq.com/debug/wxadoc/dev/component/contact-button.html)
+
+** api(https://mp.weixin.qq.com/debug/wxadoc/dev/api/)
+*** ### [网络](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-network.html)
+**** #### [发起请求](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-request.html)
+      - `wx.request`   `wx.request` 发起的是 HTTPS 请求
+**** #### [上传、下载](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-file.html)
+
+      - `wx.uploadFile`   将本地资源上传到开发者服务器
+      - `wx.downloadFile` 下载文件资源到本地
+**** #### [WebSocket](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
+
+      - `wx.connectSocket`  创建一个 WebSocket 连接
+      - `wx.onSocketOpen`   监听 WebSocket 连接打开事件
+      - `wx.onSocketError`  监听 WebSocket 错误
+      - `wx.sendSocketMessage`  通过 WebSocket 连接发送数据
+      - `wx.onSocketMessage`  监听 WebSocket 接受到服务器的消息事件
+      - `wx.closeSocket`    关闭 WebSocket 连接
+      - `wx.onSocketClose`  监听 WebSocket 关闭
+*** ### [媒体](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-picture.html)
+****   #### [图片](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-picture.html)
+
+       - `wx.chooseImage`  从本地相册选择图片或使用相机拍照
+       - `wx.previewImage` 预览图片
+       - `wx.getImageInfo` 获取图片信息
+****    #### [录音](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-record.html)
+
+       - `wx.startRecord`  开始录音
+       - `wx.stopRecord`   主动调用停止录音
+**** #### [音频播放控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-voice.html)
+
+       - `wx.playVoice`    开始播放语音
+       - `wx.pauseVoice`   暂停正在播放的语音
+       - `wx.stopVoice`    结束播放语音
+**** #### [音乐播放控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/media-background-audio.html)
+
+       - `wx.getBackgroundAudioPlayerState`  获取音乐播放状态
+       - `wx.playBackgroundAudio`  播放音乐，同时只能有一首音乐正在播放
+       - `wx.pauseBackgroundAudio` 暂停播放音乐
+       - `wx.seekBackgroundAudio`  控制音乐播放进度
+       - `wx.stopBackgroundAudio`  停止播放音乐
+       - `wx.onBackgroundAudioPlay`  监听音乐播放
+       - `wx.onBackgroundAudioPause` 监听音乐暂停
+       - `wx.onBackgroundAudioStop`  监听音乐停止
+****        #### [音频组件控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
+
+       - `wx.createAudioContext` 创建并返回 audio 上下文 `audioContext` 对象
+**** #### [视频](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
+
+       - `wx.chooseVideo`  拍摄视频或从手机相册中选视频，返回视频的临时文件路径
+**** #### [视频组件控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
+
+       - `wx.createVideoContext`  创建并返回 video 上下文 `videoContext` 对象
+*** ### [文件](https://mp.weixin.qq.com/debug/wxadoc/dev/api/network-socket.html)
+
+       - `wx.saveFile` 保存文件到本地
+       - `wx.getSavedFileList` 获取本地已保存的文件列表
+       - `wx.getSavedFileInfo` 获取本地文件的文件信息
+       - `wx.removeSavedFile` 删除本地存储的文件
+       - `wx.openDocument` 新开页面打开文档，支持格式：doc, xls, ppt, pdf, docx, xlsx, pptx
+*** ### [数据缓存](https://mp.weixin.qq.com/debug/wxadoc/dev/api/data.html)
+
+       - `wx.setStorage`   将数据存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个异步接口
+       - `wx.setStorageSync` 将 data 存储在本地缓存中指定的 key 中，会覆盖掉原来该 key 对应的内容，这是一个同步接口
+       - `wx.getStorage`  从本地缓存中异步获取指定 key 对应的内容
+       - `wx.getStorageSync` 从本地缓存中同步获取指定 key 对应的内容
+       - `wx.getStorageInfo` 异步获取当前 storage 的相关信息
+       - `wx.getStorageInfoSync` 同步获取当前 storage 的相关信息
+       - `wx.removeStorage`  从本地缓存中异步移除指定 key
+       - `wx.removeStorageSync`  从本地缓存中同步移除指定 key
+       - `wx.clearStorage` 清理本地数据缓存
+       - `wx.clearStorageSync` 同步清理本地数据缓存
+*** ### [位置](https://mp.weixin.qq.com/debug/wxadoc/dev/api/location.html)
+**** #### 获取位置
+
+        - `wx.getLocation` 获取当前的地理位置、速度
+        - `wx.chooseLocation` 打开地图选择位置
+**** #### 查看位置
+
+        - `wx.openLocation` 使用微信内置地图查看位置
+**** #### [地图组件控制](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-map.html)
+
+        - `wx.createMapContext` 创建并返回 map 上下文 mapContext 对象
+*** ### [设备](https://mp.weixin.qq.com/debug/wxadoc/dev/api/device.html)
+**** #### [系统信息](https://mp.weixin.qq.com/debug/wxadoc/dev/api/systeminfo.html)
+
+        - `wx.getSystemInfo` 获取系统信息
+        - `wx.getSystemInfoSync` 获取系统信息同步接口
+****    #### [网络状态](https://mp.weixin.qq.com/debug/wxadoc/dev/api/device.html)
+
+        - `wx.getNetworkType` 获取网络类型
+**** #### [重力感应](https://mp.weixin.qq.com/debug/wxadoc/dev/api/accelerometer.html)
+
+        - `wx.onAccelerometerChange`  监听重力感应数据，频率：5次/秒
+**** #### [罗盘](https://mp.weixin.qq.com/debug/wxadoc/dev/api/campass.html)
+
+        - `wx.onCompassChange`  监听罗盘数据，频率：5次/秒
+**** #### [拨打电话](https://mp.weixin.qq.com/debug/wxadoc/dev/api/phonecall.html)
+
+        - `wx.makePhoneCall`  拨打电话
+**** #### [扫码](https://mp.weixin.qq.com/debug/wxadoc/dev/api/scancode.html)
+
+        - `wx.scanCode` 调起客户端扫码界面，扫码成功后返回对应的结果
+*** ### [界面](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-react.html)
+**** #### [交互反馈](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-react.html)
+
+        - `wx.showToast` 显示消息提示框
+        - `wx.hideToast` 隐藏消息提示框
+        - `wx.showModal` ​显示模态弹窗
+        - `wx.showActionSheet` 显示操作菜单
+**** #### [设置导航条](https://mp.weixin.qq.com/debug/wxadoc/dev/api/ui.html)
+
+        - `wx.setNavigationBarTitle` 动态设置当前页面的标题
+        - `wx.showNavigationBarLoading` 在当前页面显示导航条加载动画
+        - `wx.hideNavigationBarLoading` 隐藏导航条加载动画
+****    #### [导航](https://mp.weixin.qq.com/debug/wxadoc/dev/api/ui-navigate.html)
+
+        - `wx.navigateTo`  保留当前页面，跳转到应用内的某个页面，使用 `wx.navigateBack` 可以返回到原页面
+        - `wx.redirectTo` 关闭当前页面，跳转到应用内的某个页面
+        - `wx.switchTab`  跳转到 `tabBar` 页面，并关闭其他所有非 `tabBar` 页面
+        - `wx.navigateBack`  关闭当前页面，返回上一页面或多级页面。可通过 `getCurrentPages()` 获取当前的页面栈，决定需要返回几层
+**** #### [动画](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-animation.html)
+
+        - `wx.createAnimation`  创建一个动画实例 `animation`。调用实例的方法来描述动画。最后通过动画实例的`export` 方法导出动画数据传递给组件的 `animation` 属性。
+        - animation
+        - 动画队列
+**** #### [绘图](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/intro.html)
+
+        - [简介 intro](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/intro.html)
+        - [Canvas 坐标系](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/coordinates.html)
+        - [渐变](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/gradient.html)
+        - [API 接口索引](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/reference.html)
+        - [wx.createCanvasContext](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/create-canvas-context.html) 创建 canvas 绘图上下文（指定 canvasId）
+        - [wx.canvasToTempFilePath](https://mp.weixin.qq.com/debug/wxadoc/dev/api/canvas/reference.html) 把当前画布的内容导出生成图片，并返回文件路径
+**** #### [下拉刷新](https://mp.weixin.qq.com/debug/wxadoc/dev/api/pulldown.html)
+
+        - `Page.onPullDownRefresh` 在 `Page` 中定义 `onPullDownRefresh` 处理函数，监听该页面用户下拉刷新事件
+        - `wx.stopPullDownRefresh` 停止当前页面下拉刷新
+*** ### [开放接口](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-login.html)
+**** #### [登录](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-login.html)
+
+         - `wx.login` 调用接口获取登录凭证（code）进而换取用户登录态信息
+         - `code` 换取 `session_key`
+         - 登录态维护
+           - 登录时序图
+           - `wx.checkSession` 检查登陆态是否过期
+         - [用户数据的签名验证和加解密](https://mp.weixin.qq.com/debug/wxadoc/dev/api/signature.html)
+           - 数据签名校验
+           - 加密数据解密算法
+****     #### [用户信息](https://mp.weixin.qq.com/debug/wxadoc/dev/api/open.html)
+
+         - `wx.getUserInfo` 获取用户信息，需要先调用 `wx.login` 接口说明
+         - `UnionID` 机制说明
+**** #### [微信支付](https://mp.weixin.qq.com/debug/wxadoc/dev/api/api-login.html)
+
+         - `wx.requestPayment` 发起微信支付
+**** #### [模板消息](https://mp.weixin.qq.com/debug/wxadoc/dev/api/notice.html)
+
+         - 使用说明
+         - 接口说明
+           - 获取 access_token
+           - 发送模板消息
+           - 下发条件说明
+           - 审核说明
+           - 违规说明
+           - 处罚说明
+**** #### 客服消息
+
+         - [接收消息和事件](https://mp.weixin.qq.com/debug/wxadoc/dev/api/custommsg/receive.html)
+           - 文本消息
+           - 图片消息
+           - 进入会话事件
+         - [发送客服消息](https://mp.weixin.qq.com/debug/wxadoc/dev/api/custommsg/conversation.html)
+         - [临时素材接口](https://mp.weixin.qq.com/debug/wxadoc/dev/api/custommsg/material.html)
+           - 获取临时素材
+           - 新增临时素材
+         - [接入指引](https://mp.weixin.qq.com/debug/wxadoc/dev/api/custommsg/callback_help.html)
+**** #### [分享](https://mp.weixin.qq.com/debug/wxadoc/dev/api/share.html)
+
+         - Page.onShareAppMessage
+** [工具](https://mp.weixin.qq.com/debug/wxadoc/dev/devtools/devtools.html)
+*** [概览](https://mp.weixin.qq.com/debug/wxadoc/dev/devtools/devtools.html)
+*** [程序调试](https://mp.weixin.qq.com/debug/wxadoc/dev/devtools/debug.html)
+
+          - 模拟器
+          - 调试工具
+            - Wxml panel
+            - Sources panel
+            - Network panel
+            - Appdata panel
+            - Storage panel
+            - Console panel
+          - 小程序操作区
