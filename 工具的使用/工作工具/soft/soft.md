@@ -18,6 +18,8 @@ AppimageLauncher： 用来更好的使用以 appimage 为拓展名的应用程�
       sudo apt install peek
 ### 像素识别
       sudo snap install pick-colour-picker 
+### 屏幕录制
+sudo apt install simplescreenrecorder
 ## 编辑器 
 - emacs
 - vscode

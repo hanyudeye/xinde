@@ -1,5 +1,5 @@
-#+TITLE: 版本管理
-#+DESCRIPTION: 版本控制
+#+TITLE: git 
+#+DESCRIPTION: git 版本控制
 #+TAGS[]: git
 #+CATEGORIES[]: 技术
 #+DATE: 2019-12-25T06:23:31+08:00
@@ -7,6 +7,7 @@
 追踪文件修改历史信息。
 
 # more   
+* git 
 ** 初始化设置
    #+begin_src shell 
      git config [--system,--global, --list]
@@ -435,5 +436,21 @@ git branch --set-upstream-to=origin/master master
 
 git pull --allow-unrelated-histories    (忽略版本不同造成的影响)
 
-完成，问题解决
+* faq
+** 在Git存储库中查找并还原已删除的文件
+   查找影响给定路径的最后一次提交。由于文件不在head commit中，所以此commit必须已将其删除。
+   git rev-list -n 1 HEAD -- <file_path>
+ 
+ 然后在提交之前签出版本，使用插入符号(^符号：
+ git checkout <deleting_commit>^ -- <file_path>
+ 
+ 或者在一个命令中，如果$file是有问题的文件。
+ git checkout $(git rev-list -n 1 HEAD --"$file")^ --"$file"
+ 
+ 如果您使用的是zsh并启用了扩展的_glob选项，插入符号将无法工作。你可以用~1代替。
+ git checkout $(git rev-list -n 1 HEAD --"$file")~1 --"$file"
 
+ - 2
+ 使用git log --diff-filter=D --summary获取所有删除文件的承诺和删除文件的承诺；
+使用git checkout $commit~1 path/to/file.ext恢复删除的文件。
+其中，$commit是您在步骤1中发现的承诺值，例如e4cf499627。
