@@ -1802,7 +1802,7 @@
   获取 PARAM 参数
 
         input ( 'param.name' ) ;  // 获取单个参数
-       input ( 'param.' ) ;  // 获取全部参数
+       input ('param.' ) ;  // 获取全部参数
        // 下面是等效的
        input ( 'name' ) ; 
        input ( '' ) ;
@@ -1817,7 +1817,6 @@
        input ( 'get.' ) ;
 
   使用过滤方法
-
         input ( 'get.name' , '' , 'htmlspecialchars' ) ;  // 获取get变量 并用htmlspecialchars函数过滤
        input ( 'username' , '' , 'strip_tags' ) ;  // 获取param变量 并用strip_tags函数过滤
        input ( 'post.name' , '' , 'org\Filter::safeHtml' ) ;  // 获取post变量 并用org\Filter类的safeHtml方法过滤
@@ -3027,11 +3026,7 @@
        UPDATE `think_user`  SET `score`  = `score`  -  5  WHERE  `id`  =  1
  
 **** 删除数据
-
-
 ***** 删除数据
-
-
           // 根据主键删除
        Db : : table ( 'think_user' ) - > delete ( 1 ) ;
        Db : : table ( 'think_user' ) - > delete ( [ 1 , 2 , 3 ] ) ;
@@ -3077,8 +3072,6 @@
    =useSoftDelete=方法表示使用软删除，并且指定软删除字段为 =delete_time=，写入数据为当前的时间戳。
 
 **** 查询表达式
-
-
 ***** 查询表达式
 
 
@@ -3229,10 +3222,7 @@
        Db : : name ( 'user' ) - > whereNotBetween ( 'id' , '1,8' ) - > select ( ) ;
  
 ***** [NOT] IN： 同 sql 的[not] in
-
-
    查询条件支持字符串或者数组，例如：
-
          Db : : name ( 'user' ) - > where ( 'id' , 'in' , '1,5,8' ) - > select ( ) ;
  
    和下面的等效：
@@ -3253,8 +3243,6 @@
   
 
 ***** [NOT] NULL ：
-
-
    查询字段是否（不）是 =Null=，例如：
 
          Db : : name ( 'user' ) - > where ( 'name' ,  null )
@@ -3280,8 +3268,6 @@
         - > select ( ) ;
  
 ***** EXP：表达式
-
-
    支持更复杂的查询情况 例如：
 
          Db : : name ( 'user' ) - > where ( 'id' , 'in' , '1,3,8' ) - > select ( ) ;
@@ -3297,8 +3283,6 @@
          Db : : name ( 'user' ) - > whereExp ( 'id' ,  'IN (1,3,8) ' ) - > select ( ) ;
  
 **** 链式操作
-
-
    数据库提供的链式操作方法，可以有效的提高数据存取的代码清晰度和开发效率，并且支持所有的 CURD 操作（原生查询不支持链式操作）。
 
    使用也比较简单，假如我们现在要查询一个 User 表的满足状态为 1 的前 10 条记录，并希望按照用户的创建时间排序 ，代码如下：
@@ -3931,17 +3915,14 @@
          - > select ( ) ;
   
 ***** union
-
-
-    UNION 操作用于合并两个或多个 SELECT 语句的结果集。
+      UNION 操作用于合并两个或多个 SELECT 语句的结果集。
 
     使用示例：
-
-           Db : : field ( 'name' )
-             - > table ( 'think_user_0' )
-             - > union ( 'SELECT name FROM think_user_1' )
-             - > union ( 'SELECT name FROM think_user_2' )
-             - > select ( ) ;
+           Db::field ('name')
+             ->table('think_user_0')
+             ->union('SELECT name FROM think_user_1')
+             ->union('SELECT name FROM think_user_2')
+             ->select( ) ;
   
     闭包用法：
 
@@ -3982,18 +3963,12 @@
   
     每个 union 方法相当于一个独立的 SELECT 语句。
 
-
       UNION 内部的 SELECT 语句必须拥有相同数量的列。列也必须拥有相似的数据类型。同时，每条 SELECT 语句中的列的顺序必须相同。
   
-
 ***** distinct
-
-
     DISTINCT 方法用于返回唯一不同的值 。
 
     例如数据库表中有以下数据
-
-    [[file:images/000000.png]]
 
     以下代码会返回 =user_login=字段不同的数据
 
@@ -4168,8 +4143,6 @@
              - > findOrFail ( ) ;
   
 ***** sequence
-
-
     =sequence=方法用于 =pgsql=数据库指定自增序列名，其它数据库不必使用，用法为：
 
            Db : : name ( 'user' )
@@ -4177,8 +4150,6 @@
          - > insert ( [ 'name' = > 'thinkphp' ] ) ;
   
 ***** replace
-
-
     =replace=方法用于设置 =MySQL=数据库 =insert=方法或者 =insertAll=方法写入数据的时候是否适用 =REPLACE=方式。
 
            Db : : name ( 'user' )
@@ -4186,9 +4157,7 @@
              - > insert ($data ) ;
   
 ***** extra
-
-
-    =extra=方法可以用于 =CURD=查询，例如：
+      =extra=方法可以用于 =CURD=查询，例如：
 
            Db : : name ( 'user' )
              - > extra ( 'IGNORE' )
@@ -4203,9 +4172,7 @@
              - > select ( ) ;
   
 ***** duplicate
-
-
-    用于设置 =DUPLICATE=查询，用法示例：
+      用于设置 =DUPLICATE=查询，用法示例：
 
            Db : : name ( 'user' )
              - > duplicate ( [ 'score'  = >  10 ] )
@@ -4233,19 +4200,11 @@
   
 
 ***** 用法示例
-
-
-   获取用户数：
-
-         Db : : table ( 'think_user' ) - > count ( ) ;
+   获取用户数： Db : : table ( 'think_user' ) - > count ( ) ;
  
-   实际生成的 SQL 语句是：
-
-         SELECT  COUNT ( * ) AS tp_count FROM `think_user` LIMIT  1
+   实际生成的 SQL 语句是： SELECT  COUNT ( * ) AS tp_count FROM `think_user` LIMIT  1
  
-   或者根据字段统计：
-
-         Db : : table ( 'think_user' ) - > count ( 'id' ) ;
+   或者根据字段统计： Db : : table ( 'think_user' ) - > count ( 'id' ) ;
  
    生成的 SQL 语句是：
 
@@ -4292,12 +4251,8 @@
          Db : : table ( 'score' ) - > field ( 'user_id,SUM(score) AS sum_score' ) - > group ( 'user_id' ) - > select ( ) ;
  
 **** 分页查询
-
-
 ***** 分页实现
-
-
-   =ThinkPHP=内置了分页实现，要给数据添加分页输出功能变得非常简单，可以直接在 =Db=类查询的时候调用 =paginate=方法：
+      =ThinkPHP=内置了分页实现，要给数据添加分页输出功能变得非常简单，可以直接在 =Db=类查询的时候调用 =paginate=方法：
 
           // 查询状态为1的用户数据 并且每页显示10条数据
        $list  = Db : : name ( 'user' ) - > where ( 'status' , 1 ) - > order ( 'id' ,  'desc' ) - > paginate ( 10 ) ;
@@ -4319,7 +4274,7 @@
    也可以单独赋值分页输出的模板变量
 
           // 查询状态为1的用户数据 并且每页显示10条数据
-       $list  = Db : : name ( 'user' ) - > where ( 'status' , 1 ) - > order ( 'id' ,  'desc' ) - > paginate ( 10 ) ;
+       $list=Db::name('user') ->where('status' , 1) ->order('id' ,  'desc') ->paginate(10);
 
         // 获取分页显示
        $page  = $list - > render ( ) ;
@@ -11124,3 +11079,127 @@
 
      
      
+
+
+* [[https://blog.csdn.net/znyyjk/article/details/52786862][thinkphp 5.0 验证规则_学习笔记-CSDN博客]]                           :website:
+
+[2020-12-04 五 09:48]
+
+** Article
+
+[[http://www.kancloud.cn/manual/thinkphp5/129319][官方文档 - 内置规则]]\\
+系统内置的验证规则如下：
+
+*格式验证类：*
+
+| 规则                  | 说明                                                                                       | 示例                                |
+|-----------------------+--------------------------------------------------------------------------------------------+-------------------------------------|
+| require               | 验证某个字段必须                                                                           | ‘name'=>'require'                   |
+| number 或者 integer   | 验证某个字段的值是否为数字（采用filter_var验证）                                           | ‘num'=>'number'                     |
+| float                 | 验证某个字段的值是否为浮点数字（采用filter_var验证）                                       | ‘num'=>'float'                      |
+| boolean               | 验证某个字段的值是否为布尔值（采用filter_var验证）                                         | ‘num'=>'boolean'                    |
+| email                 | 验证某个字段的值是否为email地址（采用filter_var验证）                                      | ‘email'=>'email'                    |
+| array                 | 验证某个字段的值是否为数组                                                                 | ‘info'=>'array'                     |
+| accepted              | 验证某个字段是否为为 yes, on, 或是 1。这在确认”服务条款”是否同意时很有用                   | ‘accept'=>'accepted'                |
+| date                  | 验证值是否为有效的日期，会对日期值进行strtotime后进行判断                                  | ‘date'=>'date'                      |
+| alpha                 | 验证某个字段的值是否为字母                                                                 | ‘name'=>'alpha'                     |
+| alphaNum              | 验证某个字段的值是否为字母和数字                                                           | ‘name'=>'alphaNum'                  |
+| alphaDash             | 验证某个字段的值是否为字母和数字，下划线_及破折号-                                         | ‘name'=>'alphaDash'                 |
+| activeUrl             | 验证某个字段的值是否为有效的域名或者IP                                                     | ‘host'=>'activeUrl'                 |
+| url                   | 验证某个字段的值是否为有效的URL地址（采用filter_var验证）                                  | ‘url'=>'url'                        |
+| ip                    | 验证某个字段的值是否为有效的IP地址（采用filter_var验证），支持验证ipv4和ipv6格式的IP地址   | ‘ip'=>'ip'                          |
+| dateFormat:format     | 验证某个字段的值是否为指定格式的日期                                                       | ‘create_time'=>'dateFormat:y-m-d'   |
+
+*长度和区间验证类：*
+
+| 规则                        | 说明                                                               | 示例                                             |
+|-----------------------------+--------------------------------------------------------------------+--------------------------------------------------|
+| in                          | 验证某个字段的值是否在某个范围                                     | ‘num'=>'in:1,2,3'                                |
+| notIn                       | 验证某个字段的值不在某个范围                                       | ‘num'=>'notIn:1,2,3'                             |
+| between                     | 验证某个字段的值是否在某个区间                                     | ‘num'=>'between:1,10'                            |
+| notBetween                  | 验证某个字段的值不在某个范围                                       | ‘num'=>'notBetween:1,10'                         |
+| length:num1,num2            | 验证某个字段的值的长度是否在某个范围，或者指定长度。\\             | ‘name'=>'length:4,25'\\                          |
+|                             | *如果验证的数据是数组，则判断数组的长度。\\                        | 'name'=>'length:4'                               |
+|                             | 如果验证的数据是File对象，则判断文件的大小。                       |                                                  |
+| max:number                  | 验证某个字段的值的最大长度\\                                       | ‘name'=>'max:25'                                 |
+|                             | *如果验证的数据是数组，则判断数组的长度。\\                        |                                                  |
+|                             | 如果验证的数据是File对象，则判断文件的大小。                       |                                                  |
+| min:number                  | 验证某个字段的值的最小长度\\                                       | ‘name'=>'min:5'                                  |
+|                             | *如果验证的数据是数组，则判断数组的长度。\\                        |                                                  |
+|                             | 如果验证的数据是File对象，则判断文件的大小。                       |                                                  |
+| after:日期                  | 验证某个字段的值是否在某个日期之后                                 | ‘begin_time' => ‘after:2016-3-18',               |
+| before:日期                 | 验证某个字段的值是否在某个日期之前                                 | ‘end_time' => ‘before:2016-10-01',               |
+| expire:开始时间,结束时间    | 验证当前操作（注意不是某个值）是否在某个有效日期之内               | ‘expire_time' => ‘expire:2016-2-1,2016-10-01',   |
+| allowIp:allow1,allow2,...   | 验证当前请求的IP是否在某个范围，该规则可以用于某个后台的访问权限   | ‘name' => ‘allowIp:114.45.4.55',                 |
+| denyIp:allow1,allow2,...    | 验证当前请求的IP是否禁止访问                                       | ‘name' => ‘denyIp:114.45.4.55',                  |
+
+*字段比较类：*
+
+| 规则                  | 说明                                       | 示例                     |
+|-----------------------+--------------------------------------------+--------------------------|
+| confirm               | 验证某个字段是否和另外一个字段的值一致     | ‘repassport'=>'require   |
+| different             | 验证某个字段是否和另外一个字段的值不一致   | ‘name'=>'require         |
+| egt 或者 >=           | 验证是否大于等于某个值                     | ‘score'=>'egt:60'\\      |
+|                       |                                            | 'num'=>'>=:100'          |
+| gt 或者 >             | 验证是否大于某个值                         | ‘score'=>'gt:60'\\       |
+|                       |                                            | 'num'=>'>:100'           |
+| elt 或者 <=           | 验证是否小于等于某个值                     | ‘score'=>'elt:100'\\     |
+|                       |                                            | 'num'=>'<=:100'          |
+| lt 或者 <             | 验证是否小于某个值                         | ‘score'=>'lt:100'\\      |
+|                       |                                            | 'num'=>'<:100'           |
+| eq 或者 = 或者 same   | 验证是否等于某个值                         | ‘score'=>'eq:100'\\      |
+|                       |                                            | 'num'=>'=:100'\\         |
+|                       |                                            | 'num'=>'same:100'        |
+
+*filter验证：*
+
+| 规则   | 说明                         | 示例                         |
+|--------+------------------------------+------------------------------|
+|        | 支持使用filter_var进行验证   | ‘ip'=>'filter:validate_ip'   |
+
+*正则验证：*
+
+| 规则   | 说明                   | 示例                    |
+|--------+------------------------+-------------------------|
+|        | 支持直接使用正则验证   | ‘zip'=>'\d{6}',\\       |
+|        |                        | // 或者\\               |
+|        |                        | 'zip'=>'regex:\d{6}',   |
+
+*上传验证：*
+
+| 规则                          | 说明                                                                              | 示例   |
+|-------------------------------+-----------------------------------------------------------------------------------+--------|
+| file                          | 验证是否是一个上传文件                                                            |        |
+| image:width,height,type       | 验证是否是一个图像文件，width height和type都是可选，width和height必须同时定义。   |        |
+| fileExt:允许的文件后缀        | 验证上传文件后缀                                                                  |        |
+| fileMime:允许的文件类型       | 验证上传文件类型                                                                  |        |
+| fileSize:允许的文件字节大小   | 验证上传文件大小                                                                  |        |
+
+*行为验证：*
+
+| 规则   | 说明               | 示例                                           |
+|--------+--------------------+------------------------------------------------|
+|        | 使用行为验证数据   | ‘data'=>'behavior:\app\index\behavior\Check'   |
+
+*其它验证：*
+
+| 规则                           | 说明                                   | 示例                                                          |
+|--------------------------------+----------------------------------------+---------------------------------------------------------------|
+| unique:table,field,except,pk   | 验证当前请求的字段值是否为唯一的       | // 表示验证name字段的值是否在user表（不包含前缀）中唯一\\     |
+|                                |                                        | 'name' => ‘unique:user',\\                                    |
+|                                |                                        | // 验证其他字段\\                                             |
+|                                |                                        | 'name' => ‘unique:user,account',\\                            |
+|                                |                                        | // 排除某个主键值\\                                           |
+|                                |                                        | 'name' => ‘unique:user,account,10',\\                         |
+|                                |                                        | // 指定某个主键值排除\\                                       |
+|                                |                                        | 'name' => ‘unique:user,account,10,user_id',\\                 |
+|                                |                                        | \\                                                            |
+|                                |                                        | 如果需要对复杂的条件验证唯一，可以使用下面的方式：\\          |
+|                                |                                        | // 多个字段验证唯一验证条件\\                                 |
+|                                |                                        | 'name' => ‘unique:user,status^account',\\                     |
+|                                |                                        | // 复杂验证条件\\                                             |
+|                                |                                        | 'name' => ‘unique:user,status=1&account='.$data[‘account'],   |
+| requireIf:field,value          | 验证某个字段的值等于某个值的时候必须   | // 当account的值等于1的时候 password必须\\                    |
+|                                |                                        | 'password'=>'requireIf:account,1'                             |
+| requireWith:field              | 验证某个字段有值的时候必须             | // 当account有值的时候password字段必须\\                      |
+|                                |                                        | 'password'=>'requireWith:account'                             |
