@@ -3,19 +3,18 @@
 #+TAGS: Docker 
 #+CATEGORIES: 软件使用
 
-
 * docker 
 ** 安装与启动
 *** 安装
      #+begin_src shell
-       sudo	apt install	docker
+       sudo	apt install	docker.io
      #+END_SRC
 *** 启动服务
     #+begin_src sh
       sudo	service	docker	start
     #+end_src
      
-** 镜像操作
+** 镜像
 *** 查找
     #+begin_src sh
     docker search ubuntu
@@ -232,41 +231,41 @@ Docker 镜像是怎么实现增量的修改和维护的？ 每个镜像都由很
    events    Get real time events from the server          # 从 docker 服务获取容器实时事件
    exec      Run a command in an existing container        # 在已存在的容器上运行命令
    export    Stream the contents of a container as a tar archive # 导出容器的内容流作为一个 tar 归档文件[对应 import ]
-    history   Show the history of an image                  # 展示一个镜像形成历史
-    images    List images                                   # 列出系统当前镜像
-    import    Create a new filesystem image from the contents of a tarball # 从 tar 包中的内容创建一个新的文件系统映像[对应 export]
-    info      Display system-wide information               # 显示系统相关信息
-    inspect   Return low-level information on a container   # 查看容器详细信息
-    kill      Kill a running container                      # kill 指定 docker 容器
-    load      Load an image from a tar archive              # 从一个 tar 包中加载一个镜像[对应 save]
-    login     Register or Login to the docker registry server # 注册或者登陆一个 docker 源服务器
-    logout    Log out from a Docker registry server         # 从当前 Docker registry 退出
-    logs      Fetch the logs of a container                 # 输出当前容器日志信息
-    port      Lookup the public-facing port which is NAT-ed to PRIVATE_PORT
-              # 查看映射端口对应的容器内部源端口
-    pause     Pause all processes within a container        # 暂停容器
-    ps        List containers                               # 列出容器列表
-    pull      Pull an image or a repository from the docker registry server
-              # 从 docker 镜像源服务器拉取指定镜像或者库镜像
-    push      Push an image or a repository to the docker registry server
-              # 推送指定镜像或者库镜像至 docker 源服务器
-    restart   Restart a running container                   # 重启运行的容器
-    rm        Remove one or more containers                 # 移除一个或者多个容器
-    rmi       Remove one or more images                 
-              # 移除一个或多个镜像[无容器使用该镜像才可删除，否则需删除相关容器才可继续或 -f 强制删除]
-    run       Run a command in a new container
-              # 创建一个新的容器并运行一个命令
-    save      Save an image to a tar archive                # 保存一个镜像为一个 tar 包[对应 load]
-    search    Search for an image on the Docker Hub         # 在 docker hub 中搜索镜像
-    start     Start a stopped containers                    # 启动容器
-    stop      Stop a running containers                     # 停止容器
-    tag       Tag an image into a repository                # 给源中镜像打标签
-    top       Lookup the running processes of a container   # 查看容器中运行的进程信息
-    unpause   Unpause a paused container                    # 取消暂停容器
-    version   Show the docker version information           # 查看 docker 版本号
-    wait      Block until a container stops, then print its exit code   
-              # 截取容器停止时的退出状态值
-              Run 'docker COMMAND --help' for more information on a command.
+   history   Show the history of an image                  # 展示一个镜像形成历史
+   images    List images                                   # 列出系统当前镜像
+   import    Create a new filesystem image from the contents of a tarball # 从 tar 包中的内容创建一个新的文件系统映像[对应 export]
+   info      Display system-wide information               # 显示系统相关信息
+   inspect   Return low-level information on a container   # 查看容器详细信息
+   kill      Kill a running container                      # kill 指定 docker 容器
+   load      Load an image from a tar archive              # 从一个 tar 包中加载一个镜像[对应 save]
+   login     Register or Login to the docker registry server # 注册或者登陆一个 docker 源服务器
+   logout    Log out from a Docker registry server         # 从当前 Docker registry 退出
+   logs      Fetch the logs of a container                 # 输出当前容器日志信息
+   port      Lookup the public-facing port which is NAT-ed to PRIVATE_PORT
+   # 查看映射端口对应的容器内部源端口
+   pause     Pause all processes within a container        # 暂停容器
+   ps        List containers                               # 列出容器列表
+   pull      Pull an image or a repository from the docker registry server
+   # 从 docker 镜像源服务器拉取指定镜像或者库镜像
+   push      Push an image or a repository to the docker registry server
+   # 推送指定镜像或者库镜像至 docker 源服务器
+   restart   Restart a running container                   # 重启运行的容器
+   rm        Remove one or more containers                 # 移除一个或者多个容器
+   rmi       Remove one or more images                 
+   # 移除一个或多个镜像[无容器使用该镜像才可删除，否则需删除相关容器才可继续或 -f 强制删除]
+   run       Run a command in a new container
+   # 创建一个新的容器并运行一个命令
+   save      Save an image to a tar archive                # 保存一个镜像为一个 tar 包[对应 load]
+   search    Search for an image on the Docker Hub         # 在 docker hub 中搜索镜像
+   start     Start a stopped containers                    # 启动容器
+   stop      Stop a running containers                     # 停止容器
+   tag       Tag an image into a repository                # 给源中镜像打标签
+   top       Lookup the running processes of a container   # 查看容器中运行的进程信息
+   unpause   Unpause a paused container                    # 取消暂停容器
+   version   Show the docker version information           # 查看 docker 版本号
+   wait      Block until a container stops, then print its exit code   
+   # 截取容器停止时的退出状态值
+   Run 'docker COMMAND --help' for more information on a command.
 ** 容器
 *** 运行容器
     $ sudo docker run -i -t ubuntu:14.04 /bin/bash
@@ -282,7 +281,7 @@ Docker 镜像是怎么实现增量的修改和维护的？ 每个镜像都由很
     CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
     6c9129e9df10        ubuntu:14.04        /bin/bash 6 minutes ago       Up 6 minutes                            cranky_babbage
 *** 后台运行
-    	sudo	docker	run	-d	ubuntu:14.04	/bin/sh	-c	"while	true;	do	echo	hello	world;	sleep	1;	done"
+    sudo	docker	run	-d	ubuntu:14.04	/bin/sh	-c	"while	true;	do	echo	hello	world;	sleep	1;	done"
 *** 获取后台输出
     sudo	docker	logs	$containerName
 *** 进入后台容器
@@ -320,158 +319,158 @@ Docker 镜像是怎么实现增量的修改和维护的？ 每个镜像都由很
      :END:
 
      :流程:
- 检查本地是否存在指定的镜像，不存在就从公有仓库下载
- 利用镜像创建并启动一个容器
- 分配一个文件系统，并在只读的镜像层外面挂载一层可读写层
- 从宿主主机配置的网桥接口中桥接一个虚拟接口到容器中去
- 从地址池配置一个 ip 地址给容器
- 执行用户指定的应用程序
- 执行完毕后容器被终止
+     检查本地是否存在指定的镜像，不存在就从公有仓库下载
+     利用镜像创建并启动一个容器
+     分配一个文件系统，并在只读的镜像层外面挂载一层可读写层
+     从宿主主机配置的网桥接口中桥接一个虚拟接口到容器中去
+     从地址池配置一个 ip 地址给容器
+     执行用户指定的应用程序
+     执行完毕后容器被终止
      :END:
 **** 重启容器
      docker start
 *** 守护态运行
- 更多的时候，需要让 Docker 容器在后台以守护态（Daemonized）形式运行。此时，可以
- 通过添加 -d 参数来实现。
+    更多的时候，需要让 Docker 容器在后台以守护态（Daemonized）形式运行。此时，可以
+    通过添加 -d 参数来实现。
 
- 例如下面的命令会在后台运行容器。
+    例如下面的命令会在后台运行容器。
 
- $ sudo docker run -d ubuntu:14.04 /bin/sh -c "while true; do echo hello world; sleep 1; done"
- 1e5535038e285177d5214659a068137486f96ee5c2e85a4ac52dc83f2ebe4147
- 容器启动后会返回一个唯一的 id，也可以通过 docker ps 命令来查看容器信息。
+    $ sudo docker run -d ubuntu:14.04 /bin/sh -c "while true; do echo hello world; sleep 1; done"
+    1e5535038e285177d5214659a068137486f96ee5c2e85a4ac52dc83f2ebe4147
+    容器启动后会返回一个唯一的 id，也可以通过 docker ps 命令来查看容器信息。
 
- $ sudo docker ps
- CONTAINER ID  IMAGE         COMMAND               CREATED        STATUS       PORTS NAMES
- 1e5535038e28  ubuntu:14.04  /bin/sh -c 'while tr  2 minutes ago  Up 1 minute        insane_babbage
- 要获取容器的输出信息，可以通过 docker logs 命令。
+    $ sudo docker ps
+    CONTAINER ID  IMAGE         COMMAND               CREATED        STATUS       PORTS NAMES
+    1e5535038e28  ubuntu:14.04  /bin/sh -c 'while tr  2 minutes ago  Up 1 minute        insane_babbage
+    要获取容器的输出信息，可以通过 docker logs 命令。
 
- $ sudo docker logs insane_babbage
- hello world
- hello world
- hello world
- . . .
+    $ sudo docker logs insane_babbage
+    hello world
+    hello world
+    hello world
+    . . .
 *** 进入守护态运行 ctrl-p ctrl-q
 *** 终止容器
- 可以使用 docker stop 来终止一个运行中的容器。
+    可以使用 docker stop 来终止一个运行中的容器。
 
- 此外，当 Docker 容器中指定的应用终结时，容器也自动终止。 例如对于上一章节中只启
- 动了一个终端的容器，用户通过 exit 命令或 Ctrl+d 来退出终端时，所创建的容器立刻
- 终止。
+    此外，当 Docker 容器中指定的应用终结时，容器也自动终止。 例如对于上一章节中只启
+    动了一个终端的容器，用户通过 exit 命令或 Ctrl+d 来退出终端时，所创建的容器立刻
+    终止。
 
- 终止状态的容器可以用 docker ps -a 命令看到。例如
+    终止状态的容器可以用 docker ps -a 命令看到。例如
 
- sudo docker ps -a
- CONTAINER ID        IMAGE                    COMMAND                CREATED             STATUS                          PORTS               NAMES
- ba267838cc1b        ubuntu:14.04             "/bin/bash"            30 minutes ago      Exited (0) About a minute ago                       trusting_newton
- 98e5efa7d997        training/webapp:latest   "python app.py"        About an hour ago   Exited (0) 34 minutes ago                           backstabbing_pike
- 处于终止状态的容器，可以通过 docker start 命令来重新启动。
+    sudo docker ps -a
+    CONTAINER ID        IMAGE                    COMMAND                CREATED             STATUS                          PORTS               NAMES
+    ba267838cc1b        ubuntu:14.04             "/bin/bash"            30 minutes ago      Exited (0) About a minute ago                       trusting_newton
+    98e5efa7d997        training/webapp:latest   "python app.py"        About an hour ago   Exited (0) 34 minutes ago                           backstabbing_pike
+    处于终止状态的容器，可以通过 docker start 命令来重新启动。
 
- 此外，docker restart 命令会将一个运行态的容器终止，然后再重新启动它。
+    此外，docker restart 命令会将一个运行态的容器终止，然后再重新启动它。
 *** 进入容器
- 在使用 -d 参数时，容器启动后会进入后台。 某些时候需要进入容器进行操作，有很多种
- 方法，包括使用 docker attach 命令或 nsenter 工具等。
+    在使用 -d 参数时，容器启动后会进入后台。 某些时候需要进入容器进行操作，有很多种
+    方法，包括使用 docker attach 命令或 nsenter 工具等。
 **** attach 命令
-  docker attach 是 Docker 自带的命令。下面示例如何使用该命令。
-  $ sudo docker run -idt ubuntu
-  243c32535da7d142fb0e6df616a3c3ada0b8ab417937c853a9e1c251f499f550
-  $ sudo docker ps
-  CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-  243c32535da7        ubuntu:latest       "/bin/bash"         18 seconds ago      Up 17 seconds                           nostalgic_hypatia
-  $sudo docker attach nostalgic_hypatia
-  root@243c32535da7:/#
+     docker attach 是 Docker 自带的命令。下面示例如何使用该命令。
+     $ sudo docker run -idt ubuntu
+     243c32535da7d142fb0e6df616a3c3ada0b8ab417937c853a9e1c251f499f550
+     $ sudo docker ps
+     CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+     243c32535da7        ubuntu:latest       "/bin/bash"         18 seconds ago      Up 17 seconds                           nostalgic_hypatia
+     $sudo docker attach nostalgic_hypatia
+     root@243c32535da7:/#
   
-  但是使用 attach 命令有时候并不方便。当多个窗口同时 attach 到同一个容器的时候，
-  所有窗口都会同步显示。当某个窗口因命令阻塞时,其他窗口也无法执行操作了。
+     但是使用 attach 命令有时候并不方便。当多个窗口同时 attach 到同一个容器的时候，
+     所有窗口都会同步显示。当某个窗口因命令阻塞时,其他窗口也无法执行操作了。
 **** nsenter 命令
 ***** 安装
-   nsenter 工具在 util-linux 包 2.23 版本后包含。 如果系统中 util-linux 包没有该命令，可以按照下面的方法从源码安装。
+      nsenter 工具在 util-linux 包 2.23 版本后包含。 如果系统中 util-linux 包没有该命令，可以按照下面的方法从源码安装。
 
-   $ cd /tmp; curl https://www.kernel.org/pub/linux/utils/util-linux/v2.24/util-linux-2.24.tar.gz | tar -zxf-; cd util-linux-2.24;
-   $ ./configure --without-ncurses
-   $ make nsenter && sudo cp nsenter /usr/local/bin
+      $ cd /tmp; curl https://www.kernel.org/pub/linux/utils/util-linux/v2.24/util-linux-2.24.tar.gz | tar -zxf-; cd util-linux-2.24;
+      $ ./configure --without-ncurses
+      $ make nsenter && sudo cp nsenter /usr/local/bin
 ***** 使用
-   nsenter 可以访问另一个进程的名字空间。nsenter 要正常工作需要有 root 权限。 很不幸，Ubuntu 14.04 仍然使用的是 util-linux 2.20。安装最新版本的 util-linux（2.24）版，请按照以下步骤：
+      nsenter 可以访问另一个进程的名字空间。nsenter 要正常工作需要有 root 权限。 很不幸，Ubuntu 14.04 仍然使用的是 util-linux 2.20。安装最新版本的 util-linux（2.24）版，请按照以下步骤：
 
-   $ wget https://www.kernel.org/pub/linux/utils/util-linux/v2.24/util-linux-2.24.tar.gz; tar xzvf util-linux-2.24.tar.gz
-   $ cd util-linux-2.24
-   $ ./configure --without-ncurses && make nsenter
-   $ sudo cp nsenter /usr/local/bin
-   为了连接到容器，你还需要找到容器的第一个进程的 PID，可以通过下面的命令获取。
+      $ wget https://www.kernel.org/pub/linux/utils/util-linux/v2.24/util-linux-2.24.tar.gz; tar xzvf util-linux-2.24.tar.gz
+      $ cd util-linux-2.24
+      $ ./configure --without-ncurses && make nsenter
+      $ sudo cp nsenter /usr/local/bin
+      为了连接到容器，你还需要找到容器的第一个进程的 PID，可以通过下面的命令获取。
 
-   PID=$(docker inspect --format "{{ .State.Pid }}" <container>)
-   通过这个 PID，就可以连接到这个容器：
+      PID=$(docker inspect --format "{{ .State.Pid }}" <container>)
+      通过这个 PID，就可以连接到这个容器：
 
-   $ nsenter --target $PID --mount --uts --ipc --net --pid
-   下面给出一个完整的例子。
+      $ nsenter --target $PID --mount --uts --ipc --net --pid
+      下面给出一个完整的例子。
 
-   $ sudo docker run -idt ubuntu
-   243c32535da7d142fb0e6df616a3c3ada0b8ab417937c853a9e1c251f499f550
-   $ sudo docker ps
-   CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-   243c32535da7        ubuntu:latest       "/bin/bash"         18 seconds ago      Up 17 seconds                           nostalgic_hypatia
-   $ PID=$(docker-pid 243c32535da7)
-   10981
-   $ sudo nsenter --target 10981 --mount --uts --ipc --net --pid
-   root@243c32535da7:/#
-   更简单的，建议大家下载 .bashrc_docker，并将内容放到 .bashrc 中。
+      $ sudo docker run -idt ubuntu
+      243c32535da7d142fb0e6df616a3c3ada0b8ab417937c853a9e1c251f499f550
+      $ sudo docker ps
+      CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+      243c32535da7        ubuntu:latest       "/bin/bash"         18 seconds ago      Up 17 seconds                           nostalgic_hypatia
+      $ PID=$(docker-pid 243c32535da7)
+      10981
+      $ sudo nsenter --target 10981 --mount --uts --ipc --net --pid
+      root@243c32535da7:/#
+      更简单的，建议大家下载 .bashrc_docker，并将内容放到 .bashrc 中。
 
-   $ wget -P ~ https://github.com/yeasy/docker_practice/raw/master/_local/.bashrc_docker;
-   $ echo "[ -f ~/.bashrc_docker ] && . ~/.bashrc_docker" >> ~/.bashrc; source ~/.bashrc
-   这个文件中定义了很多方便使用 Docker 的命令，例如 docker-pid 可以获取某个容器的 PID；而 docker-enter 可以进入容器或直接在容器内执行命令。
+      $ wget -P ~ https://github.com/yeasy/docker_practice/raw/master/_local/.bashrc_docker;
+      $ echo "[ -f ~/.bashrc_docker ] && . ~/.bashrc_docker" >> ~/.bashrc; source ~/.bashrc
+      这个文件中定义了很多方便使用 Docker 的命令，例如 docker-pid 可以获取某个容器的 PID；而 docker-enter 可以进入容器或直接在容器内执行命令。
 
-   $ echo $(docker-pid <container>)
-   $ docker-enter <container> ls
+      $ echo $(docker-pid <container>)
+      $ docker-enter <container> ls
 *** 导出和导入容器
-   5.1 导出容器
-   如果要导出本地某个容器，可以使用 docker export 命令。
+    5.1 导出容器
+    如果要导出本地某个容器，可以使用 docker export 命令。
 
-   $ sudo docker ps -a
-   CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                    PORTS               NAMES
-   7691a814370e        ubuntu:14.04        "/bin/bash"         36 hours ago        Exited (0) 21 hours ago                       test
-   $ sudo docker export 7691a814370e > ubuntu.tar
-   这样将导出容器快照到本地文件。
+    $ sudo docker ps -a
+    CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                    PORTS               NAMES
+    7691a814370e        ubuntu:14.04        "/bin/bash"         36 hours ago        Exited (0) 21 hours ago                       test
+    $ sudo docker export 7691a814370e > ubuntu.tar
+    这样将导出容器快照到本地文件。
 
-   5.2 导入容器快照
-   可以使用 docker import 从容器快照文件中再导入为镜像，例如
+    5.2 导入容器快照
+    可以使用 docker import 从容器快照文件中再导入为镜像，例如
 
-   $ cat ubuntu.tar | sudo docker import - test/ubuntu:v1.0
-   $ sudo docker images
-   REPOSITORY          TAG                 IMAGE ID            CREATED              VIRTUAL SIZE
-   test/ubuntu         v1.0                9d37a6082e97        About a minute ago   171.3 MB
-   此外，也可以通过指定 URL 或者某个目录来导入，例如
+    $ cat ubuntu.tar | sudo docker import - test/ubuntu:v1.0
+    $ sudo docker images
+    REPOSITORY          TAG                 IMAGE ID            CREATED              VIRTUAL SIZE
+    test/ubuntu         v1.0                9d37a6082e97        About a minute ago   171.3 MB
+    此外，也可以通过指定 URL 或者某个目录来导入，例如
 
-   $sudo docker import http://example.com/exampleimage.tgz example/imagerepo
-   *注：用户既可以使用 docker load 来导入镜像存储文件到本地镜像库，也可以使用 docker import 来导入一个容器快照到本地镜像库。这两者的区别在于容器快照文件将丢弃所有的历史记录和元数据信息（即仅保存容器当时的快照状态），而镜像存储文件将保存完整记录，体积也要大。此外，从容器快照文件导入时可以重新指定标签等元数据信息。
+    $sudo docker import http://example.com/exampleimage.tgz example/imagerepo
+    *注：用户既可以使用 docker load 来导入镜像存储文件到本地镜像库，也可以使用 docker import 来导入一个容器快照到本地镜像库。这两者的区别在于容器快照文件将丢弃所有的历史记录和元数据信息（即仅保存容器当时的快照状态），而镜像存储文件将保存完整记录，体积也要大。此外，从容器快照文件导入时可以重新指定标签等元数据信息。
 
-   6、删除容器
-   可以使用 docker rm 来删除一个处于终止状态的容器。 例如
+    6、删除容器
+    可以使用 docker rm 来删除一个处于终止状态的容器。 例如
 
-   $sudo docker rm  trusting_newton
-   trusting_newton
-   如果要删除一个运行中的容器，可以添加 -f 参数。Docker 会发送 SIGKILL 信号给容器。
+    $sudo docker rm  trusting_newton
+    trusting_newton
+    如果要删除一个运行中的容器，可以添加 -f 参数。Docker 会发送 SIGKILL 信号给容器。
 
 ** 数据卷
-数据卷是一个可供一个或多个容器使用的特殊目录，它绕过 UFS，可以提供很多有用的特性：
+   数据卷是一个可供一个或多个容器使用的特殊目录，它绕过 UFS，可以提供很多有用的特性：
 
-数据卷可以在容器之间共享和重用
-对数据卷的修改会立马生效
-对数据卷的更新，不会影响镜像
-卷会一直存在，直到没有容器使用
-*数据卷的使用，类似于 Linux 下对目录或文件进行 mount。
+   数据卷可以在容器之间共享和重用
+   对数据卷的修改会立马生效
+   对数据卷的更新，不会影响镜像
+   卷会一直存在，直到没有容器使用
+   *数据卷的使用，类似于 Linux 下对目录或文件进行 mount。
 
-1.1 创建一个数据卷
-在用 docker run 命令的时候，使用 -v 标记来创建一个数据卷并挂载到容器里。在一次 run 中多次使用可以挂载多个数据卷。
+   1.1 创建一个数据卷
+   在用 docker run 命令的时候，使用 -v 标记来创建一个数据卷并挂载到容器里。在一次 run 中多次使用可以挂载多个数据卷。
 
-下面创建一个 web 容器，并加载一个数据卷到容器的 /webapp 目录。
+   下面创建一个 web 容器，并加载一个数据卷到容器的 /webapp 目录。
 
-$ sudo docker run -d -P --name web -v /webapp training/webapp python app.py
-*注意：也可以在 Dockerfile 中使用 VOLUME 来添加一个或者多个新的卷到由该镜像创建的任意容器。
+   $ sudo docker run -d -P --name web -v /webapp training/webapp python app.py
+   *注意：也可以在 Dockerfile 中使用 VOLUME 来添加一个或者多个新的卷到由该镜像创建的任意容器。
 
-1.2 挂载一个主机目录作为数据卷
-使用 -v 标记也可以指定挂载一个本地主机的目录到容器中去。
+   1.2 挂载一个主机目录作为数据卷
+   使用 -v 标记也可以指定挂载一个本地主机的目录到容器中去。
 
-$ sudo docker run -d -P --name web -v /src/webapp:/opt/webapp training/webapp python app.py
-上面的命令加载主机的 /src/webapp 目录到容器的 /opt/webapp 目录。这个功能在进行测试的时候十分方便，比如用户可以放置一些程序到本地目录中，来查看容器是否正常工作。本地目录的路径必须是绝对路径，如果目录不存在 Docker 会自动为你创建它。
+   $ sudo docker run -d -P --name web -v /src/webapp:/opt/webapp training/webapp python app.py
+   上面的命令加载主机的 /src/webapp 目录到容器的 /opt/webapp 目录。这个功能在进行测试的时候十分方便，比如用户可以放置一些程序到本地目录中，来查看容器是否正常工作。本地目录的路径必须是绝对路径，如果目录不存在 Docker 会自动为你创建它。
 
 *注意：Dockerfile 中不支持这种用法，这是因为 Dockerfile 是为了移植和分享用的。然而，不同操作系统的路径格式不一样，所以目前还不能支持。
 
@@ -528,665 +527,665 @@ $ sudo docker run --volumes-from dbdata2 -v $(pwd):/backup busybox tar xvf
 
 ** 使用网络
    1、外部访问容器
-容器中可以运行一些网络应用，要让外部也可以访问这些应用，可以通过 -P 或 -p 参数来指定端口映射。
+   容器中可以运行一些网络应用，要让外部也可以访问这些应用，可以通过 -P 或 -p 参数来指定端口映射。
 
-当使用 -P 标记时，Docker 会随机映射一个 49000~49900 的端口到内部容器开放的网络端口。
+   当使用 -P 标记时，Docker 会随机映射一个 49000~49900 的端口到内部容器开放的网络端口。
 
-使用 docker ps 可以看到，本地主机的 49155 被映射到了容器的 5000 端口。此时访问本机的 49155 端口即可访问容器内 web 应用提供的界面。
+   使用 docker ps 可以看到，本地主机的 49155 被映射到了容器的 5000 端口。此时访问本机的 49155 端口即可访问容器内 web 应用提供的界面。
 
-$ sudo docker run -d -P training/webapp python app.py
-$ sudo docker ps -l
-CONTAINER ID  IMAGE                   COMMAND       CREATED        STATUS        PORTS                    NAMES
-bc533791f3f5  training/webapp:latest  python app.py 5 seconds ago  Up 2 seconds  0.0.0.0:49155->5000/tcp  nostalgic_morse
-同样的，可以通过 docker logs 命令来查看应用的信息。
+   $ sudo docker run -d -P training/webapp python app.py
+   $ sudo docker ps -l
+   CONTAINER ID  IMAGE                   COMMAND       CREATED        STATUS        PORTS                    NAMES
+   bc533791f3f5  training/webapp:latest  python app.py 5 seconds ago  Up 2 seconds  0.0.0.0:49155->5000/tcp  nostalgic_morse
+   同样的，可以通过 docker logs 命令来查看应用的信息。
 
-$ sudo docker logs -f nostalgic_morse
- * Running on http://0.0.0.0:5000/
-10.0.2.2 - - [23/May/2014 20:16:31] "GET / HTTP/1.1" 200 -
-10.0.2.2 - - [23/May/2014 20:16:31] "GET /favicon.ico HTTP/1.1" 404 -
--p（小写的）则可以指定要映射的端口，并且，在一个指定端口上只可以绑定一个容器。支持的格式有 ip:hostPort:containerPort | ip::containerPort | hostPort:containerPort。
+   $ sudo docker logs -f nostalgic_morse
+   * Running on http://0.0.0.0:5000/
+   10.0.2.2 - - [23/May/2014 20:16:31] "GET / HTTP/1.1" 200 -
+   10.0.2.2 - - [23/May/2014 20:16:31] "GET /favicon.ico HTTP/1.1" 404 -
+   -p（小写的）则可以指定要映射的端口，并且，在一个指定端口上只可以绑定一个容器。支持的格式有 ip:hostPort:containerPort | ip::containerPort | hostPort:containerPort。
 
-1.1 映射所有接口地址
-使用 hostPort:containerPort 格式本地的 5000 端口映射到容器的 5000 端口，可以执行
+   1.1 映射所有接口地址
+   使用 hostPort:containerPort 格式本地的 5000 端口映射到容器的 5000 端口，可以执行
 
-$ sudo docker run -d -p 5000:5000 training/webapp python app.py
-此时默认会绑定本地所有接口上的所有地址。
+   $ sudo docker run -d -p 5000:5000 training/webapp python app.py
+   此时默认会绑定本地所有接口上的所有地址。
 
-1.2 映射到指定地址的指定端口
-可以使用 ip:hostPort:containerPort 格式指定映射使用一个特定地址，比如 localhost 地址 127.0.0.1
+   1.2 映射到指定地址的指定端口
+   可以使用 ip:hostPort:containerPort 格式指定映射使用一个特定地址，比如 localhost 地址 127.0.0.1
 
-$ sudo docker run -d -p 127.0.0.1:5000:5000 training/webapp python app.py
-1.3 映射到指定地址的任意端口
-使用 ip::containerPort 绑定 localhost 的任意端口到容器的 5000 端口，本地主机会自动分配一个端口。
+   $ sudo docker run -d -p 127.0.0.1:5000:5000 training/webapp python app.py
+   1.3 映射到指定地址的任意端口
+   使用 ip::containerPort 绑定 localhost 的任意端口到容器的 5000 端口，本地主机会自动分配一个端口。
 
-$ sudo docker run -d -p 127.0.0.1::5000 training/webapp python app.py
-还可以使用 udp 标记来指定 udp 端口
+   $ sudo docker run -d -p 127.0.0.1::5000 training/webapp python app.py
+   还可以使用 udp 标记来指定 udp 端口
 
-$ sudo docker run -d -p 127.0.0.1:5000:5000/udp training/webapp python app.py
-1.4 查看映射端口配置
-使用 docker port 来查看当前映射的端口配置，也可以查看到绑定的地址
+   $ sudo docker run -d -p 127.0.0.1:5000:5000/udp training/webapp python app.py
+   1.4 查看映射端口配置
+   使用 docker port 来查看当前映射的端口配置，也可以查看到绑定的地址
 
-$ docker port nostalgic_morse 5000
-127.0.0.1:49155.
-注意：
+   $ docker port nostalgic_morse 5000
+   127.0.0.1:49155.
+   注意：
 
-容器有自己的内部网络和 ip 地址（使用 docker inspect 可以获取所有的变量，Docker 还可以有一个可变的网络配置。）
--p 标记可以多次使用来绑定多个端口
-例如
+   容器有自己的内部网络和 ip 地址（使用 docker inspect 可以获取所有的变量，Docker 还可以有一个可变的网络配置。）
+   -p 标记可以多次使用来绑定多个端口
+   例如
 
-$ sudo docker run -d -p 5000:5000  -p 3000:80 training/webapp python app.py
-2、容器互联
-容器的连接（linking）系统是除了端口映射外，另一种跟容器中应用交互的方式。
+   $ sudo docker run -d -p 5000:5000  -p 3000:80 training/webapp python app.py
+   2、容器互联
+   容器的连接（linking）系统是除了端口映射外，另一种跟容器中应用交互的方式。
 
-该系统会在源和接收容器之间创建一个隧道，接收容器可以看到源容器指定的信息。
+   该系统会在源和接收容器之间创建一个隧道，接收容器可以看到源容器指定的信息。
 
-2.1 自定义容器命名
-连接系统依据容器的名称来执行。因此，首先需要自定义一个好记的容器命名。
+   2.1 自定义容器命名
+   连接系统依据容器的名称来执行。因此，首先需要自定义一个好记的容器命名。
 
-虽然当创建容器的时候，系统默认会分配一个名字。自定义命名容器有 2 个好处：
+   虽然当创建容器的时候，系统默认会分配一个名字。自定义命名容器有 2 个好处：
 
-自定义的命名，比较好记，比如一个 web 应用容器我们可以给它起名叫 web
-当要连接其他容器时候，可以作为一个有用的参考点，比如连接 web 容器到 db 容器
-使用 --name 标记可以为容器自定义命名。
+   自定义的命名，比较好记，比如一个 web 应用容器我们可以给它起名叫 web
+   当要连接其他容器时候，可以作为一个有用的参考点，比如连接 web 容器到 db 容器
+   使用 --name 标记可以为容器自定义命名。
 
-$ sudo docker run -d -P --name web training/webapp python app.py
-使用 docker ps 来验证设定的命名。
+   $ sudo docker run -d -P --name web training/webapp python app.py
+   使用 docker ps 来验证设定的命名。
 
-$ sudo docker ps -l
-CONTAINER ID  IMAGE                  COMMAND        CREATED       STATUS       PORTS                    NAMES
-aed84ee21bde  training/webapp:latest python app.py  12 hours ago  Up 2 seconds 0.0.0.0:49154->5000/tcp  web
-也可以使用 docker inspect 来查看容器的名字
+   $ sudo docker ps -l
+   CONTAINER ID  IMAGE                  COMMAND        CREATED       STATUS       PORTS                    NAMES
+   aed84ee21bde  training/webapp:latest python app.py  12 hours ago  Up 2 seconds 0.0.0.0:49154->5000/tcp  web
+   也可以使用 docker inspect 来查看容器的名字
 
-$ sudo docker inspect -f "{{ .Name }}" aed84ee21bde
-/web
-注意：容器的名称是唯一的。如果已经命名了一个叫 web 的容器，当你要再次使用 web 这个名称的时候，需要先用 docker rm 来删除之前创建的同名容器。
+   $ sudo docker inspect -f "{{ .Name }}" aed84ee21bde
+   /web
+   注意：容器的名称是唯一的。如果已经命名了一个叫 web 的容器，当你要再次使用 web 这个名称的时候，需要先用 docker rm 来删除之前创建的同名容器。
 
-在执行 docker run 的时候如果添加 --rm 标记，则容器在终止后会立刻删除。注意，--rm 和 -d 参数不能同时使用。
+   在执行 docker run 的时候如果添加 --rm 标记，则容器在终止后会立刻删除。注意，--rm 和 -d 参数不能同时使用。
 
-2.2 容器互联
-使用 --link 参数可以让容器之间安全的进行交互。
+   2.2 容器互联
+   使用 --link 参数可以让容器之间安全的进行交互。
 
-下面先创建一个新的数据库容器。
+   下面先创建一个新的数据库容器。
 
-$ sudo docker run -d --name db training/postgres
-删除之前创建的 web 容器
+   $ sudo docker run -d --name db training/postgres
+   删除之前创建的 web 容器
 
-$ docker rm -f web
-然后创建一个新的 web 容器，并将它连接到 db 容器
+   $ docker rm -f web
+   然后创建一个新的 web 容器，并将它连接到 db 容器
 
-$ sudo docker run -d -P --name web --link db:db training/webapp python app.py
-此时，db 容器和 web 容器建立互联关系。
+   $ sudo docker run -d -P --name web --link db:db training/webapp python app.py
+   此时，db 容器和 web 容器建立互联关系。
 
---link 参数的格式为 --link name:alias，其中 name 是要链接的容器的名称，alias 是这个连接的别名。
+   --link 参数的格式为 --link name:alias，其中 name 是要链接的容器的名称，alias 是这个连接的别名。
 
-使用 docker ps 来查看容器的连接
+   使用 docker ps 来查看容器的连接
 
-$ docker ps
-CONTAINER ID  IMAGE                     COMMAND               CREATED             STATUS             PORTS                    NAMES
-349169744e49  training/postgres:latest  su postgres -c '/usr  About a minute ago  Up About a minute  5432/tcp                 db, web/db
-aed84ee21bde  training/webapp:latest    python app.py         16 hours ago        Up 2 minutes       0.0.0.0:49154->5000/tcp  web
-可以看到自定义命名的容器，db 和 web，db 容器的 names 列有 db 也有 web/db。这表示 web 容器链接到 db 容器，web 容器将被允许访问 db 容器的信息。
+   $ docker ps
+   CONTAINER ID  IMAGE                     COMMAND               CREATED             STATUS             PORTS                    NAMES
+   349169744e49  training/postgres:latest  su postgres -c '/usr  About a minute ago  Up About a minute  5432/tcp                 db, web/db
+   aed84ee21bde  training/webapp:latest    python app.py         16 hours ago        Up 2 minutes       0.0.0.0:49154->5000/tcp  web
+   可以看到自定义命名的容器，db 和 web，db 容器的 names 列有 db 也有 web/db。这表示 web 容器链接到 db 容器，web 容器将被允许访问 db 容器的信息。
 
-Docker 在两个互联的容器之间创建了一个安全隧道，而且不用映射它们的端口到宿主主机上。在启动 db 容器的时候并没有使用 -p 和 -P 标记，从而避免了暴露数据库端口到外部网络上。
+   Docker 在两个互联的容器之间创建了一个安全隧道，而且不用映射它们的端口到宿主主机上。在启动 db 容器的时候并没有使用 -p 和 -P 标记，从而避免了暴露数据库端口到外部网络上。
 
-Docker 通过 2 种方式为容器公开连接信息：
+   Docker 通过 2 种方式为容器公开连接信息：
 
-环境变量
-更新 /etc/hosts 文件
-使用 env 命令来查看 web 容器的环境变量
+   环境变量
+   更新 /etc/hosts 文件
+   使用 env 命令来查看 web 容器的环境变量
 
-$ sudo docker run --rm --name web2 --link db:db training/webapp env
-. . .
-DB_NAME=/web2/db
-DB_PORT=tcp://172.17.0.5:5432
-DB_PORT_5000_TCP=tcp://172.17.0.5:5432
-DB_PORT_5000_TCP_PROTO=tcp
-DB_PORT_5000_TCP_PORT=5432
-DB_PORT_5000_TCP_ADDR=172.17.0.5
-. . .
-其中 DB_ 开头的环境变量是供 web 容器连接 db 容器使用，前缀采用大写的连接别名。
+   $ sudo docker run --rm --name web2 --link db:db training/webapp env
+   . . .
+   DB_NAME=/web2/db
+   DB_PORT=tcp://172.17.0.5:5432
+   DB_PORT_5000_TCP=tcp://172.17.0.5:5432
+   DB_PORT_5000_TCP_PROTO=tcp
+   DB_PORT_5000_TCP_PORT=5432
+   DB_PORT_5000_TCP_ADDR=172.17.0.5
+   . . .
+   其中 DB_ 开头的环境变量是供 web 容器连接 db 容器使用，前缀采用大写的连接别名。
 
-除了环境变量，Docker 还添加 host 信息到父容器的 /etc/hosts 的文件。下面是父容器 web 的 hosts 文件
+   除了环境变量，Docker 还添加 host 信息到父容器的 /etc/hosts 的文件。下面是父容器 web 的 hosts 文件
 
-$ sudo docker run -t -i --rm --link db:db training/webapp /bin/bash
-root@aed84ee21bde:/opt/webapp# cat /etc/hosts
-172.17.0.7  aed84ee21bde
-. . .
-172.17.0.5  db
-这里有 2 个 hosts，第一个是 web 容器，web 容器用 id 作为他的主机名，第二个是 db 容器的 ip 和主机名。 可以在 web 容器中安装 ping 命令来测试跟 db 容器的连通。
+   $ sudo docker run -t -i --rm --link db:db training/webapp /bin/bash
+   root@aed84ee21bde:/opt/webapp# cat /etc/hosts
+   172.17.0.7  aed84ee21bde
+   . . .
+   172.17.0.5  db
+   这里有 2 个 hosts，第一个是 web 容器，web 容器用 id 作为他的主机名，第二个是 db 容器的 ip 和主机名。 可以在 web 容器中安装 ping 命令来测试跟 db 容器的连通。
 
-root@aed84ee21bde:/opt/webapp# apt-get install -yqq inetutils-ping
-root@aed84ee21bde:/opt/webapp# ping db
-PING db (172.17.0.5): 48 data bytes
-56 bytes from 172.17.0.5: icmp_seq=0 ttl=64 time=0.267 ms
-56 bytes from 172.17.0.5: icmp_seq=1 ttl=64 time=0.250 ms
-56 bytes from 172.17.0.5: icmp_seq=2 ttl=64 time=0.256 ms
-用 ping 来测试 db 容器，它会解析成 172.17.0.5。 *注意：官方的 ubuntu 镜像默认没有安装 ping，需要自行安装。
+   root@aed84ee21bde:/opt/webapp# apt-get install -yqq inetutils-ping
+   root@aed84ee21bde:/opt/webapp# ping db
+   PING db (172.17.0.5): 48 data bytes
+   56 bytes from 172.17.0.5: icmp_seq=0 ttl=64 time=0.267 ms
+   56 bytes from 172.17.0.5: icmp_seq=1 ttl=64 time=0.250 ms
+   56 bytes from 172.17.0.5: icmp_seq=2 ttl=64 time=0.256 ms
+   用 ping 来测试 db 容器，它会解析成 172.17.0.5。 *注意：官方的 ubuntu 镜像默认没有安装 ping，需要自行安装。
 
-用户可以链接多个父容器到子容器，比如可以链接多个 web 到 db 容器上。
+   用户可以链接多个父容器到子容器，比如可以链接多个 web 到 db 容器上。
 
 ** 高级网络配置
    
-1、快速配置指南
-下面是一个跟 Docker 网络相关的命令列表。
+   1、快速配置指南
+   下面是一个跟 Docker 网络相关的命令列表。
 
-其中有些命令选项只有在 Docker 服务启动的时候才能配置，而且不能马上生效。
+   其中有些命令选项只有在 Docker 服务启动的时候才能配置，而且不能马上生效。
 
--b BRIDGE or –bridge=BRIDGE –指定容器挂载的网桥
-–bip=CIDR –定制 docker0 的掩码
--H SOCKET… or –host=SOCKET… –Docker 服务端接收命令的通道
-–icc=true|false –是否支持容器之间进行通信
-–ip-forward=true|false –请看下文容器之间的通信
-–iptables=true|false –禁止 Docker 添加 iptables 规则
-–mtu=BYTES –容器网络中的 MTU
-下面 2 个命令选项既可以在启动服务时指定，也可以 Docker 容器启动（docker run）时候指定。在 Docker 服务启动的时候指定则会成为默认值，后面执行 docker run 时可以覆盖设置的默认值。
+   -b BRIDGE or –bridge=BRIDGE –指定容器挂载的网桥
+   –bip=CIDR –定制 docker0 的掩码
+   -H SOCKET… or –host=SOCKET… –Docker 服务端接收命令的通道
+   –icc=true|false –是否支持容器之间进行通信
+   –ip-forward=true|false –请看下文容器之间的通信
+   –iptables=true|false –禁止 Docker 添加 iptables 规则
+   –mtu=BYTES –容器网络中的 MTU
+   下面 2 个命令选项既可以在启动服务时指定，也可以 Docker 容器启动（docker run）时候指定。在 Docker 服务启动的时候指定则会成为默认值，后面执行 docker run 时可以覆盖设置的默认值。
 
-–dns=IP_ADDRESS… –使用指定的 DNS 服务器
-–dns-search=DOMAIN… –指定 DNS 搜索域
-最后这些选项只有在 docker run 执行时使用，因为它是针对容器的特性内容。
+   –dns=IP_ADDRESS… –使用指定的 DNS 服务器
+   –dns-search=DOMAIN… –指定 DNS 搜索域
+   最后这些选项只有在 docker run 执行时使用，因为它是针对容器的特性内容。
 
--h HOSTNAME or –hostname=HOSTNAME –配置容器主机名
-–link=CONTAINER_NAME:ALIAS –添加到另一个容器的连接
-–net=bridge|none|container:NAME_or_ID|host –配置容器的桥接模式
--p SPEC or –publish=SPEC –映射容器端口到宿主主机
--P or –publish-all=true|false –映射容器所有端口到宿主主机
-2、配置 DNS
-Docker 没有为每个容器专门定制镜像，那么怎么自定义配置容器的主机名和 DNS 配置呢？ 秘诀就是它利用虚拟文件来挂载到来容器的 3 个相关配置文件。
+   -h HOSTNAME or –hostname=HOSTNAME –配置容器主机名
+   –link=CONTAINER_NAME:ALIAS –添加到另一个容器的连接
+   –net=bridge|none|container:NAME_or_ID|host –配置容器的桥接模式
+   -p SPEC or –publish=SPEC –映射容器端口到宿主主机
+   -P or –publish-all=true|false –映射容器所有端口到宿主主机
+   2、配置 DNS
+   Docker 没有为每个容器专门定制镜像，那么怎么自定义配置容器的主机名和 DNS 配置呢？ 秘诀就是它利用虚拟文件来挂载到来容器的 3 个相关配置文件。
 
-在容器中使用 mount 命令可以看到挂载信息：
+   在容器中使用 mount 命令可以看到挂载信息：
 
-$ mount
-...
-/dev/disk/by-uuid/1fec...ebdf on /etc/hostname type ext4 ...
-/dev/disk/by-uuid/1fec...ebdf on /etc/hosts type ext4 ...
-tmpfs on /etc/resolv.conf type tmpfs ...
-...
-这种机制可以让宿主主机 DNS 信息发生更新后，所有 Docker 容器的 dns 配置通过 /etc/resolv.conf 文件立刻得到更新。
+   $ mount
+   ...
+   /dev/disk/by-uuid/1fec...ebdf on /etc/hostname type ext4 ...
+   /dev/disk/by-uuid/1fec...ebdf on /etc/hosts type ext4 ...
+   tmpfs on /etc/resolv.conf type tmpfs ...
+   ...
+   这种机制可以让宿主主机 DNS 信息发生更新后，所有 Docker 容器的 dns 配置通过 /etc/resolv.conf 文件立刻得到更新。
 
-如果用户想要手动指定容器的配置，可以利用下面的选项。
+   如果用户想要手动指定容器的配置，可以利用下面的选项。
 
--h HOSTNAME or --hostname=HOSTNAME 设定容器的主机名，它会被写到容器内的 /etc/hostname 和/etc/hosts。但它在容器外部看不到，既不会在 docker ps 中显示，也不会在其他的容器的 /etc/hosts 看到。
+   -h HOSTNAME or --hostname=HOSTNAME 设定容器的主机名，它会被写到容器内的 /etc/hostname 和/etc/hosts。但它在容器外部看不到，既不会在 docker ps 中显示，也不会在其他的容器的 /etc/hosts 看到。
 
---link=CONTAINER_NAME:ALIAS 选项会在创建容器的时候，添加一个其他容器的主机名到 /etc/hosts 文件中，让新容器的进程可以使用主机名 ALIAS 就可以连接它。
+   --link=CONTAINER_NAME:ALIAS 选项会在创建容器的时候，添加一个其他容器的主机名到 /etc/hosts 文件中，让新容器的进程可以使用主机名 ALIAS 就可以连接它。
 
---dns=IP_ADDRESS 添加 DNS 服务器到容器的 /etc/resolv.conf 中，让容器用这个服务器来解析所有不在/etc/hosts 中的主机名。
+   --dns=IP_ADDRESS 添加 DNS 服务器到容器的 /etc/resolv.conf 中，让容器用这个服务器来解析所有不在/etc/hosts 中的主机名。
 
---dns-search=DOMAIN 设定容器的搜索域，当设定搜索域为 .example.com 时，在搜索一个名为 host 的主机时，DNS 不仅搜索 host，还会搜索 host.example.com。 注意：如果没有上述最后 2 个选项，Docker 会默认用主机上的 /etc/resolv.conf 来配置容器。
+   --dns-search=DOMAIN 设定容器的搜索域，当设定搜索域为 .example.com 时，在搜索一个名为 host 的主机时，DNS 不仅搜索 host，还会搜索 host.example.com。 注意：如果没有上述最后 2 个选项，Docker 会默认用主机上的 /etc/resolv.conf 来配置容器。
 
-3、容器访问控制
-容器的访问控制，主要通过 Linux 上的 iptables 防火墙来进行管理和实现。iptables 是 Linux 上默认的防火墙软件，在大部分发行版中都自带。
+   3、容器访问控制
+   容器的访问控制，主要通过 Linux 上的 iptables 防火墙来进行管理和实现。iptables 是 Linux 上默认的防火墙软件，在大部分发行版中都自带。
 
-3.1 容器访问外部网络
-容器要想访问外部网络，需要本地系统的转发支持。在 Linux 系统中，检查转发是否打开。
+   3.1 容器访问外部网络
+   容器要想访问外部网络，需要本地系统的转发支持。在 Linux 系统中，检查转发是否打开。
 
-$sysctl net.ipv4.ip_forward
-net.ipv4.ip_forward = 1
-如果为 0，说明没有开启转发，则需要手动打开。
+   $sysctl net.ipv4.ip_forward
+   net.ipv4.ip_forward = 1
+   如果为 0，说明没有开启转发，则需要手动打开。
 
-$sysctl -w net.ipv4.ip_forward=1
-如果在启动 Docker 服务的时候设定 --ip-forward=true, Docker 就会自动设定系统的 ip_forward 参数为 1。
+   $sysctl -w net.ipv4.ip_forward=1
+   如果在启动 Docker 服务的时候设定 --ip-forward=true, Docker 就会自动设定系统的 ip_forward 参数为 1。
 
-3.2 容器之间访问
-容器之间相互访问，需要两方面的支持。
+   3.2 容器之间访问
+   容器之间相互访问，需要两方面的支持。
 
-容器的网络拓扑是否已经互联。默认情况下，所有容器都会被连接到 docker0 网桥上。
-本地系统的防火墙软件 — iptables 是否允许通过。
-3.2.1 访问所有端口
-当启动 Docker 服务时候，默认会添加一条转发策略到 iptables 的 FORWARD 链上。策略为通过（ACCEPT）还是禁止（DROP）取决于配置--icc=true（缺省值）还是 --icc=false。当然，如果手动指定 --iptables=false 则不会添加 iptables 规则。
+   容器的网络拓扑是否已经互联。默认情况下，所有容器都会被连接到 docker0 网桥上。
+   本地系统的防火墙软件 — iptables 是否允许通过。
+   3.2.1 访问所有端口
+   当启动 Docker 服务时候，默认会添加一条转发策略到 iptables 的 FORWARD 链上。策略为通过（ACCEPT）还是禁止（DROP）取决于配置--icc=true（缺省值）还是 --icc=false。当然，如果手动指定 --iptables=false 则不会添加 iptables 规则。
 
-可见，默认情况下，不同容器之间是允许网络互通的。如果为了安全考虑，可以在 /etc/default/docker 文件中配置 DOCKER_OPTS=--icc=false 来禁止它。
+   可见，默认情况下，不同容器之间是允许网络互通的。如果为了安全考虑，可以在 /etc/default/docker 文件中配置 DOCKER_OPTS=--icc=false 来禁止它。
 
-3.2.2 访问指定端口
-在通过 -icc=false 关闭网络访问后，还可以通过 --link=CONTAINER_NAME:ALIAS 选项来访问容器的开放端口。
+   3.2.2 访问指定端口
+   在通过 -icc=false 关闭网络访问后，还可以通过 --link=CONTAINER_NAME:ALIAS 选项来访问容器的开放端口。
 
-例如，在启动 Docker 服务时，可以同时使用 icc=false --iptables=true 参数来关闭允许相互的网络访问，并让 Docker 可以修改系统中的 iptables 规则。
+   例如，在启动 Docker 服务时，可以同时使用 icc=false --iptables=true 参数来关闭允许相互的网络访问，并让 Docker 可以修改系统中的 iptables 规则。
 
-此时，系统中的 iptables 规则可能是类似
+   此时，系统中的 iptables 规则可能是类似
 
-$ sudo iptables -nL
-...
-Chain FORWARD (policy ACCEPT)
-target     prot opt source               destination
-DROP       all  --  0.0.0.0/0            0.0.0.0/0
-...
-之后，启动容器（docker run）时使用 --link=CONTAINER_NAME:ALIAS 选项。Docker 会在 iptable 中为 两个容器分别添加一条 ACCEPT 规则，允许相互访问开放的端口（取决于 Dockerfile 中的 EXPOSE 行）。
+   $ sudo iptables -nL
+   ...
+   Chain FORWARD (policy ACCEPT)
+   target     prot opt source               destination
+   DROP       all  --  0.0.0.0/0            0.0.0.0/0
+   ...
+   之后，启动容器（docker run）时使用 --link=CONTAINER_NAME:ALIAS 选项。Docker 会在 iptable 中为 两个容器分别添加一条 ACCEPT 规则，允许相互访问开放的端口（取决于 Dockerfile 中的 EXPOSE 行）。
 
-当添加了 --link=CONTAINER_NAME:ALIAS 选项后，添加了 iptables 规则。
+   当添加了 --link=CONTAINER_NAME:ALIAS 选项后，添加了 iptables 规则。
 
-$ sudo iptables -nL
-...
-Chain FORWARD (policy ACCEPT)
-target     prot opt source               destination
-ACCEPT     tcp  --  172.17.0.2           172.17.0.3           tcp spt:80
-ACCEPT     tcp  --  172.17.0.3           172.17.0.2           tcp dpt:80
-DROP       all  --  0.0.0.0/0            0.0.0.0/0
-注意：--link=CONTAINER_NAME:ALIAS 中的 CONTAINER_NAME 目前必须是 Docker 分配的名字，或使用 --name 参数指定的名字。主机名则不会被识别。
+   $ sudo iptables -nL
+   ...
+   Chain FORWARD (policy ACCEPT)
+   target     prot opt source               destination
+   ACCEPT     tcp  --  172.17.0.2           172.17.0.3           tcp spt:80
+   ACCEPT     tcp  --  172.17.0.3           172.17.0.2           tcp dpt:80
+   DROP       all  --  0.0.0.0/0            0.0.0.0/0
+   注意：--link=CONTAINER_NAME:ALIAS 中的 CONTAINER_NAME 目前必须是 Docker 分配的名字，或使用 --name 参数指定的名字。主机名则不会被识别。
 
-4、映射容器端口到宿主主机的实现
-默认情况下，容器可以主动访问到外部网络的连接，但是外部网络无法访问到容器。
+   4、映射容器端口到宿主主机的实现
+   默认情况下，容器可以主动访问到外部网络的连接，但是外部网络无法访问到容器。
 
-4.1 容器访问外部实现
-容器所有到外部网络的连接，源地址都会被 NAT 成本地系统的 IP 地址。这是使用 iptables 的源地址伪装操作实现的。
+   4.1 容器访问外部实现
+   容器所有到外部网络的连接，源地址都会被 NAT 成本地系统的 IP 地址。这是使用 iptables 的源地址伪装操作实现的。
 
-查看主机的 NAT 规则。
+   查看主机的 NAT 规则。
 
-$ sudo iptables -t nat -nL
-...
-Chain POSTROUTING (policy ACCEPT)
-target     prot opt source               destination
-MASQUERADE  all  --  172.17.0.0/16       !172.17.0.0/16
-...
-其中，上述规则将所有源地址在 172.17.0.0/16 网段，目标地址为其他网段（外部网络）的流量动态伪装为从系统网卡发出。MASQUERADE 跟传统 SNAT 的好处是它能动态从网卡获取地址。
+   $ sudo iptables -t nat -nL
+   ...
+   Chain POSTROUTING (policy ACCEPT)
+   target     prot opt source               destination
+   MASQUERADE  all  --  172.17.0.0/16       !172.17.0.0/16
+   ...
+   其中，上述规则将所有源地址在 172.17.0.0/16 网段，目标地址为其他网段（外部网络）的流量动态伪装为从系统网卡发出。MASQUERADE 跟传统 SNAT 的好处是它能动态从网卡获取地址。
 
-4.2 外部访问容器实现
-容器允许外部访问，可以在 docker run 时候通过 -p 或 -P 参数来启用。
+   4.2 外部访问容器实现
+   容器允许外部访问，可以在 docker run 时候通过 -p 或 -P 参数来启用。
 
-不管用那种办法，其实也是在本地的 iptable 的 nat 表中添加相应的规则。
+   不管用那种办法，其实也是在本地的 iptable 的 nat 表中添加相应的规则。
 
-使用 -P 时：
+   使用 -P 时：
 
-$ iptables -t nat -nL
-...
-Chain DOCKER (2 references)
-target     prot opt source               destination
-DNAT       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:49153 to:172.17.0.2:80
-使用 -p 80:80 时：
+   $ iptables -t nat -nL
+   ...
+   Chain DOCKER (2 references)
+   target     prot opt source               destination
+   DNAT       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:49153 to:172.17.0.2:80
+   使用 -p 80:80 时：
 
-$ iptables -t nat -nL
-Chain DOCKER (2 references)
-target     prot opt source               destination
-DNAT       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:80 to:172.17.0.2:80
-注意：
+   $ iptables -t nat -nL
+   Chain DOCKER (2 references)
+   target     prot opt source               destination
+   DNAT       tcp  --  0.0.0.0/0            0.0.0.0/0            tcp dpt:80 to:172.17.0.2:80
+   注意：
 
-这里的规则映射了 0.0.0.0，意味着将接受主机来自所有接口的流量。用户可以通过 -p IP:host_port:container_port 或 -p IP::port 来指定允许访问容器的主机上的 IP、接口等，以制定更严格的规则。
-如果希望永久绑定到某个固定的 IP 地址，可以在 Docker 配置文件 /etc/default/docker 中指定 DOCKER_OPTS="--ip=IP_ADDRESS"，之后重启 Docker 服务即可生效。
-5、配置 docker0 网桥
-Docker 服务默认会创建一个 docker0 网桥（其上有一个 docker0 内部接口），它在内核层连通了其他的物理或虚拟网卡，这就将所有容器和本地主机都放到同一个物理网络。
+   这里的规则映射了 0.0.0.0，意味着将接受主机来自所有接口的流量。用户可以通过 -p IP:host_port:container_port 或 -p IP::port 来指定允许访问容器的主机上的 IP、接口等，以制定更严格的规则。
+   如果希望永久绑定到某个固定的 IP 地址，可以在 Docker 配置文件 /etc/default/docker 中指定 DOCKER_OPTS="--ip=IP_ADDRESS"，之后重启 Docker 服务即可生效。
+   5、配置 docker0 网桥
+   Docker 服务默认会创建一个 docker0 网桥（其上有一个 docker0 内部接口），它在内核层连通了其他的物理或虚拟网卡，这就将所有容器和本地主机都放到同一个物理网络。
 
-Docker 默认指定了 docker0 接口 的 IP 地址和子网掩码，让主机和容器之间可以通过网桥相互通信，它还给出了 MTU（接口允许接收的最大传输单元），通常是 1500 Bytes，或宿主主机网络路由上支持的默认值。这些值都可以在服务启动的时候进行配置。
+   Docker 默认指定了 docker0 接口 的 IP 地址和子网掩码，让主机和容器之间可以通过网桥相互通信，它还给出了 MTU（接口允许接收的最大传输单元），通常是 1500 Bytes，或宿主主机网络路由上支持的默认值。这些值都可以在服务启动的时候进行配置。
 
---bip=CIDR — IP 地址加掩码格式，例如 192.168.1.5/24
---mtu=BYTES — 覆盖默认的 Docker mtu 配置
-也可以在配置文件中配置 DOCKER_OPTS，然后重启服务。 由于目前 Docker 网桥是 Linux 网桥，用户可以使用 brctl show 来查看网桥和端口连接信息。
+   --bip=CIDR — IP 地址加掩码格式，例如 192.168.1.5/24
+   --mtu=BYTES — 覆盖默认的 Docker mtu 配置
+   也可以在配置文件中配置 DOCKER_OPTS，然后重启服务。 由于目前 Docker 网桥是 Linux 网桥，用户可以使用 brctl show 来查看网桥和端口连接信息。
 
-$ sudo brctl show
-bridge name     bridge id               STP enabled     interfaces
-docker0         8000.3a1d7362b4ee       no              veth65f9
-                                             vethdda6
-*注：brctl 命令在 Debian、Ubuntu 中可以使用 sudo apt-get install bridge-utils 来安装。
+   $ sudo brctl show
+   bridge name     bridge id               STP enabled     interfaces
+   docker0         8000.3a1d7362b4ee       no              veth65f9
+   vethdda6
+   *注：brctl 命令在 Debian、Ubuntu 中可以使用 sudo apt-get install bridge-utils 来安装。
 
-每次创建一个新容器的时候，Docker 从可用的地址段中选择一个空闲的 IP 地址分配给容器的 eth0 端口。使用本地主机上 docker0 接口的 IP 作为所有容器的默认网关。
+   每次创建一个新容器的时候，Docker 从可用的地址段中选择一个空闲的 IP 地址分配给容器的 eth0 端口。使用本地主机上 docker0 接口的 IP 作为所有容器的默认网关。
 
-$ sudo docker run -i -t --rm base /bin/bash
-$ ip addr show eth0
-24: eth0: <BROADCAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
-    link/ether 32:6f:e0:35:57:91 brd ff:ff:ff:ff:ff:ff
-    inet 172.17.0.3/16 scope global eth0
-       valid_lft forever preferred_lft forever
-    inet6 fe80::306f:e0ff:fe35:5791/64 scope link
-       valid_lft forever preferred_lft forever
-$ ip route
-default via 172.17.42.1 dev eth0
-172.17.0.0/16 dev eth0  proto kernel  scope link  src 172.17.0.3
-$ exit
-6、自定义网桥
-除了默认的 docker0 网桥，用户也可以指定网桥来连接各个容器。
+   $ sudo docker run -i -t --rm base /bin/bash
+   $ ip addr show eth0
+   24: eth0: <BROADCAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+   link/ether 32:6f:e0:35:57:91 brd ff:ff:ff:ff:ff:ff
+   inet 172.17.0.3/16 scope global eth0
+   valid_lft forever preferred_lft forever
+   inet6 fe80::306f:e0ff:fe35:5791/64 scope link
+   valid_lft forever preferred_lft forever
+   $ ip route
+   default via 172.17.42.1 dev eth0
+   172.17.0.0/16 dev eth0  proto kernel  scope link  src 172.17.0.3
+   $ exit
+   6、自定义网桥
+   除了默认的 docker0 网桥，用户也可以指定网桥来连接各个容器。
 
-在启动 Docker 服务的时候，使用 -b BRIDGE 或--bridge=BRIDGE 来指定使用的网桥。
+   在启动 Docker 服务的时候，使用 -b BRIDGE 或--bridge=BRIDGE 来指定使用的网桥。
 
-如果服务已经运行，那需要先停止服务，并删除旧的网桥。
+   如果服务已经运行，那需要先停止服务，并删除旧的网桥。
 
-$ sudo service docker stop
-$ sudo ip link set dev docker0 down
-$ sudo brctl delbr docker0
-然后创建一个网桥 bridge0。
+   $ sudo service docker stop
+   $ sudo ip link set dev docker0 down
+   $ sudo brctl delbr docker0
+   然后创建一个网桥 bridge0。
 
-$ sudo brctl addbr bridge0
-$ sudo ip addr add 192.168.5.1/24 dev bridge0
-$ sudo ip link set dev bridge0 up
-查看确认网桥创建并启动。
+   $ sudo brctl addbr bridge0
+   $ sudo ip addr add 192.168.5.1/24 dev bridge0
+   $ sudo ip link set dev bridge0 up
+   查看确认网桥创建并启动。
 
-$ ip addr show bridge0
-4: bridge0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state UP group default
-    link/ether 66:38:d0:0d:76:18 brd ff:ff:ff:ff:ff:ff
-    inet 192.168.5.1/24 scope global bridge0
-       valid_lft forever preferred_lft forever
-配置 Docker 服务，默认桥接到创建的网桥上。
+   $ ip addr show bridge0
+   4: bridge0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state UP group default
+   link/ether 66:38:d0:0d:76:18 brd ff:ff:ff:ff:ff:ff
+   inet 192.168.5.1/24 scope global bridge0
+   valid_lft forever preferred_lft forever
+   配置 Docker 服务，默认桥接到创建的网桥上。
 
-$ echo 'DOCKER_OPTS="-b=bridge0"' >> /etc/default/docker
-$ sudo service docker start
-启动 Docker 服务。 新建一个容器，可以看到它已经桥接到了 bridge0 上。
+   $ echo 'DOCKER_OPTS="-b=bridge0"' >> /etc/default/docker
+   $ sudo service docker start
+   启动 Docker 服务。 新建一个容器，可以看到它已经桥接到了 bridge0 上。
 
-可以继续用 brctl show 命令查看桥接的信息。另外，在容器中可以使用 ip addr 和 ip route 命令来查看 IP 地址配置和路由信息。
+   可以继续用 brctl show 命令查看桥接的信息。另外，在容器中可以使用 ip addr 和 ip route 命令来查看 IP 地址配置和路由信息。
 
-7、工具和示例
-在介绍自定义网络拓扑之前，你可能会对一些外部工具和例子感兴趣：
+   7、工具和示例
+   在介绍自定义网络拓扑之前，你可能会对一些外部工具和例子感兴趣：
 
-7.1 pipework
-Jérôme Petazzoni 编写了一个叫 pipework 的 shell 脚本，可以帮助用户在比较复杂的场景中完成容器的连接。
+   7.1 pipework
+   Jérôme Petazzoni 编写了一个叫 pipework 的 shell 脚本，可以帮助用户在比较复杂的场景中完成容器的连接。
 
-7.2 playground
-Brandon Rhodes 创建了一个提供完整的 Docker 容器网络拓扑管理的 Python 库，包括路由、NAT 防火墙；以及一些提供 HTTP, SMTP, POP, IMAP, Telnet, SSH, FTP 的服务器。
+   7.2 playground
+   Brandon Rhodes 创建了一个提供完整的 Docker 容器网络拓扑管理的 Python 库，包括路由、NAT 防火墙；以及一些提供 HTTP, SMTP, POP, IMAP, Telnet, SSH, FTP 的服务器。
 
-8、编辑网络配置文件
-Docker 1.2.0 开始支持在运行中的容器里编辑 /etc/hosts, /etc/hostname 和 /etc/resolve.conf 文件。
+   8、编辑网络配置文件
+   Docker 1.2.0 开始支持在运行中的容器里编辑 /etc/hosts, /etc/hostname 和 /etc/resolve.conf 文件。
 
-但是这些修改是临时的，只在运行的容器中保留，容器终止或重启后并不会被保存下来。也不会被 docker commit 提交。
+   但是这些修改是临时的，只在运行的容器中保留，容器终止或重启后并不会被保存下来。也不会被 docker commit 提交。
 
-9、示例：创建一个点到点连接
-默认情况下，Docker 会将所有容器连接到由 docker0 提供的虚拟子网中。
+   9、示例：创建一个点到点连接
+   默认情况下，Docker 会将所有容器连接到由 docker0 提供的虚拟子网中。
 
-用户有时候需要两个容器之间可以直连通信，而不用通过主机网桥进行桥接。
+   用户有时候需要两个容器之间可以直连通信，而不用通过主机网桥进行桥接。
 
-解决办法很简单：创建一对 peer 接口，分别放到两个容器中，配置成点到点链路类型即可。
+   解决办法很简单：创建一对 peer 接口，分别放到两个容器中，配置成点到点链路类型即可。
 
-首先启动 2 个容器：
+   首先启动 2 个容器：
 
-$ sudo docker run -i -t --rm --net=none base /bin/bash
-root@1f1f4c1f931a:/#
-$ sudo docker run -i -t --rm --net=none base /bin/bash
-root@12e343489d2f:/#
-找到进程号，然后创建网络名字空间的跟踪文件。
+   $ sudo docker run -i -t --rm --net=none base /bin/bash
+   root@1f1f4c1f931a:/#
+   $ sudo docker run -i -t --rm --net=none base /bin/bash
+   root@12e343489d2f:/#
+   找到进程号，然后创建网络名字空间的跟踪文件。
 
-$ sudo docker inspect -f '{{.State.Pid}}' 1f1f4c1f931a
-2989
-$ sudo docker inspect -f '{{.State.Pid}}' 12e343489d2f
-3004
-$ sudo mkdir -p /var/run/netns
-$ sudo ln -s /proc/2989/ns/net /var/run/netns/2989
-$ sudo ln -s /proc/3004/ns/net /var/run/netns/3004
-创建一对 peer 接口，然后配置路由
+   $ sudo docker inspect -f '{{.State.Pid}}' 1f1f4c1f931a
+   2989
+   $ sudo docker inspect -f '{{.State.Pid}}' 12e343489d2f
+   3004
+   $ sudo mkdir -p /var/run/netns
+   $ sudo ln -s /proc/2989/ns/net /var/run/netns/2989
+   $ sudo ln -s /proc/3004/ns/net /var/run/netns/3004
+   创建一对 peer 接口，然后配置路由
 
-$ sudo ip link add A type veth peer name B
+   $ sudo ip link add A type veth peer name B
 
-$ sudo ip link set A netns 2989
-$ sudo ip netns exec 2989 ip addr add 10.1.1.1/32 dev A
-$ sudo ip netns exec 2989 ip link set A up
-$ sudo ip netns exec 2989 ip route add 10.1.1.2/32 dev A
+   $ sudo ip link set A netns 2989
+   $ sudo ip netns exec 2989 ip addr add 10.1.1.1/32 dev A
+   $ sudo ip netns exec 2989 ip link set A up
+   $ sudo ip netns exec 2989 ip route add 10.1.1.2/32 dev A
 
-$ sudo ip link set B netns 3004
-$ sudo ip netns exec 3004 ip addr add 10.1.1.2/32 dev B
-$ sudo ip netns exec 3004 ip link set B up
-$ sudo ip netns exec 3004 ip route add 10.1.1.1/32 dev B
-现在这 2 个容器就可以相互 ping 通，并成功建立连接。点到点链路不需要子网和子网掩码。
+   $ sudo ip link set B netns 3004
+   $ sudo ip netns exec 3004 ip addr add 10.1.1.2/32 dev B
+   $ sudo ip netns exec 3004 ip link set B up
+   $ sudo ip netns exec 3004 ip route add 10.1.1.1/32 dev B
+   现在这 2 个容器就可以相互 ping 通，并成功建立连接。点到点链路不需要子网和子网掩码。
 
-此外，也可以不指定 --net=none 来创建点到点链路。这样容器还可以通过原先的网络来通信。
+   此外，也可以不指定 --net=none 来创建点到点链路。这样容器还可以通过原先的网络来通信。
 
-利用类似的办法，可以创建一个只跟主机通信的容器。但是一般情况下，更推荐使用 --icc=false 来关闭容器之间的通信。
+   利用类似的办法，可以创建一个只跟主机通信的容器。但是一般情况下，更推荐使用 --icc=false 来关闭容器之间的通信。
 
 ** 安全介绍
    1、内核名字空间
-Docker 容器和 LXC 容器很相似，所提供的安全特性也差不多。当用 docker run 启动一个容器时，在后台 Docker 为容器创建了一个独立的名字空间和控制组集合。
+   Docker 容器和 LXC 容器很相似，所提供的安全特性也差不多。当用 docker run 启动一个容器时，在后台 Docker 为容器创建了一个独立的名字空间和控制组集合。
 
-名字空间提供了最基础也是最直接的隔离，在容器中运行的进程不会被运行在主机上的进程和其它容器发现和作用。
+   名字空间提供了最基础也是最直接的隔离，在容器中运行的进程不会被运行在主机上的进程和其它容器发现和作用。
 
-每个容器都有自己独有的网络栈，意味着它们不能访问其他容器的 sockets 或接口。不过，如果主机系统上做了相应的设置，容器可以像跟主机交互一样的和其他容器交互。当指定公共端口或使用 links 来连接 2 个容器时，容器就可以相互通信了（可以根据配置来限制通信的策略）。
+   每个容器都有自己独有的网络栈，意味着它们不能访问其他容器的 sockets 或接口。不过，如果主机系统上做了相应的设置，容器可以像跟主机交互一样的和其他容器交互。当指定公共端口或使用 links 来连接 2 个容器时，容器就可以相互通信了（可以根据配置来限制通信的策略）。
 
-从网络架构的角度来看，所有的容器通过本地主机的网桥接口相互通信，就像物理机器通过物理交换机通信一样。
+   从网络架构的角度来看，所有的容器通过本地主机的网桥接口相互通信，就像物理机器通过物理交换机通信一样。
 
-那么，内核中实现名字空间和私有网络的代码是否足够成熟？
+   那么，内核中实现名字空间和私有网络的代码是否足够成熟？
 
-内核名字空间从 2.6.15 版本（2008 年 7 月发布）之后被引入，数年间，这些机制的可靠性在诸多大型生产系统中被实践验证。
+   内核名字空间从 2.6.15 版本（2008 年 7 月发布）之后被引入，数年间，这些机制的可靠性在诸多大型生产系统中被实践验证。
 
-实际上，名字空间的想法和设计提出的时间要更早，最初是为了在内核中引入一种机制来实现 OpenVZ 的特性。 而 OpenVZ 项目早在 2005 年就发布了，其设计和实现都已经十分成熟。
+   实际上，名字空间的想法和设计提出的时间要更早，最初是为了在内核中引入一种机制来实现 OpenVZ 的特性。 而 OpenVZ 项目早在 2005 年就发布了，其设计和实现都已经十分成熟。
 
-2、控制组
-控制组是 Linux 容器机制的另外一个关键组件，负责实现资源的审计和限制。
+   2、控制组
+   控制组是 Linux 容器机制的另外一个关键组件，负责实现资源的审计和限制。
 
-它提供了很多有用的特性；以及确保各个容器可以公平地分享主机的内存、CPU、磁盘 IO 等资源；当然，更重要的是，控制组确保了当容器内的资源使用产生压力时不会连累主机系统。
+   它提供了很多有用的特性；以及确保各个容器可以公平地分享主机的内存、CPU、磁盘 IO 等资源；当然，更重要的是，控制组确保了当容器内的资源使用产生压力时不会连累主机系统。
 
-尽管控制组不负责隔离容器之间相互访问、处理数据和进程，它在防止拒绝服务（DDOS）攻击方面是必不可少的。尤其是在多用户的平台（比如公有或私有的 PaaS）上，控制组十分重要。例如，当某些应用程序表现异常的时候，可以保证一致地正常运行和性能。
+   尽管控制组不负责隔离容器之间相互访问、处理数据和进程，它在防止拒绝服务（DDOS）攻击方面是必不可少的。尤其是在多用户的平台（比如公有或私有的 PaaS）上，控制组十分重要。例如，当某些应用程序表现异常的时候，可以保证一致地正常运行和性能。
 
-控制组机制始于 2006 年，内核从 2.6.24 版本开始被引入。
+   控制组机制始于 2006 年，内核从 2.6.24 版本开始被引入。
 
-3、Docker 服务端的防护
-运行一个容器或应用程序的核心是通过 Docker 服务端。Docker 服务的运行目前需要 root 权限，因此其安全性十分关键。
+   3、Docker 服务端的防护
+   运行一个容器或应用程序的核心是通过 Docker 服务端。Docker 服务的运行目前需要 root 权限，因此其安全性十分关键。
 
-首先，确保只有可信的用户才可以访问 Docker 服务。Docker 允许用户在主机和容器间共享文件夹，同时不需要限制容器的访问权限，这就容易让容器突破资源限制。例如，恶意用户启动容器的时候将主机的根目录/映射到容器的 /host 目录中，那么容器理论上就可以对主机的文件系统进行任意修改了。这听起来很疯狂？但是事实上几乎所有虚拟化系统都允许类似的资源共享，而没法禁止用户共享主机根文件系统到虚拟机系统。
+   首先，确保只有可信的用户才可以访问 Docker 服务。Docker 允许用户在主机和容器间共享文件夹，同时不需要限制容器的访问权限，这就容易让容器突破资源限制。例如，恶意用户启动容器的时候将主机的根目录/映射到容器的 /host 目录中，那么容器理论上就可以对主机的文件系统进行任意修改了。这听起来很疯狂？但是事实上几乎所有虚拟化系统都允许类似的资源共享，而没法禁止用户共享主机根文件系统到虚拟机系统。
 
-这将会造成很严重的安全后果。因此，当提供容器创建服务时（例如通过一个 web 服务器），要更加注意进行参数的安全检查，防止恶意的用户用特定参数来创建一些破坏性的容器
+   这将会造成很严重的安全后果。因此，当提供容器创建服务时（例如通过一个 web 服务器），要更加注意进行参数的安全检查，防止恶意的用户用特定参数来创建一些破坏性的容器
 
-为了加强对服务端的保护，Docker 的 REST API（客户端用来跟服务端通信）在 0.5.2 之后使用本地的 Unix 套接字机制替代了原先绑定在 127.0.0.1 上的 TCP 套接字，因为后者容易遭受跨站脚本攻击。现在用户使用 Unix 权限检查来加强套接字的访问安全。
+   为了加强对服务端的保护，Docker 的 REST API（客户端用来跟服务端通信）在 0.5.2 之后使用本地的 Unix 套接字机制替代了原先绑定在 127.0.0.1 上的 TCP 套接字，因为后者容易遭受跨站脚本攻击。现在用户使用 Unix 权限检查来加强套接字的访问安全。
 
-用户仍可以利用 HTTP 提供 REST API 访问。建议使用安全机制，确保只有可信的网络或 VPN，或证书保护机制（例如受保护的 stunnel 和 ssl 认证）下的访问可以进行。此外，还可以使用 HTTPS 和证书来加强保护。
+   用户仍可以利用 HTTP 提供 REST API 访问。建议使用安全机制，确保只有可信的网络或 VPN，或证书保护机制（例如受保护的 stunnel 和 ssl 认证）下的访问可以进行。此外，还可以使用 HTTPS 和证书来加强保护。
 
-最近改进的 Linux 名字空间机制将可以实现使用非 root 用户来运行全功能的容器。这将从根本上解决了容器和主机之间共享文件系统而引起的安全问题。
+   最近改进的 Linux 名字空间机制将可以实现使用非 root 用户来运行全功能的容器。这将从根本上解决了容器和主机之间共享文件系统而引起的安全问题。
 
-终极目标是改进 2 个重要的安全特性：
+   终极目标是改进 2 个重要的安全特性：
 
-将容器的 root 用户映射到本地主机上的非 root 用户，减轻容器和主机之间因权限提升而引起的安全问题；
-允许 Docker 服务端在非 root 权限下运行，利用安全可靠的子进程来代理执行需要特权权限的操作。这些子进程将只允许在限定范围内进行操作，例如仅仅负责虚拟网络设定或文件系统管理、配置操作等。
-最后，建议采用专用的服务器来运行 Docker 和相关的管理服务（例如管理服务比如 ssh 监控和进程监控、管理工具 nrpe、collectd 等）。其它的业务服务都放到容器中去运行。
+   将容器的 root 用户映射到本地主机上的非 root 用户，减轻容器和主机之间因权限提升而引起的安全问题；
+   允许 Docker 服务端在非 root 权限下运行，利用安全可靠的子进程来代理执行需要特权权限的操作。这些子进程将只允许在限定范围内进行操作，例如仅仅负责虚拟网络设定或文件系统管理、配置操作等。
+   最后，建议采用专用的服务器来运行 Docker 和相关的管理服务（例如管理服务比如 ssh 监控和进程监控、管理工具 nrpe、collectd 等）。其它的业务服务都放到容器中去运行。
 
-4、内核能力机制
-能力机制（Capability）是 Linux 内核一个强大的特性，可以提供细粒度的权限访问控制。Linux 内核自 2.2 版本起就支持能力机制，它将权限划分为更加细粒度的操作能力，既可以作用在进程上，也可以作用在文件上。
+   4、内核能力机制
+   能力机制（Capability）是 Linux 内核一个强大的特性，可以提供细粒度的权限访问控制。Linux 内核自 2.2 版本起就支持能力机制，它将权限划分为更加细粒度的操作能力，既可以作用在进程上，也可以作用在文件上。
 
-例如，一个 Web 服务进程只需要绑定一个低于 1024 的端口的权限，并不需要 root 权限。那么它只需要被授权 net_bind_service 能力即可。此外，还有很多其他的类似能力来避免进程获取 root 权限。
+   例如，一个 Web 服务进程只需要绑定一个低于 1024 的端口的权限，并不需要 root 权限。那么它只需要被授权 net_bind_service 能力即可。此外，还有很多其他的类似能力来避免进程获取 root 权限。
 
-默认情况下，Docker 启动的容器被严格限制只允许使用内核的一部分能力。
+   默认情况下，Docker 启动的容器被严格限制只允许使用内核的一部分能力。
 
-使用能力机制对加强 Docker 容器的安全有很多好处。通常，在服务器上会运行一堆需要特权权限的进程，包括有 ssh、cron、syslogd、硬件管理工具模块（例如负载模块）、网络配置工具等等。容器跟这些进程是不同的，因为几乎所有的特权进程都由容器以外的支持系统来进行管理。
+   使用能力机制对加强 Docker 容器的安全有很多好处。通常，在服务器上会运行一堆需要特权权限的进程，包括有 ssh、cron、syslogd、硬件管理工具模块（例如负载模块）、网络配置工具等等。容器跟这些进程是不同的，因为几乎所有的特权进程都由容器以外的支持系统来进行管理。
 
-ssh 访问被主机上 ssh 服务来管理；
-cron 通常应该作为用户进程执行，权限交给使用它服务的应用来处理；
-日志系统可由 Docker 或第三方服务管理；
-硬件管理无关紧要，容器中也就无需执行 udevd 以及类似服务；
-网络管理也都在主机上设置，除非特殊需求，容器不需要对网络进行配置。
-从上面的例子可以看出，大部分情况下，容器并不需要“真正的” root 权限，容器只需要少数的能力即可。为了加强安全，容器可以禁用一些没必要的权限。
+   ssh 访问被主机上 ssh 服务来管理；
+   cron 通常应该作为用户进程执行，权限交给使用它服务的应用来处理；
+   日志系统可由 Docker 或第三方服务管理；
+   硬件管理无关紧要，容器中也就无需执行 udevd 以及类似服务；
+   网络管理也都在主机上设置，除非特殊需求，容器不需要对网络进行配置。
+   从上面的例子可以看出，大部分情况下，容器并不需要“真正的” root 权限，容器只需要少数的能力即可。为了加强安全，容器可以禁用一些没必要的权限。
 
-完全禁止任何 mount 操作；
-禁止直接访问本地主机的套接字；
-禁止访问一些文件系统的操作，比如创建新的设备、修改文件属性等；
-禁止模块加载。
-这样，就算攻击者在容器中取得了 root 权限，也不能获得本地主机的较高权限，能进行的破坏也有限。
+   完全禁止任何 mount 操作；
+   禁止直接访问本地主机的套接字；
+   禁止访问一些文件系统的操作，比如创建新的设备、修改文件属性等；
+   禁止模块加载。
+   这样，就算攻击者在容器中取得了 root 权限，也不能获得本地主机的较高权限，能进行的破坏也有限。
 
-默认情况下，Docker 采用 白名单 机制，禁用 必需功能 之外的其它权限。 当然，用户也可以根据自身需求来为 Docker 容器启用额外的权限。
+   默认情况下，Docker 采用 白名单 机制，禁用 必需功能 之外的其它权限。 当然，用户也可以根据自身需求来为 Docker 容器启用额外的权限。
 
-5、其它安全特性
-除了能力机制之外，还可以利用一些现有的安全机制来增强使用 Docker 的安全性，例如 TOMOYO, AppArmor, SELinux, GRSEC 等。
+   5、其它安全特性
+   除了能力机制之外，还可以利用一些现有的安全机制来增强使用 Docker 的安全性，例如 TOMOYO, AppArmor, SELinux, GRSEC 等。
 
-Docker 当前默认只启用了能力机制。用户可以采用多种方案来加强 Docker 主机的安全，例如：
+   Docker 当前默认只启用了能力机制。用户可以采用多种方案来加强 Docker 主机的安全，例如：
 
-在内核中启用 GRSEC 和 PAX，这将增加很多编译和运行时的安全检查；通过地址随机化避免恶意探测等。并且，启用该特性不需要 Docker 进行任何配置。
-使用一些有增强安全特性的容器模板，比如带 AppArmor 的模板和 Redhat 带 SELinux 策略的模板。这些模板提供了额外的安全特性。
-用户可以自定义访问控制机制来定制安全策略。
-跟其它添加到 Docker 容器的第三方工具一样（比如网络拓扑和文件系统共享），有很多类似的机制，在不改变 Docker 内核情况下就可以加固现有的容器。
+   在内核中启用 GRSEC 和 PAX，这将增加很多编译和运行时的安全检查；通过地址随机化避免恶意探测等。并且，启用该特性不需要 Docker 进行任何配置。
+   使用一些有增强安全特性的容器模板，比如带 AppArmor 的模板和 Redhat 带 SELinux 策略的模板。这些模板提供了额外的安全特性。
+   用户可以自定义访问控制机制来定制安全策略。
+   跟其它添加到 Docker 容器的第三方工具一样（比如网络拓扑和文件系统共享），有很多类似的机制，在不改变 Docker 内核情况下就可以加固现有的容器。
 
-6、总结
-总体来看，Docker 容器还是十分安全的，特别是在容器内不使用 root 权限来运行进程的话。
+   6、总结
+   总体来看，Docker 容器还是十分安全的，特别是在容器内不使用 root 权限来运行进程的话。
 
-另外，用户可以使用现有工具，比如 Apparmor, SELinux, GRSEC 来增强安全性；甚至自己在内核中实现更复杂的安全机制。
+   另外，用户可以使用现有工具，比如 Apparmor, SELinux, GRSEC 来增强安全性；甚至自己在内核中实现更复杂的安全机制。
 
 ** Dockerfile 介绍
    1、基本结构
-Dockerfile 由一行行命令语句组成，并且支持以 # 开头的注释行。
+   Dockerfile 由一行行命令语句组成，并且支持以 # 开头的注释行。
 
-一般的，Dockerfile 分为四部分：基础镜像信息、维护者信息、镜像操作指令和容器启动时执行指令。
+   一般的，Dockerfile 分为四部分：基础镜像信息、维护者信息、镜像操作指令和容器启动时执行指令。
 
-例如
+   例如
 
-# This dockerfile uses the ubuntu image
-# VERSION 2 - EDITION 1
-# Author: docker_user
-# Command format: Instruction [arguments / command] ..
+   # This dockerfile uses the ubuntu image
+   # VERSION 2 - EDITION 1
+   # Author: docker_user
+   # Command format: Instruction [arguments / command] ..
 
-# Base image to use, this must be set as the first line
-FROM ubuntu
+   # Base image to use, this must be set as the first line
+   FROM ubuntu
 
-# Maintainer: docker_user <docker_user at email.com> (@docker_user)
-MAINTAINER docker_user docker_user@email.com
+   # Maintainer: docker_user <docker_user at email.com> (@docker_user)
+   MAINTAINER docker_user docker_user@email.com
 
-# Commands to update the image
-RUN echo "deb http://archive.ubuntu.com/ubuntu/ raring main universe" >> /etc/apt/sources.list
-RUN apt-get update && apt-get install -y nginx
-RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
+   # Commands to update the image
+   RUN echo "deb http://archive.ubuntu.com/ubuntu/ raring main universe" >> /etc/apt/sources.list
+   RUN apt-get update && apt-get install -y nginx
+   RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf
 
-# Commands when creating a new container
-CMD /usr/sbin/nginx
-其中，一开始必须指明所基于的镜像名称，接下来推荐说明维护者信息。
+   # Commands when creating a new container
+   CMD /usr/sbin/nginx
+   其中，一开始必须指明所基于的镜像名称，接下来推荐说明维护者信息。
 
-后面则是镜像操作指令，例如 RUN 指令，RUN 指令将对镜像执行跟随的命令。每运行一条 RUN 指令，镜像添加新的一层，并提交。
+   后面则是镜像操作指令，例如 RUN 指令，RUN 指令将对镜像执行跟随的命令。每运行一条 RUN 指令，镜像添加新的一层，并提交。
 
-最后是 CMD 指令，来指定运行容器时的操作命令。
+   最后是 CMD 指令，来指定运行容器时的操作命令。
 
-下面是一个更复杂的例子
+   下面是一个更复杂的例子
 
-# Nginx
-#
-# VERSION               0.0.1
+   # Nginx
+   #
+   # VERSION               0.0.1
 
-FROM      ubuntu
-MAINTAINER Victor Vieux <victor@docker.com>
+   FROM      ubuntu
+   MAINTAINER Victor Vieux <victor@docker.com>
 
-RUN apt-get update && apt-get install -y inotify-tools nginx apache2 openssh-server
+   RUN apt-get update && apt-get install -y inotify-tools nginx apache2 openssh-server
 
-# Firefox over VNC
-#
-# VERSION               0.3
+   # Firefox over VNC
+   #
+   # VERSION               0.3
 
-FROM ubuntu
+   FROM ubuntu
 
-# Install vnc, xvfb in order to create a 'fake' display and firefox
-RUN apt-get update && apt-get install -y x11vnc xvfb firefox
-RUN mkdir /.vnc
-# Setup a password
-RUN x11vnc -storepasswd 1234 ~/.vnc/passwd
-# Autostart firefox (might not be the best way, but it does the trick)
-RUN bash -c 'echo "firefox" >> /.bashrc'
+   # Install vnc, xvfb in order to create a 'fake' display and firefox
+   RUN apt-get update && apt-get install -y x11vnc xvfb firefox
+   RUN mkdir /.vnc
+   # Setup a password
+   RUN x11vnc -storepasswd 1234 ~/.vnc/passwd
+   # Autostart firefox (might not be the best way, but it does the trick)
+   RUN bash -c 'echo "firefox" >> /.bashrc'
 
-EXPOSE 5900
-CMD    ["x11vnc", "-forever", "-usepw", "-create"]
+   EXPOSE 5900
+   CMD    ["x11vnc", "-forever", "-usepw", "-create"]
 
-# Multiple images example
-#
-# VERSION               0.1
+   # Multiple images example
+   #
+   # VERSION               0.1
 
-FROM ubuntu
-RUN echo foo > bar
-# Will output something like ===> 907ad6c2736f
+   FROM ubuntu
+   RUN echo foo > bar
+   # Will output something like ===> 907ad6c2736f
 
-FROM ubuntu
-RUN echo moo > oink
-# Will output something like ===> 695d7793cbe4
+   FROM ubuntu
+   RUN echo moo > oink
+   # Will output something like ===> 695d7793cbe4
 
-# You᾿ll now have two images, 907ad6c2736f with /bar, and 695d7793cbe4 with
-# /oink.
-2、指令
-指令的一般格式为 INSTRUCTION arguments，指令包括 FROM、MAINTAINER、RUN 等。
+   # You᾿ll now have two images, 907ad6c2736f with /bar, and 695d7793cbe4 with
+   # /oink.
+   2、指令
+   指令的一般格式为 INSTRUCTION arguments，指令包括 FROM、MAINTAINER、RUN 等。
 
-2.1 FROM
-格式为 FROM <image>或 FROM <image>:<tag>。
+   2.1 FROM
+   格式为 FROM <image>或 FROM <image>:<tag>。
 
-第一条指令必须为 FROM 指令。并且，如果在同一个 Dockerfile 中创建多个镜像时，可以使用多个 FROM 指令（每个镜像一次）。
+   第一条指令必须为 FROM 指令。并且，如果在同一个 Dockerfile 中创建多个镜像时，可以使用多个 FROM 指令（每个镜像一次）。
 
-2.2 MAINTAINER
-格式为 MAINTAINER <name>，指定维护者信息。
+   2.2 MAINTAINER
+   格式为 MAINTAINER <name>，指定维护者信息。
 
-2.3 RUN
-格式为 RUN <command> 或 RUN ["executable", "param1", "param2"]。
+   2.3 RUN
+   格式为 RUN <command> 或 RUN ["executable", "param1", "param2"]。
 
-前者将在 shell 终端中运行命令，即 /bin/sh -c；后者则使用 exec 执行。指定使用其它终端可以通过第二种方式实现，例如 RUN ["/bin/bash", "-c", "echo hello"]。
+   前者将在 shell 终端中运行命令，即 /bin/sh -c；后者则使用 exec 执行。指定使用其它终端可以通过第二种方式实现，例如 RUN ["/bin/bash", "-c", "echo hello"]。
 
-每条 RUN 指令将在当前镜像基础上执行指定命令，并提交为新的镜像。当命令较长时可以使用 \ 来换行。
+   每条 RUN 指令将在当前镜像基础上执行指定命令，并提交为新的镜像。当命令较长时可以使用 \ 来换行。
 
-2.4 CMD
-支持三种格式
+   2.4 CMD
+   支持三种格式
 
-CMD ["executable","param1","param2"] 使用 exec 执行，推荐方式；
-CMD command param1 param2 在 /bin/sh 中执行，提供给需要交互的应用；
-CMD ["param1","param2"] 提供给 ENTRYPOINT 的默认参数；
-指定启动容器时执行的命令，每个 Dockerfile 只能有一条 CMD 命令。如果指定了多条命令，只有最后一条会被执行。
+   CMD ["executable","param1","param2"] 使用 exec 执行，推荐方式；
+   CMD command param1 param2 在 /bin/sh 中执行，提供给需要交互的应用；
+   CMD ["param1","param2"] 提供给 ENTRYPOINT 的默认参数；
+   指定启动容器时执行的命令，每个 Dockerfile 只能有一条 CMD 命令。如果指定了多条命令，只有最后一条会被执行。
 
-如果用户启动容器时候指定了运行的命令，则会覆盖掉 CMD 指定的命令。
+   如果用户启动容器时候指定了运行的命令，则会覆盖掉 CMD 指定的命令。
 
-2.5 EXPOSE
-格式为 EXPOSE <port> [<port>...]。
+   2.5 EXPOSE
+   格式为 EXPOSE <port> [<port>...]。
 
-告诉 Docker 服务端容器暴露的端口号，供互联系统使用。在启动容器时需要通过 -P，Docker 主机会自动分配一个端口转发到指定的端口。
+   告诉 Docker 服务端容器暴露的端口号，供互联系统使用。在启动容器时需要通过 -P，Docker 主机会自动分配一个端口转发到指定的端口。
 
-2.6 ENV
-格式为 ENV <key> <value>。 指定一个环境变量，会被后续 RUN 指令使用，并在容器运行时保持。
+   2.6 ENV
+   格式为 ENV <key> <value>。 指定一个环境变量，会被后续 RUN 指令使用，并在容器运行时保持。
 
-例如
+   例如
 
-ENV PG_MAJOR 9.3
-ENV PG_VERSION 9.3.4
-RUN curl -SL http://example.com/postgres-$PG_VERSION.tar.xz | tar -xJC /usr/src/postgress && …
-ENV PATH /usr/local/postgres-$PG_MAJOR/bin:$PATH
-2.7 ADD
-格式为 ADD <src> <dest>。
+   ENV PG_MAJOR 9.3
+   ENV PG_VERSION 9.3.4
+   RUN curl -SL http://example.com/postgres-$PG_VERSION.tar.xz | tar -xJC /usr/src/postgress && …
+   ENV PATH /usr/local/postgres-$PG_MAJOR/bin:$PATH
+   2.7 ADD
+   格式为 ADD <src> <dest>。
 
-该命令将复制指定的 <src> 到容器中的 <dest>。 其中 <src> 可以是 Dockerfile 所在目录的一个相对路径；也可以是一个 URL；还可以是一个 tar 文件（自动解压为目录）。
+   该命令将复制指定的 <src> 到容器中的 <dest>。 其中 <src> 可以是 Dockerfile 所在目录的一个相对路径；也可以是一个 URL；还可以是一个 tar 文件（自动解压为目录）。
 
-2.8 COPY
-格式为 COPY <src> <dest>。
+   2.8 COPY
+   格式为 COPY <src> <dest>。
 
-复制本地主机的 <src>（为 Dockerfile 所在目录的相对路径）到容器中的 <dest>。
+   复制本地主机的 <src>（为 Dockerfile 所在目录的相对路径）到容器中的 <dest>。
 
-当使用本地目录为源目录时，推荐使用 COPY。
+   当使用本地目录为源目录时，推荐使用 COPY。
 
-ENTRYPOINT
-两种格式：
+   ENTRYPOINT
+   两种格式：
 
-ENTRYPOINT ["executable", "param1", "param2"]
-ENTRYPOINT command param1 param2（shell 中执行）。
-配置容器启动后执行的命令，并且不可被 docker run 提供的参数覆盖。
+   ENTRYPOINT ["executable", "param1", "param2"]
+   ENTRYPOINT command param1 param2（shell 中执行）。
+   配置容器启动后执行的命令，并且不可被 docker run 提供的参数覆盖。
 
-每个 Dockerfile 中只能有一个 ENTRYPOINT，当指定多个时，只有最后一个起效。
+   每个 Dockerfile 中只能有一个 ENTRYPOINT，当指定多个时，只有最后一个起效。
 
-2.9 VOLUME
-格式为 VOLUME ["/data"]。
+   2.9 VOLUME
+   格式为 VOLUME ["/data"]。
 
-创建一个可以从本地主机或其他容器挂载的挂载点，一般用来存放数据库和需要保持的数据等。
+   创建一个可以从本地主机或其他容器挂载的挂载点，一般用来存放数据库和需要保持的数据等。
 
-2.10 USER
-格式为 USER daemon。
+   2.10 USER
+   格式为 USER daemon。
 
-指定运行容器时的用户名或 UID，后续的 RUN 也会使用指定用户。
+   指定运行容器时的用户名或 UID，后续的 RUN 也会使用指定用户。
 
-当服务不需要管理员权限时，可以通过该命令指定运行用户。并且可以在之前创建所需要的用户，例如：RUN groupadd -r postgres && useradd -r -g postgres postgres。要临时获取管理员权限可以使用 gosu，而不推荐 sudo。
+   当服务不需要管理员权限时，可以通过该命令指定运行用户。并且可以在之前创建所需要的用户，例如：RUN groupadd -r postgres && useradd -r -g postgres postgres。要临时获取管理员权限可以使用 gosu，而不推荐 sudo。
 
-2.11 WORKDIR
-格式为 WORKDIR /path/to/workdir。
+   2.11 WORKDIR
+   格式为 WORKDIR /path/to/workdir。
 
-为后续的 RUN、CMD、ENTRYPOINT 指令配置工作目录。
+   为后续的 RUN、CMD、ENTRYPOINT 指令配置工作目录。
 
-可以使用多个 WORKDIR 指令，后续命令如果参数是相对路径，则会基于之前命令指定的路径。例如
+   可以使用多个 WORKDIR 指令，后续命令如果参数是相对路径，则会基于之前命令指定的路径。例如
 
-WORKDIR /a
-WORKDIR b
-WORKDIR c
-RUN pwd
-则最终路径为 /a/b/c。
+   WORKDIR /a
+   WORKDIR b
+   WORKDIR c
+   RUN pwd
+   则最终路径为 /a/b/c。
 
-2.12 ONBUILD
-格式为 ONBUILD [INSTRUCTION]。
+   2.12 ONBUILD
+   格式为 ONBUILD [INSTRUCTION]。
 
-配置当所创建的镜像作为其它新创建镜像的基础镜像时，所执行的操作指令。
+   配置当所创建的镜像作为其它新创建镜像的基础镜像时，所执行的操作指令。
 
-例如，Dockerfile 使用如下的内容创建了镜像 image-A。
+   例如，Dockerfile 使用如下的内容创建了镜像 image-A。
 
-[...]
-ONBUILD ADD . /app/src
-ONBUILD RUN /usr/local/bin/python-build --dir /app/src
-[...]
-如果基于 image-A 创建新的镜像时，新的 Dockerfile 中使用 FROM image-A 指定基础镜像时，会自动执行 ONBUILD 指令内容，等价于在后面添加了两条指令。
+   [...]
+   ONBUILD ADD . /app/src
+   ONBUILD RUN /usr/local/bin/python-build --dir /app/src
+   [...]
+   如果基于 image-A 创建新的镜像时，新的 Dockerfile 中使用 FROM image-A 指定基础镜像时，会自动执行 ONBUILD 指令内容，等价于在后面添加了两条指令。
 
-FROM image-A
+   FROM image-A
 
-#Automatically run the following
-ADD . /app/src
-RUN /usr/local/bin/python-build --dir /app/src
-使用 ONBUILD 指令的镜像，推荐在标签中注明，例如 ruby:1.9-onbuild。
+   #Automatically run the following
+   ADD . /app/src
+   RUN /usr/local/bin/python-build --dir /app/src
+   使用 ONBUILD 指令的镜像，推荐在标签中注明，例如 ruby:1.9-onbuild。
 
-3、创建镜像
-编写完成 Dockerfile 之后，可以通过 docker build 命令来创建镜像。
+   3、创建镜像
+   编写完成 Dockerfile 之后，可以通过 docker build 命令来创建镜像。
 
-基本的格式为 docker build [选项] 路径，该命令将读取指定路径下（包括子目录）的 Dockerfile，并将该路径下所有内容发送给 Docker 服务端，由服务端来创建镜像。因此一般建议放置 Dockerfile 的目录为空目录。也可以通过 .dockerignore 文件（每一行添加一条匹配模式）来让 Docker 忽略路径下的目录和文件。
+   基本的格式为 docker build [选项] 路径，该命令将读取指定路径下（包括子目录）的 Dockerfile，并将该路径下所有内容发送给 Docker 服务端，由服务端来创建镜像。因此一般建议放置 Dockerfile 的目录为空目录。也可以通过 .dockerignore 文件（每一行添加一条匹配模式）来让 Docker 忽略路径下的目录和文件。
 
-要指定镜像的标签信息，可以通过 -t 选项，例如
+   要指定镜像的标签信息，可以通过 -t 选项，例如
 
-$ sudo docker build -t myrepo/myapp /tmp/test1/
+   $ sudo docker build -t myrepo/myapp /tmp/test1/
 
 ** 命令
    docker start|stop|kill
@@ -1195,290 +1194,298 @@ $ sudo docker build -t myrepo/myapp /tmp/test1/
    docker stop CONTAINER [CONTAINER...]
    # 停掉一个或多个运行的容器-t 选项可指定超时时间
    docker kill [OPTIONS] CONTAINER [CONTAINER...]
-# 默认 kill 发送 SIGKILL 信号-s 可以指定发送 kill 信号类型
-docker restart [OPTIONS] CONTAINER [CONTAINER...]
-# 重启一个或多个运行的容器-t 选项可指定超时时间
-docker pause CONTAINER
-# 暂停一个容器，方便 commit
-docker unpause CONTAINER
-# 继续暂停的容器
-docker rm [OPTIONS] CONTAINER [CONTAINER...]
-# 移除一个或多个容器
--f, --force=false Force removal of running container
--l, --link=false Remove the specified link and not the underlying container
--v, --volumes=false Remove the volumes associated with the container
-docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
-# 提交指定容器为镜像
--a, --author="" Author (e.g., "John Hannibal Smith hannibal@a-team.com")
--m, --message="" Commit message
--p, --pause=true Pause container during commit
-# 默认 commit 是暂停状态
-docker inspect CONTAINER|IMAGE [CONTAINER|IMAGE...]
-# 查看容器或者镜像的详细信息
-docker logs CONTAINER
-# 输出指定容器日志信息
--f, --follow=false Follow log output
-# 类似 tail -f
--t, --timestamps=false Show timestamps
---tail="all" Output the specified number of lines at the end of logs (defaults to all logs)
+   # 默认 kill 发送 SIGKILL 信号-s 可以指定发送 kill 信号类型
+   docker restart [OPTIONS] CONTAINER [CONTAINER...]
+   # 重启一个或多个运行的容器-t 选项可指定超时时间
+   docker pause CONTAINER
+   # 暂停一个容器，方便 commit
+   docker unpause CONTAINER
+   # 继续暂停的容器
+   docker rm [OPTIONS] CONTAINER [CONTAINER...]
+   # 移除一个或多个容器
+   -f, --force=false Force removal of running container
+   -l, --link=false Remove the specified link and not the underlying container
+   -v, --volumes=false Remove the volumes associated with the container
+   docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
+   # 提交指定容器为镜像
+   -a, --author="" Author (e.g., "John Hannibal Smith hannibal@a-team.com")
+   -m, --message="" Commit message
+   -p, --pause=true Pause container during commit
+   # 默认 commit 是暂停状态
+   docker inspect CONTAINER|IMAGE [CONTAINER|IMAGE...]
+   # 查看容器或者镜像的详细信息
+   docker logs CONTAINER
+   # 输出指定容器日志信息
+   -f, --follow=false Follow log output
+   # 类似 tail -f
+   -t, --timestamps=false Show timestamps
+   --tail="all" Output the specified number of lines at the end of logs (defaults to all logs)
 ** 构建服务
 *** 构建 jekyll 
 *** Java 引用程序
 *** redis
 *** node
+** 以非 Root 用户身份执行 Docker
+   sudo usermod -aG docker $USER
+** 阿里云服务器镜像
+   https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
+
+   配置文件/etc/docker/daemon.json来使用加速器
+   
+   #+begin_src sh
+     vim daemon.json
+     {
+       "registry-mirrors": ["***"]
+     }
+     sudo systemctl daemon-reload
+     sudo systemctl restart docker
+   #+end_src
 * Dockerfile 详解
-   指定基础 image
-   FROM <image>:<tag>  
+  指定基础 image
+  FROM <image>:<tag>  
+
+  指定镜像创建者信息
+  MAINTAINER <name>  
+
+  安装软件 (该指令有两种形式)
+  RUN <command> (the command is run in a shell - `/bin/sh -c`)  
+  RUN ["executable", "param1", "param2" ... ]  (exec form)  
+
+  设置 container 启动时执行的操作
+  CMD ["executable","param1","param2"] (like an exec, this is the preferred form)  
+  CMD command param1 param2 (as a shell)
+  //当 Dockerfile 指定了 ENTRYPOINT，那么使用下面的格式：
+  CMD ["param1","param2"] (as default parameters to ENTRYPOINT)  
 
 
-   指定镜像创建者信息
-   MAINTAINER <name>  
+  设置 container 启动时执行的操作
+  ENTRYPOINT ["executable", "param1", "param2"] (like an exec, the preferred form)  
+  ENTRYPOINT command param1 param2 (as a shell)   
+  <!--该指令的使用分为两种情况，一种是独自使用，另一种和 CMD 指令配合使用。
+  当独自使用时，如果你还使用了 CMD 命令且 CMD 是一个完整的可执行的命令，那么 CMD 指令和 ENTRYPOINT 会互相覆盖只有最后一个 CMD 或者 ENTRYPOINT 有效。
+  另一种用法和 CMD 指令配合使用来指定 ENTRYPOINT 的默认参数，这时 CMD 指令不是一个完整的可执行命令，仅仅是参数部分；
+  ENTRYPOINT 指令只能使用 JSON 方式指定执行命令，而不能指定参数。-->
 
 
-   安装软件 (该指令有两种形式)
-   RUN <command> (the command is run in a shell - `/bin/sh -c`)  
-   RUN ["executable", "param1", "param2" ... ]  (exec form)  
+  设置 container 容器的用户(默认 root)
+  USER root 
 
 
-   设置 container 启动时执行的操作
-   CMD ["executable","param1","param2"] (like an exec, this is the preferred form)  
-   CMD command param1 param2 (as a shell)
-   //当 Dockerfile 指定了 ENTRYPOINT，那么使用下面的格式：
-   CMD ["param1","param2"] (as default parameters to ENTRYPOINT)  
+  指定容器需要映射到宿主机器的端口
+  EXPOSE <port> [<port>...]   
+  # 映射一个端口  
+  EXPOSE port1  
+  # 相应的运行容器使用的命令  
+  docker run -p port1 image  
+  # 映射多个端口  
+  EXPOSE port1 port2 port3  
+  # 相应的运行容器使用的命令  
+  docker run -p port1 -p port2 -p port3 image  
+  # 还可以指定需要映射到宿主机器上的某个端口号  
+  docker run -p host_port1:port1 -p host_port2:port2 -p host_port3:port3 image  
 
 
-   设置 container 启动时执行的操作
-   ENTRYPOINT ["executable", "param1", "param2"] (like an exec, the preferred form)  
-   ENTRYPOINT command param1 param2 (as a shell)   
-   <!--该指令的使用分为两种情况，一种是独自使用，另一种和 CMD 指令配合使用。
-   当独自使用时，如果你还使用了 CMD 命令且 CMD 是一个完整的可执行的命令，那么 CMD 指令和 ENTRYPOINT 会互相覆盖只有最后一个 CMD 或者 ENTRYPOINT 有效。
-   另一种用法和 CMD 指令配合使用来指定 ENTRYPOINT 的默认参数，这时 CMD 指令不是一个完整的可执行命令，仅仅是参数部分；
-   ENTRYPOINT 指令只能使用 JSON 方式指定执行命令，而不能指定参数。-->
+  设置环境变量
+
+  ENV <key> <value> 
 
 
-   设置 container 容器的用户(默认 root)
-   USER root 
+  从 src 复制文件到 container 的 dest 路径
+
+  COPY <src> <dest>
 
 
-   指定容器需要映射到宿主机器的端口
-   EXPOSE <port> [<port>...]   
-   # 映射一个端口  
-   EXPOSE port1  
-   # 相应的运行容器使用的命令  
-   docker run -p port1 image  
-   # 映射多个端口  
-   EXPOSE port1 port2 port3  
-   # 相应的运行容器使用的命令  
-   docker run -p port1 -p port2 -p port3 image  
-   # 还可以指定需要映射到宿主机器上的某个端口号  
-   docker run -p host_port1:port1 -p host_port2:port2 -p host_port3:port3 image  
+  从 src 复制文件到 container 的 dest 路径
+
+  ADD <src> <dest>
+  <src> 是相对被构建的源目录的相对路径，可以是文件或目录的路径，也可以是一个远程的文件 url,如果是压缩包会被自动解压。
+  <dest> 是 container 中的绝对路径 s
 
 
-   设置环境变量
+  指定挂载点
 
-   ENV <key> <value> 
-
-
-   从 src 复制文件到 container 的 dest 路径
-
-   COPY <src> <dest>
+  //设置指令，使容器中的一个目录具有持久化存储数据的功能，该目录可以被容器本身使用，也可以共享给其他容器使用。
+  VOLUME ["<mountpoint>"]  
+  eg:
+  VOLUME ["/tmp/data"] 
 
 
-   从 src 复制文件到 container 的 dest 路径
+  切换目录
 
-   ADD <src> <dest>
-   <src> 是相对被构建的源目录的相对路径，可以是文件或目录的路径，也可以是一个远程的文件 url,如果是压缩包会被自动解压。
-   <dest> 是 container 中的绝对路径 s
-
-
-   指定挂载点
-
-   //设置指令，使容器中的一个目录具有持久化存储数据的功能，该目录可以被容器本身使用，也可以共享给其他容器使用。
-   VOLUME ["<mountpoint>"]  
-   eg:
-   VOLUME ["/tmp/data"] 
+  WORKDIR /path/to/workdir  
+  # 在 /p1/p2 下执行 vim a.txt  
+  WORKDIR /p1 WORKDIR p2 RUN vim a.txt   
 
 
-   切换目录
+  在子镜像中执行
 
-   WORKDIR /path/to/workdir  
-   # 在 /p1/p2 下执行 vim a.txt  
-   WORKDIR /p1 WORKDIR p2 RUN vim a.txt   
+  ONBUILD <Dockerfile 关键字>  
 
 
-   在子镜像中执行
+  docker 中运行 express 项目
+  现在让我们开始实战一下，生成一个 express 项目，将之使用 docker 部署。
+  生成 express 项目
+  使用 express-generator 生成 expess 项目。
+  npm install -g express-generator
+  express express-jerrwy
 
-   ONBUILD <Dockerfile 关键字>  
+  //可以看到项目创建出来了，目录如下
+  app.js  bin  node_modules  package.json  public  routes  views
 
+  安装依赖
+  npm i 
 
-   docker 中运行 express 项目
-   现在让我们开始实战一下，生成一个 express 项目，将之使用 docker 部署。
-   生成 express 项目
-   使用 express-generator 生成 expess 项目。
-   npm install -g express-generator
-   express express-jerrwy
+  //运行项目
+  npm start 
 
-   //可以看到项目创建出来了，目录如下
-   app.js  bin  node_modules  package.json  public  routes  views
+  访问 localhost:3000 可以看到 express 欢迎页面，表示 express 项目创建成功。
+  编写 Dokerfile
+  在项目根目录，新建一个 Dockerfile 文件，该文件名就叫 Dockerfile,注意大小写，没有后缀，否则会报错。
+  Dockerfile 文件定义了如何创建 Docker 镜像。
+  我的 Dockerfile 如下：
+  FROM node:6.9.1
 
-   安装依赖
-   npm i 
+  USER root
 
-   //运行项目
-   npm start 
+  RUN npm config set registry https://registry.npm.taobao.org
 
-   访问 localhost:3000 可以看到 express 欢迎页面，表示 express 项目创建成功。
-   编写 Dokerfile
-   在项目根目录，新建一个 Dockerfile 文件，该文件名就叫 Dockerfile,注意大小写，没有后缀，否则会报错。
-   Dockerfile 文件定义了如何创建 Docker 镜像。
-   我的 Dockerfile 如下：
-   FROM node:6.9.1
+  WORKDIR /var/workspace
+  COPY package.json /var/workspace/package.json
+  RUN npm install  && npm cache clean
+  COPY . /var/workspace 
 
-   USER root
+  大致解释一下里面做了什么：
 
-   RUN npm config set registry https://registry.npm.taobao.org
+  我使用基础镜像 node:6.9.1,也就是一个镜像，里面装了 node 6.9.1
+  我镜像里面使用的用户是 root
+  执行命令，设置 npm 源
+  设置镜像的工作目录
+  将 package.json 拷贝到镜像的工作目录中
+  安装依赖
+  将项目代码拷贝到工作目录
 
-   WORKDIR /var/workspace
-   COPY package.json /var/workspace/package.json
-   RUN npm install  && npm cache clean
-   COPY . /var/workspace 
+  生成镜像
+  Dockerfile 写好之后，我们就可以生成镜像了。
+  docker build . -t moyunchen/express-jerrwy:test
 
-   大致解释一下里面做了什么：
+  moyunchen/express-jerrwy:test 中 moyunchen 是我 docker hub 的账号名，express-jerrwy 是镜像名称，test 是镜像标签，相当于版本号。
+  第一次生成镜像由于要下载基础镜像，速度可能比较慢，稍等十几分钟，出去喝杯茶~。
+  生成成功之后，运行命令：
+  docker images
 
-   我使用基础镜像 node:6.9.1,也就是一个镜像，里面装了 node 6.9.1
-   我镜像里面使用的用户是 root
-   执行命令，设置 npm 源
-   设置镜像的工作目录
-   将 package.json 拷贝到镜像的工作目录中
-   安装依赖
-   将项目代码拷贝到工作目录
+  //可以看到 
+  REPOSITORY                TAG   IMAGE ID      CREATED       SIZE
+  moyunchen/express-jerrwy  test  754d9122fa3e  13 hours ago  663.7 MB
 
-   生成镜像
-   Dockerfile 写好之后，我们就可以生成镜像了。
-   docker build . -t moyunchen/express-jerrwy:test
+  表明你的 docker 镜像已经生成啦~
+  其实，现在你就已经可以运行镜像，生成容器了。
+  docker run  -itd -p 3000:3000 --name express01  moyunchen/express-jerrwy:test  npm start 
 
-   moyunchen/express-jerrwy:test 中 moyunchen 是我 docker hub 的账号名，express-jerrwy 是镜像名称，test 是镜像标签，相当于版本号。
-   第一次生成镜像由于要下载基础镜像，速度可能比较慢，稍等十几分钟，出去喝杯茶~。
-   生成成功之后，运行命令：
-   docker images
+  打开 localhost:3000 我们可以看到 express 欢迎信息。说明我们的 exress 项目在 docker 部署成功了。
+  查看 docker 容器
+  docker ps
 
-   //可以看到 
-   REPOSITORY                TAG   IMAGE ID      CREATED       SIZE
-   moyunchen/express-jerrwy  test  754d9122fa3e  13 hours ago  663.7 MB
+  //可以看到
+  CONTAINER ID  IMAGE                         COMMAND      CREATED        STATUS        PORTS                  NAMES
+  b8106d910823  moyunchen/express-jerrwy:test "npm start"  6 seconds ago  Up 4 seconds  0.0.0.0:3000->3000/tcp express01 
 
-   表明你的 docker 镜像已经生成啦~
-   其实，现在你就已经可以运行镜像，生成容器了。
-   docker run  -itd -p 3000:3000 --name express01  moyunchen/express-jerrwy:test  npm start 
+  这就是我们正在运行中的 docker 容器，里面跑了我们的 express 服务。
+  登录进去看看
+  docker exec -it b8106d910823  bash
 
-   打开 localhost:3000 我们可以看到 express 欢迎信息。说明我们的 exress 项目在 docker 部署成功了。
-   查看 docker 容器
-   docker ps
+  //可以看到
+  root@b8106d910823:/var/workspace# ls
+  Dockerfile  app.js  bin  node_modules  package.json  public  routes  views
 
-   //可以看到
-   CONTAINER ID  IMAGE                         COMMAND      CREATED        STATUS        PORTS                  NAMES
-   b8106d910823  moyunchen/express-jerrwy:test "npm start"  6 seconds ago  Up 4 seconds  0.0.0.0:3000->3000/tcp express01 
+  这个就是 docker 中项目目录中我们的项目代码。
+  push 镜像到 docker hub
+  docker hub 就好比 github,是官方的镜像公有仓库。
+  我们将镜像发布到这个上面，其他人就可以直接将你的镜像 pull 下来，然后运行。
+  就不用单独的把代码 pull 下来，自己 build 镜像了。
+  登录 docker 账号
+  docker login
+  //接下来他会让你输入账号密码邮箱 
+  Username: [username]
+  Password: [password]
+  Email: xxxx@foxmail.com
+  WARNING: login credentials saved in /root/.docker/config.json
+  Login Succeeded
 
-   这就是我们正在运行中的 docker 容器，里面跑了我们的 express 服务。
-   登录进去看看
-   docker exec -it b8106d910823  bash
+  push 镜像到 docker hub 仓库
+  docker push moyunchen/express-jerrwy:test
 
-   //可以看到
-   root@b8106d910823:/var/workspace# ls
-   Dockerfile  app.js  bin  node_modules  package.json  public  routes  views
+  moyunchen 是你的 docker 账号名，生成镜像的时候也必须是 [username]/[imagename] 这种格式
+  push 的过程异常缓慢。。。我这里用了几个小时。。。只是第一次才慢，后面是增量更新就会快很多。。
+  成功之后，登录 docker hub 就可以看到你的镜像了。
+  从 docker hub 拉取镜像，生成容器
+  现在，你的镜像推送到了 docker hub 上面了，让你的项目伙伴拉取项目镜像，运行起来。
+  拉取镜像
+  docker pull moyunchen/express-jerrwy:test
 
-   这个就是 docker 中项目目录中我们的项目代码。
-   push 镜像到 docker hub
-   docker hub 就好比 github,是官方的镜像公有仓库。
-   我们将镜像发布到这个上面，其他人就可以直接将你的镜像 pull 下来，然后运行。
-   就不用单独的把代码 pull 下来，自己 build 镜像了。
-   登录 docker 账号
-   docker login
-   //接下来他会让你输入账号密码邮箱 
-   Username: [username]
-   Password: [password]
-   Email: xxxx@foxmail.com
-   WARNING: login credentials saved in /root/.docker/config.json
-   Login Succeeded
+  运行镜像，创建容器的步骤，跟上面一样。
 
-   push 镜像到 docker hub 仓库
-   docker push moyunchen/express-jerrwy:test
+  docker-compose
+  docker-compose 是用于定义和运行复杂 Docker 应用的工具。
+  你可以在一个文件中定义一个多容器的应用，然后使用一条命令来启动你的应用，然后所有相关的操作都会被自动完成。
+  在上面过程中，我们运行容器的命令过于复杂，而且一次只能启动一个 docker 应用，管理起来也不是很方便。
+  于是就有懒惰的程序员创建了 docker-compose
+  安装
+  以 ubuntu 系统举例
+  curl -L https://github.com/docker/compose/releases/download/1.3.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+  chmod +x /usr/local/bin/docker-compose 
 
-   moyunchen 是你的 docker 账号名，生成镜像的时候也必须是 [username]/[imagename] 这种格式
-   push 的过程异常缓慢。。。我这里用了几个小时。。。只是第一次才慢，后面是增量更新就会快很多。。
-   成功之后，登录 docker hub 就可以看到你的镜像了。
-   从 docker hub 拉取镜像，生成容器
-   现在，你的镜像推送到了 docker hub 上面了，让你的项目伙伴拉取项目镜像，运行起来。
-   拉取镜像
-   docker pull moyunchen/express-jerrwy:test
+  //这个装起来也好慢。。。是因为墙的原因吧。。
 
-   运行镜像，创建容器的步骤，跟上面一样。
+  安装完成之后
+  docker-compose --version
 
-   docker-compose
-   docker-compose 是用于定义和运行复杂 Docker 应用的工具。
-   你可以在一个文件中定义一个多容器的应用，然后使用一条命令来启动你的应用，然后所有相关的操作都会被自动完成。
-   在上面过程中，我们运行容器的命令过于复杂，而且一次只能启动一个 docker 应用，管理起来也不是很方便。
-   于是就有懒惰的程序员创建了 docker-compose
-   安装
-   以 ubuntu 系统举例
-   curl -L https://github.com/docker/compose/releases/download/1.3.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-   chmod +x /usr/local/bin/docker-compose 
+  //可以看到  
+  docker-compose 1.8.1
 
-   //这个装起来也好慢。。。是因为墙的原因吧。。
+  到这里，你的 docker-compose 就算安装成功了。
+  docker-compose.yml
+  docker-compose.yml 文件的目的是定义了一组应用，可以很方便的对多个应用进行发布。
+  我的理解是取代了 docker run，因为 docker run 命令使用起来过于繁琐。
+  当然，如果你不想用 docker-compose，你可以将对于的 docker-compose.yml 翻译成 docker run 语法。
+  还是以上面的 express-jerrwy 镜像为例，对应的 docker-compose.yml 文件
+  version: '2'
+  services:
+  express-jerrwy:
+  ports:
+  - "3000:3000"
+    image: "docker.io/moyunchen/express-jerrwy:test"
+    container_name: "express-jerrwy"
+    restart: always
+    command: "npm start" 
 
-   安装完成之后
-   docker-compose --version
+    现在 docker-compose.yml 写好了,上面我们只定义了 express-jerrwy 一个 docker 服务，我们完全可以一次定义多个。
+    我们现在创建容器
+    docker-compose up -d 
 
-   //可以看到  
-   docker-compose 1.8.1
+    关闭容器
+    docker-compose down
 
-   到这里，你的 docker-compose 就算安装成功了。
-   docker-compose.yml
-   docker-compose.yml 文件的目的是定义了一组应用，可以很方便的对多个应用进行发布。
-   我的理解是取代了 docker run，因为 docker run 命令使用起来过于繁琐。
-   当然，如果你不想用 docker-compose，你可以将对于的 docker-compose.yml 翻译成 docker run 语法。
-   还是以上面的 express-jerrwy 镜像为例，对应的 docker-compose.yml 文件
-   version: '2'
-   services:
-     express-jerrwy:
-         ports:
-           - "3000:3000"
-         image: "docker.io/moyunchen/express-jerrwy:test"
-         container_name: "express-jerrwy"
-         restart: always
-         command: "npm start" 
+    以后我们部署项目，就只需要写好 docker-compose.yml 文件，就可以利用 docker-compose 进行项目部署。
+    是不是简单了很多。
 
-   现在 docker-compose.yml 写好了,上面我们只定义了 express-jerrwy 一个 docker 服务，我们完全可以一次定义多个。
-   我们现在创建容器
-   docker-compose up -d 
+    daocloud
+    上面我们用的 docker hub 为公有仓库。
+    我们发布的应用镜像是所有人都可以下载得到的。
+    如果使我们公司的项目，里面含有一个不能公开的东西，那公有仓库也就不适合我们了。
+    所以我们就可以使用私有仓库，例如 daocloud
+    使用方法跟公有仓库区别不大。
 
-   关闭容器
-   docker-compose down
-
-   以后我们部署项目，就只需要写好 docker-compose.yml 文件，就可以利用 docker-compose 进行项目部署。
-   是不是简单了很多。
-
-   daocloud
-   上面我们用的 docker hub 为公有仓库。
-   我们发布的应用镜像是所有人都可以下载得到的。
-   如果使我们公司的项目，里面含有一个不能公开的东西，那公有仓库也就不适合我们了。
-   所以我们就可以使用私有仓库，例如 daocloud
-   使用方法跟公有仓库区别不大。
-
-   作者：jerrwy
-   链接：https://www.jianshu.com/p/6cadb5b722ac
-   来源：简书
-   简书著作权归作者所有，任何形式的转载都请联系作者获得授权并注明出处。
 * docker 查看端口被占用进程
-现在希望启动一个 docker container, 把 container 中的 80 端口映射到宿主机。
+  现在希望启动一个 docker container, 把 container 中的 80 端口映射到宿主机。
 
-[root@cmdb2 ~]# docker run -p 80:80  -it 9d1c954badc7 /bin/bash
-[root@cmdb2 ~]# docker ps
-CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                NAMES
-870ac9aaf081        9d1c954badc7        "/bin/bash"         3 minutes ago       Up 3 minutes        0.0.0.0:80->80/tcp   adoring_mestorf
-[root@cmdb2 ~]# lsof -i:80
-COMMAND    PID USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
-docker-pr 7056 root    4u  IPv6 128759      0t0  TCP *:http (LISTEN)
-[root@cmdb2 ~]# netstat -antp|grep 80
-tcp6       0      0 :::80                   :::*                    LISTEN      7056/docker-proxy
-[root@cmdb2 ~]# docker run -p 80:80  -it 9d1c954badc7 /bin/bash
+  [root@cmdb2 ~]# docker run -p 80:80  -it 9d1c954badc7 /bin/bash
+  [root@cmdb2 ~]# docker ps
+  CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS                NAMES
+  870ac9aaf081        9d1c954badc7        "/bin/bash"         3 minutes ago       Up 3 minutes        0.0.0.0:80->80/tcp   adoring_mestorf
+  [root@cmdb2 ~]# lsof -i:80
+  COMMAND    PID USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+  docker-pr 7056 root    4u  IPv6 128759      0t0  TCP *:http (LISTEN)
+  [root@cmdb2 ~]# netstat -antp|grep 80
+  tcp6       0      0 :::80                   :::*                    LISTEN      7056/docker-proxy
+  [root@cmdb2 ~]# docker run -p 80:80  -it 9d1c954badc7 /bin/bash
 
