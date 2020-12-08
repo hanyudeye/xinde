@@ -1,0 +1,213 @@
+* [[https://blog.csdn.net/everything1209/article/details/52626151][Jquery的$.ajax防止重复提交的方法_liuzp111的专栏-CSDN博客_jquery防止重复提交]] :website:
+
+[2020-12-08 二 09:02]
+
+** Article
+
+*** 1、第一种，对于onclick事件触发的的ajax
+
+
+ 可以采用如下方法：\\
+ 即在beforeSend中使点击按钮不可用，ajax结果返回后置为可用
+
+ #+BEGIN_EXAMPLE
+         $.ajax(
+         {
+             type:  'POST',
+             url: APP+ '?m=Shopping&a=ajaxSubmitorder&sid='+sid+ '&src='+src,
+             cache: false,
+             dataType:  'json',
+             data: { 'src':src, "uid": uid, 'shipping_id':shipping_id, 'order_amount':order_amount, 'amount':amount, 'postscript':postscript, 'addr_id':addr_id},
+             async:  false,
+             beforeSend:  function ()
+             {    //触发ajax请求开始时执行
+                 $( '#submit_font').text( '提交订单中...');
+                 $( '.pay_alipay').attr( 'onclick', 'javascript:void();'); //改变提交按钮上的文字并将按钮设置为不可点击
+             },                
+             success:   function  (msg, textStatus) 
+             {
+                  if(msg.result== 1)
+                 {
+                     $.Alert( '成功提交订单',  160);
+                     window.location.href=APP+ '?m=Pay&a=index&sid='+ sid +  '&fuid='+ fuid +  '&parent_order_sn='+msg.parent_order_sn;
+                 }
+                  else
+                 {
+                     $.Alert(msg.msg,  160);
+                     $( '#submit_font').text( '提交订单');
+                     $( '.pay_alipay').attr( 'onclick', 'submitorder();'); //改变提交按钮上的文字并将按钮设置为可点击                    
+                 }
+             },
+             error:   function  (textStatus) 
+             {
+                 $.Alert( '网络繁忙，请稍后再试...',  160);
+                 $( '#submit_font').text( '提交订单');
+                 $( '.pay_alipay').attr( 'onclick', 'submitorder();'); //改变提交按钮上的文字并将按钮设置为可点击                    
+             },
+             complete:   function (msg, textStatus)
+             {   
+                      //ajax请求完成时执行
+                  if(msg.result== 1)
+                 {
+                     $( '#submit_font').text( '提交订单');
+                     $( '.pay_alipay').attr( 'onclick', 'javascript:void();'); //改变提交按钮上的文字并将按钮设置为可以点击
+                 }
+             }                
+         });   
+ #+END_EXAMPLE
+
+*** 2、利用jquery ajaxPrefilter中断请求
+
+
+ 1）Prefilters是一个预过滤器，在每个请求之前被发送和$.ajax()处理它们前处理。
+
+ #+BEGIN_EXAMPLE
+        options 是请求的选项
+
+      originalOptions 值作为提供给Ajax方法未经修改的选项，因此，没有ajaxSettings设置中的默认值
+
+      jqXHR 是请求的jqXHR对象
+ #+END_EXAMPLE
+
+ 以上内容的核心思想是维护一个队列，发送请求时，将请求加入队列，请求响应后，从队列中清除，这就保证了在任一时刻只能有一个同样的请求发送.
+
+ 局限性：仅仅是前台防止jquery的ajax请求。对于非jquery的ajax请求，不起作用。因为使用的是jquery的ajaxPreFilter函数，仅仅对jquery的ajax请求有作用。
+
+ 2）按钮每次点击都会向后端发送请求，下面的demo实现了多次点击按钮之后，只保证最后一次点击的请求能够成功。
+
+ #+BEGIN_EXAMPLE
+      "button1">button1
+     "button2">button2
+     "button3">button3       
+      "text/javascript"</span> src= <span class="hljs-string">"jquery.min.js"</span>>
+
+              <span class="hljs-keyword">var</span> pendingRequests = {};
+             jQuery.ajaxPrefilter( <span class="hljs-function"> <span class="hljs-keyword">function</span> <span class="hljs-params">( options, originalOptions, jqXHR )</span> {</span>
+                  <span class="hljs-keyword">var</span> key = options.url;
+                 console.log(key);
+                  <span class="hljs-keyword">if</span> (!pendingRequests[key]) {
+                     pendingRequests[key] = jqXHR;
+                 } <span class="hljs-keyword">else</span>{
+                      <span class="hljs-comment">//jqXHR.abort();    //放弃后触发的提交</span>
+                     pendingRequests[key].abort();    <span class="hljs-comment">// 放弃先触发的提交</span>
+                 }
+
+                  <span class="hljs-keyword">var</span> complete = options.complete;
+                 options.complete =  <span class="hljs-function"> <span class="hljs-keyword">function</span> <span class="hljs-params">(jqXHR, textStatus)</span> {</span>
+                     pendingRequests[key] =  <span class="hljs-literal">null</span>;
+                      <span class="hljs-keyword">if</span> (jQuery.isFunction(complete)) {
+                     complete.apply( <span class="hljs-keyword">this</span>, arguments);
+                     }
+                 };
+             });
+             <!-- 异步加载应用列表开始 -->
+
+             $( <span class="hljs-string">"#button1"</span>).live( <span class="hljs-string">"click"</span>,  <span class="hljs-function"> <span class="hljs-keyword">function</span> <span class="hljs-params">()</span> {</span>
+                   $.ajax( <span class="hljs-string">'config/ajax/appinfoListFetcher.json'</span>, {
+                     type: <span class="hljs-string">'POST'</span>,
+                     data:   {param1: <span class="hljs-number">1</span>,
+                              param2: <span class="hljs-number">2</span>,
+                           },
+                     success:  <span class="hljs-function"> <span class="hljs-keyword">function</span> <span class="hljs-params">(res)</span>{</span>
+                              <span class="hljs-comment">//后端数据回写到页面中</span>
+                     },
+                     error: <span class="hljs-function"> <span class="hljs-keyword">function</span> <span class="hljs-params">(jqXHR, textStatus, errorThrown)</span>{</span>
+                          <span class="hljs-keyword">if</span>(errorThrown !=  <span class="hljs-string">'abort'</span>){
+                             alert( <span class="hljs-string">'应用加载失败！'</span>);
+                         }
+                     }
+                   });
+                   <!-- 异步加载应用列表结束 -->
+              });
+ #+END_EXAMPLE
+
+ 调用abort后jquery会执行error的方法，抛出abort的异常信息。可以使用以下方式区分出该类型的异常。
+
+ *3）注意事项：对于嵌套的点击事件的代码，是不起作用的。*
+
+ #+BEGIN_EXAMPLE
+      $( '.btn-cancel-all').live( 'click',  function ()
+     {
+         $( '.confirm-dialog .confirm').live( 'click',  function ()
+         {
+             $.ajax({
+                  //这里面的ajax事件是不能起作用的
+             })
+         }
+     }
+ #+END_EXAMPLE
+
+ 参考链接： [[http://www.hollischuang.com/archives/931]]
+
+ 
+* [[https://blog.csdn.net/qq_43344133/article/details/90317914][jquery 防止重复点击提交_五笔小哥的博客-CSDN博客_jquery 防止重复点击]] :website:
+
+** Article
+
+**** jquery 防止重复点击提交
+****** 方法一： 使用 css 禁用属性 ------ disable
+       该方法只能点击一次，若想再次点击需要页面重新进行了加载或者跳转；
+
+#+BEGIN_EXAMPLE
+        $(function(){
+            $('#submitBtn').on('click‘，function(){
+                    $(this).attr('disabled',true); //点击后就禁用，若想再次点击需刷新页面；
+                    $(this).val('登录中...');  //此处设置 value 值给以提示
+                    this.form.submit();
+            });
+        });
+#+END_EXAMPLE
+
+****** 方法二： 使用 jquery 中 one() 方法
+
+同样是上面 Html 例子，也是只可点击一次；再次点击需要页面重新进行了加载或者跳转；该方式是将绑定 on 方法 改为 one 方法 ，如下：
+
+#+BEGIN_EXAMPLE
+     
+        $(function(){
+            $('#submitBtn').one('click‘，function(){
+                    $(this).attr('disabled',true); //点击后就禁用，若想再次点击需刷新页面；
+                    $(this).val('登录中...');  //此处设置 value 值给以提示
+                    this.form.submit();
+            });
+        });
+#+END_EXAMPLE
+
+****** 方法三： 针对 ajax 请求方式
+
+异步请求更好的适应用户的体验，为防止多次提交，可在提交前做处理；
+
+#+BEGIN_EXAMPLE
+     $(function () {
+        $('#submitBtn').click(function () {
+            //1.先进行表单验证
+            //......
+            //2.异步提交
+            $.ajax({
+                url: url+'/login',
+                data: $('form').serialize(),
+                type: 'post',
+                beforeSend: function () {
+                    //3.设置提交按钮失效，以实现防止按钮重复点击
+                    $(this).attr('disabled', true);
+                    //4.给用户提示
+                    $(this).val('登录中...');
+                },
+                complete: function () {
+                    //5.提交完成后按钮重新设置有效
+                    $(this).removeAttr('disabled');
+                },
+                success: function(data){
+                    if (data === 'ok') {
+                        alert('登录成功！');
+                        //做逻辑处理
+                        //......
+                    } else {
+                        alert('登录失败，请重新登录！');
+                    }
+                }
+            }); 
+        });
+    });
+#+END_EXAMPLE
+

@@ -1,0 +1,97 @@
+* [[https://blog.csdn.net/leedaning/article/details/46007515][div+css实现简单的弹出窗（背景变灰色）_leedaning的专栏-CSDN博客]] :website:
+
+[2020-12-08 二 14:28]
+
+** Article
+
+自己做了一个网站，需要用到弹出框的功能，以前没做过这个，就去网上查了下资料，然后试着写了一个最简单的弹出框效果。\\
+需求：点击弹出框按钮，在原页面基础上弹出一个弹出框，并且背景要变成灰色，原页面不能被编辑知道关闭弹出框。\\
+原理：在原页面的基础上添加两个div，一个是弹出框，一个是弹出框后面的背景层（页面变灰）。首先这两个div是跟原页面的代码在一起存放的，只不过使用了 =display：none=这个css属性先将其隐藏不显示，在触发弹出框效果时再使用 =display：block=让这两个div显示出来即可。\\
+完整代码如下：
+
+#+BEGIN_EXAMPLE
+      
+     < html>
+     < head>
+     < meta  http-equiv= 'Content-Type'  content= 'text/html; charset=UTF-8'>
+     < title>div+css实现弹出层 title>
+     < style> 
+
+     #popBox {
+          position:  absolute;
+          display: none;
+          width:  300px;
+          height:  200px;
+          left:  40%;
+          top:  20%;
+          z-index:  11;
+          background:  #B8F764; 
+     }
+
+     #popLayer {
+          position:  absolute;
+          display: none;
+          left:  0;
+          top:  0;
+          z-index:  10;
+          background:  #DCDBDC;
+          -moz-opacity:   0.8;
+          opacity: . 80;
+          filter:   alpha(opacity= 80); /* 只支持IE6、7、8、9 */
+     }
+
+     style>
+     < script  type= "text/javascript"> 
+          function  popBox (){
+             var popBox = document.getElementById( 'popBox');
+             var popLayer = document.getElementById( 'popLayer');
+
+            popLayer.style.width = document.body.scrollWidth +  "px";
+            popLayer.style.height = document.body.scrollHeight +  "px";
+
+            popLayer.style.display =  "block";
+            popBox.style.display =  "block";
+        } //end func popBox()
+
+          function  closeBox (){
+             var popBox = document.getElementById( 'popBox');
+             var popLayer = document.getElementById( 'popLayer');
+
+            popLayer.style.display =  "none";
+            popBox.style.display =  "none";
+
+        } //end func closeBox()
+
+     script>
+     head>
+     < body>
+
+     < input  type= "button"  name= "popBox"  value= "弹出框"  onclick= "popBox()" />
+
+     < div  id= "popLayer" >
+        背景层  
+     div>
+     < div  id= "popBox" >
+         < div> < a  href= "javascript:void(0)"  onclick= "closeBox()">关闭 a> div>
+         < div>弹出框 div>
+     div>
+
+     body>
+     html>
+#+END_EXAMPLE
+
+效果图如下：\\
+原页面：\\
+[[https://img-blog.csdn.net/20150526141818539]]\\
+弹出框：\\
+[[https://img-blog.csdn.net/20150526142028403]]
+
+其他需要注意事项：1、两个弹出层的上下位置；2、弹出的背景层的透明设置；\\
+首先，两个div都要使用 =position: absolute;=这个属性，然后使用z-index这个属性可以设置层的上下顺序，值越大越靠上显示；\\
+其次，背景透明需要使用滤镜等功能，具体代码如下：\\
+=-moz-opacity: 0.8;   opacity:.80;   filter: alpha(opacity=80);/* 只支持IE6、7、8、9 */=\\
+3、如果页面高度超过屏幕高度，弹出的背景层只有屏幕大小，这是因为使用了position:absolute;的话高度width:100%;就无效了。解决办法，使用js获取页面的宽度和高度进行设置。
+
+Author: =leedaning=\\
+本文地址： [[http://blog.csdn.net/leedaning/article/details/46007515%20%E6%9C%AC%E6%96%87%E5%9C%B0%E5%9D%80][http://blog.csdn.net/leedaning/article/details/46007515]]
+
