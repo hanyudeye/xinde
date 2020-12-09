@@ -2406,7 +2406,6 @@
 
 **** 切换连接
 
-
   我们可以在数据库配置文件中定义多个连接信息
 
         return  [
@@ -4252,14 +4251,16 @@
  
       模板文件中分页输出代码如下：
 
-      <div >
-      <ul >
-      {volist name='list' id='user'}
-      <li > {$user.nickname}   li >
-      {/volist}
-      ul >
-      div >
-      {$list|raw}
+      #+begin_src html
+        <div >
+          <ul >
+            {volist name='list' id='user'}
+            <li > {$user.nickname}   </li >
+            {/volist}
+          </ul>
+        </div >
+        {$list|raw}
+      #+end_src
  
       也可以单独赋值分页输出的模板变量
 
@@ -4273,6 +4274,7 @@
  
       模板文件中分页输出代码如下：
 
+      #+begin_src html
       <div >
       <ul >
       {volist name='list' id='user'}
@@ -4281,26 +4283,30 @@
       ul >
       div >
       {$page|raw}
+      #+end_src
  
       默认情况下，生成的分页输出是完整分页功能，带总分页数据和上下页码，分页样式只需要通过样式修改即可，完整分页默认生成的分页输出代码为：
 
-      <ul class = "pagination" >
-      <li > <a href = "?page=1" > &laquo ; < /a > < /li >
-      <li > <a href = "?page=1" > 1 < /a > < /li >
-      <li class = "active" > <span > 2 < /span > < /li >
-      <li class = "disabled" > <span > &raquo ; < /span > < /li >
-      < /ul >
+      #+begin_src html
+        <ul class = "pagination" >
+          <li > <a href = "?page=1" > &laquo ; </a > </li >
+          <li > <a href = "?page=1" > 1 </a > </li >
+          <li class = "active" > <span> 2 </span > </li >
+          <li class = "disabled" > <span > &raquo ; </span > </li >
+        </ul >
+        #+end_src
  
       如果你需要单独获取总的数据，可以使用
 
+      #+begin_src php
       // 查询状态为1的用户数据 并且每页显示10条数据
       $list  = Db : : name ( 'user' ) - > where ( 'status' , 1 ) - > order ( 'id'  , 'desc' ) - > paginate ( 10 ) ;
       // 获取总记录数
       $count  = $list - > total ( ) ;
       return  view ( 'index' ,  [ 'list'  = > $list ,  'count'  = > $count ] ) ;
+      #+end_src
  
 ****** 传入总记录数
-
 
        支持传入总记录数而不会自动进行总数计算，例如：
 
@@ -4320,10 +4326,12 @@
 
        支持分页类后数据直接 =each=遍历处理，方便修改分页后的数据，而不是只能通过模型的获取器来补充字段。
 
+       #+begin_src php
        $list  = Db : : name ( 'user' ) - > where ( 'status' , 1 ) - > order ( 'id' ,  'desc' ) - > paginate ( ) - > each ( function ($item , $key ) {
        $item [ 'nickname' ]  =  'think' ;
        return $item ;
        } ) ;
+       #+end_src
  
        如果是模型类操作分页数据的话， =each=方法的闭包函数中不需要使用返回值，例如：
 
@@ -4332,8 +4340,6 @@
        } ) ;
  
 ***** 简洁分页
-
-
       如果你仅仅需要输出一个 仅仅只有上下页的分页输出，可以使用下面的简洁分页代码：
 
       // 查询状态为1的用户数据 并且每页显示10条数据
@@ -4344,18 +4350,17 @@
  
       简洁分页模式的输出代码为：
 
-      <ul class = "pager" >
-      <li > <a href = "?page=1" > &laquo ; < /a > < /li >
-      <li class = "disabled" > <span > &raquo ; < /span > < /li >
-      < /ul >
+      #+begin_src html
+        <ul class = "pager" >
+          <li > <a href = "?page=1" > &laquo ; </a> </li >
+          <li class = "disabled"> <span > &raquo ; </span > </li >
+        </ul>
+      #+end_src
  
 
       由于简洁分页模式不需要查询总数据数，因此可以提高查询性能。
   
-
 ***** 分页参数
-
-
       主要的分页参数如下：
 
       | 参数         | 描述          |
@@ -4409,11 +4414,7 @@
       ] ;
  
 **** 时间查询
-
-
 ***** 时间比较
-
-
 
       框架内置了常用的时间查询方法，并且可以自动识别时间字段的类型，所以无论采用什么类型的时间字段，都可以统一使用本章的时间查询用法。
   
@@ -4577,11 +4578,7 @@
       ] ,
  
 **** 高级查询
-
-
 ***** 快捷查询
-
-
       快捷查询方式是 *一种多字段相同查询条件*的简化写法，可以进一步简化查询条件的写法，在多个字段之间用 =|=分割表示 =OR=查询，用 =&=分割表示 =AND=查询，可以实现下面的查询，例如：
 
       Db : : table ( 'think_user' )
@@ -8931,6 +8928,14 @@
      }
 
      渲染的内容中一样可以使用模板引擎的相关标签。
+
+**** 模板函数使用三元运算符
+     {:date('Y-m-d H:i:s',$abc ? $abc : time())}
+
+**** 循环
+     | 标签名  | 作用               | 包含属性                      |
+     | volist  | 循环数组数据输出   | name,id,offset,length,key,mod |
+     | foreach | 数组或对象遍历输出 | name,item,key                 |
 
 ** 错误和日志 
 *** 异常处理
