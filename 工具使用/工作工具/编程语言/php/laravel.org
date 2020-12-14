@@ -5,14 +5,32 @@
 #+DATE: 2020-02-14T20:58:44+08:00
 #+draft: true
 
-
-*php* 用来处理动态性的网页的， *laravel* 是 *php* 的工具集，扩展了功能。
-#+begin_quote
-特点： 所有的 *URL* 访问必须先定义路由规则。
-#+end_quote
-# more
-
 ** 基础功能
+*** 安装   
+**** 安装 Laravel installer
+     Laravel 利用 Composer 来管理依赖。所以，在使用 Laravel 之前，请确保你的机器上安装了 Composer。
+
+     通过 Laravel 安装器
+     首先，使用 Composer 下载 Laravel 安装程序：
+
+     composer global require "laravel/installer"
+     确保 $HOME/.composer/vendor/bin 目录（或你的操作系统的等效目录）已经放在你的环境变量 $PATH 中，以便系统可以找到 laravel 的可执行文件。
+     #+begin_quote
+     我本地的在 ~/.config/composer/vendor/bin 目录下
+     #+end_quote
+
+     安装之后， laravel new 命令会在你指定的目录中创建一个新的 Laravel 项目。例如，laravel new blog 命令会创建一个名为 blog 的目录，其中包含所有已经安装好的 Laravel 的依赖项：
+     laravel new blog
+**** 通过 Composer 创建项目
+     或者，你还可以通过在终端中运行 create-project 命令来安装 Laravel：
+
+     composer create-project --prefer-dist laravel/laravel blog "5.5.*"
+     本地开发服务器
+     如果你在本地安装了 PHP，并且想使用 PHP 内置的开发服务器来为你的应用程序提供服务，那就使用 Artisan 命令 serve。这个命令会在 http://localhost:8000 上启动开发服务器：
+
+     php artisan serve
+     当然，对于本地开发来说，最好的选择还是 Homestead 和 Valet。
+
 *** 配置 
     - 配置文件都在 */config* 目录里面
     - 目录权限 */storage* 和 */bootstrap/cache* 目录都要可写
@@ -53,12 +71,6 @@
      - Route::group 把路由条目归归类，好区分
 
 *** 控制器
-    路由做好了路由的事情了，你不会把给用户的逻辑响应的事情也交给它做吧，它估计要累死， 在 *laravel* 中交给 *控制器* 来做这件事。 
-    
-    #+begin_quote
-    控制器把要做的事分门别类放到单独的文件中，所以一个 web 站点有那么多的功能，而且容易整理。
-    #+end_quote
-    
     - app/Http/Controllers  控制器定义目录
     
 **** 控制器结构
@@ -146,12 +158,9 @@
     #+end_quote
     
 **** 配置  
-     
      - config/database.php  配置文件 
      - .env   环境变量配置文件
      - use DB; 使用 DB 类  
-
-
 ***** 对 SQLite 的配置
 
       #+begin_example
