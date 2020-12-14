@@ -127,79 +127,79 @@
 
 **** 页面路由
 ***** 页面栈
- | 路由方式   | 页面栈表现                        |
- |------------+-----------------------------------|
- | 初始化     | 新页面入栈                        |
- | 打开新页面 | 新页面入栈                        |
- | 页面重定向 | 当前页面出栈，新页面入栈          |
- | 页面返回   | 页面不断出栈，直到目标返回页      |
- | Tab 切换   | 页面全部出栈，只留下新的 Tab 页面 |
- | 重加载     | 页面全部出栈，只留下新的页面      |
+      | 路由方式   | 页面栈表现                        |
+      |------------+-----------------------------------|
+      | 初始化     | 新页面入栈                        |
+      | 打开新页面 | 新页面入栈                        |
+      | 页面重定向 | 当前页面出栈，新页面入栈          |
+      | 页面返回   | 页面不断出栈，直到目标返回页      |
+      | Tab 切换   | 页面全部出栈，只留下新的 Tab 页面 |
+      | 重加载     | 页面全部出栈，只留下新的页面      |
 
-  开发者可以使用 =getCurrentPages()= 函数获取当前页面栈。
+      开发者可以使用 =getCurrentPages()= 函数获取当前页面栈。
 
 ***** 路由方式
-          <navigator url="/pages/home/home">home</navigator>
+      <navigator url="/pages/home/home">home</navigator>
           
-  | 打开新页面 | wx.navigateTo        | 组件 <navigator open-type="navigateTo"/>     |
-  | 页面重定向 | wx.redirectTo        | 组件 <navigator open-type="redirectTo"/>     |
-  | 页面返回   | wx.navigateBack      | 使用组件<navigator open-type="navigateBack"> |
-  | Tab 切换   | wx.switchTab         | 使用组件 <navigator open-type="switchTab"/>  |
-  | 重启动     | 调用 API wx.reLaunch | 使用组件 <navigator open-type="reLaunch"/>   |
+      | 打开新页面 | wx.navigateTo        | 组件 <navigator open-type="navigateTo"/>     |
+      | 页面重定向 | wx.redirectTo        | 组件 <navigator open-type="redirectTo"/>     |
+      | 页面返回   | wx.navigateBack      | 使用组件<navigator open-type="navigateBack"> |
+      | Tab 切换   | wx.switchTab         | 使用组件 <navigator open-type="switchTab"/>  |
+      | 重启动     | 调用 API wx.reLaunch | 使用组件 <navigator open-type="reLaunch"/>   |
 
-  Tab 切换对应的生命周期（以 A、B 页面为 Tabbar 页面，C 是从 A 页面打开的页面，D 页面是从 C 页面打开的页面为例）：
+      Tab 切换对应的生命周期（以 A、B 页面为 Tabbar 页面，C 是从 A 页面打开的页面，D 页面是从 C 页面打开的页面为例）：
   
-  | 当前页面          | 路由后页面      | 触发的生命周期（按顺序）                             |
-  |-------------------+-----------------+------------------------------------------------------|
-  | A                 | A               | Nothing happend                                      |
-  | A                 | B               | A.onHide(), B.onLoad(), B.onShow()                   |
-  | A                 | B（再次打开）   | A.onHide(), B.onShow()                               |
-  | C                 | A               | C.onUnload(), A.onShow()                             |
-  | C                 | B               | C.onUnload(), B.onLoad(), B.onShow()                 |
-  | D                 | B               | D.onUnload(), C.onUnload(), B.onLoad(), B.onShow()   |
-  | D（从转发进入）   | A               | D.onUnload(), A.onLoad(), A.onShow()                 |
-  | D（从转发进入）   | B               | D.onUnload(), B.onLoad(), B.onShow()                 |
+      | 当前页面          | 路由后页面      | 触发的生命周期（按顺序）                             |
+      |-------------------+-----------------+------------------------------------------------------|
+      | A                 | A               | Nothing happend                                      |
+      | A                 | B               | A.onHide(), B.onLoad(), B.onShow()                   |
+      | A                 | B（再次打开）   | A.onHide(), B.onShow()                               |
+      | C                 | A               | C.onUnload(), A.onShow()                             |
+      | C                 | B               | C.onUnload(), B.onLoad(), B.onShow()                 |
+      | D                 | B               | D.onUnload(), C.onUnload(), B.onLoad(), B.onShow()   |
+      | D（从转发进入）   | A               | D.onUnload(), A.onLoad(), A.onShow()                 |
+      | D（从转发进入）   | B               | D.onUnload(), B.onLoad(), B.onShow()                 |
 
-  - =navigateTo=, =redirectTo= 只能打开非 tabBar 页面。
-  - =switchTab= 只能打开 tabBar 页面。
-  - =reLaunch= 可以打开任意页面。
-  - 页面底部的 tabBar 由页面决定，即只要是定义为 tabBar 的页面，底部都有tabBar。
-  - 调用页面路由带的参数可以在目标页面的=onLoad=中获取。
+      - =navigateTo=, =redirectTo= 只能打开非 tabBar 页面。
+      - =switchTab= 只能打开 tabBar 页面。
+      - =reLaunch= 可以打开任意页面。
+      - 页面底部的 tabBar 由页面决定，即只要是定义为 tabBar 的页面，底部都有tabBar。
+      - 调用页面路由带的参数可以在目标页面的=onLoad=中获取。
 
 **** 模块化
-    可以将一些公共的代码抽离成为一个单独的 js 文件，作为一个模块。模块只有通过 module.exports 或者 exports 才能对外暴露接口。
+     可以将一些公共的代码抽离成为一个单独的 js 文件，作为一个模块。模块只有通过 module.exports 或者 exports 才能对外暴露接口。
 
-    注意：
+     注意：
 
-    -  =exports= 是 module.exports 的一个引用，因此在模块里边随意更改 =exports= 的指向会造成未知的错误。所以更推荐开发者采用 =module.exports= 来暴露模块接口，除非你已经清晰知道这两者的关系。
-    -  小程序目前不支持直接引入 =node_modules= , 开发者需要使用到 =node_modules= 时候建议拷贝出相关的代码到小程序的目录中，或者使用小程序支持的npm 功能。
+     -  =exports= 是 module.exports 的一个引用，因此在模块里边随意更改 =exports= 的指向会造成未知的错误。所以更推荐开发者采用 =module.exports= 来暴露模块接口，除非你已经清晰知道这两者的关系。
+     -  小程序目前不支持直接引入 =node_modules= , 开发者需要使用到 =node_modules= 时候建议拷贝出相关的代码到小程序的目录中，或者使用小程序支持的npm 功能。
 
-    #+BEGIN_EXAMPLE
-        // common.js
-        function sayHello(name) {
-          console.log(`Hello ${name} !`)
-        }
-        function sayGoodbye(name) {
-          console.log(`Goodbye ${name} !`)
-        }
+     #+BEGIN_EXAMPLE
+         // common.js
+         function sayHello(name) {
+           console.log(`Hello ${name} !`)
+         }
+         function sayGoodbye(name) {
+           console.log(`Goodbye ${name} !`)
+         }
 
-        module.exports.sayHello = sayHello
-        exports.sayGoodbye = sayGoodbye
-    #+END_EXAMPLE
-    
-    在需要使用这些模块的文件中，使用 =require= 将公共代码引入
+         module.exports.sayHello = sayHello
+         exports.sayGoodbye = sayGoodbye
+     #+END_EXAMPLE
 
-    #+BEGIN_EXAMPLE
-        var common = require('common.js')
-        Page({
-          helloMINA: function() {
-            common.sayHello('MINA')
-          },
-          goodbyeMINA: function() {
-            common.sayGoodbye('MINA')
-          }
-        })
-    #+END_EXAMPLE
+     在需要使用这些模块的文件中，使用 =require= 将公共代码引入
+
+     #+BEGIN_EXAMPLE
+         var common = require('common.js')
+         Page({
+           helloMINA: function() {
+             common.sayHello('MINA')
+           },
+           goodbyeMINA: function() {
+             common.sayGoodbye('MINA')
+           }
+         })
+     #+END_EXAMPLE
 
 **** 文件作用域
      在 JavaScript文件中声明的变量和函数只在该文件中有效；不同的文件中可以声明相同名字的变量和函数，不会互相影响。
@@ -233,15 +233,15 @@
 
 **** API
 ***** 事件监听 API
-   我们约定，以 =on= 开头的 API用来监听某个事件是否触发，如：wx.onSocketOpen， wx.onCompassChange等。
+      我们约定，以 =on= 开头的 API用来监听某个事件是否触发，如：wx.onSocketOpen， wx.onCompassChange等。
 
-   这类 API 接受一个回调函数作为参数，当事件触发时会调用这个回调函数，并将相关数据以参数形式传入。
+      这类 API 接受一个回调函数作为参数，当事件触发时会调用这个回调函数，并将相关数据以参数形式传入。
 
-   #+BEGIN_EXAMPLE
-       wx.onCompassChange(function (res) {
-         console.log(res.direction)
-       })
-   #+END_EXAMPLE
+      #+BEGIN_EXAMPLE
+          wx.onCompassChange(function (res) {
+            console.log(res.direction)
+          })
+      #+END_EXAMPLE
 
 ***** 同步 API
       我们约定，以 =Sync= 结尾的 API 都是同步 API， 如wx.setStorageSync， wx.getSystemInfoSync等。此外，也有一些其他的同步 API，如wx.createWorker，
@@ -478,7 +478,7 @@
       #+END_EXAMPLE
 
       页面输出：
-          5
+      5
 
 *** 事件详解
 **** 事件分类
@@ -677,14 +677,14 @@
 
 *** 基础组件
 
-     | 属性名         | 类型         | 描述           | 注解                                     |
-     |----------------+--------------+----------------+------------------------------------------|
-     | id             | String       | 组件的唯一标示 | 保持整个页面唯一                         |
-     | class          | String       | 组件的样式类   | 在对应的 WXSS 中定义的样式类             |
-     | style          | String       | 组件的内联样式 | 可以动态设置的内联样式                   |
-     | hidden         | Boolean      | 组件是否显示   | 所有组件默认显示                         |
-     | data-*         | Any          | 自定义属性     | 组件上触发的事件时，会发送给事件处理函数 |
-     | bind* / catch* | EventHandler | 组件的事件     | 详见[[file:wxml/event.html][事件]]                                 |
+    | 属性名         | 类型         | 描述           | 注解                                     |
+    |----------------+--------------+----------------+------------------------------------------|
+    | id             | String       | 组件的唯一标示 | 保持整个页面唯一                         |
+    | class          | String       | 组件的样式类   | 在对应的 WXSS 中定义的样式类             |
+    | style          | String       | 组件的内联样式 | 可以动态设置的内联样式                   |
+    | hidden         | Boolean      | 组件是否显示   | 所有组件默认显示                         |
+    | data-*         | Any          | 自定义属性     | 组件上触发的事件时，会发送给事件处理函数 |
+    | bind* / catch* | EventHandler | 组件的事件     | 详见[[file:wxml/event.html][事件]]                                 |
 
 *** 获取界面上的节点信息
 **** WXML 节点信息
@@ -842,7 +842,7 @@
       iPad 上不能单独配置某个页面是否支持屏幕旋转。
 
 **** Media Query
-    有时，对于不同尺寸的显示区域，页面的布局会有所差异。此时可以使用 media query
+     有时，对于不同尺寸的显示区域，页面的布局会有所差异。此时可以使用 media query
      来解决大多数问题。
 
      *代码示例：*
@@ -955,7 +955,6 @@
 
 
 
-
 *** 动画
 **** 界面动画的常见方式
      在小程序中，通常可以使用[[https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions][CSS渐变<<>>]] 和[[https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Animations/Using_CSS_animations][CSS动画<<>>]] 来创建简易的界面动画。
@@ -1026,7 +1025,7 @@
      | translateZ      | Number        |        | 否                                | Z 方向位移，即 CSS transform translateZ |
 **** 滚动驱动的动画
 
-    我们发现，根据滚动位置而不断改变动画的进度是一种比较常见的场景，这类动画可以让人感觉到界面交互很连贯自然，体验更好。因此，从小程序基础库
+     我们发现，根据滚动位置而不断改变动画的进度是一种比较常见的场景，这类动画可以让人感觉到界面交互很连贯自然，体验更好。因此，从小程序基础库
      [[../compatibility.html][2.9.0]] 开始支持一种由滚动驱动的动画机制。
 
      基于上述的关键帧动画接口，新增一个 =ScrollTimeline=
@@ -1102,7 +1101,7 @@
 
 
 **** 高级的动画方式
-    在一些复杂场景下，上述的动画方法可能并不适用。
+     在一些复杂场景下，上述的动画方法可能并不适用。
 
      [[file:interactive-animation.html][WXS 响应事件]] 的方式可以通过使用 WXS 来响应事件的方法来动态调整节点的 style 属性。通过不断改变 style 属性的值可以做到动画效果。同时，这种方式也可以根据用户的触摸事件来动态地生成动画。
      
@@ -3020,7 +3019,7 @@
      [[https://developers.weixin.qq.com/s/CI5omDmT7khB][在开发者工具中预览效果<<>>]]
 
 **** [[index_u79.html#内置-behaviors][#]] 内置 behaviors
-    自定义组件可以通过引用内置的 =behavior= 来获得内置组件的一些行为。
+     自定义组件可以通过引用内置的 =behavior= 来获得内置组件的一些行为。
      #+BEGIN_EXAMPLE
          Component({
            behaviors: ['wx://form-field']
@@ -4301,142 +4300,142 @@
 **  *五、基础文件目录详解*
    project.config.json: 小程序的配置文件，包含项目打包配置、上传代码自动压缩等等，是一些开发、打包之类的配置。
 
-app.json: 当前项目的配置文件。包括项目的页面引入、导航条颜色、导航条标题 等等，是项目具体到代码开发上的配置。介绍几个配置：
+   app.json: 当前项目的配置文件。包括项目的页面引入、导航条颜色、导航条标题 等等，是项目具体到代码开发上的配置。介绍几个配置：
 
-pages： 包含的页面。每次新增页面都得在这里引入，否则新页面的 json 配置等无法生效。 注意 pages 中页面先写的先渲染，所以数组第一条也就是我们的首页。
+   pages： 包含的页面。每次新增页面都得在这里引入，否则新页面的 json 配置等无法生效。 注意 pages 中页面先写的先渲染，所以数组第一条也就是我们的首页。
 
-window： 配置所有页面导航条字体、颜色、背景色等
+   window： 配置所有页面导航条字体、颜色、背景色等
 
-app.js: 小程序入口文件。生成小程序实例，App({}), 通常在这获取用户信息、授权信息、定义全局变量等。
+   app.js: 小程序入口文件。生成小程序实例，App({}), 通常在这获取用户信息、授权信息、定义全局变量等。
 
-app.wxss: 小程序全局 style 文件。对整个项目页面生效。通常规定项目的 字体、基础颜色，定义一些公共样式。
+   app.wxss: 小程序全局 style 文件。对整个项目页面生效。通常规定项目的 字体、基础颜色，定义一些公共样式。
 
-utils: 工具函数目录。通常用来放一些公共的 js 方法。比如封装的 request 请求，一些别的处理数据什么的方法。
+   utils: 工具函数目录。通常用来放一些公共的 js 方法。比如封装的 request 请求，一些别的处理数据什么的方法。
 
-pages: 小程序的页面目录。所有的小程序页面，都写在这里面。
+   pages: 小程序的页面目录。所有的小程序页面，都写在这里面。
 
 **  *六、完善项目目录*
    上边大致解释了一下小程序的基础文件，现在按照常见的规范完善一下项目目录，这里
    面包含一些个人见解，有需要的参考即可。先看一下结果：
 
-现在解释一下这些目录：
-components： 我们封装的小程序可复用组件。
-constants： 一些项目中的常亮。
-image： 用到的图片。
-services： 用到的所有接口目录
+   现在解释一下这些目录：
+   components： 我们封装的小程序可复用组件。
+   constants： 一些项目中的常亮。
+   image： 用到的图片。
+   services： 用到的所有接口目录
 
-大致就新建了这几个，如果有别的需求，根据自己的情况增加。
+   大致就新建了这几个，如果有别的需求，根据自己的情况增加。
 
 ** *八、实现页面跳转*
    和通常的 web 开发一样，小程序页面跳转页分 2 中，wxml 中的 vavigator 标签，以
    及 js 的 navigator 相关的 api。路由跳转的方法有好几个，这里不一一赘述了，常用
    的直接跳转
 
-#+BEGIN_EXAMPLE
-    wx.navigateTo，重定向 wx.redirectTo等等，具体的请看官方文档。这里强调一下路由传参，很简单： 
-    1、少量数据。直接问号传参。然后在目标页面的onLoad方法中通过options参数接收。 
-    2、大量数据。直接塞到全局变量里面。
-#+END_EXAMPLE
+   #+BEGIN_EXAMPLE
+       wx.navigateTo，重定向 wx.redirectTo等等，具体的请看官方文档。这里强调一下路由传参，很简单： 
+       1、少量数据。直接问号传参。然后在目标页面的onLoad方法中通过options参数接收。 
+       2、大量数据。直接塞到全局变量里面。
+   #+END_EXAMPLE
 
-#+BEGIN_EXAMPLE
-     //  wxml跳转页面
-          {{item.name}}
-           
-     // js跳转页面
-     wx.navigateTo({
-          url: `/pages/my/appointDetail/index?_id=${ this .data.marker.id}`
-        }) 
-     
-    //路由传参如何接收 
-onLoad: function (options) {
-　　 console.log(options)
-},
+   #+BEGIN_EXAMPLE
+        //  wxml跳转页面
+             {{item.name}}
 
-#+END_EXAMPLE
+        // js跳转页面
+        wx.navigateTo({
+             url: `/pages/my/appointDetail/index?_id=${ this .data.marker.id}`
+           }) 
+
+       //路由传参如何接收 
+   onLoad: function (options) {
+   　　 console.log(options)
+   },
+
+   #+END_EXAMPLE
 
 ** *九、wx.request 的封装*
- 在 utils 中新建 request.js，简单封装了一下，一些数据要全局配置的都引进来，然后
- 做了些错误的统一处理，没什么难度， 不过要特别注意一下 cookie 的携带。具体代码如
- 下：
+   在 utils 中新建 request.js，简单封装了一下，一些数据要全局配置的都引进来，然后
+   做了些错误的统一处理，没什么难度， 不过要特别注意一下 cookie 的携带。具体代码如
+   下：
 
- #+BEGIN_EXAMPLE
-     const app =  getApp()
-     export  default  function request(url, options =  {}) {
-        return  new Promise( function  (resolve, reject) {
-         wx.request({
-           url: `${app.origin}${url}`,
-           method: 'GET' ,
-           ...options,
-           data: options.data,
-           header: {
-             'content-type': 'application/json' ,
-             'cookie': wx.getStorageSync("cookie" )
-           },
-           success:  function  (res) {
-              // 重新授权登录
-              if (res.statusCode === 401 ){ 
-               wx.redirectTo({url: '/pages/login/index' })
-                return 
-             } else  if (res.statusCode !== 200 ) { 
-               reject({ error: '服务器忙，请稍后重试', code: 500  });
-                return 
-             }  else  {
-                if (url === '/api/cdz/user/weixin/login' ) {
-                 const cookie = res.header["set-cookie" ] || res.header["Set-Cookie"]; 
-     　　　　　　　　
-                  if (cookie) wx.setStorageSync("cookie" , cookie);
+   #+BEGIN_EXAMPLE
+       const app =  getApp()
+       export  default  function request(url, options =  {}) {
+          return  new Promise( function  (resolve, reject) {
+           wx.request({
+             url: `${app.origin}${url}`,
+             method: 'GET' ,
+             ...options,
+             data: options.data,
+             header: {
+               'content-type': 'application/json' ,
+               'cookie': wx.getStorageSync("cookie" )
+             },
+             success:  function  (res) {
+                // 重新授权登录
+                if (res.statusCode === 401 ){ 
+                 wx.redirectTo({url: '/pages/login/index' })
+                  return 
+               } else  if (res.statusCode !== 200 ) { 
+                 reject({ error: '服务器忙，请稍后重试', code: 500  });
+                  return 
+               }  else  {
+                  if (url === '/api/cdz/user/weixin/login' ) {
+                   const cookie = res.header["set-cookie" ] || res.header["Set-Cookie"]; 
+       　　　　　　　　
+                    if (cookie) wx.setStorageSync("cookie" , cookie);
+                 }
+                 resolve(res.data);
                }
-               resolve(res.data);
+             },
+             fail:  function  (res) {
+                //  fail调用接口失败
+                if (url === '/api/cdz/user/weixin/login' ) {
+                 const cookie = res.header["set-cookie" ] || res.header["Set-Cookie"];
+                  if (cookie) wx.setStorageSync("cookie" , cookie);
+               } 
+               reject({ error: '网络错误', code: 0  });
              }
-           },
-           fail:  function  (res) {
-              //  fail调用接口失败
-              if (url === '/api/cdz/user/weixin/login' ) {
-               const cookie = res.header["set-cookie" ] || res.header["Set-Cookie"];
-                if (cookie) wx.setStorageSync("cookie" , cookie);
-             } 
-             reject({ error: '网络错误', code: 0  });
-           }
+           })
          })
-       })
-     }
- #+END_EXAMPLE
+       }
+   #+END_EXAMPLE
 
-然后我们使用的时候直接使用封装好的 request 方法，这样所有的 api 就封装成一个个函数。我们在页面中直接 import 引入调用即可。
+   然后我们使用的时候直接使用封装好的 request 方法，这样所有的 api 就封装成一个个函数。我们在页面中直接 import 引入调用即可。
 
- #+BEGIN_EXAMPLE
-     import request from "../utils/request" ;
-     import { stringify } from "../utils/util" 
+   #+BEGIN_EXAMPLE
+       import request from "../utils/request" ;
+       import { stringify } from "../utils/util" 
 
-     export  function  testPost(data) {
-        return request(`/api/test/post`, {
-         method: 'PUT' ,
-         data,
-       })
-     }
+       export  function  testPost(data) {
+          return request(`/api/test/post`, {
+           method: 'PUT' ,
+           data,
+         })
+       }
 
-     export  function  testGet(data) {
-        return request(`/api/test/get`)
-     }
- #+END_EXAMPLE
+       export  function  testGet(data) {
+          return request(`/api/test/get`)
+       }
+   #+END_EXAMPLE
 
 ** *十、使用 npm （引入 weui、moment 等插件）*
-因为小程序使用的是不完整的浏览器对象，所以很多 js 包都是不好使的，比如 jquery
-之类的。所以 npm 基本是废了，能用的依赖包很少，具体哪些能用得自己发掘了。这里还
-是要介绍一下小程序如何使用 npm，毕竟有些包还是要用的。
+   因为小程序使用的是不完整的浏览器对象，所以很多 js 包都是不好使的，比如 jquery
+   之类的。所以 npm 基本是废了，能用的依赖包很少，具体哪些能用得自己发掘了。这里还
+   是要介绍一下小程序如何使用 npm，毕竟有些包还是要用的。
 
-1、打开 微信开发者工具 -- 点击 详情 -- 勾选 使用 npm 模块
-2、打开命令行，进入项目的根目录下， npm init 初始化 npm
-3、npm i 。。。安装你需要的依赖
-4、打开 微信开发者工具 -- 点击 工具 -- 点击 构建 npm。 此时小程序会将 node_modules 文件编译打包，生成新目录 miniprogram_npm ，
-5、在需要用到的页面的 js 文件中，const moment= require('moment') 引入，直接使用即可
-6、最后记得忽略文件。新建 .gitignore 文件，node_modules 、 package_lock.json 等文件不需要上传，最好只保留小程序的 npm 构建包，用什么依赖也是的那个下载。这个到不是必须的
+   1、打开 微信开发者工具 -- 点击 详情 -- 勾选 使用 npm 模块
+   2、打开命令行，进入项目的根目录下， npm init 初始化 npm
+   3、npm i 。。。安装你需要的依赖
+   4、打开 微信开发者工具 -- 点击 工具 -- 点击 构建 npm。 此时小程序会将 node_modules 文件编译打包，生成新目录 miniprogram_npm ，
+   5、在需要用到的页面的 js 文件中，const moment= require('moment') 引入，直接使用即可
+   6、最后记得忽略文件。新建 .gitignore 文件，node_modules 、 package_lock.json 等文件不需要上传，最好只保留小程序的 npm 构建包，用什么依赖也是的那个下载。这个到不是必须的
  
-　　ps: 特殊注意一下 weui 的引入，这个 ui 库是纯 css 的，没有 js 文件，所以他没法用 npm 引入，而是直接下载文件，我直接丢到根目录下，然后在 app.wxss 文件的开头引入
+   　　ps: 特殊注意一下 weui 的引入，这个 ui 库是纯 css 的，没有 js 文件，所以他没法用 npm 引入，而是直接下载文件，我直接丢到根目录下，然后在 app.wxss 文件的开头引入
 
-#+BEGIN_EXAMPLE
-@import 'weui.wxss';，这样使用的
-#+END_EXAMPLE
+   #+BEGIN_EXAMPLE
+   @import 'weui.wxss';，这样使用的
+   #+END_EXAMPLE
 
 * 样式 https://weui.io/
 * 组件和 api
@@ -4657,94 +4656,94 @@ onLoad: function (options) {
      string schema
      使用 ${API}.${method}.${param}.${option} 或者 ${component}.${attribute}.${option} 方式来调用
 ***** 参数说明
-     ${API} 代表 API 名字
-     ${method} 代表调用方式，有效值为return, success, object, callback
-     ${param} 代表参数或者返回值
-     ${option} 代表参数的可选值或者返回值的属性
-     ${component} 代表组件名字
-     ${attribute} 代表组件属性
-     ${option} 代表组件属性的可选值
+      ${API} 代表 API 名字
+      ${method} 代表调用方式，有效值为return, success, object, callback
+      ${param} 代表参数或者返回值
+      ${option} 代表参数的可选值或者返回值的属性
+      ${component} 代表组件名字
+      ${attribute} 代表组件属性
+      ${option} 代表组件属性的可选值
 ***** 示例代码
-     // 对象的属性或方法
-     wx.canIUse('console.log')
-     wx.canIUse('CameraContext.onCameraFrame')
-     wx.canIUse('CameraFrameListener.start')
-     wx.canIUse('Image.src')
+      // 对象的属性或方法
+      wx.canIUse('console.log')
+      wx.canIUse('CameraContext.onCameraFrame')
+      wx.canIUse('CameraFrameListener.start')
+      wx.canIUse('Image.src')
 
-     // wx接口参数、回调或者返回值
-     wx.canIUse('openBluetoothAdapter')
-     wx.canIUse('getSystemInfoSync.return.safeArea.left')
-     wx.canIUse('getSystemInfo.success.screenWidth')
-     wx.canIUse('showToast.object.image')
-     wx.canIUse('onCompassChange.callback.direction')
-     wx.canIUse('request.object.method.GET')
+      // wx接口参数、回调或者返回值
+      wx.canIUse('openBluetoothAdapter')
+      wx.canIUse('getSystemInfoSync.return.safeArea.left')
+      wx.canIUse('getSystemInfo.success.screenWidth')
+      wx.canIUse('showToast.object.image')
+      wx.canIUse('onCompassChange.callback.direction')
+      wx.canIUse('request.object.method.GET')
 
-     // 组件的属性
-     wx.canIUse('live-player')
-     wx.canIUse('text.selectable')
-     wx.canIUse('button.open-type.contact')
+      // 组件的属性
+      wx.canIUse('live-player')
+      wx.canIUse('text.selectable')
+      wx.canIUse('button.open-type.contact')
 
 *** 开放接口
 **** 登录
      wx.login
      wx.checkSession
 **** 小程序跳转
- wx.navigateToMiniProgram
- wx.navigateBackMiniProgram
+     wx.navigateToMiniProgram
+     wx.navigateBackMiniProgram
 **** 帐号信息
- wx.getAccountInfoSync
+     wx.getAccountInfoSync
 **** 用户信息
- wx.getUserInfo
- UserInfo
+     wx.getUserInfo
+     UserInfo
 **** 数据上报
- wx.reportMonitor
+     wx.reportMonitor
 **** 数据分析
- wx.reportAnalytics
+     wx.reportAnalytics
 **** 支付
- wx.requestPayment
+     wx.requestPayment
 **** 授权
- wx.authorize
+     wx.authorize
 **** 设置
- wx.openSetting
- wx.getSetting
- AuthSetting
- SubscriptionsSetting
+     wx.openSetting
+     wx.getSetting
+     AuthSetting
+     SubscriptionsSetting
 **** 收货地址
- wx.chooseAddress
+     wx.chooseAddress
 **** 卡券
- wx.openCard
- wx.addCard
+     wx.openCard
+     wx.addCard
 **** 发票
- wx.chooseInvoiceTitle
- wx.chooseInvoice
+     wx.chooseInvoiceTitle
+     wx.chooseInvoice
 **** 生物认证
- wx.startSoterAuthentication
- wx.checkIsSupportSoterAuthentication
- wx.checkIsSoterEnrolledInDevice
+     wx.startSoterAuthentication
+     wx.checkIsSupportSoterAuthentication
+     wx.checkIsSoterEnrolledInDevice
 **** 微信运动
- wx.getWeRunData
+     wx.getWeRunData
 **** 性能
- wx.reportPerformance
- wx.getPerformance
+     wx.reportPerformance
+     wx.getPerformance
 ***** EntryList
-  EntryList.getEntries
-  EntryList.getEntriesByName
-  EntryList.getEntriesByType
+      EntryList.getEntries
+      EntryList.getEntriesByName
+      EntryList.getEntriesByType
 ***** Performance
-  Performance.createObserver
-  Performance.getEntries
-  Performance.getEntriesByName
-  Performance.getEntriesByType
-  Performance.setBufferSize
+      Performance.createObserver
+      Performance.getEntries
+      Performance.getEntriesByName
+      Performance.getEntriesByType
+      Performance.setBufferSize
 ***** PerformanceObserver
-  PerformanceObserver.disconnect
-  PerformanceObserver.observe
+      PerformanceObserver.disconnect
+      PerformanceObserver.observe
 **** 订阅消息
- wx.requestSubscribeMessage
+     wx.requestSubscribeMessage
 **** 微信红包
- wx.showRedPackage
+     wx.showRedPackage
 **** 群工具
- wx.getGroupEnterInfo
+     wx.getGroupEnterInfo
 
 * 开发工具
   - Wxml panel
@@ -4763,244 +4762,400 @@ onLoad: function (options) {
    -  touchcancel：触摸动作被打断，如来电提醒，弹窗等。
    -  touchend：触摸结束。
 ** 事件属性
- - capture-bind：捕获阶段触发。
- - capture-catch：捕获阶段触发，并中断事件，不再向下传播，即中断捕获阶段，并取消随后的冒泡阶段。
- - bind：冒泡阶段触发。
- - catch：冒泡阶段触发，并取消事件进一步向上冒泡。
+   - capture-bind：捕获阶段触发。
+   - capture-catch：捕获阶段触发，并中断事件，不再向下传播，即中断捕获阶段，并取消随后的冒泡阶段。
+   - bind：冒泡阶段触发。
+   - catch：冒泡阶段触发，并取消事件进一步向上冒泡。
 
 * WXML语法  
 ** 数据绑定 
 *** 控制属性
     <view wx:if="{{condition}}"> </view>
 *** 三元运算
-<view hidden="{{flag ? true : false}}"> Hidden </view>
+    <view hidden="{{flag ? true : false}}"> Hidden </view>
 *** 算数运算
-<view> {{a + b}} + {{c}} + d </view>
+    <view> {{a + b}} + {{c}} + d </view>
 *** 逻辑判断
-<view wx:if="{{length > 5}}"> </view>
+    <view wx:if="{{length > 5}}"> </view>
 *** 字符串运算
-<view>{{"hello" + name}}</view>
+    <view>{{"hello" + name}}</view>
 *** 数组
-<view wx:for="{{[zero, 1, 2, 3, 4]}}"> {{item}} </view>
+    <view wx:for="{{[zero, 1, 2, 3, 4]}}"> {{item}} </view>
 *** 对象
-<template is="objectCombine" data="{{for: a, bar: b}}"></template>
+    <template is="objectCombine" data="{{for: a, bar: b}}"></template>
 *** 也可以用扩展运算符 ... 来将一个对象展开
     <template is="objectCombine" data="{{...obj1, ...obj2, e: 5}}"></template>
 ** 列表渲染
 *** wx:for
     在组件上使用 wx:for 控制属性绑定一个数组，即可使用数组中各项的数据重复渲染该组件。
 
- 默认数组的当前项的下标变量名默认为 index，数组当前项的变量名默认为 item
+    默认数组的当前项的下标变量名默认为 index，数组当前项的变量名默认为 item
 
- <view wx:for="{{array}}">
-   {{index}}: {{item.message}}
- </view>
- Page({
-   data: {
-     array: [{
-       message: 'foo',
-     }, {
-       message: 'bar'
-     }]
-   }
- })
- 使用 wx:for-item 可以指定数组当前元素的变量名，
+    <view wx:for="{{array}}">
+    {{index}}: {{item.message}}
+    </view>
+    Page({
+    data: {
+    array: [{
+    message: 'foo',
+    }, {
+    message: 'bar'
+    }]
+    }
+    })
+    使用 wx:for-item 可以指定数组当前元素的变量名，
 
- 使用 wx:for-index 可以指定数组当前下标的变量名：
+    使用 wx:for-index 可以指定数组当前下标的变量名：
 
- <view wx:for="{{array}}" wx:for-index="idx" wx:for-item="itemName">
-   {{idx}}: {{itemName.message}}
- </view>
- wx:for 也可以嵌套，下边是一个九九乘法表
+    <view wx:for="{{array}}" wx:for-index="idx" wx:for-item="itemName">
+    {{idx}}: {{itemName.message}}
+    </view>
+    wx:for 也可以嵌套，下边是一个九九乘法表
 
- <view wx:for="{{[1, 2, 3, 4, 5, 6, 7, 8, 9]}}" wx:for-item="i">
-   <view wx:for="{{[1, 2, 3, 4, 5, 6, 7, 8, 9]}}" wx:for-item="j">
-     <view wx:if="{{i <= j}}">
-       {{i}} * {{j}} = {{i * j}}
-     </view>
-   </view>
- </view>
- block wx:for
- 类似 block wx:if，也可以将 wx:for 用在<block/>标签上，以渲染一个包含多节点的结构块。例如：
+    <view wx:for="{{[1, 2, 3, 4, 5, 6, 7, 8, 9]}}" wx:for-item="i">
+    <view wx:for="{{[1, 2, 3, 4, 5, 6, 7, 8, 9]}}" wx:for-item="j">
+    <view wx:if="{{i <= j}}">
+    {{i}} * {{j}} = {{i * j}}
+    </view>
+    </view>
+    </view>
+    block wx:for
+    类似 block wx:if，也可以将 wx:for 用在<block/>标签上，以渲染一个包含多节点的结构块。例如：
 
- <block wx:for="{{[1, 2, 3]}}">
-   <view> {{index}}: </view>
-   <view> {{item}} </view>
- </block>
+    <block wx:for="{{[1, 2, 3]}}">
+    <view> {{index}}: </view>
+    <view> {{item}} </view>
+    </block>
 *** wx:key
- 如果列表中项目的位置会动态改变或者有新的项目添加到列表中，并且希望列表中的项目
- 保持自己的特征和状态（如 input 中的输入内容，switch 的选中状态），需要使用
- wx:key 来指定列表中项目的唯一的标识符。
+    如果列表中项目的位置会动态改变或者有新的项目添加到列表中，并且希望列表中的项目
+    保持自己的特征和状态（如 input 中的输入内容，switch 的选中状态），需要使用
+    wx:key 来指定列表中项目的唯一的标识符。
 
- wx:key 的值以两种形式提供
+    wx:key 的值以两种形式提供
 
- 字符串，代表在 for 循环的 array 中 item 的某个 property，该 property 的值需要是列表中唯一的字符串或数字，且不能动态改变。
- 保留关键字 *this 代表在 for 循环中的 item 本身，这种表示需要 item 本身是一个唯一的字符串或者数字。
+    字符串，代表在 for 循环的 array 中 item 的某个 property，该 property 的值需要是列表中唯一的字符串或数字，且不能动态改变。
+    保留关键字 *this 代表在 for 循环中的 item 本身，这种表示需要 item 本身是一个唯一的字符串或者数字。
  
- 当数据改变触发渲染层重新渲染的时候，会校正带有 key 的组件，框架会确保他们被重新
- 排序，而不是重新创建，以确保使组件保持自身的状态，并且提高列表渲染时的效率。
+    当数据改变触发渲染层重新渲染的时候，会校正带有 key 的组件，框架会确保他们被重新
+    排序，而不是重新创建，以确保使组件保持自身的状态，并且提高列表渲染时的效率。
 
- 如不提供 wx:key，会报一个 warning， 如果明确知道该列表是静态，或者不必关注其顺序，可以选择忽略。
+    如不提供 wx:key，会报一个 warning， 如果明确知道该列表是静态，或者不必关注其顺序，可以选择忽略。
 
- 示例代码：
+    示例代码：
 
- <switch wx:for="{{objectArray}}" wx:key="unique" style="display: block;"> {{item.id}} </switch>
- <button bindtap="switch"> Switch </button>
- <button bindtap="addToFront"> Add to the front </button>
+    <switch wx:for="{{objectArray}}" wx:key="unique" style="display: block;"> {{item.id}} </switch>
+    <button bindtap="switch"> Switch </button>
+    <button bindtap="addToFront"> Add to the front </button>
 
- <switch wx:for="{{numberArray}}" wx:key="*this" style="display: block;"> {{item}} </switch>
- <button bindtap="addNumberToFront"> Add to the front </button>
- Page({
-   data: {
-     objectArray: [
-       {id: 5, unique: 'unique_5'},
-       {id: 4, unique: 'unique_4'},
-       {id: 3, unique: 'unique_3'},
-       {id: 2, unique: 'unique_2'},
-       {id: 1, unique: 'unique_1'},
-       {id: 0, unique: 'unique_0'},
-     ],
-     numberArray: [1, 2, 3, 4]
-   },
-   switch: function(e) {
-     const length = this.data.objectArray.length
-     for (let i = 0; i < length; ++i) {
-       const x = Math.floor(Math.random() * length)
-       const y = Math.floor(Math.random() * length)
-       const temp = this.data.objectArray[x]
-       this.data.objectArray[x] = this.data.objectArray[y]
-       this.data.objectArray[y] = temp
-     }
-     this.setData({
-       objectArray: this.data.objectArray
-     })
-   },
-   addToFront: function(e) {
-     const length = this.data.objectArray.length
-     this.data.objectArray = [{id: length, unique: 'unique_' + length}].concat(this.data.objectArray)
-     this.setData({
-       objectArray: this.data.objectArray
-     })
-   },
-   addNumberToFront: function(e){
-     this.data.numberArray = [ this.data.numberArray.length + 1 ].concat(this.data.numberArray)
-     this.setData({
-       numberArray: this.data.numberArray
-     })
-   }
- })
- 注意：
+    <switch wx:for="{{numberArray}}" wx:key="*this" style="display: block;"> {{item}} </switch>
+    <button bindtap="addNumberToFront"> Add to the front </button>
+    Page({
+    data: {
+    objectArray: [
+    {id: 5, unique: 'unique_5'},
+    {id: 4, unique: 'unique_4'},
+    {id: 3, unique: 'unique_3'},
+    {id: 2, unique: 'unique_2'},
+    {id: 1, unique: 'unique_1'},
+    {id: 0, unique: 'unique_0'},
+    ],
+    numberArray: [1, 2, 3, 4]
+    },
+    switch: function(e) {
+    const length = this.data.objectArray.length
+    for (let i = 0; i < length; ++i) {
+    const x = Math.floor(Math.random() * length)
+    const y = Math.floor(Math.random() * length)
+    const temp = this.data.objectArray[x]
+    this.data.objectArray[x] = this.data.objectArray[y]
+    this.data.objectArray[y] = temp
+    }
+    this.setData({
+    objectArray: this.data.objectArray
+    })
+    },
+    addToFront: function(e) {
+    const length = this.data.objectArray.length
+    this.data.objectArray = [{id: length, unique: 'unique_' + length}].concat(this.data.objectArray)
+    this.setData({
+    objectArray: this.data.objectArray
+    })
+    },
+    addNumberToFront: function(e){
+    this.data.numberArray = [ this.data.numberArray.length + 1 ].concat(this.data.numberArray)
+    this.setData({
+    numberArray: this.data.numberArray
+    })
+    }
+    })
+    注意：
 
- 当 wx:for 的值为字符串时，会将字符串解析成字符串数组
+    当 wx:for 的值为字符串时，会将字符串解析成字符串数组
 
- <view wx:for="array">
-   {{item}}
- </view>
- 等同于
+    <view wx:for="array">
+    {{item}}
+    </view>
+    等同于
 
- <view wx:for="{{['a','r','r','a','y']}}">
-   {{item}}
- </view>
- 注意： 花括号和引号之间如果有空格，将最终被解析成为字符串
+    <view wx:for="{{['a','r','r','a','y']}}">
+    {{item}}
+    </view>
+    注意： 花括号和引号之间如果有空格，将最终被解析成为字符串
 
- <view wx:for="{{[1,2,3]}} ">
-   {{item}}
- </view>
- 等同于
+    <view wx:for="{{[1,2,3]}} ">
+    {{item}}
+    </view>
+    等同于
 
- <view wx:for="{{[1,2,3] + ' '}}" >
-   {{item}}
- </view>
+    <view wx:for="{{[1,2,3] + ' '}}" >
+    {{item}}
+    </view>
 * 后端 API
-小程序还提供了一系列在后端服务器使用 HTTPS 请求调用的 API，帮助开发者在后台完成各类数据分析、管理和查询等操作。如 getAccessToken，code2Session 等。详细介绍请参考 API 文档。
+  小程序还提供了一系列在后端服务器使用 HTTPS 请求调用的 API，帮助开发者在后台完成各类数据分析、管理和查询等操作。如 getAccessToken，code2Session 等。详细介绍请参考 API 文档。
 
-access_token
-access_token 是小程序全局唯一后台接口调用凭据，调用绝大多数后台接口时都需使用。开发者可以通过 getAccessToken 接口获取并进行妥善保存。
+  access_token
+  access_token 是小程序全局唯一后台接口调用凭据，调用绝大多数后台接口时都需使用。开发者可以通过 getAccessToken 接口获取并进行妥善保存。
 
-为了 access_token 的安全性，后端 API 不能直接在小程序内通过 wx.request 调用，即 api.weixin.qq.com 不能被配置为服务器域名。开发者应在后端服务器使用getAccessToken获取 access_token，并调用相关 API；
+  为了 access_token 的安全性，后端 API 不能直接在小程序内通过 wx.request 调用，即 api.weixin.qq.com 不能被配置为服务器域名。开发者应在后端服务器使用getAccessToken获取 access_token，并调用相关 API；
 
-请求参数说明
-对于 GET 请求，请求参数应以 QueryString 的形式写在 URL 中。
-对于 POST 请求，部分参数需以 QueryString 的形式写在 URL 中（一般只有 access_token，如有额外参数会在文档里的 URL 中体现），其他参数如无特殊说明均以 JSON 字符串格式写在 POST 请求的 body 中。
-返回参数说明
-注意：当API调用成功时，部分接口不会返回 errcode 和 errmsg，只有调用失败时才会返回。
+  请求参数说明
+  对于 GET 请求，请求参数应以 QueryString 的形式写在 URL 中。
+  对于 POST 请求，部分参数需以 QueryString 的形式写在 URL 中（一般只有 access_token，如有额外参数会在文档里的 URL 中体现），其他参数如无特殊说明均以 JSON 字符串格式写在 POST 请求的 body 中。
+  返回参数说明
+  注意：当API调用成功时，部分接口不会返回 errcode 和 errmsg，只有调用失败时才会返回。
 ** 登录
 *** auth.code2Session
 
     登录凭证校验。通过 wx.login 接口获得临时登录凭证 code 后传到开发者服务器调用此接口完成登录流程。更多使用方法详见 小程序登录。
 
 
-请求地址
-GET https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code
-请求参数
-属性	类型	默认值	必填	说明
-appid	string		是	小程序 appId
-secret	string		是	小程序 appSecret
-js_code	string		是	登录时获取的 code
-grant_type	string		是	授权类型，此处只需填写 authorization_code
-返回值
-Object
-返回的 JSON 数据包
+    请求地址
+    GET https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code
+    请求参数
+    属性	类型	默认值	必填	说明
+    appid	string		是	小程序 appId
+    secret	string		是	小程序 appSecret
+    js_code	string		是	登录时获取的 code
+    grant_type	string		是	授权类型，此处只需填写 authorization_code
+    返回值
+    Object
+    返回的 JSON 数据包
 
-属性	类型	说明
-openid	string	用户唯一标识
-session_key	string	会话密钥
-unionid	string	用户在开放平台的唯一标识符，在满足 UnionID 下发条件的情况下会返回，详见 UnionID 机制说明。
-errcode	number	错误码
-errmsg	string	错误信息
-errcode 的合法值
+    属性	类型	说明
+    openid	string	用户唯一标识
+    session_key	string	会话密钥
+    unionid	string	用户在开放平台的唯一标识符，在满足 UnionID 下发条件的情况下会返回，详见 UnionID 机制说明。
+    errcode	number	错误码
+    errmsg	string	错误信息
+    errcode 的合法值
 
-值	说明	最低版本
--1	系统繁忙，此时请开发者稍候再试	
-0	请求成功	
-40029	code 无效	
-45011	频率限制，每个用户每分钟100次
+    值	说明	最低版本
+    -1	系统繁忙，此时请开发者稍候再试	
+    0	请求成功	
+    40029	code 无效	
+    45011	频率限制，每个用户每分钟100次
 ** 接口调用凭证 
 *** auth.getAccessToken
-本接口应在服务器端调用，详细说明参见服务端API。
+    本接口应在服务器端调用，详细说明参见服务端API。
 
-获取小程序全局唯一后台接口调用凭据（access_token）。调用绝大多数后台接口时都需使用 access_token，开发者需要进行妥善保存。
+    获取小程序全局唯一后台接口调用凭据（access_token）。调用绝大多数后台接口时都需使用 access_token，开发者需要进行妥善保存。
 
 
-请求地址
-GET https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
-请求参数
-属性	类型	默认值	必填	说明
-grant_type	string		是	填写 client_credential
-appid	string		是	小程序唯一凭证，即 AppID，可在「微信公众平台 - 设置 - 开发设置」页中获得。（需要已经成为开发者，且帐号没有异常状态）
-secret	string		是	小程序唯一凭证密钥，即 AppSecret，获取方式同 appid
-返回值
-Object
-返回的 JSON 数据包
+    请求地址
+    GET https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
+    请求参数
+    属性	类型	默认值	必填	说明
+    grant_type	string		是	填写 client_credential
+    appid	string		是	小程序唯一凭证，即 AppID，可在「微信公众平台 - 设置 - 开发设置」页中获得。（需要已经成为开发者，且帐号没有异常状态）
+    secret	string		是	小程序唯一凭证密钥，即 AppSecret，获取方式同 appid
+    返回值
+    Object
+    返回的 JSON 数据包
 
-属性	类型	说明
-access_token	string	获取到的凭证
-expires_in	number	凭证有效时间，单位：秒。目前是7200秒之内的值。
-errcode	number	错误码
-errmsg	string	错误信息
-errcode 的合法值
+    属性	类型	说明
+    access_token	string	获取到的凭证
+    expires_in	number	凭证有效时间，单位：秒。目前是7200秒之内的值。
+    errcode	number	错误码
+    errmsg	string	错误信息
+    errcode 的合法值
 
-值	说明	最低版本
--1	系统繁忙，此时请开发者稍候再试	
-0	请求成功	
-40001	AppSecret 错误或者 AppSecret 不属于这个小程序，请开发者确认 AppSecret 的正确性	
-40002	请确保 grant_type 字段值为 client_credential	
-40013	不合法的 AppID，请开发者检查 AppID 的正确性，避免异常字符，注意大小写	
-返回数据示例
-正常返回
+    值	说明	最低版本
+    -1	系统繁忙，此时请开发者稍候再试	
+    0	请求成功	
+    40001	AppSecret 错误或者 AppSecret 不属于这个小程序，请开发者确认 AppSecret 的正确性	
+    40002	请确保 grant_type 字段值为 client_credential	
+    40013	不合法的 AppID，请开发者检查 AppID 的正确性，避免异常字符，注意大小写	
+    返回数据示例
+    正常返回
 
-{"access_token":"ACCESS_TOKEN","expires_in":7200}
-错误时返回
+    {"access_token":"ACCESS_TOKEN","expires_in":7200}
+    错误时返回
 
-{"errcode":40013,"errmsg":"invalid appid"}
-access_token 的存储与更新
-access_token 的存储至少要保留 512 个字符空间；
-access_token 的有效期目前为 2 个小时，需定时刷新，重复获取将导致上次获取的 access_token 失效；
-建议开发者使用中控服务器统一获取和刷新 access_token，其他业务逻辑服务器所使用的 access_token 均来自于该中控服务器，不应该各自去刷新，否则容易造成冲突，导致 access_token 覆盖而影响业务；
-access_token 的有效期通过返回的 expires_in 来传达，目前是7200秒之内的值，中控服务器需要根据这个有效时间提前去刷新。在刷新过程中，中控服务器可对外继续输出的老 access_token，此时公众平台后台会保证在5分钟内，新老 access_token 都可用，这保证了第三方业务的平滑过渡；
-access_token 的有效时间可能会在未来有调整，所以中控服务器不仅需要内部定时主动刷新，还需要提供被动刷新 access_token 的接口，这样便于业务服务器在API调用获知 access_token 已超时的情况下，可以触发 access_token 的刷新流程。
-详情可参考微信公众平台文档 《获取access_token》
+    {"errcode":40013,"errmsg":"invalid appid"}
+    access_token 的存储与更新
+    access_token 的存储至少要保留 512 个字符空间；
+    access_token 的有效期目前为 2 个小时，需定时刷新，重复获取将导致上次获取的 access_token 失效；
+    建议开发者使用中控服务器统一获取和刷新 access_token，其他业务逻辑服务器所使用的 access_token 均来自于该中控服务器，不应该各自去刷新，否则容易造成冲突，导致 access_token 覆盖而影响业务；
+    access_token 的有效期通过返回的 expires_in 来传达，目前是7200秒之内的值，中控服务器需要根据这个有效时间提前去刷新。在刷新过程中，中控服务器可对外继续输出的老 access_token，此时公众平台后台会保证在5分钟内，新老 access_token 都可用，这保证了第三方业务的平滑过渡；
+    access_token 的有效时间可能会在未来有调整，所以中控服务器不仅需要内部定时主动刷新，还需要提供被动刷新 access_token 的接口，这样便于业务服务器在API调用获知 access_token 已超时的情况下，可以触发 access_token 的刷新流程。
+    详情可参考微信公众平台文档 《获取access_token》
 
-在线调试
-开发者可以使用网页调试工具调试该接口
+    在线调试
+    开发者可以使用网页调试工具调试该接口
+* 支付
+** api  
+*** 统一下单
+    URL地址：https://api.mch.weixin.qq.com/pay/unifiedorder
+    URL地址：https://api2.mch.weixin.qq.com/pay/unifiedorder(备用域名)见跨城冗灾方案
+    
 
+
+    #+begin_src xml
+      <xml>
+        <appid>wx2421b1c4370ec43b</appid>
+        <attach>支付测试</attach>
+        <body>JSAPI支付测试</body>
+        <mch_id>10000100</mch_id>
+        <detail><![CDATA[{ "goods_detail":[ { "goods_id":"iphone6s_16G", "wxpay_goods_id":"1001", "goods_name":"iPhone6s 16G", "quantity":1, "price":528800, "goods_category":"123456", "body":"苹果手机" }, { "goods_id":"iphone6s_32G", "wxpay_goods_id":"1002", "goods_name":"iPhone6s 32G", "quantity":1, "price":608800, "goods_category":"123789", "body":"苹果手机" } ] }]]></detail>
+        <nonce_str>1add1a30ac87aa2db72f57a2375d8fec</nonce_str>
+        <notify_url>http://wxpay.wxutil.com/pub_v2/pay/notify.v2.php</notify_url>
+        <openid>oUpF8uMuAJO_M2pxb1Q9zNjWeS6o</openid>
+        <out_trade_no>1415659990</out_trade_no>
+        <spbill_create_ip>14.23.150.211</spbill_create_ip>
+        <total_fee>1</total_fee>
+        <trade_type>JSAPI</trade_type>
+        <sign>0CB01533B8C1EF103065174F50BCA001</sign>
+      </xml>
+    #+end_src
+
+*** [[https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1][【微信支付】JSAPI支付开发者文档]]                                 :website:
+
+    | 字段名                 | 变量名             | 必填   | 类型           | 示例值                                   | 描述                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+    |------------------------+--------------------+--------+----------------+------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+    | 公众账号ID             | appid              | 是     | String(32)     | wxd678efh567hg6787                       | 微信支付分配的公众账号ID（企业号corpid即为此appId）                                                                                                                                                                                                                                                                                                                                                                                                                              |
+    | 商户号                 | mch_id             | 是     | String(32)     | 1230000109                               | 微信支付分配的商户号                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+    | 设备号                 | device_info        | 否     | String(32)     | 013467007045764                          | 自定义参数，可以为终端设备号(门店号或收银设备ID)，PC网页或公众号内支付可以传"WEB"                                                                                                                                                                                                                                                                                                                                                                                                |
+    | 随机字符串             | nonce_str          | 是     | String(32)     | 5K8264ILTKCH16CQ2502SI8ZNMTM67VS         | 随机字符串，长度要求在32位以内。推荐 [[file:?chapter=4_3][随机数生成算法]]                                                                                                                                                                                                                                                                                                                                                                                                       |
+    | 签名                   | sign               | 是     | String(32)     | C380BEC2BFD727A4B6845133519F3AD6         | 通过签名算法计算得出的签名值，详见 [[file:?chapter=4_3][签名生成算法]]                                                                                                                                                                                                                                                                                                                                                                                                           |
+    | 签名类型               | sign_type          | 否     | String(32)     | MD5                                      | 签名类型，默认为MD5，支持HMAC-SHA256和MD5。                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+    | 商品描述               | body               | 是     | String(128)    | 腾讯充值中心-QQ会员充值                  | 商品简单描述，该字段请按照规范传递，具体请见 [[file:?chapter=4_2][参数规定]]                                                                                                                                                                                                                                                                                                                                                                                                     |
+    | 商品详情               | detail             | 否     | String(6000)   |                                          | 商品详细描述，对于使用单品优惠的商户，该字段必须按照规范上传，详见 [[file:danpin.php?chapter=9_102&index=2][“单品优惠参数说明”]]                                                                                                                                                                                                                                                                                                                                                 |
+    | 附加数据               | attach             | 否     | String(127)    | 深圳分店                                 | 附加数据，在查询API和支付通知中原样返回，可作为自定义参数使用。                                                                                                                                                                                                                                                                                                                                                                                                                  |
+    | 商户订单号             | out_trade_no       | 是     | String(32)     | 20150806125346                           | 商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|* 且在同一个商户号下唯一。详见 [[file:?chapter=4_2][商户订单号]]                                                                                                                                                                                                                                                                                                                                                    |
+    | 标价币种               | fee_type           | 否     | String(16)     | CNY                                      | 符合ISO 4217标准的三位字母代码，默认人民币：CNY，详细列表请参见 [[file:?chapter=4_2][货币类型]]                                                                                                                                                                                                                                                                                                                                                                                  |
+    | 标价金额               | total_fee          | 是     | Int            | 88                                       | 订单总金额，单位为分，详见 [[file:?chapter=4_2][支付金额]]                                                                                                                                                                                                                                                                                                                                                                                                                       |
+    | 终端IP                 | spbill_create_ip   | 是     | String(64)     | 123.12.12.123                            | 支持IPV4和IPV6两种格式的IP地址。用户的客户端IP                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+    | 交易起始时间           | time_start         | 否     | String(14)     | 20091225091010                           | 订单生成时间，格式为yyyyMMddHHmmss，如2009年12月25日9点10分10秒表示为20091225091010。其他详见 [[file:?chapter=4_2][时间规则]]                                                                                                                                                                                                                                                                                                                                                    |
+    | 交易结束时间           | time_expire        | 否     | String(14)     | 20091227091010                           | 订单失效时间，格式为yyyyMMddHHmmss，如2009年12月27日9点10分10秒表示为20091227091010。订单失效时间是针对订单号而言的，由于在请求支付的时候有一个必传参数prepay_id只有两小时的有效期，所以在重入时间超过2小时的时候需要重新请求下单接口获取新的prepay_id。其他详见 [[file:?chapter=4_2][时间规则]]                                                                                                                                                                                 |
+    |                        |                    |        |                |                                          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+    |                        |                    |        |                |                                          | time_expire只能第一次下单传值，不允许二次修改，二次修改系统将报错。如用户支付失败后，需再次支付，需更换原订单号重新下单。\\                                                                                                                                                                                                                                                                                                                                                      |
+    |                        |                    |        |                |                                          | 建议：最短失效时间间隔大于1分钟                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+    | 订单优惠标记           | goods_tag          | 否     | String(32)     | WXG                                      | 订单优惠标记，使用代金券或立减优惠功能时需要的参数，说明详见 [[https://pay.weixin.qq.com/wiki/doc/api/tools/sp_coupon.php?chapter=12_7&index=3][代金券或立减优惠]]                                                                                                                                                                                                                                                                                                               |
+    | 通知地址               | notify_url         | 是     | String(256)    | http://www.weixin.qq.com/wxpay/pay.php   | 异步接收微信支付结果通知的回调地址，通知url必须为外网可访问的url，不能携带参数。                                                                                                                                                                                                                                                                                                                                                                                                 |
+    | 交易类型               | trade_type         | 是     | String(16)     | JSAPI                                    | JSAPI -JSAPI支付                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+    |                        |                    |        |                |                                          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+    |                        |                    |        |                |                                          | NATIVE -Native支付                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+    |                        |                    |        |                |                                          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+    |                        |                    |        |                |                                          | APP -APP支付                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+    |                        |                    |        |                |                                          |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+    |                        |                    |        |                |                                          | 说明详见 [[file:?chapter=4_2][参数规定]]                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+    | 商品ID                 | product_id         | 否     | String(32)     | 12235413214070356458058                  | trade_type=NATIVE时，此参数必传。此参数为二维码中包含的商品ID，商户自行定义。                                                                                                                                                                                                                                                                                                                                                                                                    |
+    | 指定支付方式           | limit_pay          | 否     | String(32)     | no_credit                                | 上传此参数no_credit--可限制用户不能使用信用卡支付                                                                                                                                                                                                                                                                                                                                                                                                                                |
+    | 用户标识               | openid             | 否     | String(128)    | oUpF8uMuAJO_M2pxb1Q9zNjWeS6o             | trade_type=JSAPI时（即JSAPI支付），此参数必传，此参数为微信用户在商户对应appid下的唯一标识。openid如何获取，可参考【 [[file:?chapter=4_4][获取openid]]】。企业号请使用【 [[http://qydev.weixin.qq.com/wiki/index.php?title=OAuth%E9%AA%8C%E8%AF%81%E6%8E%A5%E5%8F%A3][企业号OAuth2.0接口]]】获取企业号内成员userid，再调用【 [[http://qydev.weixin.qq.com/wiki/index.php?title=Userid%E4%B8%8Eopenid%E4%BA%92%E6%8D%A2%E6%8E%A5%E5%8F%A3][企业号userid转openid接口]]】进行转换   |
+    | 电子发票入口开放标识   | receipt            | 否     | String(8)      | Y                                        | Y，传入Y时，支付成功消息和支付详情页将出现开票入口。需要在微信支付商户平台或微信公众平台开通电子发票功能，传此字段才可生效                                                                                                                                                                                                                                                                                                                                                       |
+    | + 场景信息             | scene_info         | 否     | String(256)    | {"store_info" : {\\                      | 该字段常用于线下活动时的场景信息上报，支持上报实际门店信息，商户也可以按需求自己上报相关信息。该字段为JSON对象数据，对象格式为{"store_info":{"id": "门店ID","name": "名称","area_code": "编码","address": "地址" }} ，字段详细说明请点击行前的+展开                                                                                                                                                                                                                              |
+    |                        |                    |        |                | "id": "SZTX001",\\                       |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+    |                        |                    |        |                | "name": "腾大餐厅",\\                    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+    |                        |                    |        |                | "area_code": "440305",\\                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+    |                        |                    |        |                | "address": "科技园中一路腾讯大厦" }}     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+    | -门店id                | id                 | 是     | String(32)     | SZTX001                                  | 门店编号，由商户自定义                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+    | -门店名称              | name               | 否     | String(64)     | 腾讯大厦腾大餐厅                         | 门店名称 ，由商户自定义                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+    | -门店行政区划码        | area_code          | 否     | String(6)      | 440305                                   | 门店所在地行政区划码，详细见 [[/wiki/doc/api/download/store_adress.csv][《最新县及县以上行政区划代码》]]                                                                                                                                                                                                                                                                                                                                                                         |
+    | -门店详细地址          | address            | 否     | String(128)    | 科技园中一路腾讯大厦                     | 门店详细地址 ，由商户自定义                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+
+    举例如下：
+
+    \\
+       wx2421b1c4370ec43b\\
+       支付测试\\
+       
+
+    JSAPI支付测试
+
+    \\
+       10000100\\
+       { "goods_detail":[ { "goods_id":"iphone6s_16G", "wxpay_goods_id":"1001", "goods_name":"iPhone6s 16G", "quantity":1, "price":528800, "goods_category":"123456", "body":"苹果手机" }, { "goods_id":"iphone6s_32G", "wxpay_goods_id":"1002", "goods_name":"iPhone6s 32G", "quantity":1, "price":608800, "goods_category":"123789", "body":"苹果手机" } ] }\\
+       1add1a30ac87aa2db72f57a2375d8fec\\
+       http://wxpay.wxutil.com/pub_v2/pay/notify.v2.php\\
+       oUpF8uMuAJO_M2pxb1Q9zNjWeS6o\\
+       1415659990\\
+       14.23.150.211\\
+       1\\
+       JSAPI\\
+       0CB01533B8C1EF103065174F50BCA001\\
+
+    注：参数值用XML转义即可，CDATA标签用于说明数据不被XML解析器解析。
+
+*** 支付结果通知 (回退)
+**** Article
+
+     | 字段名             | 变量名               | 必填 | 类型        | 示例值                           |                               |
+     |--------------------+----------------------+------+-------------+----------------------------------+-------------------------------|
+     | 小程序ID           | appid                | 是   | String(32)  | wx8888888888888888               |                               |
+     | 商户号             | mch_id               | 是   | String(32)  | 1900000109                       |                               |
+     | 设备号             | device_info          | 否   | String(32)  | 013467007045764                  |                               |
+     | 随机字符串         | nonce_str            | 是   | String(32)  | 5K8264ILTKCH16CQ2502SI8ZNMTM67VS |                               |
+     | 签名               | sign                 | 是   | String(32)  | C380BEC2BFD727A4B6845133519F3AD6 |                               |
+     | 签名类型           | sign_type            | 否   | String(32)  | HMAC-SHA256                      |                               |
+     | 业务结果           | result_code          | 是   | String(16)  | SUCCESS                          |                               |
+     | 错误代码           | err_code             | 否   | String(32)  | SYSTEMERROR                      |                               |
+     | 错误代码描述       | err_code_des         | 否   | String(128) | 系统错误                         |                               |
+     | 用户标识           | openid               | 是   | String(128) | wxd930ea5d5a258f4f               |                               |
+     | 是否关注公众账号   | is_subscribe         | 是   | String(1)   | Y                                |                               |
+     | 交易类型           | trade_type           | 是   | String(16)  | JSAPI                            |                               |
+     | 付款银行           | bank_type            | 是   | String(32)  | CMC                              |                               |
+     | 订单金额           | total_fee            | 是   | Int         | 100                              |                               |
+     | 应结订单金额       | settlement_total_fee | 否   | Int         | 100                              |                               |
+     | 货币种类           | fee_type             | 否   | String(8)   | CNY                              |                               |
+     | 现金支付金额       | cash_fee             | 是   | Int         | 100                              |                               |
+     | 现金支付货币类型   | cash_fee_type        | 否   | String(16)  | CNY                              |                               |
+     | 总代金券金额       | coupon_fee           | 否   | Int         | 10                               |                               |
+     | 代金券使用数量     | coupon_count         | 否   | Int         | 1                                |                               |
+     | 代金券类型         | coupon_type_$n       | 否   | String      | CASH                             |                               |
+     |                    |                      |      |             |                                  |                               |
+     |                    |                      |      |             |                                  |                               |
+     |                    |                      |      |             |                                  |                               |
+     |                    |                      |      |             |                                  |                               |
+     |                    |                      |      |             |                                  |                               |
+     |                    |                      |      |             |                                  |                               |
+     |                    |                      |      |             |                                  |                               |
+     | 代金券ID           | coupon_id_$n         | 否   | String(20)  | 10000                            |                               |
+     |                    |                      |      |             |                                  |                               |
+     |                    |                      |      |             |                                  |                               |
+     | 单个代金券支付金额 | coupon_fee_$n        | 否   | Int         | 100                              |                               |
+     | 微信支付订单号     | transaction_id       | 是   | String(32)  | 1217752501201407033233368018     |                               |
+     | 商户订单号         | out_trade_no         | 是   | String(32)  | 1212321211201407033568112322     | *@ ，且在同一个商户号下唯一。 |
+     | 商家数据包         | attach               | 否   | String(128) | 123456                           |                               |
+     | 支付完成时间       | time_end             | 是   | String(14)  | 20141030133525                   |                               |
+
+     #+begin_src xml
+       <xml>
+         <appid><![CDATA[wx068a5e75284f3840]]></appid>
+         <attach><![CDATA[2]]></attach>
+         <bank_type><![CDATA[OTHERS]]></bank_type>
+         <cash_fee><![CDATA[1]]></cash_fee>
+         <fee_type><![CDATA[CNY]]></fee_type>
+         <is_subscribe><![CDATA[N]]></is_subscribe>
+         <mch_id><![CDATA[1345891001]]></mch_id>
+         <nonce_str><![CDATA[rot09e3bh93zzixgs33hzgyynk7brbnf]]></nonce_str>
+         <openid><![CDATA[oY18vs7BjseudymgLrwJhCApOeL0]]></openid>
+         <out_trade_no><![CDATA[2020090752545649]]></out_trade_no>
+         <result_code><![CDATA[SUCCESS]]></result_code>
+         <return_code><![CDATA[SUCCESS]]></return_code>
+         <sign><![CDATA[3FA6FD4C2D5579547B9E981AE98F550F8C6F60BF4243D96AE521CA53748C75C7]]></sign>
+         <time_end><![CDATA[20200907164738]]></time_end>
+         <total_fee>1</total_fee>
+         <trade_type><![CDATA[JSAPI]]></trade_type>
+         <transaction_id><![CDATA[4200000702202009079014259658]]></transaction_id>
+       </xml>
+     #+end_src
