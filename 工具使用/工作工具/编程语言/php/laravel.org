@@ -592,3 +592,202 @@ LaravelStudy/resources/views/layouts/default.blade.php
         @include('layouts._footer')
     </div>
     #+end_src
+
+
+*** [[https://www.cnblogs.com/ryanzheng/p/11787311.html][Laravel 控制器 Controller - Ryan_zheng - 博客园]]                 :website:
+
+  [2020-12-15 二 08:00]
+
+**** Article
+
+***** 一、控制器存在的意义
+
+
+   路由可以分发请求；\\
+   路由中还可以引入 html 页面；\\
+   我们可以在 route/web.php 中搞定一切了；\\
+   但是如果把业务逻辑都写入到路由中；\\
+   那路由将庞大的难以维护；\\
+   于是控制器就有了很明显的存在价值；\\
+   把业务逻辑写在控制器中；\\
+   路由只负责转发请求到指定的控制器即可；
+
+***** 二、创建控制器
+
+
+   我们可以直接使用 Laravel 内置的命令生成很多代码，例如控制器；
+
+   artisan 就是 laravel 的命令行接口；\\
+   就是根目录下的 artisan 文件；
+
+   下面来使用命令创建一个控制器
+
+   #+BEGIN_EXAMPLE
+       php artisan make:controller ArticleController
+   #+END_EXAMPLE
+
+   运行完成后会生成一个 app/Http/Controllers/ArticleController.php 文件
+
+   [[https://img2018.cnblogs.com/blog/1274475/201911/1274475-20191103150741353-558151505.png]]
+
+   接下来就需要在新创建的控制器中写各种方法，但是，只要在刚刚的命令中加入一个参数就可以自动生成一些方法
+
+   #+BEGIN_EXAMPLE
+       php artisan make:controller ArticleController --resource
+   #+END_EXAMPLE
+
+   如果直接运行的话是会报错的；\\
+   提示 =Controller already exists!=；\\
+   因为我们刚已经创建过 ArticleController了；\\
+   所以我们需要先把 app/Http/Controllers/ArticleController.php 文件删掉再运行；\\
+   那么会再次生成一个 app/Http/Controllers/ArticleController.php 文件；
+
+   #+BEGIN_EXAMPLE
+       <? php
+
+        namespace  App\Http\Controllers;
+
+       use Illuminate\Http\Request;
+
+        class  ArticleController extends Controller
+       {
+            /* *
+            * Display a listing of the resource.
+            *
+            * @return \Illuminate\Http\Response
+             */
+            public  function index()
+           {
+                //
+            }
+
+            /* *
+            * Show the form for creating a new resource.
+            *
+            * @return \Illuminate\Http\Response
+             */
+            public  function create()
+           {
+                //
+            }
+
+            /* *
+            * Store a newly created resource in storage.
+            *
+            * @param  \Illuminate\Http\Request  $request
+            * @return \Illuminate\Http\Response
+             */
+            public  function store(Request $request)
+           {
+                //
+            }
+
+            /* *
+            * Display the specified resource.
+            *
+            * @param  int  $id
+            * @return \Illuminate\Http\Response
+             */
+            public  function show($id)
+           {
+                //
+            }
+
+            /* *
+            * Show the form for editing the specified resource.
+            *
+            * @param  int  $id
+            * @return \Illuminate\Http\Response
+             */
+            public  function edit($id)
+           {
+                //
+            }
+
+            /* *
+            * Update the specified resource in storage.
+            *
+            * @param  \Illuminate\Http\Request  $request
+            * @param  int  $id
+            * @return \Illuminate\Http\Response
+             */
+            public  function update(Request $request, $id)
+           {
+                //
+            }
+
+            /* *
+            * Remove the specified resource from storage.
+            *
+            * @param  int  $id
+            * @return \Illuminate\Http\Response
+             */
+            public  function destroy($id)
+           {
+                //
+            }
+       }
+   #+END_EXAMPLE
+
+   增删改查的方法都定义好了；\\
+   连注释都给写好了；
+
+   这其实是按 RESTful 规范生成的格式；\\
+   除了 GET POST 它还包含了一大堆请求方式；\\
+   PUT 、 PATCH 、 DELETE 、HEAD 、OPTIONS；\\
+   也就是说 Route:: 后面还可以跟上面这些方法；
+
+   #+BEGIN_EXAMPLE
+       Route::put( ' article ' , function () {
+            return view( ' article ' );
+       });
+   #+END_EXAMPLE
+
+***** 三、什么是 artisan
+
+
+   laravel 是一个现代化框架；\\
+   它对命令行有着非常好的支持；\\
+   artisan 就是 laravel 的命令行接口；\\
+   就是根目录下的 artisan 文件；
+
+   [[https://img2018.cnblogs.com/blog/1274475/201911/1274475-20191103151146167-259086979.png]]
+
+   我们可以把它理解为命令行级的单入口文件；\\
+   跟 index.php 文件的使命一样；\\
+   所有的命令行都从它这走；\\
+   所以如果想使用命令行；\\
+   就需要 cd 到项目的根目录下；\\
+   或者手动指定一长串路径；
+
+   [[https://img2018.cnblogs.com/blog/1274475/201911/1274475-20191103151237562-203157895.png]]
+
+   在命令行中以 php 开头意思是用 php 来执行某个文件；\\
+   =php index.php= 意思就是使用 php 的命令行模式运行 index.php ；\\
+   命令行下是可以不需要文件后缀就能识别的；
+
+   你可以创建个 test 的文本文件，然后在里面写一些php代码，使用命令行 php test 也是可以正常运行的；\\
+   所以根目录下的 artisan 文件并没有带上 .php ；
+
+   命令行主要有两个方向的应用；\\
+   第一是生成文件；\\
+   第二是执行任务；
+
+***** 四、路由绑定控制器方法
+
+
+   在上面生成的控制器方法 index 中写入如下代码
+
+   [[https://img2018.cnblogs.com/blog/1274475/201911/1274475-20191103151854968-774233953.png]]
+
+   然后写一个路由绑定这个控制器方法，在 routes/web.php 中添加如下代码
+
+   #+BEGIN_EXAMPLE
+       Route:: get( ' article/index ',  ' ArticleController@index ');
+   #+END_EXAMPLE
+
+   打开链接
+
+   http://127.0.0.1:8000/article/index
+
+   [[https://img2018.cnblogs.com/blog/1274475/201911/1274475-20191103152129415-1166370204.png]]
