@@ -8,45 +8,32 @@
 ** 基础功能
 *** 安装   
 **** 安装 Laravel installer
-     Laravel 利用 Composer 来管理依赖。所以，在使用 Laravel 之前，请确保你的机器上安装了 Composer。
-
-     通过 Laravel 安装器
-     首先，使用 Composer 下载 Laravel 安装程序：
-
      composer global require "laravel/installer"
-     确保 $HOME/.composer/vendor/bin 目录（或你的操作系统的等效目录）已经放在你的环境变量 $PATH 中，以便系统可以找到 laravel 的可执行文件。
-     #+begin_quote
-     我本地的在 ~/.config/composer/vendor/bin 目录下
-     #+end_quote
-
-     安装之后， laravel new 命令会在你指定的目录中创建一个新的 Laravel 项目。例如，laravel new blog 命令会创建一个名为 blog 的目录，其中包含所有已经安装好的 Laravel 的依赖项：
-     laravel new blog
+     添加环境变量 $HOME/.composer/vendor/bin
+     
+    创建Laravel 项目 laravel new blog
 **** 通过 Composer 创建项目
-     或者，你还可以通过在终端中运行 create-project 命令来安装 Laravel：
-
      composer create-project --prefer-dist laravel/laravel blog "5.5.*"
-     本地开发服务器
-     如果你在本地安装了 PHP，并且想使用 PHP 内置的开发服务器来为你的应用程序提供服务，那就使用 Artisan 命令 serve。这个命令会在 http://localhost:8000 上启动开发服务器：
-
-     php artisan serve
-     当然，对于本地开发来说，最好的选择还是 Homestead 和 Valet。
+**** 启动应用
+     php artisan serve 或  apache (推荐)
+     
+     对于本地开发来说，最好的选择还是 Homestead 和 Valet。
 
 *** 配置 
     - 配置文件都在 */config* 目录里面
     - 目录权限 */storage* 和 */bootstrap/cache* 目录都要可写
     - APP_KEY 设置随机秘钥 php artisan key: generate
-    - 运行 php artisan serve 或者 apache (推荐)
 
     - app.php 配置   
       - app.php aliases 段可定义别名
       - 'debug' => env('APP_DEBUG', true) 调试模式
       - 'log' => env('APP_LOG', 'daily') 日志记录 ingle, daily, syslog, errorlog
       - 'log_level' => env('APP_LOG_LEVEL', 'error') 错误等级 debug, info, notice, warning, error, critical, alert, emergency
-*** 手工路由
-    别的框架都不用你管路由，这个 *laravel* 却要你手动配置路由。
-    
+*** 路由
     /routes/web.php 路由配置文件
-
+    
+    use App\Http\Controllers\UserController;
+    Route::get('/user', [UserController::class, 'index']);
 **** 基本结构
      #+begin_src php
        Route::get($url, $callback);
@@ -72,11 +59,9 @@
 
 *** 控制器
     - app/Http/Controllers  控制器定义目录
-    
 **** 控制器结构
      #+begin_src php
        <?php
-
        namespace App\Http\Controllers;
 
        use Illuminate\Http\Request;
@@ -380,26 +365,8 @@ app/Http/Middleware/VerifyCsrfToken.php  白名单
   #+end_src
 
 ** 教程
-*** 新建路由和控制器
- laravel 的路由配置文件是：LaravelStudy/routes/web.php
-
- 我们重新定义路由：
-
- #+begin_src php
- Route::get('/', 'SiteController@index');
- Route::get('login', 'SiteController@login');
- Route::get('register', 'SiteController@register');
- #+end_src
- 路由指向的控制器是 SiteController，需要生成控制器
-
- 终端执行：
-
- ☁  laravelStudy [master] ⚡ php artisan make:controller SiteController
- Controller created successfully.
- laravel 自动为我们生成了控制器：LaravelStudy/app/Http/Controllers/SiteController.php
-
 *** 渲染页面
- 在 LaravelStudy/app/Http/Controllers/SiteController.php 添加以下代码：
+app/Http/Controllers/SiteController.php 添加以下代码：
 
      #+begin_src php
      public function index()
@@ -494,9 +461,11 @@ app/Http/Middleware/VerifyCsrfToken.php  白名单
 
 #+begin_src php
   LaravelStudy/resources/views/site/index.blade.php
+
   @extends('layouts.default')
   @section('content')
   @stop
+    
 #+end_src
   LaravelStudy/resources/views/site/login.blade.php
 
@@ -515,14 +484,7 @@ app/Http/Middleware/VerifyCsrfToken.php  白名单
         @section('content')
         @stop
   #+end_src
-  LaravelStudy/resources/views/site/login.blade.php
-
-  #+begin_src php
-    @extends('layouts.default')
-        @section('title', '登录')
-        @section('content')
-
-  #+end_src
+ #+end_src
   LaravelStudy/resources/views/site/register.blade.php
 
   #+begin_src php
@@ -552,6 +514,7 @@ app/Http/Middleware/VerifyCsrfToken.php  白名单
     </ul>
 </nav>
 #+end_src
+
 头部导航中的 a 标签链接使用了命名路由，可以理解为给路由起了个别名，这个便于扩展，
 比如，现在登录业务对应的是 SiteController@login，以后可能随着业务的改变，要改为
 UserControoler@login，如果是以硬编码的形式写路由，要修改就很麻烦。
@@ -594,200 +557,3 @@ LaravelStudy/resources/views/layouts/default.blade.php
     #+end_src
 
 
-*** [[https://www.cnblogs.com/ryanzheng/p/11787311.html][Laravel 控制器 Controller - Ryan_zheng - 博客园]]                 :website:
-
-  [2020-12-15 二 08:00]
-
-**** Article
-
-***** 一、控制器存在的意义
-
-
-   路由可以分发请求；\\
-   路由中还可以引入 html 页面；\\
-   我们可以在 route/web.php 中搞定一切了；\\
-   但是如果把业务逻辑都写入到路由中；\\
-   那路由将庞大的难以维护；\\
-   于是控制器就有了很明显的存在价值；\\
-   把业务逻辑写在控制器中；\\
-   路由只负责转发请求到指定的控制器即可；
-
-***** 二、创建控制器
-
-
-   我们可以直接使用 Laravel 内置的命令生成很多代码，例如控制器；
-
-   artisan 就是 laravel 的命令行接口；\\
-   就是根目录下的 artisan 文件；
-
-   下面来使用命令创建一个控制器
-
-   #+BEGIN_EXAMPLE
-       php artisan make:controller ArticleController
-   #+END_EXAMPLE
-
-   运行完成后会生成一个 app/Http/Controllers/ArticleController.php 文件
-
-   [[https://img2018.cnblogs.com/blog/1274475/201911/1274475-20191103150741353-558151505.png]]
-
-   接下来就需要在新创建的控制器中写各种方法，但是，只要在刚刚的命令中加入一个参数就可以自动生成一些方法
-
-   #+BEGIN_EXAMPLE
-       php artisan make:controller ArticleController --resource
-   #+END_EXAMPLE
-
-   如果直接运行的话是会报错的；\\
-   提示 =Controller already exists!=；\\
-   因为我们刚已经创建过 ArticleController了；\\
-   所以我们需要先把 app/Http/Controllers/ArticleController.php 文件删掉再运行；\\
-   那么会再次生成一个 app/Http/Controllers/ArticleController.php 文件；
-
-   #+BEGIN_EXAMPLE
-       <? php
-
-        namespace  App\Http\Controllers;
-
-       use Illuminate\Http\Request;
-
-        class  ArticleController extends Controller
-       {
-            /* *
-            * Display a listing of the resource.
-            *
-            * @return \Illuminate\Http\Response
-             */
-            public  function index()
-           {
-                //
-            }
-
-            /* *
-            * Show the form for creating a new resource.
-            *
-            * @return \Illuminate\Http\Response
-             */
-            public  function create()
-           {
-                //
-            }
-
-            /* *
-            * Store a newly created resource in storage.
-            *
-            * @param  \Illuminate\Http\Request  $request
-            * @return \Illuminate\Http\Response
-             */
-            public  function store(Request $request)
-           {
-                //
-            }
-
-            /* *
-            * Display the specified resource.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-             */
-            public  function show($id)
-           {
-                //
-            }
-
-            /* *
-            * Show the form for editing the specified resource.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-             */
-            public  function edit($id)
-           {
-                //
-            }
-
-            /* *
-            * Update the specified resource in storage.
-            *
-            * @param  \Illuminate\Http\Request  $request
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-             */
-            public  function update(Request $request, $id)
-           {
-                //
-            }
-
-            /* *
-            * Remove the specified resource from storage.
-            *
-            * @param  int  $id
-            * @return \Illuminate\Http\Response
-             */
-            public  function destroy($id)
-           {
-                //
-            }
-       }
-   #+END_EXAMPLE
-
-   增删改查的方法都定义好了；\\
-   连注释都给写好了；
-
-   这其实是按 RESTful 规范生成的格式；\\
-   除了 GET POST 它还包含了一大堆请求方式；\\
-   PUT 、 PATCH 、 DELETE 、HEAD 、OPTIONS；\\
-   也就是说 Route:: 后面还可以跟上面这些方法；
-
-   #+BEGIN_EXAMPLE
-       Route::put( ' article ' , function () {
-            return view( ' article ' );
-       });
-   #+END_EXAMPLE
-
-***** 三、什么是 artisan
-
-
-   laravel 是一个现代化框架；\\
-   它对命令行有着非常好的支持；\\
-   artisan 就是 laravel 的命令行接口；\\
-   就是根目录下的 artisan 文件；
-
-   [[https://img2018.cnblogs.com/blog/1274475/201911/1274475-20191103151146167-259086979.png]]
-
-   我们可以把它理解为命令行级的单入口文件；\\
-   跟 index.php 文件的使命一样；\\
-   所有的命令行都从它这走；\\
-   所以如果想使用命令行；\\
-   就需要 cd 到项目的根目录下；\\
-   或者手动指定一长串路径；
-
-   [[https://img2018.cnblogs.com/blog/1274475/201911/1274475-20191103151237562-203157895.png]]
-
-   在命令行中以 php 开头意思是用 php 来执行某个文件；\\
-   =php index.php= 意思就是使用 php 的命令行模式运行 index.php ；\\
-   命令行下是可以不需要文件后缀就能识别的；
-
-   你可以创建个 test 的文本文件，然后在里面写一些php代码，使用命令行 php test 也是可以正常运行的；\\
-   所以根目录下的 artisan 文件并没有带上 .php ；
-
-   命令行主要有两个方向的应用；\\
-   第一是生成文件；\\
-   第二是执行任务；
-
-***** 四、路由绑定控制器方法
-
-
-   在上面生成的控制器方法 index 中写入如下代码
-
-   [[https://img2018.cnblogs.com/blog/1274475/201911/1274475-20191103151854968-774233953.png]]
-
-   然后写一个路由绑定这个控制器方法，在 routes/web.php 中添加如下代码
-
-   #+BEGIN_EXAMPLE
-       Route:: get( ' article/index ',  ' ArticleController@index ');
-   #+END_EXAMPLE
-
-   打开链接
-
-   http://127.0.0.1:8000/article/index
-
-   [[https://img2018.cnblogs.com/blog/1274475/201911/1274475-20191103152129415-1166370204.png]]

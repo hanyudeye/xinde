@@ -1,9 +1,374 @@
 
 Java 的api 做的又多又烂
+* 使用java命令执行class文件
+** 一、运行class文件
+ 执行带main方法的class文件，命令行为：
+ java <CLASS文件名>
+ 注意：CLASS文件名不要带文件后缀.class
 
+ 例如：
+
+ java Test
+ 
+ 如果执行的class文件是带包的，即在类文件中使用了：package <包名>
+
+ 那应该在包的基路径下执行，命令行为：
+ 
+ java <包名>.CLASS文件名
+ 
+ 例如：PackageTest.java中，其包名为：com.ee2ee.test，对应的语句为：
+ 
+ package com.ee2ee.test;
+ PackageTest.java及编译后的class文件PackageTest.class的存放目录如下：
+ 
+ 要运行PackageTest.class，应在classes目录下执行：
+
+ java com.ee2ee.test.PackageTest map 131
+ 
+ 主类后面的就是要穿的参数。
+** 二、运行jar文件中的class
+    原理和运行class文件一样，只需加上参数-cp <jar文件名>即可。需要注意的一点是：jar包要放在刚才所说的classes文件夹下（你
+    终端现在执行命令时所在的目录下），要不然提示找不到主类。
+ 
+    例如：执行test.jar中的类com.ee2ee.test.PackageTest，命令行如下：
+    
+    java -cp test.jar com.ee2ee.test.PackageTest
 * java
 ** 打印数组  
    Arrays.toString(ARR);
 
    多维数组
    Arrays.deepToString()
+   
+* java打jar包的几种方式详解
+  经常会头疼于一个jar包是如何制作的，包括maven的打包方式，springboot的打jar包的原
+理，jar包稍稍有错误就会完全无法运行。在网上折腾了很久终于有些思路和步骤，在这里
+做个笔记
+
+** 一、制作只含有字节码文件的jar包
+   我们先来看只含有字节码文件，即只含有class文件的jar包怎么制作，这是最简单的形式
+ 
+*** 1、最简单的jar包——直接输出hello
+    最终生成的jar包结构
+
+    #+begin_src
+  META-INF
+  Hello.class
+    #+end_src
+
+  方法步骤
+**** （1）用记事本写一个Hello.java的文件
+
+     #+begin_src java
+       class Hello{
+           public static void main(String[] agrs){
+               System.out.println("hello");
+           }
+       }
+     #+end_src
+   
+**** （2）用命令行进入到该目录下，编译这个文件
+     javac Hello.java 
+**** （3）将编译后的Hello.class文件打成jar包
+     jar -cvf hello.jar Hello.class 
+     
+     c表示要创建一个新的jar包，v表示创建的过程中在控制台输出创建过程的一些信息，f表示给生成的jar包命名
+   
+**** （4）运行jar包
+     java -jar hello.jar  这时会报如下错误  hello.jar中没有主清单属性 
+
+     添加Main-Class属性
+
+     用压缩软件打开hello.jar，会发现里面多了一个META-INF文件夹，里面有一个MENIFEST.MF的文件，用记事本打开
+
+     #+begin_src 
+    Manifest-Version: 1.0
+    Created-By: 1.8.0_121 (Oracle Corporation)
+     #+end_src
+    
+     在第三行的位置写入 Main-Class: Hello （注意冒号后面有一个空格，整个文件最后有一行空行），保存
+
+     再次运行 java -jar hello.jar ，此时成功在控制台看到  hello ，成功
+
+*** 2、含有两个类的jar包——通过调用输出hello
+    最终生成的jar包结构
+
+    #+begin_example
+    META-INF
+    Tom.class
+    Hello.class
+    #+end_example
+
+    方法步骤
+
+    
+**** （1）用记事本写一个Hello.java和一个Tom.java的文件
+
+    　　目的是让Hello调用Tom的speak方法
+
+     #+begin_src java
+     class Hello{
+         public static void main(String[] agrs){
+             Tom.speak();
+         }
+     }
+     class Tom{
+         public static void speak(){
+             System.out.println("hello");
+         }
+     }
+     #+end_src
+     
+**** （2）编译： javac Hello.java 
+
+    　　此时Hello.java和Tom.java同时被编译，因为Hello中调用了Tom，在编译Hello的过程中发现还需要编译Tom
+
+    
+**** （3）打jar包，这次我们换一种方式直接定义Main-Class。
+     #+begin_src 
+     Manifest-Version: 1.0
+     Created-By: 1.8.0_121 (Oracle Corporation)
+     Main-Class: Hello
+     #+end_src
+      
+    事先准备好上述的MENIFEST.MF文件，并存放在META-INF文件夹下，此时打jar包的命令如下
+
+     jar -cvfm hello.jar META-INF\MENIFEST.MF Hello.class Tom.class 
+
+    该命令表示用第一个文件当做MENIFEST.MF文件，hello.jar作为名称，将Hello.class和Tom.class打成jar包。其中多了一个参数m，表示要定义MENIFEST文件
+**** （4）运行 java -jar hello.jar ，此时成功在控制台看到  hello ，成功
+*** 3、有目录结构的jar包——通过引包并调用输出hello
+
+    最终生成的jar包结构
+
+    META-INF
+    com
+    　Tom.class
+    Hello.class
+
+    　　我们将上一个稍稍变化一下，将Tom这个类放在com包下，源文件目录结构变成
+
+    　　　　com
+    　　　　　Tom.java
+    　　　　Hello.java
+
+    　　同时Tom.java需要在第一行声明自己的包名
+
+    package com;
+    　　Hello.java需要引入Tom这个类，同样要在第一行进行import
+
+    import com.Tom;
+    方法步骤
+
+    （1）编译Hello.java
+
+    （2）打jar包，同样准备好MENIFEST文件
+
+    　　 jar -cvfm hello.jar META-INF\MENIFEST.MF Hello.class com 
+
+    　　注意，最后一个com表示把com这个文件夹下的所有文件都打进jar包
+
+    （3）运行 java -jar hello.jar  ，此时成功在控制台看到  hello ，成功
+
+    （4）优化过程
+
+    　　我们注意到，com包下是有Tom.java源文件的，也被打进了jar包里，这样不太好，能不能优化一下javac命令，使所有的编译后文件编译到另一个隔离的地方呢，答案是可以的。
+
+    　　在编译Hello.java时，先新建一个target文件夹。然后我们用如下命令
+
+    　　　　 javac Hello.java -d target 
+
+    　　该命令表示，将所有编译后的文件，都放到target文件夹下。
+
+    　　将META-INF文件夹也复制到target目录下，进入这个目录，输入如下命令
+
+    　　　　 jar -cvfm hello.jar META-INF\MENIFEST.MF * 
+
+    　　注意最后一个位置变成了*，表示把当前目录下所有文件都打在jar包里
+
+    　　优化完毕
+
+    至此，我们可以总结出，制作一个只含有class字节码文件的jar包，以下命令足以
+
+    javac 要编译的文件 -d 目标位置
+
+    jar -cvfm 命名 MENIFEST文件 要打包的文件1 要打包的文件2
+
+ 
+** 二、制作含有jar文件的jar包
+   我们将场景稍稍变得复杂一点，看看jar包中需要引入其他jar包的场景
+
+ 
+*** 1、两个jar包间相互调用——调用jar外的jar输出hello
+
+  最终生成的jar包结构
+
+  hello.jar
+  tom.jar
+
+  方法步骤
+
+  准备：将上述一中写好的那个不带包的tom.jar复制过来（目的是调用里面的speak方法）
+
+  （1）编写一个Hello.java并将其编译成Hello.class，注意，由于Hello里面引用了Tom类的speak方法，因此在打jar包时应使用-cp参数，将tom.jar包引入
+
+  　　  javac -cp tom.jar Hello.class 
+
+  　　这里的 -cp 表示 -classpath，指的是把tom.jar加入classpath路径下
+
+  （2）将hello.class达成jar包，步骤略
+
+  （3）此时运行 java -jar 发现报错  ClassNotFoundException：Tom 
+
+  　　原因很简单，引入jar包需要在MENIFEST.MF文件中配置一个新属性：Class-Path，路径指向你需要的所有jar包
+
+  　　现在MENIFEST.MF这个文件应该变成
+
+  1 Manifest-Version: 1.0
+  2 Created-By: 1.8.0_121 (Oracle Corporation)
+  3 Main-Class: Hello
+  4 Class-Path: Tom.jar
+  5  
+  （4）好了，修改这个文件，再次运行，发现成功在控制台输出 hello 
+
+  tips：引入多个jar包，中间用空格隔开
+
+  至此，我们可以总结出，命令变化如下
+
+  javac -cp xxx.jar 要编译的文件 -d 目标位置
+
+  jar -cvfm 命名 MENIFEST文件 要打包的文件1 要打包的文件2
+
+*** 2、jar包中含有jar包——调用jar内的jar输出hello
+
+  最终生成的jar包结构
+
+  META-INF
+  Hello.class
+  tom.jar
+
+  　　当项目中我们把所需要的第三方jar包也打进了我们自己的jar包中时，如果仍然按照上述操作方式，会报找不到Class异常。原因就是jar引用不到放在自己内部的jar包。
+
+  　　这种情况的具体实现细节比较复杂，我会在后一篇介绍一些知名的java应用是如何加载jar包的，来说明这种情况。实现方式的简单说明，可以先参考这篇文章：
+
+  http://www.cnblogs.com/adolfmc/archive/2012/10/07/2713562.html
+
+ 
+** 三、制作含有资源文件的jar包
+
+***  1、资源文件在jar包内部——读取jar内的文件
+
+ 最终生成的jar包结构
+
+ META-INF
+ Hello.class
+ text.txt
+
+  方法步骤
+
+ 复制代码
+ 复制代码
+  1 import java.io.InputStream;
+  2 import java.io.BufferedReader;
+  3 import java.io.InputStreamReader;
+  4 
+  5 class Hello{
+  6     public static void main(String[] args) throws Exception{
+  7         Hello hello = new Hello();
+  8         InputStream is = hello.getClass().getResourceAsStream("text.txt");
+  9         print(is);
+ 10     }
+ 11     
+ 12     /**
+ 13      * 读取文件，输出里面的内容，通用方法
+ 14      */
+ 15     public static void print(InputStream inputStream) throws Exception {
+ 16         InputStreamReader reader = new InputStreamReader(inputStream, "utf-8");
+ 17         BufferedReader br = new BufferedReader(reader);
+ 18         String s = "";
+ 19         while ((s = br.readLine()) != null)
+ 20             System.out.println(s);
+ 21         inputStream.close();
+ 22     }
+ 23 }
+ 复制代码
+ 复制代码
+ 
+
+ 
+*** 2、资源文件在另一个jar包内部——读取另一个jar内的文件
+
+ 最终生成的jar包结构
+
+ hello.jar
+ resource.jar
+ 　text.txt
+
+  方法步骤
+
+ 同1一样，只不过需要在MENIFEST文件中将resource.jar加入classpath
+
+ 复制代码
+ 复制代码
+  1 import java.io.InputStream;
+  2 import java.io.BufferedReader;
+  3 import java.io.InputStreamReader;
+  4 
+  5 class Hello{
+  6     public static void main(String[] args) throws Exception{
+  7         Hello hello = new Hello();
+  8         InputStream is = hello.getClass().getResourceAsStream("text.txt");
+  9         print(is);
+ 10     }
+ 11     
+ 12     /**
+ 13      * 读取文件，输出里面的内容，通用方法
+ 14      */
+ 15     public static void print(InputStream inputStream) throws Exception {
+ 16         InputStreamReader reader = new InputStreamReader(inputStream, "utf-8");
+ 17         BufferedReader br = new BufferedReader(reader);
+ 18         String s = "";
+ 19         while ((s = br.readLine()) != null)
+ 20             System.out.println(s);
+ 21         inputStream.close();
+ 22     }
+ 23 }
+ 复制代码
+ 复制代码
+ 
+
+*** 3、资源文件在jar包外部——读取jar外的文件
+
+ 最终生成的jar包结构
+
+ hello.jar
+ text.txt
+
+  方法步骤
+
+ 复制代码
+ 复制代码
+  1 import java.io.InputStream;
+  2 import java.io.BufferedReader;
+  3 import java.io.InputStreamReader;
+  4 import java.io.FileInputStream;
+  5 
+  6 class Hello{
+  7     public static void main(String[] args) throws Exception{
+  8         Hello hello = new Hello();
+  9         InputStream is = new FileInputStream("text.txt");
+ 10         print(is);
+ 11     }
+ 12     
+ 13     /**
+ 14      * 读取文件，输出里面的内容，通用方法
+ 15      */
+ 16     public static void print(InputStream inputStream) throws Exception {
+ 17         InputStreamReader reader = new InputStreamReader(inputStream, "utf-8");
+ 18         BufferedReader br = new BufferedReader(reader);
+ 19         String s = "";
+ 20         while ((s = br.readLine()) != null)
+ 21             System.out.println(s);
+ 22         inputStream.close();
+ 23     }
+ 24 }

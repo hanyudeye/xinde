@@ -5159,3 +5159,131 @@
          <transaction_id><![CDATA[4200000702202009079014259658]]></transaction_id>
        </xml>
      #+end_src
+*  微信小程序下拉刷新/上拉加载更多
+** Article
+查看文档，在用page()函数注册页面的时候有这样的两个对象参数用户判断用户 *在最顶部下拉*和 *到达最底部，*
+
+在小程序里，用户顶部下拉是默认禁止的，我们需要把他设置为启用，在app.json中的设置对所有页面有效，在单独页面设置则对当前页面有效；
+
+看一下json文件
+
+#+BEGIN_QUOTE
+  *"enablePullDownRefresh": true,*
+#+END_QUOTE
+
+注意这里的true是布尔型而不是字符；
+
+每个页面生成的时候已经默认为我们设置了前面提到的 *onPullDownRefresh*函数和 *onReachBottom*函数
+
+*** 下拉刷新
+ page为全局变量，用在在后面的加载请求，这里要跟后端大哥讨论好请求；
+
+ #+BEGIN_QUOTE
+   // 下拉刷新
+
+     onPullDownRefresh: function () {
+       // 显示顶部刷新图标
+
+       wx.showNavigationBarLoading();
+
+       var that = this;
+
+       wx.request({
+
+         url: 'https://xxx/?page=0',
+
+         method: "GET",
+
+         header: {
+
+           'content-type': 'application/text'
+
+         },
+
+         success: function (res) {
+
+           that.setData({
+
+             moment: res.data.data
+
+           });
+
+           // 设置数组元素
+
+           that.setData({
+
+             moment: that.data.moment
+
+           });
+
+           console.log(that.data.moment);
+
+           // 隐藏导航栏加载框
+
+           wx.hideNavigationBarLoading();
+
+           // 停止下拉动作
+
+           wx.stopPullDownRefresh();
+
+         }
+
+       })
+
+     },
+ #+END_QUOTE
+*** 上拉加载更多
+
+    #+BEGIN_QUOTE
+    /**
+      * 页面上拉触底事件的处理函数
+      */
+
+      onReachBottom: function () {
+        var that = this;
+        // 显示加载图标
+    wx.showLoading({
+    title: '玩命加载中',
+        })
+
+        // 页数+1
+        page = page + 1;
+   
+       wx.request({
+         url: 'https://xxx/?page=' + page,
+         method: "GET",
+         // 请求头部
+         header: {
+           'content-type': 'application/text'
+         },
+
+         success: function (res) {
+           // 回调函数
+
+           var moment_list = that.data.moment;
+
+           for (var i = 0; i < res.data.data.length; i++) {
+
+             moment_list.push(res.data.data[i]);
+
+           }
+
+           // 设置数据
+
+           that.setData({
+
+             moment: that.data.moment
+
+           })
+
+           // 隐藏加载框
+
+           wx.hideLoading();
+
+         }
+
+       })
+
+     },
+ #+END_QUOTE
+

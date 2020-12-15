@@ -2,4 +2,11 @@
       url: "/pages/auth/auth",
     });
  
-    
+  An API incompatibility was encountered   
+  
+        //查找我邀请的人
+        $users = $this->model
+            ->field("id,nickname")
+            ->where("SUBSTRING_INDEX(pid,',',1) =" . $ucode. " or SUBSTRING_INDEX(pid,',',-1)=".$ucode." and del=0")->select()
+            ->toArray();
+
