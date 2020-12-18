@@ -1,0 +1,146 @@
+* Flatpak简介
+Flatpak是一个用于在Linux上分发桌面应用程序的框架。 它由具有长期工作在Linux桌面的开发人员创建，并作为独立的开源项目运行。
+
+目标受众
+Flatpak可以被各种桌面应用程序使用，旨在尽可能与应用程序的构建方式无关。 也对编程语言，构建工具，工具包或框架不作要求。
+
+虽然Flatpak只能在Linux上运行，但它可以被针对其他操作系统的应用程序以及特定于Linux的应用程序使用。 应用程序可以是开源的或专有的（尽管某些分发服务，如 Flathub ，在这方面可能有限制）。
+
+Flatpak提出的唯一技术要求是应用程序遵循少量的Freedesktop标准，以实现桌面集成（参考 要求与规范）。
+
+使用Flatpak的理由
+与其他在Linux上分发应用程序的方法相比，Flatpak具有一些主要优势。 首先，Flatpak允许在几乎任何Linux发行版上安装和运行单个应用程序构建。 它还可以与 Flathub 结合使用，Flathub是一种中心化服务，用于在所有发行版上分发应用程序。 这使得应用开发者可以从一个地方瞄准整个Linux桌面市场。
+
+Flatpak还为主要Linux桌面提供本机集成，以便用户可以通过现有的桌面环境和工具轻松浏览，安装，运行和使用Flatpak应用程序。
+
+其他开发者可以得益的地方：
+
+向前兼容：相同的Flatpak可以在同一发行版的不同版本上运行，包括尚未发布的版本。 这不需要应用程序开发人员进行任何更改或管理。
+维护平台：称为运行时，它们包含依赖项集合，可供应用程序使用，并且可以从应用程序开发中完成大量工作。
+捆绑：这允许应用程序开发人员将几乎任何依赖项或库作为其应用程序的一部分。 这样可以完全控制用于构建应用程序的软件。
+Consistent application environments: because these are the same across devices, applications perform as intended. This also makes it easier to identify bugs and to do testing.
+最后，虽然Flatpak确实为分发应用程序提供了中心化服务，但它还允许分布式托管和分发，以便应用开发者或下游可以托管他们自己的应用和应用仓库。
+* 使用Flatpak
+这个页面介绍flatpak CLI，解释必要的技术约定和常用的命令。
+
+最终用户不应该使用Flatpak CLI，因为Flatpak在有图形界面的软件管理器中非常容易使用。当然咯，如果他们更喜欢使用命令行的话，也可以使用Flatpak CLI。
+
+flatpak命令
+flatpak is the primary Flatpak command, to which specific commands are appended. For example, the command to install something is flatpak install and the command to uninstall is flatpak uninstall.
+
+标识符
+Flatpak通过唯一的三元组标识应用和运行时，如 com.company.App 。地址的最后一段是对象名，前面的部分标识了开发者，所以同一个开发者可以开发多个应用，如 com.company.App1 和 com.company.App2 。
+
+标识符三元组
+一般来说，使用ID来引用一个对象是高效的。然而，有时候，我们需要指定对象的版本或者架构。例如，有些应用可能会提供稳定版和测试版，这种情况下，指定版本是很必要的。
+
+Flatpak可以使用对象标识符三元组来指定架构和版本。格式是 name/architecture/branch ，如 com.company.App/i386/stable 。（分支是指向同一个版本的术语。这里也可以参考git里的概念）三元组的第一部分是ID，第二部分是架构，第三部分是分支。
+
+标识符三元组也可以通过使用空白来仅指定架构或分支。如 com.company.App//stable 仅指定了分支， com.company.App/i386// 仅指定了架构。
+
+如果架构或者分支需要指定，Flatpak CLI会有相应的反馈的。
+
+System vs user
+Flatpak命令既可以在系统级运行，也可以在用户级运行。安装在系统级的应用和运行时可以给当前系统的所有用户使用。安装在用户级的应用和运行时仅安装的用户可以使用。
+
+上述原则也可以用于仓库。系统级的仓库可以给所有的用户使用，用户级仓库仅给安装的用户使用。
+
+Flatpak命令默认运行在系统级。如果你安装应用是为了日常使用，我们推荐坚持默认行为。
+
+然而，运行用户级命令对测试和开发很有用，因为用户级安装的对象不会给系统上其他的用户使用。如果使用用户级命令，可以使用 `` –user `` 选项，这个选项可以和大多数 `` flatpak `` 命令组合使用。
+
+用户级运行命令和系统级运行命令行为一致。
+
+基本命令
+这本部分涵盖了安装，运行和管理Flatpak应用的基本命令。运行 flatpak --help 查看所有的Flatpak命令，或者参阅 Flatpak命令行参考文档。
+
+列出远程仓库
+运行下面的命令，列出在系统中已经配置好远程仓库：
+
+$ flatpak remotes
+列出已经添加了的远程仓库。列表表明每一个远程仓库是用户级的还是系统级的。
+
+添加远程仓库
+最方便的方式添加远程仓库是使用 `` .flatpakrepo `` 文件，它包含远程仓库的信息和GPG秘钥：
+
+$ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+Here, flathub is the local name that is given to the remote. The URL points to the remote’s .flatpakrepo file. --if-not-exists stops the command from producing an error if the remote already exists.
+
+移除远程仓库
+运行下面的命令以移除远程仓库：
+
+$ flatpak remote-delete flathub
+In this case, flathub is the remote’s local name.
+
+搜索
+使用 `` search `` 命令查找远程仓库中的应用。如：
+
+$ flatpak search gimp
+搜索会返回匹配搜索词的应用。每一个搜索结果包含应用ID和应用所在的仓库。在这个例子中，搜索词是 `` gimp `` 。
+
+注解
+
+Flatpak 0.11.1以前，在搜索之前需要手动更新远程仓库的元数据。可以通过运行 `` flatpak update `` 或 `` flatpak update –appstream `` 完成。
+
+安装应用
+运行下面的命令安装应用：
+
+$ flatpak install flathub org.gimp.GIMP
+Here, flathub is the name of the remote the application is to be installed from, and org.gimp.GIMP is the ID of the application.
+
+有时，应用需要特定的运行时，运行时需要在安装应用前安装。
+
+将要安装的应用的详细信息可以由 `` .flatpakref `` 文件提供， `` .flatpakref `` 文件可以是本地的，也可以是远程的。运行下面的命令指定 `` .flatpakref `` ，而不是手动指定远程仓库和应用ID。
+
+$ flatpak install https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref
+如果 `` .flatpakref `` 文件指定从远程仓库中安装的应用已经添加过，在应用安装前，将会被问到，哪一个应用应该添加。
+
+运行应用
+应用安装后，可以使用 `` run `` 命令和应用ID运行应用：
+
+$ flatpak run org.gimp.GIMP
+更新
+运行下面的命令更新所有的应用和运行时到最新版本：
+
+$ flatpak update
+列出安装的应用
+运行下面的命令，列出安装的应用和运行时：
+
+$ flatpak list
+运行下面的命令仅列出安装的应用：
+
+$ flatpak list --app
+移除应用
+运行下面的命令移除应用：
+
+$ flatpak uninstall org.gimp.GIMP
+* Flatpak原理
+本页面简单介绍了Flatpak内部工作原理。虽然仅仅是使用Flatpak没必要熟悉这些，但是有些人可会会觉得这很有趣。从用户和应用开发者的角度来看，了解Flatpak的体系结构还有助于更好地理解它的工作方式和原因。
+
+应用级Git
+Flatpak建立在一种名为`OSTree <https://ostree.readthedocs.io/en/latest/manual/introduction/>`的技术之上，该技术受Git版本控制系统的影响，非常类似Git。与Git一样，OSTree允许跟踪版本化数据并在不同的仓库间分发。不同的是，Git为跟踪源文件设计，OSTree为跟踪二进制文件和其他大数据设计。
+
+在内部，Flatpak的工作方式与Git类似，许多Flatpak概念与Git概念类似。 与Git一样，Flatpak使用仓库来存储数据，并跟踪版本之间的差异。
+
+使用Flatpak，每个应用程序，运行时和扩展都是仓库中的一个分支。 标识符三元组，例如 `` com.company.App/i386/stable `` 是对该分支的引用。 Flatpak构建过程的输出是一个文件目录，它提交给其中一个分支。
+
+使用Flatpak安装应用时，会将其从远程仓库中拉入到本地仓库中的新分支。 然后生成从文件系统指向仓库的链接（这些链接是快速解析和高效利用的磁盘空间`硬链接 <https://en.wikipedia.org/wiki/Hard_link>`）。 换句话说，安装的每个应用程序都存储在本地版本控制仓库中，然后映射到本地文件系统。
+
+因此，版本跟踪是Flatpak架构的核心部分，这使得更新软件非常高效。 版本控制也使回滚成为可能，因此如果需要，可以很容易地回滚到以前的版本。
+
+将应用程序存储在本地OSTree存储库中具有其他优点。 例如，它允许对存储在磁盘上的文件去重，所以属于多个应用程序（或运行时）的同一文件仅存储一次。
+
+基础技术
+Flatpak使用了许多已经存在的技术。如：
+
+The bubblewrap utility from Project Atomic, which lets unprivileged users set up and run containers, using kernel features such as:
+Cgroups
+Namespaces
+Bind mounts
+Seccomp rules
+`systemd <https://www.freedesktop.org/wiki/Software/systemd/>`为沙盒启动cgroups
+D-Bus <https://www.freedesktop.org/wiki/Software/dbus/>，一种成熟的为应用程序提供高级API的方法
+`Open Container Initiative <https://www.opencontainers.org/>`的OCI格式，作为单文件包的便捷传输格式
+`OSTree <https://ostree.readthedocs.io/en/latest/>`系统，版本化和分布式文件系统树
+`Appstream <https://www.freedesktop.org/software/appstream/docs/>`元数据，允许Flatpak应用在软件中心友好的展示
+

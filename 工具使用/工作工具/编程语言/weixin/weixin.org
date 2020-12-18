@@ -5287,3 +5287,114 @@
      },
  #+END_QUOTE
 
+* [[https://blog.csdn.net/sxs1995/article/details/80091924][微信小程序回到顶部的两种方式_sxs1995的博客-CSDN博客_小程序回到顶部]] :website:
+
+[2020-12-17 四 13:37]
+
+** Article
+
+一,使用view形式的回到顶部\\
+HTML：
+<image src='../../img/button-top.png' class='goTop' hidden='{{!floorstatus}}' bindtap="goTop"></image>
+
+CSS：
+
+#+BEGIN_EXAMPLE
+     /* 返回顶部 */
+    .goTop{
+      height: 80rpx;
+      width: 80rpx;
+      position: fixed;
+      bottom: 50rpx;
+      background: rgba(0,0,0,.3);
+      right: 30rpx;
+      border-radius: 50%;
+    }
+#+END_EXAMPLE
+
+JS：
+
+#+BEGIN_EXAMPLE
+       // 获取滚动条当前位置
+      onPageScroll: function (e) {
+        console.log(e)
+        if (e.scrollTop > 100) {
+          this.setData({
+            floorstatus: true
+          });
+        } else {
+          this.setData({
+            floorstatus: false
+          });
+        }
+      },
+
+      //回到顶部
+      goTop: function (e) {  // 一键回到顶部
+        if (wx.pageScrollTo) {
+          wx.pageScrollTo({
+            scrollTop: 0
+          })
+        } else {
+          wx.showModal({
+            title: '提示',
+            content: '当前微信版本过低，无法使用该功能，请升级到最新微信版本后重试。'
+          })
+        }
+      },
+#+END_EXAMPLE
+
+二.使用scroll-view形式的回到顶部
+
+#+BEGIN_EXAMPLE
+ <scroll-view scroll-y scroll-top='{{topNum}}' bindscroll="scrolltoupper">
+<image src='../../img/button-top.png' class='goTop' hidden='{{!floorstatus}}' bindtap="goTop"></image>    
+#+END_EXAMPLE
+
+CSS：
+
+#+BEGIN_EXAMPLE
+     /* 返回顶部 */
+    .goTop{
+      height: 80rpx;
+      width: 80rpx;
+      position: fixed;
+      bottom: 50rpx;
+      background: rgba(0,0,0,.3);
+      right: 30rpx;
+      border-radius: 50%;
+    }
+#+END_EXAMPLE
+
+JS：
+
+#+BEGIN_EXAMPLE
+       data:{
+        topNum: 0
+      }
+      
+      // 获取滚动条当前位置
+      scrolltoupper:function(e){
+        console.log(e)
+        let t =  e.detail.scrollTop;
+        if (t > 100 && !this.data.floorstatus) {
+            // 避免重复setData
+            this.setData({
+               floorstatus: true
+            });
+        } 
+        
+        if(t <= 100 && this.data.floorstatus){
+          this.setData({
+            floorstatus: false
+          });
+        }
+      },
+
+      //回到顶部
+      goTop: function (e) {  // 一键回到顶部
+        this.setData({
+          topNum: this.data.topNum = 0
+        });
+      },
+#+END_EXAMPLE
