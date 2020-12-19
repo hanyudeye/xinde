@@ -1,0 +1,264 @@
+* [[https://www.liaoxuefeng.com/wiki/1022910821149312/1023022423592576][Canvas - 廖雪峰的官方网站]] :website:
+** Article
+   Canvas是HTML5新增的组件，它就像一块幕布，可以用JavaScript在上面绘制各种图表、动画等。
+
+   没有Canvas的年代，绘图只能借助Flash插件实现，页面不得不用JavaScript和Flash进行交互。有了Canvas，我们就再也不需要Flash了，直接使用JavaScript完成绘制。
+   
+一个Canvas定义了一个指定尺寸的矩形框，在这个范围内我们可以随意绘制：
+
+#+BEGIN_EXAMPLE
+<canvas id="test-canvas" width="300" height="200"></canvas>    
+#+END_EXAMPLE
+
+由于浏览器对HTML5标准支持不一致，所以，通常在 ==
+
+内部添加一些说明性HTML代码，如果浏览器支持Canvas，它将忽略 ==
+
+内部的HTML，如果浏览器不支持Canvas，它将显示 ==
+
+内部的HTML：
+
+#+BEGIN_EXAMPLE
+<canvas id="test-stock" width="300" height="200">
+<p>Current Price: 25.51</p>
+</canvas>
+#+END_EXAMPLE
+
+在使用Canvas前，用 =canvas.getContext=来测试浏览器是否支持Canvas：
+
+#+BEGIN_EXAMPLE
+<!-- HTML代码 -->
+<canvas id="test-canvas" width="200" heigth="100">
+    <p>你的浏览器不支持Canvas</p>
+</canvas>
+#+END_EXAMPLE
+
+你的浏览器不支持Canvas
+
+#+BEGIN_EXAMPLE
+     'use strict';
+    ----
+    var canvas = document.getElementById('test-canvas');
+    if (canvas.getContext) {
+        console.log('你的浏览器支持Canvas!');
+    } else {
+        console.log('你的浏览器不支持Canvas!');
+    }
+#+END_EXAMPLE
+
+=getContext('2d')=方法让我们拿到一个 =CanvasRenderingContext2D=对象，所有的绘图操作都需要通过这个对象完成。
+
+#+BEGIN_EXAMPLE
+     var ctx = canvas.getContext('2d');
+#+END_EXAMPLE
+
+如果需要绘制3D怎么办？HTML5还有一个WebGL规范，允许在Canvas中绘制3D图形：
+
+#+BEGIN_EXAMPLE
+     gl = canvas.getContext("webgl");
+#+END_EXAMPLE
+
+本节我们只专注于绘制2D图形。
+
+*** 绘制形状
+我们可以在Canvas上绘制各种形状。在绘制前，我们需要先了解一下Canvas的坐标系统：
+
+Canvas的坐标以左上角为原点，水平向右为X轴，垂直向下为Y轴，以像素为单位，所以每个点都是非负整数。
+
+=CanvasRenderingContext2D=对象有若干方法来绘制图形：
+
+#+BEGIN_EXAMPLE
+'use strict';
+
+defer
+    var canvas = document.getElementById('test-shape-canvas'),
+        ctx = canvas.getContext('2d');
+        
+    ctx.clearRect(0, 0, 200, 200); // 擦除(0,0)位置大小为200x200的矩形，擦除的意思是把该区域变为透明
+    ctx.fillStyle = '#dddddd'; // 设置颜色
+    ctx.fillRect(10, 10, 130, 130); // 把(10,10)位置大小为130x130的矩形涂色
+    // 利用Path绘制复杂路径:
+    var path=new Path2D();
+    path.arc(75, 75, 50, 0, Math.PI*2, true);
+    path.moveTo(110,75);
+    path.arc(75, 75, 35, 0, Math.PI, false);
+    path.moveTo(65, 65);
+    path.arc(60, 65, 5, 0, Math.PI*2, true);
+    path.moveTo(95, 65);
+    path.arc(90, 65, 5, 0, Math.PI*2, true);
+    ctx.strokeStyle = '#0000ff';
+    ctx.stroke(path);
+#+END_EXAMPLE
+
+*** 绘制文本
+
+
+绘制文本就是在指定的位置输出文本，可以设置文本的字体、样式、阴影等，与CSS完全一致：
+
+#+BEGIN_EXAMPLE
+     'use strict';
+
+    var
+        canvas = document.getElementById('test-text-canvas'),
+        ctx = canvas.getContext('2d');
+    ----
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    ctx.shadowBlur = 2;
+    ctx.shadowColor = '#666666';
+    ctx.font = '24px Arial';
+    ctx.fillStyle = '#333333';
+    ctx.fillText('带阴影的文字', 20, 40);
+#+END_EXAMPLE
+
+Canvas除了能绘制基本的形状和文本，还可以实现动画、缩放、各种滤镜和像素转换等高级操作。如果要实现非常复杂的操作，考虑以下优化方案：
+
+- 通过创建一个不可见的Canvas来绘图，然后将最终绘制结果复制到页面的可见Canvas中；
+
+- 尽量使用整数坐标而不是浮点数；
+
+- 可以创建多个重叠的Canvas绘制不同的层，而不是在一个Canvas中绘制非常复杂的图；
+
+- 背景图片如果不变可以直接用 ==标签并放到最底层。
+
+*** 练习
+
+
+请根据从163获取的JSON数据绘制最近30个交易日的K线图，数据已处理为包含一组对象的数组：
+
+#+BEGIN_EXAMPLE
+    window.drawStock = function (data) {
+        var
+            canvas = document.getElementById('stock-canvas'),
+            MAX_X = canvas.width,
+            MAX_Y = canvas.height,
+            ctx = canvas.getContext('2d');
+
+        var low = data.reduce(function (prev, x) {
+            return x.low < prev.low ? x : prev;
+        });
+        var high = data.reduce(function (prev, x) {
+            return x.high > prev.high ? x : prev;
+        });
+
+        var chg = high.high - low.low;
+
+        // index range:
+        var lowest = Math.floor(low.low - chg * 0.1);
+        var highest = Math.floor(high.high + chg * 0.1 + 1);
+
+        var calcY = function (idx) {
+            return MAX_Y * (highest - idx) / (highest - lowest);
+        };
+
+        var drawAtX = function (x, k) {
+            var
+                tmp,
+                y1 = calcY(k.open),
+                y2 = calcY(k.close);
+            if (y1 > y2) {
+                tmp = y1;
+                y1 = y2;
+                y2 = tmp;
+            }
+            ctx.fillStyle = (k.open > k.close) ? '#00ff00' : '#ff0000';
+            ctx.fillRect(x, calcY(k.high), 1, calcY(k.low) - calcY(k.high));
+            ctx.fillRect(x-2, y1, 5, y2 - y1);
+        };
+
+        ctx.clearRect(0, 0, MAX_X, MAX_Y);
+
+        ctx.font = '12px serif';
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#000000';
+        ctx.fillText(String(Math.floor(high.high)), 40, 15);
+        ctx.fillText(String(Math.floor(low.low)), 40, MAX_Y - 20);
+
+        var i, x;
+        for (i=0; i
+      'use strict';
+
+    window.loadStockData = function (r) {
+        var
+            NUMS = 30,
+            data = r.data;
+        if (data.length > NUMS) {
+            data = data.slice(data.length - NUMS);
+        }
+        data = data.map(function (x) {
+            return {
+                date: x[0],
+                open: x[1],
+                close: x[2],
+                high: x[3],
+                low: x[4],
+                vol: x[5],
+                change: x[6]
+            };
+        });
+        window.drawStock(data);
+    }
+
+    window.drawStock = function (data) {
+    ----
+        var
+            canvas = document.getElementById('stock-canvas'),
+            width = canvas.width,
+            height = canvas.height,
+            ctx = canvas.getContext('2d');
+        console.log(JSON.stringify(data[0])); // {"date":"20150602","open":4844.7,"close":4910.53,"high":4911.57,"low":4797.55,"vol":62374809900,"change":1.69}
+        ctx.clearRect(0, 0, width, height);
+        ctx.fillText('Test Canvas', 10, 10);
+    ----
+    };
+
+    // 加载最近30个交易日的K线图数据:
+    var js = document.createElement('script');
+    js.src = 'http://img1.money.126.net/data/hs/kline/day/history/2015/0000001.json?callback=loadStockData&t=' + Date.now();
+    document.getElementsByTagName('head')[0].appendChild(js);
+#+END_EXAMPLE
+
+[[#0][下载为图片]]
+
+* canvas 画虚线
+#+begin_src js
+function drawScreen() {
+
+    ctx.setLineDash([5,15]);
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#f36';
+
+    ctx.beginPath();
+    ctx.moveTo(10, 100);
+    ctx.lineTo(400, 100);
+    ctx.stroke();
+}
+#+end_src
+
+* 圆角矩形
+要在Canvas中绘制一个矩形，使用strokeRect或fillRect函数即可。
+
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+ 
+ctx.strokeRect(50, 100, 100, 50);
+ctx.fillRect(200, 100, 150, 100);
+将得到下面的图形：
+
+
+要想绘制出圆角矩形，好办，将ctx的lineJoin属性设置为round即可。
+
+ctx.lineJoin = "round";
+ctx.strokeRect(50, 100, 100, 50);
+ctx.fillRect(200, 100, 150, 100);
+
+这是圆角矩形吗？没错，只不过角度太小了。将ctx的lineWidth属性增大一些，效果就出来了。
+
+ctx.lineJoin = "round";
+ctx.lineWidth = 20;
+ 
+ctx.strokeRect(50, 100, 100, 50);
+ctx.fillRect(200, 100, 150, 100);
+
+左边的圆角效果出来了，但代价是必须指定线条宽度，以让ctx有空间来填充该线条，才能有圆角效果。若想要更大的圆角，虽可增加lineWidth，但将得到更大的黑框，更丑了。而右边的填充图形，却根本没有圆角效果出现。

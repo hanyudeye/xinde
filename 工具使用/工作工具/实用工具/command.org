@@ -12,6 +12,17 @@
 ** 帮助软件和命令行辅助
 *** 软件参考 man
 *** 查看命令历史 history
+*** 管道和重定向
+**** 管道 |
+**** 输出重定向和错误重定向 
+***** 输出>
+***** 追加>>
+***** 错误输出 2>
+**** 输入重定向 <
+**** 多重定向 tee
+*** 别名
+**** alias
+**** unalias
 ** 日期时间软件    
 *** 日历 cal 
     cal [ -jy ] [ 月份 ] [ 年份 ]
@@ -31,97 +42,85 @@
      如果使用了[TIME]参数， 那么在关机流程开始前 5 分钟将会创建
      /run/nologin 文件， 以禁止用户登录。
 *** 退出登录 logout
-** 实用程序
-*** 文件和文件夹操作
-**** 创建/删除目录
-***** mkdir
-***** rmdir
-**** 创建/删除文件
-***** touch
-***** rm
-**** 切换和查看当前工作目录 
-***** ls
+** 文件和文件夹操作
+*** 创建/删除目录
+**** mkdir
+**** rmdir
+*** 创建/删除文件
+**** touch
+**** rm
+*** 切换和查看当前工作目录 
+**** ls
 - R 递归展开
 - a 显示隐藏文件
 - d 仅显示目录
 - t/r 排序 (正向，反向)
 
-***** cd
-**** 查看文件内容
-***** cat (正看)
-***** tac (倒看)
-***** head
-***** tail
-***** more
-***** less
-***** rev (反向)
-***** od
-**** 拷贝/移动文件
-***** cp
-***** mv
-**** 文件重命名 
-***** rename
-**** 查找文件和查找内容 
-***** find
+**** cd
+*** 查看文件内容
+**** cat (正看)
+**** tac (倒看)
+**** head
+**** tail
+**** more
+**** less
+**** rev (反向)
+**** od
+*** 拷贝/移动文件
+**** cp
+**** mv
+*** 文件重命名 
+**** rename
+*** 查找文件和查找内容 
+**** find
 
-      - 扩展查找  find . -type f -exec ls -l {} \;
-      - 大小查找 -size n[bckw] block/ char/ kb/word
+     - 扩展查找  find . -type f -exec ls -l {} \;
+     - 大小查找 -size n[bckw] block/ char/ kb/word
 
 
-***** grep
-**** 创建链接和查看链接 
-***** ln
-***** readlink
-**** 压缩/解压缩和归档/解归档
-***** gzip
-***** unar
-      中文不会乱码
+**** grep
+*** 创建链接和查看链接 
+**** ln
+**** readlink
+*** 压缩/解压缩和归档/解归档
+**** gzip
+**** unar
+     中文不会乱码
     
-***** tar
-**** 将标准输入转成命令行参数 
-***** xargs
-**** 其他相关工具
-***** 对内容排序 sort
-***** 拆分文件 split
-***** 判断文件类型 file
-***** 统计文件行数、单词数、字节数 wc
-***** 去掉相邻重复内容 uniq
-***** 替换指定内容为新内容 tr
-*****  剪切/黏贴内容 cut paste
-***** 编码转换 iconv
-*** 管道和重定向
-**** 管道 |
-**** 输出重定向和错误重定向 
-***** 输出>
-***** 追加>>
-***** 错误输出 2>
-**** 输入重定向 <
-**** 多重定向 tee
-*** 别名
-**** alias
-**** unalias
-*** 文本处理
-**** 字符流编辑器  sed
-     用法：
-     sed 's,A,B,' FILE   把 FILE 中的 A 用 B 替换
+**** tar
+*** 将标准输入转成命令行参数 
+**** xargs
+*** 其他相关工具
+**** 对内容排序 sort
+**** 拆分文件 split
+**** 判断文件类型 file
+**** 统计文件行数、单词数、字节数 wc
+**** 去掉相邻重复内容 uniq
+**** 替换指定内容为新内容 tr
+****  剪切/黏贴内容 cut paste
+**** 编码转换 iconv
+** 文本处理
+*** 字符流编辑器  sed
+    用法：
+    sed 's,A,B,' FILE   把 FILE 中的 A 用 B 替换
      
-     - a 追加
-     - i 插入
-     - d 删除
-     - s 替换
+    - a 追加
+    - i 插入
+    - d 删除
+    - s 替换
 
-     例子
-     #+begin_src shell
-       [root ~]# sed '2,4d' fruit.txt
-     #+end_src
-**** 模式匹配和处理语言 awk
-     处理表格
+    例子
+    #+begin_src shell
+      [root ~]# sed '2,4d' fruit.txt
+    #+end_src
+*** 模式匹配和处理语言 awk
+    处理表格
 
-     例子
-     #+begin_src shell
-       [root ~]# awk '{print $2}' fruit2.txt 
-       [root ~]# awk '{if($3 >= 300) {print $0}}' fruit2.txt 
-     #+end_src
+    例子
+    #+begin_src shell
+      [root ~]# awk '{print $2}' fruit2.txt 
+      [root ~]# awk '{if($3 >= 300) {print $0}}' fruit2.txt 
+    #+end_src
 ** 用户管理程序
 *** 用户登录信息程序
 **** w
@@ -259,10 +258,8 @@
 
 ** 系统信息程序
 *** 查看系统和主机名 
-**** uname 
-     显示系统信息
-**** hostname
-     显示或设置系统的主机名
+**** uname 显示系统信息
+**** hostname 显示或设置系统的主机名
 *** 系统启动异常诊断 dmesg
 *** 查看系统活动信息 sar 
     - `-A` - 显示所有设备（CPU、内存、磁盘）的运行状况。
@@ -281,9 +278,7 @@
 ** 工具软件    
 *** pdf
 **** 合并 pdf  
-     #+begin_src sh
        pdfunite *.pdf all.pdf
-     #+end_src
 *** 图片处理
 **** 压缩转换 convert
 *** wireshark
@@ -305,8 +300,7 @@
      特别说明----http 中 http.request 表示请求头中的第一行（如 GET index.jsp HTTP/1.1），http.response 表示响应头中的第一行（如 HTTP/1.1 200 OK），其他头部都用 http.header_name 形式。
      筛选 url 中包含.php 的 http 数据包----http.request.uri contains ".php"
      筛选内容包含 username 的 http 数据包----http contains "username"
-*** feh 
-    : 图片显示，设置背景，截图
+*** feh 图片显示，设置背景，截图
     设置背景 feh --bg-scale
 *** Pandoc
     : 文档转换
@@ -332,4 +326,3 @@
     - autoclean - 清除旧的的已下载的归档文件 
     - check - 检验是否有损坏的依赖 
     - sudo add-apt-repository --remove ppa:whatever/ppa (移除源)
-** xwindow
