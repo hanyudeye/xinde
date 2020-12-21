@@ -452,3 +452,13 @@ git pull --allow-unrelated-histories    (忽略版本不同造成的影响)
  使用git log --diff-filter=D --summary获取所有删除文件的承诺和删除文件的承诺；
 使用git checkout $commit~1 path/to/file.ext恢复删除的文件。
 其中，$commit是您在步骤1中发现的承诺值，例如e4cf499627。
+** Permission denied (publickey). fatal: 无法读取远程仓库
+   ssh-add "你的 id-rsa 文件地址" 注意这里ssh-add后面填的是私钥地址
+
+    ssh git@github.com 验证是不是添加成功
+** 有时候你GitHub仓库初始化时候带了Readme或其他文件，推送之前需要先git pull 拉下来，会报“ * branch master  -> FETCH_HEAD  fatal: 拒绝合并无关的历史”的错误，解决方法是在git pull时加上–allow-unrelated-histories，如下：
+git pull origin master --allow-unrelated-histories
+** Error connecting to agent: No such file or directory (当 ssh-add 添加私钥的时候)
+使用 ssh-agent bash
+
+或者 eval "$(ssh-agent)"  (推荐)
