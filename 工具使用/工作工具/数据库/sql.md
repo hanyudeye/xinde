@@ -1,3 +1,222 @@
+# 基础教程
+
+* [SELECT - 从数据库中提取数据](#SELECT)
+* [INSERT INTO - 向数据库中插入新数据](#INSERT_INTO)
+* [UPDATE - 更新数据库中的数据](#UPDATE)
+* [DELETE - 从数据库中删除数据](#DELETE)
+* [CREATE - 创建新数据库、表和索引](#CREATE)
+* [DROP - 撤销数据库、表和索引](#DROP)
+* [ALTER - 已有的表中添加、删除或修改列](#ALTER)
+
+
+
+注意事项:
+* SQL 对大小写不敏感：SELECT 与 select 是相同的。
+* 某些数据库系统要求在每条 SQL 语句的末端使用分号。分号是在数据库系统中分隔每条 SQL 语句的标准方法，这样就可以在对服务器的相同请求中执行一条以上的 SQL 语句。
+
+
+
+
+## SELECT
+
+SELECT 语句用于从数据库中选取数据。结果被存储在一个结果表中，称为结果集。
+
+SQL SELECT 语法
+```sql
+SELECT column_name,column_name FROM table_name;
+SELECT * FROM table_name;
+```
+
+
+
+### ORDER_BY
+
+ORDER BY 关键字用于对结果集按照一个列或者多个列进行排序。
+
+ORDER BY 关键字默认按照升序对记录进行排序。如果需要按照降序对记录进行排序，您可以使用 DESC 关键字。
+
+```sql
+SELECT column_name,column_name FROM table_name ORDER BY column_name,column_name ASC|DESC; #desc 或者 asc 只对它紧跟着的第一个列名有效，其他不受影响，仍然是默认的升序。
+```
+
+
+### SELECT DISTINCT
+
+DISTINCT 关键词用于返回唯一不同的值。
+
+```sql
+SELECT DISTINCT column_name,column_name FROM table_name;
+```
+
+
+### SELECT TOP
+
+SELECT TOP 子句用于规定要返回的记录的数目。
+
+**MySQL 支持 LIMIT 语句来选取指定的条数数据， Oracle 可以使用 ROWNUM 来选取。**
+
+
+```sql
+# SQL Serve
+SELECT TOP number|percent column_name(s) FROM table_name;
+
+# MySQL
+SELECT column_name(s) FROM table_name LIMIT number;
+
+# Oracle
+SELECT column_name(s) FROM table_name WHERE ROWNUM <= number;
+```
+
+
+### SELECT AS
+
+
+```sql
+SELECT column_name AS alias_name FROM table_name;
+SELECT column_name(s) FROM table_name AS alias_name;
+```
+
+
+### SELECT INTO
+
+SELECT INTO 语句从一个表复制数据，然后把数据插入到另一个新表中。
+
+**MySQL 数据库不支持 SELECT ... INTO 语句，但支持 INSERT INTO ... SELECT**
+
+```sql
+SELECT * INTO newtable [IN externaldb] FROM table1; 
+SELECT column_name(s) INTO newtable [IN externaldb] FROM table1;
+```
+
+## INSERT_INTO
+
+INSERT INTO 语句用于向表中插入新记录。
+
+```sql
+INSERT INTO table_name VALUES (value1,value2,value3,...);
+INSERT INTO table_name (column1,column2,column3,...) VALUES (value1,value2,value3,...);
+```
+
+### INSERT INTO SELECT
+
+INSERT INTO SELECT 语句从一个表复制数据，然后把数据插入到一个已存在的表中。目标表中任何已存在的行都不会受影响。
+
+```sql
+INSERT INTO table2 SELECT * FROM table1;
+INSERT INTO table2 (column_name(s)) SELECT column_name(s) FROM table1;
+```
+
+
+## UPDATE
+
+UPDATE 语句用于更新表中已存在的记录。
+
+```sql
+UPDATE table_name SET column1=value1,column2=value2,... WHERE some_column=some_value;#set sql_safe_updates=1强制要求带where
+```
+
+
+## DELETE
+DELETE 语句用于删除表中的行。
+
+```sql
+DELETE FROM table_name WHERE some_column=some_value; # Delete 删除指定数据 Truncate删除所有数据 Drop删除整个表
+
+# 删除所有数据
+DELETE FROM table_name;
+DELETE * FROM table_name;
+```
+
+
+## CREATE
+
+
+### CREATE DATABASE 
+CREATE DATABASE 语句用于创建数据库。
+
+```sql
+CREATE DATABASE dbname;
+```
+
+### CREATE TABLE
+CREATE TABLE 语句用于创建数据库中的表。
+
+表由行和列组成，每个表都必须有个表名。
+
+```sql
+CREATE TABLE table_name
+(
+column_name1 data_type(size),
+column_name2 data_type(size),
+column_name3 data_type(size),
+....
+);
+```
+
+* column_name 参数规定表中列的名称。
+* data_type 参数规定列的数据类型（例如 varchar、integer、decimal、date 等等）。
+* size 参数规定表中列的最大长度。
+
+
+### CREATE INDEX
+
+CREATE INDEX 语句用于在表中创建索引。
+
+在不读取整个表的情况下，索引使数据库应用程序可以更快地查找数据。
+
+**更新一个包含索引的表需要比更新一个没有索引的表花费更多的时间，这是由于索引本身也需要更新。因此，理想的做法是仅仅在常常被搜索的列（以及表）上面创建索引。**
+
+
+```sql
+CREATE INDEX index_name ON table_name (column_name)
+CREATE UNIQUE INDEX index_name ON table_name (column_name) # 创建唯一的索引
+```
+
+
+## DROP
+
+### DROP INDEX
+
+```sql
+DROP INDEX index_name ON table_name #MS Access
+DROP INDEX table_name.index_name #MS SQL Server
+DROP INDEX index_name #DB2/Oracle
+ALTER TABLE table_name DROP INDEX index_name #MySQL
+```
+
+### DROP TABLE
+
+```sql
+DROP TABLE table_name
+TRUNCATE TABLE table_name # 仅删除表内的数据
+```
+
+### DROP DATABASE
+
+```sql
+DROP DATABASE database_name
+```
+
+
+## ALTER
+
+ALTER TABLE 语句用于在已有的表中添加、删除或修改列。
+
+```sql
+# 在表中添加列
+ALTER TABLE table_name ADD column_name datatype
+
+# 删除表中的列
+ALTER TABLE table_name DROP COLUMN column_name
+
+# 改变表中列的数据类型
+ALTER TABLE table_name ALTER COLUMN column_name datatype # SQL Server / MS Access
+ALTER TABLE table_name MODIFY COLUMN column_name datatype # My SQL / Oracle
+ALTER TABLE table_name MODIFY column_name datatype # Oracle 10G 之后版本
+
+
+
+
 # 高级教程
 
 
@@ -675,3 +894,256 @@ binary object	|	OLE Object Memo	|	Binary (fixed up to 8K) Varbinary (<8K)	Image 
     cursor	|	存储对用于数据库操作的指针的引用。
     table	|	存储结果集，供稍后处理。
 
+# 函数
+
+
+* SQL Aggregate 函数
+    SQL Aggregate 函数计算从列中取得的值，返回一个单一的值。
+
+    有用的 Aggregate 函数：
+
+    * [AVG() - 返回平均值](#AVG())
+    * [COUNT() - 返回行数](#COUNT())
+    * [FIRST() - 返回第一个记录的值](#FIRST())
+    * [LAST() - 返回最后一个记录的值](#LAST())
+    * [MAX() - 返回最大值](#MAX())
+    * [MIN() - 返回最小值](#[MIN())
+    * [SUM() - 返回总和](#SUM())
+
+
+* SQL Scalar 函数
+    SQL Scalar 函数基于输入值，返回一个单一的值。
+
+    有用的 Scalar 函数：
+
+    * [UCASE() - 将某个字段转换为大写](#UCASE())
+    * [LCASE() - 将某个字段转换为小写](#LCASE())
+    * [MID() - 从某个文本字段提取字符，MySql 中使用](#MID())
+    * [SubString(字段，1，end) - 从某个文本字段提取字符](#SubString())
+    * [LEN() - 返回某个文本字段的长度](#LEN())
+    * [ROUND() - 对某个数值字段进行指定小数位数的四舍五入](#ROUND())
+    * [NOW() - 返回当前的系统日期和时间](#NOW())
+    * [FORMAT() - 格式化某个字段的显示方式](#FORMAT())
+
+* [Date 函数](#Date)
+
+## Aggregate
+
+
+### AVG() 
+
+AVG() 函数返回数值列的平均值。
+
+```sql
+SELECT AVG(column_name) FROM table_name
+```
+
+### COUNT()
+
+COUNT() 函数返回匹配指定条件的行数。
+
+```sql
+SELECT COUNT(column_name) FROM table_name; # 返回指定列的值的数目（NULL 不计入）
+SELECT COUNT(*) FROM table_name; # 返回表中的记录数
+SELECT COUNT(DISTINCT column_name) FROM table_name; # 返回指定列的不同值的数目 COUNT(DISTINCT) 适用于 ORACLE 和 Microsoft SQL Server，但是无法用于 Microsoft Access。
+```
+
+
+### FIRST()
+
+FIRST() 函数返回指定的列中第一个记录的值。
+
+```sql
+SELECT FIRST(column_name) FROM table_name; # 只有 MS Access 支持 FIRST() 函数。
+```
+
+### LAST()
+
+LAST() 函数返回指定的列中最后一个记录的值。
+```sql
+SELECT LAST(column_name) FROM table_name; # 只有 MS Access 支持 LAST() 函数。
+```
+
+### MAX()
+
+MAX() 函数返回指定列的最大值。
+```sql
+SELECT MAX(column_name) FROM table_name;
+```
+
+
+### MIN()
+
+MIN() 函数返回指定列的最小值。
+
+```sql
+SELECT MIN(column_name) FROM table_name;
+```
+
+### SUM()
+
+SUM() 函数返回数值列的总数。
+```sql
+SELECT SUM(column_name) FROM table_name;
+```
+
+
+## Scalar
+
+
+### UCASE()
+
+UCASE() 函数把字段的值转换为大写。
+
+```sql
+SELECT UCASE(column_name) FROM table_name;
+SELECT UPPER(column_name) FROM table_name; #SQL Server
+```
+
+### LCASE()
+
+LCASE() 函数把字段的值转换为小写。
+
+```sql
+SELECT LCASE(column_name) FROM table_name;
+SELECT LOWER(column_name) FROM table_name;#SQL Server
+```
+
+
+### MID()
+
+MID() 函数用于从文本字段中提取字符。
+
+```sql
+SELECT MID(column_name,start[,length]) FROM table_name;
+```
+* column_name	必需。要提取字符的字段。
+* start	必需。规定开始位置（起始值是 1）。
+* length	可选。要返回的字符数。如果省略，则 MID() 函数返回剩余文本。
+
+
+### LEN() 
+
+LEN() 函数返回文本字段中值的长度。
+
+```sql
+SELECT LEN(column_name) FROM table_name;
+SELECT LENGTH(column_name) FROM table_name; # MySQL 
+```
+
+
+### ROUND()
+
+ROUND() 函数用于把数值字段舍入为指定的小数位数。
+
+```sql
+SELECT ROUND(column_name,decimals) FROM table_name;
+```
+
+* column_name	必需。要舍入的字段。
+* decimals	必需。规定要返回的小数位数。
+
+
+
+### NOW()
+
+NOW() 函数返回当前系统的日期和时间。
+
+```sql
+SELECT NOW() FROM table_name;
+```
+
+
+### FORMAT()
+
+FORMAT() 函数用于对字段的显示进行格式化。
+
+```sql
+SELECT FORMAT(column_name,format) FROM table_name;
+```
+* column_name	必需。要格式化的字段。
+* format	必需。规定格式。
+
+
+
+## Date
+
+
+### Date 函数
+
+* MySQL Date 函数
+
+    函数	|	描述
+    --------|-------------
+    NOW()	|	返回当前的日期和时间
+    CURDATE()	|	返回当前的日期
+    CURTIME()	|	返回当前的时间
+    DATE()	|	提取日期或日期/时间表达式的日期部分
+    EXTRACT()	|	返回日期/时间的单独部分
+    DATE_ADD()	|	向日期添加指定的时间间隔
+    DATE_SUB()	|	从日期减去指定的时间间隔
+    DATEDIFF()	|	返回两个日期之间的天数
+    DATE_FORMAT()	|	用不同的格式显示日期/时间
+
+
+* SQL Server Date 函数
+
+    函数	|	描述
+    --------|--------------
+    GETDATE()	|	返回当前的日期和时间
+    DATEPART()	|	返回日期/时间的单独部分
+    DATEADD()	|	在日期中添加或减去指定的时间间隔
+    DATEDIFF()	|	返回两个日期之间的时间
+    CONVERT()	|	用不同的格式显示日期/时间
+
+
+### Date 数据类型
+
+* MySQL 使用下列数据类型在数据库中存储日期或日期/时间值：
+    * DATE - 格式：YYYY-MM-DD
+    * DATETIME - 格式：YYYY-MM-DD HH:MM:SS
+    * TIMESTAMP - 格式：YYYY-MM-DD HH:MM:SS
+    * YEAR - 格式：YYYY 或 YY
+
+* SQL Server 使用下列数据类型在数据库中存储日期或日期/时间值：
+    * DATE - 格式：YYYY-MM-DD
+    * DATETIME - 格式：YYYY-MM-DD HH:MM:SS
+    * SMALLDATETIME - 格式：YYYY-MM-DD HH:MM:SS
+    * TIMESTAMP - 格式：唯一的数字
+
+# Sql 快速参考手册
+
+
+SQL 语句 | 语法
+--------|-----------
+AND / OR | SELECT column_name(s) FROM table_name WHERE condition AND|OR condition
+ALTER TABLE | ALTER TABLE table_name  ADD column_name datatype or ALTER TABLE table_name  DROP COLUMN column_name
+AS (alias) | SELECT column_name AS column_alias FROM table_name or SELECT column_name FROM table_name AS table_alias
+BETWEEN | SELECT column_name(s) FROM table_name WHERE column_name BETWEEN value1 AND value2
+CREATE DATABASE | CREATE DATABASE database_name
+CREATE TABLE | CREATE TABLE table_name (column_name1 data_type,column_name2 data_type,column_name2 data_type,...)
+CREATE INDEX | CREATE INDEX index_name ON table_name (column_name) or CREATE UNIQUE INDEX index_name ON table_name (column_name)
+CREATE VIEW | CREATE VIEW view_name AS SELECT column_name(s) FROM table_name WHERE condition
+DELETE | DELETE FROM table_name WHERE some_column=some_value or DELETE FROM table_name (Note: Deletes the entire table!!) DELETE * FROM table_name (Note: Deletes the entire table!!)
+DROP DATABASE | DROP DATABASE database_name
+DROP INDEX | DROP INDEX table_name.index_name (SQL Server) DROP INDEX index_name ON table_name (MS Access) DROP INDEX index_name (DB2/Oracle) ALTER TABLE table_name DROP INDEX index_name (MySQL)
+DROP TABLE | DROP TABLE table_name
+GROUP BY | SELECT column_name, aggregate_function(column_name) FROM table_name WHERE column_name operator value GROUP BY column_name
+HAVING | SELECT column_name, aggregate_function(column_name) FROM table_name WHERE column_name operator value GROUP BY column_name HAVING aggregate_function(column_name) operator value
+IN | SELECT column_name(s) FROM table_name WHERE column_name IN (value1,value2,..)
+INSERT INTO | INSERT INTO table_name VALUES (value1, value2, value3,....) or INSERT INTO table_name (column1, column2, column3,...) VALUES (value1, value2, value3,....)
+INNER JOIN | SELECT column_name(s) FROM table_name1 INNER JOIN table_name2 ON table_name1.column_name=table_name2.column_name
+LEFT JOIN | SELECT column_name(s) FROM table_name1 LEFT JOIN table_name2 ON table_name1.column_name=table_name2.column_name
+RIGHT JOIN | SELECT column_name(s) FROM table_name1 RIGHT JOIN table_name2 ON table_name1.column_name=table_name2.column_name
+FULL JOIN | SELECT column_name(s) FROM table_name1 FULL JOIN table_name2 ON table_name1.column_name=table_name2.column_name
+LIKE | SELECT column_name(s) FROM table_name WHERE column_name LIKE pattern
+ORDER BY | SELECT column_name(s) FROM table_name ORDER BY column_name [ASC|DESC]
+SELECT | SELECT column_name(s) FROM table_name
+SELECT * | SELECT * FROM table_name
+SELECT DISTINCT | SELECT DISTINCT column_name(s) FROM table_name
+SELECT INTO | SELECT * INTO new_table_name [IN externaldatabase] FROM old_table_name or SELECT column_name(s) INTO new_table_name [IN externaldatabase] FROM old_table_name
+SELECT TOP | SELECT TOP number|percent column_name(s) FROM table_name
+TRUNCATE TABLE | TRUNCATE TABLE table_name
+UNION | SELECT column_name(s) FROM table_name1 UNION SELECT column_name(s) FROM table_name2
+UNION ALL | SELECT column_name(s) FROM table_name1 UNION ALL SELECT column_name(s) FROM table_name2
+UPDATE | UPDATE table_name SET column1=value, column2=value,... WHERE some_colu
