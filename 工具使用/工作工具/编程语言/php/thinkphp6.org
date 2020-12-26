@@ -8488,40 +8488,45 @@
       } ] ) - > select ( [ 1 , 2 , 3 ] ) ;
  
 ***** 延迟预载入
-
-
       有些情况下，需要根据查询出来的数据来决定是否需要使用关联预载入，当然关联查询本身就能解决这个问题，因为关联查询是惰性的，不过用预载入的理由也很明显，性能具有优势。
 
       延迟预载入仅针对多个数据的查询，因为单个数据的查询用延迟预载入和关联惰性查询没有任何区别，所以不需要使用延迟预载入。
 
       如果你的数据集查询返回的是数据集对象，可以使用调用数据集对象的 =load=实现延迟预载入：
 
-      // 查询数据集
-      $list  = User : : select ( [ 1 , 2 , 3 ] ) ;
-      // 延迟预载入
-      $list - > load ( [ 'cards' ] ) ;
-      foreach ($list as $user ) {
-      // 获取用户关联的card模型数据
-      dump ($user - >cards ) ;
-      }
+      #+begin_src php
+        // 查询数据集
+        $list  = User : : select ( [ 1 , 2 , 3 ] ) ;
+        // 延迟预载入
+        $list - > load ( [ 'cards' ] ) ;
+        foreach ($list as $user ) {
+            // 获取用户关联的card模型数据
+            dump ($user - >cards ) ;
+        }
+      #+end_src
  
 ***** 关联预载入缓存
       关联预载入可以支持查询缓存，例如：
-
+#+begin_src php
       $list  = User : : with ( [ 'profile' ] ) - > withCache ( 30 ) - > select ( [ 1 , 2 , 3 ] ) ;
+#+end_src
  
       表示对关联数据缓存 30 秒。
 
       如果你有多个关联数据，也可以仅仅缓存部分关联
 
-      $list  = User : : with ( [ 'profile' ,  'book' ] ) - > withCache ( [ 'profile' ] , 30 ) - > select ( [ 1 , 2 , 3 ] ) ;
+      #+begin_src php
+        $list  = User : : with ( [ 'profile' ,  'book' ] ) - > withCache ( [ 'profile' ] , 30 ) - > select ( [ 1 , 2 , 3 ] ) ;
+      #+end_src
  
       对于延迟预载入查询的话，可以在第二个参数传入缓存参数。
 
+      #+begin_src php
       // 查询数据集
       $list  = User : : select ( [ 1 , 2 , 3 ] ) ;
       // 延迟预载入
       $list - > load ( [ 'cards' ] ,  30 ) ;
+      #+end_src
  
 **** 关联统计
 
@@ -8666,249 +8671,101 @@
  
 ** 视图 
 *** 视图
-    视图功能由 =\think\View=类配合视图驱动（也即模板引擎驱动）类一起完成，新版仅内置了 PHP 原生模板引擎（主要用于内置的异常页面输出），如果需要使用其它的模板引擎需要单独安装相应的模板引擎扩展。
-
     如果你需要使用 =think-template=模板引擎，只需要安装 =think-view= 模板引擎驱动。
-
     composer require topthink /think -view
-    视图相关的配置在配置目录的 =view.php=配置文件中进行定义。
-    通常可以直接使用 =think\facade\View=来操作视图。
+    
+    视图相关的配置在配置目录的 =view.php= 配置文件中进行定义。 通常可以直接使用 =think\facade\View= 来操作视图。
 
 *** 模板变量
 **** 模板赋值
      模板中的变量（除了一些系统变量外）必须先进行模板赋值后才能使用，可以使用 =assign=方法进行全局模板变量赋值。
 
-     namespace app\controller ;
-
-     use think\facade\View ;
-
-     class  Index
-     {
-     public  function  index ( )
-     {
-     // 模板变量赋值
-     View : : assign ( 'name' , 'ThinkPHP' ) ;
-     View : : assign ( 'email' , 'thinkphp@qq.com' ) ;
-     // 或者批量赋值
-     View : : assign ( [
-     'name'   = >  'ThinkPHP' ,
-     'email'  = >  'thinkphp@qq.com'
-     ] ) ;
-     // 模板输出
-     return View : : fetch ( 'index' ) ;
-     }
-     }
-
-     =assign=方法赋值属于全局变量赋值，如果你需要单次赋值的话，可以直接在 =fetch=方法中传入。
-
-     namespace app\controller ;
-
-     use think\facade\View ;
-
-     class  Index
-     {
-     public  function  index ( )
-     {
-     // 模板输出并变量赋值
-     return View : : fetch ( 'index' ,  [
-     'name'   = >  'ThinkPHP' ,
-     'email'  = >  'thinkphp@qq.com'
-     ] ) ;
-     }
-     }
-
-***** 助手函数
-      如果使用 =view=助手函数渲染输出的话，可以使用下面的方法进行模板变量赋值：
-
-      return  view ( 'index' ,  [
-      'name'   = >  'ThinkPHP' ,
-      'email'  = >  'thinkphp@qq.com'
+    #+begin_src php
+      // 模板变量赋值
+      View::assign('name' ,'ThinkPHP' ) ;
+      View::assign('email' , 'thinkphp@qq.com' ) ;
+      // 或者批量赋值
+      View::assign( [
+          'name'   =>  'ThinkPHP' ,
+          'email'  =>  'thinkphp@qq.com'
       ] ) ;
+    #+end_src
+     
+     =assign= 方法赋值属于全局变量赋值，如果你需要单次赋值的话，可以直接在 =fetch=方法中传入。
+     #+begin_src php
+       // 模板输出并变量赋值
+       return View::fetch( 'index' ,  [
+           'name'   =>  'ThinkPHP' ,
+           'email'  =>  'thinkphp@qq.com'
+       ] ) ;
+     #+end_src
+     
+***** 助手函数
+      如果使用 =view= 助手函数渲染输出的话，可以使用下面的方法进行模板变量赋值：
 
-      助手函数的变量赋值也是当次模板渲染有效。
+      #+begin_src php
+        return  view( 'index' ,  [
+            'name'   =>  'ThinkPHP' ,
+            'email'  =>  'thinkphp@qq.com'
+        ] ) ;
+      #+end_src
 
 *** 视图过滤
     可以对视图的渲染输出进行过滤
-    < ?php
-    namespace app\index\controller ;
-    use think\facade\View ;
+    #+begin_src php
+      // 使用视图输出过滤
+      return View::filter ( function ($content ) {
+          return  str_replace ( "\r\n" , '
+       ' ,$content ) ;
+      } ) ->fetch ( ) ;
+   #+end_src
 
-    class  Index 
-    {
-    public  function  index ( )
-    {
-    // 使用视图输出过滤
-    return View : : filter ( function ($content ) {
-    return  str_replace ( "\r\n" , '
-    ' ,$content ) ;
-    } ) - > fetch ( ) ;
-    }
-    }
-
-    如果使用 =view=助手函数进行模板渲染输出的话，可以使用下面的方式
-
-    < ?php
-    namespace app\index\controller ;
-
-    class  Index 
-    {
-    public  function  index ( )
-    {
-    // 使用视图输出过滤
-    return  view ( ) - > filter ( function ($content ) {
-    return  str_replace ( "\r\n" , '
-    ' ,$content ) ;
-    } ) ;
-    }
-    }
+    如果使用 =view= 助手函数进行模板渲染输出的话，可以使用下面的方式
+    #+begin_src php
+      // 使用视图输出过滤
+      return  view() ->filter( function ($content ) {
+          return  str_replace ( "\r\n" , '
+       ' ,$content ) ;
+      } ) ;
+   #+end_src
 
 *** 模板渲染
 **** 模板路径
-     默认情况下，框架会自动定位你的模板文件路径，优先定位应用目录下的 =view=目录，
-     这种方式的视图目录下就是应用的控制器目录。
-
-***** 单应用模式
-      ├─app
-      │   └─view（视图目录）
-      │     ├─index            index控制器目录
-      │     │  └─index .html    index模板文件
-      │     └─  . . .             更多控制器目录
-
-***** 多应用模式
-      ├─app
-      │  ├─app1 （应用 1）
-      │  │   └─view（应用视图目录）
-      │  │     ├─index            index控制器目录
-      │  │     │  └─index .html    index模板文件
-      │  │     └─  . . .             更多控制器目录
-      │  │ 
-      │  └─ app2 . . . （更多应用）
-       
-      第二种方式是视图文件和应用类库文件完全分离，统一放置在根目录下的 =view=目录。
-
-***** 单应用模式
-
-      ├─view                 视图文件目录
-      │   ├─index            index控制器目录
-      │   │  └─index .html    index模板文件
-      │   └─  . . .             更多控制器目录
-
-***** 多应用模式
-
-      如果是多应用模式的话，这种方式下 =view=目录下面首先是应用子目录。
-
-      ├─view                 视图文件目录
-      │  ├─index（应用视图目录）
-      │  │   ├─index            index控制器目录
-      │  │   │  └─index .html    index模板文件
-      │  │   └─  . . .             更多控制器目录
-
-      如果你需要自定义 =view=目录名称，可以通过设置 =view_dir_name=配置参数。
-
-      'view_dir_name'     = >     'template' ,
-
+     默认情况下，框架会自动定位你的模板文件路径，优先定位应用目录下的 =view= 目录，这种方式的视图目录下就是应用的控制器目录。
 **** 模板渲染
-     模板渲染的最典型用法是直接使用 =fetch=方法，不带任何参数：
+     模板渲染的最典型用法是直接使用 =fetch= 方法，不带任何参数：
 
-     < ?php
-     namespace app\index\controller ;
+     #+begin_src php
+       // 不带任何参数 自动定位当前操作的模板文件
+       return View::fetch ( ) ;
 
-     use think\facade\View ;
+       // 指定模板输出
+       return View::fetch ( 'edit' ) ; 
+       return View::fetch ( 'member/read' ) ;
 
-     class  Index
-     {
-     public  function  index ( )
-     {
-     // 不带任何参数 自动定位当前操作的模板文件
-     return View : : fetch ( ) ;
-     }
-     }
+       # 跨应用渲染模板
+       return View::fetch ( 'admin@member/edit' ) ;
+    #+end_src
 
-     表示系统会按照默认规则自动定位视图目录下的模板文件，其规则是：
-
-     控制器名（小写 +下划线） /操作名 .html
-
-     默认的模板文件名规则改为实际操作方法名的小写+下划线写法。但可以配置 =auto_rule=参数的值来改变当前操作的自动渲染规则。
-
-     | auto\_rule 配置   | 自动定位规则            |
-     |------------------+-------------------------|
-     | 1                | 操作方法的小写+下划线   |
-     | 2                | 操作方法全部转换小写    |
-     | 3                | 保持和操作方法一致      |
-
-     如果有更改模板引擎的 =view_depr=设置（假设 ='view_depr'=>'_'=）的话，则上面的自动定位规则变成：
-
-     控制器（小写 +下划线）_操作 .html
-
-     如果没有按照模板定义规则来定义模板文件（或者需要调用其他控制器下面的某个模板），可以使用：
-
-     // 指定模板输出
-     return View : : fetch ( 'edit' ) ; 
-
-     表示调用当前控制器下面的 edit 模板
-     return View : : fetch ( 'member/read' ) ;
-     表示调用 Member 控制器下面的 read 模板。
-
-     跨应用渲染模板
-
-     return View : : fetch ( 'admin@member/edit' ) ;
-
-     渲染输出不需要写模板文件的路径和后缀。这里面的控制器和操作并不一定需要有实际对应的控制器和操作，只是一个目录名称和文件名称而已，例如，你的项目里面可能根本没有 Public 控制器，更没有 Public 控制器的 menu 操作，但是一样可以使用
-
-     return View : : fetch ( 'public/menu' ) ;
-
-     输出这个模板文件。理解了这个，模板输出就清晰了。
-
-     支持从视图根目录开始读取模板，例如：
-
-     return View : : fetch ( '/menu' ) ;
-
-     表示读取的模板是
-
-     menu .html
-
-     如果你的模板文件位置比较特殊或者需要自定义模板文件的位置，可以采用下面的方式处理。
-
+    如果你的模板文件位置比较特殊或者需要自定义模板文件的位置，可以采用下面的方式处理。
      return View : : fetch ( '../template/public/menu.html' ) ;
+     这种方式需要带模板路径和后缀指定一个完整的模板文件位置，这里的 =../template/public= 目录是相对于当前项目入口文件位置
 
-     这种方式需要带模板路径和后缀指定一个完整的模板文件位置，这里的 =../template/public=目录是相对于当前项目入口文件位置。如果是其他的后缀文件，也支持直接输出，例如：
-
-     return View : : fetch ( '../template/public/menu.tpl' ) ;
-
-     只要 =../template/public/menu.tpl=是一个实际存在的模板文件。
-     要注意模板文件位置是相对于应用的入口文件，而不是模板目录。
 **** 助手函数
-     可以使用系统提供的助手函数 =view=，可以完成相同的功能：
+     可以使用系统提供的助手函数 =view= ，可以完成相同的功能：
 
-     namespace app\index\controller ;
-
-     class  Index 
-     {
-     public  function  index ( )
-     {
-     // 渲染模板输出
+     #+begin_src php
+    // 渲染模板输出
      return  view ( 'hello' ,  [ 'name'  = >  'thinkphp' ] ) ;
-     }
-     }
+    #+end_src
 
 **** 渲染内容
-     如果希望直接解析内容而不通过模板文件的话，可以使用 =display=方法：
-
-     namespace app\index\controller ;
-
-     use think\facade\View ;
-
-     class  Index 
-     {
-     public  function  index ( )
-     {
-     // 直接渲染内容
-     $content  =  '{$name}-{$email}' ;
-     return View : : display ($content ,  [ 'name'  = >  'thinkphp' ,  'email'  = >  'thinkphp@qq.com' ] ) ;
-     }
-     }
-
-     渲染的内容中一样可以使用模板引擎的相关标签。
+     如果希望直接解析内容而不通过模板文件的话，可以使用 =display= 方法：
+     #+begin_src php
+       // 直接渲染内容
+       $content  =  '{$name}-{$email}' ;
+       return View::display ($content ,  [ 'name'  =>  'thinkphp' ,  'email'  =>  'thinkphp@qq.com' ] ) ;
+     #+end_src
 
 **** 模板函数使用三元运算符
      {:date('Y-m-d H:i:s',$abc ? $abc : time())}
@@ -8918,21 +8775,39 @@
      | volist  | 循环数组数据输出   | name,id,offset,length,key,mod |
      | foreach | 数组或对象遍历输出 | name,item,key                 |
 
+*** 引入公共部分head和foot(多种方法)
+**** include 
+     首先在view下面新建一个文件夹(common)，用来存放公共模板，然后使用include在需要的地方引用该板块：
+     
+     {include file="common/head" /}
+
+     可以一次包含多个模版，例如：
+
+     {include file="public/header,public/menu" /}
+
+     模板参数
+     {include file="Public/header" title="$title" keywords="开源WEB开发框架" /}
+
+     #+begin_src html
+       <html xmlns="http://www.w3.org/1999/xhtml">
+         <head>
+           <title>[title]</title>
+           <meta name="keywords" content="[keywords]" />
+         </head>
+     #+end_src
+**** 模板布局
+
 ** 错误和日志 
 *** 异常处理
 **** 异常处理接管
-
-
- 
-     本着严谨的原则，框架会对任何错误（包括警告错误）抛出异常。系统产生的异常和错误都是程序的隐患，要尽早排除和解决，而不是掩盖。对于应用自己抛出的异常则做出相应的捕获处理。
- 
-
      框架支持异常处理由开发者自定义类进行接管，需要在 =app=目录下面的 =provider.php=文件中绑定异常处理类，例如：
 
-     // 绑定自定义异常处理handle类
-     'think\exception\Handle'        = >  '\\app\\exception\\Http' ,
+     #+begin_src php
+       // 绑定自定义异常处理handle类
+       'think\exception\Handle'        = >  '\app\exception\Http' ,
+     #+end_src
 
-     自定义类需要继承 =think\exception\Handle=并且实现 =render=方法，可以参考如下代码：
+     自定义类需要继承 =think\exception\Handle= 并且实现 =render= 方法，可以参考如下代码：
 
      < ?php
      namespace app\common\exception ;
@@ -8994,8 +8869,6 @@
      支持使用 =try-catch-finally=结构捕获异常。
  
 **** HTTP 异常
-
-
      可以使用 =\think\exception\HttpException=类来抛出异常\\
      框架提供了一个 =abort=助手函数快速抛出一个 HTTP 异常：
 
