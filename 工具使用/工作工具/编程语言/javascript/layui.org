@@ -11656,3 +11656,78 @@ HTML规范：常用公共属性
 
 
 
+
+* 调用自己
+  #+begin_src js
+    add: function() {
+      layTool.open( "{:url('news/add')}", "添加新闻", '80%', '80%');
+    }
+
+    $('.layui-btn.layuiadmin-btn-admin').on('click', function(){
+      var type = $(this).data('type');
+      active[type] ? active[type].call(this) : '';
+    });
+#+end_src
+ 
+
+#+begin_src js
+    layui.use(['layer','layedit', 'form','jquery'],function() {
+        var form = layui.form, layer = layui.layer;
+        var $ = layui.$;
+        var layedit = layui.layedit;
+        layedit.set({
+            uploadImage: {
+                url: '{:url(\'api/upload/edit_img\')}' //图片上传接口url
+                ,type: 'post' //默认post
+            }
+        });
+        var index = layedit.build('demo', {
+            height: 480 //设置编辑器高度
+        }); //建立编辑器
+        form.verify({
+            content: function (value) {
+                return layedit.sync(index);
+            }
+        })
+    })
+#+end_src
+
+
+图片上传接口
+
+记住此接口要严格按照layui图片上传接口返回格式书写
+
+返回码必须0
+msg内容自定义
+data必须为数组，返回两个参数src 和 title，其中src必须严格书写，用于富文本加载图片，建议前期先测试好该地址，看看是否能加载，否则加载失败，并且控制台和layui.msg不会做任何提示！很大部分图片上传失败都是由于src接口错误导致！我图片上传接口符合ThinkPHP5.0格式，并且测试可以网络可以正常加载。
+/**
+     * json(['code' => 0, 'msg' => '', 'data' => $data]);
+     * {
+     *   "code": 0 //0表示成功，其它失败
+     *   ,"msg": "" //提示信息 //一般上传失败后返回
+     *   ,"data": {
+     *       "src": "图片路径",
+     *       "title": "图片名称" //可选
+     *      }
+     *  }
+     */
+    public function edit_img()
+    {
+        $isLogin = lib\Tools::isLogin();
+        if(!$isLogin) {
+            return show('500','请登录后操作');
+        }
+        $file = request()->file('file');
+        $dir = ROOT_PATH . 'public' . DS . 'about/';
+        $info = $file->move($dir);
+        if($info && $info->getPathname()) {
+            $data = [
+                'src'    => '__STATIC__/../about/'.$info->getSaveName(),
+                'title'  => 'link_image'
+            ];
+            return json(['code' => 0, 'msg' => 'ok', 'data' => $data]);
+        }else {
+            return json(['code' => 500, 'msg' => 'error', 'data' => '']);
+        }
+        return json(['code' => 500, 'msg' => 'error', 'data' => '']);
+    }
