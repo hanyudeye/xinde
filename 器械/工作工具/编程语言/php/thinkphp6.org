@@ -13,25 +13,22 @@
      如果要设置一个没有键值的数组参数，可以使用
 
      #+BEGIN_EXAMPLE
-         PATHINFO_PATH [ ]  =  ORIG_PATH_INFO
-         PATHINFO_PATH [ ]  =  REDIRECT_PATH_INFO
-         PATHINFO_PATH [ ]  =  REDIRECT_URL
+         PATHINFO_PATH[ ]  = ORIG_PATH_INFO
+         PATHINFO_PATH[ ]  = REDIRECT_PATH_INFO
+         PATHINFO_PATH[ ]  = REDIRECT_URL
      #+END_EXAMPLE
 
      获取环境变量的值可以使用下面的方式获取：
 
      #+BEGIN_EXAMPLE
-         Env : : get ( 'database.username' ) ;
-         Env : : get ( 'database.password' ) ;
-         Env : : get ( 'PATHINFO_PATH' ) ;
+         Env::get('database.username' ) ;
+         Env::get('database.password' ) ;
+         Env::get('PATHINFO_PATH' ) ;
      #+END_EXAMPLE
 
      要使用 =Env=类，必须先引入 =think\facade\Env=。
-
- 
      环境变量的获取不区分大小写
  
-
      可以支持默认值，例如：
 
      #+BEGIN_EXAMPLE
@@ -57,42 +54,50 @@
 
   读取单个配置参数
 
-  Config : : get ( 'app.app_name' ) ;
-  Config : : get ( 'route.url_domain_root' ) ;
+  #+begin_src php
+  Config::get( 'app.app_name' ) ;
+  Config::get( 'route.url_domain_root' ) ;
+  #+end_src
 
   读取数组配置（理论上支持无限级配置参数读取）
 
-  Config : : get ( 'database.default.host' ) ;
+  #+begin_src php
+    Config::get( 'database.default.host' ) ;
+  #+end_src
 
   判断是否存在某个设置参数：
 
-       Config : : has ( 'template' ) ;
-      Config : : has ( 'route.route_rule_merge' ) ;
+  #+begin_src php
+    Config::has('template' ) ;
+    Config::has('route.route_rule_merge' ) ;
+  #+end_src
       
 **** 参数批量设置
-        // 批量设置参数
-      Config : : set ( [ 'name1'  = >  'value1' ,  'name2'  = >  'value2' ] ,  'config' ) ;
+     #+begin_src php
+       // 批量设置参数
+       Config : : set ( [ 'name1'  = >  'value1' ,  'name2'  = >  'value2' ] ,  'config' ) ;
        // 获取配置
-      Config : : get ( 'config' ) ;
+       Config : : get ( 'config' ) ;
+     #+end_src
 
 **** 系统配置文件
   下面系统自带的配置文件列表及其作用：
 
-  | 配置文件名       | 描述            |
-  |------------------+-----------------|
-  | app.php          | 应用配置        |
-  | cache.php        | 缓存配置        |
-  | console.php      | 控制台配置      |
-  | cookie.php       | Cookie 配置      |
-  | database.php     | 数据库配置      |
-  | filesystem.php   | 磁盘配置        |
-  | lang.php         | 多语言配置      |
-  | log.php          | 日志配置        |
-  | middleware.php   | 中间件配置      |
-  | route.php        | 路由和 URL 配置   |
-  | session.php      | Session 配置     |
-  | trace.php        | 页面 Trace 配置   |
-  | view.php         | 视图配置        |
+  | 配置文件名     | 描述            |
+  |----------------+-----------------|
+  | app.php        | 应用配置        |
+  | cache.php      | 缓存配置        |
+  | console.php    | 控制台配置      |
+  | cookie.php     | Cookie 配置     |
+  | database.php   | 数据库配置      |
+  | filesystem.php | 磁盘配置        |
+  | lang.php       | 多语言配置      |
+  | log.php        | 日志配置        |
+  | middleware.php | 中间件配置      |
+  | route.php      | 路由和 URL 配置 |
+  | session.php    | Session 配置    |
+  | trace.php      | 页面 Trace 配置 |
+  | view.php       | 视图配置        |
 
   具体的配置参数及默认值可以直接查看应用 =config=目录下面的相关文件内容。
   如果是多应用模式的话配置文件可能同时存在全局和应用配置文件两个同名文件
