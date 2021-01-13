@@ -35,3 +35,9 @@ sudo apt install simplescreenrecorder
 ## 添加字母软件
 ### 迅捷视频剪辑软件
 https://link.zhihu.com/?target=https%3A//www.xunjieshipin.com/download-video-crop%3Fzhczk
+
+
+## 修改 wine-qq 字体大小
+env WINEPREFIX="$HOME/.deepinwine/Deepin-QQ" winecfg
+
+在显示一栏设置 dpi 大小
