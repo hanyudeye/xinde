@@ -1,465 +1,329 @@
 #+TITLE: Docker 简介
 #+DESCRIPTION: Docker 简介
-#+TAGS: Docker 
+#+TAGS: 虚拟机
 #+CATEGORIES: 软件使用
-# Docker
-  >Docker是一个开源的引擎，可以轻松的为任何应用创建一个轻量级的、可移植的、自给自足的容器。开发者在笔记本上编译测试通过的容器可以批量地在生产环境中部署，包括VMs（虚拟机）、bare metal、OpenStack 集群和其他的基础应用平台。
 
-
-Docker通常用于如下场景：
-
-    web应用的自动化打包和发布；
-    自动化测试和持续集成、发布；
-    在服务型环境中部署和调整数据库或其他的后台应用；
-    从头编译或者扩展现有的OpenShift或Cloud Foundry平台来搭建自己的PaaS环境。
-
+轻量级虚拟机
+# more
 
 * docker 
+** [[https://www.cnblogs.com/CloudMan6/p/6763789.html][架构]]
+ - client
+ - docker服务器 （docker 守护进程）
+ - 资源
+
+   #+begin_verse
+   docker镜像
+   docker容器 镜像运行的实例
+   仓库 存放镜像的仓库，包含共有和私有
+   #+end_verse
+   
+   #+begin_example
+   运行过程
+   当client 执行命令docker run nginx时，client发送socket消息给docker守护进程，
+   docker守护进程先在本地看下有没有这个镜像存在，如果不存在就去远程仓库下载，然后保存到本地；
+   然后通过 container run命令把这个镜像做成一个容器然后运行起来
+   #+end_example
+
 ** 安装与启动
 *** 安装
      #+begin_src shell
-       sudo	apt install	docker.io
+       # 安装客户端和服务端 
+        sudo	apt install	docker docker.io
      #+END_SRC
-*** 启动服务
+*** 启动服务端
     #+begin_src sh
       sudo	service	docker	start
     #+end_src
-     
-** 镜像
-*** 查找
-    #+begin_src sh
-    docker search ubuntu
-    docker search -s 100 ubuntu # 查找 star 数至少为 100 的镜像，找出只有官方镜像 start 数超过 100，默认不加 s 选项找出所有相关 ubuntu 镜像
-    #+end_src
-*** 列出
-    #+begin_src sh
-    sudo docker images -a # 显示当前系统所有镜像，包括过渡层镜像 
-    sudo docker images ubuntu # 显示当前系统 docker ubuntu 库中的所有镜像
-    #+end_src
+*** 配置阿里云服务器镜像
+  - /etc/docker/daemon.json
+  - ~/.docker/config.json
+  - ~/.docker
     
-*** 获取
-    #+begin_src sh
-    sudo	docker	pull	ubuntu:12.04
-    # 相当于
-    sudo	docker	pull	registry.hub.docker.com/ubuntu:12.04	 	
-    #+end_src
+   #+begin_src sh
+     {
+       "registry-mirrors": ["https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors"]
+     }
+   #+end_src
+  - 或者 "registry-mirrors": ["https://registry.docker-cn.com"]
 
-*** 构建
-**** Dockerfile   
-    #+BEGIN_SRC docker
-      #	T his	is	a	comment
-      FROM  ubuntu:14.04
-      MAINTAINER	Docker	Newbee	<newbee@docker.com>
-      RUN	apt-get	-qq	update
-      RUN	apt-get	-qqy	install	ruby	ruby-dev
-      RUN	gem	install	sinatra
-    #+END_SRC
-**** build 镜像
-     $	sudo	docker	build	-t="ouruser/sinatra:v2"	.
-
- 还可以利用 ADD 命令复制本地文件到镜像;用 EXPOSE 命令来向外部开放端口;用 CMD 命令来描述容器启动后运行的程序等。例如
- #+BEGIN_SRC Dockerfile
-   #	put	my	local	web	site	in	myApp	folder	to	/var/www
-   ADD	myApp	/var/www
-   #	expose	httpd	port
-   EXPOSE	80
-   #	the	command	to	run
-   CMD	["/usr/sbin/apachectl",	"-D",	"FOREGROUND"]
-   #+END_SRC
-**** 修改镜像标签
- 	   sudo	docker	tag	5db5f8471261	ouruser/sinatra:devel
- 	   sudo	docker	images	ouruser/sinatra
-*** 删除
-    #+begin_src sh
-      docker rmi IMAGE [IMAGE...] Remove one or more images
-    #+end_src
-*** 导入导出
-    #+BEGIN_SRC shell
-      sudo	docker	ps	-a
-      CONTAINER	ID								IMAGE															COMMAND													CREATED													STATUS															
-      7691a814370e								ubuntu:14.04								"/bin/bash"									36	hours	ago								Exited	(0)	21	hours	a
-      sudo	docker	export	7691a814370e	>	ubuntu.tar
-    #+END_SRC
-    #+BEGIN_SRC sh
-      cat	ubuntu.tar	|	sudo	docker	import	-	test/ubuntu:v1.0
-    #+END_SRC
-*** 从本地文件系统导入
-    #+begin_src sh
-      cat	ubuntu-14.04-x86_64-minimal.tar.gz|docker	import	-	ubuntu:14.04
-    #+end_src
+     #+begin_src sh
+       sudo systemctl restart docker
+     #+end_src
+** 命令 
+*** 镜像命令
+**** 查找
+     #+begin_src sh
+     docker search ubuntu
+     docker search -s 100 ubuntu # 查找 star 数至少为 100 的镜像，找出只有官方镜像 start 数超过 100，默认不加 s 选项找出所有相关 ubuntu 镜像
+     #+end_src
+**** 列出
+     #+begin_src sh
+     sudo docker images -a # 显示当前系统所有镜像，包括过渡层镜像 
+     sudo docker images ubuntu # 显示当前系统 docker ubuntu 库中的所有镜像
+     #+end_src
     
-*** 创建镜像
-**** 修改已有镜像
-     $ sudo docker run -t -i training/sinatra /bin/bash
+     -  -a 列出所有镜像
+     -  -q 只显示镜像ID
+     -  --digests：显示摘要信息
+     -  --no-trunc：不截断输出，显示完整的镜像ID
+
+**** 获取
+     #+begin_src sh
+     sudo	docker	pull	ubuntu:12.04
+     # 相当于
+     sudo	docker	pull	registry.hub.docker.com/ubuntu:12.04	 	
+     #+end_src
+
+**** 构建
+***** Dockerfile   
+     #+BEGIN_SRC docker
+       #	T his	is	a	comment
+       FROM  ubuntu:14.04
+       MAINTAINER	Docker	Newbee	<newbee@docker.com>
+       RUN	apt-get	-qq	update
+       RUN	apt-get	-qqy	install	ruby	ruby-dev
+       RUN	gem	install	sinatra
+     #+END_SRC
+***** build 镜像
+      $	sudo	docker	build	-t="ouruser/sinatra:v2"	.
+
+  还可以利用 ADD 命令复制本地文件到镜像;用 EXPOSE 命令来向外部开放端口;用 CMD 命令来描述容器启动后运行的程序等。例如
+  #+BEGIN_SRC Dockerfile
+    #	put	my	local	web	site	in	myApp	folder	to	/var/www
+    ADD	myApp	/var/www
+    #	expose	httpd	port
+    EXPOSE	80
+    #	the	command	to	run
+    CMD	["/usr/sbin/apachectl",	"-D",	"FOREGROUND"]
+    #+END_SRC
+***** 修改镜像标签
+ 	    sudo	docker	tag	5db5f8471261	ouruser/sinatra:devel
+ 	    sudo	docker	images	ouruser/sinatra
+**** 删除
+      - docker rmi 镜像ID/镜像名称
+      - 删除全部  docker rmi $(docker images -qa)
+      - 删除全部 docker rmi `docker images -q`
+**** 导入导出
+     #+BEGIN_SRC shell
+       sudo	docker	ps	-a
+       CONTAINER	ID								IMAGE															COMMAND													CREATED													STATUS															
+       7691a814370e								ubuntu:14.04								"/bin/bash"									36	hours	ago								Exited	(0)	21	hours	a
+       sudo	docker	export	7691a814370e	>	ubuntu.tar
+     #+END_SRC
+     #+BEGIN_SRC sh
+       cat	ubuntu.tar	|	sudo	docker	import	-	test/ubuntu:v1.0
+     #+END_SRC
+**** 从本地文件系统导入
+     #+begin_src sh
+       cat	ubuntu-14.04-x86_64-minimal.tar.gz|docker	import	-	ubuntu:14.04
+     #+end_src
+    
+**** 创建镜像
+***** 修改已有镜像
+      $ sudo docker run -t -i training/sinatra /bin/bash
      
-     $ sudo docker commit -m "Added json gem" -a "Docker Newbee" 0b2616b0e5a8 ouruser/sinatra:v2
+      $ sudo docker commit -m "Added json gem" -a "Docker Newbee" 0b2616b0e5a8 ouruser/sinatra:v2
      
-     其中，-m 来指定提交的说明信息，跟我们使用的版本控制工具一样；-a 可以指定更
-     新的用户信息；之后是用来创建镜像的容器的 ID；最后指定目标镜像的仓库名和 tag
-     信息。创建成功后会返回这个镜像的 ID 信息。
-**** 利用 Dockerfile 来创建镜像
-     使用 docker commit 来扩展一个镜像比较简单，但是不方便在一个团队中分享。我们可以
-     使用 docker build 来创建一个新的镜像。为此，首先需要创建一个 Dockerfile，包含一
-     些如何创建镜像的指令。
+      其中，-m 来指定提交的说明信息，跟我们使用的版本控制工具一样；-a 可以指定更
+      新的用户信息；之后是用来创建镜像的容器的 ID；最后指定目标镜像的仓库名和 tag
+      信息。创建成功后会返回这个镜像的 ID 信息。
+***** 利用 Dockerfile 来创建镜像
+      使用 docker commit 来扩展一个镜像比较简单，但是不方便在一个团队中分享。我们可以
+      使用 docker build 来创建一个新的镜像。为此，首先需要创建一个 Dockerfile，包含一
+      些如何创建镜像的指令。
 
-     新建一个目录和一个 Dockerfile
+      新建一个目录和一个 Dockerfile
 
-$ mkdir sinatra
-$ cd sinatra
-$ touch Dockerfile
-Dockerfile 中每一条指令都创建镜像的一层，例如：
+ $ mkdir sinatra
+ $ cd sinatra
+ $ touch Dockerfile
+ Dockerfile 中每一条指令都创建镜像的一层，例如：
 
-# This is a comment
-FROM ubuntu:14.04
-MAINTAINER Docker Newbee <newbee@docker.com>
-RUN apt-get -qq update
-RUN apt-get -qqy install ruby ruby-dev
-RUN gem install sinatra
-Dockerfile 基本的语法是
+ # This is a comment
+ FROM ubuntu:14.04
+ MAINTAINER Docker Newbee <newbee@docker.com>
+ RUN apt-get -qq update
+ RUN apt-get -qqy install ruby ruby-dev
+ RUN gem install sinatra
+ Dockerfile 基本的语法是
 
-使用#来注释
-FROM 指令告诉 Docker 使用哪个镜像作为基础
-接着是维护者的信息
-RUN 开头的指令会在创建中运行，比如安装一个软件包，在这里使用 apt-get 来安装了一些软件
-编写完成 Dockerfile 后可以使用 docker build 来生成镜像。
+ 使用#来注释
+ FROM 指令告诉 Docker 使用哪个镜像作为基础
+ 接着是维护者的信息
+ RUN 开头的指令会在创建中运行，比如安装一个软件包，在这里使用 apt-get 来安装了一些软件
+ 编写完成 Dockerfile 后可以使用 docker build 来生成镜像。
 
-$ sudo docker build -t="ouruser/sinatra:v2" .
-Uploading context  2.56 kB
-Uploading context
-Step 0 : FROM ubuntu:14.04
- ---> 99ec81b80c55
-Step 1 : MAINTAINER Newbee <newbee@docker.com>
- ---> Running in 7c5664a8a0c1
- ---> 2fa8ca4e2a13
-Removing intermediate container 7c5664a8a0c1
-Step 2 : RUN apt-get -qq update
- ---> Running in b07cc3fb4256
- ---> 50d21070ec0c
-Removing intermediate container b07cc3fb4256
-Step 3 : RUN apt-get -qqy install ruby ruby-dev
- ---> Running in a5b038dd127e
-Selecting previously unselected package libasan0:amd64.
-(Reading database ... 11518 files and directories currently installed.)
-Preparing to unpack .../libasan0_4.8.2-19ubuntu1_amd64.deb ...
-Setting up ruby (1:1.9.3.4) ...
-Setting up ruby1.9.1 (1.9.3.484-2ubuntu1) ...
-Processing triggers for libc-bin (2.19-0ubuntu6) ...
- ---> 2acb20f17878
-Removing intermediate container a5b038dd127e
-Step 4 : RUN gem install sinatra
- ---> Running in 5e9d0065c1f7
-. . .
-Successfully installed rack-protection-1.5.3
-Successfully installed sinatra-1.4.5
-4 gems installed
- ---> 324104cde6ad
-Removing intermediate container 5e9d0065c1f7
-Successfully built 324104cde6ad
-其中 -t 标记来添加 tag，指定新的镜像的用户信息。 “.” 是 Dockerfile 所在的路径（当前目录），也可以替换为一个具体的 Dockerfile 的路径。
+ $ sudo docker build -t="ouruser/sinatra:v2" .
+ Uploading context  2.56 kB
+ Uploading context
+ Step 0 : FROM ubuntu:14.04
+  ---> 99ec81b80c55
+ Step 1 : MAINTAINER Newbee <newbee@docker.com>
+  ---> Running in 7c5664a8a0c1
+  ---> 2fa8ca4e2a13
+ Removing intermediate container 7c5664a8a0c1
+ Step 2 : RUN apt-get -qq update
+  ---> Running in b07cc3fb4256
+  ---> 50d21070ec0c
+ Removing intermediate container b07cc3fb4256
+ Step 3 : RUN apt-get -qqy install ruby ruby-dev
+  ---> Running in a5b038dd127e
+ Selecting previously unselected package libasan0:amd64.
+ (Reading database ... 11518 files and directories currently installed.)
+ Preparing to unpack .../libasan0_4.8.2-19ubuntu1_amd64.deb ...
+ Setting up ruby (1:1.9.3.4) ...
+ Setting up ruby1.9.1 (1.9.3.484-2ubuntu1) ...
+ Processing triggers for libc-bin (2.19-0ubuntu6) ...
+  ---> 2acb20f17878
+ Removing intermediate container a5b038dd127e
+ Step 4 : RUN gem install sinatra
+  ---> Running in 5e9d0065c1f7
+ . . .
+ Successfully installed rack-protection-1.5.3
+ Successfully installed sinatra-1.4.5
+ 4 gems installed
+  ---> 324104cde6ad
+ Removing intermediate container 5e9d0065c1f7
+ Successfully built 324104cde6ad
+ 其中 -t 标记来添加 tag，指定新的镜像的用户信息。 “.” 是 Dockerfile 所在的路径（当前目录），也可以替换为一个具体的 Dockerfile 的路径。
 
-可以看到 build 进程在执行操作。它要做的第一件事情就是上传这个 Dockerfile 内容，因为所有的操作都要依据 Dockerfile 来进行。 然后，Dockfile 中的指令被一条一条的执行。每一步都创建了一个新的容器，在容器中执行指令并提交修改（就跟之前介绍过的 docker commit 一样）。当所有的指令都执行完毕之后，返回了最终的镜像 id。所有的中间步骤所产生的容器都被删除和清理了。
+ 可以看到 build 进程在执行操作。它要做的第一件事情就是上传这个 Dockerfile 内容，因为所有的操作都要依据 Dockerfile 来进行。 然后，Dockfile 中的指令被一条一条的执行。每一步都创建了一个新的容器，在容器中执行指令并提交修改（就跟之前介绍过的 docker commit 一样）。当所有的指令都执行完毕之后，返回了最终的镜像 id。所有的中间步骤所产生的容器都被删除和清理了。
 
-*注意一个镜像不能超过 127 层
+ *注意一个镜像不能超过 127 层
 
-此外，还可以利用 ADD 命令复制本地文件到镜像；用 EXPOSE 命令来向外部开放端口；用 CMD 命令来描述容器启动后运行的程序等。例如
+ 此外，还可以利用 ADD 命令复制本地文件到镜像；用 EXPOSE 命令来向外部开放端口；用 CMD 命令来描述容器启动后运行的程序等。例如
 
-# put my local web site in myApp folder to /var/www
-ADD myApp /var/www
-# expose httpd port
-EXPOSE 80
-# the command to run
-CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
-现在可以利用新创建的镜像来启动一个容器。
+ # put my local web site in myApp folder to /var/www
+ ADD myApp /var/www
+ # expose httpd port
+ EXPOSE 80
+ # the command to run
+ CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
+ 现在可以利用新创建的镜像来启动一个容器。
 
-$ sudo docker run -t -i ouruser/sinatra:v2 /bin/bash
-root@8196968dac35:/#
-还可以用 docker tag 命令来修改镜像的标签。
+ $ sudo docker run -t -i ouruser/sinatra:v2 /bin/bash
+ root@8196968dac35:/#
+ 还可以用 docker tag 命令来修改镜像的标签。
 
-$ sudo docker tag 5db5f8471261 ouruser/sinatra:devel
-$ sudo docker images ouruser/sinatra
-REPOSITORY          TAG     IMAGE ID      CREATED        VIRTUAL SIZE
-ouruser/sinatra     latest  5db5f8471261  11 hours ago   446.7 MB
-ouruser/sinatra     devel   5db5f8471261  11 hours ago   446.7 MB
-ouruser/sinatra     v2      5db5f8471261  11 hours ago   446.7 MB
-4.3 从本地文件系统导入
-要从本地文件系统导入一个镜像，可以使用 openvz（容器虚拟化的先锋技术）的模板来创建：openvz 的模板下载地址为 templates。
+ $ sudo docker tag 5db5f8471261 ouruser/sinatra:devel
+ $ sudo docker images ouruser/sinatra
+ REPOSITORY          TAG     IMAGE ID      CREATED        VIRTUAL SIZE
+ ouruser/sinatra     latest  5db5f8471261  11 hours ago   446.7 MB
+ ouruser/sinatra     devel   5db5f8471261  11 hours ago   446.7 MB
+ ouruser/sinatra     v2      5db5f8471261  11 hours ago   446.7 MB
+ 4.3 从本地文件系统导入
+ 要从本地文件系统导入一个镜像，可以使用 openvz（容器虚拟化的先锋技术）的模板来创建：openvz 的模板下载地址为 templates。
 
-比如，先下载了一个 ubuntu-14.04 的镜像，之后使用以下命令导入：
+ 比如，先下载了一个 ubuntu-14.04 的镜像，之后使用以下命令导入：
 
-sudo cat ubuntu-14.04-x86_64-minimal.tar.gz  |docker import - ubuntu:14.04
-然后查看新导入的镜像。
+ sudo cat ubuntu-14.04-x86_64-minimal.tar.gz  |docker import - ubuntu:14.04
+ 然后查看新导入的镜像。
 
-docker images
-REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-ubuntu              14.04               05ac7c0b9383        17 seconds ago      215.5 MB
-4.4 上传镜像
-用户可以通过 docker push 命令，把自己创建的镜像上传到仓库中来共享。例如，用户在 Docker Hub 上完成注册后，可以推送自己的镜像到仓库中。
+ docker images
+ REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+ ubuntu              14.04               05ac7c0b9383        17 seconds ago      215.5 MB
+ 4.4 上传镜像
+ 用户可以通过 docker push 命令，把自己创建的镜像上传到仓库中来共享。例如，用户在 Docker Hub 上完成注册后，可以推送自己的镜像到仓库中。
 
-$ sudo docker push ouruser/sinatra
-The push refers to a repository [ouruser/sinatra] (len: 1)
-Sending image list
-Pushing repository ouruser/sinatra (3 tags)
-5、存出和载入镜像
-5.1 存出镜像
-如果要导出镜像到本地文件，可以使用 docker save 命令。
+ $ sudo docker push ouruser/sinatra
+ The push refers to a repository [ouruser/sinatra] (len: 1)
+ Sending image list
+ Pushing repository ouruser/sinatra (3 tags)
+ 5、存出和载入镜像
+ 5.1 存出镜像
+ 如果要导出镜像到本地文件，可以使用 docker save 命令。
 
-$ sudo docker images
-REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
-ubuntu              14.04               c4ff7513909d        5 weeks ago         225.4 MB
-...
-$sudo docker save -o ubuntu_14.04.tar ubuntu:14.04
-5.2 载入镜像
-可以使用 docker load 从导出的本地文件中再导入到本地镜像库，例如
+ $ sudo docker images
+ REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+ ubuntu              14.04               c4ff7513909d        5 weeks ago         225.4 MB
+ ...
+ $sudo docker save -o ubuntu_14.04.tar ubuntu:14.04
+ 5.2 载入镜像
+ 可以使用 docker load 从导出的本地文件中再导入到本地镜像库，例如
 
-$ sudo docker load --input ubuntu_14.04.tar
-或
+ $ sudo docker load --input ubuntu_14.04.tar
+ 或
 
-$ sudo docker load < ubuntu_14.04.tar
-这将导入镜像以及其相关的元数据信息（包括标签等）。
+ $ sudo docker load < ubuntu_14.04.tar
+ 这将导入镜像以及其相关的元数据信息（包括标签等）。
 
-6、移除本地镜像
-如果要移除本地的镜像，可以使用 docker rmi 命令。注意 docker rm 命令是移除容器。
+ 6、移除本地镜像
+ 如果要移除本地的镜像，可以使用 docker rmi 命令。注意 docker rm 命令是移除容器。
 
-$ sudo docker rmi training/sinatra
-Untagged: training/sinatra:latest
-Deleted: 5bc342fa0b91cabf65246837015197eecfa24b2213ed6a51a8974ae250fedd8d
-Deleted: ed0fffdcdae5eb2c3a55549857a8be7fc8bc4241fb19ad714364cbfd7a56b22f
-Deleted: 5c58979d73ae448df5af1d8142436d81116187a7633082650549c52c3a2418f0
-*注意：在删除镜像之前要先用 docker rm 删掉依赖于这个镜像的所有容器。
+ $ sudo docker rmi training/sinatra
+ Untagged: training/sinatra:latest
+ Deleted: 5bc342fa0b91cabf65246837015197eecfa24b2213ed6a51a8974ae250fedd8d
+ Deleted: ed0fffdcdae5eb2c3a55549857a8be7fc8bc4241fb19ad714364cbfd7a56b22f
+ Deleted: 5c58979d73ae448df5af1d8142436d81116187a7633082650549c52c3a2418f0
+ *注意：在删除镜像之前要先用 docker rm 删掉依赖于这个镜像的所有容器。
 
-7、镜像的实现原理
-Docker 镜像是怎么实现增量的修改和维护的？ 每个镜像都由很多层次构成，Docker 使用 Union FS 将这些不同的层结合到一个镜像中去。
+ 7、镜像的实现原理
+ Docker 镜像是怎么实现增量的修改和维护的？ 每个镜像都由很多层次构成，Docker 使用 Union FS 将这些不同的层结合到一个镜像中去。
 
-通常 Union FS 有两个用途, 一方面可以实现不借助 LVM、RAID 将多个 disk 挂到同一个目录下,另一个更常用的就是将一个只读的分支和一个可写的分支联合在一起，Live CD 正是基于此方法可以允许在镜像不变的基础上允许用户在其上进行一些写操作。Docker 在 AUFS 上构建的容器也是利用了类似的原理。
+ 通常 Union FS 有两个用途, 一方面可以实现不借助 LVM、RAID 将多个 disk 挂到同一个目录下,另一个更常用的就是将一个只读的分支和一个可写的分支联合在一起，Live CD 正是基于此方法可以允许在镜像不变的基础上允许用户在其上进行一些写操作。Docker 在 AUFS 上构建的容器也是利用了类似的原理。
 
-** 使用 
-   attach    Attach to a running container            
-   build     Build an image from a Dockerfile              # 通过 Dockerfile 定制镜像
-   commit    Create a new image from a container's changes # 提交当前容器为新的镜像
-   cp        Copy files/folders from the containers filesystem to the host path # 从容器中拷贝指定文件或者目录到宿主机中
-   create    Create a new container                        # 创建一个新的容器，同 run，但不启动容器
-   diff      Inspect changes on a container's filesystem   # 查看 docker 容器变化
-   events    Get real time events from the server          # 从 docker 服务获取容器实时事件
-   exec      Run a command in an existing container        # 在已存在的容器上运行命令
-   export    Stream the contents of a container as a tar archive # 导出容器的内容流作为一个 tar 归档文件[对应 import ]
-   history   Show the history of an image                  # 展示一个镜像形成历史
-   images    List images                                   # 列出系统当前镜像
-   import    Create a new filesystem image from the contents of a tarball # 从 tar 包中的内容创建一个新的文件系统映像[对应 export]
-   info      Display system-wide information               # 显示系统相关信息
-   inspect   Return low-level information on a container   # 查看容器详细信息
-   kill      Kill a running container                      # kill 指定 docker 容器
-   load      Load an image from a tar archive              # 从一个 tar 包中加载一个镜像[对应 save]
-   login     Register or Login to the docker registry server # 注册或者登陆一个 docker 源服务器
-   logout    Log out from a Docker registry server         # 从当前 Docker registry 退出
-   logs      Fetch the logs of a container                 # 输出当前容器日志信息
-   port      Lookup the public-facing port which is NAT-ed to PRIVATE_PORT
-   # 查看映射端口对应的容器内部源端口
-   pause     Pause all processes within a container        # 暂停容器
-   ps        List containers                               # 列出容器列表
-   pull      Pull an image or a repository from the docker registry server
-   # 从 docker 镜像源服务器拉取指定镜像或者库镜像
-   push      Push an image or a repository to the docker registry server
-   # 推送指定镜像或者库镜像至 docker 源服务器
-   restart   Restart a running container                   # 重启运行的容器
-   rm        Remove one or more containers                 # 移除一个或者多个容器
-   rmi       Remove one or more images                 
-   # 移除一个或多个镜像[无容器使用该镜像才可删除，否则需删除相关容器才可继续或 -f 强制删除]
-   run       Run a command in a new container
-   # 创建一个新的容器并运行一个命令
-   save      Save an image to a tar archive                # 保存一个镜像为一个 tar 包[对应 load]
-   search    Search for an image on the Docker Hub         # 在 docker hub 中搜索镜像
-   start     Start a stopped containers                    # 启动容器
-   stop      Stop a running containers                     # 停止容器
-   tag       Tag an image into a repository                # 给源中镜像打标签
-   top       Lookup the running processes of a container   # 查看容器中运行的进程信息
-   unpause   Unpause a paused container                    # 取消暂停容器
-   version   Show the docker version information           # 查看 docker 版本号
-   wait      Block until a container stops, then print its exit code   
-   # 截取容器停止时的退出状态值
-   Run 'docker COMMAND --help' for more information on a command.
-** 容器
-*** 运行容器
-    $ sudo docker run -i -t ubuntu:14.04 /bin/bash
-    docker run - 运行一个容器
-    -t - 分配一个（伪）tty (link is external)
-    -i - 交互模式 (so we can interact with it)
-    ubuntu:14.04 - 使用 ubuntu 基础镜像 14.04
-    /bin/bash - 运行命令 bash shell
-    注: ubuntu 会有多个版本，通过指定 tag 来启动特定的版本 [image]:[tag]
+*** 容器命令
+**** 运行容器
+     docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
+    
+   - OPTIONS
+     --name为容器指定新名称
+     -d 后台运行
+     -i交换方式运行
+     -t伪终端
+     -p端口映射
+     -P随机端口映射
 
-    $ sudo docker ps # 查看当前运行的容器
-    ps -a 列出当前系统所有的容器
-    CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-    6c9129e9df10        ubuntu:14.04        /bin/bash 6 minutes ago       Up 6 minutes                            cranky_babbage
-*** 后台运行
-    sudo	docker	run	-d	ubuntu:14.04	/bin/sh	-c	"while	true;	do	echo	hello	world;	sleep	1;	done"
-*** 获取后台输出
-    sudo	docker	logs	$containerName
-*** 进入后台容器
-    $	sudo	docker	run	-idt	ubuntu
-    243c32535da7d142fb0e6df616a3c3ada0b8ab417937c853a9e1c251f499f550
-    $	sudo	docker	ps
-    CONTAINER	ID								IMAGE															COMMAND													CREATED													STATUS														P
-    243c32535da7								ubuntu:latest							"/bin/bash"									18	seconds	ago						Up	17	seconds								
-    $sudo	docker	attach	$containerName
-
-    或者
-    PID=$(docker	inspect	--format	"{{	.State.Pid	}}"	<$container>)
-    PID=$(docker	inspect	--format	"{{	.State.Pid	}}"	dazzling_euclid)
-    nsenter	--target	$PID	--mount	--uts	--ipc	--net	--pid
-    nsenter	--target	8754 --mount	--uts	--ipc	--net	--pid
-*** 删除容器
-    可以使用		docker	rm	 	来删除一个处于终止状态的容器。	例如
-    $sudo	docker	rm		trusting_newton
-*** 启动容器
-**** 新建容器
-     $ sudo docker run ubuntu:14.04 /bin/echo 'Hello world'
-     Hello world
-     这跟在本地直接执行 /bin/echo 'hello world' 几乎感觉不出任何区别。
-     
-     :交互:
-     下面的命令则启动一个 bash 终端，允许用户进行交互。
-
-     $ sudo docker run -t -i ubuntu:14.04 /bin/bash
-     root@af8bae53bdd3:/#
-     
-     其中，-t 选项让 Docker 分配一个伪终端（pseudo-tty）并绑定到容器的标准输入上，
-     -i 则让容器的标准输入保持打开。
-
-     在交互模式下，用户可以通过所创建的终端来输入命令，例如
-     :END:
-
-     :流程:
-     检查本地是否存在指定的镜像，不存在就从公有仓库下载
-     利用镜像创建并启动一个容器
-     分配一个文件系统，并在只读的镜像层外面挂载一层可读写层
-     从宿主主机配置的网桥接口中桥接一个虚拟接口到容器中去
-     从地址池配置一个 ip 地址给容器
-     执行用户指定的应用程序
-     执行完毕后容器被终止
-     :END:
-**** 重启容器
-     docker start
-*** 守护态运行
-    更多的时候，需要让 Docker 容器在后台以守护态（Daemonized）形式运行。此时，可以
-    通过添加 -d 参数来实现。
-
-    例如下面的命令会在后台运行容器。
-
-    $ sudo docker run -d ubuntu:14.04 /bin/sh -c "while true; do echo hello world; sleep 1; done"
-    1e5535038e285177d5214659a068137486f96ee5c2e85a4ac52dc83f2ebe4147
-    容器启动后会返回一个唯一的 id，也可以通过 docker ps 命令来查看容器信息。
-
-    $ sudo docker ps
-    CONTAINER ID  IMAGE         COMMAND               CREATED        STATUS       PORTS NAMES
-    1e5535038e28  ubuntu:14.04  /bin/sh -c 'while tr  2 minutes ago  Up 1 minute        insane_babbage
-    要获取容器的输出信息，可以通过 docker logs 命令。
-
-    $ sudo docker logs insane_babbage
-    hello world
-    hello world
-    hello world
-    . . .
-*** 进入守护态运行 ctrl-p ctrl-q
-*** 终止容器
-    可以使用 docker stop 来终止一个运行中的容器。
-
-    此外，当 Docker 容器中指定的应用终结时，容器也自动终止。 例如对于上一章节中只启
-    动了一个终端的容器，用户通过 exit 命令或 Ctrl+d 来退出终端时，所创建的容器立刻
-    终止。
-
-    终止状态的容器可以用 docker ps -a 命令看到。例如
-
-    sudo docker ps -a
-    CONTAINER ID        IMAGE                    COMMAND                CREATED             STATUS                          PORTS               NAMES
-    ba267838cc1b        ubuntu:14.04             "/bin/bash"            30 minutes ago      Exited (0) About a minute ago                       trusting_newton
-    98e5efa7d997        training/webapp:latest   "python app.py"        About an hour ago   Exited (0) 34 minutes ago                           backstabbing_pike
-    处于终止状态的容器，可以通过 docker start 命令来重新启动。
-
-    此外，docker restart 命令会将一个运行态的容器终止，然后再重新启动它。
-*** 进入容器
-    在使用 -d 参数时，容器启动后会进入后台。 某些时候需要进入容器进行操作，有很多种
-    方法，包括使用 docker attach 命令或 nsenter 工具等。
-**** attach 命令
-     docker attach 是 Docker 自带的命令。下面示例如何使用该命令。
-     $ sudo docker run -idt ubuntu
-     243c32535da7d142fb0e6df616a3c3ada0b8ab417937c853a9e1c251f499f550
-     $ sudo docker ps
-     CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-     243c32535da7        ubuntu:latest       "/bin/bash"         18 seconds ago      Up 17 seconds                           nostalgic_hypatia
-     $sudo docker attach nostalgic_hypatia
-     root@243c32535da7:/#
+     docker run -i -t ubuntu:14.04 /bin/bash
+**** 列出所有运行的容器
+	   docker ps [options]
   
-     但是使用 attach 命令有时候并不方便。当多个窗口同时 attach 到同一个容器的时候，
-     所有窗口都会同步显示。当某个窗口因命令阻塞时,其他窗口也无法执行操作了。
-**** nsenter 命令
-***** 安装
-      nsenter 工具在 util-linux 包 2.23 版本后包含。 如果系统中 util-linux 包没有该命令，可以按照下面的方法从源码安装。
+		 -a :所有正在运行和运行过的
+     -l: 显示最近创建的容器
+     -n:显示最近创建的n个容器
+     -q:只显示容器id 
+**** 退出容器
+     exit / ctrl + d：退出并停止容器
+     ctrl-p ctrl-q:退出不停止容器
+**** 启动/终止容器
+     docker start 容器id/名称
+     可以使用 docker stop 来终止一个运行中的容器。
+     处于终止状态的容器，可以通过 docker start 命令来重新启动。
 
-      $ cd /tmp; curl https://www.kernel.org/pub/linux/utils/util-linux/v2.24/util-linux-2.24.tar.gz | tar -zxf-; cd util-linux-2.24;
-      $ ./configure --without-ncurses
-      $ make nsenter && sudo cp nsenter /usr/local/bin
-***** 使用
-      nsenter 可以访问另一个进程的名字空间。nsenter 要正常工作需要有 root 权限。 很不幸，Ubuntu 14.04 仍然使用的是 util-linux 2.20。安装最新版本的 util-linux（2.24）版，请按照以下步骤：
+     docker restart 命令会将一个运行态的容器终止，然后再重新启动它。
+    
+**** 删除容器
+     docker	rm	 	删除一个处于终止状态的容器
 
-      $ wget https://www.kernel.org/pub/linux/utils/util-linux/v2.24/util-linux-2.24.tar.gz; tar xzvf util-linux-2.24.tar.gz
-      $ cd util-linux-2.24
-      $ ./configure --without-ncurses && make nsenter
-      $ sudo cp nsenter /usr/local/bin
-      为了连接到容器，你还需要找到容器的第一个进程的 PID，可以通过下面的命令获取。
+**** 删除所有容器
+	   docker rm -f $(docker ps -aq)
+     docker ps -a -q | xargs docker rm
+**** 以后台方式运行容器
+	   docker run -d 容器
+    
+     docker	run	-d	ubuntu:14.04	/bin/sh	-c	"while	true;	do	echo	hello	world;	sleep	1;	done"
+**** 进入正在运行的容器，并以前台方式运行
+	 - docker exec -t 容器id/名称  bashshell 产生新的进程
+	 - docker attach 容器id/名称  进入容器不产生新的进程
+**** 获取后台输出
+     sudo	docker	logs	 容器id/名称
+**** 容器 <->拷贝文件<->主机
+	 - docker cp 容器id/名称:容器中路径 主机路径
+   - docker cp 主机路径 容器id/名称:容器中路径
+** 镜像
+*** 是什么
+**** UnionFS(联合文件系统)
+**** 镜像加载原理
+**** 分层镜像
+**** 为什么采用这种设计
+*** docker commit 镜像提交
+	  docker commit -m="" -a="作者" 容器id 目标镜像名称:[标签名]
+    
+    docker commit --help
+    docker commit -m="create image from current container" -a="panshen" 3a90f19f1669 "tomcat2:2.0"
 
-      PID=$(docker inspect --format "{{ .State.Pid }}" <container>)
-      通过这个 PID，就可以连接到这个容器：
-
-      $ nsenter --target $PID --mount --uts --ipc --net --pid
-      下面给出一个完整的例子。
-
-      $ sudo docker run -idt ubuntu
-      243c32535da7d142fb0e6df616a3c3ada0b8ab417937c853a9e1c251f499f550
-      $ sudo docker ps
-      CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-      243c32535da7        ubuntu:latest       "/bin/bash"         18 seconds ago      Up 17 seconds                           nostalgic_hypatia
-      $ PID=$(docker-pid 243c32535da7)
-      10981
-      $ sudo nsenter --target 10981 --mount --uts --ipc --net --pid
-      root@243c32535da7:/#
-      更简单的，建议大家下载 .bashrc_docker，并将内容放到 .bashrc 中。
-
-      $ wget -P ~ https://github.com/yeasy/docker_practice/raw/master/_local/.bashrc_docker;
-      $ echo "[ -f ~/.bashrc_docker ] && . ~/.bashrc_docker" >> ~/.bashrc; source ~/.bashrc
-      这个文件中定义了很多方便使用 Docker 的命令，例如 docker-pid 可以获取某个容器的 PID；而 docker-enter 可以进入容器或直接在容器内执行命令。
-
-      $ echo $(docker-pid <container>)
-      $ docker-enter <container> ls
-*** 导出和导入容器
-    5.1 导出容器
-    如果要导出本地某个容器，可以使用 docker export 命令。
-
-    $ sudo docker ps -a
-    CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                    PORTS               NAMES
-    7691a814370e        ubuntu:14.04        "/bin/bash"         36 hours ago        Exited (0) 21 hours ago                       test
-    $ sudo docker export 7691a814370e > ubuntu.tar
-    这样将导出容器快照到本地文件。
-
-    5.2 导入容器快照
-    可以使用 docker import 从容器快照文件中再导入为镜像，例如
-
-    $ cat ubuntu.tar | sudo docker import - test/ubuntu:v1.0
-    $ sudo docker images
-    REPOSITORY          TAG                 IMAGE ID            CREATED              VIRTUAL SIZE
-    test/ubuntu         v1.0                9d37a6082e97        About a minute ago   171.3 MB
-    此外，也可以通过指定 URL 或者某个目录来导入，例如
-
-    $sudo docker import http://example.com/exampleimage.tgz example/imagerepo
-    *注：用户既可以使用 docker load 来导入镜像存储文件到本地镜像库，也可以使用 docker import 来导入一个容器快照到本地镜像库。这两者的区别在于容器快照文件将丢弃所有的历史记录和元数据信息（即仅保存容器当时的快照状态），而镜像存储文件将保存完整记录，体积也要大。此外，从容器快照文件导入时可以重新指定标签等元数据信息。
-
-    6、删除容器
-    可以使用 docker rm 来删除一个处于终止状态的容器。 例如
-
-    $sudo docker rm  trusting_newton
-    trusting_newton
-    如果要删除一个运行中的容器，可以添加 -f 参数。Docker 会发送 SIGKILL 信号给容器。
-
+    用已经存在的容器做一个新的镜像
 ** 数据卷
    数据卷是一个可供一个或多个容器使用的特殊目录，它绕过 UFS，可以提供很多有用的特性：
 
@@ -535,8 +399,18 @@ $ sudo docker run -v /dbdata --name dbdata2 ubuntu /bin/bash
 
 $ sudo docker run --volumes-from dbdata2 -v $(pwd):/backup busybox tar xvf
 /backup/backup.tar
+** 数据卷
+*** 是什么
+*** 能干什么
+*** 数据卷
+*** 数据容器卷
+**** 是什么
+**** 能干什么
+		 日志系统存储（典型场景）
+**** 使用
+			docker run -it --name n1 --volumes-from n0 centos
 
-** 使用网络
+** 网络
    1、外部访问容器
    容器中可以运行一些网络应用，要让外部也可以访问这些应用，可以通过 -P 或 -p 参数来指定端口映射。
 
@@ -1198,39 +1072,6 @@ $ sudo docker run --volumes-from dbdata2 -v $(pwd):/backup busybox tar xvf
 
    $ sudo docker build -t myrepo/myapp /tmp/test1/
 
-** 命令
-   docker start|stop|kill
-   docker start CONTAINER [CONTAINER...]
-   # 运行一个或多个停止的容器
-   docker stop CONTAINER [CONTAINER...]
-   # 停掉一个或多个运行的容器-t 选项可指定超时时间
-   docker kill [OPTIONS] CONTAINER [CONTAINER...]
-   # 默认 kill 发送 SIGKILL 信号-s 可以指定发送 kill 信号类型
-   docker restart [OPTIONS] CONTAINER [CONTAINER...]
-   # 重启一个或多个运行的容器-t 选项可指定超时时间
-   docker pause CONTAINER
-   # 暂停一个容器，方便 commit
-   docker unpause CONTAINER
-   # 继续暂停的容器
-   docker rm [OPTIONS] CONTAINER [CONTAINER...]
-   # 移除一个或多个容器
-   -f, --force=false Force removal of running container
-   -l, --link=false Remove the specified link and not the underlying container
-   -v, --volumes=false Remove the volumes associated with the container
-   docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
-   # 提交指定容器为镜像
-   -a, --author="" Author (e.g., "John Hannibal Smith hannibal@a-team.com")
-   -m, --message="" Commit message
-   -p, --pause=true Pause container during commit
-   # 默认 commit 是暂停状态
-   docker inspect CONTAINER|IMAGE [CONTAINER|IMAGE...]
-   # 查看容器或者镜像的详细信息
-   docker logs CONTAINER
-   # 输出指定容器日志信息
-   -f, --follow=false Follow log output
-   # 类似 tail -f
-   -t, --timestamps=false Show timestamps
-   --tail="all" Output the specified number of lines at the end of logs (defaults to all logs)
 ** 构建服务
 *** 构建 jekyll 
 *** Java 引用程序
@@ -1238,19 +1079,6 @@ $ sudo docker run --volumes-from dbdata2 -v $(pwd):/backup busybox tar xvf
 *** node
 ** 以非 Root 用户身份执行 Docker
    sudo usermod -aG docker $USER
-** 阿里云服务器镜像
-   https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
-
-   配置文件/etc/docker/daemon.json来使用加速器
-   
-   #+begin_src sh
-     vim daemon.json
-     {
-       "registry-mirrors": ["***"]
-     }
-     sudo systemctl daemon-reload
-     sudo systemctl restart docker
-   #+end_src
 * Dockerfile 详解
   指定基础 image
   FROM <image>:<tag>  

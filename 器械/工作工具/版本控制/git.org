@@ -8,6 +8,31 @@
 
 # more   
 * git 
+** 安装 
+*** 下载地址 
+ - https://git-scm.com/downloads
+*** 检查是否安装成功
+    git --version
+** 结构
+*** 工作区(Working Directory) 
+*** 版本库(Repository)
+    - 暂存区 (stage/index)
+    - master  head唯一指向
+
+** Git 文件的4种状态
+*** Untracked（未被跟踪的）
+ - 此文件在文件夹中, 但并没有加入到git库, 不参与版本控制. 通过git add 状态变为Staged.
+*** Unmodify（文件已经入库）
+ - 文件已经入库, 未修改, 即版本库中的文件快照内容与文件夹中完全一致. 这种类型的文件有两种去处, 如果它被修改, 而变为Modified. 如果使用git rm移出版本库, 则成为Untracked文件
+
+ ###
+*** Modified（文件已修改）
+
+ - 文件已修改, 仅仅是修改, 并没有进行其他的操作. 这个文件也有两个去处, 通过git add可进入暂存staged状态, 使用git checkout 则丢弃修改过, 返回到unmodify状态, 这个git checkout即从库中取出文件, 覆盖当前修改
+*** Staged（暂存状态）
+
+ - 执行git commit则将修改同步到库中, 这时库中的文件和本地文件又变为一致, 文件为Unmodify状态. 执行git reset HEAD filename取消暂存, 文件状态为Modified
+
 ** 使用设置
    #+begin_src shell 
      git config [--system,--global, --list]
@@ -21,76 +46,76 @@
     3. ssh-add rsa  添加私钥 
     4. 测试  ssh git@github.com  \ ssh -T git@e.coding.net
 ** 用法
-*** 初始化版本库
-**** git init 
-**** git clone 
-       git clone git://github.com/someone/some_project.git some_project
-**** git remote  (关联远程仓库)
-     git remote add origin git://github.com/someone/another_project.git
-*** 常用命令
-**** 1、远程仓库相关命令
-     查看远程仓库：$ git remote -v\\
-     添加远程仓库：$ git remote add [name] [url]\\
-     删除远程仓库：$ git remote rm [name]\\
-     修改远程仓库：$ git remote set-url --push [name] [newUrl]\\
-     拉取远程仓库：$ git pull [remoteName] [localBranchName]\\
-     推送远程仓库：$ git push [remoteName] [localBranchName]
+*** git init 
+    - 初始化git仓库
+    - 出现.git文件夹
+*** git clone 
+      git clone git://github.com/someone/some_project.git some_project
+*** git remote  (关联远程仓库)
+    git remote add origin git://github.com/someone/another_project.git
+*** 1、远程仓库相关命令
+    查看远程仓库：$ git remote -v\\
+    添加远程仓库：$ git remote add [name] [url]\\
+    删除远程仓库：$ git remote rm [name]\\
+    修改远程仓库：$ git remote set-url --push [name] [newUrl]\\
+    拉取远程仓库：$ git pull [remoteName] [localBranchName]\\
+    推送远程仓库：$ git push [remoteName] [localBranchName]
 
-     如果想把本地的某个分支 test 提交到远程仓库，并作为远程仓库的 master 分支，或者作为另外一个名叫 test 的分支，如下：/
+    如果想把本地的某个分支 test 提交到远程仓库，并作为远程仓库的 master 分支，或者作为另外一个名叫 test 的分支，如下：/
 
-     $git push origin test:master // 提交本地 test 分支作为远程的 master 分支\\
-     $git push origin test:test // 提交本地 test 分支作为远程的 test 分支
+    $git push origin test:master // 提交本地 test 分支作为远程的 master 分支\\
+    $git push origin test:test // 提交本地 test 分支作为远程的 test 分支
 
-**** 2、分支(branch)操作相关命令
-   - 查看本地分支：$ git branch
-   - 查看远程分支：$ git branch -r
-   - 创建本地分支：$ git branch [name] ----注意新分支创建后不会自动切换为当前分支
-   - 切换分支：$ git checkout [name]
-   - 创建新分支并立即切换到新分支：$ git checkout -b [name]
-   - 删除分支：$ git branch -d [name] ---- -d 选项只能删除已经参与了合并的分支，对于未有合并的分支是无法删除的。如果想强制删除一个分支，可以使用-D 选项
-   - 合并分支：$ git merge [name] ----将名称为[name]的分支与当前分支合并
-   - 创建远程分支(本地分支 push 到远程)：$ git push origin [name]
-   - 删除远程分支：$ git push origin :heads/[name] 或 $ git push origin :[name]
+*** 2、分支(branch)操作相关命令
+  - 查看本地分支：$ git branch
+  - 查看远程分支：$ git branch -r
+  - 创建本地分支：$ git branch [name] ----注意新分支创建后不会自动切换为当前分支
+  - 切换分支：$ git checkout [name]
+  - 创建新分支并立即切换到新分支：$ git checkout -b [name]
+  - 删除分支：$ git branch -d [name] ---- -d 选项只能删除已经参与了合并的分支，对于未有合并的分支是无法删除的。如果想强制删除一个分支，可以使用-D 选项
+  - 合并分支：$ git merge [name] ----将名称为[name]的分支与当前分支合并
+  - 创建远程分支(本地分支 push 到远程)：$ git push origin [name]
+  - 删除远程分支：$ git push origin :heads/[name] 或 $ git push origin :[name]
 
-     创建空的分支：(执行命令之前记得先提交你当前分支的修改，否则会被强制删干净没得后悔)
+    创建空的分支：(执行命令之前记得先提交你当前分支的修改，否则会被强制删干净没得后悔)
 
-     #+begin_src sh
-     $git symbolic-ref HEAD refs/heads/[name]
-     $rm .git/index
-     $git clean -fdx
-     #+end_src
+    #+begin_src sh
+    $git symbolic-ref HEAD refs/heads/[name]
+    $rm .git/index
+    $git clean -fdx
+    #+end_src
 
-**** 3、版本(tag)操作相关命令
-   - 查看版本：$ git tag
-   - 创建版本：$ git tag [name]
-   - 删除版本：$ git tag -d [name]
-   - 查看远程版本：$ git tag -r
-   - 创建远程版本(本地版本 push 到远程)：$ git push origin [name]
-   - 删除远程版本：$ git push origin :refs/tags/[name]
-   - 合并远程仓库的 tag 到本地：$ git pull origin --tags
-   - 上传本地 tag 到远程仓库：$ git push origin --tags
-   - 创建带注释的 tag：$ git tag -a [name] -m 'yourMessage'
+*** 3、版本(tag)操作相关命令
+  - 查看版本：$ git tag
+  - 创建版本：$ git tag [name]
+  - 删除版本：$ git tag -d [name]
+  - 查看远程版本：$ git tag -r
+  - 创建远程版本(本地版本 push 到远程)：$ git push origin [name]
+  - 删除远程版本：$ git push origin :refs/tags/[name]
+  - 合并远程仓库的 tag 到本地：$ git pull origin --tags
+  - 上传本地 tag 到远程仓库：$ git push origin --tags
+  - 创建带注释的 tag：$ git tag -a [name] -m 'yourMessage'
 
-**** 4、子模块(submodule)相关操作命令
-     添加子模块：$ git submodule add [url] [path]
-     如：$git submodule add [[https://link.jianshu.com?t=git://github.com/soberh/ui-libs.git][git://github.com/soberh/ui-libs.git]] src/main/webapp/ui-libs
+*** 4、子模块(submodule)相关操作命令
+    添加子模块：$ git submodule add [url] [path]
+    如：$git submodule add [[https://link.jianshu.com?t=git://github.com/soberh/ui-libs.git][git://github.com/soberh/ui-libs.git]] src/main/webapp/ui-libs
 
-     初始化子模块：$ git submodule init ----只在首次检出仓库时运行一次就行
-     更新子模块：$ git submodule update ----每次更新或切换分支后都需要运行一下
+    初始化子模块：$ git submodule init ----只在首次检出仓库时运行一次就行
+    更新子模块：$ git submodule update ----每次更新或切换分支后都需要运行一下
 
-     删除子模块：（分 4 步走哦）
-     1. $ git rm --cached [path]
-     2. 编辑“.gitmodules”文件，将子模块的相关配置节点删除掉
-     3. 编辑“ .git/config”文件，将子模块的相关配置节点删除掉
-     4. 手动删除子模块残留的目录
+    删除子模块：（分 4 步走哦）
+    1. $ git rm --cached [path]
+    2. 编辑“.gitmodules”文件，将子模块的相关配置节点删除掉
+    3. 编辑“ .git/config”文件，将子模块的相关配置节点删除掉
+    4. 手动删除子模块残留的目录
 
-**** 5、忽略一些文件、文件夹不提交
-     在仓库根目录下创建名称为“.gitignore”的文件，写入不需要的文件夹名或文件，每个元素占一行即可，如
-     #+begin_example
-     target
-     bin
-     ,*.db
-     #+end_example
+*** 5、忽略一些文件、文件夹不提交
+    在仓库根目录下创建名称为“.gitignore”的文件，写入不需要的文件夹名或文件，每个元素占一行即可，如
+    #+begin_example
+    target
+    bin
+    ,*.db
+    #+end_example
 
 ** github
   热门  https://github.com/trending
@@ -122,7 +147,6 @@
     
 
 
-    
 ** [[https://www.jianshu.com/p/afeeaea8c0c8][git基本操作、stash暂存、stash找回、创建分支、删除分支、git忽略文件失效、合并分支、重定向项目地址 - 简书]] :website:
 
  [2020-10-31 六 06:49]
@@ -161,8 +185,6 @@
    =git stash clear= 清空所有的暂存\\
    =git stash drop [-q|--quiet] []= 删除某一个暂存，在中括号里面放置需要删除的暂存ID\\
    =git stash apply= 使用某个暂存，但是不会删除这个暂存
-
-   --------------
 
 ******* 暂存不小心清空，结果里面有需要的代码，也是有找回方法的
    =git fsck --lost-found= 命令找出刚才删除的分支里面的提交对象。\\

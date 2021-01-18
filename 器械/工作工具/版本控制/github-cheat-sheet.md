@@ -4,7 +4,7 @@ Git 和 Github 秘籍，灵感来自于 [Zach Holman](https://github.com/holman)
 *其他语言版本: [English](README.md), [한국어](README.ko.md), [日本語](README.ja.md), [简体中文](README.zh-cn.md).*
 
 # 目录
-  - [GitHub](#github)
+- [GitHub](#github)
     - [不比较空白字符](#不比较空白字符)
     - [调整 Tab 字符所代表的空格数](#调整-tab-字符所代表的空格数)
     - [查看某个用户的 Commit 历史](#查看某个用户的-commit-历史)
@@ -589,6 +589,17 @@ GitHubs 图标库 (Octicons) 现已开源。
 | Git and GitHub Secrets | https://www.youtube.com/watch?v=Foz9yvMkvlA |
 | More Git and GitHub Secrets | https://www.youtube.com/watch?v=p50xsL-iVgU |
 
+### 查看项目大小 (75行，size单位是k )
+直接在浏览器地址栏输入
+
+https://api.github.com/repos/organization/repository
+其中organization替换为项目的所有者(组织)，repository替换为项目的名称`
+
+返回的页面是描述这个项目的JSON数据，其中的size指的就是项目的大小，单位为kB(千字节)
+
+例如 torvalds/linux 的访问为 https://api.github.com/repos/torvalds/linux
+
+https://api.github.com/repos/geekxh/hello-algorithm
 ## Git
 ### 从工作区去除大量已删除文件
 当用 `/bin/rm` 命令删除了大量文件之后，你可以用下面一条命令从工作区和索引中去除这些文件，以免一个一个的删除：
